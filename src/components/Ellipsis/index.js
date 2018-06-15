@@ -8,6 +8,7 @@ import styles from './index.less';
 
 const isSupportLineClamp = document.body.style.webkitLineClamp !== undefined;
 
+<<<<<<< HEAD
 export const getStrFullLength = (str = '') => {
   return str.split('').reduce((pre, cur) => {
     const charCode = cur.charCodeAt(0);
@@ -42,6 +43,13 @@ const EllipsisText = ({ text, length, tooltip, fullWidthRecognition, ...other })
   }
   const textLength = fullWidthRecognition ? getStrFullLength(text) : text.length;
   if (textLength <= length || length < 0) {
+=======
+const EllipsisText = ({ text, length, tooltip, ...other }) => {
+  if (typeof text !== 'string') {
+    throw new Error('Ellipsis children must be string.');
+  }
+  if (text.length <= length || length < 0) {
+>>>>>>> init
     return <span {...other}>{text}</span>;
   }
   const tail = '...';
@@ -49,7 +57,11 @@ const EllipsisText = ({ text, length, tooltip, fullWidthRecognition, ...other })
   if (length - tail.length <= 0) {
     displayText = '';
   } else {
+<<<<<<< HEAD
     displayText = fullWidthRecognition ? cutStrByFullLength(text, length) : text.slice(0, length);
+=======
+    displayText = text.slice(0, length);
+>>>>>>> init
   }
 
   if (tooltip) {
@@ -84,8 +96,12 @@ export default class Ellipsis extends Component {
   }
 
   componentDidUpdate(perProps) {
+<<<<<<< HEAD
     const { lines } = this.props;
     if (lines !== perProps.lines) {
+=======
+    if (this.props.lines !== perProps.lines) {
+>>>>>>> init
       this.computeLine();
     }
   }
@@ -110,7 +126,11 @@ export default class Ellipsis extends Component {
 
       // bisection
       const len = text.length;
+<<<<<<< HEAD
       const mid = Math.ceil(len / 2);
+=======
+      const mid = Math.floor(len / 2);
+>>>>>>> init
 
       const count = this.bisection(targetHeight, mid, 0, len, text, shadowNode);
 
@@ -177,6 +197,7 @@ export default class Ellipsis extends Component {
 
   render() {
     const { text, targetCount } = this.state;
+<<<<<<< HEAD
     const {
       children,
       lines,
@@ -186,6 +207,9 @@ export default class Ellipsis extends Component {
       fullWidthRecognition,
       ...restProps
     } = this.props;
+=======
+    const { children, lines, length, className, tooltip, ...restProps } = this.props;
+>>>>>>> init
 
     const cls = classNames(styles.ellipsis, className, {
       [styles.lines]: lines && !isSupportLineClamp,
@@ -208,7 +232,10 @@ export default class Ellipsis extends Component {
           length={length}
           text={children || ''}
           tooltip={tooltip}
+<<<<<<< HEAD
           fullWidthRecognition={fullWidthRecognition}
+=======
+>>>>>>> init
           {...restProps}
         />
       );

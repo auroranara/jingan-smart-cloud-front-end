@@ -14,6 +14,7 @@ class WarpFormItem extends Component {
       count: 0,
     };
   }
+<<<<<<< HEAD
 
   componentDidMount() {
     const { updateActive, name } = this.props;
@@ -26,6 +27,16 @@ class WarpFormItem extends Component {
     clearInterval(this.interval);
   }
 
+=======
+  componentDidMount() {
+    if (this.props.updateActive) {
+      this.props.updateActive(this.props.name);
+    }
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+>>>>>>> init
   onGetCaptcha = () => {
     const { onGetCaptcha } = this.props;
     const result = onGetCaptcha ? onGetCaptcha() : null;
@@ -38,7 +49,10 @@ class WarpFormItem extends Component {
       this.runGetCaptchaCountDown();
     }
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   getFormItemOptions = ({ onChange, defaultValue, rules }) => {
     const options = {
       rules: rules || this.customprops.rules,
@@ -51,10 +65,15 @@ class WarpFormItem extends Component {
     }
     return options;
   };
+<<<<<<< HEAD
 
   runGetCaptchaCountDown = () => {
     const { countDown } = this.props;
     let count = countDown || 59;
+=======
+  runGetCaptchaCountDown = () => {
+    let count = this.props.countDown || 59;
+>>>>>>> init
     this.setState({ count });
     this.interval = setInterval(() => {
       count -= 1;
@@ -64,6 +83,7 @@ class WarpFormItem extends Component {
       }
     }, 1000);
   };
+<<<<<<< HEAD
 
   render() {
     const { count } = this.state;
@@ -71,6 +91,12 @@ class WarpFormItem extends Component {
     const {
       form: { getFieldDecorator },
     } = this.props;
+=======
+  render() {
+    const { count } = this.state;
+
+    const { getFieldDecorator } = this.props.form;
+>>>>>>> init
 
     // 这么写是为了防止restProps中 带入 onChange, defaultValue, rules props
     const {
@@ -80,7 +106,10 @@ class WarpFormItem extends Component {
       rules,
       name,
       updateActive,
+<<<<<<< HEAD
       type,
+=======
+>>>>>>> init
       ...restProps
     } = this.props;
 
@@ -88,13 +117,23 @@ class WarpFormItem extends Component {
     const options = this.getFormItemOptions(this.props);
 
     const otherProps = restProps || {};
+<<<<<<< HEAD
     if (type === 'Captcha') {
+=======
+    if (this.props.type === 'Captcha') {
+>>>>>>> init
       const inputProps = omit(otherProps, ['onGetCaptcha']);
       return (
         <FormItem>
           <Row gutter={8}>
             <Col span={16}>
+<<<<<<< HEAD
               {getFieldDecorator(name, options)(<Input {...customprops} {...inputProps} />)}
+=======
+              {getFieldDecorator(name, options)(
+                <Input {...this.props.customprops} {...inputProps} />
+              )}
+>>>>>>> init
             </Col>
             <Col span={8}>
               <Button
@@ -112,7 +151,11 @@ class WarpFormItem extends Component {
     }
     return (
       <FormItem>
+<<<<<<< HEAD
         {getFieldDecorator(name, options)(<Input {...customprops} {...otherProps} />)}
+=======
+        {getFieldDecorator(name, options)(<Input {...this.props.customprops} {...otherProps} />)}
+>>>>>>> init
       </FormItem>
     );
   }

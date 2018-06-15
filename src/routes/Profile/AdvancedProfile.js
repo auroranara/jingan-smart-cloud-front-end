@@ -212,6 +212,7 @@ export default class AdvancedProfile extends Component {
   @Bind()
   @Debounce(200)
   setStepDirection() {
+<<<<<<< HEAD
     const { stepDirection } = this.state;
     const w = getWindowWidth();
     if (stepDirection !== 'vertical' && w <= 576) {
@@ -227,6 +228,25 @@ export default class AdvancedProfile extends Component {
 
   render() {
     const { stepDirection, operationkey } = this.state;
+=======
+    requestAnimationFrame(() => {
+      const { stepDirection } = this.state;
+      const w = getWindowWidth();
+      if (stepDirection !== 'vertical' && w <= 576) {
+        this.setState({
+          stepDirection: 'vertical',
+        });
+      } else if (stepDirection !== 'horizontal' && w > 576) {
+        this.setState({
+          stepDirection: 'horizontal',
+        });
+      }
+    });
+  }
+
+  render() {
+    const { stepDirection } = this.state;
+>>>>>>> init
     const { profile, loading } = this.props;
     const { advancedOperation1, advancedOperation2, advancedOperation3 } = profile;
     const contentList = {
@@ -333,8 +353,12 @@ export default class AdvancedProfile extends Component {
         </Card>
         <Card title="用户近半年来电记录" style={{ marginBottom: 24 }} bordered={false}>
           <div className={styles.noData}>
+<<<<<<< HEAD
             <Icon type="frown-o" />
             暂无数据
+=======
+            <Icon type="frown-o" />暂无数据
+>>>>>>> init
           </div>
         </Card>
         <Card
@@ -343,7 +367,11 @@ export default class AdvancedProfile extends Component {
           tabList={operationTabList}
           onTabChange={this.onOperationTabChange}
         >
+<<<<<<< HEAD
           {contentList[operationkey]}
+=======
+          {contentList[this.state.operationkey]}
+>>>>>>> init
         </Card>
       </PageHeaderLayout>
     );

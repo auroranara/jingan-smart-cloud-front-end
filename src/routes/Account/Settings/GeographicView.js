@@ -20,6 +20,7 @@ const nullSlectItem = {
 })
 export default class GeographicView extends PureComponent {
   componentDidMount = () => {
+<<<<<<< HEAD
     const { dispatch } = this.props;
     dispatch({
       type: 'geographic/fetchProvince',
@@ -47,6 +48,26 @@ export default class GeographicView extends PureComponent {
     return this.getOption(city);
   };
 
+=======
+    this.props.dispatch({
+      type: 'geographic/fetchProvince',
+    });
+  };
+  componentDidUpdate(props) {
+    if (!props.value && !!this.props.value && !!this.props.value.province) {
+      this.props.dispatch({
+        type: 'geographic/fetchCity',
+        payload: this.props.value.province.key,
+      });
+    }
+  }
+  getProvinceOption() {
+    return this.getOption(this.props.province);
+  }
+  getCityOption = () => {
+    return this.getOption(this.props.city);
+  };
+>>>>>>> init
   getOption = list => {
     if (!list || list.length < 1) {
       return (
@@ -63,6 +84,7 @@ export default class GeographicView extends PureComponent {
       );
     });
   };
+<<<<<<< HEAD
 
   selectProvinceItem = item => {
     const { dispatch, onChange } = this.props;
@@ -71,10 +93,19 @@ export default class GeographicView extends PureComponent {
       payload: item.key,
     });
     onChange({
+=======
+  selectProvinceItem = item => {
+    this.props.dispatch({
+      type: 'geographic/fetchCity',
+      payload: item.key,
+    });
+    this.props.onChange({
+>>>>>>> init
       province: item,
       city: nullSlectItem,
     });
   };
+<<<<<<< HEAD
 
   selectCityItem = item => {
     const { value, onChange } = this.props;
@@ -84,6 +115,14 @@ export default class GeographicView extends PureComponent {
     });
   };
 
+=======
+  selectCityItem = item => {
+    this.props.onChange({
+      province: this.props.value.province,
+      city: item,
+    });
+  };
+>>>>>>> init
   conversionObject() {
     const { value } = this.props;
     if (!value) {
@@ -98,12 +137,19 @@ export default class GeographicView extends PureComponent {
       city: city || nullSlectItem,
     };
   }
+<<<<<<< HEAD
 
   render() {
     const { province, city } = this.conversionObject();
     const { isLoading } = this.props;
     return (
       <Spin spinning={isLoading} wrapperClassName={styles.row}>
+=======
+  render() {
+    const { province, city } = this.conversionObject();
+    return (
+      <Spin spinning={this.props.isLoading} wrapperClassName={styles.row}>
+>>>>>>> init
         <Select
           className={styles.item}
           value={province}

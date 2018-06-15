@@ -19,7 +19,10 @@ module.exports = {
     'react/jsx-no-bind': [0],
     'react/prop-types': [0],
     'react/prefer-stateless-function': [0],
+<<<<<<< HEAD
     'react/jsx-one-expression-per-line': [0],
+=======
+>>>>>>> init
     'react/jsx-wrap-multilines': [
       'error',
       {

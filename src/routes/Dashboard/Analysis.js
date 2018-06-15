@@ -55,8 +55,12 @@ export default class Analysis extends Component {
   };
 
   componentDidMount() {
+<<<<<<< HEAD
     const { dispatch } = this.props;
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'chart/fetch',
     });
   }
@@ -81,23 +85,37 @@ export default class Analysis extends Component {
   };
 
   handleRangePickerChange = rangePickerValue => {
+<<<<<<< HEAD
     const { dispatch } = this.props;
+=======
+>>>>>>> init
     this.setState({
       rangePickerValue,
     });
 
+<<<<<<< HEAD
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'chart/fetchSalesData',
     });
   };
 
   selectDate = type => {
+<<<<<<< HEAD
     const { dispatch } = this.props;
+=======
+>>>>>>> init
     this.setState({
       rangePickerValue: getTimeDistance(type),
     });
 
+<<<<<<< HEAD
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'chart/fetchSalesData',
     });
   };
@@ -203,10 +221,14 @@ export default class Analysis extends Component {
         sorter: (a, b) => a.range - b.range,
         render: (text, record) => (
           <Trend flag={record.status === 1 ? 'down' : 'up'}>
+<<<<<<< HEAD
             <span style={{ marginRight: 4 }}>
               {text}
               %
             </span>
+=======
+            <span style={{ marginRight: 4 }}>{text}%</span>
+>>>>>>> init
           </Trend>
         ),
         align: 'right',
@@ -261,25 +283,38 @@ export default class Analysis extends Component {
                   <Icon type="info-circle-o" />
                 </Tooltip>
               }
+<<<<<<< HEAD
               loading={loading}
+=======
+>>>>>>> init
               total={() => <Yuan>126560</Yuan>}
               footer={<Field label="日均销售额" value={`￥${numeral(12423).format('0,0')}`} />}
               contentHeight={46}
             >
               <Trend flag="up" style={{ marginRight: 16 }}>
+<<<<<<< HEAD
                 周同比
                 <span className={styles.trendText}>12%</span>
               </Trend>
               <Trend flag="down">
                 日环比
                 <span className={styles.trendText}>11%</span>
+=======
+                周同比<span className={styles.trendText}>12%</span>
+              </Trend>
+              <Trend flag="down">
+                日环比<span className={styles.trendText}>11%</span>
+>>>>>>> init
               </Trend>
             </ChartCard>
           </Col>
           <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
+<<<<<<< HEAD
               loading={loading}
+=======
+>>>>>>> init
               title="访问量"
               action={
                 <Tooltip title="指标说明">
@@ -296,7 +331,10 @@ export default class Analysis extends Component {
           <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
+<<<<<<< HEAD
               loading={loading}
+=======
+>>>>>>> init
               title="支付笔数"
               action={
                 <Tooltip title="指标说明">
@@ -312,7 +350,10 @@ export default class Analysis extends Component {
           </Col>
           <Col {...topColResponsiveProps}>
             <ChartCard
+<<<<<<< HEAD
               loading={loading}
+=======
+>>>>>>> init
               bordered={false}
               title="运营活动效果"
               action={
@@ -324,12 +365,19 @@ export default class Analysis extends Component {
               footer={
                 <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
                   <Trend flag="up" style={{ marginRight: 16 }}>
+<<<<<<< HEAD
                     周同比
                     <span className={styles.trendText}>12%</span>
                   </Trend>
                   <Trend flag="down">
                     日环比
                     <span className={styles.trendText}>11%</span>
+=======
+                    周同比<span className={styles.trendText}>12%</span>
+                  </Trend>
+                  <Trend flag="down">
+                    日环比<span className={styles.trendText}>11%</span>
+>>>>>>> init
                   </Trend>
                 </div>
               }

@@ -27,23 +27,39 @@ export default class LoginPage extends Component {
         if (err) {
           reject(err);
         } else {
+<<<<<<< HEAD
           const { dispatch } = this.props;
           dispatch({
             type: 'login/getCaptcha',
             payload: values.mobile,
           })
+=======
+          this.props
+            .dispatch({
+              type: 'login/getCaptcha',
+              payload: values.mobile,
+            })
+>>>>>>> init
             .then(resolve)
             .catch(reject);
         }
       });
     });
   };
+<<<<<<< HEAD
 
   handleSubmit = (err, values) => {
     const { type } = this.state;
     if (!err) {
       const { dispatch } = this.props;
       dispatch({
+=======
+  loginForm;
+  handleSubmit = (err, values) => {
+    const { type } = this.state;
+    if (!err) {
+      this.props.dispatch({
+>>>>>>> init
         type: 'login/login',
         payload: {
           ...values,
@@ -59,15 +75,22 @@ export default class LoginPage extends Component {
     });
   };
 
+<<<<<<< HEAD
   loginForm;
 
+=======
+>>>>>>> init
   renderMessage = content => {
     return <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />;
   };
 
   render() {
     const { login, submitting } = this.props;
+<<<<<<< HEAD
     const { type, autoLogin } = this.state;
+=======
+    const { type } = this.state;
+>>>>>>> init
     return (
       <div className={styles.main}>
         <Login
@@ -95,7 +118,11 @@ export default class LoginPage extends Component {
             <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
           </Tab>
           <div>
+<<<<<<< HEAD
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
+=======
+            <Checkbox checked={this.state.autoLogin} onChange={this.changeAutoLogin}>
+>>>>>>> init
               自动登录
             </Checkbox>
             <a style={{ float: 'right' }} href="">

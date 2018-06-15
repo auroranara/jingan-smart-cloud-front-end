@@ -7,9 +7,14 @@ const defaultSetting = {
   fixedHeader: false,
   autoHideHeader: false,
   fixSiderbar: false,
+<<<<<<< HEAD
   colorWeak: false,
 };
 
+=======
+  colorWeak: 'close',
+};
+>>>>>>> init
 export default {
   namespace: 'setting',
   state: defaultSetting,

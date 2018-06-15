@@ -34,35 +34,53 @@ class LoadingPage extends PureComponent {
     loading: true,
     isMobile: false,
   };
+<<<<<<< HEAD
 
   componentDidMount() {
     const { dispatch } = this.props;
+=======
+  componentDidMount() {
+>>>>>>> init
     this.enquireHandler = enquireScreen(mobile => {
       this.setState({
         isMobile: mobile,
       });
     });
+<<<<<<< HEAD
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'user/fetchCurrent',
     });
     this.hideLoading();
     this.initSetting();
   }
+<<<<<<< HEAD
 
   componentWillUnmount() {
     unenquireScreen(this.enquireHandler);
   }
 
+=======
+  componentWillUnmount() {
+    unenquireScreen(this.enquireHandler);
+  }
+>>>>>>> init
   hideLoading() {
     this.setState({
       loading: false,
     });
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   /**
    * get setting from url params
    */
   initSetting() {
+<<<<<<< HEAD
     const { dispatch } = this.props;
     dispatch({
       type: 'setting/getSetting',
@@ -72,6 +90,14 @@ class LoadingPage extends PureComponent {
   render() {
     const { loading, isMobile } = this.state;
     if (loading) {
+=======
+    this.props.dispatch({
+      type: 'setting/getSetting',
+    });
+  }
+  render() {
+    if (this.state.loading) {
+>>>>>>> init
       return (
         <div
           style={{
@@ -88,7 +114,11 @@ class LoadingPage extends PureComponent {
     }
     return (
       <BasicLayout
+<<<<<<< HEAD
         isMobile={isMobile}
+=======
+        isMobile={this.state.isMobile}
+>>>>>>> init
         menuData={MenuData}
         redirectData={redirectData}
         {...this.props}

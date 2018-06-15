@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Table, Button, Input, message, Popconfirm, Divider } from 'antd';
+<<<<<<< HEAD
 import isEqual from 'lodash.isequal';
 import styles from './style.less';
 
@@ -8,12 +9,18 @@ export default class TableForm extends PureComponent {
 
   cacheOriginData = {};
 
+=======
+import styles from './style.less';
+
+export default class TableForm extends PureComponent {
+>>>>>>> init
   constructor(props) {
     super(props);
 
     this.state = {
       data: props.value,
       loading: false,
+<<<<<<< HEAD
       /* eslint-disable-next-line react/no-unused-state */
       value: props.value,
     };
@@ -38,6 +45,28 @@ export default class TableForm extends PureComponent {
     e.preventDefault();
     const { data } = this.state;
     const newData = data.map(item => ({ ...item }));
+=======
+      editData: [],
+    };
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    if ('value' in nextProps) {
+      return {
+        data: nextProps.value,
+      };
+    }
+    return null;
+  }
+  getRowByKey(key, newData) {
+    return (newData || this.state.data).filter(item => item.key === key)[0];
+  }
+  index = 0;
+  cacheOriginData = {};
+  toggleEditable = (e, key) => {
+    e.preventDefault();
+    const newData = this.state.data.map(item => ({ ...item }));
+>>>>>>> init
     const target = this.getRowByKey(key, newData);
     if (target) {
       // 进入编辑状态时保存原始数据
@@ -48,6 +77,7 @@ export default class TableForm extends PureComponent {
       this.setState({ data: newData });
     }
   };
+<<<<<<< HEAD
 
   newMember = () => {
     const { data } = this.state;
@@ -72,22 +102,74 @@ export default class TableForm extends PureComponent {
     onChange(newData);
   }
 
+=======
+  remove(key) {
+    const { editData } = this.state;
+    const editItem = editData.find(item => item.key === key);
+    if (editItem && editItem.key) {
+      // 如果存在缓存
+      if (this.cacheOriginData[key]) {
+        const data = [...this.state.data];
+        data.push(this.cacheOriginData[key]);
+        this.setState(
+          {
+            data,
+          },
+          () => {
+            delete this.cacheOriginData[key];
+          }
+        );
+      }
+      // 从 editData 中删除
+      this.setState({
+        editData: editData.filter(item => item.key !== key),
+      });
+      return;
+    }
+    const newData = this.state.data.filter(item => item.key !== key);
+    this.setState({ data: newData });
+    this.props.onChange(newData);
+  }
+  newMember = () => {
+    this.index += 1;
+    this.setState({
+      editData: [
+        {
+          key: `NEW_TEMP_ID_${this.index}`,
+          workId: '',
+          name: '',
+          department: '',
+          editable: true,
+          isNew: true,
+        },
+      ],
+    });
+  };
+>>>>>>> init
   handleKeyPress(e, key) {
     if (e.key === 'Enter') {
       this.saveRow(e, key);
     }
   }
+<<<<<<< HEAD
 
   handleFieldChange(e, fieldName, key) {
     const { data } = this.state;
     const newData = data.map(item => ({ ...item }));
+=======
+  handleFieldChange(e, fieldName, key) {
+    const newData = this.state.data.map(item => ({ ...item }));
+>>>>>>> init
     const target = this.getRowByKey(key, newData);
     if (target) {
       target[fieldName] = e.target.value;
       this.setState({ data: newData });
     }
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   saveRow(e, key) {
     e.persist();
     this.setState({
@@ -107,22 +189,35 @@ export default class TableForm extends PureComponent {
         });
         return;
       }
+<<<<<<< HEAD
       const { data } = this.state;
       const { onChange } = this.props;
       delete target.isNew;
       this.toggleEditable(e, key);
       onChange(data);
+=======
+      delete target.isNew;
+      this.toggleEditable(e, key);
+      this.props.onChange(this.state.data);
+>>>>>>> init
       this.setState({
         loading: false,
       });
     }, 500);
   }
+<<<<<<< HEAD
 
   cancel(e, key) {
     this.clickedCancel = true;
     e.preventDefault();
     const { data } = this.state;
     const newData = data.map(item => ({ ...item }));
+=======
+  cancel(e, key) {
+    this.clickedCancel = true;
+    e.preventDefault();
+    const newData = this.state.data.map(item => ({ ...item }));
+>>>>>>> init
     const target = this.getRowByKey(key, newData);
     if (this.cacheOriginData[key]) {
       Object.assign(target, this.cacheOriginData[key]);
@@ -132,7 +227,10 @@ export default class TableForm extends PureComponent {
     this.setState({ data: newData });
     this.clickedCancel = false;
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   render() {
     const columns = [
       {
@@ -197,8 +295,12 @@ export default class TableForm extends PureComponent {
         title: '操作',
         key: 'action',
         render: (text, record) => {
+<<<<<<< HEAD
           const { loading } = this.state;
           if (!!record.editable && loading) {
+=======
+          if (!!record.editable && this.state.loading) {
+>>>>>>> init
             return null;
           }
           if (record.editable) {
@@ -233,6 +335,7 @@ export default class TableForm extends PureComponent {
         },
       },
     ];
+<<<<<<< HEAD
 
     const { loading, data } = this.state;
 
@@ -242,6 +345,15 @@ export default class TableForm extends PureComponent {
           loading={loading}
           columns={columns}
           dataSource={data}
+=======
+    const dataSource = this.state.data.concat(this.state.editData);
+    return (
+      <Fragment>
+        <Table
+          loading={this.state.loading}
+          columns={columns}
+          dataSource={dataSource}
+>>>>>>> init
           pagination={false}
           rowClassName={record => {
             return record.editable ? styles.editable : '';

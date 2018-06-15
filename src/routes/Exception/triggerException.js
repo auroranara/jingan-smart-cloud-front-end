@@ -10,25 +10,39 @@ export default class TriggerException extends PureComponent {
   state = {
     isloading: false,
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   triggerError = code => {
     this.setState({
       isloading: true,
     });
+<<<<<<< HEAD
     const { dispatch } = this.props;
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'error/query',
       payload: {
         code,
       },
     });
   };
+<<<<<<< HEAD
 
   render() {
     const { isloading } = this.state;
     return (
       <Card>
         <Spin spinning={isloading} wrapperClassName={styles.trigger}>
+=======
+  render() {
+    return (
+      <Card>
+        <Spin spinning={this.state.isloading} wrapperClassName={styles.trigger}>
+>>>>>>> init
           <Button type="danger" onClick={() => this.triggerError(401)}>
             触发401
           </Button>

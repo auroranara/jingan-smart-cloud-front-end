@@ -67,7 +67,10 @@ class BasicLayout extends React.PureComponent {
       breadcrumbNameMap: getBreadcrumbNameMap(menuData, routerData),
     };
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
@@ -84,7 +87,10 @@ class BasicLayout extends React.PureComponent {
     }
     return title;
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   getLayoutStyle = () => {
     const { fixSiderbar, collapsed, layout } = this.props;
     if (fixSiderbar && layout !== 'topmenu') {
@@ -94,7 +100,10 @@ class BasicLayout extends React.PureComponent {
     }
     return null;
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   getContentStyle = () => {
     const { fixedHeader } = this.props;
     return {
@@ -102,7 +111,10 @@ class BasicLayout extends React.PureComponent {
       paddingTop: fixedHeader ? 64 : 0,
     };
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   getBashRedirect = () => {
     // According to the url parameter to redirect
     // 这里是重定向的,重定向到 url 的 redirect 参数所示地址
@@ -123,16 +135,22 @@ class BasicLayout extends React.PureComponent {
     }
     return redirect;
   };
+<<<<<<< HEAD
 
   handleMenuCollapse = collapsed => {
     const { dispatch } = this.props;
     dispatch({
+=======
+  handleMenuCollapse = collapsed => {
+    this.props.dispatch({
+>>>>>>> init
       type: 'global/changeLayoutCollapsed',
       payload: collapsed,
     });
   };
 
   render() {
+<<<<<<< HEAD
     const {
       isMobile,
       redirectData,
@@ -142,6 +160,10 @@ class BasicLayout extends React.PureComponent {
       match,
     } = this.props;
     const isTop = PropsLayout === 'topmenu';
+=======
+    const { isMobile, redirectData, routerData, match } = this.props;
+    const isTop = this.props.layout === 'topmenu';
+>>>>>>> init
     const bashRedirect = this.getBashRedirect();
     const myRedirectData = redirectData || [];
     const layout = (
@@ -150,7 +172,11 @@ class BasicLayout extends React.PureComponent {
           <SiderMenu
             logo={logo}
             Authorized={Authorized}
+<<<<<<< HEAD
             theme={silderTheme}
+=======
+            theme={this.props.silderTheme}
+>>>>>>> init
             onCollapse={this.handleMenuCollapse}
             {...this.props}
           />

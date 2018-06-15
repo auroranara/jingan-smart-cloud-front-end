@@ -44,7 +44,11 @@ export default class Center extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
+<<<<<<< HEAD
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'user/fetchCurrent',
     });
     dispatch({
@@ -58,7 +62,11 @@ export default class Center extends PureComponent {
     });
   }
 
+<<<<<<< HEAD
   onTabChange = key => {
+=======
+  onTabChange = (key) => {
+>>>>>>> init
     this.setState({ key });
   };
 
@@ -66,11 +74,19 @@ export default class Center extends PureComponent {
     this.setState({ inputVisible: true }, () => this.input.focus());
   };
 
+<<<<<<< HEAD
   saveInputRef = input => {
     this.input = input;
   };
 
   handleInputChange = e => {
+=======
+  saveInputRef = (input) => {
+    this.input = input;
+  };
+
+  handleInputChange = (e) => {
+>>>>>>> init
     this.setState({ inputValue: e.target.value });
   };
 
@@ -78,8 +94,19 @@ export default class Center extends PureComponent {
     const { state } = this;
     const { inputValue } = state;
     let { newTags } = state;
+<<<<<<< HEAD
     if (inputValue && newTags.filter(tag => tag.label === inputValue).length === 0) {
       newTags = [...newTags, { key: `new-${newTags.length}`, label: inputValue }];
+=======
+    if (
+      inputValue &&
+      newTags.filter(tag => tag.label === inputValue).length === 0
+    ) {
+      newTags = [
+        ...newTags,
+        { key: `new-${newTags.length}`, label: inputValue },
+      ];
+>>>>>>> init
     }
     this.setState({
       newTags,
@@ -95,7 +122,13 @@ export default class Center extends PureComponent {
         {text}
       </span>
     );
+<<<<<<< HEAD
     const ListContent = ({ data: { content, updatedAt, avatar, owner, href } }) => (
+=======
+    const ListContent = ({
+      data: { content, updatedAt, avatar, owner, href },
+    }) => (
+>>>>>>> init
       <div className={stylesArticles.listContent}>
         <div className={stylesArticles.description}>{content}</div>
         <div className={stylesArticles.extra}>
@@ -124,7 +157,14 @@ export default class Center extends PureComponent {
           >
             <List.Item.Meta
               title={
+<<<<<<< HEAD
                 <a className={stylesArticles.listItemMetaTitle} href={item.href}>
+=======
+                <a
+                  className={stylesArticles.listItemMetaTitle}
+                  href={item.href}
+                >
+>>>>>>> init
                   {item.title}
                 </a>
               }
@@ -147,17 +187,41 @@ export default class Center extends PureComponent {
     const itemMenu = (
       <Menu>
         <Menu.Item>
+<<<<<<< HEAD
           <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
+=======
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="http://www.alipay.com/"
+          >
+>>>>>>> init
             1st menu item
           </a>
         </Menu.Item>
         <Menu.Item>
+<<<<<<< HEAD
           <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
+=======
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="http://www.taobao.com/"
+          >
+>>>>>>> init
             2nd menu item
           </a>
         </Menu.Item>
         <Menu.Item>
+<<<<<<< HEAD
           <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">
+=======
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="http://www.tmall.com/"
+          >
+>>>>>>> init
             3d menu item
           </a>
         </Menu.Item>
@@ -202,7 +266,14 @@ export default class Center extends PureComponent {
                 </Dropdown>,
               ]}
             >
+<<<<<<< HEAD
               <Card.Meta avatar={<Avatar size="small" src={item.avatar} />} title={item.title} />
+=======
+              <Card.Meta
+                avatar={<Avatar size="small" src={item.avatar} />}
+                title={item.title}
+              />
+>>>>>>> init
               <div className={stylesApplications.cardItemContent}>
                 <CardInfo
                   activeUser={formatWan(item.activeUser)}
@@ -231,7 +302,14 @@ export default class Center extends PureComponent {
               hoverable
               cover={<img alt={item.title} src={item.cover} />}
             >
+<<<<<<< HEAD
               <Card.Meta title={<a href="#">{item.title}</a>} description={item.subDescription} />
+=======
+              <Card.Meta
+                title={<a href="#">{item.title}</a>}
+                description={item.subDescription}
+              />
+>>>>>>> init
               <div className={stylesProjects.cardItemContent}>
                 <span>{moment(item.updatedAt).fromNow()}</span>
                 <div className={stylesProjects.avatarList}>
@@ -252,7 +330,10 @@ export default class Center extends PureComponent {
       />
     );
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   renderContent() {
     const { newTags, inputVisible, inputValue } = this.state;
     const {
@@ -307,7 +388,13 @@ export default class Center extends PureComponent {
         <Divider dashed />
         <div className={styles.tags}>
           <div className={styles.tagsTitle}>标签</div>
+<<<<<<< HEAD
           {currentUser.tags.concat(newTags).map(item => <Tag key={item.key}>{item.label}</Tag>)}
+=======
+          {currentUser.tags
+            .concat(newTags)
+            .map(item => <Tag key={item.key}>{item.label}</Tag>)}
+>>>>>>> init
           {inputVisible && (
             <Input
               ref={this.saveInputRef}
@@ -321,7 +408,14 @@ export default class Center extends PureComponent {
             />
           )}
           {!inputVisible && (
+<<<<<<< HEAD
             <Tag onClick={this.showInput} style={{ background: '#fff', borderStyle: 'dashed' }}>
+=======
+            <Tag
+              onClick={this.showInput}
+              style={{ background: '#fff', borderStyle: 'dashed' }}
+            >
+>>>>>>> init
               <Icon type="plus" />
             </Tag>
           )}
@@ -345,7 +439,10 @@ export default class Center extends PureComponent {
       </div>
     );
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   render() {
     const {
       list: { list },
@@ -384,13 +481,25 @@ export default class Center extends PureComponent {
       application: this.renderApplications(list, listLoading),
       project: this.renderProjects(list, listLoading),
     };
+<<<<<<< HEAD
     const { key } = this.state;
+=======
+
+>>>>>>> init
     return (
       <GridContent>
         <div className={styles.userCenter}>
           <Row gutter={24}>
             <Col lg={7} md={24}>
+<<<<<<< HEAD
               <Card bordered={false} style={{ marginBottom: 24 }} loading={currentUserLoading}>
+=======
+              <Card
+                bordered={false}
+                style={{ marginBottom: 24 }}
+                loading={currentUserLoading}
+              >
+>>>>>>> init
                 {currentUser && Object.keys(currentUser).length
                   ? this.renderContent()
                   : 'loading...'}
@@ -403,7 +512,11 @@ export default class Center extends PureComponent {
                 tabList={operationTabList}
                 onTabChange={this.onTabChange}
               >
+<<<<<<< HEAD
                 {contentMap[key]}
+=======
+                {contentMap[this.state.key]}
+>>>>>>> init
               </Card>
             </Col>
           </Row>

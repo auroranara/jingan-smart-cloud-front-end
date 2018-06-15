@@ -31,7 +31,11 @@ export function getRule(req, res, u) {
 
   const params = parse(url, true).query;
 
+<<<<<<< HEAD
   let dataSource = tableListDataSource;
+=======
+  let dataSource = [...tableListDataSource];
+>>>>>>> init
 
   if (params.sorter) {
     const s = params.sorter.split('_');
@@ -48,7 +52,11 @@ export function getRule(req, res, u) {
     let filterDataSource = [];
     status.forEach(s => {
       filterDataSource = filterDataSource.concat(
+<<<<<<< HEAD
         dataSource.filter(data => parseInt(data.status, 10) === parseInt(s[0], 10))
+=======
+        [...dataSource].filter(data => parseInt(data.status, 10) === parseInt(s[0], 10))
+>>>>>>> init
       );
     });
     dataSource = filterDataSource;
@@ -116,8 +124,12 @@ export function postRule(req, res, u, b) {
     case 'update':
       tableListDataSource = tableListDataSource.map(item => {
         if (item.key === key) {
+<<<<<<< HEAD
           Object.assign(item, { desc, name });
           return item;
+=======
+          return { ...item, desc, name };
+>>>>>>> init
         }
         return item;
       });

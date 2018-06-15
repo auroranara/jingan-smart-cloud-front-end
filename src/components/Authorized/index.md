@@ -25,14 +25,22 @@ order: 15
 | 参数      | 说明                                      | 类型         | 默认值 |
 |----------|------------------------------------------|-------------|-------|
 | children    | 正常渲染的元素，权限判断通过时展示           | ReactNode  | - |
+<<<<<<< HEAD
 | authority   | 准入权限/权限判断         | `string | array | Promise | (currentAuthority) => boolean | Promise` | - |
+=======
+| authority   | 准入权限/权限判断         | `string | array | Promise | (currentAuthority) => boolean` | - |
+>>>>>>> init
 | noMatch     | 权限异常渲染元素，权限判断不通过时展示        | ReactNode  | - |
 
 ### Authorized.AuthorizedRoute
 
 | 参数      | 说明                                      | 类型         | 默认值 |
 |----------|------------------------------------------|-------------|-------|
+<<<<<<< HEAD
 | authority     | 准入权限/权限判断         | `string | array | Promise | (currentAuthority) => boolean | Promise` | - |
+=======
+| authority     | 准入权限/权限判断         | `string | array | Promise | (currentAuthority) => boolean` | - |
+>>>>>>> init
 | redirectPath  | 权限异常时重定向的页面路由                | string  | - |
 
 其余参数与 `Route` 相同。
@@ -43,16 +51,28 @@ order: 15
 
 | 参数      | 说明                                      | 类型         | 默认值 |
 |----------|------------------------------------------|-------------|-------|
+<<<<<<< HEAD
 | authority     | 准入权限/权限判断         | `string | Promise | (currentAuthority) => boolean | Promise` | - |
+=======
+| authority     | 准入权限/权限判断         | `string | Promise | (currentAuthority) => boolean` | - |
+>>>>>>> init
 | error  | 权限异常时渲染元素                |  ReactNode | <Exception type="403" /> |
 
 ### Authorized.check
 
+<<<<<<< HEAD
 函数形式的 Authorized，用于某些不能被 HOC 包裹的组件。 `Authorized.check(authority, target, Exception)`
+=======
+函数形式的 Authorized，用于某些不能被 HOC 包裹的组件。 `Authorized.check(authority, target, Exception)`  
+>>>>>>> init
 注意：传入一个 Promise 时，无论正确还是错误返回的都是一个 ReactClass。
 
 | 参数      | 说明                                      | 类型         | 默认值 |
 |----------|------------------------------------------|-------------|-------|
+<<<<<<< HEAD
 | authority     | 准入权限/权限判断         | `string | Promise | (currentAuthority) => boolean | Promise` | - |
+=======
+| authority     | 准入权限/权限判断         | `string | Promise | (currentAuthority) => boolean` | - |
+>>>>>>> init
 | target     | 权限判断通过时渲染的元素         | ReactNode | - |
 | Exception  | 权限异常时渲染元素                |  ReactNode | - |

@@ -38,7 +38,10 @@ export default class GlobalHeaderRight extends PureComponent {
     });
     return groupBy(newNotices, 'type');
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   render() {
     const {
       currentUser,
@@ -46,7 +49,10 @@ export default class GlobalHeaderRight extends PureComponent {
       onNoticeVisibleChange,
       onMenuClick,
       onNoticeClear,
+<<<<<<< HEAD
       theme,
+=======
+>>>>>>> init
     } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
@@ -67,7 +73,11 @@ export default class GlobalHeaderRight extends PureComponent {
     );
     const noticeData = this.getNoticeData();
     let className = styles.right;
+<<<<<<< HEAD
     if (theme === 'dark') {
+=======
+    if (this.props.theme === 'dark') {
+>>>>>>> init
       className = `${styles.right}  ${styles.dark}`;
     }
     return (

@@ -1,6 +1,10 @@
 import React, { PureComponent, createElement } from 'react';
 import pathToRegexp from 'path-to-regexp';
+<<<<<<< HEAD
 import { Breadcrumb, Tabs, Card } from 'antd';
+=======
+import { Breadcrumb, Tabs } from 'antd';
+>>>>>>> init
 import classNames from 'classnames';
 import styles from './index.less';
 import { urlToList } from '../_utils/pathTools';
@@ -27,6 +31,7 @@ export default class PageHeader extends PureComponent {
   }
 
   componentDidUpdate(preProps) {
+<<<<<<< HEAD
     const { tabActiveKey } = this.props;
     if (preProps.tabActiveKey !== tabActiveKey) {
       this.getBreadcrumbDom();
@@ -50,13 +55,35 @@ export default class PageHeader extends PureComponent {
     };
   };
 
+=======
+    if (preProps.tabActiveKey !== this.props.tabActiveKey) {
+      this.getBreadcrumbDom();
+    }
+  }
+  onChange = key => {
+    if (this.props.onTabChange) {
+      this.props.onTabChange(key);
+    }
+  };
+  getBreadcrumbProps = () => {
+    return {
+      routes: this.props.routes,
+      params: this.props.params,
+      routerLocation: this.props.location,
+      breadcrumbNameMap: this.props.breadcrumbNameMap,
+    };
+  };
+>>>>>>> init
   getBreadcrumbDom = () => {
     const breadcrumb = this.conversionBreadcrumbList();
     this.setState({
       breadcrumb,
     });
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   // Generated according to props
   conversionFromProps = () => {
     const { breadcrumbList, breadcrumbSeparator, linkElement = 'a' } = this.props;
@@ -78,7 +105,10 @@ export default class PageHeader extends PureComponent {
       </Breadcrumb>
     );
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   conversionFromLocation = (routerLocation, breadcrumbNameMap) => {
     const { breadcrumbSeparator, linkElement = 'a' } = this.props;
     // Convert the url to an array
@@ -115,7 +145,10 @@ export default class PageHeader extends PureComponent {
       </Breadcrumb>
     );
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   /**
    * 将参数转化为面包屑
    * Convert parameters into breadcrumbs
@@ -146,7 +179,10 @@ export default class PageHeader extends PureComponent {
     }
     return null;
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   // 渲染Breadcrumb 子节点
   // Render the Breadcrumb child node
   itemRender = (route, params, routes, paths) => {
@@ -178,7 +214,10 @@ export default class PageHeader extends PureComponent {
       tabActiveKey,
       tabDefaultActiveKey,
       tabBarExtraContent,
+<<<<<<< HEAD
       loading = false,
+=======
+>>>>>>> init
     } = this.props;
 
     const clsString = classNames(styles.pageHeader, className);
@@ -189,10 +228,17 @@ export default class PageHeader extends PureComponent {
     if (tabActiveKey !== undefined) {
       activeKeyProps.activeKey = tabActiveKey;
     }
+<<<<<<< HEAD
     const { breadcrumb } = this.state;
     return (
       <Card className={clsString} bodyStyle={{ padding: 0 }} loading={loading}>
         {breadcrumb}
+=======
+
+    return (
+      <div className={clsString}>
+        {this.state.breadcrumb}
+>>>>>>> init
         <div className={styles.detail}>
           {logo && <div className={styles.logo}>{logo}</div>}
           <div className={styles.main}>
@@ -217,7 +263,11 @@ export default class PageHeader extends PureComponent {
               {tabList.map(item => <TabPane tab={item.tab} key={item.key} />)}
             </Tabs>
           )}
+<<<<<<< HEAD
       </Card>
+=======
+      </div>
+>>>>>>> init
     );
   }
 }

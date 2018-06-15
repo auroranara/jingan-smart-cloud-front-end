@@ -5,16 +5,25 @@ export default class PromiseRender extends React.PureComponent {
   state = {
     component: null,
   };
+<<<<<<< HEAD
 
   componentDidMount() {
     this.setRenderComponent(this.props);
   }
 
+=======
+  componentDidMount() {
+    this.setRenderComponent(this.props);
+  }
+>>>>>>> init
   componentDidUpdate(nextProps) {
     // new Props enter
     this.setRenderComponent(nextProps);
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   // set render Component : ok or error
   setRenderComponent(props) {
     const ok = this.checkIsInstantiation(props.ok);
@@ -31,7 +40,10 @@ export default class PromiseRender extends React.PureComponent {
         });
       });
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   // Determine whether the incoming component has been instantiated
   // AuthorizedRoute is already instantiated
   // Authorized  render is already instantiated, children is no instantiated
@@ -42,12 +54,19 @@ export default class PromiseRender extends React.PureComponent {
     }
     return () => target;
   };
+<<<<<<< HEAD
 
   render() {
     const { component: Component } = this.state;
     const { ok, error, promise, ...rest } = this.props;
     return Component ? (
       <Component {...rest} />
+=======
+  render() {
+    const Component = this.state.component;
+    return Component ? (
+      <Component {...this.props} />
+>>>>>>> init
     ) : (
       <div
         style={{

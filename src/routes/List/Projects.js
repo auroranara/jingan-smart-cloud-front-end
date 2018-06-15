@@ -21,8 +21,12 @@ const FormItem = Form.Item;
 }))
 export default class CoverCardList extends PureComponent {
   componentDidMount() {
+<<<<<<< HEAD
     const { dispatch } = this.props;
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'list/fetch',
       payload: {
         count: 8,
@@ -49,11 +53,15 @@ export default class CoverCardList extends PureComponent {
   };
 
   render() {
+<<<<<<< HEAD
     const {
       list: { list = [] },
       loading,
       form,
     } = this.props;
+=======
+    const { list: { list = [] }, loading, form } = this.props;
+>>>>>>> init
     const { getFieldDecorator } = form;
 
     const cardList = list ? (

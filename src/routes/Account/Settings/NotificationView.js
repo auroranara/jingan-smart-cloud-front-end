@@ -23,7 +23,10 @@ export default class NotificationView extends Component {
       },
     ];
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   render() {
     return (
       <Fragment>

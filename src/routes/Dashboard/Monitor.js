@@ -27,8 +27,12 @@ const havePermissionAsync = new Promise(resolve => {
 }))
 export default class Monitor extends PureComponent {
   componentDidMount() {
+<<<<<<< HEAD
     const { dispatch } = this.props;
     dispatch({
+=======
+    this.props.dispatch({
+>>>>>>> init
       type: 'monitor/fetchTags',
     });
   }

@@ -29,6 +29,7 @@ export default class Info extends Component {
       mode: 'inline',
     };
   }
+<<<<<<< HEAD
 
   componentDidMount() {
     window.addEventListener('resize', this.resize);
@@ -39,6 +40,8 @@ export default class Info extends Component {
     window.removeEventListener('resize', this.resize);
   }
 
+=======
+>>>>>>> init
   static getDerivedStateFromProps(props, state) {
     const { match, location } = props;
     let selectKey = location.pathname.replace(`${match.path}/`, '');
@@ -48,6 +51,7 @@ export default class Info extends Component {
     }
     return null;
   }
+<<<<<<< HEAD
 
   getmenu = () => {
     return Object.keys(menuMap).map(item => <Item key={item}>{menuMap[item]}</Item>);
@@ -61,11 +65,31 @@ export default class Info extends Component {
   selectKey = ({ key }) => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push(`/account/settings/${key}`));
+=======
+  componentDidMount() {
+    window.addEventListener('resize', this.resize);
+    this.resize();
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resize);
+  }
+  getmenu = () => {
+    return Object.keys(menuMap).map(item => <Item key={item}>{menuMap[item]}</Item>);
+  };
+  getRightTitle = () => {
+    return menuMap[this.state.selectKey];
+  };
+  selectKey = ({ key }) => {
+    this.props.dispatch(routerRedux.push(`/account/settings/${key}`));
+>>>>>>> init
     this.setState({
       selectKey: key,
     });
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   resize = () => {
     if (!this.main) {
       return;
@@ -84,13 +108,19 @@ export default class Info extends Component {
       });
     });
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> init
   render() {
     const { match, routerData, currentUser } = this.props;
     if (!currentUser.userid) {
       return '';
     }
+<<<<<<< HEAD
     const { mode, selectKey } = this.state;
+=======
+>>>>>>> init
     return (
       <GridContent>
         <div
@@ -100,7 +130,15 @@ export default class Info extends Component {
           }}
         >
           <div className={styles.leftmenu}>
+<<<<<<< HEAD
             <Menu mode={mode} selectedKeys={[selectKey]} onClick={this.selectKey}>
+=======
+            <Menu
+              mode={this.state.mode}
+              selectedKeys={[this.state.selectKey]}
+              onClick={this.selectKey}
+            >
+>>>>>>> init
               {this.getmenu()}
             </Menu>
           </div>

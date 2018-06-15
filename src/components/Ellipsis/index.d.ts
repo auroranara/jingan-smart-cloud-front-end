@@ -5,7 +5,10 @@ export interface IEllipsisProps {
   lines?: number;
   style?: React.CSSProperties;
   className?: string;
+<<<<<<< HEAD
   fullWidthRecognition?: boolean;
+=======
+>>>>>>> init
 }
 
 export default class Ellipsis extends React.Component<IEllipsisProps, any> {}

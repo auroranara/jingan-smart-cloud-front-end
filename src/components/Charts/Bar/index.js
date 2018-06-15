@@ -25,6 +25,7 @@ class Bar extends Component {
     if (!this.node) {
       return;
     }
+<<<<<<< HEAD
     const canvasWidth = this.node.parentNode.clientWidth;
     const { data = [], autoLabel = true } = this.props;
     if (!autoLabel) {
@@ -44,6 +45,29 @@ class Bar extends Component {
         autoHideXLabels: false,
       });
     }
+=======
+    requestAnimationFrame(() => {
+      const canvasWidth = this.node.parentNode.clientWidth;
+      const { data = [], autoLabel = true } = this.props;
+      if (!autoLabel) {
+        return;
+      }
+      const minWidth = data.length * 30;
+      const { autoHideXLabels } = this.state;
+
+      if (canvasWidth <= minWidth) {
+        if (!autoHideXLabels) {
+          this.setState({
+            autoHideXLabels: true,
+          });
+        }
+      } else if (autoHideXLabels) {
+        this.setState({
+          autoHideXLabels: false,
+        });
+      }
+    });
+>>>>>>> init
   }
 
   handleRoot = n => {

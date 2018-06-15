@@ -35,7 +35,11 @@ export default {
     saveCurrentUser(state, action) {
       return {
         ...state,
+<<<<<<< HEAD
         currentUser: action.payload || {},
+=======
+        currentUser: action.payload,
+>>>>>>> init
       };
     },
     changeNotifyCount(state, action) {
