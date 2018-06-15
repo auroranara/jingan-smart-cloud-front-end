@@ -2,7 +2,7 @@ const defaultSetting = {
   collapse: false,
   silderTheme: 'dark',
   themeColor: '#1890FF',
-  layout: 'sidemenu',
+  layout: 'topmenu',
   grid: 'Fluid',
   fixedHeader: false,
   autoHideHeader: false,
