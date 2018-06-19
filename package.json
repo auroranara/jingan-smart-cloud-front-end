@@ -141,8 +141,7 @@
       "prettier --write",
       "git add"
     ],
-    "**/*.{js,jsx}": "npm run lint-staged:js",
-    "**/*.less": "stylelint --syntax less"
+    "**/*.{js,jsx}": "npm run lint-staged:js"
   },
   "engines": {
     "node": ">=8.0.0"
