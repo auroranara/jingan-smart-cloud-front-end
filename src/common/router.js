@@ -91,11 +91,19 @@ export const getRouterData = app => {
     '/base-info/company': {
       component: dynamicWrapper(app, ['form'], () => import('../routes/BaseInfo/Company/Index')),
     },
+
+    // 维保公司
     '/fire-control/maintenance-company': {
       component: dynamicWrapper(app, ['form'], () =>
         import('../routes/FireControl/MaintenanceCompany/Index')
       ),
     },
+    '/fire-control/add-company': {
+      component: dynamicWrapper(app, ['add'], () =>
+        import('../routes/FireControl/MaintenanceCompany/AddCompany')
+      ),
+    },
+
     '/fire-control/user-transmission-device': {
       name: '用户传输装置',
       component: dynamicWrapper(app, ['form'], () =>
