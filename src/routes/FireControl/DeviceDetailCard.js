@@ -89,11 +89,11 @@ const hostColumns = [
 
 export default class DeviceDetailCard extends Component {
   renderDeviceTable() {
-    return <Table columns={deviceColumns} dataSource={this.props.deviceData} />;
+    return <Table columns={deviceColumns} dataSource={this.props.deviceData} rowKey="index" />;
   }
 
   renderHostTable() {
-    return <Table columns={hostColumns} dataSource={this.props.hostData} />;
+    return <Table columns={hostColumns} dataSource={this.props.hostData} rowKey="index" />;
   }
 
   render() {

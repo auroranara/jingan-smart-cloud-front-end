@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Link } from 'react-router-dom';
 import { Card, Button, Input, List, Row, Col } from 'antd';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -21,7 +22,8 @@ export default class CardList extends PureComponent {
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        page: 1,
+        pageIndex: 1,
+        pageSize: 9,
       },
     });
   }
@@ -31,7 +33,8 @@ export default class CardList extends PureComponent {
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        page: 1,
+        pageIndex: 1,
+        pageSize: 9,
         company,
         address,
       },
@@ -93,13 +96,15 @@ export default class CardList extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Card hoverable className={styles.card} title={item.company}>
-                  <p>地址：{item.address}</p>
-                  <p>安全负责人：{item.leader}</p>
-                  <p>联系电话：{item.phone}</p>
-                  <p>消防主机数量：{item.quantity}</p>
-                  <span className={styles.quantity}>{item.quantity}</span>
-                </Card>
+                <Link to={`/fire-control/user-transmission-device-detail/${item.id}`}>
+                  <Card hoverable className={styles.card} title={item.company}>
+                    <p>地址：{item.address}</p>
+                    <p>安全负责人：{item.leader}</p>
+                    <p>联系电话：{item.phone}</p>
+                    <p>消防主机数量：{item.quantity}</p>
+                    <span className={styles.quantity}>{item.quantity}</span>
+                  </Card>
+                </Link>
               </List.Item>
             )}
           />
