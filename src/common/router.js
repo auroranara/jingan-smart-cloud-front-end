@@ -88,15 +88,19 @@ export const getRouterData = app => {
       // name: '工作台',
       // authority: 'admin',
     },
-    '/form/basic-form': {
-      component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/BasicForm')),
+    '/base-info/company': {
+      component: dynamicWrapper(app, ['form'], () => import('../routes/BaseInfo/Company/Index')),
     },
-    '/form/step-form': {
-      component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm')),
+    '/fire-control/maintenance-company': {
+      component: dynamicWrapper(app, ['form'], () =>
+        import('../routes/FireControl/MaintenanceCompany/Index')
+      ),
     },
-    '/form/step-form/info': {
-      name: '分步表单（填写转账信息）',
-      component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step1')),
+    '/fire-control/user-transmission-device': {
+      name: '用户传输装置',
+      component: dynamicWrapper(app, ['form'], () =>
+        import('../routes/FireControl/UserTransmissionDevice/Index')
+      ),
     },
     '/form/step-form/confirm': {
       name: '分步表单（确认转账信息）',
