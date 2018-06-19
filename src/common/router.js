@@ -93,13 +93,19 @@ export const getRouterData = app => {
     },
     '/fire-control/maintenance-company': {
       component: dynamicWrapper(app, ['form'], () =>
-        import('../routes/FireControl/MaintenanceCompany/Index')
+        import('../routes/FireControl/MaintenanceCompany.js')
       ),
     },
     '/fire-control/user-transmission-device': {
       name: '用户传输装置',
-      component: dynamicWrapper(app, ['form'], () =>
-        import('../routes/FireControl/UserTransmissionDevice/Index')
+      component: dynamicWrapper(app, ['transmission'], () =>
+        import('../routes/FireControl/UserTransmissionDevice.js')
+      ),
+    },
+    '/fire-control/user-transmission-device-detail/:id': {
+      name: '用户传输装置详情',
+      component: dynamicWrapper(app, ['transmission'], () =>
+        import('../routes/FireControl/UserTransmissionDeviceDetail.js')
       ),
     },
     '/form/step-form/confirm': {
