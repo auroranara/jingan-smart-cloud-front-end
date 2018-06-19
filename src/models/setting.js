@@ -3,7 +3,7 @@ const defaultSetting = {
   silderTheme: 'dark',
   themeColor: '#1890FF',
   layout: 'topmenu',
-  grid: 'Fluid',
+  grid: 'Wide',
   fixedHeader: false,
   autoHideHeader: false,
   fixSiderbar: false,
