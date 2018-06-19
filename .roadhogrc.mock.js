@@ -11,6 +11,8 @@ import { format, delay } from 'roadhog-api-doc';
 >>>>>>> init
 import { getProvince, getCity } from './mock/geographic';
 
+import { getDeviceList, getDeviceDetail } from './mock/transmission';
+
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
 
@@ -176,6 +178,8 @@ const proxy = {
   }),
   'GET /api/fake_list': getFakeList,
   'POST /api/fake_list': postFakeList,
+  'GET /api/transmission_device_list': getDeviceList,
+  'GET /api/transmission_device_detail': getDeviceDetail,
   'GET /api/fake_chart_data': getFakeChartData,
   'GET /api/profile/basic': getProfileBasicData,
   'GET /api/profile/advanced': getProfileAdvancedData,
