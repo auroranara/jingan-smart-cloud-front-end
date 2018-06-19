@@ -23,114 +23,28 @@ const menuData = [
     ],
   },
   {
-    name: '表单页',
+    name: '基础信息',
     icon: 'form',
-    path: 'form',
+    path: 'base-info',
     children: [
       {
-        name: '基础表单',
-        path: 'basic-form',
-      },
-      {
-        name: '分步表单',
-        path: 'step-form',
-      },
-      {
-        name: '高级表单',
-        authority: 'admin',
-        path: 'advanced-form',
+        name: '企业单位',
+        path: 'company',
       },
     ],
   },
   {
-    name: '列表页',
+    name: '消防维保',
     icon: 'table',
-    path: 'list',
+    path: 'fire-control',
     children: [
       {
-        name: '查询表格',
-        path: 'table-list',
+        name: '维保公司',
+        path: 'maintenance-company',
       },
       {
-        name: '标准列表',
-        path: 'basic-list',
-      },
-      {
-        name: '卡片列表',
-        path: 'card-list',
-      },
-      {
-        name: '搜索列表',
-        path: 'search',
-        children: [
-          {
-            name: '搜索列表（文章）',
-            path: 'articles',
-          },
-          {
-            name: '搜索列表（项目）',
-            path: 'projects',
-          },
-          {
-            name: '搜索列表（应用）',
-            path: 'applications',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: '详情页',
-    icon: 'profile',
-    path: 'profile',
-    children: [
-      {
-        name: '基础详情页',
-        path: 'basic',
-      },
-      {
-        name: '高级详情页',
-        path: 'advanced',
-        authority: 'admin',
-      },
-    ],
-  },
-  {
-    name: '结果页',
-    icon: 'check-circle-o',
-    path: 'result',
-    children: [
-      {
-        name: '成功',
-        path: 'success',
-      },
-      {
-        name: '失败',
-        path: 'fail',
-      },
-    ],
-  },
-  {
-    name: '异常页',
-    icon: 'warning',
-    path: 'exception',
-    children: [
-      {
-        name: '403',
-        path: '403',
-      },
-      {
-        name: '404',
-        path: '404',
-      },
-      {
-        name: '500',
-        path: '500',
-      },
-      {
-        name: '触发异常',
-        path: 'trigger',
-        hideInMenu: true,
+        name: '用户传输装置',
+        path: 'user-transmission-device',
       },
     ],
   },
@@ -151,21 +65,6 @@ const menuData = [
       {
         name: '注册结果',
         path: 'register-result',
-      },
-    ],
-  },
-  {
-    name: '个人页',
-    icon: 'user',
-    path: 'account',
-    children: [
-      {
-        name: '个人中心',
-        path: 'center',
-      },
-      {
-        name: '个人设置',
-        path: 'settings',
       },
     ],
   },
