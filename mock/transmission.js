@@ -1,9 +1,9 @@
 const myItem = {
-  company: '常熟市鑫博伟纺织有限公司',
-  address: '常熟市朝阳区北京路1号',
+  name: '常熟市鑫博伟纺织有限公司',
+  praticalAddress: '常熟市朝阳区北京路1号',
   leader: '张三',
   phone: '13912345678',
-  quantity: 3,
+  hostQuantity: 3,
 };
 const getDeviceList = [];
 for (
@@ -35,4 +35,7 @@ const hostData = [1, 2, 3].map(n => ({
 
 const getDeviceDetail = [0, 1].map(n => ({ index: n, deviceData, hostData }));
 
-export { getDeviceList, getDeviceDetail };
+const deviceResponse = { data: { list: getDeviceList } };
+const deviceDetailResponse = { data: getDeviceDetail };
+
+export { deviceResponse, deviceDetailResponse };
