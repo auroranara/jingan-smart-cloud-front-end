@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card } from 'antd';
+import { Spin } from 'antd';
 // import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 // import styles from './UserTransmissionDeviceDetail.less';
@@ -44,9 +44,7 @@ export default class BasicProfile extends Component {
 
     return (
       <PageHeaderLayout title="用户传输装置详情页">
-        <Card title="用户传输装置" bordered={false} loading={loading}>
-          {cards}
-        </Card>
+        <Spin spinning={loading}>{cards}</Spin>
       </PageHeaderLayout>
     );
   }

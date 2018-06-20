@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Card, Table } from 'antd';
 
+const TABLE_ACTION_MARGIN_RIGHT = 10;
+
 const deviceColumns = [
   {
     title: '装置编号',
@@ -37,7 +39,7 @@ const deviceColumns = [
     key: 'action',
     render: () => (
       <span>
-        <a>编辑</a>
+        <a style={{ marginRight: TABLE_ACTION_MARGIN_RIGHT }}>编辑</a>
         <a>删除</a>
       </span>
     ),
@@ -80,25 +82,45 @@ const hostColumns = [
     key: 'action',
     render: () => (
       <span>
-        <a>编辑</a>
-        <a>删除</a>
+        <a style={{ marginRight: TABLE_ACTION_MARGIN_RIGHT }}>编辑</a>
+        <a style={{ marginRight: TABLE_ACTION_MARGIN_RIGHT }}>删除</a>
+        <a>导入位点</a>
       </span>
     ),
   },
 ];
 
+function setColumnAlign(columns, align = 'center') {
+  return columns.map(column => ({ ...column, align }));
+}
+
 export default class DeviceDetailCard extends Component {
   renderDeviceTable() {
-    return <Table columns={deviceColumns} dataSource={this.props.deviceData} rowKey="index" />;
+    return (
+      <Table
+        pagination={false}
+        columns={setColumnAlign(deviceColumns)}
+        dataSource={this.props.deviceData}
+        rowKey="index"
+        style={{ marginBottom: 20 }}
+      />
+    );
   }
 
   renderHostTable() {
-    return <Table columns={hostColumns} dataSource={this.props.hostData} rowKey="index" />;
+    return (
+      <Table
+        pagination={false}
+        columns={setColumnAlign(hostColumns)}
+        dataSource={this.props.hostData}
+        rowKey="index"
+      />
+    );
   }
 
   render() {
     return (
-      <Card type="inner">
+      <Card style={{ marginBottom: 30 }}>
         <h5>用户传输装置{this.props.index}</h5>
         {this.renderDeviceTable()}
         <h5>关联消费主机</h5>
