@@ -1,11 +1,11 @@
-import { queryTransmissionDevice, queryTransmissionDeviceDetail } from '../services/api';
+import { queryTransmissionDevice, queryTransmissionDeviceDetail } from '../services/transmission';
 
 export default {
   namespace: 'transmission',
 
   state: {
     list: [],
-    detailList: [],
+    deviceList: [],
   },
 
   effects: {
@@ -17,6 +17,14 @@ export default {
           pagination: { pageIndex, total },
         },
       } = response;
+
+      const pIndex = Number.parseInt(pageIndex, 10);
+      const pType = typeof pIndex;
+      if (pType !== 'number') {
+        console.error(`pageIndex in transmission.js[models] is ${pType}, not a number!`);
+        return;
+      }
+
       yield put({
         type: 'queryList',
         payload: { pageIndex, list },
@@ -30,7 +38,7 @@ export default {
       // console.log('response', response);
       yield put({
         type: 'queryDetail',
-        payload: response.data,
+        payload: response.data.list,
       });
       // console.log('fetchDetail end');
     },
@@ -52,15 +60,8 @@ export default {
   reducers: {
     queryList(state, action) {
       const { pageIndex, list } = action.payload;
-      const pIndex = parseInt(pageIndex, 10);
-      const pType = typeof pIndex;
-      if (pType !== 'number') {
-        console.error(`pageIndex in transmission.js[models] is ${pType}, not a number!`);
-        return state;
-      }
-
       let nextList = list;
-      if (pIndex !== 1) nextList = state.list.concat(list);
+      if (pageIndex !== 1) nextList = state.list.concat(list);
 
       return {
         ...state,
@@ -71,7 +72,7 @@ export default {
       // console.log('action.payload', action.payload);
       return {
         ...state,
-        detailList: action.payload,
+        deviceList: action.payload,
       };
     },
   },

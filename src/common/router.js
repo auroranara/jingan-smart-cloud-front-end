@@ -103,7 +103,7 @@ export const getRouterData = app => {
       ),
     },
     '/fire-control/user-transmission-device-detail/:id': {
-      name: '用户传输装置详情',
+      name: '查看详情',
       component: dynamicWrapper(app, ['transmission'], () =>
         import('../routes/FireControl/UserTransmissionDeviceDetail.js')
       ),
