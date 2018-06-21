@@ -124,20 +124,3 @@ export async function queryNotices() {
 export async function getFakeCaptcha(mobile) {
   return request(`/api/captcha?mobile=${mobile}`);
 }
-
-/* 查询企业 */
-export async function queryCompanies(params) {
-  return request(`/acloud_new/v2/baseInfo/companies.json?${stringify(params)}`);
-}
-
-/* 删除企业 */
-export async function deleteCompany({ id }) {
-  return request(`/acloud_new/v2/baseInfo/company/${id}`, {
-    method: 'DELETE',
-  });
-}
-
-/* 获取行业类别 */
-export async function queryCompanyCategories() {
-  return request(`/acloud_new/v2/baseInfo/company/categories`);
-}

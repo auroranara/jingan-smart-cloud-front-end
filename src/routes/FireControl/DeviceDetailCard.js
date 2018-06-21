@@ -1,130 +1,149 @@
-import React, { Component } from 'react';
-import { Card, Table } from 'antd';
+import React, { Component, Fragment } from 'react';
+import { Button, Card, Table } from 'antd';
+import DescriptionList from 'components/DescriptionList';
 
-const TABLE_ACTION_MARGIN_RIGHT = 10;
+const { Description } = DescriptionList;
 
-const deviceColumns = [
-  {
-    title: '装置编号',
-    dataIndex: 'index',
-    key: 'index',
-  },
-  {
-    title: '品牌',
-    dataIndex: 'brand',
-    key: 'brand',
-  },
-  {
-    title: '型号',
-    dataIndex: 'model',
-    key: 'model',
-  },
-  {
-    title: '安装位置',
-    dataIndex: 'position',
-    key: 'position',
-  },
-  {
-    title: '生产日期',
-    dataIndex: 'productionDate',
-    key: 'productionDate',
-  },
-  {
-    title: '接入主机数量',
-    dataIndex: 'hostQuantity',
-    key: 'hostQuantity',
-  },
-  {
-    title: '操作',
-    key: 'action',
-    render: () => (
-      <span>
-        <a style={{ marginRight: TABLE_ACTION_MARGIN_RIGHT }}>编辑</a>
-        <a>删除</a>
-      </span>
-    ),
-  },
-];
+const INDEX_CHINESE = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+const hostTableAStyle = { marginRight: 10 };
 
-const hostColumns = [
-  {
-    title: '主机编号',
-    dataIndex: 'index',
-    key: 'index',
-  },
-  {
-    title: '品牌',
-    dataIndex: 'brand',
-    key: 'brand',
-  },
-  {
-    title: '型号',
-    dataIndex: 'model',
-    key: 'model',
-  },
-  {
-    title: '传输接口',
-    dataIndex: 'interface',
-    key: 'interface',
-  },
-  {
-    title: '安装位置',
-    dataIndex: 'position',
-    key: 'position',
-  },
-  {
-    title: '生产日期',
-    dataIndex: 'productionDate',
-    key: 'productionDate',
-  },
-  {
-    title: '操作',
-    key: 'action',
-    render: () => (
-      <span>
-        <a style={{ marginRight: TABLE_ACTION_MARGIN_RIGHT }}>编辑</a>
-        <a style={{ marginRight: TABLE_ACTION_MARGIN_RIGHT }}>删除</a>
-        <a>导入位点</a>
-      </span>
-    ),
-  },
-];
+const deviceButtonStyle = { marginRight: 8 };
 
 function setColumnAlign(columns, align = 'center') {
   return columns.map(column => ({ ...column, align }));
 }
 
+const deviceCardStyle = { marginBottom: 20 };
+
 export default class DeviceDetailCard extends Component {
-  renderDeviceTable() {
+  renderDeviceExtra() {
+    const {
+      deviceData,
+      handleDeviceUpdateClick,
+      handleDeviceDeleteClick,
+      handleHostAddClick,
+    } = this.props;
+
     return (
-      <Table
-        pagination={false}
-        columns={setColumnAlign(deviceColumns)}
-        dataSource={this.props.deviceData}
-        rowKey="index"
-        style={{ marginBottom: 20 }}
-      />
+      <Fragment>
+        <Button
+          type="primary"
+          style={deviceButtonStyle}
+          onClick={() => handleDeviceUpdateClick(deviceData)}
+        >
+          编辑
+        </Button>
+        <Button type="primary" style={deviceButtonStyle} onClick={handleDeviceDeleteClick}>
+          删除
+        </Button>
+        <Button type="primary" onClick={handleHostAddClick}>
+          新增消防主机
+        </Button>
+      </Fragment>
+    );
+  }
+
+  renderDeviceInfo() {
+    const deviceInfo = this.props.deviceData;
+    return (
+      <DescriptionList size="small">
+        <Description term="装置编号">{deviceInfo.deviceCode}</Description>
+        <Description term="品牌">{deviceInfo.brand}</Description>
+        <Description term="型号">{deviceInfo.model}</Description>
+        <Description term="安装位置">{deviceInfo.installLocation}</Description>
+        <Description term="生产日期">{deviceInfo.productionDate}</Description>
+        <Description term="接入主机数量">{deviceInfo.hostList.length}</Description>
+      </DescriptionList>
     );
   }
 
   renderHostTable() {
+    const {
+      deviceData,
+      handleHostUpdateClick,
+      handleHostDeleteClick,
+      importPointPositionClick,
+    } = this.props;
+    const { hostList, id } = deviceData;
+
+    const hostColumns = [
+      {
+        title: '主机编号',
+        dataIndex: 'deviceCode',
+        key: 'deviceCode',
+      },
+      {
+        title: '品牌',
+        dataIndex: 'brand',
+        key: 'brand',
+      },
+      {
+        title: '型号',
+        dataIndex: 'model',
+        key: 'model',
+      },
+      {
+        title: '传输接口',
+        dataIndex: 'transmissionInterface',
+        key: 'transmissionInterface',
+      },
+      {
+        title: '安装位置',
+        dataIndex: 'installLocation',
+        key: 'installLocation',
+      },
+      {
+        title: '生产日期',
+        dataIndex: 'productionDate',
+        key: 'productionDate',
+      },
+      {
+        title: '操作',
+        key: 'action',
+        render: (text, record, index) => (
+          <span>
+            <a
+              style={hostTableAStyle}
+              onClick={() => handleHostUpdateClick({ ...hostList[index], deviceId: id })}
+            >
+              编辑
+            </a>
+            <a style={hostTableAStyle} onClick={handleHostDeleteClick}>
+              删除
+            </a>
+            <a onClick={importPointPositionClick}>导入点位</a>
+          </span>
+        ),
+      },
+    ];
+
     return (
       <Table
         pagination={false}
         columns={setColumnAlign(hostColumns)}
-        dataSource={this.props.hostData}
-        rowKey="index"
+        dataSource={hostList}
+        rowKey="id"
       />
     );
   }
 
   render() {
+    const { index } = this.props;
+
     return (
       <Card style={{ marginBottom: 30 }}>
-        <h5>用户传输装置{this.props.index}</h5>
-        {this.renderDeviceTable()}
-        <h5>关联消费主机</h5>
-        {this.renderHostTable()}
+        <Card
+          type="inner"
+          title={`用户传输装置${INDEX_CHINESE[index]}`}
+          bordered={false}
+          extra={this.renderDeviceExtra()}
+          style={deviceCardStyle}
+        >
+          {this.renderDeviceInfo()}
+        </Card>
+        <Card type="inner" title="关联消防主机" bordered={false}>
+          {this.renderHostTable()}
+        </Card>
       </Card>
     );
   }
