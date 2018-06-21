@@ -141,3 +141,14 @@ export async function deleteCompany({ id }) {
 export async function queryCompanyCategories() {
   return request(`/acloud_new/v2/baseInfo/company/categories`);
 }
+
+// 用户传输装置公司列表
+export async function queryTransmissionDevice(params) {
+  // return request(`/api/transmission_device_list?${stringify(params)}`);
+  return request(`/acloud_new/api/transmission/companies?${stringify(params)}`);
+}
+
+// 用户传输装置公司详情
+export async function queryTransmissionDeviceDetail(params) {
+  return request(`/api/transmission_device_detail?${stringify(params)}`);
+}
