@@ -68,7 +68,8 @@ export default function request(url, options) {
     .then(checkStatus)
     .then(response => {
       if (newOptions.method === 'DELETE' || response.status === 204) {
-        return response.text();
+        // console.log('request.js', response);
+        // return response.text();
       }
       return response.json();
     })
