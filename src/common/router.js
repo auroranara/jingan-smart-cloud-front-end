@@ -88,18 +88,49 @@ export const getRouterData = app => {
       // name: '工作台',
       // authority: 'admin',
     },
-    '/base-info/company': {
-      component: dynamicWrapper(app, ['form'], () => import('../routes/BaseInfo/Company/Index')),
-    },
-    '/fire-control/maintenance-company': {
-      component: dynamicWrapper(app, ['form'], () =>
-        import('../routes/FireControl/MaintenanceCompany/Index')
+    '/base-info/company/list': {
+      component: dynamicWrapper(app, ['company'], () =>
+        import('../routes/BaseInfo/Company/CompanyList')
       ),
     },
+    '/base-info/company/detail/:id': {
+      component: dynamicWrapper(app, ['companydetail'], () =>
+        import('../routes/BaseInfo/Company/CompanyDetail')
+      ),
+    },
+    '/base-info/company/add': {
+      component: dynamicWrapper(app, ['companydetail'], () =>
+        import('../routes/BaseInfo/Company/CompanyDetail')
+      ),
+    },
+    '/base-info/company/edit/:id': {
+      component: dynamicWrapper(app, ['companydetail'], () =>
+        import('../routes/BaseInfo/Company/CompanyDetail')
+      ),
+    },
+
+    // 维保公司
+    '/fire-control/maintenance-company': {
+      component: dynamicWrapper(app, ['form'], () =>
+        import('../routes/FireControl/MaintenanceCompany.js')
+      ),
+    },
+    // '/fire-control/add-company': {
+    //   component: dynamicWrapper(app, ['add'], () =>
+    //     import('../routes/FireControl/MaintenanceCompany/AddCompany')
+    //   ),
+    // },
+
     '/fire-control/user-transmission-device': {
       name: '用户传输装置',
-      component: dynamicWrapper(app, ['form'], () =>
-        import('../routes/FireControl/UserTransmissionDevice/Index')
+      component: dynamicWrapper(app, ['transmission'], () =>
+        import('../routes/FireControl/UserTransmissionDevice.js')
+      ),
+    },
+    '/fire-control/user-transmission-device-detail/:id': {
+      name: '用户传输装置详情',
+      component: dynamicWrapper(app, ['transmission'], () =>
+        import('../routes/FireControl/UserTransmissionDeviceDetail.js')
       ),
     },
     '/form/step-form/confirm': {

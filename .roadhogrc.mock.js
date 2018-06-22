@@ -8,6 +8,8 @@ import { getNotices } from './mock/notices';
 import { format, delay } from 'roadhog-api-doc';
 import { getProvince, getCity } from './mock/geographic';
 
+import { deviceResponse, deviceDetailResponse } from './mock/transmission';
+
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
 
@@ -15,12 +17,12 @@ const noProxy = process.env.NO_PROXY === 'true';
 const proxy = {
   // 支持值为 Object 和 Array
 
-  'GET /acloud_new/api/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/api/',
-  'POST /acloud_new/api/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/api/',
-  'PUT /acloud_new/api/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/api/',
-  'DELETE /acloud_new/api/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/api/',
+  'GET /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
+  'POST /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
+  'PUT /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
+  'DELETE /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
 
-  'GET /api/currentUser': {
+  'GET /v2/currentUser': {
     $desc: '获取当前用户接口',
     $params: {
       pageSize: {
@@ -119,6 +121,8 @@ const proxy = {
   }),
   'GET /api/fake_list': getFakeList,
   'POST /api/fake_list': postFakeList,
+  'GET /api/transmission_device_list': deviceResponse,
+  'GET /api/transmission_device_detail': deviceDetailResponse,
   'GET /api/fake_chart_data': getFakeChartData,
   'GET /api/profile/basic': getProfileBasicData,
   'GET /api/profile/advanced': getProfileAdvancedData,
