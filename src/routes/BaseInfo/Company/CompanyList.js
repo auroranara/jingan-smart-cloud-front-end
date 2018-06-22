@@ -182,7 +182,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <Affix offsetTop={10}>
+      <Affix offsetTop={10} target={() => document.getElementById('root')}>
         <Card>
           <Form layout="inline">
             <FormItem>
