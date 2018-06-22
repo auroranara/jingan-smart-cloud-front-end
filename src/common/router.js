@@ -110,16 +110,17 @@ export const getRouterData = app => {
     },
 
     // 维保公司
-    '/fire-control/maintenance-company': {
+    '/fire-control/maintenance-company/list': {
       component: dynamicWrapper(app, ['maintenanceCompany'], () =>
-        import('../routes/FireControl/MaintenanceCompany/List.js')
+        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyList.js')
       ),
     },
-    // '/fire-control/add-company': {
-    //   component: dynamicWrapper(app, ['add'], () =>
-    //     import('../routes/FireControl/MaintenanceCompany/AddCompany')
-    //   ),
-    // },
+    // 新增维保公司
+    '/fire-control/maintenance-company/add': {
+      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
+      ),
+    },
 
     '/fire-control/user-transmission-device': {
       name: '用户传输装置',

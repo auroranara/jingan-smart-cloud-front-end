@@ -1,13 +1,26 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, Modal, message, BackTop, Spin, Affix } from 'antd';
+import {
+  Form,
+  List,
+  Card,
+  Button,
+  Icon,
+  Input,
+  Modal,
+  message,
+  BackTop,
+  Spin,
+  Affix,
+  Badge,
+} from 'antd';
 import { Link } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 
-import styles from './List.less';
+import styles from './MaintenanceCompanyList.less';
 
 const FormItem = Form.Item;
 
@@ -185,7 +198,7 @@ export default class MaintenanceCompanyList extends PureComponent {
               <Button onClick={this.handleClickToReset}>重置</Button>
             </FormItem>
             <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/base-info/company/add">
+              <Button type="primary" href="#/fire-control/maintenance-company/add">
                 新增
               </Button>
             </FormItem>
@@ -232,12 +245,12 @@ export default class MaintenanceCompanyList extends PureComponent {
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                   {`地址：${item.practicalAddress}`}
                 </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`下属公司数：${item.subordinateCompanyCount}`}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`启用状态：${item.usingStatus}`}
-                </Ellipsis>
+                <p>{`下属公司数：${item.subordinateCompanyCount}`}</p>
+                <p>
+                  启用状态：
+                  <Badge status={item.usingStatus === 1 ? 'success' : 'error'} />
+                  {`${item.usingStatus === 1 ? '启用' : '禁用'}`}
+                </p>
                 <span className={styles.quantity}>{item.serviceCompanyCount}</span>
                 <span className={styles.servicenum}>服务单位数</span>
               </Card>
