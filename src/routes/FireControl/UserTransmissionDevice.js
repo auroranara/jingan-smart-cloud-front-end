@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Link } from 'react-router-dom';
 import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
+import Ellipsis from 'components/Ellipsis';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
@@ -17,12 +18,12 @@ const rootElement = document.getElementById('root');
   transmission,
   loading: loading.models.transmission,
 }))
-export default class CardList extends PureComponent {
+export default class UserTransmissionDevice extends PureComponent {
   state = {
     company: '',
     address: '',
-    scrollLoading: false,
-    hasMore: true,
+    scrollLoading: false, // 下拉加载，当前是否正在请求数据
+    hasMore: true, // 数据库中是否还存在数据
   };
 
   componentDidMount() {
@@ -48,9 +49,10 @@ export default class CardList extends PureComponent {
 
     const { scrollLoading, hasMore } = this.state;
     // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
-    const meetEnd = rootDOM.scrollTop + rootDOM.offsetHeight >= childDOM.offsetHeight;
+    // 判断页面是否滚到底部
+    const scrollToBottom = rootDOM.scrollTop + rootDOM.offsetHeight >= childDOM.offsetHeight;
     // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
-    if (meetEnd && !scrollLoading && hasMore) this.handleInfiniteOnLoad();
+    if (scrollToBottom && !scrollLoading && hasMore) this.handleLazyload();
   };
 
   handleCheck = () => {
@@ -88,7 +90,7 @@ export default class CardList extends PureComponent {
     this.setState({ address: e.target.value.trim() });
   };
 
-  handleInfiniteOnLoad = () => {
+  handleLazyload = () => {
     const that = this;
     const { company, address } = this.state;
     this.setState({ scrollLoading: true });
@@ -157,7 +159,9 @@ export default class CardList extends PureComponent {
               <List.Item key={item.id}>
                 <Link to={`/fire-control/user-transmission-device-detail/${item.id}`}>
                   <Card hoverable className={styles.card} title={item.name}>
-                    <p>地址：{item.praticalAddress}</p>
+                    <Ellipsis className={styles.ellipsis} lines={1}>
+                      地址：{item.praticalAddress}
+                    </Ellipsis>
                     <p>安全负责人：{item.leader}</p>
                     <p>联系电话：{item.phone}</p>
                     <p>消防主机数量：{item.hostQuantity}</p>
