@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Layout, BackTop } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { Route, Redirect, Switch } from 'dva/router';
@@ -215,6 +215,7 @@ class BasicLayout extends React.PureComponent {
               <div className={classNames(params)}>
                 {layout}
                 <SettingDarwer />
+                <BackTop target={() => document.getElementById('root')} />
               </div>
             </Context.Provider>
           )}
