@@ -58,7 +58,7 @@ export default class MaintenanceCompanyList extends PureComponent {
   };
 
   componentDidMount() {
-    // 获取企业列表
+    // 获取维保单位列表
     this.props.fetch({
       payload: {
         pageSize,
@@ -71,8 +71,8 @@ export default class MaintenanceCompanyList extends PureComponent {
   /* 显示删除确认提示框 */
   handleShowDeleteConfirm = id => {
     Modal.confirm({
-      title: '你确定要删除这个企业单位吗?',
-      content: '如果你确定要删除这个企业单位，点击确定按钮',
+      title: '你确定要删除这个维保单位吗?',
+      content: '如果你确定要删除这个维保单位，点击确定按钮',
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
@@ -233,14 +233,13 @@ export default class MaintenanceCompanyList extends PureComponent {
                   {`地址：${item.practicalAddress}`}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`行业类别：${item.industryCategoryName}`}
+                  {`下属公司数：${item.subordinateCompanyCount}`}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`负责人：${item.name}`}
+                  {`启用状态：${item.usingStatus}`}
                 </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`联系电话：${item.name}`}
-                </Ellipsis>
+                <span className={styles.quantity}>{item.serviceCompanyCount}</span>
+                <span className={styles.servicenum}>服务单位数</span>
               </Card>
             </List.Item>
           )}
