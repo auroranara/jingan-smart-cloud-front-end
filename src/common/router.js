@@ -111,8 +111,8 @@ export const getRouterData = app => {
 
     // 维保公司
     '/fire-control/maintenance-company': {
-      component: dynamicWrapper(app, ['form'], () =>
-        import('../routes/FireControl/MaintenanceCompany.js')
+      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+        import('../routes/FireControl/MaintenanceCompany/List.js')
       ),
     },
     // '/fire-control/add-company': {
