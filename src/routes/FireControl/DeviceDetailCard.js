@@ -4,7 +4,7 @@ import DescriptionList from 'components/DescriptionList';
 
 const { Description } = DescriptionList;
 
-const INDEX_CHINESE = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+// const INDEX_CHINESE = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
 const hostTableAStyle = { marginRight: 10 };
 
 const deviceButtonStyle = { marginRight: 8 };
@@ -33,10 +33,14 @@ export default class DeviceDetailCard extends Component {
         >
           编辑
         </Button>
-        <Button type="primary" style={deviceButtonStyle} onClick={handleDeviceDeleteClick}>
+        <Button
+          type="primary"
+          style={deviceButtonStyle}
+          onClick={() => handleDeviceDeleteClick(deviceData.id)}
+        >
           删除
         </Button>
-        <Button type="primary" onClick={handleHostAddClick}>
+        <Button type="primary" onClick={() => handleHostAddClick(deviceData.id)}>
           新增消防主机
         </Button>
       </Fragment>
@@ -52,7 +56,9 @@ export default class DeviceDetailCard extends Component {
         <Description term="型号">{deviceInfo.model}</Description>
         <Description term="安装位置">{deviceInfo.installLocation}</Description>
         <Description term="生产日期">{deviceInfo.productionDate}</Description>
-        <Description term="接入主机数量">{deviceInfo.hostList.length}</Description>
+        <Description term="接入主机数量">
+          {deviceInfo.hostList ? deviceInfo.hostList.length : 0}
+        </Description>
       </DescriptionList>
     );
   }
@@ -64,7 +70,7 @@ export default class DeviceDetailCard extends Component {
       handleHostDeleteClick,
       importPointPositionClick,
     } = this.props;
-    const { hostList, id } = deviceData;
+    const { hostList, deviceCode, id } = deviceData;
 
     const hostColumns = [
       {
@@ -104,11 +110,17 @@ export default class DeviceDetailCard extends Component {
           <span>
             <a
               style={hostTableAStyle}
-              onClick={() => handleHostUpdateClick({ ...hostList[index], deviceId: id })}
+              onClick={() =>
+                handleHostUpdateClick({
+                  ...hostList[index],
+                  transmissionDeviceCode: deviceCode,
+                  transmissionId: id,
+                })
+              }
             >
               编辑
             </a>
-            <a style={hostTableAStyle} onClick={handleHostDeleteClick}>
+            <a style={hostTableAStyle} onClick={() => handleHostDeleteClick(id, record.id)}>
               删除
             </a>
             <a onClick={importPointPositionClick}>导入点位</a>
@@ -121,20 +133,22 @@ export default class DeviceDetailCard extends Component {
       <Table
         pagination={false}
         columns={setColumnAlign(hostColumns)}
-        dataSource={hostList}
+        dataSource={hostList || []}
         rowKey="id"
       />
     );
   }
 
   render() {
-    const { index } = this.props;
+    const {
+      deviceData: { deviceName },
+    } = this.props;
 
     return (
       <Card style={{ marginBottom: 30 }}>
         <Card
           type="inner"
-          title={`用户传输装置${INDEX_CHINESE[index]}`}
+          title={deviceName}
           bordered={false}
           extra={this.renderDeviceExtra()}
           style={deviceCardStyle}

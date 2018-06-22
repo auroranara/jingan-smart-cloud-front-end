@@ -127,7 +127,7 @@ export const getRouterData = app => {
         import('../routes/FireControl/UserTransmissionDevice.js')
       ),
     },
-    '/fire-control/user-transmission-device-detail/:id': {
+    '/fire-control/user-transmission-device-detail/:companyId': {
       name: '查看详情',
       component: dynamicWrapper(app, ['transmission'], () =>
         import('../routes/FireControl/UserTransmissionDeviceDetail.js')
