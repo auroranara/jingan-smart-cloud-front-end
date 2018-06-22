@@ -121,7 +121,16 @@ export const getRouterData = app => {
         import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
       ),
     },
-
+    // '/fire-control/maintenance-company/:id': {
+    //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+    //     import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyDetail.js')
+    //   ),
+    // },
+    // '/fire-control/maintenance-company/edit/:id': {
+    //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+    //     import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
+    //   ),
+    // },
     '/fire-control/user-transmission-device': {
       name: '用户传输装置',
       component: dynamicWrapper(app, ['transmission'], () =>
