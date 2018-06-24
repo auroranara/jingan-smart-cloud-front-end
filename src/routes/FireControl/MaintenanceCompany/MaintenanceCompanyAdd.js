@@ -10,7 +10,7 @@ const FormItem = Form.Item;
   submitting: loading.effects['form/submitRegularForm'],
 }))
 @Form.create()
-export default class MaintenanceCompanyAdd extends PureComponent {
+export default class BasicForms extends PureComponent {
   state = {
     current: {
       title: '',
