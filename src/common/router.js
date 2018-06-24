@@ -121,11 +121,12 @@ export const getRouterData = app => {
         import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
       ),
     },
-    // '/fire-control/maintenance-company/:id': {
-    //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
-    //     import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyDetail.js')
-    //   ),
-    // },
+    // 查看维保公司详情
+    '/fire-control/maintenance-company/:id': {
+      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyDetail.js')
+      ),
+    },
     // '/fire-control/maintenance-company/edit/:id': {
     //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
     //     import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
