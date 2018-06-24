@@ -11,6 +11,21 @@ const FormItem = Form.Item;
 }))
 @Form.create()
 export default class BasicForms extends PureComponent {
+  state = {
+    current: {
+      title: '',
+      subcompany: false,
+    },
+  };
+
+  switchOnchange = checked => {
+    this.setState({
+      current: {
+        subcompany: checked,
+      },
+    });
+  };
+
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -22,8 +37,10 @@ export default class BasicForms extends PureComponent {
       }
     });
   };
+
   render() {
     const { submitting } = this.props;
+    const { current } = this.state;
     //
     const {
       getFieldDecorator,
@@ -63,22 +80,32 @@ export default class BasicForms extends PureComponent {
                 ],
               })(<Input placeholder="请选择企业" />)}
             </FormItem>
+
             <FormItem {...formItemLayout} label="是否启用">
-              {getFieldDecorator('goal')(<Switch defaultChecked />)}
+              {getFieldDecorator('status', {
+                initialValue: '启用',
+              })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
             </FormItem>
+
             <FormItem {...formItemLayout} label="是否为分公司">
-              {getFieldDecorator('standard')(<Switch defaultChecked />)}
+              {getFieldDecorator('subcompany', {
+                initialValue: current.subcompany,
+              })(
+                <Switch
+                  checkedChildren="是"
+                  unCheckedChildren="否"
+                  onChange={this.switchOnchange}
+                />
+              )}
             </FormItem>
-            <FormItem {...formItemLayout} label="总公司名称">
-              {getFieldDecorator('name', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择企业',
-                  },
-                ],
-              })(<Input placeholder="请选择总公司" />)}
-            </FormItem>
+            {current.subcompany && (
+              <FormItem {...formItemLayout} label="总公司名称">
+                {getFieldDecorator('companyname', {
+                  rules: [{ message: '请选择一家维保公司为总公司' }],
+                  initialValue: current.companyname,
+                })(<Input placeholder="请选择总公司" />)}
+              </FormItem>
+            )}
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button type="primary" htmlType="submit" loading={submitting}>
