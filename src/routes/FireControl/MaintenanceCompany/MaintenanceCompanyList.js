@@ -12,7 +12,9 @@ import {
   BackTop,
   Spin,
   Affix,
+  Col,
   Badge,
+  Row,
 } from 'antd';
 import { Link } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -227,7 +229,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                 title={item.name}
                 className={styles.card}
                 actions={[
-                  <Link to={`/base-info/company/detail/${item.id}`}>查看</Link>,
+                  <Link to={`/fire-control/maintenance-company/${item.id}`}>查看</Link>,
                   <Link to={`/base-info/company/edit/${item.id}`}>编辑</Link>,
                 ]}
                 extra={
@@ -242,17 +244,23 @@ export default class MaintenanceCompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`地址：${item.practicalAddress}`}
-                </Ellipsis>
-                <p>{`下属公司数：${item.subordinateCompanyCount}`}</p>
-                <p>
-                  启用状态：
-                  <Badge status={item.usingStatus === 1 ? 'success' : 'error'} />
-                  {`${item.usingStatus === 1 ? '启用' : '禁用'}`}
-                </p>
-                <span className={styles.quantity}>{item.serviceCompanyCount}</span>
-                <span className={styles.servicenum}>服务单位数</span>
+                <Row>
+                  <Col span={16}>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      {`地址：${item.practicalAddress}`}
+                    </Ellipsis>
+                    <p>{`下属公司数：${item.subordinateCompanyCount}`}</p>
+                    <p>
+                      启用状态：
+                      <Badge status={item.usingStatus === 1 ? 'success' : 'error'} />
+                      {`${item.usingStatus === 1 ? '启用' : '禁用'}`}
+                    </p>
+                  </Col>
+                  <Col span={8}>
+                    <span className={styles.quantity}>{item.serviceCompanyCount}</span>
+                    <span className={styles.servicenum}>服务单位数</span>
+                  </Col>
+                </Row>
               </Card>
             </List.Item>
           )}
