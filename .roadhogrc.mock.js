@@ -25,10 +25,10 @@ const proxy = {
   // 'PUT /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
   // 'DELETE /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
 
-  // 'GET /acloud_new/api/(.*)': 'http://192.168.10.56:3001/mock/28/acloud_new/v2/',
-  // 'POST /acloud_new/api/(.*)': 'http://192.168.10.56:3001/mock/28/acloud_new/v2/',
-  // 'PUT /acloud_new/api/(.*)': 'http://192.168.10.56:3001/mock/28/acloud_new/v2/',
-  // 'DELETE /acloud_new/api/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
+  'GET /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
+  'POST /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
+  'PUT /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
+  'DELETE /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
 
   'GET /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
   'POST /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
