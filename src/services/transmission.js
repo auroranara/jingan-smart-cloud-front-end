@@ -1,7 +1,7 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
 
-const URL_PREFIX = '/acloud_new/api/fireControl';
+const URL_PREFIX = '/acloud_new/v2/fireControl';
 
 // 用户传输装置公司列表
 export async function queryTransmissionDevice(params) {
