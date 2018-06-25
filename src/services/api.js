@@ -152,3 +152,8 @@ export async function queryTransmissionDevice(params) {
 export async function queryTransmissionDeviceDetail(params) {
   return request(`/api/transmission_device_detail?${stringify(params)}`);
 }
+
+// 维保单位地址
+export async function queryMaintenanceCompanies(params) {
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json?${stringify(params)}`);
+}

@@ -40,7 +40,7 @@ const menuData = [
     children: [
       {
         name: '维保公司',
-        path: 'maintenance-company',
+        path: 'maintenance-company/list',
       },
       {
         name: '用户传输装置',

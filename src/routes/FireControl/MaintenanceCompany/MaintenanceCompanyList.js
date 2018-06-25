@@ -7,12 +7,14 @@ import {
   Button,
   Icon,
   Input,
-  Select,
   Modal,
   message,
   BackTop,
   Spin,
   Affix,
+  Col,
+  Badge,
+  Row,
 } from 'antd';
 import { Link } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -20,10 +22,9 @@ import VisibilitySensor from 'react-visibility-sensor';
 import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 
-import styles from './CompanyList.less';
+import styles from './MaintenanceCompanyList.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -31,69 +32,62 @@ const pageSize = 18;
 const defaultFormData = {
   name: undefined,
   practicalAddress: undefined,
-  industryCategory: undefined,
 };
 
 @connect(
-  ({ company, loading }) => ({
-    company,
-    loading: loading.models.company,
+  ({ maintenanceCompany, loading }) => ({
+    maintenanceCompany,
+    loading: loading.models.maintenanceCompany,
   }),
   dispatch => ({
     fetch(action) {
       dispatch({
-        type: 'company/fetch',
+        type: 'maintenanceCompany/fetch',
         ...action,
       });
     },
     appendFetch(action) {
       dispatch({
-        type: 'company/appendFetch',
-        ...action,
-      });
-    },
-    fetchCategories(action) {
-      dispatch({
-        type: 'company/fetchCategories',
+        type: 'maintenanceCompany/appendFetch',
         ...action,
       });
     },
     remove(action) {
       dispatch({
-        type: 'company/remove',
+        type: 'maintenanceCompany/remove',
         ...action,
       });
     },
     updateFormData(action) {
       dispatch({
-        type: 'company/updateFormData',
+        type: 'maintenanceCompany/updateFormData',
         ...action,
       });
     },
   })
 )
 @Form.create()
-export default class CompanyList extends PureComponent {
+export default class MaintenanceCompanyList extends PureComponent {
   state = {
     pageNum: 1,
   };
 
   componentDidMount() {
-    // 获取企业列表
+    // 获取维保单位列表
     this.props.fetch({
       payload: {
         pageSize,
       },
     });
     // 获取类别列表
-    this.props.fetchCategories({});
+    // this.props.fetchCategories({});
   }
 
   /* 显示删除确认提示框 */
   handleShowDeleteConfirm = id => {
     Modal.confirm({
-      title: '你确定要删除这个企业单位吗?',
-      content: '如果你确定要删除这个企业单位，点击确定按钮',
+      title: '你确定要删除这个维保单位吗?',
+      content: '如果你确定要删除这个维保单位，点击确定按钮',
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
@@ -156,12 +150,12 @@ export default class CompanyList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    if (!flag || this.props.company.isLast) {
+    if (!flag || this.props.maintenanceCompany.isLast) {
       return;
     }
     const {
       appendFetch,
-      company: { formData },
+      maintenanceCompany: { formData },
     } = this.props;
     const { pageNum } = this.state;
     // 请求数据
@@ -177,12 +171,12 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      company: { categories },
+      // company: { categories },
       form: { getFieldDecorator },
     } = this.props;
 
     return (
-      <Affix offsetTop={10}>
+      <Affix offsetTop={10} target={() => document.getElementById('root')}>
         <Card>
           <Form layout="inline">
             <FormItem>
@@ -198,19 +192,6 @@ export default class CompanyList extends PureComponent {
               })(<Input placeholder="请输入单位地址" />)}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('industryCategory', {
-                initialValue: defaultFormData.industryCategory,
-              })(
-                <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
-                  {categories.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem>
               <Button type="primary" onClick={this.handleClickToQuery}>
                 查询
               </Button>
@@ -219,7 +200,7 @@ export default class CompanyList extends PureComponent {
               <Button onClick={this.handleClickToReset}>重置</Button>
             </FormItem>
             <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/base-info/company/add">
+              <Button type="primary" href="#/fire-control/maintenance-company/add">
                 新增
               </Button>
             </FormItem>
@@ -232,7 +213,7 @@ export default class CompanyList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      company: { list },
+      maintenanceCompany: { list },
     } = this.props;
 
     return (
@@ -248,7 +229,7 @@ export default class CompanyList extends PureComponent {
                 title={item.name}
                 className={styles.card}
                 actions={[
-                  <Link to={`/base-info/company/detail/${item.id}`}>查看</Link>,
+                  <Link to={`/fire-control/maintenance-company/${item.id}`}>查看</Link>,
                   <Link to={`/base-info/company/edit/${item.id}`}>编辑</Link>,
                 ]}
                 extra={
@@ -263,18 +244,23 @@ export default class CompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`地址：${item.practicalAddress}`}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`行业类别：${item.industryCategoryName}`}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`负责人：${item.name}`}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`联系电话：${item.name}`}
-                </Ellipsis>
+                <Row>
+                  <Col span={16}>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      {`地址：${item.practicalAddress}`}
+                    </Ellipsis>
+                    <p>{`下属公司数：${item.subordinateCompanyCount}`}</p>
+                    <p>
+                      启用状态：
+                      <Badge status={item.usingStatus === 1 ? 'success' : 'error'} />
+                      {`${item.usingStatus === 1 ? '启用' : '禁用'}`}
+                    </p>
+                  </Col>
+                  <Col span={8}>
+                    <span className={styles.quantity}>{item.serviceCompanyCount}</span>
+                    <span className={styles.servicenum}>服务单位数</span>
+                  </Col>
+                </Row>
               </Card>
             </List.Item>
           )}
@@ -285,12 +271,12 @@ export default class CompanyList extends PureComponent {
 
   render() {
     const {
-      company: { list, isLast },
+      maintenanceCompany: { list, isLast },
       loading,
     } = this.props;
 
     return (
-      <PageHeaderLayout title="企业单位">
+      <PageHeaderLayout title="维保单位">
         <BackTop />
         {this.renderForm()}
         {this.renderList()}
