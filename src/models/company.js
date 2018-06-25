@@ -1,17 +1,63 @@
-import { queryCompanies, deleteCompany, queryCompanyCategories } from '../services/api.js';
+import {
+  queryCompanies,
+  deleteCompany,
+  queryDict,
+  queryCompany,
+  addCompany,
+  updateCompany,
+  queryMaintenanceCompanies,
+} from '../services/company/company.js';
 
 export default {
   namespace: 'company',
 
   state: {
     list: [],
-    categories: [],
+    industryCategories: [],
+    economicTypes: [],
+    companyStatuses: [],
+    scales: [],
+    licenseTypes: [],
     formData: {
       name: undefined,
       practicalAddress: undefined,
       industryCategory: undefined,
     },
+    pageNum: 1,
     isLast: false,
+    detail: {
+      data: {
+        province: undefined,
+        city: undefined,
+        district: undefined,
+        town: undefined,
+        businessScope: undefined,
+        code: undefined,
+        companyIchnography: undefined,
+        companyStatus: undefined,
+        createDate: undefined,
+        economicType: undefined,
+        groupName: undefined,
+        industryCategory: undefined,
+        latitude: undefined,
+        licenseType: undefined,
+        longitude: undefined,
+        maintenanceContract: undefined,
+        maintenanceId: undefined,
+        name: undefined,
+        practicalAddress: undefined,
+        registerAddress: undefined,
+        scale: undefined,
+      },
+    },
+    modal: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
   },
 
   effects: {
@@ -20,7 +66,7 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'query',
-          payload: response.data.list,
+          payload: response.data,
         });
       }
     },
@@ -33,12 +79,15 @@ export default {
         });
       }
     },
-    *fetchCategories({ payload }, { call, put }) {
-      const response = yield call(queryCompanyCategories, payload);
+    *fetchDict({ payload }, { call, put }) {
+      const response = yield call(queryDict, payload);
       if (response.code === 200) {
         yield put({
-          type: 'queryCategories',
-          payload: response.data.list,
+          type: 'queryDict',
+          payload: {
+            type: payload.type,
+            list: response.data.list,
+          },
         });
       }
     },
@@ -56,13 +105,60 @@ export default {
         error();
       }
     },
+    *fetchCompany({ payload }, { call, put }) {
+      const response = yield call(queryCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryCompany',
+          payload: response.data,
+        });
+      }
+    },
+    *insertCompany({ payload, success, error }, { call }) {
+      const response = yield call(addCompany, payload);
+      if (response.code === 200) {
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.error);
+      }
+    },
+    *editCompany({ payload }, { call, put }) {
+      const response = yield call(updateCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updateCompany',
+          payload: response.data,
+        });
+      }
+    },
+    *fetchModalList({ payload }, { call, put }) {
+      const response = yield call(queryMaintenanceCompanies, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryModalList',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
-    query(state, { payload }) {
+    query(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       return {
         ...state,
-        list: payload,
+        list,
+        pageNum: 1,
+        isLast: pageNum * pageSize >= total,
       };
     },
     appendList(
@@ -70,20 +166,21 @@ export default {
       {
         payload: {
           list,
-          pagination: { pageIndex, pageSize, total },
+          pagination: { pageNum, pageSize, total },
         },
       }
     ) {
       return {
         ...state,
         list: [...state.list, ...list],
-        isLast: pageIndex * pageSize >= total,
+        pageNum,
+        isLast: pageNum * pageSize >= total,
       };
     },
-    queryCategories(state, { payload }) {
+    queryDict(state, { payload }) {
       return {
         ...state,
-        categories: payload,
+        [payload.type]: payload.list,
       };
     },
     delete(state, { payload }) {
@@ -96,6 +193,39 @@ export default {
       return {
         ...state,
         formData: payload,
+      };
+    },
+    queryCompany(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+    // addCompany(state, { payload }) {
+    //   return {
+    //     ...state,
+    //     detail: {
+    //       ...state.detail,
+    //       data: payload,
+    //     },
+    //   };
+    // },
+    updateCompany(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+    queryModalList(state, { payload }) {
+      return {
+        ...state,
+        modal: payload,
       };
     },
   },

@@ -124,36 +124,3 @@ export async function queryNotices() {
 export async function getFakeCaptcha(mobile) {
   return request(`/api/captcha?mobile=${mobile}`);
 }
-
-/* 查询企业 */
-export async function queryCompanies(params) {
-  return request(`/acloud_new/v2/baseInfo/companies.json?${stringify(params)}`);
-}
-
-/* 删除企业 */
-export async function deleteCompany({ id }) {
-  return request(`/acloud_new/v2/baseInfo/company/${id}`, {
-    method: 'DELETE',
-  });
-}
-
-/* 获取行业类别 */
-export async function queryCompanyCategories() {
-  return request(`/acloud_new/v2/baseInfo/company/categories`);
-}
-
-// 用户传输装置公司列表
-export async function queryTransmissionDevice(params) {
-  // return request(`/api/transmission_device_list?${stringify(params)}`);
-  return request(`/acloud_new/api/transmission/companies?${stringify(params)}`);
-}
-
-// 用户传输装置公司详情
-export async function queryTransmissionDeviceDetail(params) {
-  return request(`/api/transmission_device_detail?${stringify(params)}`);
-}
-
-// 维保单位地址
-export async function queryMaintenanceCompanies(params) {
-  return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json?${stringify(params)}`);
-}
