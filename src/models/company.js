@@ -18,11 +18,6 @@ export default {
     companyStatuses: [],
     scales: [],
     licenseTypes: [],
-    formData: {
-      name: undefined,
-      practicalAddress: undefined,
-      industryCategory: undefined,
-    },
     pageNum: 1,
     isLast: false,
     detail: {
@@ -105,13 +100,19 @@ export default {
         error();
       }
     },
-    *fetchCompany({ payload }, { call, put }) {
+    // 获取企业详情
+    *fetchCompany({ payload, success, error }, { call, put }) {
       const response = yield call(queryCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryCompany',
           payload: response.data,
         });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
       }
     },
     *insertCompany({ payload, success, error }, { call }) {
@@ -187,12 +188,6 @@ export default {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
-      };
-    },
-    updateFormData(state, { payload }) {
-      return {
-        ...state,
-        formData: payload,
       };
     },
     queryCompany(state, { payload }) {

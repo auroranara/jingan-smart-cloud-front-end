@@ -32,7 +32,7 @@ const title = '编辑企业';
 // 返回地址
 const href = '/base-info/company-list';
 // 上传文件地址
-const uploadAction = 'http://118.126.110.115:3001/mock/28/acloud_new/v2/upload';
+const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件限制数量
 const uploadLength = 1;
 // 面包屑
@@ -105,27 +105,32 @@ const defaultPagination = {
     loading: loading.models.company,
   }),
   dispatch => ({
-    insert(action) {
+    // 修改
+    editCompany(action) {
       dispatch({
-        type: 'company/insertCompany',
+        type: 'company/editCompany',
         ...action,
       });
     },
+    // 获取详情
     fetchCompany(action) {
       dispatch({
         type: 'company/fetchCompany',
         ...action,
       });
     },
+    // 获取字典
     fetchDict(action) {
       dispatch({
         type: 'company/fetchDict',
         ...action,
       });
     },
+    // 返回
     goBack() {
       dispatch(routerRedux.push(href));
     },
+    // 获取维保单位列表
     fetchModalList(action) {
       dispatch({
         type: 'company/fetchModalList',
@@ -213,7 +218,7 @@ export default class CompanyDetail extends PureComponent {
   /* 点击提交按钮验证表单信息 */
   handleClickValidate = () => {
     const {
-      insert,
+      editCompany,
       goBack,
       form: { validateFieldsAndScroll },
     } = this.props;
@@ -228,7 +233,7 @@ export default class CompanyDetail extends PureComponent {
           this.setState({
             loading: true,
           });
-          insert({
+          editCompany({
             payload: {
               ...restFields,
               province,
