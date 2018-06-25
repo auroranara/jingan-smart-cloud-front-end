@@ -121,7 +121,7 @@ export default class UserTransmissionDevice extends PureComponent {
 
     return (
       <PageHeaderLayout title="用户传输装置">
-        <div className={styles.check}>
+        <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>
               <Input
@@ -148,7 +148,7 @@ export default class UserTransmissionDevice extends PureComponent {
               <Button onClick={this.handleReset}>重置</Button>
             </Col>
           </Row>
-        </div>
+        </Card>
         <div className={styles.cardList}>
           <List
             rowKey="id"

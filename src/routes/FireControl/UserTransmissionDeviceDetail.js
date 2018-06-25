@@ -114,8 +114,9 @@ export default class UserTransmissionDeviceDetail extends Component {
   };
 
   /* 带click的方法，表示传入card中用来button点击时触发，正在处理数据的方法中不带click
-   * 在这里，add和update时是在Modal中操作的，而addClick,updateClick时是是在Table中触发跳出Modal，并不能直接进行add/update操作，
-   * 所以造成了数据分离，所以要将其分开，并将部分数据同步到共同的父组件，而deleteClick时却可以直接执行delete操作，所以数据不用同步，传个参就可以
+   * 在这里，add和update时是在Modal中操作的，而addClick,updateClick时是是在Table中触发跳出Modal，
+   * 并不能直接进行add/update操作，所以造成了数据分离，所以要将其分开，并将部分数据同步到共同的父组件，
+   * 而deleteClick时却可以通过confirm执行delete操作，所以数据不用同步，传个参就可以
    */
   handleDeviceAddClick = () => {
     this.setState({ deviceModalVisible: true, operation: 'add', deviceRecord: null });
