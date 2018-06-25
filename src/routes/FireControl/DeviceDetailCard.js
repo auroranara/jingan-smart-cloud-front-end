@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Card, Table } from 'antd';
+import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
 const { Description } = DescriptionList;
@@ -68,7 +69,7 @@ export default class DeviceDetailCard extends Component {
       deviceData,
       handleHostUpdateClick,
       handleHostDeleteClick,
-      importPointPositionClick,
+      // importPointPositionClick,
     } = this.props;
     const { hostList, deviceCode, id } = deviceData;
 
@@ -126,7 +127,7 @@ export default class DeviceDetailCard extends Component {
               <a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a>
             </p>
             <p style={hostColumnsActionPStyle}>
-              <a onClick={importPointPositionClick}>导入点位</a>
+              <Link to={`/fire-control/import-point-position/${record.id}`}>导入点位</Link>
             </p>
           </Fragment>
         ),

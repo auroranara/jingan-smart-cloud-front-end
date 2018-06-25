@@ -106,7 +106,7 @@ export default class UserTransmissionDeviceDetail extends Component {
   }
 
   downloadPointPositionTemplate = () => {};
-  importPointPositionClick = () => {};
+  // importPointPositionClick = () => {};
   exportPointPositionClick = () => {};
 
   handleDeviceModalVisible = flag => {
