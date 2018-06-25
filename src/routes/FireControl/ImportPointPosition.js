@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import { Form, Input } from 'antd';
 import { connect } from 'dva';
 
+const FormItem = Form.Item;
+
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.models.transmission,
@@ -16,7 +18,6 @@ export default class ImportPointPosition extends PureComponent {
       },
     } = this.props;
     const { getFieldDecorator } = form;
-    const FormItem = Form.Item;
 
     return (
       <Form>
