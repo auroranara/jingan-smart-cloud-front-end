@@ -258,11 +258,6 @@ export const getRouterData = app => {
         import('../routes/Account/Settings/NotificationView')
       ),
     },
-    '/test': {
-      component: dynamicWrapper(app, ['geographic'], () =>
-        import('../routes/BaseInfo/Company/Test')
-      ),
-    },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },
