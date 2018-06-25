@@ -145,12 +145,12 @@ export async function queryCompanyCategories() {
 // 用户传输装置公司列表
 export async function queryTransmissionDevice(params) {
   // return request(`/api/transmission_device_list?${stringify(params)}`);
-  return request(`/acloud_new/api/transmission/companies?${stringify(params)}`);
+  return request(`/acloud_new/v2/transmission/companies?${stringify(params)}`);
 }
 
 // 用户传输装置公司详情
 export async function queryTransmissionDeviceDetail(params) {
-  return request(`/api/transmission_device_detail?${stringify(params)}`);
+  return request(`/v2/transmission_device_detail?${stringify(params)}`);
 }
 
 // 维保单位地址
