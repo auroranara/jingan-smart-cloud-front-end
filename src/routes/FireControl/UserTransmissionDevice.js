@@ -160,7 +160,9 @@ export default class UserTransmissionDevice extends PureComponent {
                 <Link to={`/fire-control/user-transmission-device-detail/${item.id}`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
-                      地址：{item.practicalAddress}
+                      地址：{item.practicalAddress !== undefined
+                        ? item.practicalAddress
+                        : item.praticalAddress}
                     </Ellipsis>
                     <p>安全负责人：{item.leader}</p>
                     <p>联系电话：{item.phone}</p>

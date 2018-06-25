@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Icon, Spin } from 'antd';
+import { Button, Icon, Modal, Spin } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -10,6 +10,7 @@ import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
 
 const { Description } = DescriptionList;
+const { confirm } = Modal;
 
 // 若顺序不是按照当前顺序的话，改成数组
 const DESCRIP_MAP = {
@@ -21,6 +22,7 @@ const DESCRIP_MAP = {
   economicType: '经济类型',
   scale: '规上',
   practicalAddress: '实际经营地址',
+  praticalAddress: '实际经营地址',
   createDate: '成立时间',
 };
 
@@ -153,7 +155,13 @@ export default class UserTransmissionDeviceDetail extends Component {
   };
 
   handleDeviceDeleteClick = deviceId => {
-    this.handleDeviceDelete(deviceId);
+    const that = this;
+    confirm({
+      title: '确定删除当前用户传输装置？',
+      onOk() {
+        that.handleDeviceDelete(deviceId);
+      },
+    });
   };
 
   handleDeviceDelete = deviceId => {
@@ -218,7 +226,13 @@ export default class UserTransmissionDeviceDetail extends Component {
   };
 
   handleHostDeleteClick = (transmissionId, hostId) => {
-    this.handleHostDelete(transmissionId, hostId);
+    const that = this;
+    confirm({
+      title: '确认删除当前消防主机？',
+      onOk() {
+        that.handleHostDelete(transmissionId, hostId);
+      },
+    });
   };
 
   handleHostDelete = (transmissionId, hostId) => {
@@ -264,11 +278,15 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     const description = (
       <DescriptionList size="small">
-        {Object.keys(DESCRIP_MAP).map(k => (
-          <Description key={k} term={DESCRIP_MAP[k]}>
-            {companyDetail[k]}
-          </Description>
-        ))}
+        {Object.keys(DESCRIP_MAP).map(
+          k =>
+            // 兼容实际地址 practical pratical
+            companyDetail[k] === undefined ? null : (
+              <Description key={k} term={DESCRIP_MAP[k]}>
+                {companyDetail[k]}
+              </Description>
+            )
+        )}
       </DescriptionList>
     );
 

@@ -6,8 +6,8 @@ const { Description } = DescriptionList;
 
 // const INDEX_CHINESE = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
 const hostTableAStyle = { marginRight: 10 };
-
 const deviceButtonStyle = { marginRight: 8 };
+const hostColumnsActionPStyle = { marginBottom: 0 };
 
 function setColumnAlign(columns, align = 'center') {
   return columns.map(column => ({ ...column, align }));
@@ -92,6 +92,7 @@ export default class DeviceDetailCard extends Component {
         title: '传输接口',
         dataIndex: 'transmissionInterface',
         key: 'transmissionInterface',
+        width: 88,
       },
       {
         title: '安装位置',
@@ -106,25 +107,28 @@ export default class DeviceDetailCard extends Component {
       {
         title: '操作',
         key: 'action',
+        width: 98,
         render: (text, record, index) => (
-          <span>
-            <a
-              style={hostTableAStyle}
-              onClick={() =>
-                handleHostUpdateClick({
-                  ...hostList[index],
-                  transmissionDeviceCode: deviceCode,
-                  transmissionId: id,
-                })
-              }
-            >
-              编辑
-            </a>
-            <a style={hostTableAStyle} onClick={() => handleHostDeleteClick(id, record.id)}>
-              删除
-            </a>
-            <a onClick={importPointPositionClick}>导入点位</a>
-          </span>
+          <Fragment>
+            <p style={hostColumnsActionPStyle}>
+              <a
+                style={hostTableAStyle}
+                onClick={() =>
+                  handleHostUpdateClick({
+                    ...hostList[index],
+                    transmissionDeviceCode: deviceCode,
+                    transmissionId: id,
+                  })
+                }
+              >
+                编辑
+              </a>
+              <a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a>
+            </p>
+            <p style={hostColumnsActionPStyle}>
+              <a onClick={importPointPositionClick}>导入点位</a>
+            </p>
+          </Fragment>
         ),
       },
     ];
