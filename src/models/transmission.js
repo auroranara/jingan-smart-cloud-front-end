@@ -57,27 +57,27 @@ export default {
     *deviceAddAsync({ payload }, { call, put }) {
       const response = yield call(transmissionDeviceAdd, payload);
 
-      const { msg, data } = response;
+      const { code, data } = response;
       const { hostList } = data;
       // 返回的新增设备，hostList属性不存在时，赋给一个空数组
-      if (msg === 'success')
+      if (code === 200)
         yield put({ type: 'addDevice', payload: { ...data, hostList: hostList || [] } });
     },
     *deviceUpdateAsync({ payload }, { call, put }) {
       const response = yield call(transmissionDeviceUpdate, payload);
 
-      const { msg } = response;
+      const { code } = response;
       const { data, transmissionId } = payload;
       // 传入的payload = { companyId, transmissionId, data: fieldsValue } fieldValue中已丢失id，所以要再传入一个id
-      if (msg === 'success')
+      if (code === 200)
         yield put({ type: 'updateDevice', payload: { ...data, id: transmissionId } });
     },
     *deviceDeleteAsync({ payload }, { call, put }) {
       const response = yield call(transmissionDeviceDelete, payload);
 
-      const { msg } = response;
+      const { code } = response;
       // console.log(response, response.code, msg, msg === 'success');
-      if (msg === 'success') {
+      if (code === 200) {
         yield put({ type: 'deleteDevice', payload: payload.transmissionId });
       }
     },
@@ -85,16 +85,15 @@ export default {
       const response = yield call(transmissionHostAdd, payload);
 
       const { transmissionId } = payload;
-      const { msg, data } = response;
-      if (msg === 'success')
-        yield put({ type: 'addHost', payload: { transmissionId, host: data } });
+      const { code, data } = response;
+      if (code === 200) yield put({ type: 'addHost', payload: { transmissionId, host: data } });
     },
     *hostUpdateAsync({ payload }, { call, put }) {
       const response = yield call(transmissionHostUpdate, payload);
 
       const { transmissionId, hostId, data } = payload;
-      const { msg } = response;
-      if (msg === 'success')
+      const { code } = response;
+      if (code === 200)
         yield put({
           type: 'updateHost',
           payload: { transmissionId, updatedHost: { ...data, id: hostId } },
@@ -104,8 +103,8 @@ export default {
       const response = yield call(transmissionHostDelete, payload);
 
       const { transmissionId, hostId } = payload;
-      const { msg } = response;
-      if (msg === 'success') yield put({ type: 'deleteHost', payload: { transmissionId, hostId } });
+      const { code } = response;
+      if (code === 200) yield put({ type: 'deleteHost', payload: { transmissionId, hostId } });
     },
   },
 
