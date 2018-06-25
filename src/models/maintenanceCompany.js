@@ -1,7 +1,8 @@
 import {
   queryMaintenanceCompanies,
-  deleteMaintenanceCompany,
-  queryMaintenanceCompanyinfo,
+  delateMaintenanceCompany,
+  queryMaintenanceCompany,
+  queryMaintenanceCompanyDetail,
 } from '../services/api.js';
 
 export default {
@@ -30,7 +31,7 @@ export default {
       }
     },
     *appendFetch({ payload }, { call, put }) {
-      const response = yield call(queryMaintenanceCompanies, payload);
+      const response = yield call(queryMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'appendList',
@@ -39,7 +40,7 @@ export default {
       }
     },
     *remove({ payload, success, error }, { call, put }) {
-      const response = yield call(deleteMaintenanceCompany, payload);
+      const response = yield call(delateMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'delete',
@@ -52,12 +53,16 @@ export default {
         error();
       }
     },
-    *fetchDetail({ payload }, { call, put }) {
-      const response = yield call(queryMaintenanceCompanyinfo, payload);
-      yield put({
-        type: 'queryDetail',
-        payload: response.data,
-      });
+
+    // 获取维保单位详情
+    *fetchMaintenanceCompany({ payload }, { call, put }) {
+      const response = yield call(queryMaintenanceCompanyDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryMaintenanceCompanyDetail',
+          payload: response.data,
+        });
+      }
     },
   },
 
@@ -99,6 +104,15 @@ export default {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
+      };
+    },
+    queryMaintenanceCompanyDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
     updateFormData(state, { payload }) {

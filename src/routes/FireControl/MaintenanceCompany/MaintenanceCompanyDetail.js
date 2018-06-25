@@ -1,54 +1,68 @@
 import React, { PureComponent } from 'react';
-import { Form, Input, Card } from 'antd';
+import { connect } from 'dva';
+import { Card } from 'antd';
+import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
-const FormItem = Form.Item;
+const { Description } = DescriptionList;
 
-@Form.create()
-export default class BasicForms extends PureComponent {
-  render() {
-    //
+const breadcrumbList = [
+  {
+    title: '首页',
+    href: '/',
+  },
+  {
+    title: '消防维保',
+  },
+  {
+    title: '维保公司',
+    href: '/fire-control/maintenance-company/list',
+  },
+  {
+    title: '维保公司详情',
+  },
+];
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
+@connect(({ maintenanceCompany, loading }) => ({
+  maintenanceCompany,
+  loading: loading.models.maintenanceCompany,
+}))
+export default class maintenanceCompanyDetail extends PureComponent {
+  /* 生命周期函数 */
+  componentDidMount() {
     const {
-      getFieldDecorator,
-      // getFieldValue
-    } = this.props.form;
-
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
+      dispatch,
+      match: {
+        params: { id },
       },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 },
-        md: { span: 10 },
-      },
-    };
+    } = this.props;
+    // console.log(id);
+    dispatch({
+      type: 'maintenanceCompany/fetchMaintenanceCompany',
+      payload: id,
+    });
+  }
 
+  // 渲染信息
+  renderdetail() {
+    const {
+      maintenanceCompany: {
+        detail: { data },
+      },
+    } = this.props;
     return (
-      <PageHeaderLayout title="维保公司详情">
+      <PageHeaderLayout title="维保公司详情" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
-          <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="企业名称">
-              {getFieldDecorator('name')(<Input style={{ border: 0 }} />)}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="地址">
-              {getFieldDecorator('address')(<Input style={{ border: 0 }} />)}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="下属公司数">
-              {getFieldDecorator('subcompanynum')(<Input style={{ border: 0 }} />)}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="启用状态">
-              {getFieldDecorator('status')(<Input style={{ border: 0 }} />)}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="服务单位数">
-              {getFieldDecorator('servicenum')(<Input style={{ border: 0 }} />)}
-            </FormItem>
-          </Form>
+          <DescriptionList>
+            <Description term="维修单位：">{data.companyName || getEmptyData()}</Description>
+            <Description term="启用状态：">{data.usingStatus || getEmptyData()}</Description>
+            <Description term="是否为分公司：">{data.isBranch || getEmptyData()}</Description>
+            <Description term="总公司名称：">{data.parnetUnitName || getEmptyData()}</Description>
+          </DescriptionList>
         </Card>
       </PageHeaderLayout>
     );

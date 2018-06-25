@@ -125,16 +125,17 @@ export const getRouterData = app => {
       ),
     },
     // 查看维保公司详情
-    '/fire-control/maintenance-company/:id': {
+    '/fire-control/maintenance-company/detail/:id': {
       component: dynamicWrapper(app, ['maintenanceCompany'], () =>
         import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyDetail.js')
       ),
     },
-    // '/fire-control/maintenance-company/edit/:id': {
-    //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
-    //     import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
-    //   ),
-    // },
+    // 修改维保公司信息
+    '/fire-control/maintenance-company/edit/:id': {
+      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyEdit.js')
+      ),
+    },
     '/fire-control/user-transmission-device': {
       name: '用户传输装置',
       component: dynamicWrapper(app, ['transmission'], () =>

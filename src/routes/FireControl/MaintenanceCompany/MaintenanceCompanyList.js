@@ -79,8 +79,6 @@ export default class MaintenanceCompanyList extends PureComponent {
         pageSize,
       },
     });
-    // 获取类别列表
-    // this.props.fetchCategories({});
   }
 
   /* 显示删除确认提示框 */
@@ -122,6 +120,7 @@ export default class MaintenanceCompanyList extends PureComponent {
     fetch({
       payload: {
         pageSize,
+        pageNum: 1,
         ...data,
       },
     });
@@ -229,8 +228,8 @@ export default class MaintenanceCompanyList extends PureComponent {
                 title={item.name}
                 className={styles.card}
                 actions={[
-                  <Link to={`/fire-control/maintenance-company/${item.id}`}>查看</Link>,
-                  <Link to={`/base-info/company/edit/${item.id}`}>编辑</Link>,
+                  <Link to={`/fire-control/maintenance-company/detail/${item.id}`}>查看</Link>,
+                  <Link to={`/fire-control/maintenance-company/edit/${item.id}`}>编辑</Link>,
                 ]}
                 extra={
                   <Button
