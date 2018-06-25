@@ -1,6 +1,4 @@
 @import '~antd/lib/style/themes/default.less';
-@import '../../../utils/utils.less';
-
 .card {
   margin-bottom: 24px;
 }
@@ -88,27 +86,4 @@
 .optional {
   color: @text-color-secondary;
   font-style: normal;
-}
-
-/* 返回按钮 */
-.backButton {
-  float: right;
-}
-
-:global {
-  .anticon-close-circle {
-    cursor: pointer;
-    color: #ccc;
-    transition: color 0.3s;
-    font-size: 12px;
-  }
-  .anticon-close-circle:hover {
-    color: #999;
-  }
-  .anticon-close-circle:active {
-    color: #666;
-  }
-  #maintenanceId {
-    cursor: pointer;
-  }
 }
