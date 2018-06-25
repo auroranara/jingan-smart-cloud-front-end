@@ -108,6 +108,12 @@ export const getRouterData = app => {
         import('../routes/FireControl/UserTransmissionDeviceDetail.js')
       ),
     },
+    '/fire-control/import-point-position/:hostId': {
+      name: '导入点位数据',
+      component: dynamicWrapper(app, ['transmission'], () =>
+        import('../routes/FireControl/ImportPointPosition.js')
+      ),
+    },
     '/form/step-form/confirm': {
       name: '分步表单（确认转账信息）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),

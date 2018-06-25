@@ -62,7 +62,7 @@ function ModalForm(props) {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      {formItems}
+      <Form>{formItems}</Form>
     </Modal>
   );
 }
