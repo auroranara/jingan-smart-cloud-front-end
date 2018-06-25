@@ -43,3 +43,13 @@ export async function updateCompany({ id, ...restParams }) {
 export async function queryMaintenanceCompanies(params) {
   return request(`/acloud_new/v2/baseInfo/company?${stringify(params)}`);
 }
+
+/* 文件上传 */
+export async function upload(params) {
+  return request(`acloud_new/v2/uploadFile`, {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}

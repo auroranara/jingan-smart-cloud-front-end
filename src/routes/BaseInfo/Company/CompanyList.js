@@ -21,39 +21,42 @@ const defaultFormData = {
   industryCategory: undefined,
 };
 
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 @connect(
   ({ company, loading }) => ({
     company,
     loading: loading.models.company,
   }),
   dispatch => ({
+    // 获取初始数据列表
     fetch(action) {
       dispatch({
         type: 'company/fetch',
         ...action,
       });
     },
+    // 追加数据列表
     appendFetch(action) {
       dispatch({
         type: 'company/appendFetch',
         ...action,
       });
     },
+    // 获取行业类别
     fetchCategories(action) {
       dispatch({
         type: 'company/fetchCategories',
         ...action,
       });
     },
+    // 删除企业
     remove(action) {
       dispatch({
         type: 'company/remove',
-        ...action,
-      });
-    },
-    updateFormData(action) {
-      dispatch({
-        type: 'company/updateFormData',
         ...action,
       });
     },
@@ -61,6 +64,11 @@ const defaultFormData = {
 )
 @Form.create()
 export default class CompanyList extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.formData = defaultFormData;
+  }
+
   componentDidMount() {
     // 获取企业列表
     this.props.fetch({
@@ -104,14 +112,11 @@ export default class CompanyList extends PureComponent {
   handleClickToQuery = () => {
     const {
       fetch,
-      updateFormData,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    // 修改store中的数据
-    updateFormData({
-      payload: data,
-    });
+    // 修改表单数据
+    this.formData = data;
     // 重新请求数据
     fetch({
       payload: {
@@ -126,15 +131,12 @@ export default class CompanyList extends PureComponent {
   handleClickToReset = () => {
     const {
       fetch,
-      updateFormData,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
     resetFields();
-    // 清除store中的数据
-    updateFormData({
-      payload: defaultFormData,
-    });
+    // 修改表单数据
+    this.formData = defaultFormData;
     // 重新请求数据
     fetch({
       payload: {
@@ -151,14 +153,14 @@ export default class CompanyList extends PureComponent {
     }
     const {
       appendFetch,
-      company: { pageNum, formData },
+      company: { pageNum },
     } = this.props;
     // 请求数据
     appendFetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...formData,
+        ...this.formData,
       },
     });
   };
@@ -253,16 +255,16 @@ export default class CompanyList extends PureComponent {
                 }
               >
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`地址：${item.practicalAddress || ''}`}
+                  地址：{item.practicalAddress || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`行业类别：${item.industryCategory || ''}`}
+                  行业类别：{item.industryCategory || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`负责人：${item.name || ''}`}
+                  负责人：{item.name || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`联系电话：${item.name || ''}`}
+                  联系电话：{item.name || getEmptyData()}
                 </Ellipsis>
               </Card>
             </List.Item>
