@@ -88,14 +88,53 @@ export const getRouterData = app => {
       // name: '工作台',
       // authority: 'admin',
     },
-    '/base-info/company': {
-      component: dynamicWrapper(app, ['form'], () => import('../routes/BaseInfo/Company/Index')),
-    },
-    '/fire-control/maintenance-company': {
-      component: dynamicWrapper(app, ['form'], () =>
-        import('../routes/FireControl/MaintenanceCompany.js')
+    /* 企业列表 */
+    '/base-info/company-list': {
+      component: dynamicWrapper(app, ['company'], () =>
+        import('../routes/BaseInfo/Company/CompanyList')
       ),
     },
+    /* 企业详情 */
+    '/base-info/company/detail/:id': {
+      component: dynamicWrapper(app, ['company'], () =>
+        import('../routes/BaseInfo/Company/CompanyDetail')
+      ),
+    },
+    /* 企业添加 */
+    '/base-info/company/add': {
+      component: dynamicWrapper(app, ['company'], () =>
+        import('../routes/BaseInfo/Company/CompanyAdd')
+      ),
+    },
+    /* 企业修改 */
+    '/base-info/company/edit/:id': {
+      component: dynamicWrapper(app, ['company'], () =>
+        import('../routes/BaseInfo/Company/CompanyEdit')
+      ),
+    },
+    // 维保公司
+    '/fire-control/maintenance-company/list': {
+      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyList.js')
+      ),
+    },
+    // 新增维保公司
+    '/fire-control/maintenance-company/add': {
+      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
+      ),
+    },
+    // 查看维保公司详情
+    '/fire-control/maintenance-company/:id': {
+      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyDetail.js')
+      ),
+    },
+    // '/fire-control/maintenance-company/edit/:id': {
+    //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+    //     import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
+    //   ),
+    // },
     '/fire-control/user-transmission-device': {
       name: '用户传输装置',
       component: dynamicWrapper(app, ['transmission'], () =>
