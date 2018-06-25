@@ -47,7 +47,11 @@ export default {
       // console.log('fetchDetail');
       const response = yield call(queryTransmissionDeviceDetail, payload);
       // console.log('response', response);
-      yield put({ type: 'queryDetail', payload: response.data.list });
+      const list = response.data.list.map(item => ({
+        ...item.transmissionDevice,
+        hostList: item.fireDevices,
+      }));
+      yield put({ type: 'queryDetail', payload: list });
       // console.log('fetchDetail end');
     },
     *fetchCompanyDetail({ payload }, { call, put }) {

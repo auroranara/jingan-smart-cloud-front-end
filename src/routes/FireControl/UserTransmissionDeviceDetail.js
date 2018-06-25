@@ -109,8 +109,8 @@ export default class UserTransmissionDeviceDetail extends Component {
   // importPointPositionClick = () => {};
   exportPointPositionClick = () => {};
 
-  handleDeviceModalVisible = flag => {
-    this.setState({ deviceModalVisible: !!flag });
+  hideDeviceModal = () => {
+    this.setState({ deviceModalVisible: false, deviceRecord: null });
   };
 
   /* 带click的方法，表示传入card中用来button点击时触发，正在处理数据的方法中不带click
@@ -119,7 +119,7 @@ export default class UserTransmissionDeviceDetail extends Component {
    * 而deleteClick时却可以通过confirm执行delete操作，所以数据不用同步，传个参就可以
    */
   handleDeviceAddClick = () => {
-    this.setState({ deviceModalVisible: true, operation: 'add', deviceRecord: null });
+    this.setState({ deviceModalVisible: true, operation: 'add' });
   };
 
   handleDeviceAdd = fieldsValue => {
@@ -178,8 +178,8 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleHostModalVisible = flag => {
-    this.setState({ hostModalVisible: !!flag });
+  hideHostModal = () => {
+    this.setState({ hostModalVisible: false });
   };
 
   handleHostAddClick = transmissionId => {
@@ -284,7 +284,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             // 兼容实际地址 practical pratical
             companyDetail[k] === undefined ? null : (
               <Description key={k} term={DESCRIP_MAP[k]}>
-                {companyDetail[k]}
+                {companyDetail[k] === null ? null : companyDetail[k].toString()}
               </Description>
             )
         )}
@@ -311,12 +311,12 @@ export default class UserTransmissionDeviceDetail extends Component {
     ));
 
     const deviceParentMethods = {
-      handleModalVisible: this.handleDeviceModalVisible,
+      hideModal: this.hideDeviceModal,
       handleAdd: this.handleDeviceAdd,
       handleUpdate: this.handleDeviceUpdate,
     };
     const hostParentMethods = {
-      handleModalVisible: this.handleHostModalVisible,
+      hideModal: this.hideHostModal,
       handleAdd: this.handleHostAdd,
       handleUpdate: this.handleHostUpdate,
     };
