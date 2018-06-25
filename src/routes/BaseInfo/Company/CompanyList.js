@@ -1,19 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  List,
-  Card,
-  Button,
-  Icon,
-  Input,
-  Select,
-  Modal,
-  message,
-  BackTop,
-  Spin,
-  Affix,
-} from 'antd';
+import { Form, List, Card, Button, Icon, Input, Select, Modal, message, Spin, Affix } from 'antd';
 import { Link } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -74,19 +61,20 @@ const defaultFormData = {
 )
 @Form.create()
 export default class CompanyList extends PureComponent {
-  state = {
-    pageNum: 1,
-  };
-
   componentDidMount() {
     // 获取企业列表
     this.props.fetch({
       payload: {
         pageSize,
+        pageNum: 1,
       },
     });
     // 获取类别列表
-    this.props.fetchCategories({});
+    this.props.fetchCategories({
+      payload: {
+        type: 'industryCategories',
+      },
+    });
   }
 
   /* 显示删除确认提示框 */
@@ -128,6 +116,7 @@ export default class CompanyList extends PureComponent {
     fetch({
       payload: {
         pageSize,
+        pageNum: 1,
         ...data,
       },
     });
@@ -150,6 +139,7 @@ export default class CompanyList extends PureComponent {
     fetch({
       payload: {
         pageSize,
+        pageNum: 1,
       },
     });
   };
@@ -161,14 +151,13 @@ export default class CompanyList extends PureComponent {
     }
     const {
       appendFetch,
-      company: { formData },
+      company: { pageNum, formData },
     } = this.props;
-    const { pageNum } = this.state;
     // 请求数据
     appendFetch({
       payload: {
         pageSize,
-        pageNum,
+        pageNum: pageNum + 1,
         ...formData,
       },
     });
@@ -177,12 +166,12 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      company: { categories },
+      company: { industryCategories },
       form: { getFieldDecorator },
     } = this.props;
 
     return (
-      <Affix offsetTop={10}>
+      <Affix offsetTop={10} target={() => document.getElementById('root')}>
         <Card>
           <Form layout="inline">
             <FormItem>
@@ -202,9 +191,9 @@ export default class CompanyList extends PureComponent {
                 initialValue: defaultFormData.industryCategory,
               })(
                 <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
-                  {categories.map(item => (
+                  {industryCategories.map(item => (
                     <Option value={item.id} key={item.id}>
-                      {item.name}
+                      {item.label}
                     </Option>
                   ))}
                 </Select>
@@ -264,16 +253,16 @@ export default class CompanyList extends PureComponent {
                 }
               >
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`地址：${item.practicalAddress}`}
+                  {`地址：${item.practicalAddress || ''}`}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`行业类别：${item.industryCategoryName}`}
+                  {`行业类别：${item.industryCategory || ''}`}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`负责人：${item.name}`}
+                  {`负责人：${item.name || ''}`}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`联系电话：${item.name}`}
+                  {`联系电话：${item.name || ''}`}
                 </Ellipsis>
               </Card>
             </List.Item>
@@ -291,7 +280,6 @@ export default class CompanyList extends PureComponent {
 
     return (
       <PageHeaderLayout title="企业单位">
-        <BackTop />
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}

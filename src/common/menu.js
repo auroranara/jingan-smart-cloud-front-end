@@ -29,7 +29,7 @@ const menuData = [
     children: [
       {
         name: '企业单位',
-        path: 'company/list',
+        path: 'company-list',
       },
     ],
   },

@@ -88,27 +88,30 @@ export const getRouterData = app => {
       // name: '工作台',
       // authority: 'admin',
     },
-    '/base-info/company/list': {
+    /* 企业列表 */
+    '/base-info/company-list': {
       component: dynamicWrapper(app, ['company'], () =>
         import('../routes/BaseInfo/Company/CompanyList')
       ),
     },
+    /* 企业详情 */
     '/base-info/company/detail/:id': {
-      component: dynamicWrapper(app, ['companydetail'], () =>
+      component: dynamicWrapper(app, ['company'], () =>
         import('../routes/BaseInfo/Company/CompanyDetail')
       ),
     },
+    /* 企业添加 */
     '/base-info/company/add': {
-      component: dynamicWrapper(app, ['companydetail'], () =>
-        import('../routes/BaseInfo/Company/CompanyDetail')
+      component: dynamicWrapper(app, ['company'], () =>
+        import('../routes/BaseInfo/Company/CompanyAdd')
       ),
     },
+    /* 企业修改 */
     '/base-info/company/edit/:id': {
-      component: dynamicWrapper(app, ['companydetail'], () =>
-        import('../routes/BaseInfo/Company/CompanyDetail')
+      component: dynamicWrapper(app, ['company'], () =>
+        import('../routes/BaseInfo/Company/CompanyEdit')
       ),
     },
-
     // 维保公司
     '/fire-control/maintenance-company': {
       component: dynamicWrapper(app, ['form'], () =>
@@ -236,6 +239,11 @@ export const getRouterData = app => {
     '/account/settings/notification': {
       component: dynamicWrapper(app, ['geographic'], () =>
         import('../routes/Account/Settings/NotificationView')
+      ),
+    },
+    '/test': {
+      component: dynamicWrapper(app, ['geographic'], () =>
+        import('../routes/BaseInfo/Company/Test')
       ),
     },
     // '/user/:id': {
