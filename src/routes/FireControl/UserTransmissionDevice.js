@@ -32,13 +32,13 @@ export default class UserTransmissionDevice extends PureComponent {
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
       },
     });
   }
 
-  currentPageIndex = 2;
+  currentpageNum = 2;
 
   handleScroll = e => {
     const rootDOM = e.target;
@@ -58,11 +58,11 @@ export default class UserTransmissionDevice extends PureComponent {
   handleCheck = () => {
     const { company, address } = this.state;
     this.setState({ hasMore: true });
-    this.currentPageIndex = 2;
+    this.currentpageNum = 2;
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
         company,
         address,
@@ -72,11 +72,11 @@ export default class UserTransmissionDevice extends PureComponent {
 
   handleReset = () => {
     this.setState({ company: '', address: '', hasMore: true });
-    this.currentPageIndex = 2;
+    this.currentpageNum = 2;
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
       },
     });
@@ -98,14 +98,14 @@ export default class UserTransmissionDevice extends PureComponent {
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: this.currentPageIndex,
+        pageNum: this.currentpageNum,
         pageSize: PAGE_SIZE,
         company,
         address,
       },
       callback(total) {
-        const currentLength = that.currentPageIndex * PAGE_SIZE;
-        that.currentPageIndex += 1;
+        const currentLength = that.currentpageNum * PAGE_SIZE;
+        that.currentpageNum += 1;
         that.setState({ scrollLoading: false });
         if (currentLength >= total) that.setState({ hasMore: false });
       },
@@ -160,7 +160,9 @@ export default class UserTransmissionDevice extends PureComponent {
                 <Link to={`/fire-control/user-transmission-device-detail/${item.id}`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
-                      地址：{item.praticalAddress}
+                      地址：{item.practicalAddress !== undefined
+                        ? item.practicalAddress
+                        : item.praticalAddress}
                     </Ellipsis>
                     <p>安全负责人：{item.leader}</p>
                     <p>联系电话：{item.phone}</p>
