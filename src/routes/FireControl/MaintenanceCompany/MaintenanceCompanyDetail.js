@@ -1,15 +1,35 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card } from 'antd';
-import DescriptionList from 'components/DescriptionList';
+import { Form, Input, Card, Button, Switch } from 'antd';
+// import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
-const { Description } = DescriptionList;
+// const { Description } = DescriptionList;
+
+const FormItem = Form.Item;
+
+const breadcrumbList = [
+  {
+    title: '首页',
+    href: '/',
+  },
+  {
+    title: '消防维保',
+  },
+  {
+    title: '维保公司',
+    href: '/fire-control/maintenance-company/list',
+  },
+  {
+    title: '维保单位详情',
+  },
+];
 
 @connect(({ maintenanceCompany, loading }) => ({
   maintenanceCompany,
   loading: loading.effects['maintenanceCompany/fetchDetail'],
 }))
+@Form.create()
 export default class MaintenanceCmpanyDetail extends PureComponent {
   componentDidMount() {
     const {
@@ -21,34 +41,32 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
 
     dispatch({
       type: 'maintenanceCompany/fetchDetail',
-      payload: id,
+      payload: {
+        id,
+      },
     });
   }
 
   render() {
-    const breadcrumbList = [
-      {
-        title: '首页',
-        href: '/',
-      },
-      {
-        title: '消防维保',
-      },
-      {
-        title: '维保公司',
-        href: '/fire-control/maintenance-company/list',
-      },
-      {
-        title: '维保单位详情',
-      },
-    ];
+    const { getFieldDecorator } = this.props.form;
 
-    /* 表单标签 */
-    const fieldLabels = {
-      companyName: '维保单位',
-      usingStatus: '企业状态',
-      isBranch: '是否为分公司',
-      parnetUnitName: '所属总公司',
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+        md: { span: 10 },
+      },
+    };
+
+    const submitFormLayout = {
+      wrapperCol: {
+        xs: { span: 24, offset: 0 },
+        sm: { span: 10, offset: 7 },
+      },
     };
 
     const {
@@ -58,12 +76,65 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
     return (
       <PageHeaderLayout title="维保单位详情" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
-          <DescriptionList style={{ marginBottom: 32 }}>
-            <Description term={fieldLabels.companyName}>{data.companyName}</Description>
-            <Description term={fieldLabels.usingStatus}>{String(data.usingStatus)}</Description>
-            <Description term={fieldLabels.isBranch}>{data.isBranch}</Description>
-            <Description term={fieldLabels.parnetUnitName}>{data.parnetUnitName}</Description>
-          </DescriptionList>
+          <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
+            <FormItem {...formItemLayout} label="企业名称">
+              {getFieldDecorator('companyName', {
+                initialValue: data.companyName,
+                rules: [
+                  {
+                    required: true,
+                  },
+                ],
+              })(<Input style={{ border: 0 }} />)}
+            </FormItem>
+
+            <FormItem {...formItemLayout} label="企业状态">
+              {getFieldDecorator('usingStatus', {
+                initialValue: data.usingStatus === 1 ? '启用' : '禁用',
+                rules: [
+                  {
+                    required: true,
+                  },
+                ],
+              })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
+            </FormItem>
+
+            <FormItem {...formItemLayout} label="是否为分公司">
+              {getFieldDecorator('isBranch', {
+                initialValue: data.isBranch === 1 ? '是' : '否',
+                rules: [
+                  {
+                    required: true,
+                    message: '是否为分公司',
+                  },
+                ],
+              })(
+                <Switch
+                  checkedChildren="是"
+                  unCheckedChildren="否"
+                  onChange={this.switchOnchange}
+                />
+              )}
+            </FormItem>
+
+            <FormItem {...formItemLayout} label="所属总公司">
+              {getFieldDecorator('parnetUnitName	', {
+                initialValue: data.parnetUnitName,
+                rules: [
+                  {
+                    required: true,
+                    message: '所属总公司',
+                  },
+                ],
+              })(<Input style={{ border: 0 }} />)}
+            </FormItem>
+
+            <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
+              <Button type="primary" href="">
+                编辑
+              </Button>
+            </FormItem>
+          </Form>
         </Card>
       </PageHeaderLayout>
     );

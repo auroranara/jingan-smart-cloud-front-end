@@ -174,3 +174,11 @@ export async function deleteMaintenanceCompany(id) {
 export async function queryMaintenanceCompanyinfo(id) {
   return request(`acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`);
 }
+
+/* 修改维保单位信息 */
+export async function updateMaintenanceCompany(params) {
+  return request(`acloud_new/v2/fireControl/maintenanceUnit.json`, {
+    method: 'PUT',
+    body: params,
+  });
+}
