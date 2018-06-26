@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Switch } from 'antd';
+import { Form, Input, Card, Button, Switch } from 'antd';
+// import DescriptionList from 'components/DescriptionList';
+import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+// const { Description } = DescriptionList;
 
 const FormItem = Form.Item;
 
-// 面包屑
 const breadcrumbList = [
   {
     title: '首页',
@@ -20,15 +21,16 @@ const breadcrumbList = [
     href: '/fire-control/maintenance-company/list',
   },
   {
-    title: '修改维保公司信息',
+    title: '修改维保单位',
   },
 ];
 
 @connect(({ maintenanceCompany, loading }) => ({
   maintenanceCompany,
-  loading: loading.models.maintenanceCompany,
+  loading: loading.effects['maintenanceCompany/editcompany'],
 }))
-export default class maintenanceCompanyEdit extends PureComponent {
+@Form.create()
+export default class MaintenanceCmpanyEdit extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
@@ -38,20 +40,17 @@ export default class maintenanceCompanyEdit extends PureComponent {
     } = this.props;
     // console.log(id);
     dispatch({
-      type: 'maintenanceCompany/fetchMaintenanceCompany',
-      payload: id,
+      type: 'maintenanceCompany/editcompany',
+      payload: {
+        id,
+      },
     });
   }
 
   /* 渲染基础信息 */
   render() {
     const { submitting } = this.props;
-    const { current } = this.state;
-
-    const {
-      getFieldDecorator,
-      // getFieldValue
-    } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
 
     const formItemLayout = {
       labelCol: {
@@ -72,12 +71,17 @@ export default class maintenanceCompanyEdit extends PureComponent {
       },
     };
 
+    const {
+      maintenanceCompany: { detail: data },
+    } = this.props;
+
     return (
       <PageHeaderLayout title="新增维保单位" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">
-              {getFieldDecorator('name', {
+              {getFieldDecorator('companyId', {
+                initialValue: data.companyId,
                 rules: [
                   {
                     required: true,
@@ -87,15 +91,27 @@ export default class maintenanceCompanyEdit extends PureComponent {
               })(<Input placeholder="请选择企业" />)}
             </FormItem>
 
-            <FormItem {...formItemLayout} label="是否启用">
-              {getFieldDecorator('status', {
-                initialValue: '启用',
-              })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
+            <FormItem {...formItemLayout} label="企业状态">
+              {getFieldDecorator('usingStatus', {
+                initialValue: data.usingStatus === 1 ? '启用' : '禁用',
+                rules: [
+                  {
+                    required: true,
+                    message: '企业状态',
+                  },
+                ],
+              })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
             </FormItem>
 
             <FormItem {...formItemLayout} label="是否为分公司">
-              {getFieldDecorator('subcompany', {
-                initialValue: current.subcompany,
+              {getFieldDecorator('isBranch', {
+                initialValue: data.isBranch === 1 ? '是' : '否',
+                rules: [
+                  {
+                    required: true,
+                    message: '是否为分公司',
+                  },
+                ],
               })(
                 <Switch
                   checkedChildren="是"
@@ -104,20 +120,23 @@ export default class maintenanceCompanyEdit extends PureComponent {
                 />
               )}
             </FormItem>
-            {current.subcompany && (
-              <FormItem {...formItemLayout} label="总公司名称">
-                {getFieldDecorator('companyname', {
-                  rules: [{ message: '请选择一家维保公司为总公司' }],
-                  initialValue: current.companyname,
-                })(<Input placeholder="请选择总公司" />)}
-              </FormItem>
-            )}
+
+            <FormItem {...formItemLayout} label="所属总公司">
+              {getFieldDecorator('parentId	', {
+                initialValue: data.parentId,
+                rules: [
+                  {
+                    required: true,
+                    message: '所属总公司',
+                  },
+                ],
+              })(<Input placeholder="所属总公司" />)}
+            </FormItem>
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button type="primary" htmlType="submit" loading={submitting}>
                 提交
               </Button>
-              <Button style={{ marginLeft: 8 }}>保存</Button>
             </FormItem>
           </Form>
         </Card>

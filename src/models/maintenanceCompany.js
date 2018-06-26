@@ -2,7 +2,8 @@ import {
   queryMaintenanceCompanies,
   delateMaintenanceCompany,
   queryMaintenanceCompany,
-  queryMaintenanceCompanyDetail,
+  queryMaintenanceCompanyinfo,
+  updateMaintenanceCompany,
 } from '../services/api.js';
 
 export default {
@@ -64,6 +65,15 @@ export default {
         });
       }
     },
+    *editcompany({ payload }, { call, put }) {
+      const response = yield call(updateMaintenanceCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updateMaintenanceCompany',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -119,6 +129,15 @@ export default {
       return {
         ...state,
         formData: payload,
+      };
+    },
+    updateMaintenanceCompany(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
   },
