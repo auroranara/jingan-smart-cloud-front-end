@@ -3,9 +3,10 @@ import { Button, Card, Table } from 'antd';
 import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
+import './DeviceDetailCard.less';
+
 const { Description } = DescriptionList;
 
-// const INDEX_CHINESE = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
 const hostTableAStyle = { marginRight: 10 };
 const deviceButtonStyle = { marginRight: 8 };
 const hostColumnsActionPStyle = { marginBottom: 0 };
@@ -41,7 +42,10 @@ export default class DeviceDetailCard extends Component {
         >
           删除
         </Button>
-        <Button type="primary" onClick={() => handleHostAddClick(deviceData.id)}>
+        <Button
+          type="primary"
+          onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
+        >
           新增消防主机
         </Button>
       </Fragment>
