@@ -55,14 +55,14 @@ export default class DeviceDetailCard extends Component {
   renderDeviceInfo() {
     const deviceInfo = this.props.deviceData;
     return (
-      <DescriptionList size="small">
+      <DescriptionList size="small" col={3}>
         <Description term="装置编号">{deviceInfo.deviceCode}</Description>
         <Description term="品牌">{deviceInfo.brand}</Description>
         <Description term="型号">{deviceInfo.model}</Description>
         <Description term="安装位置">{deviceInfo.installLocation}</Description>
         <Description term="生产日期">{deviceInfo.productionDate}</Description>
         <Description term="接入主机数量">
-          {deviceInfo.hostList ? deviceInfo.hostList.length.toString() : 0}
+          {deviceInfo.hostList ? deviceInfo.hostList.length.toString() : '0'}
         </Description>
       </DescriptionList>
     );
