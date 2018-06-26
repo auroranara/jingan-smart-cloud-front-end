@@ -151,7 +151,7 @@ export default {
         payload: { transmissionId, host },
       } = action;
       // console.log(action.payload);
-      console.log(state.deviceList);
+      // console.log(state.deviceList);
       const nextDeviceList = state.deviceList.map(d => {
         if (d.id !== transmissionId) return d;
         return { ...d, hostList: [host, ...d.hostList] };
