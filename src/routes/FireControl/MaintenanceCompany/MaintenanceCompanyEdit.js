@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Input, Button, Card, Switch } from 'antd';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
-// import styles from './MaintenanceCompanyAdd.less';
+import { Form, Card, Button, Input, Switch } from 'antd';
+
+import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 
 const FormItem = Form.Item;
 
+// 面包屑
 const breadcrumbList = [
   {
     title: '首页',
@@ -19,46 +20,34 @@ const breadcrumbList = [
     href: '/fire-control/maintenance-company/list',
   },
   {
-    title: '新增维保单位',
+    title: '修改维保公司信息',
   },
 ];
 
-@connect(({ loading }) => ({
-  submitting: loading.effects['form/submitRegularForm'],
+@connect(({ maintenanceCompany, loading }) => ({
+  maintenanceCompany,
+  loading: loading.models.maintenanceCompany,
 }))
-@Form.create()
-export default class BasicForms extends PureComponent {
-  state = {
-    current: {
-      title: '',
-      subcompany: false,
-    },
-  };
-
-  switchOnchange = checked => {
-    this.setState({
-      current: {
-        subcompany: checked,
+export default class maintenanceCompanyEdit extends PureComponent {
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
       },
+    } = this.props;
+    // console.log(id);
+    dispatch({
+      type: 'maintenanceCompany/fetchMaintenanceCompany',
+      payload: id,
     });
-  };
+  }
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        this.props.dispatch({
-          type: 'form/submitRegularForm',
-          payload: values,
-        });
-      }
-    });
-  };
-
+  /* 渲染基础信息 */
   render() {
     const { submitting } = this.props;
     const { current } = this.state;
-    //
+
     const {
       getFieldDecorator,
       // getFieldValue
