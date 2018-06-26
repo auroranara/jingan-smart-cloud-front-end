@@ -3,6 +3,7 @@ import { Form, Card, Table, Upload, Button, Icon, Popover } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
+import Result from '../../components/Result';
 
 @connect(({ transmission, loading }) => ({
   transmission,
@@ -10,6 +11,12 @@ import styles from './ImportPointPosition.less';
 }))
 @Form.create()
 export default class ImportPointPosition extends PureComponent {
+  state = {
+    showError: false,
+  };
+  handleShow = () => {
+    this.setState({ showError: !this.state.showError })
+  };
   render() {
     const {
       match: {
@@ -44,6 +51,16 @@ export default class ImportPointPosition extends PureComponent {
         </div>
       )
     }
+    /*  const table = () => {
+       if (this.state.showError) {
+         return (
+           <div>
+             <span className={styles.tableTitle}>错误信息提示框：</span>
+             <Table rowKey="row" pagination={false} dataSource={dataSource} columns={columns} scroll={{ x: 1500 }} />
+           </div>
+         )
+       }
+     } */
     const dataSource = [
       {
         unitType: '【42】点型光电感烟火灾探测器',
@@ -192,7 +209,7 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `//acloud_new/v2/pointData/pointData/${hostId}.json`,
+      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
       headers: {
         authorization: 'authorization-text',
       },
@@ -214,7 +231,7 @@ export default class ImportPointPosition extends PureComponent {
         logo={<Icon type="apple" />}
         content={description(hostId)}
       >
-        <Card className={styles.cardContainer}>
+        <Card title="导入点位数据" className={styles.cardContainer}>
           <Form>
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
               <Upload {...props}>
@@ -222,10 +239,25 @@ export default class ImportPointPosition extends PureComponent {
                   <Icon type="upload" /> 选择文件
                 </Button>
               </Upload>
+              <Button onClick={this.handleShow.bind(this)}>test</Button>
             </FormItem>
           </Form>
-          <span className={styles.tableTitle}>错误信息提示框：</span>
-          <Table rowKey="row" pagination={false} dataSource={dataSource} columns={columns} scroll={{ x: 1500 }} />
+        </Card>
+        <Card className={styles.cardContainer}>
+          <Result
+            style={{ display: this.state.showError ? 'none' : 'block', width: '100%' }}
+            type="success"
+            title="提交成功"
+          />
+          <Result
+            style={{ display: this.state.showError ? 'block' : 'none', width: '100%' }}
+            type="error"
+            title="提交失败"
+          />
+          <div style={{ display: this.state.showError ? 'block' : 'none' }}>
+            <span className={styles.tableTitle}>错误信息提示框：</span>
+            <Table rowKey="row" pagination={false} dataSource={dataSource} columns={columns} scroll={{ x: 1500 }} />
+          </div>
         </Card>
       </PageHeaderLayout>
     );
