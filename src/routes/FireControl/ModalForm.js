@@ -1,5 +1,6 @@
 import React from 'react';
 import { Checkbox, Form, Input, Modal } from 'antd';
+// import { POINT_CONVERSION_COMPRESSED } from 'constants';
 
 // 封装的modal下带form的组件，需要传入的值查看props中传入的值
 
@@ -17,7 +18,7 @@ function ModalForm(props) {
     items, // 传入的formItem配置数组
     operation = 'add', // 当前操作类型，这关系到modal上title的显示，是新增还是编辑
     title = '', // 当前modal的title显示的一部分
-    colSpan = [5, 15], // formItem的col配置
+    colSpan = [6, 15], // formItem的col配置
     initialValues = {}, // 每个formItem的初始值，也可以在items中传入，当需要改变form中的值时，在这里传入对应的对象
   } = props;
   // 解构中传入null时，initialValus认为传值了，所以并不会是{}
@@ -25,6 +26,7 @@ function ModalForm(props) {
   const initVals = initialValues || {};
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
+      // console.log('err in ModalForm', err, fieldsValue);
       if (err) return;
       form.resetFields();
       if (operation === 'update') handleUpdate(fieldsValue);
@@ -35,7 +37,9 @@ function ModalForm(props) {
 
   const formItems = items.map(item => {
     // 每个formItem都是个对象，需要设置label(标签),name(字段名),options(初始配置),type(formItem中的组件类型，当前只有Input和Checkbox，默认Input)
-    const { type = 'input', placeholder = '', label, name, options } = item;
+    // disabled默认是false，即可修改的，手动设为true(或其他真值)，则为只读
+    const { type = 'input', disabled, placeholder = '', label, name, options } = item;
+    // console.log('disabled in ModalForm-columns-item', disabled);
     const initialValue = initVals[name];
     let newOptions = options;
     if (initialValue !== undefined && initialValue !== null)
@@ -48,8 +52,10 @@ function ModalForm(props) {
         wrapperCol={{ span: colSpan[1] }}
       >
         {type === 'checkbox'
-          ? form.getFieldDecorator(name, newOptions)(<Checkbox />)
-          : form.getFieldDecorator(name, newOptions)(<Input placeholder={placeholder} />)}
+          ? form.getFieldDecorator(name, newOptions)(<Checkbox disabled={!!disabled} />)
+          : form.getFieldDecorator(name, newOptions)(
+            <Input disabled={!!disabled} placeholder={placeholder} />
+            )}
       </FormItem>
     );
   });

@@ -22,14 +22,17 @@ export async function queryCompanyDetail(companyId) {
 
 // 添加用户传输装置
 export async function transmissionDeviceAdd({ companyId, data }) {
-  return request(`${URL_PREFIX}/company/${companyId}/transmission`, { method: 'POST', body: data });
+  return request(`${URL_PREFIX}/company/${companyId}/transmission`, {
+    method: 'POST',
+    body: { ...data, companyId },
+  });
 }
 
 // 编辑用户传输装置
 export async function transmissionDeviceUpdate({ companyId, transmissionId, data }) {
   return request(`${URL_PREFIX}/company/${companyId}/transmission/${transmissionId}`, {
     method: 'PUT',
-    body: data,
+    body: { ...data, companyId, id: transmissionId },
   });
 }
 
@@ -44,7 +47,7 @@ export async function transmissionDeviceDelete({ companyId, transmissionId }) {
 export async function transmissionHostAdd({ companyId, transmissionId, data }) {
   return request(`${URL_PREFIX}/company/${companyId}/transmission/${transmissionId}/host`, {
     method: 'POST',
-    body: data,
+    body: { ...data, companyId, transmissionId },
   });
 }
 
@@ -52,7 +55,7 @@ export async function transmissionHostAdd({ companyId, transmissionId, data }) {
 export async function transmissionHostUpdate({ companyId, transmissionId, hostId, data }) {
   return request(
     `${URL_PREFIX}/company/${companyId}/transmission/${transmissionId}/host/${hostId}`,
-    { method: 'PUT', body: data }
+    { method: 'PUT', body: { ...data, companyId, deviceId: transmissionId, id: hostId } }
   );
 }
 

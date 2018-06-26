@@ -166,8 +166,8 @@ export default class UserTransmissionDevice extends PureComponent {
                     </Ellipsis>
                     <p>安全负责人：张三</p>
                     <p>联系电话：132 8888 8888</p>
-                    <p>消防主机数量：{item.transimissionCount}</p>
-                    <span className={styles.quantity}>{item.transmissionCount}</span>
+                    <p>消防主机数量：{item.fireCount}</p>
+                    <span className={styles.quantity}>{item.fireCount}</span>
                   </Card>
                 </Link>
               </List.Item>
