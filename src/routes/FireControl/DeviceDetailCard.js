@@ -1,15 +1,17 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Card, Table } from 'antd';
+import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
 import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
 import './DeviceDetailCard.less';
 
 const { Description } = DescriptionList;
+const ButtonGroup = Button.Group;
+const MenuItem = Menu.Item;
 
 const hostTableAStyle = { marginRight: 10 };
-const deviceButtonStyle = { marginRight: 8 };
-const hostColumnsActionPStyle = { marginBottom: 0 };
+// const deviceButtonStyle = { marginRight: 8 };
+// const hostColumnsActionPStyle = { marginBottom: 0 };
 
 function setColumnAlign(columns, align = 'center') {
   return columns.map(column => ({ ...column, align }));
@@ -23,32 +25,38 @@ export default class DeviceDetailCard extends Component {
       deviceData,
       handleDeviceUpdateClick,
       handleDeviceDeleteClick,
-      handleHostAddClick,
     } = this.props;
 
     return (
-      <Fragment>
+      <ButtonGroup>
         <Button
-          type="primary"
-          style={deviceButtonStyle}
+          // type="primary"
+          // style={deviceButtonStyle}
           onClick={() => handleDeviceUpdateClick(deviceData)}
         >
           编辑
         </Button>
         <Button
-          type="primary"
-          style={deviceButtonStyle}
+          // type="primary"
+          // style={deviceButtonStyle}
           onClick={() => handleDeviceDeleteClick(deviceData.id)}
         >
           删除
         </Button>
-        <Button
-          type="primary"
-          onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
-        >
-          新增消防主机
-        </Button>
-      </Fragment>
+      </ButtonGroup>
+    );
+  }
+
+  renderHostExtra() {
+    const { deviceData, handleHostAddClick } = this.props;
+
+    return (
+      <Button
+        type="primary"
+        onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
+      >
+        新增主机
+      </Button>
     );
   }
 
@@ -112,10 +120,17 @@ export default class DeviceDetailCard extends Component {
       {
         title: '操作',
         key: 'action',
-        width: 98,
-        render: (text, record, index) => (
-          <Fragment>
-            <p style={hostColumnsActionPStyle}>
+        // width: 98,
+        render(text, record, index) {
+          const menu = (
+            <Menu>
+              <MenuItem><a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a></MenuItem>
+              <MenuItem><Link to={`/fire-control/import-point-position/${record.id}`}>导入点位</Link></MenuItem>
+            </Menu>
+          );
+
+          return (
+            <Fragment>
               <a
                 style={hostTableAStyle}
                 onClick={() =>
@@ -128,13 +143,12 @@ export default class DeviceDetailCard extends Component {
               >
                 编辑
               </a>
-              <a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a>
-            </p>
-            <p style={hostColumnsActionPStyle}>
-              <Link to={`/fire-control/import-point-position/${record.id}`}>导入点位</Link>
-            </p>
-          </Fragment>
-        ),
+              <Dropdown overlay={menu}>
+                <a>更多<Icon type="down" /></a>
+              </Dropdown>
+            </Fragment>
+          );
+        },
       },
     ];
 
@@ -164,7 +178,12 @@ export default class DeviceDetailCard extends Component {
         >
           {this.renderDeviceInfo()}
         </Card>
-        <Card type="inner" title="关联消防主机" bordered={false}>
+        <Card
+          type="inner"
+          title="关联消防主机"
+          bordered={false}
+          extra={this.renderHostExtra()}
+        >
           {this.renderHostTable()}
         </Card>
       </Card>
