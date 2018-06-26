@@ -37,11 +37,13 @@ export default class ImportPointPosition extends PureComponent {
         );
       } else return <span>{val}</span>;
     };
-    const description = (
-      <div>
-        <span>主机编号：</span>
-      </div>
-    );
+    const description = (id) => {
+      return (
+        <div>
+          <span>主机编号：{id}</span>
+        </div>
+      )
+    }
     const dataSource = [
       {
         unitType: '【42】点型光电感烟火灾探测器',
@@ -93,11 +95,16 @@ export default class ImportPointPosition extends PureComponent {
         title: '行序号',
         dataIndex: 'row',
         key: 'row',
+        align: 'center',
+        fixed: 'left',
+        width: 80,
       },
       {
         title: '消防设施系统类型',
         dataIndex: 'systemType',
         key: 'systemType',
+        align: 'center',
+        width: 300,
         render(val, rows) {
           return tableCell(val, rows, 'systemType');
         },
@@ -106,6 +113,8 @@ export default class ImportPointPosition extends PureComponent {
         title: '消防设施部件类型',
         dataIndex: 'unitType',
         key: 'unitType',
+        align: 'center',
+        width: 300,
         render(val, rows) {
           return tableCell(val, rows, 'unitType');
         },
@@ -114,6 +123,8 @@ export default class ImportPointPosition extends PureComponent {
         title: '回路号',
         dataIndex: 'loopNumber',
         key: 'loopNumber',
+        align: 'center',
+        width: 100,
         render(val, rows) {
           return tableCell(val, rows, 'loopNumber');
         },
@@ -122,6 +133,8 @@ export default class ImportPointPosition extends PureComponent {
         title: '部位号',
         dataIndex: 'partNumber',
         key: 'partNumber',
+        align: 'center',
+        width: 100,
         render(val, rows) {
           return tableCell(val, rows, 'partNumber');
         },
@@ -130,6 +143,8 @@ export default class ImportPointPosition extends PureComponent {
         title: '部件型号',
         dataIndex: 'componentModel',
         key: 'componentModel',
+        align: 'center',
+        width: 120,
         render(val, rows) {
           return tableCell(val, rows, 'componentModel');
         },
@@ -138,6 +153,8 @@ export default class ImportPointPosition extends PureComponent {
         title: '生产企业名称',
         dataIndex: 'createCompanyName',
         key: 'createCompanyName',
+        align: 'center',
+        width: 250,
         render(val, rows) {
           return tableCell(val, rows, 'createCompanyName');
         },
@@ -146,6 +163,8 @@ export default class ImportPointPosition extends PureComponent {
         title: '安装楼层',
         dataIndex: 'installFloor',
         key: 'installFloor',
+        align: 'center',
+        width: 100,
         render(val, rows) {
           return tableCell(val, rows, 'installFloor');
         },
@@ -154,6 +173,8 @@ export default class ImportPointPosition extends PureComponent {
         title: '安装位置',
         dataIndex: 'installAddress',
         key: 'installAddress',
+        align: 'center',
+        width: 180,
         render(val, rows) {
           return tableCell(val, rows, 'installAddress');
         },
@@ -161,7 +182,9 @@ export default class ImportPointPosition extends PureComponent {
       {
         title: '备注（非必填）',
         dataIndex: 'remark',
+        align: 'center',
         key: 'remark',
+        width: 150,
         render(val, rows) {
           return tableCell(val, rows, 'remark');
         },
@@ -189,14 +212,11 @@ export default class ImportPointPosition extends PureComponent {
       <PageHeaderLayout
         title="常熟市鑫博伟纺织有限公司"
         logo={<Icon type="apple" />}
-        content={description}
+        content={description(hostId)}
       >
         <Card className={styles.cardContainer}>
           <Form>
-            <FormItem label="主机编号" labelCol={{ span: 3 }} wrapperCol={{ span: 18 }}>
-              <span>{hostId}</span>
-            </FormItem>
-            <FormItem label="上传附件" labelCol={{ span: 3 }} wrapperCol={{ span: 18 }}>
+            <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
               <Upload {...props}>
                 <Button>
                   <Icon type="upload" /> 选择文件
@@ -205,7 +225,7 @@ export default class ImportPointPosition extends PureComponent {
             </FormItem>
           </Form>
           <span className={styles.tableTitle}>错误信息提示框：</span>
-          <Table pagination={false} bordered dataSource={dataSource} columns={columns} />
+          <Table rowKey="row" pagination={false} dataSource={dataSource} columns={columns} scroll={{ x: 1500 }} />
         </Card>
       </PageHeaderLayout>
     );
