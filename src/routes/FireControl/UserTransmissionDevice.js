@@ -121,7 +121,7 @@ export default class UserTransmissionDevice extends PureComponent {
 
     return (
       <PageHeaderLayout title="用户传输装置">
-        <div className={styles.check}>
+        <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>
               <Input
@@ -148,7 +148,7 @@ export default class UserTransmissionDevice extends PureComponent {
               <Button onClick={this.handleReset}>重置</Button>
             </Col>
           </Row>
-        </div>
+        </Card>
         <div className={styles.cardList}>
           <List
             rowKey="id"
@@ -164,10 +164,10 @@ export default class UserTransmissionDevice extends PureComponent {
                         ? item.practicalAddress
                         : item.praticalAddress}
                     </Ellipsis>
-                    <p>安全负责人：{item.leader}</p>
-                    <p>联系电话：{item.phone}</p>
-                    <p>消防主机数量：{item.hostQuantity}</p>
-                    <span className={styles.quantity}>{item.hostQuantity}</span>
+                    <p>安全负责人：张三</p>
+                    <p>联系电话：132 8888 8888</p>
+                    <p>消防主机数量：{item.transimissionCount}</p>
+                    <span className={styles.quantity}>{item.transmissionCount}</span>
                   </Card>
                 </Link>
               </List.Item>

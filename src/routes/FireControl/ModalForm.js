@@ -13,7 +13,7 @@ function ModalForm(props) {
     modalVisible = true,
     handleAdd, // 处理添加
     handleUpdate, // 处理编辑
-    handleModalVisible, // 改变modal的可见性
+    hideModal, // 改变modal的可见性
     items, // 传入的formItem配置数组
     operation = 'add', // 当前操作类型，这关系到modal上title的显示，是新增还是编辑
     title = '', // 当前modal的title显示的一部分
@@ -21,6 +21,7 @@ function ModalForm(props) {
     initialValues = {}, // 每个formItem的初始值，也可以在items中传入，当需要改变form中的值时，在这里传入对应的对象
   } = props;
   // 解构中传入null时，initialValus认为传值了，所以并不会是{}
+  // console.log('initialValues in ModalForm', initialValues);
   const initVals = initialValues || {};
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
@@ -28,7 +29,7 @@ function ModalForm(props) {
       form.resetFields();
       if (operation === 'update') handleUpdate(fieldsValue);
       else handleAdd(fieldsValue);
-      handleModalVisible();
+      hideModal();
     });
   };
 
@@ -60,7 +61,7 @@ function ModalForm(props) {
       title={`${OPERATION_CHINESE[operation]}${title}`}
       visible={modalVisible}
       onOk={okHandle}
-      onCancel={() => handleModalVisible()}
+      onCancel={() => hideModal()}
     >
       <Form>{formItems}</Form>
     </Modal>

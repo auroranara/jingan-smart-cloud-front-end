@@ -58,7 +58,7 @@ export default class DeviceDetailCard extends Component {
         <Description term="安装位置">{deviceInfo.installLocation}</Description>
         <Description term="生产日期">{deviceInfo.productionDate}</Description>
         <Description term="接入主机数量">
-          {deviceInfo.hostList ? deviceInfo.hostList.length : 0}
+          {deviceInfo.hostList ? deviceInfo.hostList.length.toString() : 0}
         </Description>
       </DescriptionList>
     );
