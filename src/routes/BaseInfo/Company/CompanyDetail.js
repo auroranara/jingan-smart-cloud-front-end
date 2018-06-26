@@ -93,10 +93,6 @@ export default class CompanyDetail extends PureComponent {
       payload: {
         id,
       },
-      success: data => {
-        console.log(data);
-        // 判断字典是否有值，有值的话根据id获取对应的值
-      },
     });
   }
 
@@ -112,17 +108,18 @@ export default class CompanyDetail extends PureComponent {
             practicalAddress,
             longitude,
             latitude,
-            province,
-            city,
-            district,
-            town,
+            provinceLabel,
+            cityLabel,
+            districtLabel,
+            townLabel,
             companyIchnography,
           },
         },
       },
     } = this.props;
 
-    const administrativeDivision = province + city + district + town;
+    const administrativeDivision =
+      (provinceLabel || '') + (cityLabel || '') + (districtLabel || '') + (townLabel || '');
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
@@ -159,11 +156,11 @@ export default class CompanyDetail extends PureComponent {
       company: {
         detail: {
           data: {
-            industryCategory,
-            economicType,
-            companyStatus,
-            scale,
-            licenseType,
+            industryCategoryLabel,
+            economicTypeLabel,
+            companyStatusLabel,
+            scaleLabel,
+            licenseTypeLabel,
             createDate,
             groupName,
             businessScope,
@@ -176,16 +173,18 @@ export default class CompanyDetail extends PureComponent {
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList>
           <Description term={fieldLabels.industryCategory}>
-            {industryCategory || getEmptyData()}
+            {industryCategoryLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.economicType}>
-            {economicType || getEmptyData()}
+            {economicTypeLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.companyStatus}>
-            {companyStatus || getEmptyData()}
+            {companyStatusLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.scale}>{scale || getEmptyData()}</Description>
-          <Description term={fieldLabels.licenseType}>{licenseType || getEmptyData()}</Description>
+          <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
+          <Description term={fieldLabels.licenseType}>
+            {licenseTypeLabel || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.createDate}>{createDate || getEmptyData()}</Description>
           <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
           <Description term={fieldLabels.businessScope}>
@@ -214,7 +213,7 @@ export default class CompanyDetail extends PureComponent {
     const {
       company: {
         detail: {
-          data: { maintenanceId, maintenanceContract },
+          data: { maintenanceUnitName, maintenanceContract },
         },
       },
     } = this.props;
@@ -223,7 +222,7 @@ export default class CompanyDetail extends PureComponent {
       <Card title="其他信息" className={styles.card} bordered={false}>
         <DescriptionList>
           <Description term={fieldLabels.maintenanceId}>
-            {maintenanceId || getEmptyData()}
+            {maintenanceUnitName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.maintenanceContract}>
             {(maintenanceContract && (

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, Select, Modal, message, Spin, Affix } from 'antd';
+import { Form, List, Card, Button, Icon, Input, Select, Modal, message, Spin } from 'antd';
 import { Link } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -47,9 +47,9 @@ const getEmptyData = () => {
       });
     },
     // 获取行业类别
-    fetchCategories(action) {
+    fetchDict(action) {
       dispatch({
-        type: 'company/fetchCategories',
+        type: 'company/fetchDict',
         ...action,
       });
     },
@@ -70,17 +70,19 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount() {
+    const { fetch, fetchDict } = this.props;
     // 获取企业列表
-    this.props.fetch({
+    fetch({
       payload: {
         pageSize,
         pageNum: 1,
       },
     });
     // 获取类别列表
-    this.props.fetchCategories({
+    fetchDict({
       payload: {
-        type: 'industryCategories',
+        type: 'industryTypeId',
+        key: 'industryCategories',
       },
     });
   }
@@ -173,50 +175,48 @@ export default class CompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <Affix offsetTop={0} target={() => document.getElementById('root')}>
-        <Card>
-          <Form layout="inline">
-            <FormItem>
-              {getFieldDecorator('name', {
-                initialValue: defaultFormData.name,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位名称" />)}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('practicalAddress', {
-                initialValue: defaultFormData.practicalAddress,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位地址" />)}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('industryCategory', {
-                initialValue: defaultFormData.industryCategory,
-              })(
-                <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
-                  {industryCategories.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.label}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem>
-              <Button type="primary" onClick={this.handleClickToQuery}>
-                查询
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button onClick={this.handleClickToReset}>重置</Button>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/base-info/company/add">
-                新增
-              </Button>
-            </FormItem>
-          </Form>
-        </Card>
-      </Affix>
+      <Card>
+        <Form layout="inline">
+          <FormItem>
+            {getFieldDecorator('name', {
+              initialValue: defaultFormData.name,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位名称" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('practicalAddress', {
+              initialValue: defaultFormData.practicalAddress,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位地址" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('industryCategory', {
+              initialValue: defaultFormData.industryCategory,
+            })(
+              <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
+                {industryCategories.map(item => (
+                  <Option value={item.id} key={item.id}>
+                    {item.label}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+          <FormItem>
+            <Button type="primary" onClick={this.handleClickToQuery}>
+              查询
+            </Button>
+          </FormItem>
+          <FormItem>
+            <Button onClick={this.handleClickToReset}>重置</Button>
+          </FormItem>
+          <FormItem style={{ float: 'right' }}>
+            <Button type="primary" href="#/base-info/company/add">
+              新增
+            </Button>
+          </FormItem>
+        </Form>
+      </Card>
     );
   }
 
@@ -258,13 +258,13 @@ export default class CompanyList extends PureComponent {
                   地址：{item.practicalAddress || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  行业类别：{item.industryCategory || getEmptyData()}
+                  行业类别：{item.industryCategoryLabel || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  负责人：{item.name || getEmptyData()}
+                  负责人：{item.principal || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  联系电话：{item.name || getEmptyData()}
+                  联系电话：{item.contact || getEmptyData()}
                 </Ellipsis>
               </Card>
             </List.Item>
@@ -276,7 +276,7 @@ export default class CompanyList extends PureComponent {
 
   render() {
     const {
-      company: { list, isLast },
+      company: { list },
       loading,
     } = this.props;
 
@@ -285,12 +285,11 @@ export default class CompanyList extends PureComponent {
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
-            </div>
-          )}
+        {loading && (
+          <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+            <Spin />
+          </div>
+        )}
       </PageHeaderLayout>
     );
   }

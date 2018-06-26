@@ -126,6 +126,20 @@ const defaultPagination = {
         ...action,
       });
     },
+    // 获取行政区域
+    fetchArea(action) {
+      dispatch({
+        type: 'company/fetchArea',
+        ...action,
+      });
+    },
+    // 上传文件
+    upload(action) {
+      dispatch({
+        type: 'company/upload',
+        ...action,
+      });
+    },
   })
 )
 @Form.create()
@@ -140,51 +154,51 @@ export default class CompanyDetail extends PureComponent {
       selectedRowKeys: [],
     },
     maintenanceId: undefined,
-    options: [
-      {
-        value: 'zhejiang',
-        label: 'Zhejiang',
-        isLeaf: false,
-      },
-      {
-        value: 'jiangsu',
-        label: 'Jiangsu',
-        isLeaf: false,
-      },
-    ],
   };
 
   /* 生命周期函数 */
   componentWillMount() {
-    const { fetchDict } = this.props;
+    const { fetchDict, fetchArea } = this.props;
     // 获取行业类别
     fetchDict({
       payload: {
-        type: 'industryCategories',
+        type: 'industryTypeId',
+        key: 'industryCategories',
       },
     });
     // 获取经济类型
     fetchDict({
       payload: {
-        type: 'economicTypes',
+        type: 'economicType',
+        key: 'economicTypes',
       },
     });
     // 获取企业状态
     fetchDict({
       payload: {
-        type: 'companyStatuses',
+        type: 'companyState',
+        key: 'companyStatuses',
       },
     });
     // 获取规模情况
     fetchDict({
       payload: {
-        type: 'scales',
+        type: 'scale',
+        key: 'scales',
       },
     });
     // 获取营业执照类别
     fetchDict({
       payload: {
-        type: 'licenseTypes',
+        type: 'businessLicense',
+        key: 'licenseTypes',
+      },
+    });
+    // 获取行政区域省
+    fetchArea({
+      payload: {
+        parentId: 0,
+        ids: [],
       },
     });
   }
@@ -407,37 +421,37 @@ export default class CompanyDetail extends PureComponent {
 
   /* 行政区域动态加载 */
   handleLoadData = selectedOptions => {
-    console.log(selectedOptions);
+    const ids = selectedOptions.map(item => item.id);
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
-    setTimeout(() => {
-      targetOption.loading = false;
-      targetOption.children = [
-        {
-          label: `${targetOption.label} Dynamic 1`,
-          value: 'dynamic1',
-          isLeaf: false,
-        },
-        {
-          label: `${targetOption.label} Dynamic 2`,
-          value: 'dynamic2',
-          isLeaf: false,
-        },
-      ];
-      this.setState({
-        options: [...this.state.options],
-      });
-    }, 2000);
+    this.props.fetchArea({
+      payload: {
+        ids,
+        parentId: targetOption.id,
+      },
+      success: () => {
+        targetOption.loading = false;
+      },
+      error: msg => {
+        message.error(msg, () => {
+          targetOption.loading = false;
+        });
+      },
+    });
   };
 
   /* 上传文件按钮 */
-  renderUploadButton = ({ filedList, onChange }) => {
+  renderUploadButton = ({ filedList, onChange, folder }) => {
     return (
       <Upload
-        name="file"
+        name="files"
+        data={{
+          folder,
+        }}
         action={uploadAction}
-        onChange={onChange}
         filedList={filedList}
+        onChange={onChange}
+        multiple
         // withCredentials
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
@@ -452,8 +466,9 @@ export default class CompanyDetail extends PureComponent {
   renderBasicInfo() {
     const {
       form: { getFieldDecorator },
+      company: { area },
     } = this.props;
-    const { ichnographyList, options } = this.state;
+    const { ichnographyList } = this.state;
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
@@ -462,7 +477,6 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.name}>
                 {getFieldDecorator('name', {
-                  initialValue: null,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入企业名称' }],
                 })(<Input placeholder="请输入企业名称" />)}
@@ -515,7 +529,13 @@ export default class CompanyDetail extends PureComponent {
                   rules: [{ required: true, message: '请选择行政区域' }],
                 })(
                   <Cascader
-                    options={options}
+                    options={area}
+                    filedNames={{
+                      value: 'id',
+                      label: 'name',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
                     loadData={this.handleLoadData}
                     changeOnSelect
                     placeholder="请选择行政区域"
