@@ -1,8 +1,8 @@
 import {
   queryMaintenanceCompanies,
-  delateMaintenanceCompany,
+  deleteMaintenanceCompany,
   queryMaintenanceCompany,
-  queryMaintenanceCompanyDetail,
+  queryMaintenanceCompanyinfo,
 } from '../services/api.js';
 
 export default {
@@ -10,6 +10,7 @@ export default {
 
   state: {
     list: [],
+    detail: {},
     categories: [],
     formData: {
       name: undefined,
@@ -39,7 +40,7 @@ export default {
       }
     },
     *remove({ payload, success, error }, { call, put }) {
-      const response = yield call(delateMaintenanceCompany, payload);
+      const response = yield call(deleteMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'delete',
@@ -52,16 +53,12 @@ export default {
         error();
       }
     },
-
-    // 获取维保单位详情
-    *fetchMaintenanceCompany({ payload }, { call, put }) {
-      const response = yield call(queryMaintenanceCompanyDetail, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'queryMaintenanceCompanyDetail',
-          payload: response.data,
-        });
-      }
+    *fetchDetail({ payload }, { call, put }) {
+      const response = yield call(queryMaintenanceCompanyinfo, payload);
+      yield put({
+        type: 'queryDetail',
+        payload: response.data,
+      });
     },
   },
 
@@ -70,6 +67,12 @@ export default {
       return {
         ...state,
         list: payload,
+      };
+    },
+    queryDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: payload,
       };
     },
     appendList(

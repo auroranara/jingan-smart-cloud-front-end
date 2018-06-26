@@ -27,7 +27,7 @@ const breadcrumbList = [
   submitting: loading.effects['form/submitRegularForm'],
 }))
 @Form.create()
-export default class BasicForms extends PureComponent {
+export default class MaintenanceCompanyAdd extends PureComponent {
   state = {
     current: {
       title: '',

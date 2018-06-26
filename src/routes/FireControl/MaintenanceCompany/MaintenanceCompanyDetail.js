@@ -6,33 +6,11 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 const { Description } = DescriptionList;
 
-const breadcrumbList = [
-  {
-    title: '首页',
-    href: '/',
-  },
-  {
-    title: '消防维保',
-  },
-  {
-    title: '维保公司',
-    href: '/fire-control/maintenance-company/list',
-  },
-  {
-    title: '维保公司详情',
-  },
-];
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-
 @connect(({ maintenanceCompany, loading }) => ({
   maintenanceCompany,
-  loading: loading.models.maintenanceCompany,
+  loading: loading.effects['maintenanceCompany/fetchDetail'],
 }))
-export default class maintenanceCompanyDetail extends PureComponent {
-  /* 生命周期函数 */
+export default class MaintenanceCmpanyDetail extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
@@ -40,28 +18,51 @@ export default class maintenanceCompanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
-    // console.log(id);
+
     dispatch({
-      type: 'maintenanceCompany/fetchMaintenanceCompany',
+      type: 'maintenanceCompany/fetchDetail',
       payload: id,
     });
   }
 
-  // 渲染信息
-  renderdetail() {
-    const {
-      maintenanceCompany: {
-        detail: { data },
+  render() {
+    const breadcrumbList = [
+      {
+        title: '首页',
+        href: '/',
       },
+      {
+        title: '消防维保',
+      },
+      {
+        title: '维保公司',
+        href: '/fire-control/maintenance-company/list',
+      },
+      {
+        title: '维保单位详情',
+      },
+    ];
+
+    /* 表单标签 */
+    const fieldLabels = {
+      companyName: '维保单位',
+      usingStatus: '企业状态',
+      isBranch: '是否为分公司',
+      parnetUnitName: '所属总公司',
+    };
+
+    const {
+      maintenanceCompany: { detail: data },
     } = this.props;
+
     return (
-      <PageHeaderLayout title="维保公司详情" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title="维保单位详情" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
-          <DescriptionList>
-            <Description term="维修单位：">{data.companyName || getEmptyData()}</Description>
-            <Description term="启用状态：">{data.usingStatus || getEmptyData()}</Description>
-            <Description term="是否为分公司：">{data.isBranch || getEmptyData()}</Description>
-            <Description term="总公司名称：">{data.parnetUnitName || getEmptyData()}</Description>
+          <DescriptionList style={{ marginBottom: 32 }}>
+            <Description term={fieldLabels.companyName}>{data.companyName}</Description>
+            <Description term={fieldLabels.usingStatus}>{String(data.usingStatus)}</Description>
+            <Description term={fieldLabels.isBranch}>{data.isBranch}</Description>
+            <Description term={fieldLabels.parnetUnitName}>{data.parnetUnitName}</Description>
           </DescriptionList>
         </Card>
       </PageHeaderLayout>
