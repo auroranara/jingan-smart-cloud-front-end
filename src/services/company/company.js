@@ -15,7 +15,7 @@ export async function deleteCompany({ id }) {
 
 /* 获取字典 */
 export async function queryDict(params) {
-  return request(`/acloud_new/v2/sys/dict/list?${stringify(params)}`);
+  return request(`/acloud_new/v2/sys/dictDataForSelect?${stringify(params)}`);
 }
 
 /* 获取企业详情 */
@@ -26,7 +26,7 @@ export async function queryCompany({ id }) {
 /* 新建企业 */
 export async function addCompany(params) {
   return request(`/acloud_new/v2/baseInfo/company`, {
-    method: 'PUT',
+    method: 'POST',
     body: params,
   });
 }
@@ -34,22 +34,30 @@ export async function addCompany(params) {
 /* 修改企业 */
 export async function updateCompany({ id, ...restParams }) {
   return request(`/acloud_new/v2/baseInfo/company/${id}`, {
-    method: 'POST',
+    method: 'PUT',
     body: restParams,
   });
 }
 
 /* 获取维保单位列表 */
 export async function queryMaintenanceCompanies(params) {
-  return request(`/acloud_new/v2/baseInfo/company?${stringify(params)}`);
+  return request(`/acloud_new/v2/baseInfo/maintenanceCompanies.json?${stringify(params)}`);
 }
 
 /* 文件上传 */
 export async function upload(params) {
   return request(`acloud_new/v2/uploadFile`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
     body: {
       ...params,
     },
   });
+}
+
+/* 获取行政区域 */
+export async function fetchArea(params) {
+  return request(`acloud_new/v2/baseInfo/city?${stringify(params)}`);
 }
