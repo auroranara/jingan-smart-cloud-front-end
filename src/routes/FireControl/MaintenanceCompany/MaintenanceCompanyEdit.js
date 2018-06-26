@@ -39,30 +39,18 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
         href: '/fire-control/maintenance-company/list',
       },
       {
-        title: '维保单位详情',
+        title: '修改维保单位',
       },
     ];
 
-    /* 表单标签 */
-    const fieldLabels = {
-      companyName: '维保单位',
-      usingStatus: '企业状态',
-      isBranch: '是否为分公司',
-      parnetUnitName: '所属总公司',
-    };
-
-    const {
-      maintenanceCompany: { detail: data },
-    } = this.props;
-
     return (
-      <PageHeaderLayout title="维保单位详情" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title="修改维保单位" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
-          <DescriptionList style={{ marginBottom: 32 }}>
-            <Description term={fieldLabels.companyName}>{data.companyName}</Description>
-            <Description term={fieldLabels.usingStatus}>{String(data.usingStatus)}</Description>
-            <Description term={fieldLabels.isBranch}>{data.isBranch}</Description>
-            <Description term={fieldLabels.parnetUnitName}>{data.parnetUnitName}</Description>
+          <DescriptionList title="" style={{ marginBottom: 32 }}>
+            <Description term="维保单位">1000000000</Description>
+            <Description term="企业状态">111</Description>
+            <Description term="是否为分公司">1234123421</Description>
+            <Description term="所属总公司">dfg</Description>
           </DescriptionList>
         </Card>
       </PageHeaderLayout>

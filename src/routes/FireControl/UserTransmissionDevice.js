@@ -164,10 +164,10 @@ export default class UserTransmissionDevice extends PureComponent {
                         ? item.practicalAddress
                         : item.praticalAddress}
                     </Ellipsis>
-                    <p>安全负责人：{item.leader}</p>
-                    <p>联系电话：{item.phone}</p>
-                    <p>消防主机数量：{item.hostQuantity}</p>
-                    <span className={styles.quantity}>{item.hostQuantity}</span>
+                    <p>安全负责人：张三</p>
+                    <p>联系电话：132 8888 8888</p>
+                    <p>消防主机数量：{item.fireCount}</p>
+                    <span className={styles.quantity}>{item.fireCount}</span>
                   </Card>
                 </Link>
               </List.Item>

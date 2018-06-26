@@ -14,13 +14,13 @@ const { confirm } = Modal;
 
 // 若顺序不是按照当前顺序的话，改成数组
 const DESCRIP_MAP = {
-  companyStatus: '企业状态',
+  companyStatusLabel: '企业状态',
   code: '社会信用代码',
-  industryCategory: '行业类别',
-  licenseType: '营业执照类型',
+  industryCategoryLabel: '行业类别',
+  licenseTypeLabel: '营业执照类型',
   registerAddress: '注册地址',
-  economicType: '经济类型',
-  scale: '规上',
+  economicTypeLabel: '经济类型',
+  scaleLabel: '规上',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
   createDate: '成立时间',
@@ -30,19 +30,27 @@ const deviceModalFormItems = [
   {
     label: '装置名称',
     name: 'deviceName',
-    options: { rules: [{ required: true, message: 'input' }] },
+    options: { rules: [{ required: true, message: '请输入用户传输装置名称' }] },
   },
   {
     label: '装置编号',
     name: 'deviceCode',
-    options: { rules: [{ required: true, message: 'input' }] },
+    options: { rules: [{ required: true, message: '请输入用户传输装置编号' }] },
   },
-  { label: '品牌', name: 'brand', options: { rules: [{ required: true, message: 'input' }] } },
-  { label: '型号', name: 'model', options: { rules: [{ required: true, message: 'input' }] } },
+  {
+    label: '品牌',
+    name: 'brand',
+    options: { rules: [{ required: true, message: '请输入用户传输装置品牌' }] },
+  },
+  {
+    label: '型号',
+    name: 'model',
+    options: { rules: [{ required: true, message: '请输入用户传输装置型号' }] },
+  },
   {
     label: '安装位置',
     name: 'installLocation',
-    options: { rules: [{ required: true, message: 'input' }] },
+    options: { rules: [{ required: true, message: '请输入用户传输装置安装位置' }] },
   },
   { label: '生产日期', name: 'productionDate' },
 ];
@@ -51,32 +59,41 @@ const hostModalFormItems = [
   {
     label: '传输装置编号',
     name: 'transmissionDeviceCode',
-    options: { rules: [{ required: true, message: 'input' }] },
+    options: { rules: [{ required: true, message: '请输入消防主机对应的用户传输装置编号' }] },
   },
   {
     label: '传输接口',
     name: 'transmissionInterface',
-    options: { rules: [{ required: true, message: 'input' }] },
+    options: { rules: [{ required: true, message: '请输入消防主机的传输接口' }] },
   },
   {
     label: '主机编号',
     name: 'deviceCode',
-    options: { rules: [{ required: true, message: 'input' }] },
+    options: { rules: [{ required: true, message: '请输入消防主机编号' }] },
   },
-  { label: '品牌', name: 'brand', options: { rules: [{ required: true, message: 'input' }] } },
-  { label: '型号', name: 'model', options: { rules: [{ required: true, message: 'input' }] } },
+  {
+    label: '品牌',
+    name: 'brand',
+    options: { rules: [{ required: true, message: '请输入消防主机品牌' }] },
+  },
+  {
+    label: '型号',
+    name: 'model',
+    options: { rules: [{ required: true, message: '请输入消防主机型号' }] },
+  },
   {
     label: '安装位置',
     name: 'installLocation',
-    options: { rules: [{ required: true, message: 'input' }] },
+    options: { rules: [{ required: true, message: '请输入消防主机安装位置' }] },
   },
   { label: '生产日期', name: 'productionDate' },
 ];
 
-// 添加消防主机时，用户传输装置是对应好的，所以在表单中用户传输装置编号不需要显示
-const hostModalFormItemsAdd = hostModalFormItems.filter(
-  item => item.name !== 'transmissionDeviceCode'
-);
+// 添加消防主机时，用户传输装置是对应好的，所以在表单中用户传输装置编号是固定的
+const hostModalFormItemsAdd = hostModalFormItems.map(item => {
+  if (item.name === 'transmissionDeviceCode') return { ...item, disabled: true };
+  return item;
+});
 
 @connect(({ transmission, loading }) => ({
   transmission,
@@ -109,8 +126,8 @@ export default class UserTransmissionDeviceDetail extends Component {
   // importPointPositionClick = () => {};
   exportPointPositionClick = () => {};
 
-  handleDeviceModalVisible = flag => {
-    this.setState({ deviceModalVisible: !!flag });
+  hideDeviceModal = () => {
+    this.setState({ deviceModalVisible: false, deviceRecord: null });
   };
 
   /* 带click的方法，表示传入card中用来button点击时触发，正在处理数据的方法中不带click
@@ -119,7 +136,7 @@ export default class UserTransmissionDeviceDetail extends Component {
    * 而deleteClick时却可以通过confirm执行delete操作，所以数据不用同步，传个参就可以
    */
   handleDeviceAddClick = () => {
-    this.setState({ deviceModalVisible: true, operation: 'add', deviceRecord: null });
+    this.setState({ deviceModalVisible: true, operation: 'add' });
   };
 
   handleDeviceAdd = fieldsValue => {
@@ -178,15 +195,16 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleHostModalVisible = flag => {
-    this.setState({ hostModalVisible: !!flag });
+  hideHostModal = () => {
+    this.setState({ hostModalVisible: false, hostRecord: null });
   };
 
-  handleHostAddClick = transmissionId => {
+  // 添加主机时，消防传输装置的deviceCode是固定的
+  handleHostAddClick = (transmissionId, transmissionDeviceCode) => {
     this.setState({
       hostModalVisible: true,
       operation: 'add',
-      hostRecord: null,
+      hostRecord: { transmissionDeviceCode },
       currentTransmissionId: transmissionId,
     });
   };
@@ -284,7 +302,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             // 兼容实际地址 practical pratical
             companyDetail[k] === undefined ? null : (
               <Description key={k} term={DESCRIP_MAP[k]}>
-                {companyDetail[k]}
+                {companyDetail[k] === null ? null : companyDetail[k].toString()}
               </Description>
             )
         )}
@@ -311,12 +329,12 @@ export default class UserTransmissionDeviceDetail extends Component {
     ));
 
     const deviceParentMethods = {
-      handleModalVisible: this.handleDeviceModalVisible,
+      hideModal: this.hideDeviceModal,
       handleAdd: this.handleDeviceAdd,
       handleUpdate: this.handleDeviceUpdate,
     };
     const hostParentMethods = {
-      handleModalVisible: this.handleHostModalVisible,
+      hideModal: this.hideHostModal,
       handleAdd: this.handleHostAdd,
       handleUpdate: this.handleHostUpdate,
     };

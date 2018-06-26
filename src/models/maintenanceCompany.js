@@ -1,10 +1,16 @@
-import { queryMaintenanceCompanies, deleteCompany } from '../services/api.js';
+import {
+  queryMaintenanceCompanies,
+  deleteMaintenanceCompany,
+  queryMaintenanceCompany,
+  queryMaintenanceCompanyinfo,
+} from '../services/api.js';
 
 export default {
   namespace: 'maintenanceCompany',
 
   state: {
     list: [],
+    detail: {},
     categories: [],
     formData: {
       name: undefined,
@@ -25,7 +31,7 @@ export default {
       }
     },
     *appendFetch({ payload }, { call, put }) {
-      const response = yield call(queryMaintenanceCompanies, payload);
+      const response = yield call(queryMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'appendList',
@@ -34,7 +40,7 @@ export default {
       }
     },
     *remove({ payload, success, error }, { call, put }) {
-      const response = yield call(deleteCompany, payload);
+      const response = yield call(deleteMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'delete',
@@ -47,6 +53,13 @@ export default {
         error();
       }
     },
+    *fetchDetail({ payload }, { call, put }) {
+      const response = yield call(queryMaintenanceCompanyinfo, payload);
+      yield put({
+        type: 'queryDetail',
+        payload: response.data,
+      });
+    },
   },
 
   reducers: {
@@ -54,6 +67,12 @@ export default {
       return {
         ...state,
         list: payload,
+      };
+    },
+    queryDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: payload,
       };
     },
     appendList(
@@ -81,6 +100,15 @@ export default {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
+      };
+    },
+    queryMaintenanceCompanyDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
     updateFormData(state, { payload }) {

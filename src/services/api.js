@@ -153,7 +153,24 @@ export async function queryTransmissionDeviceDetail(params) {
   return request(`/v2/transmission_device_detail?${stringify(params)}`);
 }
 
-// 维保单位地址
+// 维保单位列表
 export async function queryMaintenanceCompanies(params) {
   return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json?${stringify(params)}`);
+}
+
+// 查询维保单位列表
+export async function queryMaintenanceCompany(params) {
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json?${stringify(params)}`);
+}
+
+// 删除维保单位
+export async function deleteMaintenanceCompany(id) {
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// 查看指定维保单位信息
+export async function queryMaintenanceCompanyinfo(id) {
+  return request(`acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`);
 }

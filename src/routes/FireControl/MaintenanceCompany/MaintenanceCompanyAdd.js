@@ -6,11 +6,28 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 const FormItem = Form.Item;
 
+const breadcrumbList = [
+  {
+    title: '首页',
+    href: '/',
+  },
+  {
+    title: '消防维保',
+  },
+  {
+    title: '维保公司',
+    href: '/fire-control/maintenance-company/list',
+  },
+  {
+    title: '新增维保单位',
+  },
+];
+
 @connect(({ loading }) => ({
   submitting: loading.effects['form/submitRegularForm'],
 }))
 @Form.create()
-export default class BasicForms extends PureComponent {
+export default class MaintenanceCompanyAdd extends PureComponent {
   state = {
     current: {
       title: '',
@@ -67,7 +84,7 @@ export default class BasicForms extends PureComponent {
     };
 
     return (
-      <PageHeaderLayout title="新增维保单位">
+      <PageHeaderLayout title="新增维保单位" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">
