@@ -11,6 +11,14 @@ import ModalForm from './ModalForm';
 
 const { Description } = DescriptionList;
 const { confirm } = Modal;
+const ButtonGroup = Button.Group;
+
+const breadcrumbList = [
+  { title: '首页', href: '/' },
+  { title: '消防维保' },
+  { title: '用户传输装置', href: '/fire-control/user-transmission-device' },
+  { title: '详情页' },
+];
 
 // 若顺序不是按照当前顺序的话，改成数组
 const DESCRIP_MAP = {
@@ -23,7 +31,7 @@ const DESCRIP_MAP = {
   scaleLabel: '规模',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
-  createDate: '成立时间',
+  createTime: '成立时间',
 };
 
 const deviceModalFormItems = [
@@ -295,14 +303,16 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     const action = (
       <Fragment>
+        <ButtonGroup>
+          <Button onClick={this.downloadPointPositionTemplate}>
+            下载点位
+          </Button>
+          <Button onClick={this.exportPointPositionClick}>
+            导出点位
+          </Button>
+        </ButtonGroup>
         <Button type="primary" onClick={this.handleDeviceAddClick}>
-          新增用户传输装置
-        </Button>
-        <Button type="primary" onClick={this.downloadPointPositionTemplate}>
-          下载点位模板
-        </Button>
-        <Button type="primary" onClick={this.exportPointPositionClick}>
-          导出点位数据
+          新增装置
         </Button>
       </Fragment>
     );
@@ -314,7 +324,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             // 兼容实际地址 practical pratical
             companyDetail[k] === undefined ? null : (
               <Description key={k} term={DESCRIP_MAP[k]}>
-                {companyDetail[k] === null ? null : companyDetail[k].toString()}
+                {companyDetail[k] === null ? '暂无信息' : companyDetail[k].toString()}
               </Description>
             )
         )}
@@ -354,6 +364,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     return (
       <PageHeaderLayout
         title="常熟市鑫博伟纺织有限公司"
+        breadcrumbList={breadcrumbList}
         logo={<Icon type="apple" />}
         action={action}
         content={description}
