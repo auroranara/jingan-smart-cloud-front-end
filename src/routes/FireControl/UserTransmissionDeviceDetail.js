@@ -20,7 +20,7 @@ const DESCRIP_MAP = {
   licenseTypeLabel: '营业执照类型',
   registerAddress: '注册地址',
   economicTypeLabel: '经济类型',
-  scaleLabel: '规上',
+  scaleLabel: '规模',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
   createDate: '成立时间',
@@ -296,7 +296,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     );
 
     const description = (
-      <DescriptionList size="small">
+      <DescriptionList size="small" col={3}>
         {Object.keys(DESCRIP_MAP).map(
           k =>
             // 兼容实际地址 practical pratical
