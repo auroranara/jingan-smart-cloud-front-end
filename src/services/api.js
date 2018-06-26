@@ -158,6 +158,11 @@ export async function queryMaintenanceCompanies(params) {
   return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json?${stringify(params)}`);
 }
 
+// 查询维保单位列表
+export async function queryMaintenanceCompany(params) {
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json?${stringify(params)}`);
+}
+
 // 删除维保单位
 export async function deleteMaintenanceCompany(id) {
   return request(`/acloud_new/v2/fireControl/maintenanceCompanies/${id}`, {

@@ -1,6 +1,7 @@
 import {
   queryMaintenanceCompanies,
   deleteMaintenanceCompany,
+  queryMaintenanceCompany,
   queryMaintenanceCompanyinfo,
 } from '../services/api.js';
 
@@ -30,7 +31,7 @@ export default {
       }
     },
     *appendFetch({ payload }, { call, put }) {
-      const response = yield call(queryMaintenanceCompanies, payload);
+      const response = yield call(queryMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'appendList',
@@ -99,6 +100,15 @@ export default {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
+      };
+    },
+    queryMaintenanceCompanyDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
     updateFormData(state, { payload }) {
