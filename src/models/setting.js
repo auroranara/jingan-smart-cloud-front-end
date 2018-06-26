@@ -2,16 +2,11 @@ const defaultSetting = {
   collapse: false,
   silderTheme: 'dark',
   themeColor: '#1890FF',
-  layout: 'topmenu',
+  layout: 'sidemenu',
   grid: 'Wide',
-  fixedHeader: false,
+  fixedHeader: true,
   autoHideHeader: false,
-  fixSiderbar: false,
-<<<<<<< HEAD
-  colorWeak: false,
-};
-
-=======
+  fixSiderbar: true,
   colorWeak: 'close',
 };
 >>>>>>> init
