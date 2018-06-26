@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Icon, Modal, Spin } from 'antd';
+import { Button, Icon, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -20,7 +20,7 @@ const DESCRIP_MAP = {
   licenseTypeLabel: '营业执照类型',
   registerAddress: '注册地址',
   economicTypeLabel: '经济类型',
-  scaleLabel: '规上',
+  scaleLabel: '规模',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
   createDate: '成立时间',
@@ -95,6 +95,13 @@ const hostModalFormItemsAdd = hostModalFormItems.map(item => {
   return item;
 });
 
+function dispatchCallback(code, successMsg, failMsg) {
+  if (code === 200)
+    message.info(successMsg);
+  else
+    message.warn(failMsg);
+}
+
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.effects['transmission/fetchDetail'],
@@ -146,7 +153,7 @@ export default class UserTransmissionDeviceDetail extends Component {
         params: { companyId },
       },
     } = this.props;
-    dispatch({ type: 'transmission/deviceAddAsync', payload: { companyId, data: fieldsValue } });
+    dispatch({ type: 'transmission/deviceAddAsync', payload: { companyId, data: fieldsValue }, callback: dispatchCallback });
   };
 
   // 带入了一个参数record，是为了从card中对应的地方获取数据同步到其父组件的state中，进行变量提升，
@@ -169,6 +176,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/deviceUpdateAsync',
       payload: { companyId, transmissionId, data: fieldsValue },
+      callback: dispatchCallback,
     });
   };
 
@@ -192,6 +200,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/deviceDeleteAsync',
       payload: { companyId, transmissionId: deviceId },
+      callback: dispatchCallback,
     });
   };
 
@@ -220,6 +229,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/hostAddAsync',
       payload: { companyId, transmissionId, data: fieldsValue },
+      callback: dispatchCallback,
     });
   };
 
@@ -241,6 +251,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/hostUpdateAsync',
       payload: { companyId, transmissionId, hostId, data: fieldsValue },
+      callback: dispatchCallback,
     });
   };
 
@@ -264,6 +275,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/hostDeleteAsync',
       payload: { companyId, transmissionId, hostId },
+      callback: dispatchCallback,
     });
   };
 
@@ -296,7 +308,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     );
 
     const description = (
-      <DescriptionList size="small">
+      <DescriptionList size="small" col={3}>
         {Object.keys(DESCRIP_MAP).map(
           k =>
             // 兼容实际地址 practical pratical
