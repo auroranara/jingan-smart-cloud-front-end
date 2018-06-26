@@ -65,18 +65,14 @@ const getEmptyData = () => {
     loading: loading.models.company,
   }),
   dispatch => ({
+    // 获取详情
     fetchCompany(action) {
       dispatch({
         type: 'company/fetchCompany',
         ...action,
       });
     },
-    fetchDict(action) {
-      dispatch({
-        type: 'company/fetchDict',
-        ...action,
-      });
-    },
+    // 跳转到编辑页面
     goToEdit(id) {
       dispatch(routerRedux.push(`/base-info/company/edit/${id}`));
     },
@@ -88,7 +84,6 @@ export default class CompanyDetail extends PureComponent {
   componentWillMount() {
     const {
       fetchCompany,
-      fetchDict,
       match: {
         params: { id },
       },
@@ -99,64 +94,56 @@ export default class CompanyDetail extends PureComponent {
         id,
       },
     });
-    // 获取行业类别
-    fetchDict({
-      payload: {
-        type: 'industryCategories',
-      },
-    });
-    // 获取经济类型
-    fetchDict({
-      payload: {
-        type: 'economicTypes',
-      },
-    });
-    // 获取企业状态
-    fetchDict({
-      payload: {
-        type: 'companyStatuses',
-      },
-    });
-    // 获取规模情况
-    fetchDict({
-      payload: {
-        type: 'scales',
-      },
-    });
-    // 获取营业执照类别
-    fetchDict({
-      payload: {
-        type: 'licenseTypes',
-      },
-    });
   }
 
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
       company: {
-        detail: { data },
+        detail: {
+          data: {
+            name,
+            registerAddress,
+            code,
+            practicalAddress,
+            longitude,
+            latitude,
+            provinceLabel,
+            cityLabel,
+            districtLabel,
+            townLabel,
+            companyIchnography,
+          },
+        },
       },
     } = this.props;
+
+    const administrativeDivision =
+      (provinceLabel || '') + (cityLabel || '') + (districtLabel || '') + (townLabel || '');
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList>
-          <Description term={fieldLabels.name}>{data.name || getEmptyData()}</Description>
+          <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
-            {data.registerAddress || getEmptyData()}
+            {registerAddress || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.code}>{data.code || getEmptyData()}</Description>
+          <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.practicalAddress}>
-            {data.practicalAddress || getEmptyData()}
+            {practicalAddress || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.longitude}>{data.longitude || getEmptyData()}</Description>
-          <Description term={fieldLabels.latitude}>{data.latitude || getEmptyData()}</Description>
+          <Description term={fieldLabels.longitude}>{longitude || getEmptyData()}</Description>
+          <Description term={fieldLabels.latitude}>{latitude || getEmptyData()}</Description>
           <Description term={fieldLabels.administrativeDivision}>
-            {data.province + data.city + data.district + data.town || getEmptyData()}
+            {administrativeDivision || getEmptyData()}
           </Description>
           <Description term={fieldLabels.companyIchnography}>
-            {data.companyIchnography || getEmptyData()}
+            {(companyIchnography && (
+              <a href={companyIchnography} target="_bland">
+                预览
+              </a>
+            )) ||
+              getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>
@@ -167,7 +154,18 @@ export default class CompanyDetail extends PureComponent {
   renderMoreInfo() {
     const {
       company: {
-        detail: { data },
+        detail: {
+          data: {
+            industryCategoryLabel,
+            economicTypeLabel,
+            companyStatusLabel,
+            scaleLabel,
+            licenseTypeLabel,
+            createDate,
+            groupName,
+            businessScope,
+          },
+        },
       },
     } = this.props;
 
@@ -175,24 +173,22 @@ export default class CompanyDetail extends PureComponent {
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList>
           <Description term={fieldLabels.industryCategory}>
-            {data.industryCategory || getEmptyData()}
+            {industryCategoryLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.economicType}>
-            {data.economicType || getEmptyData()}
+            {economicTypeLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.companyStatus}>
-            {data.companyStatus || getEmptyData()}
+            {companyStatusLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.scale}>{data.scale || getEmptyData()}</Description>
+          <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
-            {data.licenseType || getEmptyData()}
+            {licenseTypeLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.createDate}>
-            {data.createDate || getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.groupName}>{data.groupName || getEmptyData()}</Description>
+          <Description term={fieldLabels.createDate}>{createDate || getEmptyData()}</Description>
+          <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
           <Description term={fieldLabels.businessScope}>
-            {data.businessScope || getEmptyData()}
+            {businessScope || getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>
@@ -216,7 +212,9 @@ export default class CompanyDetail extends PureComponent {
   renderOtherInfo() {
     const {
       company: {
-        detail: { data },
+        detail: {
+          data: { maintenanceUnitName, maintenanceContract },
+        },
       },
     } = this.props;
 
@@ -224,10 +222,15 @@ export default class CompanyDetail extends PureComponent {
       <Card title="其他信息" className={styles.card} bordered={false}>
         <DescriptionList>
           <Description term={fieldLabels.maintenanceId}>
-            {data.maintenanceId || getEmptyData()}
+            {maintenanceUnitName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.maintenanceContract}>
-            {data.maintenanceContract || getEmptyData()}
+            {(maintenanceContract && (
+              <a href={maintenanceContract} target="_bland">
+                预览
+              </a>
+            )) ||
+              getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>
