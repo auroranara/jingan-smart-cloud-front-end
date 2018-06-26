@@ -64,8 +64,8 @@ export default class UserTransmissionDevice extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: PAGE_SIZE,
-        company,
-        address,
+        name: company,
+        practicalAddress: address,
       },
     });
   };
@@ -100,8 +100,8 @@ export default class UserTransmissionDevice extends PureComponent {
       payload: {
         pageNum: this.currentpageNum,
         pageSize: PAGE_SIZE,
-        company,
-        address,
+        name: company,
+        practicalAddress: address,
       },
       callback(total) {
         const currentLength = that.currentpageNum * PAGE_SIZE;
