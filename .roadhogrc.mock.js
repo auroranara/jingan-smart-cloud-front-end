@@ -146,8 +146,14 @@ const initProxy = key => {
   };
 };
 
-const key = 'test';
+const hosts = {
+  lm: '192.168.10.2', // 吕旻
+  gjm: '192.168.10.55', // 顾家铭
+  sqz: '192.168.10.56', //孙启政
+  test: '192.168.10.67:9080', // 内网
+};
 
-const key = 'test';
+const key = 'sqz';
+// const key = 'test';
 
 export default (noProxy ? {} : delay(initProxy(key), 1000));

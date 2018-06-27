@@ -346,9 +346,13 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     // console.log('detailList in render', deviceList);
     // console.log('transmission', this.props.transmission);
-    const cards = deviceList.map((device, index) => (
-      <DeviceDetailCard key={device.id} index={index} deviceData={device} {...cardParentMethods} />
-    ));
+
+    let cards = <div style={{ textAlign: 'center', fontSize: 20 }}>暂无数据</div>
+
+    if (deviceList.length)
+      cards = deviceList.map((device, index) => (
+        <DeviceDetailCard key={device.id} index={index} deviceData={device} {...cardParentMethods} />
+      ));
 
     const deviceParentMethods = {
       hideModal: this.hideDeviceModal,
