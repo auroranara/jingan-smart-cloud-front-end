@@ -4,6 +4,7 @@ import {
   queryMaintenanceCompany,
   queryMaintenanceCompanyinfo,
   updateMaintenanceCompany,
+  addMaintenanceCompany,
 } from '../services/maintenanceCompany.js';
 
 export default {
@@ -56,11 +57,13 @@ export default {
     },
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload);
-      if (callback) callback(!!response.data.isBranch);
-      yield put({
-        type: 'queryDetail',
-        payload: response.data,
-      });
+      if (response.code === 200) {
+        yield put({
+          type: 'queryDetail',
+          payload: response.data,
+        });
+        if (callback) callback(response.data);
+      }
     },
     *updateMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
       const response = yield call(updateMaintenanceCompany, payload);
@@ -69,6 +72,17 @@ export default {
       if (code === 200) {
         yield put({
           type: 'updateMaintenanceCompany',
+          payload: response.data,
+        });
+      }
+    },
+    *addMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
+      const response = yield call(addMaintenanceCompany, payload);
+      const { code } = response;
+      if (callback) callback(code);
+      if (code === 200) {
+        yield put({
+          type: 'addMaintenanceCompany',
           payload: response.data,
         });
       }
@@ -131,6 +145,15 @@ export default {
       };
     },
     updateMaintenanceCompany(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+    addMaintenanceCompany(state, { payload }) {
       return {
         ...state,
         detail: {

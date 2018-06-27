@@ -30,3 +30,11 @@ export async function updateMaintenanceCompany(params) {
     body: params,
   });
 }
+
+/* 新增维保单位信息 */
+export async function addMaintenanceCompany(params) {
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json`, {
+    method: 'PUT',
+    body: params,
+  });
+}
