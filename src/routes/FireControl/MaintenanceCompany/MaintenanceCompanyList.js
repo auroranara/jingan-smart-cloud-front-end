@@ -170,7 +170,6 @@ export default class MaintenanceCompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      // company: { categories },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -219,7 +218,6 @@ export default class MaintenanceCompanyList extends PureComponent {
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
-          // loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => (

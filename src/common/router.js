@@ -132,7 +132,7 @@ export const getRouterData = app => {
     },
     // 修改维保公司信息
     '/fire-control/maintenance-company/edit/:id': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+      component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
         import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyEdit.js')
       ),
     },
