@@ -28,11 +28,11 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 // 标题
-const title = '编辑企业';
+const title = '修改企业';
 // 返回地址
 const href = '/base-info/company-list';
 // 上传文件地址
-const uploadAction = 'http://118.126.110.115:3001/mock/28/acloud_new/v2/upload';
+const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件限制数量
 const uploadLength = 1;
 // 面包屑
@@ -105,30 +105,42 @@ const defaultPagination = {
     loading: loading.models.company,
   }),
   dispatch => ({
-    insert(action) {
+    // 修改
+    editCompany(action) {
       dispatch({
-        type: 'company/insertCompany',
+        type: 'company/editCompany',
         ...action,
       });
     },
+    // 获取详情
     fetchCompany(action) {
       dispatch({
         type: 'company/fetchCompany',
         ...action,
       });
     },
+    // 获取字典
     fetchDict(action) {
       dispatch({
         type: 'company/fetchDict',
         ...action,
       });
     },
+    // 返回
     goBack() {
       dispatch(routerRedux.push(href));
     },
+    // 获取维保单位列表
     fetchModalList(action) {
       dispatch({
         type: 'company/fetchModalList',
+        ...action,
+      });
+    },
+    // 获取行政区域
+    fetchArea(action) {
+      dispatch({
+        type: 'company/fetchArea',
         ...action,
       });
     },
@@ -146,18 +158,6 @@ export default class CompanyDetail extends PureComponent {
       selectedRowKeys: [],
     },
     maintenanceId: undefined,
-    options: [
-      {
-        value: 'zhejiang',
-        label: 'Zhejiang',
-        isLeaf: false,
-      },
-      {
-        value: 'jiangsu',
-        label: 'Jiangsu',
-        isLeaf: false,
-      },
-    ],
   };
 
   /* 生命周期函数 */
@@ -165,44 +165,91 @@ export default class CompanyDetail extends PureComponent {
     const {
       fetchCompany,
       fetchDict,
+      fetchArea,
       match: {
         params: { id },
       },
     } = this.props;
-    // 获取详情
-    fetchCompany({
+
+    // 获取行政区域省
+    fetchArea({
       payload: {
-        id,
+        parentId: 0,
+        ids: [],
+      },
+      success: () => {
+        // 获取详情
+        fetchCompany({
+          payload: {
+            id,
+          },
+          success: ({ province, city, district }) => {
+            if (province) {
+              fetchArea({
+                payload: {
+                  parentId: province,
+                  ids: [province],
+                },
+                success: () => {
+                  if (city) {
+                    fetchArea({
+                      payload: {
+                        parentId: city,
+                        ids: [province, city],
+                      },
+                      success: () => {
+                        if (district) {
+                          fetchArea({
+                            payload: {
+                              parentId: district,
+                              ids: [province, city, district],
+                            },
+                          });
+                        }
+                      },
+                    });
+                  }
+                },
+              });
+            }
+          },
+        });
       },
     });
+
     // 获取行业类别
     fetchDict({
       payload: {
-        type: 'industryCategories',
+        type: 'industryTypeId',
+        key: 'industryCategories',
       },
     });
     // 获取经济类型
     fetchDict({
       payload: {
-        type: 'economicTypes',
+        type: 'economicType',
+        key: 'economicTypes',
       },
     });
     // 获取企业状态
     fetchDict({
       payload: {
-        type: 'companyStatuses',
+        type: 'companyState',
+        key: 'companyStatuses',
       },
     });
     // 获取规模情况
     fetchDict({
       payload: {
-        type: 'scales',
+        type: 'scale',
+        key: 'scales',
       },
     });
     // 获取营业执照类别
     fetchDict({
       payload: {
-        type: 'licenseTypes',
+        type: 'businessLicense',
+        key: 'licenseTypes',
       },
     });
   }
@@ -213,9 +260,12 @@ export default class CompanyDetail extends PureComponent {
   /* 点击提交按钮验证表单信息 */
   handleClickValidate = () => {
     const {
-      insert,
+      editCompany,
       goBack,
       form: { validateFieldsAndScroll },
+      match: {
+        params: { id },
+      },
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -228,18 +278,19 @@ export default class CompanyDetail extends PureComponent {
           this.setState({
             loading: true,
           });
-          insert({
+          editCompany({
             payload: {
+              id,
               ...restFields,
               province,
               city,
               district,
               town,
               createDate: createDate && createDate.format('YYYY-MM-DD'),
-              maintenanceId,
+              maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
             },
             success: () => {
-              message.success('新建成功！', () => {
+              message.success('修改成功！', () => {
                 goBack();
               });
             },
@@ -259,6 +310,7 @@ export default class CompanyDetail extends PureComponent {
           district,
           town,
           createDate: createDate && createDate.format('YYYY-MM-DD'),
+          maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
         });
       }
     );
@@ -425,34 +477,33 @@ export default class CompanyDetail extends PureComponent {
 
   /* 行政区域动态加载 */
   handleLoadData = selectedOptions => {
-    console.log(selectedOptions);
+    const ids = selectedOptions.map(item => item.id);
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
-    setTimeout(() => {
-      targetOption.loading = false;
-      targetOption.children = [
-        {
-          label: `${targetOption.label} Dynamic 1`,
-          value: 'dynamic1',
-          isLeaf: false,
-        },
-        {
-          label: `${targetOption.label} Dynamic 2`,
-          value: 'dynamic2',
-          isLeaf: false,
-        },
-      ];
-      this.setState({
-        options: [...this.state.options],
-      });
-    }, 2000);
+    this.props.fetchArea({
+      payload: {
+        ids,
+        parentId: targetOption.id,
+      },
+      success: () => {
+        targetOption.loading = false;
+      },
+      error: msg => {
+        message.error(msg, () => {
+          targetOption.loading = false;
+        });
+      },
+    });
   };
 
   /* 上传文件按钮 */
-  renderUploadButton = ({ filedList, onChange }) => {
+  renderUploadButton = ({ filedList, onChange, folder }) => {
     return (
       <Upload
-        name="file"
+        name="files"
+        data={{
+          folder,
+        }}
         action={uploadAction}
         onChange={onChange}
         filedList={filedList}
@@ -470,11 +521,25 @@ export default class CompanyDetail extends PureComponent {
   renderBasicInfo() {
     const {
       company: {
-        detail: { data },
+        detail: {
+          data: {
+            name,
+            registerAddress,
+            code,
+            practicalAddress,
+            longitude,
+            latitude,
+            province,
+            city,
+            district,
+            town,
+          },
+        },
+        area,
       },
       form: { getFieldDecorator },
     } = this.props;
-    const { ichnographyList, options } = this.state;
+    const { ichnographyList } = this.state;
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
@@ -483,7 +548,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.name}>
                 {getFieldDecorator('name', {
-                  initialValue: data.name,
+                  initialValue: name,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入企业名称' }],
                 })(<Input placeholder="请输入企业名称" />)}
@@ -492,7 +557,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.registerAddress}>
                 {getFieldDecorator('registerAddress', {
-                  initialValue: data.registerAddress,
+                  initialValue: registerAddress,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入注册地址' }],
                 })(<Input placeholder="请输入注册地址" />)}
@@ -501,7 +566,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.code}>
                 {getFieldDecorator('code', {
-                  initialValue: data.code,
+                  initialValue: code,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入社会信用代码' }],
                 })(<Input placeholder="请输入社会信用代码" />)}
@@ -510,7 +575,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.practicalAddress}>
                 {getFieldDecorator('practicalAddress', {
-                  initialValue: data.practicalAddress,
+                  initialValue: practicalAddress,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入实际经营地址' }],
                 })(<Input placeholder="请输入实际经营地址" />)}
@@ -519,7 +584,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.longitude}>
                 {getFieldDecorator('longitude', {
-                  initialValue: data.longitude,
+                  initialValue: longitude,
                   getValueFromEvent: this.handleTrim,
                 })(<Input placeholder="请输入经度" />)}
               </Form.Item>
@@ -527,7 +592,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.latitude}>
                 {getFieldDecorator('latitude', {
-                  initialValue: data.latitude,
+                  initialValue: latitude,
                   getValueFromEvent: this.handleTrim,
                 })(<Input placeholder="请输入纬度" />)}
               </Form.Item>
@@ -537,11 +602,17 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={12} md={18} sm={24}>
               <Form.Item label={fieldLabels.administrativeDivision}>
                 {getFieldDecorator('administrativeDivision', {
-                  initialValue: [data.province, data.city, data.district, data.town] || [],
+                  initialValue: [province, city, district, town] || [],
                   rules: [{ required: true, message: '请选择行政区域' }],
                 })(
                   <Cascader
-                    options={options}
+                    options={area}
+                    filedNames={{
+                      value: 'id',
+                      label: 'name',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
                     loadData={this.handleLoadData}
                     changeOnSelect
                     placeholder="请选择行政区域"
@@ -574,7 +645,18 @@ export default class CompanyDetail extends PureComponent {
         companyStatuses,
         scales,
         licenseTypes,
-        detail: { data },
+        detail: {
+          data: {
+            industryCategory,
+            economicType,
+            companyStatus,
+            scale,
+            licenseType,
+            createDate,
+            groupName,
+            businessScope,
+          },
+        },
       },
       form: { getFieldDecorator },
     } = this.props;
@@ -586,7 +668,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.industryCategory}>
                 {getFieldDecorator('industryCategory', {
-                  initialValue: data.industryCategory,
+                  initialValue: industryCategory || undefined,
                 })(
                   <Select allowClear placeholder="请选择行业类别">
                     {industryCategories.map(item => (
@@ -601,7 +683,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.economicType}>
                 {getFieldDecorator('economicType', {
-                  initialValue: data.economicType,
+                  initialValue: economicType,
                   rules: [{ required: true, message: '请选择经济类型' }],
                 })(
                   <Select placeholder="请选择经济类型">
@@ -617,7 +699,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyStatus}>
                 {getFieldDecorator('companyStatus', {
-                  initialValue: data.companyStatus,
+                  initialValue: companyStatus,
                   rules: [{ required: true, message: '请选择企业状态' }],
                 })(
                   <Select placeholder="请选择企业状态">
@@ -633,7 +715,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {
-                  initialValue: data.scale,
+                  initialValue: scale || undefined,
                 })(
                   <Select allowClear placeholder="请选择规模情况">
                     {scales.map(item => (
@@ -648,7 +730,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.licenseType}>
                 {getFieldDecorator('licenseType', {
-                  initialValue: data.licenseType,
+                  initialValue: licenseType,
                   rules: [{ required: true, message: '请选择营业执照类别' }],
                 })(
                   <Select placeholder="请选择营业执照类别">
@@ -664,14 +746,14 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.createDate}>
                 {getFieldDecorator('createDate', {
-                  initialValue: moment(data.createDate, 'YYYY-MM-DD'),
+                  initialValue: createDate && moment(createDate, 'YYYY-MM-DD'),
                 })(<DatePicker placeholder="请选择成立时间" style={{ width: '100%' }} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.groupName}>
                 {getFieldDecorator('groupName', {
-                  initialValue: data.groupName,
+                  initialValue: groupName,
                   getValueFromEvent: this.handleTrim,
                 })(<Input placeholder="请输入集团公司名称" />)}
               </Form.Item>
@@ -681,7 +763,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={16} md={24} sm={24}>
               <Form.Item label={fieldLabels.businessScope}>
                 {getFieldDecorator('businessScope', {
-                  initialValue: data.businessScope,
+                  initialValue: businessScope,
                 })(<TextArea rows={4} placeholder="请输入经营范围" />)}
               </Form.Item>
             </Col>
@@ -708,7 +790,9 @@ export default class CompanyDetail extends PureComponent {
   renderOtherInfo() {
     const {
       company: {
-        detail: { data },
+        detail: {
+          data: { maintenanceUnitName },
+        },
       },
       form: { getFieldDecorator },
     } = this.props;
@@ -721,7 +805,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.maintenanceId}>
                 {getFieldDecorator('maintenanceId', {
-                  initialValue: data.maintenanceId,
+                  initialValue: maintenanceUnitName,
                 })(
                   <Input
                     placeholder="请选择消防维修单位"

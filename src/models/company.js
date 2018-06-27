@@ -6,6 +6,8 @@ import {
   addCompany,
   updateCompany,
   queryMaintenanceCompanies,
+  fetchArea,
+  upload,
 } from '../services/company/company.js';
 
 export default {
@@ -18,11 +20,7 @@ export default {
     companyStatuses: [],
     scales: [],
     licenseTypes: [],
-    formData: {
-      name: undefined,
-      practicalAddress: undefined,
-      industryCategory: undefined,
-    },
+    area: [],
     pageNum: 1,
     isLast: false,
     detail: {
@@ -61,31 +59,46 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, success, error }, { call, put }) {
       const response = yield call(queryCompanies, payload);
       if (response.code === 200) {
         yield put({
           type: 'query',
           payload: response.data,
         });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
-    *appendFetch({ payload }, { call, put }) {
+    *appendFetch({ payload, success, error }, { call, put }) {
       const response = yield call(queryCompanies, payload);
       if (response.code === 200) {
         yield put({
           type: 'appendList',
           payload: response.data,
         });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
-    *fetchDict({ payload }, { call, put }) {
-      const response = yield call(queryDict, payload);
+    *fetchDict(
+      {
+        payload: { type, key },
+      },
+      { call, put }
+    ) {
+      const response = yield call(queryDict, { type });
       if (response.code === 200) {
         yield put({
           type: 'queryDict',
           payload: {
-            type: payload.type,
+            key,
             list: response.data.list,
           },
         });
@@ -102,16 +115,22 @@ export default {
           success();
         }
       } else if (error) {
-        error();
+        error(response.msg);
       }
     },
-    *fetchCompany({ payload }, { call, put }) {
+    // 获取企业详情
+    *fetchCompany({ payload, success, error }, { call, put }) {
       const response = yield call(queryCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryCompany',
           payload: response.data,
         });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
     *insertCompany({ payload, success, error }, { call }) {
@@ -121,16 +140,21 @@ export default {
           success();
         }
       } else if (error) {
-        error(response.error);
+        error(response.msg);
       }
     },
-    *editCompany({ payload }, { call, put }) {
+    *editCompany({ payload, success, error }, { call, put }) {
       const response = yield call(updateCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'updateCompany',
           payload: response.data,
         });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
     *fetchModalList({ payload }, { call, put }) {
@@ -140,6 +164,43 @@ export default {
           type: 'queryModalList',
           payload: response.data,
         });
+      }
+    },
+    // 追加行政区域
+    *fetchArea(
+      {
+        payload: { parentId, ids },
+        success,
+        error,
+      },
+      { call, put }
+    ) {
+      const response = yield call(fetchArea, { parentId });
+      if (response.code === 200) {
+        yield put({
+          type: 'queryArea',
+          payload: {
+            ids,
+            list: response.data.list,
+          },
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    /* 上传文件 */
+    *upload({ payload, success, error }, { call }) {
+      const response = yield call(upload, payload);
+      console.log(response);
+      if (response.code === 200) {
+        if (success) {
+          success(response);
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
   },
@@ -177,22 +238,21 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    queryDict(state, { payload }) {
+    queryDict(
+      state,
+      {
+        payload: { key, list },
+      }
+    ) {
       return {
         ...state,
-        [payload.type]: payload.list,
+        [key]: list,
       };
     },
     delete(state, { payload }) {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
-      };
-    },
-    updateFormData(state, { payload }) {
-      return {
-        ...state,
-        formData: payload,
       };
     },
     queryCompany(state, { payload }) {
@@ -226,6 +286,76 @@ export default {
       return {
         ...state,
         modal: payload,
+      };
+    },
+    queryArea(
+      state,
+      {
+        payload: { ids, list },
+      }
+    ) {
+      return {
+        ...state,
+        area:
+          ids.length === 0
+            ? list.map(item => {
+                return {
+                  ...item,
+                  isLeaf: false,
+                };
+              })
+            : state.area.map(province => {
+                if (province.id === ids[0]) {
+                  if (ids.length !== 1) {
+                    return {
+                      ...province,
+                      children: province.children.map(city => {
+                        if (city.id === ids[1]) {
+                          if (ids.length !== 2) {
+                            return {
+                              ...city,
+                              children: city.children.map(district => {
+                                if (district.id === ids[2]) {
+                                  return {
+                                    ...district,
+                                    children: list,
+                                    loading: false,
+                                  };
+                                }
+                                return district;
+                              }),
+                            };
+                          } else {
+                            return {
+                              ...city,
+                              children: list.map(item => {
+                                return {
+                                  ...item,
+                                  isLeaf: false,
+                                };
+                              }),
+                              loading: false,
+                            };
+                          }
+                        }
+                        return city;
+                      }),
+                    };
+                  } else {
+                    return {
+                      ...province,
+                      children: list.map(item => {
+                        return {
+                          ...item,
+                          isLeaf: false,
+                        };
+                      }),
+                      loading: false,
+                    };
+                  }
+                }
+                return province;
+              }),
       };
     },
   },

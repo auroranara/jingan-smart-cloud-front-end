@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, Select, Modal, message, Spin, Affix } from 'antd';
+import { Form, List, Card, Button, Icon, Input, Select, Modal, message, Spin } from 'antd';
 import { Link } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -21,39 +21,42 @@ const defaultFormData = {
   industryCategory: undefined,
 };
 
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 @connect(
   ({ company, loading }) => ({
     company,
     loading: loading.models.company,
   }),
   dispatch => ({
+    // 获取初始数据列表
     fetch(action) {
       dispatch({
         type: 'company/fetch',
         ...action,
       });
     },
+    // 追加数据列表
     appendFetch(action) {
       dispatch({
         type: 'company/appendFetch',
         ...action,
       });
     },
-    fetchCategories(action) {
+    // 获取行业类别
+    fetchDict(action) {
       dispatch({
-        type: 'company/fetchCategories',
+        type: 'company/fetchDict',
         ...action,
       });
     },
+    // 删除企业
     remove(action) {
       dispatch({
         type: 'company/remove',
-        ...action,
-      });
-    },
-    updateFormData(action) {
-      dispatch({
-        type: 'company/updateFormData',
         ...action,
       });
     },
@@ -61,18 +64,25 @@ const defaultFormData = {
 )
 @Form.create()
 export default class CompanyList extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.formData = defaultFormData;
+  }
+
   componentDidMount() {
+    const { fetch, fetchDict } = this.props;
     // 获取企业列表
-    this.props.fetch({
+    fetch({
       payload: {
         pageSize,
         pageNum: 1,
       },
     });
     // 获取类别列表
-    this.props.fetchCategories({
+    fetchDict({
       payload: {
-        type: 'industryCategories',
+        type: 'industryTypeId',
+        key: 'industryCategories',
       },
     });
   }
@@ -104,14 +114,11 @@ export default class CompanyList extends PureComponent {
   handleClickToQuery = () => {
     const {
       fetch,
-      updateFormData,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    // 修改store中的数据
-    updateFormData({
-      payload: data,
-    });
+    // 修改表单数据
+    this.formData = data;
     // 重新请求数据
     fetch({
       payload: {
@@ -126,15 +133,12 @@ export default class CompanyList extends PureComponent {
   handleClickToReset = () => {
     const {
       fetch,
-      updateFormData,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
     resetFields();
-    // 清除store中的数据
-    updateFormData({
-      payload: defaultFormData,
-    });
+    // 修改表单数据
+    this.formData = defaultFormData;
     // 重新请求数据
     fetch({
       payload: {
@@ -151,14 +155,14 @@ export default class CompanyList extends PureComponent {
     }
     const {
       appendFetch,
-      company: { pageNum, formData },
+      company: { pageNum },
     } = this.props;
     // 请求数据
     appendFetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...formData,
+        ...this.formData,
       },
     });
   };
@@ -171,50 +175,48 @@ export default class CompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <Affix offsetTop={0} target={() => document.getElementById('root')}>
-        <Card>
-          <Form layout="inline">
-            <FormItem>
-              {getFieldDecorator('name', {
-                initialValue: defaultFormData.name,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位名称" />)}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('practicalAddress', {
-                initialValue: defaultFormData.practicalAddress,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位地址" />)}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('industryCategory', {
-                initialValue: defaultFormData.industryCategory,
-              })(
-                <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
-                  {industryCategories.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.label}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem>
-              <Button type="primary" onClick={this.handleClickToQuery}>
-                查询
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button onClick={this.handleClickToReset}>重置</Button>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/base-info/company/add">
-                新增
-              </Button>
-            </FormItem>
-          </Form>
-        </Card>
-      </Affix>
+      <Card>
+        <Form layout="inline">
+          <FormItem>
+            {getFieldDecorator('name', {
+              initialValue: defaultFormData.name,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位名称" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('practicalAddress', {
+              initialValue: defaultFormData.practicalAddress,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位地址" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('industryCategory', {
+              initialValue: defaultFormData.industryCategory,
+            })(
+              <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
+                {industryCategories.map(item => (
+                  <Option value={item.id} key={item.id}>
+                    {item.label}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+          <FormItem>
+            <Button type="primary" onClick={this.handleClickToQuery}>
+              查询
+            </Button>
+          </FormItem>
+          <FormItem>
+            <Button onClick={this.handleClickToReset}>重置</Button>
+          </FormItem>
+          <FormItem style={{ float: 'right' }}>
+            <Button type="primary" href="#/base-info/company/add">
+              新增
+            </Button>
+          </FormItem>
+        </Form>
+      </Card>
     );
   }
 
@@ -253,16 +255,16 @@ export default class CompanyList extends PureComponent {
                 }
               >
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`地址：${item.practicalAddress || ''}`}
+                  地址：{item.practicalAddress || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`行业类别：${item.industryCategory || ''}`}
+                  行业类别：{item.industryCategoryLabel || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`负责人：${item.name || ''}`}
+                  负责人：{item.principal || getEmptyData()}
                 </Ellipsis>
                 <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  {`联系电话：${item.name || ''}`}
+                  联系电话：{item.contact || getEmptyData()}
                 </Ellipsis>
               </Card>
             </List.Item>
@@ -274,7 +276,7 @@ export default class CompanyList extends PureComponent {
 
   render() {
     const {
-      company: { list, isLast },
+      company: { list },
       loading,
     } = this.props;
 
@@ -283,12 +285,11 @@ export default class CompanyList extends PureComponent {
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
-            </div>
-          )}
+        {loading && (
+          <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+            <Spin />
+          </div>
+        )}
       </PageHeaderLayout>
     );
   }

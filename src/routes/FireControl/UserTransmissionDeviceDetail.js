@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Icon, Modal, Spin } from 'antd';
+import { Button, Icon, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -11,6 +11,14 @@ import ModalForm from './ModalForm';
 
 const { Description } = DescriptionList;
 const { confirm } = Modal;
+const ButtonGroup = Button.Group;
+
+const breadcrumbList = [
+  { title: '首页', href: '/' },
+  { title: '消防维保' },
+  { title: '用户传输装置', href: '/fire-control/user-transmission-device' },
+  { title: '详情页' },
+];
 
 // 若顺序不是按照当前顺序的话，改成数组
 const DESCRIP_MAP = {
@@ -20,10 +28,10 @@ const DESCRIP_MAP = {
   licenseTypeLabel: '营业执照类型',
   registerAddress: '注册地址',
   economicTypeLabel: '经济类型',
-  scaleLabel: '规上',
+  scaleLabel: '规模',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
-  createDate: '成立时间',
+  createTime: '成立时间',
 };
 
 const deviceModalFormItems = [
@@ -95,6 +103,13 @@ const hostModalFormItemsAdd = hostModalFormItems.map(item => {
   return item;
 });
 
+function dispatchCallback(code, successMsg, failMsg) {
+  if (code === 200)
+    message.info(successMsg);
+  else
+    message.warn(failMsg);
+}
+
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.effects['transmission/fetchDetail'],
@@ -146,7 +161,7 @@ export default class UserTransmissionDeviceDetail extends Component {
         params: { companyId },
       },
     } = this.props;
-    dispatch({ type: 'transmission/deviceAddAsync', payload: { companyId, data: fieldsValue } });
+    dispatch({ type: 'transmission/deviceAddAsync', payload: { companyId, data: fieldsValue }, callback: dispatchCallback });
   };
 
   // 带入了一个参数record，是为了从card中对应的地方获取数据同步到其父组件的state中，进行变量提升，
@@ -169,6 +184,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/deviceUpdateAsync',
       payload: { companyId, transmissionId, data: fieldsValue },
+      callback: dispatchCallback,
     });
   };
 
@@ -192,6 +208,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/deviceDeleteAsync',
       payload: { companyId, transmissionId: deviceId },
+      callback: dispatchCallback,
     });
   };
 
@@ -220,6 +237,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/hostAddAsync',
       payload: { companyId, transmissionId, data: fieldsValue },
+      callback: dispatchCallback,
     });
   };
 
@@ -241,6 +259,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/hostUpdateAsync',
       payload: { companyId, transmissionId, hostId, data: fieldsValue },
+      callback: dispatchCallback,
     });
   };
 
@@ -264,6 +283,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({
       type: 'transmission/hostDeleteAsync',
       payload: { companyId, transmissionId, hostId },
+      callback: dispatchCallback,
     });
   };
 
@@ -283,26 +303,28 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     const action = (
       <Fragment>
+        <ButtonGroup>
+          <Button onClick={this.downloadPointPositionTemplate}>
+            下载点位
+          </Button>
+          <Button onClick={this.exportPointPositionClick}>
+            导出点位
+          </Button>
+        </ButtonGroup>
         <Button type="primary" onClick={this.handleDeviceAddClick}>
-          新增用户传输装置
-        </Button>
-        <Button type="primary" onClick={this.downloadPointPositionTemplate}>
-          下载点位模板
-        </Button>
-        <Button type="primary" onClick={this.exportPointPositionClick}>
-          导出点位数据
+          新增装置
         </Button>
       </Fragment>
     );
 
     const description = (
-      <DescriptionList size="small">
+      <DescriptionList size="small" col={3}>
         {Object.keys(DESCRIP_MAP).map(
           k =>
             // 兼容实际地址 practical pratical
             companyDetail[k] === undefined ? null : (
               <Description key={k} term={DESCRIP_MAP[k]}>
-                {companyDetail[k] === null ? null : companyDetail[k].toString()}
+                {companyDetail[k] === null ? '暂无信息' : companyDetail[k].toString()}
               </Description>
             )
         )}
@@ -342,6 +364,7 @@ export default class UserTransmissionDeviceDetail extends Component {
     return (
       <PageHeaderLayout
         title="常熟市鑫博伟纺织有限公司"
+        breadcrumbList={breadcrumbList}
         logo={<Icon type="apple" />}
         action={action}
         content={description}
