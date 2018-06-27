@@ -24,9 +24,29 @@ const fields = [
     },
   },
 ];
+// 默认页面显示数量列表
+const defaultPageSizeOptions = ['5', '10', '15', '20'];
+// 表格列
+const defaultColumns = [
+  {
+    title: '企业名称',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '企业代码',
+    dataIndex: 'code',
+    key: 'code',
+  },
+];
 
 @Form.create()
 export default class CompanyModal extends PureComponent {
+  state = {
+    selectedRowKeys: [],
+    name: undefined,
+  };
+
   /* 关闭按钮点击事件 */
   handleClose = () => {
     const { onClose } = this.props;
@@ -45,26 +65,80 @@ export default class CompanyModal extends PureComponent {
 
   /* 查询按钮点击事件 */
   handleSearch = value => {
-    const { onSearch } = this.props;
-    if (onSearch) {
-      onSearch(value);
-    }
+    const {
+      fetch,
+      modal: {
+        pagination: { pageSize },
+      },
+    } = this.props;
+    this.setState({
+      ...value,
+      selectedRowKeys: [],
+    });
+    fetch({
+      payload: {
+        ...value,
+        pageNum: 1,
+        pageSize,
+      },
+    });
   };
 
   /* 选择按钮点击事件 */
-  handleSelect = value => {
-    const { onSelect } = this.props;
+  handleSelect = () => {
+    const { selectedRowKeys } = this.state;
+    const {
+      modal: { list },
+      onSelect,
+    } = this.props;
+    const selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
     if (onSelect) {
-      onSelect(value);
+      onSelect(selectedData);
     }
   };
 
   /* 重置按钮点击事件 */
   handleReset = value => {
-    const { onReset } = this.props;
-    if (onReset) {
-      onReset(value);
-    }
+    const {
+      fetch,
+      modal: {
+        pagination: { pageSize },
+      },
+    } = this.props;
+    this.setState({
+      ...value,
+      selectedRowKeys: [],
+    });
+    fetch({
+      payload: {
+        ...value,
+        pageNum: 1,
+        pageSize,
+      },
+    });
+  };
+
+  /* 选择更换 */
+  handleSelectChange = selectedRowKeys => {
+    this.setState({
+      selectedRowKeys,
+    });
+  };
+
+  /* 更换页码或显示数量 */
+  handleChangePagination = ({ current, pageSize }) => {
+    const { fetch } = this.props;
+    const { name } = this.state;
+    this.setState({
+      selectedRowKeys: [],
+    });
+    fetch({
+      payload: {
+        name,
+        pageNum: current,
+        pageSize,
+      },
+    });
   };
 
   /* 渲染选择按钮 */
@@ -73,7 +147,7 @@ export default class CompanyModal extends PureComponent {
       <Button
         type="primary"
         onClick={this.handleSelect}
-        disabled={!this.props.rowSelection.selectedRowKeys.length}
+        disabled={!this.state.selectedRowKeys.length}
       >
         选择
       </Button>
@@ -86,20 +160,22 @@ export default class CompanyModal extends PureComponent {
       width,
       title,
       loading,
-      size,
       rowKey,
-      dataSource,
       columns,
       pagination,
       rowSelection,
-      onChange,
+      modal: {
+        list,
+        pagination: { total, pageNum, pageSize },
+      },
     } = this.props;
+    const { selectedRowKeys } = this.state;
 
     return (
       <Modal
-        title={title}
+        title={title || '选择消防维修单位'}
+        width={width || 900}
         visible={visible}
-        width={width}
         onCancel={this.handleClose}
         afterClose={this.handleAfterClose}
         footer={null}
@@ -117,13 +193,28 @@ export default class CompanyModal extends PureComponent {
           style={{ marginTop: '16px' }}
           loading={loading}
           bordered
-          size={size}
-          rowKey={rowKey}
-          dataSource={dataSource}
-          columns={columns}
-          pagination={pagination}
-          rowSelection={rowSelection}
-          onChange={onChange}
+          size="middle"
+          rowKey={rowKey || 'id'}
+          dataSource={list || []}
+          columns={columns || defaultColumns}
+          pagination={{
+            total,
+            current: pageNum,
+            pageSize,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            showTotal: t => `共 ${t} 条记录`,
+            pageSizeOptions: defaultPageSizeOptions,
+            ...pagination,
+          }}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: this.handleSelectChange,
+            hideDefaultSelections: true,
+            type: 'radio',
+            ...rowSelection,
+          }}
+          onChange={this.handleChangePagination}
         />
       </Modal>
     );
