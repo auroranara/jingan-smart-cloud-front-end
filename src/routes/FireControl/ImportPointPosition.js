@@ -21,13 +21,16 @@ export default class ImportPointPosition extends PureComponent {
     showResult: false,
   };
   handleChange = (info) => {
+    console.log('info', info);
+
     if (info.file.status === 'uploading ') {
       this.setState({ loading: true })
     }
     if (info.file.response && info.file.response.code && info.file.response.code === 200) {
       this.setState({ showResult: true, loading: false })
       if (info.file.response.data) {
-        this.setState({ failed: info.file.response.data.failed, success: info.file.response.data.success, total: info.file.response.data.total, updated: info.file.response.data.updated })
+        const { failed, success, updated, total } = info.file.response.data
+        this.setState({ failed, success, updated, total })
         if (info.file.response.data.list && info.file.response.data.list.length) {
           this.setState({ dataSource: info.file.response.data.list })
         }
@@ -213,12 +216,6 @@ export default class ImportPointPosition extends PureComponent {
               title={this.state.failed > 0 ? "校验失败" : "校验成功"}
               description={message}
             />
-            {/* <Result
-              style={{ display: this.state.showError ? 'block' : 'none', width: '100%', fontSize: '72px' }}
-              type="error"
-              title="校验失败"
-              description={<span className={styles.message}>本次导入共有信息错误<span className={styles.error}>{this.state.failed}</span>条</span>}
-            /> */}
             <div style={{ display: this.state.failed > 0 ? 'block' : 'none' }}>
               {/* <span className={styles.tableTitle}>错误信息提示框：</span> */}
               <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
