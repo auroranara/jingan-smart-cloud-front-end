@@ -132,7 +132,7 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
-        <DescriptionList>
+        <DescriptionList col={3}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
             {registerAddress || getEmptyData()}
@@ -180,7 +180,7 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
-        <DescriptionList>
+        <DescriptionList col={3}>
           <Description term={fieldLabels.industryCategory}>
             {industryCategoryLabel || getEmptyData()}
           </Description>
@@ -231,7 +231,7 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="其他信息" className={styles.card} bordered={false}>
-        <DescriptionList>
+        <DescriptionList col={3}>
           <Description term={fieldLabels.maintenanceId}>
             {maintenanceUnitName || getEmptyData()}
           </Description>
