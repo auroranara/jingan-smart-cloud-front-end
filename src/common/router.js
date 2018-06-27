@@ -120,7 +120,7 @@ export const getRouterData = app => {
     },
     // 新增维保公司
     '/fire-control/maintenance-company/add': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+      component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
         import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
       ),
     },

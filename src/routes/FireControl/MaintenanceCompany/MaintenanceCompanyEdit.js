@@ -26,46 +26,46 @@ const breadcrumbList = [
     title: '修改维保单位',
   },
 ];
-// 默认页面显示数量列表
-const pageSizeOptions = ['5', '10', '15', '20'];
-// 表格列
-const columns = [
-  {
-    title: '姓名',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '年龄',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: '住址',
-    dataIndex: 'address',
-    key: 'address',
-  },
-];
+
 /* 默认分页参数 */
 const defaultPagination = {
   pageNum: 1,
   pageSize: 10,
 };
 
-@connect(({ maintenanceCompany, company, loading }) => ({
-  maintenanceCompany,
-  company,
-  loading: loading.effects['maintenanceCompany/fetchDetail'],
-}))
+@connect(
+  ({ maintenanceCompany, company, loading }) => ({
+    maintenanceCompany,
+    company,
+    loading: loading.effects['maintenanceCompany/fetchDetail'],
+  }),
+  dispatch => ({
+    // 获取维保单位
+    fetchModalList(action) {
+      dispatch({
+        type: 'company/fetchModalList',
+        ...action,
+      });
+    },
+    // 获取企业
+    fetch(action) {
+      dispatch({
+        type: 'company/fetch',
+        ...action,
+      });
+    },
+    dispatch,
+  })
+)
 @Form.create()
 export default class MaintenanceCmpanyEdit extends PureComponent {
   state = {
     hasSubcompany: false,
-    modal: {
+    maintenanceModal: {
       visible: false,
       loading: false,
-      selectedRowKeys: [],
     },
+    parentId: undefined,
   };
 
   componentDidMount() {
@@ -83,9 +83,12 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
       payload: {
         id,
       },
-      callback(isBranch) {
+      callback({ isBranch, parentId }) {
         // console.log(isBranch);
-        that.setState({ hasSubcompany: isBranch });
+        that.setState({
+          hasSubcompany: isBranch,
+          parentId,
+        });
       },
     });
   }
@@ -103,17 +106,17 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
         return;
       }
 
-      const { companyId, usingStatus, isBranch, parentId } = values;
+      const { usingStatus, isBranch } = values;
+      const { parentId } = this.state;
       // console.log(values, usingStatus, usingStatus ? 1 : 0);
 
       dispatch({
         type: 'maintenanceCompany/updateMaintenanceCompanyAsync',
         payload: {
           id,
-          companyId,
           parentId,
-          usingStatus: usingStatus ? 1 : 0,
-          isBranch: isBranch ? 1 : 0,
+          usingStatus: +usingStatus,
+          isBranch: +isBranch,
         },
         callback(code) {
           // console.log(code);
@@ -124,13 +127,14 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     });
   }
 
-  /* 显示模态框 */
-  handleShowModal = () => {
+  /* 显示选择维保模态框 */
+  handleShowMaintenanceModal = () => {
     const { fetchModalList } = this.props;
-    const { modal } = this.state;
+    const { maintenanceModal } = this.state;
     this.setState({
-      modal: {
-        ...modal,
+      maintenanceModal: {
+        type: 'company/fetchModalList',
+        ...maintenanceModal,
         visible: true,
       },
     });
@@ -141,190 +145,53 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     });
   };
 
-  /* 隐藏模态框 */
-  handleHideModal = () => {
-    const { modal } = this.state;
+  /* 隐藏维保模态框 */
+  handleHideMaintenanceModal = () => {
+    const { maintenanceModal } = this.state;
     this.setState({
-      modal: {
-        ...modal,
+      maintenanceModal: {
+        ...maintenanceModal,
         visible: false,
       },
     });
   };
 
-  /* 查询按钮点击事件 */
-  handleSearch = value => {
-    const {
-      fetchModalList,
-      company: {
-        modal: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        ...value,
-        selectedRowKeys: [],
-      },
-    });
-    fetchModalList({
-      payload: {
-        ...value,
-        ...defaultPagination,
-        pageSize,
-      },
-    });
-  };
-
-  /* 重置按钮点击事件 */
-  handleReset = value => {
-    const {
-      fetchModalList,
-      company: {
-        modal: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        ...value,
-        selectedRowKeys: [],
-      },
-    });
-    fetchModalList({
-      payload: {
-        ...value,
-        ...defaultPagination,
-        pageSize,
-      },
-    });
-  };
-
-  /* 选择更换 */
-  handleSelectChange = selectedRowKeys => {
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        selectedRowKeys,
-      },
-    });
-  };
-
   /* 选择按钮点击事件 */
-  handleSelect = () => {
+  handleSelectMaintenance = value => {
     const {
-      modal: { selectedRowKeys },
-    } = this.state;
-    const {
-      company: {
-        modal: { list },
-      },
       form: { setFieldsValue },
     } = this.props;
-    const selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
-    setFieldsValue({ maintenanceId: selectedData.name });
+    setFieldsValue({ parentId: value.name });
     this.setState({
-      // maintenanceId: selectedData.id,
+      parentId: value.id,
     });
     this.handleHideModal();
   };
 
-  /* 更换页码或显示数量 */
-  handleChangePagination = ({ current, pageSize }) => {
-    const { fetchModalList } = this.props;
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        selectedRowKeys: [],
-      },
-    });
-    fetchModalList({
-      payload: {
-        name: modal.name,
-        pageNum: current,
-        pageSize,
-      },
-    });
-  };
-
   /* 渲染选择维保单位模态框 */
-  renderModal() {
+  renderMaintenanceModal() {
     const {
-      modal: { loading, visible, selectedRowKeys },
+      maintenanceModal: { loading, visible },
     } = this.state;
     const {
-      company: {
-        modal: {
-          list,
-          pagination: { pageNum, pageSize, total },
-        },
-      },
+      company: { modal },
+      fetchModalList,
     } = this.props;
     const modalProps = {
       // 模态框是否显示
       visible,
-      // 模态框宽度
-      width: '900px',
-      // 模态框标题
-      title: '选择消防维修单位',
       // 模态框点击关闭按钮回调
-      onClose: this.handleHideModal,
+      onClose: this.handleHideMaintenanceModal,
       // 完全关闭后回调
       afterClose: () => {
-        this.maintenanceIdInput.blur();
+        this.parentIdInput.blur();
       },
-      // 查询回调
-      onSearch: this.handleSearch,
-      // 重置回调
-      onReset: this.handleReset,
+      modal,
+      fetch: fetchModalList,
       // 选择回调
-      onSelect: this.handleSelect,
+      onSelect: this.handleSelectMaintenance,
       // 表格是否正在加载
       loading,
-      // 表格大小
-      size: 'middle',
-      // 表格源数据
-      dataSource: list,
-      // 表格列
-      columns,
-      // 表格数据主键
-      rowKey: 'id',
-      // 更改显示数量或页码
-      onChange: this.handleChangePagination,
-      // 选择设置
-      rowSelection: {
-        // 选中的行
-        selectedRowKeys,
-        // 选中行的更换
-        onChange: this.handleSelectChange,
-        hideDefaultSelections: true,
-        type: 'radio',
-      },
-      // 分页设置
-      pagination: {
-        // 总数
-        total,
-        // 当前页码
-        current: pageNum,
-        // 当前显示数量
-        pageSize,
-        // 是否显示快速跳转
-        showQuickJumper: true,
-        // 是否显示每页数量列表
-        showSizeChanger: true,
-        // 显示总数
-        showTotal: t => `共 ${t} 条记录`,
-        // 每页显示数量列表
-        pageSizeOptions,
-      },
     };
 
     return <CompanyModal {...modalProps} />;
@@ -365,15 +232,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">
-              {getFieldDecorator('companyId', {
-                initialValue: data.companyId,
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择企业',
-                  },
-                ],
-              })(<Input disabled />)}
+              <div>{data.companyName}</div>
             </FormItem>
 
             <FormItem {...formItemLayout} label="企业状态">
@@ -418,7 +277,15 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
                       message: '所属总公司',
                     },
                   ],
-                })(<Input placeholder="所属总公司" />)}
+                })(
+                  <Input
+                    placeholder="所属总公司"
+                    ref={input => {
+                      this.parentIdInput = input;
+                    }}
+                    onClick={this.handleShowMaintenanceModal}
+                  />
+                )}
               </FormItem>
             )}
 
@@ -434,7 +301,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
             </FormItem>
           </Form>
         </Card>
-        {this.renderModal()}
+        {this.renderMaintenanceModal()}
       </PageHeaderLayout>
     );
   }
