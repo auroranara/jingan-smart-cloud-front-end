@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Table, Upload, Button, Icon, Popover } from 'antd';
+import { Form, Card, Table, Upload, Button, Icon, Popover, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
@@ -12,11 +12,22 @@ import Result from '../../components/Result';
 @Form.create()
 export default class ImportPointPosition extends PureComponent {
   state = {
+    loading: false,
+    dataSource: [],
+    showResult: false,
     showError: false,
   };
-  handleShow = () => {
-    this.setState({ showError: !this.state.showError })
-  };
+  handleChange = (info) => {
+    if (info.file.status === 'uploading ') {
+      this.setState({ loading: true })
+    }
+    if (info.file.response && info.file.response.code && info.file.response.code === 200) {
+      this.setState({ showResult: true, showError: false, loading: false })
+      if (info.file.response.data && info.file.response.data.list && info.file.response.data.list.length) {
+        this.setState({ showError: true, dataSource: info.file.response.data.list })
+      }
+    }
+  }
   render() {
     const {
       match: {
@@ -51,62 +62,6 @@ export default class ImportPointPosition extends PureComponent {
         </div>
       )
     }
-    /*  const table = () => {
-       if (this.state.showError) {
-         return (
-           <div>
-             <span className={styles.tableTitle}>错误信息提示框：</span>
-             <Table rowKey="row" pagination={false} dataSource={dataSource} columns={columns} scroll={{ x: 1500 }} />
-           </div>
-         )
-       }
-     } */
-    const dataSource = [
-      {
-        unitType: '【42】点型光电感烟火灾探测器',
-        componentModel: 'TY-GD-G3',
-        createCompanyName: '无锡海湾电子有限公司',
-        systemType: '【1】火灾报警系统 ',
-        partNumber: 4,
-        remark: 6,
-        row: 5,
-        installFloor: '15d',
-        error: [
-          {
-            key: 'partNumber',
-            value: '楼层格式错误',
-          },
-        ],
-        installAddress: '7号楼15层东',
-        loopNumber: '172',
-      },
-      {
-        unitType: '',
-        componentModel: 'TY-GD-G3',
-        createCompanyName: '无锡海湾电子有限公司',
-        systemType: '【1】火灾报警系统 ',
-        partNumber: '1X',
-        remark: 3,
-        row: 2,
-        installFloor: 14,
-        error: [
-          {
-            key: 'unitType',
-            value: '数据不能为空；部件类型错误',
-          },
-          {
-            key: 'loopNumber',
-            value: '回路号格式错误',
-          },
-          {
-            key: 'partNumber',
-            value: '部件号格式错误',
-          },
-        ],
-        installAddress: '7号楼14层东',
-        loopNumber: '162X',
-      },
-    ];
     const columns = [
       {
         title: '行序号',
@@ -209,20 +164,12 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
+      action: `http://118.126.110.115:3001/mock/28/acloud_new/v2/pointData/pointData/${hostId}`,
       headers: {
         authorization: 'authorization-text',
       },
-      /*       onChange(info) {
-              if (info.file.status !== 'uploading') {
-                console.log(info.file, info.fileList);
-              }
-              if (info.file.status === 'done') {
-                message.success(`${info.file.name} file uploaded successfully`);
-              } else if (info.file.status === 'error') {
-                message.error(`${info.file.name} file upload failed.`);
-              }
-            }, */
+      accept: '.xls,.xlsx',
+      onChange: this.handleChange,
     };
 
     return (
@@ -239,26 +186,27 @@ export default class ImportPointPosition extends PureComponent {
                   <Icon type="upload" /> 选择文件
                 </Button>
               </Upload>
-              <Button onClick={this.handleShow.bind(this)}>test</Button>
             </FormItem>
           </Form>
         </Card>
-        <Card className={styles.cardContainer}>
-          <Result
-            style={{ display: this.state.showError ? 'none' : 'block', width: '100%' }}
-            type="success"
-            title="提交成功"
-          />
-          <Result
-            style={{ display: this.state.showError ? 'block' : 'none', width: '100%' }}
-            type="error"
-            title="提交失败"
-          />
-          <div style={{ display: this.state.showError ? 'block' : 'none' }}>
-            <span className={styles.tableTitle}>错误信息提示框：</span>
-            <Table rowKey="row" pagination={false} dataSource={dataSource} columns={columns} scroll={{ x: 1500 }} />
-          </div>
-        </Card>
+        <Spin spinning={this.state.loading}>
+          <Card className={styles.cardContainer} style={{ display: this.state.showResult ? 'block' : 'none' }}>
+            <Result
+              style={{ display: this.state.showError ? 'none' : 'block', width: '100%' }}
+              type="success"
+              title="提交成功"
+            />
+            <Result
+              style={{ display: this.state.showError ? 'block' : 'none', width: '100%' }}
+              type="error"
+              title="提交失败"
+            />
+            <div style={{ display: this.state.showError ? 'block' : 'none' }}>
+              <span className={styles.tableTitle}>错误信息提示框：</span>
+              <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
+            </div>
+          </Card>
+        </Spin>
       </PageHeaderLayout>
     );
   }
