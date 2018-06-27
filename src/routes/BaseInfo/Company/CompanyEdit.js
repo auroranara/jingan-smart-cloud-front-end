@@ -14,6 +14,7 @@ import {
   Icon,
   message,
   Upload,
+  Spin,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -59,7 +60,7 @@ const fieldLabels = {
   code: '企业社会信用码',
   companyIchnography: '企业平面图',
   companyStatus: '企业状态',
-  createDate: '成立时间',
+  createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
@@ -149,7 +150,7 @@ const defaultPagination = {
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   state = {
-    loading: false,
+    loading: true,
     ichnographyList: [],
     contractList: [],
     modal: {
@@ -204,12 +205,29 @@ export default class CompanyDetail extends PureComponent {
                               parentId: district,
                               ids: [province, city, district],
                             },
+                            success: () => {
+                              this.setState({
+                                loading: false,
+                              });
+                            },
+                          });
+                        } else {
+                          this.setState({
+                            loading: false,
                           });
                         }
                       },
                     });
+                  } else {
+                    this.setState({
+                      loading: false,
+                    });
                   }
                 },
+              });
+            } else {
+              this.setState({
+                loading: false,
               });
             }
           },
@@ -271,7 +289,7 @@ export default class CompanyDetail extends PureComponent {
     validateFieldsAndScroll(
       (
         error,
-        { administrativeDivision: [province, city, district, town], createDate, ...restFields }
+        { administrativeDivision: [province, city, district, town], createTime, ...restFields }
       ) => {
         if (!error) {
           const { maintenanceId } = this.state;
@@ -286,7 +304,7 @@ export default class CompanyDetail extends PureComponent {
               city,
               district,
               town,
-              createDate: createDate && createDate.format('YYYY-MM-DD'),
+              createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
             },
             success: () => {
@@ -309,7 +327,7 @@ export default class CompanyDetail extends PureComponent {
           city,
           district,
           town,
-          createDate: createDate && createDate.format('YYYY-MM-DD'),
+          createTime: createTime && createTime.format('YYYY-MM-DD'),
           maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
         });
       }
@@ -652,7 +670,7 @@ export default class CompanyDetail extends PureComponent {
             companyStatus,
             scale,
             licenseType,
-            createDate,
+            createTime,
             groupName,
             businessScope,
           },
@@ -744,9 +762,11 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.createDate}>
-                {getFieldDecorator('createDate', {
-                  initialValue: createDate && moment(createDate, 'YYYY-MM-DD'),
+              <Form.Item label={fieldLabels.createTime}>
+                {getFieldDecorator('createTime', {
+                  initialValue: createTime
+                    ? moment(moment(createTime).format('YYYY/MM/DD'), 'YYYY/MM/DD')
+                    : undefined,
                 })(<DatePicker placeholder="请选择成立时间" style={{ width: '100%' }} />)}
               </Form.Item>
             </Col>
@@ -964,18 +984,21 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
+    const { loading } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         wrapperClassName={styles.advancedForm}
       >
-        {this.renderBasicInfo()}
-        {this.renderMoreInfo()}
-        {/* {this.renderPersonalInfo()} */}
-        {this.renderOtherInfo()}
-        {this.renderFooterToolbar()}
-        {this.renderModal()}
+        <Spin spinning={loading}>
+          {this.renderBasicInfo()}
+          {this.renderMoreInfo()}
+          {/* {this.renderPersonalInfo()} */}
+          {this.renderOtherInfo()}
+          {this.renderFooterToolbar()}
+          {this.renderModal()}
+        </Spin>
       </PageHeaderLayout>
     );
   }
