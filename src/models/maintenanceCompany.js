@@ -3,7 +3,8 @@ import {
   deleteMaintenanceCompany,
   queryMaintenanceCompany,
   queryMaintenanceCompanyinfo,
-} from '../services/api.js';
+  updateMaintenanceCompany,
+} from '../services/maintenanceCompany.js';
 
 export default {
   namespace: 'maintenanceCompany',
@@ -53,12 +54,24 @@ export default {
         error();
       }
     },
-    *fetchDetail({ payload }, { call, put }) {
+    *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload);
+      if (callback) callback(!!response.data.isBranch);
       yield put({
         type: 'queryDetail',
         payload: response.data,
       });
+    },
+    *updateMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
+      const response = yield call(updateMaintenanceCompany, payload);
+      const { code } = response;
+      if (callback) callback(code);
+      if (code === 200) {
+        yield put({
+          type: 'updateMaintenanceCompany',
+          payload: response.data,
+        });
+      }
     },
   },
 
@@ -115,6 +128,15 @@ export default {
       return {
         ...state,
         formData: payload,
+      };
+    },
+    updateMaintenanceCompany(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
   },
