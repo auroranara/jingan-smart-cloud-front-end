@@ -363,7 +363,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     return (
       <PageHeaderLayout
-        title="常熟市鑫博伟纺织有限公司"
+        title={companyDetail.name}
         breadcrumbList={breadcrumbList}
         logo={<Icon type="apple" />}
         action={action}
