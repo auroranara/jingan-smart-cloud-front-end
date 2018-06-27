@@ -171,4 +171,6 @@ const initProxy = key => {
 
 const key = 'test';
 
+const key = 'test';
+
 export default (noProxy ? {} : delay(initProxy(key), 1000));
