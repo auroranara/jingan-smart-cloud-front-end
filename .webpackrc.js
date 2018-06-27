@@ -19,6 +19,7 @@ export default {
   env: {
     development: {
       extraBabelPlugins: ['dva-hmr'],
+      publicPath: '/',
     },
   },
 <<<<<<< HEAD
@@ -45,31 +46,7 @@ export default {
   html: {
     template: './src/index.ejs',
   },
-  publicPath: '/',
-<<<<<<< HEAD
-  hash: true,
-  lessLoaderOptions: {
-    javascriptEnabled: true,
-  },
-  cssLoaderOptions: {
-    modules: true,
-    getLocalIdent: (context, localIdentName, localName) => {
-      if (context.resourcePath.includes('node_modules')) {
-        return localName;
-      }
-
-      let antdProPath = context.resourcePath.match(/src(.*)/)[1].replace('.less', '');
-      if (context.resourcePath.includes('components')) {
-        antdProPath = antdProPath.replace('components/', '');
-      }
-      const arr = antdProPath
-        .split('/')
-        .map(a => a.replace(/([A-Z])/g, '-$1'))
-        .map(a => a.toLowerCase());
-      return `antd-pro${arr.join('-')}-${localName}`.replace('--', '-');
-    },
-  },
-=======
+  publicPath: '/acloud_new',
   disableDynamicImport: true,
   hash: true,
 >>>>>>> init
