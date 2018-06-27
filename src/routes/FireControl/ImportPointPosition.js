@@ -34,6 +34,9 @@ export default class ImportPointPosition extends PureComponent {
       }
     }
   }
+  handleBack = () => {
+    history.back();
+  }
   render() {
     const {
       match: {
@@ -195,7 +198,7 @@ export default class ImportPointPosition extends PureComponent {
           <Form>
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
               <Upload {...props}>
-                <Button type="primary">
+                <Button type="primary" loading={this.state.loading}>
                   <Icon type="upload" /> 选择文件
                 </Button>
               </Upload>
@@ -205,7 +208,7 @@ export default class ImportPointPosition extends PureComponent {
         <Spin spinning={this.state.loading}>
           <Card className={styles.cardContainer} style={{ display: this.state.showResult ? 'block' : 'none' }}>
             <Result
-              style={{ width: '100%', fontSize: '72px' }}
+              style={{ fontSize: '72px' }}
               type={this.state.failed > 0 ? "error" : "success"}
               title={this.state.failed > 0 ? "校验失败" : "校验成功"}
               description={message}
@@ -220,6 +223,7 @@ export default class ImportPointPosition extends PureComponent {
               {/* <span className={styles.tableTitle}>错误信息提示框：</span> */}
               <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
             </div>
+            <Button style={{ margin: '0 auto', display: 'block', marginTop: '20px' }} type="primary" onClick={this.handleBack}>返回</Button>
           </Card>
         </Spin>
       </PageHeaderLayout>
