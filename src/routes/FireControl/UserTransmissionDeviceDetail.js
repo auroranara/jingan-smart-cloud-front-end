@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Icon, Modal, Spin, message } from 'antd';
+import { Button, Card, Icon, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -347,7 +347,14 @@ export default class UserTransmissionDeviceDetail extends Component {
     // console.log('detailList in render', deviceList);
     // console.log('transmission', this.props.transmission);
 
-    let cards = <div style={{ textAlign: 'center', fontSize: 20 }}>暂无数据</div>
+    let cards = (
+      <Card style={{ textAlign: 'center', fontSize: 18 }}>
+        暂无数据，您现在可以
+        <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 18, marginLeft: 5 }}>
+          新增装置
+        </Button>
+      </Card>
+    );
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
