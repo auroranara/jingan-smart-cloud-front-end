@@ -29,6 +29,7 @@ const breadcrumbList = [
 @Form.create()
 export default class MaintenanceCompanyAdd extends PureComponent {
   state = {
+    // modalVisible: false,
     current: {
       title: '',
       subcompany: false,

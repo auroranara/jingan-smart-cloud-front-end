@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Input, Card, Button, Switch } from 'antd';
+import { Link } from 'react-router-dom';
+import { Form, Input, Card, Switch } from 'antd';
 // import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
@@ -48,7 +49,13 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const {
+      form,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    const { getFieldDecorator } = form;
 
     const formItemLayout = {
       labelCol: {
@@ -130,9 +137,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
             </FormItem>
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary" href="">
-                编辑
-              </Button>
+              <Link to={`/fire-control/maintenance-company/edit/${id}`}>编辑</Link>
             </FormItem>
           </Form>
         </Card>
