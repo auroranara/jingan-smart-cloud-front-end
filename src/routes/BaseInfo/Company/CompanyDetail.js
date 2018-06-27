@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button } from 'antd';
-// import moment from 'moment';
+import { Form, Card, Button, Spin } from 'antd';
+import moment from 'moment';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -40,7 +40,7 @@ const fieldLabels = {
   code: '企业社会信用码',
   companyIchnography: '企业平面图',
   companyStatus: '企业状态',
-  createDate: '成立时间',
+  createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
@@ -80,6 +80,10 @@ const getEmptyData = () => {
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
+  state = {
+    loading: true,
+  };
+
   /* 生命周期函数 */
   componentWillMount() {
     const {
@@ -92,6 +96,11 @@ export default class CompanyDetail extends PureComponent {
     fetchCompany({
       payload: {
         id,
+      },
+      success: () => {
+        this.setState({
+          loading: false,
+        });
       },
     });
   }
@@ -161,7 +170,7 @@ export default class CompanyDetail extends PureComponent {
             companyStatusLabel,
             scaleLabel,
             licenseTypeLabel,
-            createDate,
+            createTime,
             groupName,
             businessScope,
           },
@@ -185,7 +194,9 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.createDate}>{createDate || getEmptyData()}</Description>
+          <Description term={fieldLabels.createTime}>
+            {createTime ? moment(createTime).format('YYYY-MM-DD') : getEmptyData()}
+          </Description>
           <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
           <Description term={fieldLabels.businessScope}>
             {businessScope || getEmptyData()}
@@ -260,17 +271,20 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
+    const { loading } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         wrapperClassName={styles.advancedForm}
       >
-        {this.renderBasicInfo()}
-        {this.renderMoreInfo()}
-        {/* {this.renderPersonalInfo()} */}
-        {this.renderOtherInfo()}
-        {this.renderFooterToolbar()}
+        <Spin spinning={loading}>
+          {this.renderBasicInfo()}
+          {this.renderMoreInfo()}
+          {/* {this.renderPersonalInfo()} */}
+          {this.renderOtherInfo()}
+          {this.renderFooterToolbar()}
+        </Spin>
       </PageHeaderLayout>
     );
   }
