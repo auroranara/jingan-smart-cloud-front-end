@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Input, Card, Button, Switch } from 'antd';
+import { Form, Input, Card, Button, Switch, message } from 'antd';
 // import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
@@ -27,11 +27,17 @@ const breadcrumbList = [
 
 @connect(({ maintenanceCompany, loading }) => ({
   maintenanceCompany,
-  loading: loading.effects['maintenanceCompany/editcompany'],
+  loading: loading.effects['maintenanceCompany/fetchDetail'],
 }))
 @Form.create()
 export default class MaintenanceCmpanyEdit extends PureComponent {
+  state = {
+    hasSubcompany: false,
+  };
+
   componentDidMount() {
+    const that = this;
+
     const {
       dispatch,
       match: {
@@ -40,10 +46,48 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     } = this.props;
     // console.log(id);
     dispatch({
-      type: 'maintenanceCompany/editcompany',
+      type: 'maintenanceCompany/fetchDetail',
       payload: {
         id,
       },
+      callback(isBranch) {
+        // console.log(isBranch);
+        that.setState({ hasSubcompany: isBranch });
+      },
+    });
+  }
+
+  switchOnchange = checked => {
+    this.setState({ hasSubcompany: checked });
+  };
+
+  handleUpdate(id) {
+    const { dispatch, form } = this.props;
+
+    form.validateFields((err, values) => {
+      if (err) {
+        // console.log(err);
+        return;
+      }
+
+      const { companyId, usingStatus, isBranch, parentId } = values;
+      // console.log(values, usingStatus, usingStatus ? 1 : 0);
+
+      dispatch({
+        type: 'maintenanceCompany/updateMaintenanceCompanyAsync',
+        payload: {
+          id,
+          companyId,
+          parentId,
+          usingStatus: usingStatus ? 1 : 0,
+          isBranch: isBranch ? 1 : 0,
+        },
+        callback(code) {
+          // console.log(code);
+          if (code === 200) message.info('修改成功');
+          else message.error('修改失败');
+        },
+      });
     });
   }
 
@@ -74,6 +118,9 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     const {
       maintenanceCompany: { detail: data },
     } = this.props;
+    const { hasSubcompany } = this.state;
+
+    // console.log('data', data);
 
     return (
       <PageHeaderLayout title="新增维保单位" breadcrumbList={breadcrumbList}>
@@ -93,7 +140,8 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
 
             <FormItem {...formItemLayout} label="企业状态">
               {getFieldDecorator('usingStatus', {
-                initialValue: data.usingStatus === 1 ? '启用' : '禁用',
+                valuePropName: 'checked',
+                initialValue: !!data.usingStatus,
                 rules: [
                   {
                     required: true,
@@ -105,7 +153,8 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
 
             <FormItem {...formItemLayout} label="是否为分公司">
               {getFieldDecorator('isBranch', {
-                initialValue: data.isBranch === 1 ? '是' : '否',
+                valuePropName: 'checked',
+                initialValue: !!data.isBranch,
                 rules: [
                   {
                     required: true,
@@ -121,20 +170,27 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
               )}
             </FormItem>
 
-            <FormItem {...formItemLayout} label="所属总公司">
-              {getFieldDecorator('parentId	', {
-                initialValue: data.parentId,
-                rules: [
-                  {
-                    required: true,
-                    message: '所属总公司',
-                  },
-                ],
-              })(<Input placeholder="所属总公司" />)}
-            </FormItem>
+            {hasSubcompany && (
+              <FormItem {...formItemLayout} label="所属总公司">
+                {getFieldDecorator('parentId	', {
+                  initialValue: data.parentId,
+                  rules: [
+                    {
+                      required: true,
+                      message: '所属总公司',
+                    },
+                  ],
+                })(<Input placeholder="所属总公司" />)}
+              </FormItem>
+            )}
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary" htmlType="submit" loading={submitting}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={submitting}
+                onClick={() => this.handleUpdate(data.id)}
+              >
                 提交
               </Button>
             </FormItem>

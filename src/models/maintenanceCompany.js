@@ -4,7 +4,7 @@ import {
   queryMaintenanceCompany,
   queryMaintenanceCompanyinfo,
   updateMaintenanceCompany,
-} from '../services/api.js';
+} from '../services/maintenanceCompany.js';
 
 export default {
   namespace: 'maintenanceCompany',
@@ -54,20 +54,19 @@ export default {
         error();
       }
     },
-
-    // 获取维保单位详情
-    *fetchMaintenanceCompany({ payload }, { call, put }) {
-      const response = yield call(queryMaintenanceCompanyDetail, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'queryMaintenanceCompanyDetail',
-          payload: response.data,
-        });
-      }
+    *fetchDetail({ payload, callback }, { call, put }) {
+      const response = yield call(queryMaintenanceCompanyinfo, payload);
+      if (callback) callback(!!response.data.isBranch);
+      yield put({
+        type: 'queryDetail',
+        payload: response.data,
+      });
     },
-    *editcompany({ payload }, { call, put }) {
+    *updateMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
       const response = yield call(updateMaintenanceCompany, payload);
-      if (response.code === 200) {
+      const { code } = response;
+      if (callback) callback(code);
+      if (code === 200) {
         yield put({
           type: 'updateMaintenanceCompany',
           payload: response.data,
