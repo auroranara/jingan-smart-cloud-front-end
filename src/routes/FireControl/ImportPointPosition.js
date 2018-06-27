@@ -12,19 +12,25 @@ import Result from '../../components/Result';
 @Form.create()
 export default class ImportPointPosition extends PureComponent {
   state = {
+    failed: 0,
+    success: 0,
+    total: 0,
+    updated: 0,
     loading: false,
     dataSource: [],
     showResult: false,
-    showError: false,
   };
   handleChange = (info) => {
     if (info.file.status === 'uploading ') {
       this.setState({ loading: true })
     }
     if (info.file.response && info.file.response.code && info.file.response.code === 200) {
-      this.setState({ showResult: true, showError: false, loading: false })
-      if (info.file.response.data && info.file.response.data.list && info.file.response.data.list.length) {
-        this.setState({ showError: true, dataSource: info.file.response.data.list })
+      this.setState({ showResult: true, loading: false })
+      if (info.file.response.data) {
+        this.setState({ failed: info.file.response.data.failed, success: info.file.response.data.success, total: info.file.response.data.total, updated: info.file.response.data.updated })
+        if (info.file.response.data.list && info.file.response.data.list.length) {
+          this.setState({ dataSource: info.file.response.data.list })
+        }
       }
     }
   }
@@ -62,6 +68,13 @@ export default class ImportPointPosition extends PureComponent {
         </div>
       )
     }
+    const message = (
+      <div style={{ color: '#4d4848', fontSize: '17px' }}>
+        <span>本次导入共{this.state.total}个点位。</span>
+        <span style={{ display: this.state.success > 0 ? 'inline' : 'none' }}>新建信息{this.state.success}条。</span>
+        <span style={{ display: this.state.updated > 0 ? 'inline' : 'none' }}>更新信息{this.state.updated}条。</span>
+        <span style={{ display: this.state.failed > 0 ? 'inline' : 'none' }}>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>
+      </div>)
     const columns = [
       {
         title: '行序号',
@@ -182,7 +195,7 @@ export default class ImportPointPosition extends PureComponent {
           <Form>
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
               <Upload {...props}>
-                <Button>
+                <Button type="primary">
                   <Icon type="upload" /> 选择文件
                 </Button>
               </Upload>
@@ -192,17 +205,19 @@ export default class ImportPointPosition extends PureComponent {
         <Spin spinning={this.state.loading}>
           <Card className={styles.cardContainer} style={{ display: this.state.showResult ? 'block' : 'none' }}>
             <Result
-              style={{ display: this.state.showError ? 'none' : 'block', width: '100%' }}
-              type="success"
-              title="提交成功"
+              style={{ width: '100%', fontSize: '72px' }}
+              type={this.state.failed > 0 ? "error" : "success"}
+              title={this.state.failed > 0 ? "校验失败" : "校验成功"}
+              description={message}
             />
-            <Result
-              style={{ display: this.state.showError ? 'block' : 'none', width: '100%' }}
+            {/* <Result
+              style={{ display: this.state.showError ? 'block' : 'none', width: '100%', fontSize: '72px' }}
               type="error"
-              title="提交失败"
-            />
-            <div style={{ display: this.state.showError ? 'block' : 'none' }}>
-              <span className={styles.tableTitle}>错误信息提示框：</span>
+              title="校验失败"
+              description={<span className={styles.message}>本次导入共有信息错误<span className={styles.error}>{this.state.failed}</span>条</span>}
+            /> */}
+            <div style={{ display: this.state.failed > 0 ? 'block' : 'none' }}>
+              {/* <span className={styles.tableTitle}>错误信息提示框：</span> */}
               <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
             </div>
           </Card>
