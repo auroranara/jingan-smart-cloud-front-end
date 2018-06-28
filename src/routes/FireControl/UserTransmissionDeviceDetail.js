@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Icon, Modal, Spin, message } from 'antd';
+import { Button, Card, Icon, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -346,9 +346,20 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     // console.log('detailList in render', deviceList);
     // console.log('transmission', this.props.transmission);
-    const cards = deviceList.map((device, index) => (
-      <DeviceDetailCard key={device.id} index={index} deviceData={device} {...cardParentMethods} />
-    ));
+
+    let cards = (
+      <Card style={{ textAlign: 'center', fontSize: 18 }}>
+        暂无数据，您现在可以
+        <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 18, marginLeft: 5 }}>
+          新增装置
+        </Button>
+      </Card>
+    );
+
+    if (deviceList.length)
+      cards = deviceList.map((device, index) => (
+        <DeviceDetailCard key={device.id} index={index} deviceData={device} {...cardParentMethods} />
+      ));
 
     const deviceParentMethods = {
       hideModal: this.hideDeviceModal,
@@ -363,7 +374,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     return (
       <PageHeaderLayout
-        title="常熟市鑫博伟纺织有限公司"
+        title={companyDetail.name}
         breadcrumbList={breadcrumbList}
         logo={<Icon type="apple" />}
         action={action}

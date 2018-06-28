@@ -7,7 +7,6 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
-// import { add } from 'gl-matrix/src/gl-matrix/quat';
 
 const PAGE_SIZE = 18;
 
@@ -38,9 +37,14 @@ export default class UserTransmissionDevice extends PureComponent {
     });
   }
 
+  componentWillUnmount() {
+    rootElement.removeEventListener('scroll', this.handleScroll);
+  }
+
   currentpageNum = 2;
 
   handleScroll = e => {
+    // console.log('scroll');
     const rootDOM = e.target;
     // console.log('rootDOM', rootDOM.scrollTop);
     const childDOM = rootDOM.firstElementChild;
@@ -167,7 +171,10 @@ export default class UserTransmissionDevice extends PureComponent {
                     <p>安全负责人：张三</p>
                     <p>联系电话：132 8888 8888</p>
                     <p>消防主机数量：{item.fireCount}</p>
-                    <span className={styles.quantity}>{item.fireCount}</span>
+                    <div className={styles.quantityContainer}>
+                      <div className={styles.quantity}>{item.transmissionCount}</div>
+                      <p className={styles.quantityDescrip}>传输装置数</p>
+                    </div>
                   </Card>
                 </Link>
               </List.Item>

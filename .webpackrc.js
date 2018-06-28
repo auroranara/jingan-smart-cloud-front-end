@@ -15,6 +15,7 @@ export default {
   env: {
     development: {
       extraBabelPlugins: ['dva-hmr'],
+      publicPath: '/',
     },
   },
   alias: {
@@ -25,7 +26,7 @@ export default {
   html: {
     template: './src/index.ejs',
   },
-  publicPath: '/',
+  publicPath: '/acloud_new',
   disableDynamicImport: true,
   hash: true,
 };

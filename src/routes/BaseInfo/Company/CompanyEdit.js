@@ -14,6 +14,7 @@ import {
   Icon,
   message,
   Upload,
+  Spin,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -33,8 +34,8 @@ const title = '修改企业';
 const href = '/base-info/company-list';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
-// 上传文件限制数量
-const uploadLength = 1;
+// 上传文件夹
+const folder = 'fireControl';
 // 面包屑
 const breadcrumbList = [
   {
@@ -59,7 +60,7 @@ const fieldLabels = {
   code: '企业社会信用码',
   companyIchnography: '企业平面图',
   companyStatus: '企业状态',
-  createDate: '成立时间',
+  createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
@@ -73,26 +74,6 @@ const fieldLabels = {
   registerAddress: '注册地址',
   scale: '规模情况',
 };
-// 默认页面显示数量列表
-const pageSizeOptions = ['5', '10', '15', '20'];
-// 表格列
-const columns = [
-  {
-    title: '姓名',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '年龄',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: '住址',
-    dataIndex: 'address',
-    key: 'address',
-  },
-];
 /* 默认分页参数 */
 const defaultPagination = {
   pageNum: 1,
@@ -149,13 +130,12 @@ const defaultPagination = {
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   state = {
-    loading: false,
+    loading: true,
     ichnographyList: [],
     contractList: [],
     modal: {
       visible: false,
       loading: false,
-      selectedRowKeys: [],
     },
     maintenanceId: undefined,
   };
@@ -183,7 +163,39 @@ export default class CompanyDetail extends PureComponent {
           payload: {
             id,
           },
-          success: ({ province, city, district }) => {
+          success: ({
+            maintenanceId,
+            province,
+            city,
+            district,
+            companyIchnography,
+            ichnographyName,
+            maintenanceContract,
+            contractName,
+          }) => {
+            this.setState({
+              maintenanceId,
+              ichnographyList: companyIchnography
+                ? []
+                : [
+                    {
+                      uid: -1,
+                      status: 'done',
+                      name: ichnographyName,
+                      url: companyIchnography,
+                    },
+                  ],
+              contractList: maintenanceContract
+                ? []
+                : [
+                    {
+                      uid: -1,
+                      status: 'done',
+                      name: contractName,
+                      url: maintenanceContract,
+                    },
+                  ],
+            });
             if (province) {
               fetchArea({
                 payload: {
@@ -204,12 +216,29 @@ export default class CompanyDetail extends PureComponent {
                               parentId: district,
                               ids: [province, city, district],
                             },
+                            success: () => {
+                              this.setState({
+                                loading: false,
+                              });
+                            },
+                          });
+                        } else {
+                          this.setState({
+                            loading: false,
                           });
                         }
                       },
                     });
+                  } else {
+                    this.setState({
+                      loading: false,
+                    });
                   }
                 },
+              });
+            } else {
+              this.setState({
+                loading: false,
               });
             }
           },
@@ -220,7 +249,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取行业类别
     fetchDict({
       payload: {
-        type: 'industryTypeId',
+        type: 'company_industry_type',
         key: 'industryCategories',
       },
     });
@@ -271,10 +300,19 @@ export default class CompanyDetail extends PureComponent {
     validateFieldsAndScroll(
       (
         error,
-        { administrativeDivision: [province, city, district, town], createDate, ...restFields }
+        {
+          administrativeDivision: [province, city, district, town],
+          createTime,
+          industryCategory,
+          ...restFields
+        }
       ) => {
         if (!error) {
-          const { maintenanceId } = this.state;
+          const {
+            maintenanceId,
+            ichnographyList: [ichnography],
+            contractList: [contract],
+          } = this.state;
           this.setState({
             loading: true,
           });
@@ -286,8 +324,13 @@ export default class CompanyDetail extends PureComponent {
               city,
               district,
               town,
-              createDate: createDate && createDate.format('YYYY-MM-DD'),
+              industryCategory: industryCategory.join(','),
+              createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
+              companyIchnography: ichnography.dbUrl,
+              ichnographyName: ichnography.name,
+              maintenanceContract: contract.dbUrl,
+              contractName: contract.name,
             },
             success: () => {
               message.success('修改成功！', () => {
@@ -302,46 +345,83 @@ export default class CompanyDetail extends PureComponent {
               });
             },
           });
+          console.log({
+            ...restFields,
+            province,
+            city,
+            district,
+            town,
+            industryCategory: industryCategory.join(','),
+            createTime: createTime && createTime.format('YYYY-MM-DD'),
+            maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
+            companyIchnography: ichnography.dbUrl,
+            ichnographyName: ichnography.name,
+            maintenanceContract: contract.dbUrl,
+            contractName: contract.name,
+          });
         }
-        console.log({
-          ...restFields,
-          province,
-          city,
-          district,
-          town,
-          createDate: createDate && createDate.format('YYYY-MM-DD'),
-          maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
-        });
       }
     );
   };
 
   /* 上传企业平面图 */
   handleUploadIchnography = info => {
-    let { fileList } = info;
-    fileList = fileList.slice(-uploadLength).map(file => {
-      if (file.response) {
-        return { ...file, url: file.response.url };
-      }
-      return file;
-    });
-    this.setState({
-      ichnographyList: fileList,
-    });
+    const { file } = info;
+    if (file.status !== 'done') {
+      return;
+    }
+    const {
+      response: {
+        code,
+        data: {
+          list: [result],
+        },
+      },
+    } = file;
+    if (code === 200) {
+      this.setState({
+        ichnographyList: [
+          {
+            ...file,
+            url: result.webUrl,
+            dbUrl: result.dbUrl,
+          },
+        ],
+      });
+      message.success('上传成功！');
+    } else {
+      message.error('上传失败！');
+    }
   };
 
   /* 上传维保合同 */
   handleUploadContract = info => {
-    let { fileList } = info;
-    fileList = fileList.slice(-uploadLength).map(file => {
-      if (file.response) {
-        return { ...file, url: file.response.url };
-      }
-      return file;
-    });
-    this.setState({
-      contractList: fileList,
-    });
+    const { file } = info;
+    if (file.status !== 'done') {
+      return;
+    }
+    const {
+      response: {
+        code,
+        data: {
+          list: [result],
+        },
+      },
+    } = file;
+    if (code === 200) {
+      this.setState({
+        contractList: [
+          {
+            ...file,
+            url: result.webUrl,
+            dbUrl: result.dbUrl,
+          },
+        ],
+      });
+      message.success('上传成功！');
+    } else {
+      message.error('上传失败！');
+    }
   };
 
   /* 显示模态框 */
@@ -372,107 +452,16 @@ export default class CompanyDetail extends PureComponent {
     });
   };
 
-  /* 查询按钮点击事件 */
-  handleSearch = value => {
-    const {
-      fetchModalList,
-      company: {
-        modal: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        ...value,
-        selectedRowKeys: [],
-      },
-    });
-    fetchModalList({
-      payload: {
-        ...value,
-        ...defaultPagination,
-        pageSize,
-      },
-    });
-  };
-
-  /* 重置按钮点击事件 */
-  handleReset = value => {
-    const {
-      fetchModalList,
-      company: {
-        modal: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        ...value,
-        selectedRowKeys: [],
-      },
-    });
-    fetchModalList({
-      payload: {
-        ...value,
-        ...defaultPagination,
-        pageSize,
-      },
-    });
-  };
-
-  /* 选择更换 */
-  handleSelectChange = selectedRowKeys => {
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        selectedRowKeys,
-      },
-    });
-  };
-
   /* 选择按钮点击事件 */
-  handleSelect = () => {
+  handleSelect = value => {
     const {
-      modal: { selectedRowKeys },
-    } = this.state;
-    const {
-      company: {
-        modal: { list },
-      },
       form: { setFieldsValue },
     } = this.props;
-    const selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
-    setFieldsValue({ maintenanceId: selectedData.name });
+    setFieldsValue({ maintenanceId: value.name });
     this.setState({
-      maintenanceId: selectedData.id,
+      maintenanceId: value.id,
     });
     this.handleHideModal();
-  };
-
-  /* 更换页码或显示数量 */
-  handleChangePagination = ({ current, pageSize }) => {
-    const { fetchModalList } = this.props;
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        selectedRowKeys: [],
-      },
-    });
-    fetchModalList({
-      payload: {
-        name: modal.name,
-        pageNum: current,
-        pageSize,
-      },
-    });
   };
 
   /* 行政区域动态加载 */
@@ -497,7 +486,7 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 上传文件按钮 */
-  renderUploadButton = ({ filedList, onChange, folder }) => {
+  renderUploadButton = ({ fileList, onChange }) => {
     return (
       <Upload
         name="files"
@@ -505,9 +494,8 @@ export default class CompanyDetail extends PureComponent {
           folder,
         }}
         action={uploadAction}
+        fileList={fileList}
         onChange={onChange}
-        filedList={filedList}
-        // withCredentials
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
           <Icon type="plus" style={{ fontSize: '32px' }} />
@@ -616,6 +604,7 @@ export default class CompanyDetail extends PureComponent {
                     loadData={this.handleLoadData}
                     changeOnSelect
                     placeholder="请选择行政区域"
+                    allowClear
                   />
                 )}
               </Form.Item>
@@ -625,7 +614,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyIchnography}>
                 {this.renderUploadButton({
-                  fieldList: ichnographyList,
+                  fileList: ichnographyList,
                   onChange: this.handleUploadIchnography,
                 })}
               </Form.Item>
@@ -652,7 +641,7 @@ export default class CompanyDetail extends PureComponent {
             companyStatus,
             scale,
             licenseType,
-            createDate,
+            createTime,
             groupName,
             businessScope,
           },
@@ -668,15 +657,20 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.industryCategory}>
                 {getFieldDecorator('industryCategory', {
-                  initialValue: industryCategory || undefined,
+                  initialValue: industryCategory ? industryCategory.split(',') : [],
                 })(
-                  <Select allowClear placeholder="请选择行业类别">
-                    {industryCategories.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Cascader
+                    options={industryCategories}
+                    filedNames={{
+                      value: 'id',
+                      label: 'name',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
+                    allowClear
+                    changeOnSelect
+                    placeholder="请选择行业类别"
+                  />
                 )}
               </Form.Item>
             </Col>
@@ -744,9 +738,11 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.createDate}>
-                {getFieldDecorator('createDate', {
-                  initialValue: createDate && moment(createDate, 'YYYY-MM-DD'),
+              <Form.Item label={fieldLabels.createTime}>
+                {getFieldDecorator('createTime', {
+                  initialValue: createTime
+                    ? moment(moment(createTime).format('YYYY/MM/DD'), 'YYYY/MM/DD')
+                    : undefined,
                 })(<DatePicker placeholder="请选择成立时间" style={{ width: '100%' }} />)}
               </Form.Item>
             </Col>
@@ -822,7 +818,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.maintenanceContract}>
                 {this.renderUploadButton({
-                  filedList: contractList,
+                  fileList: contractList,
                   onChange: this.handleUploadContract,
                 })}
               </Form.Item>
@@ -891,91 +887,56 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染选择维保单位模态框 */
   renderModal() {
     const {
-      modal: { loading, visible, selectedRowKeys },
+      modal: { loading, visible },
     } = this.state;
     const {
       company: {
-        modal: {
-          list,
-          pagination: { pageNum, pageSize, total },
+        modal,
+        detail: {
+          data: { id },
         },
       },
+      fetchModalList,
     } = this.props;
     const modalProps = {
       // 模态框是否显示
       visible,
-      // 模态框宽度
-      width: '900px',
-      // 模态框标题
-      title: '选择消防维修单位',
       // 模态框点击关闭按钮回调
       onClose: this.handleHideModal,
       // 完全关闭后回调
       afterClose: () => {
         this.maintenanceIdInput.blur();
       },
-      // 查询回调
-      onSearch: this.handleSearch,
-      // 重置回调
-      onReset: this.handleReset,
+      modal,
+      fetch: fetchModalList,
+      payload: {
+        companyId: id,
+      },
       // 选择回调
       onSelect: this.handleSelect,
       // 表格是否正在加载
       loading,
-      // 表格大小
-      size: 'middle',
-      // 表格源数据
-      dataSource: list,
-      // 表格列
-      columns,
-      // 表格数据主键
-      rowKey: 'id',
-      // 更改显示数量或页码
-      onChange: this.handleChangePagination,
-      // 选择设置
-      rowSelection: {
-        // 选中的行
-        selectedRowKeys,
-        // 选中行的更换
-        onChange: this.handleSelectChange,
-        hideDefaultSelections: true,
-        type: 'radio',
-      },
-      // 分页设置
-      pagination: {
-        // 总数
-        total,
-        // 当前页码
-        current: pageNum,
-        // 当前显示数量
-        pageSize,
-        // 是否显示快速跳转
-        showQuickJumper: true,
-        // 是否显示每页数量列表
-        showSizeChanger: true,
-        // 显示总数
-        showTotal: t => `共 ${t} 条记录`,
-        // 每页显示数量列表
-        pageSizeOptions,
-      },
     };
 
     return <CompanyModal {...modalProps} />;
   }
 
   render() {
+    const { loading } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         wrapperClassName={styles.advancedForm}
       >
-        {this.renderBasicInfo()}
-        {this.renderMoreInfo()}
-        {/* {this.renderPersonalInfo()} */}
-        {this.renderOtherInfo()}
-        {this.renderFooterToolbar()}
-        {this.renderModal()}
+        <Spin spinning={loading}>
+          {this.renderBasicInfo()}
+          {this.renderMoreInfo()}
+          {/* {this.renderPersonalInfo()} */}
+          {this.renderOtherInfo()}
+          {this.renderFooterToolbar()}
+          {this.renderModal()}
+        </Spin>
       </PageHeaderLayout>
     );
   }
