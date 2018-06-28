@@ -76,14 +76,14 @@ const getEmptyData = () => {
     goToEdit(id) {
       dispatch(routerRedux.push(`/base-info/company/edit/${id}`));
     },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
   })
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
-  state = {
-    loading: true,
-  };
-
   /* 生命周期函数 */
   componentWillMount() {
     const {
@@ -91,16 +91,15 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      goToException,
     } = this.props;
     // 获取详情
     fetchCompany({
       payload: {
         id,
       },
-      success: () => {
-        this.setState({
-          loading: false,
-        });
+      error: () => {
+        goToException();
       },
     });
   }
@@ -271,7 +270,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
-    const { loading } = this.state;
+    const { loading } = this.props;
     return (
       <PageHeaderLayout
         title={title}

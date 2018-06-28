@@ -254,18 +254,23 @@ export default class CompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  地址：{item.practicalAddress || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  行业类别：{item.industryCategoryLabel || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  负责人：{item.principal || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  联系电话：{item.contact || getEmptyData()}
-                </Ellipsis>
+                <Link
+                  to={`/base-info/company/detail/${item.id}`}
+                  style={{ color: 'rgba(0, 0, 0, 0.65)' }}
+                >
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    地址：{item.practicalAddress || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    行业类别：{item.industryCategoryLabel || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    负责人：{item.principal || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    联系电话：{item.contact || getEmptyData()}
+                  </Ellipsis>
+                </Link>
               </Card>
             </List.Item>
           )}

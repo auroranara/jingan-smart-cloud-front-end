@@ -119,7 +119,6 @@ const defaultPagination = {
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   state = {
-    loading: true,
     ichnographyList: [],
     contractList: [],
     modal: {
@@ -173,11 +172,6 @@ export default class CompanyDetail extends PureComponent {
         type: 'company_industry_type',
         key: 'industryCategories',
       },
-      success: () => {
-        this.setState({
-          loading: false,
-        });
-      },
     });
   }
 
@@ -208,9 +202,6 @@ export default class CompanyDetail extends PureComponent {
             ichnographyList: [ichnography],
             contractList: [contract],
           } = this.state;
-          this.setState({
-            loading: true,
-          });
           insert({
             payload: {
               ...restFields,
@@ -221,10 +212,10 @@ export default class CompanyDetail extends PureComponent {
               industryCategory: industryCategory.join(','),
               createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId,
-              companyIchnography: ichnography.dbUrl,
-              ichnographyName: ichnography.name,
-              maintenanceContract: contract.dbUrl,
-              contractName: contract.name,
+              companyIchnography: ichnography && ichnography.dbUrl,
+              ichnographyName: ichnography && ichnography.name,
+              maintenanceContract: contract && contract.dbUrl,
+              contractName: contract && contract.name,
             },
             success: () => {
               message.success('新建成功！', () => {
@@ -232,26 +223,8 @@ export default class CompanyDetail extends PureComponent {
               });
             },
             error: err => {
-              message.error(err, () => {
-                this.setState({
-                  loading: false,
-                });
-              });
+              message.error(err);
             },
-          });
-          console.log({
-            ...restFields,
-            province,
-            city,
-            district,
-            town,
-            industryCategory: industryCategory.join(','),
-            createTime: createTime && createTime.format('YYYY-MM-DD'),
-            maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
-            companyIchnography: ichnography.dbUrl,
-            ichnographyName: ichnography.name,
-            maintenanceContract: contract.dbUrl,
-            contractName: contract.name,
           });
         }
       }
@@ -510,7 +483,9 @@ export default class CompanyDetail extends PureComponent {
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.industryCategory}>
-                {getFieldDecorator('industryCategory')(
+                {getFieldDecorator('industryCategory', {
+                  initialValue: [],
+                })(
                   <Cascader
                     options={industryCategories}
                     filedNames={{
@@ -638,7 +613,7 @@ export default class CompanyDetail extends PureComponent {
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.maintenanceId}>
+              <Form.Item className={styles.maintenanceIdForm} label={fieldLabels.maintenanceId}>
                 {getFieldDecorator('maintenanceId')(
                   <Input
                     placeholder="请选择消防维修单位"
@@ -710,7 +685,7 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.state;
+    const { loading } = this.props;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
@@ -751,7 +726,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
-    const { loading } = this.state;
+    const { loading } = this.props;
     return (
       <PageHeaderLayout
         title={title}

@@ -90,6 +90,8 @@ export default {
     *fetchDict(
       {
         payload: { type, key },
+        success,
+        error,
       },
       { call, put }
     ) {
@@ -102,6 +104,11 @@ export default {
             list: response.data.list,
           },
         });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
     *remove({ payload, success, error }, { call, put }) {
