@@ -50,7 +50,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
         id,
       },
       callback: isBranch => {
-        this.setState({ hasSubcompany: isBranch });
+        this.setState({ hasSubcompany: !!isBranch });
       },
     });
   }
@@ -128,7 +128,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
 
             {hasSubcompany && (
               <FormItem {...formItemLayout} label="所属总公司">
-                {getFieldDecorator('parnetUnitName	', {
+                {getFieldDecorator('parentId	', {
                   initialValue: data.parnetUnitName,
                   rules: [
                     {

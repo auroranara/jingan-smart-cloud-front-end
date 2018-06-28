@@ -12,13 +12,6 @@ import { deviceResponse, deviceDetailResponse } from './mock/transmission';
 
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
-const hosts = {
-  mock: '118.126.110.115:3001/mock/28',
-  lm: '192.168.10.2', // 吕旻
-  gjm: '192.168.10.55', // 顾家铭
-  szq: '192.168.10.56', //孙启政
-  test: '192.168.10.67:9080', // 内网
-};
 
 // 代码中会兼容本地 service mock 以及部署站点的静态数据
 const initProxy = key => {
@@ -153,7 +146,7 @@ const hosts = {
   test: '192.168.10.67:9080', // 内网
 };
 
-const key = 'sqz';
+const key = 'test';
 // const key = 'test';
 
 export default (noProxy ? {} : delay(initProxy(key), 1000));
