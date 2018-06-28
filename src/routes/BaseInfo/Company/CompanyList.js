@@ -197,7 +197,7 @@ export default class CompanyList extends PureComponent {
             {getFieldDecorator('industryCategory', {
               initialValue: defaultFormData.industryCategory,
             })(
-              <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
+              <Select allowClear placeholder="行业类别" style={{ width: '164px' }} getPopupContainer={getRootChild}>
                 {industryCategories.map(item => (
                   <Option value={item.id} key={item.id}>
                     {item.label}
