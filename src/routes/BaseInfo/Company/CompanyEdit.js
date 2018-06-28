@@ -125,12 +125,15 @@ const defaultPagination = {
         ...action,
       });
     },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
   })
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   state = {
-    loading: true,
     ichnographyList: [],
     contractList: [],
     modal: {
@@ -149,6 +152,7 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      goToException,
     } = this.props;
 
     // 获取行政区域省
@@ -169,28 +173,32 @@ export default class CompanyDetail extends PureComponent {
             city,
             district,
             companyIchnography,
-            companyIchnographyFileName,
+            ichnographyName,
             maintenanceContract,
-            maintenanceContractFileName,
+            contractName,
           }) => {
             this.setState({
               maintenanceId,
               ichnographyList: companyIchnography
-                ? []
-                : [
+                ? [
                     {
-                      name: companyIchnographyFileName,
+                      uid: -1,
+                      status: 'done',
+                      name: ichnographyName,
                       url: companyIchnography,
                     },
-                  ],
+                  ]
+                : [],
               contractList: maintenanceContract
-                ? []
-                : [
+                ? [
                     {
-                      name: maintenanceContractFileName,
+                      uid: -1,
+                      status: 'done',
+                      name: contractName,
                       url: maintenanceContract,
                     },
-                  ],
+                  ]
+                : [],
             });
             if (province) {
               fetchArea({
@@ -212,31 +220,17 @@ export default class CompanyDetail extends PureComponent {
                               parentId: district,
                               ids: [province, city, district],
                             },
-                            success: () => {
-                              this.setState({
-                                loading: false,
-                              });
-                            },
-                          });
-                        } else {
-                          this.setState({
-                            loading: false,
                           });
                         }
                       },
                     });
-                  } else {
-                    this.setState({
-                      loading: false,
-                    });
                   }
                 },
               });
-            } else {
-              this.setState({
-                loading: false,
-              });
             }
+          },
+          error: () => {
+            goToException();
           },
         });
       },
@@ -245,7 +239,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取行业类别
     fetchDict({
       payload: {
-        type: 'industryTypeId',
+        type: 'company_industry_type',
         key: 'industryCategories',
       },
     });
@@ -296,7 +290,12 @@ export default class CompanyDetail extends PureComponent {
     validateFieldsAndScroll(
       (
         error,
-        { administrativeDivision: [province, city, district, town], createTime, ...restFields }
+        {
+          administrativeDivision: [province, city, district, town],
+          createTime,
+          industryCategory,
+          ...restFields
+        }
       ) => {
         if (!error) {
           const {
@@ -304,9 +303,6 @@ export default class CompanyDetail extends PureComponent {
             ichnographyList: [ichnography],
             contractList: [contract],
           } = this.state;
-          this.setState({
-            loading: true,
-          });
           editCompany({
             payload: {
               id,
@@ -315,12 +311,13 @@ export default class CompanyDetail extends PureComponent {
               city,
               district,
               town,
+              industryCategory: industryCategory.join(','),
               createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
-              ichnography: ichnography.dbUrl,
-              ichnographyFileName: ichnography.name,
-              maintenanceContract: contract.dbUrl,
-              maintenanceContractFileName: contract.name,
+              companyIchnography: ichnography && ichnography.dbUrl,
+              ichnographyName: ichnography && ichnography.name,
+              maintenanceContract: contract && contract.dbUrl,
+              contractName: contract && contract.name,
             },
             success: () => {
               message.success('修改成功！', () => {
@@ -328,25 +325,8 @@ export default class CompanyDetail extends PureComponent {
               });
             },
             error: err => {
-              message.error(err, () => {
-                this.setState({
-                  loading: false,
-                });
-              });
+              message.error(err);
             },
-          });
-          console.log({
-            ...restFields,
-            province,
-            city,
-            district,
-            town,
-            createTime: createTime && createTime.format('YYYY-MM-DD'),
-            maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
-            companyIchnography: ichnography.dbUrl,
-            companyIchnographyFileName: ichnography.name,
-            contract: contract.dbUrl,
-            contractFileName: contract.name,
           });
         }
       }
@@ -593,6 +573,7 @@ export default class CompanyDetail extends PureComponent {
                     loadData={this.handleLoadData}
                     changeOnSelect
                     placeholder="请选择行政区域"
+                    allowClear
                   />
                 )}
               </Form.Item>
@@ -645,15 +626,20 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.industryCategory}>
                 {getFieldDecorator('industryCategory', {
-                  initialValue: industryCategory || undefined,
+                  initialValue: industryCategory ? industryCategory.split(',') : [],
                 })(
-                  <Select allowClear placeholder="请选择行业类别">
-                    {industryCategories.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Cascader
+                    options={industryCategories}
+                    filedNames={{
+                      value: 'id',
+                      label: 'name',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
+                    allowClear
+                    changeOnSelect
+                    placeholder="请选择行业类别"
+                  />
                 )}
               </Form.Item>
             </Col>
@@ -782,7 +768,7 @@ export default class CompanyDetail extends PureComponent {
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.maintenanceId}>
+              <Form.Item label={fieldLabels.maintenanceId} className={styles.maintenanceIdForm}>
                 {getFieldDecorator('maintenanceId', {
                   initialValue: maintenanceUnitName,
                 })(
@@ -856,7 +842,7 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.state;
+    const { loading } = this.props;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
@@ -873,7 +859,12 @@ export default class CompanyDetail extends PureComponent {
       modal: { loading, visible },
     } = this.state;
     const {
-      company: { modal },
+      company: {
+        modal,
+        detail: {
+          data: { id },
+        },
+      },
       fetchModalList,
     } = this.props;
     const modalProps = {
@@ -887,6 +878,9 @@ export default class CompanyDetail extends PureComponent {
       },
       modal,
       fetch: fetchModalList,
+      payload: {
+        companyId: id,
+      },
       // 选择回调
       onSelect: this.handleSelect,
       // 表格是否正在加载
@@ -897,7 +891,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
-    const { loading } = this.state;
+    const { loading } = this.props;
     return (
       <PageHeaderLayout
         title={title}
