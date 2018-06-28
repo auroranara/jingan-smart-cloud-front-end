@@ -143,7 +143,7 @@ export default class MaintenanceCompanyAdd extends PureComponent {
   /* 显示选择维保模态框 */
   handleShowMaintenanceModal = () => {
     const { fetchModalList } = this.props;
-    const { maintenanceModal } = this.state;
+    const { maintenanceModal, companyId } = this.state;
     this.setState({
       maintenanceModal: {
         type: 'company/fetchModalList',
@@ -153,6 +153,7 @@ export default class MaintenanceCompanyAdd extends PureComponent {
     });
     fetchModalList({
       payload: {
+        companyId,
         ...defaultPagination,
       },
     });
@@ -238,6 +239,7 @@ export default class MaintenanceCompanyAdd extends PureComponent {
   renderMaintenanceModal() {
     const {
       maintenanceModal: { loading, visible },
+      companyId,
     } = this.state;
     const {
       company: { modal },
@@ -253,6 +255,9 @@ export default class MaintenanceCompanyAdd extends PureComponent {
         this.parentIdInput.blur();
       },
       modal,
+      payload: {
+        companyId,
+      },
       fetch: fetchModalList,
       // 选择回调
       onSelect: this.handleSelectMaintenance,
