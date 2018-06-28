@@ -5,6 +5,25 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
 import Result from '../../components/Result';
 
+
+// 面包屑
+const breadcrumbList = [
+  {
+    title: '首页',
+    href: '/',
+  },
+  {
+    title: '消防维保',
+  },
+  {
+    title: '用户传输装置',
+    href: '/fire-control/user-transmission-device',
+  },
+  {
+    title: '导入点位数据',
+  },
+];
+
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.models.transmission,
@@ -21,16 +40,16 @@ export default class ImportPointPosition extends PureComponent {
     showResult: false,
   };
   handleChange = (info) => {
+    const fileList = info.fileList.slice(-1);
+    this.setState({ fileList })
+
     if (info.file.status === 'uploading ') {
       this.setState({ loading: true })
     }
     if (info.file.response && info.file.response.code && info.file.response.code === 200) {
-      this.setState({ showResult: true, loading: false })
       if (info.file.response.data) {
-        this.setState({ failed: info.file.response.data.failed, success: info.file.response.data.success, total: info.file.response.data.total, updated: info.file.response.data.updated })
-        if (info.file.response.data.list && info.file.response.data.list.length) {
-          this.setState({ dataSource: info.file.response.data.list })
-        }
+        const { failed, success, updated, total } = info.file.response.data
+        this.setState({ failed, success, updated, total, showResult: true, loading: false, dataSource: info.file.response.data.list })
       }
     }
   }
@@ -180,10 +199,7 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `http://118.126.110.115:3001/mock/28/acloud_new/v2/pointData/pointData/${hostId}`,
-      headers: {
-        authorization: 'authorization-text',
-      },
+      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
       accept: '.xls,.xlsx',
       onChange: this.handleChange,
     };
@@ -193,11 +209,12 @@ export default class ImportPointPosition extends PureComponent {
         title="常熟市鑫博伟纺织有限公司"
         logo={<Icon type="apple" />}
         content={description(hostId)}
+        breadcrumbList={breadcrumbList}
       >
         <Card title="导入点位数据" className={styles.cardContainer}>
           <Form>
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
-              <Upload {...props}>
+              <Upload {...props} fileList={this.state.fileList}>
                 <Button type="primary" loading={this.state.loading}>
                   <Icon type="upload" /> 选择文件
                 </Button>
@@ -213,12 +230,6 @@ export default class ImportPointPosition extends PureComponent {
               title={this.state.failed > 0 ? "校验失败" : "校验成功"}
               description={message}
             />
-            {/* <Result
-              style={{ display: this.state.showError ? 'block' : 'none', width: '100%', fontSize: '72px' }}
-              type="error"
-              title="校验失败"
-              description={<span className={styles.message}>本次导入共有信息错误<span className={styles.error}>{this.state.failed}</span>条</span>}
-            /> */}
             <div style={{ display: this.state.failed > 0 ? 'block' : 'none' }}>
               {/* <span className={styles.tableTitle}>错误信息提示框：</span> */}
               <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
