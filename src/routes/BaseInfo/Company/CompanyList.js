@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, Select, Modal, message, Spin } from 'antd';
+import { Form, List, Card, Button, Icon, Input, Modal, message, Spin } from 'antd';
 import { Link } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -10,7 +10,7 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
+// const { Option } = Select;
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -170,7 +170,7 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      company: { industryCategories },
+      // company: { industryCategories },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -189,7 +189,7 @@ export default class CompanyList extends PureComponent {
               getValueFromEvent: e => e.target.value.trim(),
             })(<Input placeholder="请输入单位地址" />)}
           </FormItem>
-          <FormItem>
+          {/* <FormItem>
             {getFieldDecorator('industryCategory', {
               initialValue: defaultFormData.industryCategory,
             })(
@@ -201,7 +201,7 @@ export default class CompanyList extends PureComponent {
                 ))}
               </Select>
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
               查询
