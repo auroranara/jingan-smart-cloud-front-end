@@ -180,25 +180,25 @@ export default class CompanyDetail extends PureComponent {
             this.setState({
               maintenanceId,
               ichnographyList: companyIchnography
-                ? []
-                : [
+                ? [
                     {
                       uid: -1,
                       status: 'done',
                       name: ichnographyName,
                       url: companyIchnography,
                     },
-                  ],
+                  ]
+                : [],
               contractList: maintenanceContract
-                ? []
-                : [
+                ? [
                     {
                       uid: -1,
                       status: 'done',
                       name: contractName,
                       url: maintenanceContract,
                     },
-                  ],
+                  ]
+                : [],
             });
             if (province) {
               fetchArea({
