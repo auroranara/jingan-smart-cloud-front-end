@@ -79,6 +79,8 @@ const defaultPagination = {
   pageNum: 1,
   pageSize: 10,
 };
+/* root下的div */
+const getRootChild = () => document.querySelector('#root>div');
 
 @connect(
   ({ company, loading }) => ({
@@ -126,6 +128,7 @@ export default class CompanyDetail extends PureComponent {
       loading: false,
     },
     maintenanceId: undefined,
+    submitting: false,
   };
 
   /* 生命周期函数 */
@@ -197,6 +200,9 @@ export default class CompanyDetail extends PureComponent {
         }
       ) => {
         if (!error) {
+          this.setState({
+            submitting: true,
+          });
           const {
             maintenanceId,
             ichnographyList: [ichnography],
@@ -223,7 +229,11 @@ export default class CompanyDetail extends PureComponent {
               });
             },
             error: err => {
-              message.error(err);
+              message.error(err, () => {
+                this.setState({
+                  submitting: false,
+                });
+              });
             },
           });
         }
@@ -450,6 +460,7 @@ export default class CompanyDetail extends PureComponent {
                     changeOnSelect
                     placeholder="请选择行政区域"
                     allowClear
+                    getPopupContainer={getRootChild}
                   />
                 )}
               </Form.Item>
@@ -497,6 +508,7 @@ export default class CompanyDetail extends PureComponent {
                     allowClear
                     changeOnSelect
                     placeholder="请选择行业类别"
+                    getPopupContainer={getRootChild}
                   />
                 )}
               </Form.Item>
@@ -506,7 +518,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('economicType', {
                   rules: [{ required: true, message: '请选择经济类型' }],
                 })(
-                  <Select placeholder="请选择经济类型">
+                  <Select placeholder="请选择经济类型" getPopupContainer={getRootChild}>
                     {economicTypes.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -521,7 +533,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('companyStatus', {
                   rules: [{ required: true, message: '请选择企业状态' }],
                 })(
-                  <Select placeholder="请选择企业状态">
+                  <Select placeholder="请选择企业状态" getPopupContainer={getRootChild}>
                     {companyStatuses.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -534,7 +546,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale')(
-                  <Select allowClear placeholder="请选择规模情况">
+                  <Select allowClear placeholder="请选择规模情况" getPopupContainer={getRootChild}>
                     {scales.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -549,7 +561,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('licenseType', {
                   rules: [{ required: true, message: '请选择营业执照类别' }],
                 })(
-                  <Select placeholder="请选择营业执照类别">
+                  <Select placeholder="请选择营业执照类别" getPopupContainer={getRootChild}>
                     {licenseTypes.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -562,7 +574,11 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.createTime}>
                 {getFieldDecorator('createTime')(
-                  <DatePicker placeholder="请选择成立时间" style={{ width: '100%' }} />
+                  <DatePicker
+                    placeholder="请选择成立时间"
+                    style={{ width: '100%' }}
+                    getCalendarContainer={getRootChild}
+                  />
                 )}
               </Form.Item>
             </Col>
@@ -686,10 +702,11 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const { loading } = this.props;
+    const { submitting } = this.state;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" onClick={this.handleClickValidate} loading={loading}>
+        <Button type="primary" onClick={this.handleClickValidate} loading={loading || submitting}>
           提交
         </Button>
       </FooterToolbar>
@@ -727,13 +744,14 @@ export default class CompanyDetail extends PureComponent {
 
   render() {
     const { loading } = this.props;
+    const { submitting } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         wrapperClassName={styles.advancedForm}
       >
-        <Spin spinning={loading}>
+        <Spin spinning={loading || submitting}>
           {this.renderBasicInfo()}
           {this.renderMoreInfo()}
           {/* {this.renderPersonalInfo()} */}
