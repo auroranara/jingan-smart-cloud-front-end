@@ -140,9 +140,13 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({ type: 'transmission/fetchCompanyDetail', payload: companyId });
   }
 
-  downloadPointPositionTemplate = () => {};
+  downloadPointPositionTemplate = () => {
+    message.info('这个功能暂未开放');
+  };
   // importPointPositionClick = () => {};
-  exportPointPositionClick = () => {};
+  exportPointPositionClick = () => {
+    message.info('这个功能暂未开放');
+  };
 
   hideDeviceModal = () => {
     this.setState({ deviceModalVisible: false, deviceRecord: null });
