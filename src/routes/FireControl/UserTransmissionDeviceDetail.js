@@ -16,7 +16,7 @@ const ButtonGroup = Button.Group;
 const breadcrumbList = [
   { title: '首页', href: '/' },
   { title: '消防维保' },
-  { title: '用户传输装置', href: '/fire-control/user-transmission-device' },
+  { title: '用户传输装置', href: '/fire-control/user-transmission-device/list' },
   { title: '详情页' },
 ];
 
