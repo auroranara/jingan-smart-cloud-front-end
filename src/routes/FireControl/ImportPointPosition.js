@@ -209,8 +209,6 @@ export default class ImportPointPosition extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="常熟市鑫博伟纺织有限公司"
-        logo={<Icon type="apple" />}
         content={description(deviceCode)}
         breadcrumbList={breadcrumbList}
       >
