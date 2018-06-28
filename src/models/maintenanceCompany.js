@@ -46,19 +46,15 @@ export default {
         });
       }
     },
-    *remove({ payload, success, error }, { call, put }) {
-      const response = yield call(delateMaintenanceCompany, payload);
+    *remove({ payload, callback }, { call, put }) {
+      const response = yield call(deleteMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'delete',
           payload: payload.id,
         });
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error(response.msg);
       }
+      if (callback) callback(response);
     },
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload.id);

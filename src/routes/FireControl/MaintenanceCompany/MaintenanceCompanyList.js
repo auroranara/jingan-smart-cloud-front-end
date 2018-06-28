@@ -97,11 +97,12 @@ export default class MaintenanceCompanyList extends PureComponent {
           payload: {
             id,
           },
-          success: () => {
-            message.success('删除成功！');
-          },
-          error: () => {
-            message.error('删除失败，请联系管理人员！');
+          callback: res => {
+            if (res.code === 200) {
+              message.success('删除成功！');
+            } else {
+              message.error(res.msg);
+            }
           },
         });
       },
