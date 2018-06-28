@@ -125,12 +125,15 @@ const defaultPagination = {
         ...action,
       });
     },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
   })
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   state = {
-    loading: true,
     ichnographyList: [],
     contractList: [],
     modal: {
@@ -149,6 +152,7 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      goToException,
     } = this.props;
 
     // 获取行政区域省
@@ -176,25 +180,25 @@ export default class CompanyDetail extends PureComponent {
             this.setState({
               maintenanceId,
               ichnographyList: companyIchnography
-                ? []
-                : [
+                ? [
                     {
                       uid: -1,
                       status: 'done',
                       name: ichnographyName,
                       url: companyIchnography,
                     },
-                  ],
+                  ]
+                : [],
               contractList: maintenanceContract
-                ? []
-                : [
+                ? [
                     {
                       uid: -1,
                       status: 'done',
                       name: contractName,
                       url: maintenanceContract,
                     },
-                  ],
+                  ]
+                : [],
             });
             if (province) {
               fetchArea({
@@ -216,31 +220,17 @@ export default class CompanyDetail extends PureComponent {
                               parentId: district,
                               ids: [province, city, district],
                             },
-                            success: () => {
-                              this.setState({
-                                loading: false,
-                              });
-                            },
-                          });
-                        } else {
-                          this.setState({
-                            loading: false,
                           });
                         }
                       },
                     });
-                  } else {
-                    this.setState({
-                      loading: false,
-                    });
                   }
                 },
               });
-            } else {
-              this.setState({
-                loading: false,
-              });
             }
+          },
+          error: () => {
+            goToException();
           },
         });
       },
@@ -313,9 +303,6 @@ export default class CompanyDetail extends PureComponent {
             ichnographyList: [ichnography],
             contractList: [contract],
           } = this.state;
-          this.setState({
-            loading: true,
-          });
           editCompany({
             payload: {
               id,
@@ -327,10 +314,10 @@ export default class CompanyDetail extends PureComponent {
               industryCategory: industryCategory.join(','),
               createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
-              companyIchnography: ichnography.dbUrl,
-              ichnographyName: ichnography.name,
-              maintenanceContract: contract.dbUrl,
-              contractName: contract.name,
+              companyIchnography: ichnography && ichnography.dbUrl,
+              ichnographyName: ichnography && ichnography.name,
+              maintenanceContract: contract && contract.dbUrl,
+              contractName: contract && contract.name,
             },
             success: () => {
               message.success('修改成功！', () => {
@@ -338,26 +325,8 @@ export default class CompanyDetail extends PureComponent {
               });
             },
             error: err => {
-              message.error(err, () => {
-                this.setState({
-                  loading: false,
-                });
-              });
+              message.error(err);
             },
-          });
-          console.log({
-            ...restFields,
-            province,
-            city,
-            district,
-            town,
-            industryCategory: industryCategory.join(','),
-            createTime: createTime && createTime.format('YYYY-MM-DD'),
-            maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
-            companyIchnography: ichnography.dbUrl,
-            ichnographyName: ichnography.name,
-            maintenanceContract: contract.dbUrl,
-            contractName: contract.name,
           });
         }
       }
@@ -799,7 +768,7 @@ export default class CompanyDetail extends PureComponent {
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.maintenanceId}>
+              <Form.Item label={fieldLabels.maintenanceId} className={styles.maintenanceIdForm}>
                 {getFieldDecorator('maintenanceId', {
                   initialValue: maintenanceUnitName,
                 })(
@@ -873,7 +842,7 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.state;
+    const { loading } = this.props;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
@@ -922,7 +891,7 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
-    const { loading } = this.state;
+    const { loading } = this.props;
     return (
       <PageHeaderLayout
         title={title}

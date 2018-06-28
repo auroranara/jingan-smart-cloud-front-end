@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Icon, Input, Modal, message, Spin } from 'antd';
-import { Link } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
@@ -59,6 +59,10 @@ const getEmptyData = () => {
         type: 'company/remove',
         ...action,
       });
+    },
+    // 查看,
+    goToDetail(url) {
+      dispatch(routerRedux.push(url));
     },
   })
 )
@@ -224,6 +228,7 @@ export default class CompanyList extends PureComponent {
   renderList() {
     const {
       company: { list },
+      goToDetail,
     } = this.props;
 
     return (
@@ -254,18 +259,25 @@ export default class CompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  地址：{item.practicalAddress || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  行业类别：{item.industryCategoryLabel || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  负责人：{item.principal || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  联系电话：{item.contact || getEmptyData()}
-                </Ellipsis>
+                <div
+                  onClick={() => {
+                    goToDetail(`/base-info/company/detail/${item.id}`);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    地址：{item.practicalAddress || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    行业类别：{item.industryCategoryLabel || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    负责人：{item.principal || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    联系电话：{item.contact || getEmptyData()}
+                  </Ellipsis>
+                </div>
               </Card>
             </List.Item>
           )}
