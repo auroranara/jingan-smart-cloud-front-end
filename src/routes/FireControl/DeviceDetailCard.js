@@ -3,7 +3,7 @@ import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
 import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
-import './DeviceDetailCard.less';
+import styles from './DeviceDetailCard.less';
 
 const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
@@ -120,7 +120,7 @@ export default class DeviceDetailCard extends Component {
       {
         title: '操作',
         key: 'action',
-        // width: 98,
+        width: 110,
         render(text, record, index) {
           const menu = (
             <Menu>
@@ -168,7 +168,7 @@ export default class DeviceDetailCard extends Component {
     } = this.props;
 
     return (
-      <Card style={{ marginBottom: 30 }}>
+      <Card className={styles.outerCard}>
         <Card
           type="inner"
           title={deviceName}
