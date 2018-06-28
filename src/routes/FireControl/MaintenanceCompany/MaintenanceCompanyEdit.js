@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Card, Button, Switch, message } from 'antd';
-// import DescriptionList from 'components/DescriptionList';
+import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
@@ -47,12 +47,9 @@ const defaultPagination = {
         ...action,
       });
     },
-    // 获取企业
-    fetch(action) {
-      dispatch({
-        type: 'company/fetch',
-        ...action,
-      });
+    // 返回列表頁面
+    goBack() {
+      dispatch(routerRedux.push('/fire-control/maintenance-company/list'));
     },
     dispatch,
   })
@@ -60,11 +57,12 @@ const defaultPagination = {
 @Form.create()
 export default class MaintenanceCmpanyEdit extends PureComponent {
   state = {
-    hasSubcompany: false,
+    hasSubCompany: false,
     maintenanceModal: {
       visible: false,
       loading: false,
     },
+    // 用于存放选中的总公司的维保id
     parentId: undefined,
   };
 
@@ -77,16 +75,16 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-
+    // 获取id对应的信息
     dispatch({
       type: 'maintenanceCompany/fetchDetail',
       payload: {
         id,
       },
+      // 用于初始化state中的值
       callback({ isBranch, parentId }) {
-        // console.log(isBranch);
         that.setState({
-          hasSubcompany: isBranch,
+          hasSubCompany: !!isBranch,
           parentId,
         });
       },
@@ -94,11 +92,18 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
   }
 
   switchOnchange = checked => {
-    this.setState({ hasSubcompany: checked });
+    this.setState({ hasSubCompany: checked });
   };
 
   handleUpdate(id) {
-    const { dispatch, form } = this.props;
+    const {
+      dispatch,
+      form,
+      goBack,
+      maintenanceCompany: {
+        detail: { companyId },
+      },
+    } = this.props;
 
     form.validateFields((err, values) => {
       if (err) {
@@ -115,12 +120,16 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
         payload: {
           id,
           parentId,
+          companyId,
           usingStatus: +usingStatus,
           isBranch: +isBranch,
         },
         callback(code) {
           // console.log(code);
-          if (code === 200) message.info('修改成功');
+          if (code === 200)
+            message.success('修改成功', () => {
+              goBack();
+            });
           else message.error('修改失败');
         },
       });
@@ -129,7 +138,12 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
 
   /* 显示选择维保模态框 */
   handleShowMaintenanceModal = () => {
-    const { fetchModalList } = this.props;
+    const {
+      fetchModalList,
+      maintenanceCompany: {
+        detail: { companyId },
+      },
+    } = this.props;
     const { maintenanceModal } = this.state;
     this.setState({
       maintenanceModal: {
@@ -140,6 +154,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     });
     fetchModalList({
       payload: {
+        companyId,
         ...defaultPagination,
       },
     });
@@ -165,7 +180,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     this.setState({
       parentId: value.id,
     });
-    this.handleHideModal();
+    this.handleHideMaintenanceModal();
   };
 
   /* 渲染选择维保单位模态框 */
@@ -175,6 +190,9 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     } = this.state;
     const {
       company: { modal },
+      maintenanceCompany: {
+        detail: { companyId },
+      },
       fetchModalList,
     } = this.props;
     const modalProps = {
@@ -187,6 +205,9 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
         this.parentIdInput.blur();
       },
       modal,
+      payload: {
+        companyId,
+      },
       fetch: fetchModalList,
       // 选择回调
       onSelect: this.handleSelectMaintenance,
@@ -223,14 +244,14 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     const {
       maintenanceCompany: { detail: data },
     } = this.props;
-    const { hasSubcompany } = this.state;
+    const { hasSubCompany } = this.state;
 
     // console.log('data', data);
 
     return (
       <PageHeaderLayout title="修改维保单位" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
-          <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
+          <Form hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">
               <div>{data.companyName}</div>
             </FormItem>
@@ -267,10 +288,10 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
               )}
             </FormItem>
 
-            {hasSubcompany && (
+            {hasSubCompany && (
               <FormItem {...formItemLayout} label="所属总公司">
-                {getFieldDecorator('parentId	', {
-                  initialValue: data.parentId,
+                {getFieldDecorator('parentId', {
+                  initialValue: data.parnetUnitName || data.parentId,
                   rules: [
                     {
                       required: true,
@@ -292,7 +313,6 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button
                 type="primary"
-                htmlType="submit"
                 loading={submitting}
                 onClick={() => this.handleUpdate(data.id)}
               >

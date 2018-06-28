@@ -16,7 +16,7 @@ import {
   Badge,
   Row,
 } from 'antd';
-import { Link } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
@@ -64,13 +64,17 @@ const defaultFormData = {
         ...action,
       });
     },
+    goToDetail(url) {
+      dispatch(routerRedux.push(url));
+    },
   })
 )
 @Form.create()
 export default class MaintenanceCompanyList extends PureComponent {
-  state = {
-    pageNum: 1,
-  };
+  constructor(props) {
+    super(props);
+    this.formData = defaultFormData;
+  }
 
   componentDidMount() {
     // 获取维保单位列表
@@ -93,11 +97,12 @@ export default class MaintenanceCompanyList extends PureComponent {
           payload: {
             id,
           },
-          success: () => {
-            message.success('删除成功！');
-          },
-          error: () => {
-            message.error('删除失败，请联系管理人员！');
+          callback: res => {
+            if (res.code === 200) {
+              message.success('删除成功！');
+            } else {
+              message.error(res.msg);
+            }
           },
         });
       },
@@ -108,14 +113,11 @@ export default class MaintenanceCompanyList extends PureComponent {
   handleClickToQuery = () => {
     const {
       fetch,
-      updateFormData,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    // 修改store中的数据
-    updateFormData({
-      payload: data,
-    });
+    // 修改表单数据
+    this.formData = data;
     // 重新请求数据
     fetch({
       payload: {
@@ -130,19 +132,17 @@ export default class MaintenanceCompanyList extends PureComponent {
   handleClickToReset = () => {
     const {
       fetch,
-      updateFormData,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
     resetFields();
-    // 清除store中的数据
-    updateFormData({
-      payload: defaultFormData,
-    });
+    // 修改表单数据
+    this.formData = defaultFormData;
     // 重新请求数据
     fetch({
       payload: {
         pageSize,
+        pageNum: 1,
       },
     });
   };
@@ -154,15 +154,14 @@ export default class MaintenanceCompanyList extends PureComponent {
     }
     const {
       appendFetch,
-      maintenanceCompany: { formData },
+      maintenanceCompany: { pageNum },
     } = this.props;
-    const { pageNum } = this.state;
     // 请求数据
     appendFetch({
       payload: {
         pageSize,
         pageNum,
-        ...formData,
+        ...this.formData,
       },
     });
   };
@@ -212,6 +211,7 @@ export default class MaintenanceCompanyList extends PureComponent {
   renderList() {
     const {
       maintenanceCompany: { list },
+      goToDetail,
     } = this.props;
 
     return (
@@ -241,7 +241,12 @@ export default class MaintenanceCompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Row>
+                <Row
+                  onClick={() => {
+                    goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <Col span={16}>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {`地址：${item.practicalAddress}`}

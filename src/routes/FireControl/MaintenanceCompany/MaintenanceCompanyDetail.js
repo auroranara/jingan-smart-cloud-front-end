@@ -33,7 +33,7 @@ const breadcrumbList = [
 @Form.create()
 export default class MaintenanceCmpanyDetail extends PureComponent {
   state = {
-    hasSubcompany: false,
+    hasSubCompany: false,
   };
 
   componentDidMount() {
@@ -49,8 +49,8 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
       payload: {
         id,
       },
-      callback: isBranch => {
-        this.setState({ hasSubcompany: isBranch });
+      callback: ({ isBranch }) => {
+        this.setState({ hasSubCompany: !!isBranch });
       },
     });
   }
@@ -63,7 +63,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
       },
       maintenanceCompany: { detail: data },
     } = this.props;
-    const { hasSubcompany } = this.state;
+    const { hasSubCompany } = this.state;
 
     const { getFieldDecorator } = form;
 
@@ -126,9 +126,9 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
               })(<Switch disabled checkedChildren="是" unCheckedChildren="否" />)}
             </FormItem>
 
-            {hasSubcompany && (
+            {hasSubCompany && (
               <FormItem {...formItemLayout} label="所属总公司">
-                {getFieldDecorator('parnetUnitName	', {
+                {getFieldDecorator('parentId	', {
                   initialValue: data.parnetUnitName,
                   rules: [
                     {
