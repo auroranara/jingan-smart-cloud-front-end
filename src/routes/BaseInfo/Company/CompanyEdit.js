@@ -179,6 +179,8 @@ export default class CompanyDetail extends PureComponent {
                 ? []
                 : [
                     {
+                      uid: -1,
+                      status: 'done',
                       name: ichnographyName,
                       url: companyIchnography,
                     },
@@ -247,7 +249,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取行业类别
     fetchDict({
       payload: {
-        type: 'industryType',
+        type: 'company_industry_type',
         key: 'industryCategories',
       },
     });
@@ -325,8 +327,8 @@ export default class CompanyDetail extends PureComponent {
               industryCategory: industryCategory.join(','),
               createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
-              ichnography: ichnography.dbUrl,
-              ichnographyFileName: ichnography.name,
+              companyIchnography: ichnography.dbUrl,
+              ichnographyName: ichnography.name,
               maintenanceContract: contract.dbUrl,
               contractName: contract.name,
             },
@@ -354,8 +356,8 @@ export default class CompanyDetail extends PureComponent {
             maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
             companyIchnography: ichnography.dbUrl,
             ichnographyName: ichnography.name,
-            contract: contract.dbUrl,
-            contractFileName: contract.name,
+            maintenanceContract: contract.dbUrl,
+            contractName: contract.name,
           });
         }
       }
@@ -888,7 +890,12 @@ export default class CompanyDetail extends PureComponent {
       modal: { loading, visible },
     } = this.state;
     const {
-      company: { modal },
+      company: {
+        modal,
+        detail: {
+          data: { id },
+        },
+      },
       fetchModalList,
     } = this.props;
     const modalProps = {
@@ -902,6 +909,9 @@ export default class CompanyDetail extends PureComponent {
       },
       modal,
       fetch: fetchModalList,
+      payload: {
+        companyId: id,
+      },
       // 选择回调
       onSelect: this.handleSelect,
       // 表格是否正在加载

@@ -70,6 +70,7 @@ export default class CompanyModal extends PureComponent {
       modal: {
         pagination: { pageSize },
       },
+      payload,
     } = this.props;
     this.setState({
       ...value,
@@ -80,6 +81,7 @@ export default class CompanyModal extends PureComponent {
         ...value,
         pageNum: 1,
         pageSize,
+        ...payload,
       },
     });
   };
@@ -104,6 +106,7 @@ export default class CompanyModal extends PureComponent {
       modal: {
         pagination: { pageSize },
       },
+      payload,
     } = this.props;
     this.setState({
       ...value,
@@ -114,6 +117,7 @@ export default class CompanyModal extends PureComponent {
         ...value,
         pageNum: 1,
         pageSize,
+        ...payload,
       },
     });
   };
@@ -127,7 +131,7 @@ export default class CompanyModal extends PureComponent {
 
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
-    const { fetch } = this.props;
+    const { fetch, payload } = this.props;
     const { name } = this.state;
     this.setState({
       selectedRowKeys: [],
@@ -137,6 +141,7 @@ export default class CompanyModal extends PureComponent {
         name,
         pageNum: current,
         pageSize,
+        ...payload,
       },
     });
   };

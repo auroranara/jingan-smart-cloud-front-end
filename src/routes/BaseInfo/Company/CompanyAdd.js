@@ -170,7 +170,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取行业类别
     fetchDict({
       payload: {
-        type: 'industryType',
+        type: 'company_industry_type',
         key: 'industryCategories',
       },
       success: () => {
@@ -248,10 +248,10 @@ export default class CompanyDetail extends PureComponent {
             industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
             maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
-            ichnography: ichnography.dbUrl,
-            ichnographyFileName: ichnography.name,
-            contract: contract.dbUrl,
-            contractFileName: contract.name,
+            companyIchnography: ichnography.dbUrl,
+            ichnographyName: ichnography.name,
+            maintenanceContract: contract.dbUrl,
+            contractName: contract.name,
           });
         }
       }
