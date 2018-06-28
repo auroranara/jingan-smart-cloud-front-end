@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Button, Card, Switch, message } from 'antd';
+import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
@@ -46,9 +47,13 @@ const defaultPagination = {
     // 获取企业
     fetch(action) {
       dispatch({
-        type: 'company/fetch',
+        type: 'maintenanceCompany/fetchCompanyList',
         ...action,
       });
+    },
+    // 返回列表頁面
+    goBack() {
+      dispatch(routerRedux.push('/fire-control/maintenance-company/list'));
     },
     dispatch,
   })
@@ -57,8 +62,7 @@ const defaultPagination = {
 export default class BasicForms extends PureComponent {
   state = {
     current: {
-      title: '',
-      subcompany: false,
+      isBranch: false,
     },
     companyModal: {
       visible: false,
@@ -72,41 +76,19 @@ export default class BasicForms extends PureComponent {
     parentId: undefined,
   };
 
-  componentDidMount() {
-    const that = this;
-
-    const {
-      dispatch,
-      match: {
-        params: { id },
-      },
-    } = this.props;
-
-    dispatch({
-      type: 'maintenanceCompany/addMaintenanceCompanyAsync',
-      payload: {
-        id,
-      },
-      callback({ isBranch, parentId, companyId }) {
-        that.setState({
-          hasSubcompany: isBranch,
-          parentId,
-          companyId,
-        });
-      },
-    });
-  }
+  componentDidMount() {}
 
   switchOnchange = checked => {
     this.setState({
       current: {
-        subcompany: checked,
+        isBranch: checked,
       },
     });
   };
 
-  handleSubmit() {
-    const { dispatch, form } = this.props;
+  handleSubmit = e => {
+    e.preventDefault();
+    const { dispatch, form, goBack } = this.props;
 
     form.validateFields((err, values) => {
       if (err) {
@@ -128,12 +110,15 @@ export default class BasicForms extends PureComponent {
         },
         callback(code) {
           // console.log(code);
-          if (code === 200) message.info('保存成功');
+          if (code === 200)
+            message.success('保存成功', () => {
+              goBack();
+            });
           else message.error('保存失败');
         },
       });
     });
-  }
+  };
 
   /* 显示选择企业模态框 */
   handleShowCompanyModal = () => {
@@ -197,6 +182,7 @@ export default class BasicForms extends PureComponent {
 
   /* 企业选择按钮点击事件 */
   handleSelectCompany = value => {
+    console.log(value);
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -204,7 +190,7 @@ export default class BasicForms extends PureComponent {
     this.setState({
       companyId: value.id,
     });
-    this.handleHideModal();
+    this.handleHideCompanyModal();
   };
 
   /* 维保选择按钮点击事件 */
@@ -216,7 +202,7 @@ export default class BasicForms extends PureComponent {
     this.setState({
       parentId: value.id,
     });
-    this.handleHideModal();
+    this.handleHideMaintenanceModal();
   };
 
   /* 渲染选择企业模态框 */
@@ -225,7 +211,7 @@ export default class BasicForms extends PureComponent {
       companyModal: { loading, visible },
     } = this.state;
     const {
-      company: { modal },
+      maintenanceCompany: { modal },
       fetch,
     } = this.props;
     const modalProps = {
@@ -310,7 +296,7 @@ export default class BasicForms extends PureComponent {
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">
-              {getFieldDecorator('name', {
+              {getFieldDecorator('companyId', {
                 rules: [
                   {
                     required: true,
@@ -329,14 +315,14 @@ export default class BasicForms extends PureComponent {
             </FormItem>
 
             <FormItem {...formItemLayout} label="是否启用">
-              {getFieldDecorator('status', {
+              {getFieldDecorator('usingStatus', {
                 initialValue: '启用',
               })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
             </FormItem>
 
             <FormItem {...formItemLayout} label="是否为分公司">
-              {getFieldDecorator('subcompany', {
-                initialValue: current.subcompany,
+              {getFieldDecorator('isBranch', {
+                initialValue: current.isBranch,
               })(
                 <Switch
                   checkedChildren="是"
@@ -345,11 +331,12 @@ export default class BasicForms extends PureComponent {
                 />
               )}
             </FormItem>
-            {current.subcompany && (
+
+            {current.isBranch && (
               <FormItem {...formItemLayout} label="总公司名称">
-                {getFieldDecorator('companyname', {
+                {getFieldDecorator('parentId', {
                   rules: [{ message: '请选择一家维保公司为总公司' }],
-                  initialValue: current.companyname,
+                  initialValue: current.parentId,
                 })(
                   <Input
                     placeholder="请选择总公司"
