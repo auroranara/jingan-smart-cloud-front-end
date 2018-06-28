@@ -140,13 +140,9 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({ type: 'transmission/fetchCompanyDetail', payload: companyId });
   }
 
-  downloadPointPositionTemplate = () => {
-    message.info('小姐姐，这个功能暂未开放哦');
-  };
+  downloadPointPositionTemplate = () => { };
   // importPointPositionClick = () => {};
-  exportPointPositionClick = () => {
-    message.info('小姐姐，这个功能暂未开放哦');
-  };
+  exportPointPositionClick = () => { };
 
   hideDeviceModal = () => {
     this.setState({ deviceModalVisible: false, deviceRecord: null });
@@ -365,7 +361,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
-        <DeviceDetailCard key={device.id} index={index} deviceData={device} {...cardParentMethods} />
+        <DeviceDetailCard key={device.id} index={index} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
       ));
 
     const deviceParentMethods = {
