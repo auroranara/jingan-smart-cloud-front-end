@@ -26,6 +26,7 @@ export default class UserTransmissionDevice extends PureComponent {
   };
 
   componentDidMount() {
+    const that = this;
     rootElement.addEventListener('scroll', this.handleScroll, false);
 
     this.props.dispatch({
@@ -33,6 +34,11 @@ export default class UserTransmissionDevice extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: PAGE_SIZE,
+      },
+      // 如果第一页已经返回了所有结果，则hasMore置为false
+      callback(total) {
+        if (total <= PAGE_SIZE)
+          that.setState({ hasMore: false });
       },
     });
   }
@@ -60,6 +66,7 @@ export default class UserTransmissionDevice extends PureComponent {
   };
 
   handleCheck = () => {
+    const that = this;
     const { company, address } = this.state;
     this.setState({ hasMore: true });
     this.currentpageNum = 2;
@@ -71,10 +78,16 @@ export default class UserTransmissionDevice extends PureComponent {
         name: company,
         practicalAddress: address,
       },
+      // 如果第一页已经返回了所有结果，则hasMore置为false
+      callback(total) {
+        if (total <= PAGE_SIZE)
+          that.setState({ hasMore: false });
+      },
     });
   };
 
   handleReset = () => {
+    const that = this;
     this.setState({ company: '', address: '', hasMore: true });
     this.currentpageNum = 2;
     this.props.dispatch({
@@ -82,6 +95,11 @@ export default class UserTransmissionDevice extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: PAGE_SIZE,
+      },
+      // 如果第一页已经返回了所有结果，则hasMore置为false
+      callback(total) {
+        if (total <= PAGE_SIZE)
+          that.setState({ hasMore: false });
       },
     });
   };
@@ -168,8 +186,8 @@ export default class UserTransmissionDevice extends PureComponent {
                         ? item.practicalAddress
                         : item.praticalAddress}
                     </Ellipsis>
-                    <p>安全负责人：张三</p>
-                    <p>联系电话：132 8888 8888</p>
+                    <p>安全负责人：{item.leader ? item.leader : '张三'}</p>
+                    <p>联系电话：{item.phone ? item.phone : '132 8888 8888'}</p>
                     <p>消防主机数量：{item.fireCount}</p>
                     <div className={styles.quantityContainer}>
                       <div className={styles.quantity}>{item.transmissionCount}</div>

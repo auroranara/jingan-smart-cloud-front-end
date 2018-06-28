@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Card, Icon, Modal, Spin, message } from 'antd';
+import { Button, Card, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -38,74 +38,77 @@ const deviceModalFormItems = [
   {
     label: '装置名称',
     name: 'deviceName',
-    options: { rules: [{ required: true, message: '请输入用户传输装置名称' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置名称' }] },
   },
   {
     label: '装置编号',
     name: 'deviceCode',
-    options: { rules: [{ required: true, message: '请输入用户传输装置编号' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置编号' }] },
   },
   {
     label: '品牌',
     name: 'brand',
-    options: { rules: [{ required: true, message: '请输入用户传输装置品牌' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置品牌' }] },
   },
   {
     label: '型号',
     name: 'model',
-    options: { rules: [{ required: true, message: '请输入用户传输装置型号' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置型号' }] },
   },
   {
     label: '安装位置',
     name: 'installLocation',
-    options: { rules: [{ required: true, message: '请输入用户传输装置安装位置' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置安装位置' }] },
   },
-  { label: '生产日期', name: 'productionDate' },
+  { label: '生产日期', type: 'date-picker', placehoder: '请选择日期', name: 'productionDate' },
 ];
 
 const hostModalFormItems = [
   {
     label: '传输装置编号',
     name: 'transmissionDeviceCode',
-    options: { rules: [{ required: true, message: '请输入消防主机对应的用户传输装置编号' }] },
+    disabled: true,
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机对应的用户传输装置编号' }] },
   },
   {
     label: '传输接口',
     name: 'transmissionInterface',
-    options: { rules: [{ required: true, message: '请输入消防主机的传输接口' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机的传输接口' }] },
   },
   {
     label: '主机编号',
     name: 'deviceCode',
-    options: { rules: [{ required: true, message: '请输入消防主机编号' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机编号' }] },
   },
   {
     label: '品牌',
     name: 'brand',
-    options: { rules: [{ required: true, message: '请输入消防主机品牌' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机品牌' }] },
   },
   {
     label: '型号',
     name: 'model',
-    options: { rules: [{ required: true, message: '请输入消防主机型号' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机型号' }] },
   },
   {
     label: '安装位置',
     name: 'installLocation',
-    options: { rules: [{ required: true, message: '请输入消防主机安装位置' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机安装位置' }] },
   },
-  { label: '生产日期', name: 'productionDate' },
+  { label: '生产日期', type: 'date-picker', placehoder: '请选择日期', name: 'productionDate' },
 ];
 
+const hostModalFormItemsAdd = hostModalFormItems;
+
 // 添加消防主机时，用户传输装置是对应好的，所以在表单中用户传输装置编号是固定的
-const hostModalFormItemsAdd = hostModalFormItems.map(item => {
-  if (item.name === 'transmissionDeviceCode') return { ...item, disabled: true };
-  return item;
-});
+// const hostModalFormItemsAdd = hostModalFormItems.map(item => {
+//   if (item.name === 'transmissionDeviceCode') return { ...item, disabled: true };
+//   return item;
+// });
 
 function dispatchCallback(code, successMsg, failMsg) {
   if (code === 200)
-    message.info(successMsg);
+    message.success(successMsg);
   else
     message.warn(failMsg);
 }
@@ -137,9 +140,13 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({ type: 'transmission/fetchCompanyDetail', payload: companyId });
   }
 
-  downloadPointPositionTemplate = () => {};
+  downloadPointPositionTemplate = () => {
+    message.info('小姐姐，这个功能暂未开放哦');
+  };
   // importPointPositionClick = () => {};
-  exportPointPositionClick = () => {};
+  exportPointPositionClick = () => {
+    message.info('小姐姐，这个功能暂未开放哦');
+  };
 
   hideDeviceModal = () => {
     this.setState({ deviceModalVisible: false, deviceRecord: null });
@@ -305,14 +312,14 @@ export default class UserTransmissionDeviceDetail extends Component {
       <Fragment>
         <ButtonGroup>
           <Button onClick={this.downloadPointPositionTemplate}>
-            下载点位
+            下载点位模板
           </Button>
           <Button onClick={this.exportPointPositionClick}>
-            导出点位
+            导出点位数据
           </Button>
         </ButtonGroup>
         <Button type="primary" onClick={this.handleDeviceAddClick}>
-          新增装置
+          新增传输装置
         </Button>
       </Fragment>
     );
@@ -348,10 +355,10 @@ export default class UserTransmissionDeviceDetail extends Component {
     // console.log('transmission', this.props.transmission);
 
     let cards = (
-      <Card style={{ textAlign: 'center', fontSize: 18 }}>
+      <Card style={{ textAlign: 'center', fontSize: 16 }}>
         暂无数据，您现在可以
-        <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 18, marginLeft: 5 }}>
-          新增装置
+        <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 16, marginLeft: 5 }}>
+          新增传输装置
         </Button>
       </Card>
     );
@@ -376,7 +383,7 @@ export default class UserTransmissionDeviceDetail extends Component {
       <PageHeaderLayout
         title={companyDetail.name}
         breadcrumbList={breadcrumbList}
-        logo={<Icon type="apple" />}
+        // logo={<Icon type="apple" />}
         action={action}
         content={description}
       >
