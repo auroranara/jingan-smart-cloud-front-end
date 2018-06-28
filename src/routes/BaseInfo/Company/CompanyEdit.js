@@ -34,8 +34,8 @@ const title = '修改企业';
 const href = '/base-info/company-list';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
-// 上传文件限制数量
-const uploadLength = 1;
+// 上传文件夹
+const folder = 'fireControl';
 // 面包屑
 const breadcrumbList = [
   {
@@ -163,9 +163,34 @@ export default class CompanyDetail extends PureComponent {
           payload: {
             id,
           },
-          success: ({ maintenanceId, province, city, district }) => {
+          success: ({
+            maintenanceId,
+            province,
+            city,
+            district,
+            companyIchnography,
+            companyIchnographyFileName,
+            maintenanceContract,
+            maintenanceContractFileName,
+          }) => {
             this.setState({
               maintenanceId,
+              ichnographyList: companyIchnography
+                ? []
+                : [
+                    {
+                      name: companyIchnographyFileName,
+                      url: companyIchnography,
+                    },
+                  ],
+              contractList: maintenanceContract
+                ? []
+                : [
+                    {
+                      name: maintenanceContractFileName,
+                      url: maintenanceContract,
+                    },
+                  ],
             });
             if (province) {
               fetchArea({
@@ -274,7 +299,11 @@ export default class CompanyDetail extends PureComponent {
         { administrativeDivision: [province, city, district, town], createTime, ...restFields }
       ) => {
         if (!error) {
-          const { maintenanceId } = this.state;
+          const {
+            maintenanceId,
+            ichnographyList: [ichnography],
+            contractList: [contract],
+          } = this.state;
           this.setState({
             loading: true,
           });
@@ -288,6 +317,10 @@ export default class CompanyDetail extends PureComponent {
               town,
               createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
+              ichnography: ichnography.dbUrl,
+              ichnographyFileName: ichnography.name,
+              maintenanceContract: contract.dbUrl,
+              maintenanceContractFileName: contract.name,
             },
             success: () => {
               message.success('修改成功！', () => {
@@ -302,46 +335,82 @@ export default class CompanyDetail extends PureComponent {
               });
             },
           });
+          console.log({
+            ...restFields,
+            province,
+            city,
+            district,
+            town,
+            createTime: createTime && createTime.format('YYYY-MM-DD'),
+            maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
+            companyIchnography: ichnography.dbUrl,
+            companyIchnographyFileName: ichnography.name,
+            contract: contract.dbUrl,
+            contractFileName: contract.name,
+          });
         }
-        console.log({
-          ...restFields,
-          province,
-          city,
-          district,
-          town,
-          createTime: createTime && createTime.format('YYYY-MM-DD'),
-          maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
-        });
       }
     );
   };
 
   /* 上传企业平面图 */
   handleUploadIchnography = info => {
-    let { fileList } = info;
-    fileList = fileList.slice(-uploadLength).map(file => {
-      if (file.response) {
-        return { ...file, url: file.response.url };
-      }
-      return file;
-    });
-    this.setState({
-      ichnographyList: fileList,
-    });
+    const { file } = info;
+    if (file.status !== 'done') {
+      return;
+    }
+    const {
+      response: {
+        code,
+        data: {
+          list: [result],
+        },
+      },
+    } = file;
+    if (code === 200) {
+      this.setState({
+        ichnographyList: [
+          {
+            ...file,
+            url: result.webUrl,
+            dbUrl: result.dbUrl,
+          },
+        ],
+      });
+      message.success('上传成功！');
+    } else {
+      message.error('上传失败！');
+    }
   };
 
   /* 上传维保合同 */
   handleUploadContract = info => {
-    let { fileList } = info;
-    fileList = fileList.slice(-uploadLength).map(file => {
-      if (file.response) {
-        return { ...file, url: file.response.url };
-      }
-      return file;
-    });
-    this.setState({
-      contractList: fileList,
-    });
+    const { file } = info;
+    if (file.status !== 'done') {
+      return;
+    }
+    const {
+      response: {
+        code,
+        data: {
+          list: [result],
+        },
+      },
+    } = file;
+    if (code === 200) {
+      this.setState({
+        contractList: [
+          {
+            ...file,
+            url: result.webUrl,
+            dbUrl: result.dbUrl,
+          },
+        ],
+      });
+      message.success('上传成功！');
+    } else {
+      message.error('上传失败！');
+    }
   };
 
   /* 显示模态框 */
@@ -406,7 +475,7 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 上传文件按钮 */
-  renderUploadButton = ({ filedList, onChange, folder }) => {
+  renderUploadButton = ({ fileList, onChange }) => {
     return (
       <Upload
         name="files"
@@ -414,9 +483,8 @@ export default class CompanyDetail extends PureComponent {
           folder,
         }}
         action={uploadAction}
+        fileList={fileList}
         onChange={onChange}
-        filedList={filedList}
-        // withCredentials
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
           <Icon type="plus" style={{ fontSize: '32px' }} />
@@ -534,7 +602,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyIchnography}>
                 {this.renderUploadButton({
-                  fieldList: ichnographyList,
+                  fileList: ichnographyList,
                   onChange: this.handleUploadIchnography,
                 })}
               </Form.Item>
@@ -733,7 +801,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.maintenanceContract}>
                 {this.renderUploadButton({
-                  filedList: contractList,
+                  fileList: contractList,
                   onChange: this.handleUploadContract,
                 })}
               </Form.Item>

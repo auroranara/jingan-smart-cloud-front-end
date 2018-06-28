@@ -3,9 +3,6 @@
 
 .cardList {
   margin-bottom: -24px;
-  // overflow-y: scroll;
-  // overflow-x: hidden;
-  // height: 65vh;
 
   .card {
     :global {
@@ -121,19 +118,27 @@
   margin-bottom: 20px;
 }
 
-.quantity {
+.quantityContainer {
   position: absolute;
-  right: 25px;
+  right: 35px;
   bottom: 35px;
-  width: 100px;
-  height: 100px;
-  line-height: 100px;
+}
+
+.quantity {
+  width: 64px;
+  height: 64px;
+  margin-left: 3px;
+  line-height: 64px;
   text-align: center;
-  font-size: 40px;
+  font-size: 18px;
   border-radius: 50%;
-  // border: 1px solid;
-  color: #fff;
-  background: pink;
+  color: gray;
+  background: #f0f2f5;
+}
+
+.quantityDescrip {
+  margin-top: 5px;
+  margin-bottom: 0;
 }
 
 .spinContainer {

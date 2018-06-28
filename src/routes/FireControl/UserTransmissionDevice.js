@@ -7,7 +7,6 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
-// import { add } from 'gl-matrix/src/gl-matrix/quat';
 
 const PAGE_SIZE = 18;
 
@@ -32,15 +31,20 @@ export default class UserTransmissionDevice extends PureComponent {
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
       },
     });
   }
 
-  currentPageIndex = 2;
+  componentWillUnmount() {
+    rootElement.removeEventListener('scroll', this.handleScroll);
+  }
+
+  currentpageNum = 2;
 
   handleScroll = e => {
+    // console.log('scroll');
     const rootDOM = e.target;
     // console.log('rootDOM', rootDOM.scrollTop);
     const childDOM = rootDOM.firstElementChild;
@@ -58,25 +62,25 @@ export default class UserTransmissionDevice extends PureComponent {
   handleCheck = () => {
     const { company, address } = this.state;
     this.setState({ hasMore: true });
-    this.currentPageIndex = 2;
+    this.currentpageNum = 2;
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
-        company,
-        address,
+        name: company,
+        practicalAddress: address,
       },
     });
   };
 
   handleReset = () => {
     this.setState({ company: '', address: '', hasMore: true });
-    this.currentPageIndex = 2;
+    this.currentpageNum = 2;
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
       },
     });
@@ -98,14 +102,14 @@ export default class UserTransmissionDevice extends PureComponent {
     this.props.dispatch({
       type: 'transmission/fetch',
       payload: {
-        pageIndex: this.currentPageIndex,
+        pageNum: this.currentpageNum,
         pageSize: PAGE_SIZE,
-        company,
-        address,
+        name: company,
+        practicalAddress: address,
       },
       callback(total) {
-        const currentLength = that.currentPageIndex * PAGE_SIZE;
-        that.currentPageIndex += 1;
+        const currentLength = that.currentpageNum * PAGE_SIZE;
+        that.currentpageNum += 1;
         that.setState({ scrollLoading: false });
         if (currentLength >= total) that.setState({ hasMore: false });
       },
@@ -121,7 +125,7 @@ export default class UserTransmissionDevice extends PureComponent {
 
     return (
       <PageHeaderLayout title="用户传输装置">
-        <div className={styles.check}>
+        <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>
               <Input
@@ -148,7 +152,7 @@ export default class UserTransmissionDevice extends PureComponent {
               <Button onClick={this.handleReset}>重置</Button>
             </Col>
           </Row>
-        </div>
+        </Card>
         <div className={styles.cardList}>
           <List
             rowKey="id"
@@ -160,12 +164,17 @@ export default class UserTransmissionDevice extends PureComponent {
                 <Link to={`/fire-control/user-transmission-device-detail/${item.id}`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
-                      地址：{item.praticalAddress}
+                      地址：{item.practicalAddress !== undefined
+                        ? item.practicalAddress
+                        : item.praticalAddress}
                     </Ellipsis>
-                    <p>安全负责人：{item.leader}</p>
-                    <p>联系电话：{item.phone}</p>
-                    <p>消防主机数量：{item.hostQuantity}</p>
-                    <span className={styles.quantity}>{item.hostQuantity}</span>
+                    <p>安全负责人：张三</p>
+                    <p>联系电话：132 8888 8888</p>
+                    <p>消防主机数量：{item.fireCount}</p>
+                    <div className={styles.quantityContainer}>
+                      <div className={styles.quantity}>{item.transmissionCount}</div>
+                      <p className={styles.quantityDescrip}>传输装置数</p>
+                    </div>
                   </Card>
                 </Link>
               </List.Item>
