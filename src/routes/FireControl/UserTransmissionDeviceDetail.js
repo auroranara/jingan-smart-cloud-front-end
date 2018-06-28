@@ -141,11 +141,11 @@ export default class UserTransmissionDeviceDetail extends Component {
   }
 
   downloadPointPositionTemplate = () => {
-    message.info('这个功能暂未开放');
+    message.info('小姐姐，这个功能暂未开放哦');
   };
   // importPointPositionClick = () => {};
   exportPointPositionClick = () => {
-    message.info('这个功能暂未开放');
+    message.info('小姐姐，这个功能暂未开放哦');
   };
 
   hideDeviceModal = () => {
