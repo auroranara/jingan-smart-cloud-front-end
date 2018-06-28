@@ -5,6 +5,25 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
 import Result from '../../components/Result';
 
+
+// 面包屑
+const breadcrumbList = [
+  {
+    title: '首页',
+    href: '/',
+  },
+  {
+    title: '消防维保',
+  },
+  {
+    title: '用户传输装置',
+    href: '/fire-control/user-transmission-device',
+  },
+  {
+    title: '导入点位数据',
+  },
+];
+
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.models.transmission,
@@ -180,10 +199,7 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `http://118.126.110.115:3001/mock/28/acloud_new/v2/pointData/pointData/${hostId}`,
-      headers: {
-        authorization: 'authorization-text',
-      },
+      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
       accept: '.xls,.xlsx',
       onChange: this.handleChange,
     };
@@ -193,6 +209,7 @@ export default class ImportPointPosition extends PureComponent {
         title="常熟市鑫博伟纺织有限公司"
         logo={<Icon type="apple" />}
         content={description(hostId)}
+        breadcrumbList={breadcrumbList}
       >
         <Card title="导入点位数据" className={styles.cardContainer}>
           <Form>
