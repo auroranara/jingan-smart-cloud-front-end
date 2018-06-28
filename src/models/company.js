@@ -305,12 +305,7 @@ export default {
         ...state,
         area:
           ids.length === 0
-            ? list.map(item => {
-                return {
-                  ...item,
-                  isLeaf: false,
-                };
-              })
+            ? list
             : state.area.map(province => {
                 if (province.id === ids[0]) {
                   if (ids.length !== 1) {
@@ -335,12 +330,7 @@ export default {
                           } else {
                             return {
                               ...city,
-                              children: list.map(item => {
-                                return {
-                                  ...item,
-                                  isLeaf: false,
-                                };
-                              }),
+                              children: list,
                               loading: false,
                             };
                           }
@@ -351,12 +341,7 @@ export default {
                   } else {
                     return {
                       ...province,
-                      children: list.map(item => {
-                        return {
-                          ...item,
-                          isLeaf: false,
-                        };
-                      }),
+                      children: list,
                       loading: false,
                     };
                   }
