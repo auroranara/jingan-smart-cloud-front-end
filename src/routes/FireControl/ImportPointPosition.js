@@ -59,7 +59,10 @@ export default class ImportPointPosition extends PureComponent {
   render() {
     const {
       match: {
-        params: { hostId },
+        params: { deviceId },
+      },
+      location: {
+        query: { deviceCode },
       },
     } = this.props;
     // const { getFieldDecorator } = form;
@@ -199,7 +202,7 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
+      action: `/acloud_new/v2/pointData/pointData/${deviceId}`,
       accept: '.xls,.xlsx',
       onChange: this.handleChange,
     };
@@ -208,7 +211,7 @@ export default class ImportPointPosition extends PureComponent {
       <PageHeaderLayout
         title="常熟市鑫博伟纺织有限公司"
         logo={<Icon type="apple" />}
-        content={description(hostId)}
+        content={description(deviceCode)}
         breadcrumbList={breadcrumbList}
       >
         <Card title="导入点位数据" className={styles.cardContainer}>
