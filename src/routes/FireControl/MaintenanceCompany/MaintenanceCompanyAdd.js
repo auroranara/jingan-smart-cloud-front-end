@@ -183,7 +183,6 @@ export default class BasicForms extends PureComponent {
 
   /* 企业选择按钮点击事件 */
   handleSelectCompany = value => {
-    console.log(value);
     const {
       form: { setFieldsValue },
     } = this.props;
