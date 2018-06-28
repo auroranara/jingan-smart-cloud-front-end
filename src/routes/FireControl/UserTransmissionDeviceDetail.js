@@ -365,7 +365,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
-        <DeviceDetailCard key={device.id} index={index} deviceData={device} {...cardParentMethods} />
+        <DeviceDetailCard key={device.id} index={index} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
       ));
 
     const deviceParentMethods = {
