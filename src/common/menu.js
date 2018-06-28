@@ -44,7 +44,7 @@ const menuData = [
       },
       {
         name: '用户传输装置',
-        path: 'user-transmission-device',
+        path: 'user-transmission-device/list',
       },
     ],
   },

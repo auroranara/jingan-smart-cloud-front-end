@@ -6,24 +6,6 @@ import styles from './ImportPointPosition.less';
 import Result from '../../components/Result';
 
 
-// 面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    href: '/',
-  },
-  {
-    title: '消防维保',
-  },
-  {
-    title: '用户传输装置',
-    href: '/fire-control/user-transmission-device',
-  },
-  {
-    title: '导入点位数据',
-  },
-];
-
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.models.transmission,
@@ -59,7 +41,7 @@ export default class ImportPointPosition extends PureComponent {
   render() {
     const {
       match: {
-        params: { deviceId },
+        params: { hostId, companyId },
       },
       location: {
         query: { deviceCode },
@@ -67,6 +49,27 @@ export default class ImportPointPosition extends PureComponent {
     } = this.props;
     // const { getFieldDecorator } = form;
     const FormItem = Form.Item;
+    // 面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        href: '/',
+      },
+      {
+        title: '消防维保',
+      },
+      {
+        title: '用户传输装置',
+        href: '/fire-control/user-transmission-device',
+      },
+      {
+        title: '详情页',
+        href: `/fire-control/user-transmission-device-detail/${companyId}/detail`,
+      },
+      {
+        title: '导入点位数据',
+      },
+    ];
     const errorStatus = (key, error) => {
       const index = error.findIndex(item => item.key === key);
       return index > -1;
@@ -202,7 +205,7 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `/acloud_new/v2/pointData/pointData/${deviceId}`,
+      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
       accept: '.xls,.xlsx',
       onChange: this.handleChange,
     };

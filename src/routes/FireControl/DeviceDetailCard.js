@@ -78,6 +78,7 @@ export default class DeviceDetailCard extends Component {
 
   renderHostTable() {
     const {
+      companyId,
       deviceData,
       handleHostUpdateClick,
       handleHostDeleteClick,
@@ -125,7 +126,7 @@ export default class DeviceDetailCard extends Component {
           const menu = (
             <Menu>
               <MenuItem><a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a></MenuItem>
-              <MenuItem><Link to={{ pathname: `/fire-control/import-point-position/${record.deviceId}`, query: { deviceCode: record.deviceCode } }}>导入点位</Link></MenuItem>
+              <MenuItem><Link to={{ pathname: `/fire-control/user-transmission-device-detail/${companyId}/import-point-position/${record.id}`, query: { deviceCode: record.deviceCode } }}>导入点位</Link></MenuItem>
             </Menu>
           );
 
