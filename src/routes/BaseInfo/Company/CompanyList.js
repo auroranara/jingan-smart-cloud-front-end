@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Icon, Input, Modal, message, Spin } from 'antd';
-import { Link } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
@@ -59,6 +59,10 @@ const getEmptyData = () => {
         type: 'company/remove',
         ...action,
       });
+    },
+    // 查看,
+    goToDetail(url) {
+      dispatch(routerRedux.push(url));
     },
   })
 )
@@ -224,6 +228,7 @@ export default class CompanyList extends PureComponent {
   renderList() {
     const {
       company: { list },
+      goToDetail,
     } = this.props;
 
     return (
@@ -254,9 +259,11 @@ export default class CompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Link
-                  to={`/base-info/company/detail/${item.id}`}
-                  style={{ color: 'rgba(0, 0, 0, 0.65)' }}
+                <div
+                  onClick={() => {
+                    goToDetail(`/base-info/company/detail/${item.id}`);
+                  }}
+                  style={{ cursor: 'pointer' }}
                 >
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                     地址：{item.practicalAddress || getEmptyData()}
@@ -270,7 +277,7 @@ export default class CompanyList extends PureComponent {
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                     联系电话：{item.contact || getEmptyData()}
                   </Ellipsis>
-                </Link>
+                </div>
               </Card>
             </List.Item>
           )}
