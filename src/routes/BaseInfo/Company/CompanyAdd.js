@@ -119,7 +119,7 @@ const defaultPagination = {
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   state = {
-    loading: false,
+    loading: true,
     ichnographyList: [],
     contractList: [],
     modal: {
@@ -132,13 +132,6 @@ export default class CompanyDetail extends PureComponent {
   /* 生命周期函数 */
   componentWillMount() {
     const { fetchDict, fetchArea } = this.props;
-    // 获取行业类别
-    fetchDict({
-      payload: {
-        type: 'industryTypeId',
-        key: 'industryCategories',
-      },
-    });
     // 获取经济类型
     fetchDict({
       payload: {
@@ -174,6 +167,18 @@ export default class CompanyDetail extends PureComponent {
         ids: [],
       },
     });
+    // 获取行业类别
+    fetchDict({
+      payload: {
+        type: 'industryType',
+        key: 'industryCategories',
+      },
+      success: () => {
+        this.setState({
+          loading: false,
+        });
+      },
+    });
   }
 
   /* 去除左右两边空白 */
@@ -190,7 +195,12 @@ export default class CompanyDetail extends PureComponent {
     validateFieldsAndScroll(
       (
         error,
-        { administrativeDivision: [province, city, district, town], createTime, ...restFields }
+        {
+          administrativeDivision: [province, city, district, town],
+          createTime,
+          industryCategory,
+          ...restFields
+        }
       ) => {
         if (!error) {
           const {
@@ -208,12 +218,13 @@ export default class CompanyDetail extends PureComponent {
               city,
               district,
               town,
+              industryCategory: industryCategory.join(','),
               createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId,
               companyIchnography: ichnography.dbUrl,
-              companyIchnographyFileName: ichnography.name,
+              ichnographyName: ichnography.name,
               maintenanceContract: contract.dbUrl,
-              maintenanceContractFileName: contract.name,
+              contractName: contract.name,
             },
             success: () => {
               message.success('新建成功！', () => {
@@ -234,6 +245,7 @@ export default class CompanyDetail extends PureComponent {
             city,
             district,
             town,
+            industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
             maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
             ichnography: ichnography.dbUrl,
@@ -464,6 +476,7 @@ export default class CompanyDetail extends PureComponent {
                     loadData={this.handleLoadData}
                     changeOnSelect
                     placeholder="请选择行政区域"
+                    allowClear
                   />
                 )}
               </Form.Item>
@@ -498,13 +511,18 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.industryCategory}>
                 {getFieldDecorator('industryCategory')(
-                  <Select allowClear placeholder="请选择行业类别">
-                    {industryCategories.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Cascader
+                    options={industryCategories}
+                    filedNames={{
+                      value: 'id',
+                      label: 'name',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
+                    allowClear
+                    changeOnSelect
+                    placeholder="请选择行业类别"
+                  />
                 )}
               </Form.Item>
             </Col>
