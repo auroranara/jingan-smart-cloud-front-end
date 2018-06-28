@@ -148,7 +148,7 @@ export const getRouterData = app => {
         import('../routes/FireControl/UserTransmissionDeviceDetail.js')
       ),
     },
-    '/fire-control/import-point-position/:hostId': {
+    '/fire-control/import-point-position/:deviceId': {
       name: '导入点位数据',
       component: dynamicWrapper(app, ['pointPosition'], () =>
         import('../routes/FireControl/ImportPointPosition.js')
