@@ -21,19 +21,16 @@ export default class ImportPointPosition extends PureComponent {
     showResult: false,
   };
   handleChange = (info) => {
-    console.log('info', info);
+    const fileList = info.fileList.slice(-1);
+    this.setState({ fileList })
 
     if (info.file.status === 'uploading ') {
       this.setState({ loading: true })
     }
     if (info.file.response && info.file.response.code && info.file.response.code === 200) {
-      this.setState({ showResult: true, loading: false })
       if (info.file.response.data) {
         const { failed, success, updated, total } = info.file.response.data
-        this.setState({ failed, success, updated, total })
-        if (info.file.response.data.list && info.file.response.data.list.length) {
-          this.setState({ dataSource: info.file.response.data.list })
-        }
+        this.setState({ failed, success, updated, total, showResult: true, loading: false, dataSource: info.file.response.data.list })
       }
     }
   }
@@ -200,7 +197,7 @@ export default class ImportPointPosition extends PureComponent {
         <Card title="导入点位数据" className={styles.cardContainer}>
           <Form>
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
-              <Upload {...props}>
+              <Upload {...props} fileList={this.state.fileList}>
                 <Button type="primary" loading={this.state.loading}>
                   <Icon type="upload" /> 选择文件
                 </Button>
