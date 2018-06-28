@@ -169,9 +169,9 @@ export default class CompanyDetail extends PureComponent {
             city,
             district,
             companyIchnography,
-            companyIchnographyFileName,
+            ichnographyName,
             maintenanceContract,
-            maintenanceContractFileName,
+            contractName,
           }) => {
             this.setState({
               maintenanceId,
@@ -179,7 +179,7 @@ export default class CompanyDetail extends PureComponent {
                 ? []
                 : [
                     {
-                      name: companyIchnographyFileName,
+                      name: ichnographyName,
                       url: companyIchnography,
                     },
                   ],
@@ -187,7 +187,9 @@ export default class CompanyDetail extends PureComponent {
                 ? []
                 : [
                     {
-                      name: maintenanceContractFileName,
+                      uid: -1,
+                      status: 'done',
+                      name: contractName,
                       url: maintenanceContract,
                     },
                   ],
@@ -245,7 +247,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取行业类别
     fetchDict({
       payload: {
-        type: 'industryTypeId',
+        type: 'industryType',
         key: 'industryCategories',
       },
     });
@@ -296,7 +298,12 @@ export default class CompanyDetail extends PureComponent {
     validateFieldsAndScroll(
       (
         error,
-        { administrativeDivision: [province, city, district, town], createTime, ...restFields }
+        {
+          administrativeDivision: [province, city, district, town],
+          createTime,
+          industryCategory,
+          ...restFields
+        }
       ) => {
         if (!error) {
           const {
@@ -315,12 +322,13 @@ export default class CompanyDetail extends PureComponent {
               city,
               district,
               town,
+              industryCategory: industryCategory.join(','),
               createTime: createTime && createTime.format('YYYY-MM-DD'),
               maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
               ichnography: ichnography.dbUrl,
               ichnographyFileName: ichnography.name,
               maintenanceContract: contract.dbUrl,
-              maintenanceContractFileName: contract.name,
+              contractName: contract.name,
             },
             success: () => {
               message.success('修改成功！', () => {
@@ -341,10 +349,11 @@ export default class CompanyDetail extends PureComponent {
             city,
             district,
             town,
+            industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
             maintenanceId: this.state.maintenanceId || this.props.company.detail.data.maintenanceId,
             companyIchnography: ichnography.dbUrl,
-            companyIchnographyFileName: ichnography.name,
+            ichnographyName: ichnography.name,
             contract: contract.dbUrl,
             contractFileName: contract.name,
           });
@@ -593,6 +602,7 @@ export default class CompanyDetail extends PureComponent {
                     loadData={this.handleLoadData}
                     changeOnSelect
                     placeholder="请选择行政区域"
+                    allowClear
                   />
                 )}
               </Form.Item>
@@ -645,15 +655,20 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.industryCategory}>
                 {getFieldDecorator('industryCategory', {
-                  initialValue: industryCategory || undefined,
+                  initialValue: industryCategory ? industryCategory.split(',') : [],
                 })(
-                  <Select allowClear placeholder="请选择行业类别">
-                    {industryCategories.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Cascader
+                    options={industryCategories}
+                    filedNames={{
+                      value: 'id',
+                      label: 'name',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
+                    allowClear
+                    changeOnSelect
+                    placeholder="请选择行业类别"
+                  />
                 )}
               </Form.Item>
             </Col>
