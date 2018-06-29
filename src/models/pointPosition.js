@@ -1,16 +1,24 @@
-import { fetchPointPositionData } from '../services/pointPosition';
+import { queryHostDetail } from '../services/pointPosition';
 
 export default {
   namespace: 'pointPosition',
 
-  state: {},
+  state: {
+    hostDetail: {},
+  },
 
   effects: {
-    *fetchPointData({ payload }, { call }) {
-      const response = yield call(fetchPointPositionData, payload);
-      console.log(response);
+    *fetchHostDetail({ payload }, { call, put }) {
+      const response = yield call(queryHostDetail, payload);
+      if (response.code === 200) {
+        yield put({ type: 'receiveHostDetail', payload: response.data });
+      }
     },
   },
 
-  reducers: {},
+  reducers: {
+    receiveHostDetail(state, action) {
+      return { ...state, hostDetail: action.payload };
+    },
+  },
 };

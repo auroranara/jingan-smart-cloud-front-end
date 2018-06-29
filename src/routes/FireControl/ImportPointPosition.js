@@ -6,9 +6,9 @@ import styles from './ImportPointPosition.less';
 import Result from '../../components/Result';
 
 
-@connect(({ transmission, loading }) => ({
-  transmission,
-  loading: loading.models.transmission,
+@connect(({ pointPosition, loading }) => ({
+  pointPosition,
+  loading: loading.models.pointPosition,
 }))
 @Form.create()
 export default class ImportPointPosition extends PureComponent {
@@ -21,6 +21,17 @@ export default class ImportPointPosition extends PureComponent {
     dataSource: [],
     showResult: false,
   };
+
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { hostId },
+      },
+    } = this.props
+    dispatch({ type: 'pointPosition/fetchHostDetail', payload: hostId })
+  }
+
   handleChange = (info) => {
     const fileList = info.fileList.slice(-1);
     this.setState({ fileList })
@@ -43,9 +54,7 @@ export default class ImportPointPosition extends PureComponent {
       match: {
         params: { hostId, companyId },
       },
-      location: {
-        query: { deviceCode },
-      },
+      pointPosition: { hostDetail: { deviceCode } },
     } = this.props;
     // const { getFieldDecorator } = form;
     const FormItem = Form.Item;

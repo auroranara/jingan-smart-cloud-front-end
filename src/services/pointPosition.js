@@ -1,6 +1,7 @@
-import { stringify } from 'qs';
+// import { stringify } from 'qs';
 import request from '../utils/request';
 
-export async function fetchPointPositionData(params) {
-  return request(`/pointData/pointData/${stringify(params)}`);
+// 根据主机id获取主机详情
+export async function queryHostDetail(hostId) {
+  return request(`/acloud_new/v2/fireControl/company/host/${hostId}`);
 }
