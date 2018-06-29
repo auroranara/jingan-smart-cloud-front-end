@@ -45,7 +45,7 @@ const defaultPagination = {
       });
     },
     // 获取企业
-    fetch(action) {
+    fetchCompanyList(action) {
       dispatch({
         type: 'maintenanceCompany/fetchCompanyList',
         ...action,
@@ -122,18 +122,18 @@ export default class BasicForms extends PureComponent {
 
   /* 显示选择企业模态框 */
   handleShowCompanyModal = () => {
-    const { fetch } = this.props;
+    const { fetchCompanyList } = this.props;
     const { companyModal } = this.state;
     // 显示模态框
     this.setState({
       companyModal: {
-        type: 'company/appendFetch',
+        type: 'maintenanceCompany/fetchCompanyList',
         ...companyModal,
         visible: true,
       },
     });
     // 初始化表格数据
-    fetch({
+    fetchCompanyList({
       payload: {
         ...defaultPagination,
       },
@@ -212,7 +212,7 @@ export default class BasicForms extends PureComponent {
     } = this.state;
     const {
       maintenanceCompany: { modal },
-      fetch,
+      fetchCompanyList,
     } = this.props;
     const modalProps = {
       // 模态框是否显示
@@ -224,7 +224,7 @@ export default class BasicForms extends PureComponent {
         this.CompanyIdInput.blur();
       },
       modal,
-      fetch,
+      fetch: fetchCompanyList,
       // 选择回调
       onSelect: this.handleSelectCompany,
       // 表格是否正在加载
@@ -321,7 +321,7 @@ export default class BasicForms extends PureComponent {
             <FormItem {...formItemLayout} label="是否启用">
               {getFieldDecorator('usingStatus', {
                 initialValue: '1',
-              })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
+              })(<Switch checkedChildren="是" unCheckedChildren="否" defaultChecked />)}
             </FormItem>
 
             <FormItem {...formItemLayout} label="是否为分公司">

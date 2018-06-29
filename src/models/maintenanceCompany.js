@@ -92,7 +92,7 @@ export default {
       const response = yield call(queryCompanyList, payload);
       const { code } = response;
       if (callback) callback(code);
-      if (code === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'queryCompanyList',
           payload: response.data,
