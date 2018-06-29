@@ -31,7 +31,7 @@ const DESCRIP_MAP = {
   scaleLabel: '规模',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
-  createTime: '成立时间',
+  createTime: '成立时间', // response中传过来的值是个毫秒数，所以需要定义一个函数转成日期字符串
 };
 
 const deviceModalFormItems = [
@@ -111,6 +111,11 @@ function dispatchCallback(code, successMsg, failMsg) {
     message.success(successMsg);
   else
     message.warn(failMsg);
+}
+
+function convertMsToString(ms) {
+  const date = new Date(ms);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
 @connect(({ transmission, loading }) => ({
@@ -333,7 +338,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             // 兼容实际地址 practical pratical
             companyDetail[k] === undefined ? null : (
               <Description key={k} term={DESCRIP_MAP[k]}>
-                {companyDetail[k] === null ? '暂无信息' : companyDetail[k].toString()}
+                {companyDetail[k] === null ? '暂无信息' : k.toLowerCase().includes('time') ? convertMsToString(companyDetail[k]) : companyDetail[k].toString()}
               </Description>
             )
         )}
