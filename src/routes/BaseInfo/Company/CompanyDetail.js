@@ -194,7 +194,7 @@ export default class CompanyDetail extends PureComponent {
             {licenseTypeLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.createTime}>
-            {createTime ? moment(createTime).format('YYYY-MM-DD') : getEmptyData()}
+            {createTime ? moment(+createTime).format('YYYY-MM-DD') : getEmptyData()}
           </Description>
           <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
           <Description term={fieldLabels.businessScope}>
