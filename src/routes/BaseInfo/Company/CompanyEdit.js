@@ -346,60 +346,110 @@ export default class CompanyDetail extends PureComponent {
   /* 上传企业平面图 */
   handleUploadIchnography = info => {
     const { file } = info;
-    if (file.status !== 'done') {
-      return;
-    }
-    const {
-      response: {
-        code,
-        data: {
-          list: [result],
-        },
-      },
-    } = file;
-    if (code === 200) {
+    if (file.status === 'uploading') {
       this.setState({
         ichnographyList: [
-          {
-            ...file,
-            url: result.webUrl,
-            dbUrl: result.dbUrl,
-          },
+          file,
         ],
       });
-      message.success('上传成功！');
-    } else {
+    }
+    else if (file.status === 'done') {
+      if (file.response.code === 200) {
+        const { data: { list: [ result ] } } = file.response;
+        if (result){
+          this.setState({
+            ichnographyList: [
+              {
+                ...file,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              },
+            ],
+          });
+        }
+        else {
+          // 没有返回值
+          message.error('上传失败！');
+          this.setState({
+            ichnographyList: [],
+          });
+        }
+      }
+      else {
+        // code为500
+        message.error('上传失败！');
+        this.setState({
+          ichnographyList: [],
+        });
+      }
+    }
+    else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        ichnographyList: [],
+      });
+    }
+    else {
+      // error
       message.error('上传失败！');
+      this.setState({
+        ichnographyList: [],
+      });
     }
   };
 
   /* 上传维保合同 */
   handleUploadContract = info => {
     const { file } = info;
-    if (file.status !== 'done') {
-      return;
-    }
-    const {
-      response: {
-        code,
-        data: {
-          list: [result],
-        },
-      },
-    } = file;
-    if (code === 200) {
+    if (file.status === 'uploading') {
       this.setState({
-        contractList: [
-          {
-            ...file,
-            url: result.webUrl,
-            dbUrl: result.dbUrl,
-          },
+        ichnographyList: [
+          file,
         ],
       });
-      message.success('上传成功！');
-    } else {
+    }
+    else if (file.status === 'done') {
+      if (file.response.code === 200) {
+        const { data: { list: [ result ] } } = file.response;
+        if (result){
+          this.setState({
+            contractList: [
+              {
+                ...file,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              },
+            ],
+          });
+        }
+        else {
+          // 没有返回值
+          message.error('上传失败！');
+          this.setState({
+            contractList: [],
+          });
+        }
+      }
+      else {
+        // code为500
+        message.error('上传失败！');
+        this.setState({
+          contractList: [],
+        });
+      }
+    }
+    else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        contractList: [],
+      });
+    }
+    else {
+      // error
       message.error('上传失败！');
+      this.setState({
+        contractList: [],
+      });
     }
   };
 
@@ -852,8 +902,8 @@ export default class CompanyDetail extends PureComponent {
           getPopupContainer={trigger => trigger.parentNode}
         >
           <Icon type="exclamation-circle" />
+          {errorCount}
         </Popover>
-        {errorCount}
       </span>
     );
   }
