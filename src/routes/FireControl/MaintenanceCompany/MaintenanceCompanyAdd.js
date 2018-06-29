@@ -320,7 +320,7 @@ export default class BasicForms extends PureComponent {
 
             <FormItem {...formItemLayout} label="是否启用">
               {getFieldDecorator('usingStatus', {
-                initialValue: '启用',
+                initialValue: '1',
               })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
             </FormItem>
 
