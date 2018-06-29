@@ -56,8 +56,11 @@ export default class ImportPointPosition extends PureComponent {
       },
       pointPosition: { hostDetail: { deviceCode } },
     } = this.props;
+
     // const { getFieldDecorator } = form;
+
     const FormItem = Form.Item;
+
     // 面包屑
     const breadcrumbList = [
       {
@@ -79,15 +82,17 @@ export default class ImportPointPosition extends PureComponent {
         title: '导入点位数据',
       },
     ];
+
     const errorStatus = (key, error) => {
       const index = error.findIndex(item => item.key === key);
       return index > -1;
     };
+
     const content = (arr, key) => {
       const result = arr.find(item => item.key === key);
       return <div>{result.value}</div>;
-      // return (<div>{arr.map(item => { return (<p key={item.key}>{item.value}</p>) })}</div>)
     };
+
     const tableCell = (val, rows, key) => {
       if (errorStatus(key, rows.error)) {
         return (
@@ -98,6 +103,7 @@ export default class ImportPointPosition extends PureComponent {
         );
       } else return <span>{val}</span>;
     };
+
     const description = (id) => {
       return (
         <div>
@@ -105,6 +111,7 @@ export default class ImportPointPosition extends PureComponent {
         </div>
       )
     }
+
     const message = (
       <div style={{ color: '#4d4848', fontSize: '17px' }}>
         <span>本次导入共{this.state.total}个点位。</span>
@@ -112,6 +119,7 @@ export default class ImportPointPosition extends PureComponent {
         <span style={{ display: this.state.updated > 0 ? 'inline' : 'none' }}>更新信息{this.state.updated}条。</span>
         <span style={{ display: this.state.failed > 0 ? 'inline' : 'none' }}>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>
       </div>)
+
     const columns = [
       {
         title: '行序号',
@@ -119,7 +127,10 @@ export default class ImportPointPosition extends PureComponent {
         key: 'row',
         align: 'center',
         fixed: 'left',
-        width: 80,
+        width: 100,
+        render(val, rows) {
+          return tableCell(val, rows, 'others');
+        },
       },
       {
         title: '消防设施系统类型',
