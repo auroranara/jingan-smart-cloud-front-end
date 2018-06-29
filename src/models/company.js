@@ -90,6 +90,8 @@ export default {
     *fetchDict(
       {
         payload: { type, key },
+        success,
+        error,
       },
       { call, put }
     ) {
@@ -102,6 +104,11 @@ export default {
             list: response.data.list,
           },
         });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
     *remove({ payload, success, error }, { call, put }) {
@@ -298,12 +305,7 @@ export default {
         ...state,
         area:
           ids.length === 0
-            ? list.map(item => {
-                return {
-                  ...item,
-                  isLeaf: false,
-                };
-              })
+            ? list
             : state.area.map(province => {
                 if (province.id === ids[0]) {
                   if (ids.length !== 1) {
@@ -328,12 +330,7 @@ export default {
                           } else {
                             return {
                               ...city,
-                              children: list.map(item => {
-                                return {
-                                  ...item,
-                                  isLeaf: false,
-                                };
-                              }),
+                              children: list,
                               loading: false,
                             };
                           }
@@ -344,12 +341,7 @@ export default {
                   } else {
                     return {
                       ...province,
-                      children: list.map(item => {
-                        return {
-                          ...item,
-                          isLeaf: false,
-                        };
-                      }),
+                      children: list,
                       loading: false,
                     };
                   }

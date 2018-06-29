@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, Select, Modal, message, Spin } from 'antd';
-import { Link } from 'dva/router';
+import { Form, List, Card, Button, Icon, Input, Modal, message, Spin } from 'antd';
+import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
@@ -10,7 +10,7 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
+// const { Option } = Select;
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -59,6 +59,10 @@ const getEmptyData = () => {
         type: 'company/remove',
         ...action,
       });
+    },
+    // 查看,
+    goToDetail(url) {
+      dispatch(routerRedux.push(url));
     },
   })
 )
@@ -170,7 +174,7 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      company: { industryCategories },
+      // company: { industryCategories },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -189,11 +193,11 @@ export default class CompanyList extends PureComponent {
               getValueFromEvent: e => e.target.value.trim(),
             })(<Input placeholder="请输入单位地址" />)}
           </FormItem>
-          <FormItem>
+          {/* <FormItem>
             {getFieldDecorator('industryCategory', {
               initialValue: defaultFormData.industryCategory,
             })(
-              <Select allowClear placeholder="行业类别" style={{ width: '164px' }}>
+              <Select allowClear placeholder="行业类别" style={{ width: '164px' }} getPopupContainer={getRootChild}>
                 {industryCategories.map(item => (
                   <Option value={item.id} key={item.id}>
                     {item.label}
@@ -201,7 +205,7 @@ export default class CompanyList extends PureComponent {
                 ))}
               </Select>
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
               查询
@@ -224,6 +228,7 @@ export default class CompanyList extends PureComponent {
   renderList() {
     const {
       company: { list },
+      goToDetail,
     } = this.props;
 
     return (
@@ -254,18 +259,25 @@ export default class CompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  地址：{item.practicalAddress || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  行业类别：{item.industryCategoryLabel || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  负责人：{item.principal || getEmptyData()}
-                </Ellipsis>
-                <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                  联系电话：{item.contact || getEmptyData()}
-                </Ellipsis>
+                <div
+                  onClick={() => {
+                    goToDetail(`/base-info/company/detail/${item.id}`);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    地址：{item.practicalAddress || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    行业类别：{item.industryCategoryLabel || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    负责人：{item.principal || getEmptyData()}
+                  </Ellipsis>
+                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    联系电话：{item.contact || getEmptyData()}
+                  </Ellipsis>
+                </div>
               </Card>
             </List.Item>
           )}

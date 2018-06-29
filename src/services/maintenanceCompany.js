@@ -12,8 +12,8 @@ export async function queryMaintenanceCompany(params) {
 }
 
 // 删除维保单位
-export async function deleteMaintenanceCompany(id) {
-  return request(`/acloud_new/v2/fireControl/maintenanceCompanies/${id}`, {
+export async function deleteMaintenanceCompany({ id }) {
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`, {
     method: 'DELETE',
   });
 }
@@ -29,4 +29,17 @@ export async function updateMaintenanceCompany(params) {
     method: 'PUT',
     body: params,
   });
+}
+
+/* 新增维保单位信息 */
+export async function addMaintenanceCompany(params) {
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+/*  查询企业列表 */
+export async function queryCompanyList(params) {
+  return request(`/acloud_new/v2/fireControl/companyList.json?${stringify(params)}`);
 }

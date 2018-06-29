@@ -4,6 +4,8 @@ import {
   queryMaintenanceCompany,
   queryMaintenanceCompanyinfo,
   updateMaintenanceCompany,
+  addMaintenanceCompany,
+  queryCompanyList,
 } from '../services/maintenanceCompany.js';
 
 export default {
@@ -13,12 +15,16 @@ export default {
     list: [],
     detail: {},
     categories: [],
-    formData: {
-      name: undefined,
-      practicalAddress: undefined,
-      industryCategory: undefined,
-    },
+    pageNum: 1,
     isLast: false,
+    modal: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    },
   },
 
   effects: {
@@ -27,7 +33,7 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'query',
-          payload: response.data.list,
+          payload: response.data,
         });
       }
     },
@@ -40,27 +46,25 @@ export default {
         });
       }
     },
-    *remove({ payload, success, error }, { call, put }) {
+    *remove({ payload, callback }, { call, put }) {
       const response = yield call(deleteMaintenanceCompany, payload);
       if (response.code === 200) {
         yield put({
           type: 'delete',
           payload: payload.id,
         });
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error();
       }
+      if (callback) callback(response);
     },
     *fetchDetail({ payload, callback }, { call, put }) {
-      const response = yield call(queryMaintenanceCompanyinfo, payload);
-      if (callback) callback(!!response.data.isBranch);
-      yield put({
-        type: 'queryDetail',
-        payload: response.data,
-      });
+      const response = yield call(queryMaintenanceCompanyinfo, payload.id);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryDetail',
+          payload: response.data,
+        });
+        if (callback) callback(response.data);
+      }
     },
     *updateMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
       const response = yield call(updateMaintenanceCompany, payload);
@@ -73,19 +77,45 @@ export default {
         });
       }
     },
+    *addMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
+      const response = yield call(addMaintenanceCompany, payload);
+      const { code } = response;
+      if (callback) callback(code);
+      if (code === 200) {
+        yield put({
+          type: 'addMaintenanceCompany',
+          payload: response.data,
+        });
+      }
+    },
+    *fetchCompanyList({ payload, callback }, { call, put }) {
+      const response = yield call(queryCompanyList, payload);
+      const { code } = response;
+      if (callback) callback(code);
+      if (code === 200) {
+        yield put({
+          type: 'queryCompanyList',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
-    query(state, { payload }) {
+    query(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       return {
         ...state,
-        list: payload,
-      };
-    },
-    queryDetail(state, { payload }) {
-      return {
-        ...state,
-        detail: payload,
+        list,
+        pageNum: 1,
+        isLast: pageNum * pageSize >= total,
       };
     },
     appendList(
@@ -93,14 +123,21 @@ export default {
       {
         payload: {
           list,
-          pagination: { pageIndex, pageSize, total },
+          pagination: { pageNum, pageSize, total },
         },
       }
     ) {
       return {
         ...state,
         list: [...state.list, ...list],
-        isLast: pageIndex * pageSize >= total,
+        pageNum,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+    queryDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: payload,
       };
     },
     queryCategories(state, { payload }) {
@@ -113,15 +150,6 @@ export default {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
-      };
-    },
-    queryMaintenanceCompanyDetail(state, { payload }) {
-      return {
-        ...state,
-        detail: {
-          ...state.detail,
-          data: payload,
-        },
       };
     },
     updateFormData(state, { payload }) {
@@ -137,6 +165,21 @@ export default {
           ...state.detail,
           data: payload,
         },
+      };
+    },
+    addMaintenanceCompany(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+    queryCompanyList(state, { payload }) {
+      return {
+        ...state,
+        modal: payload,
       };
     },
   },

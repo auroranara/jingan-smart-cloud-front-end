@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button } from 'antd';
-// import moment from 'moment';
+import { Form, Card, Button, Spin } from 'antd';
+import moment from 'moment';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -40,7 +40,7 @@ const fieldLabels = {
   code: '企业社会信用码',
   companyIchnography: '企业平面图',
   companyStatus: '企业状态',
-  createDate: '成立时间',
+  createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
@@ -76,6 +76,10 @@ const getEmptyData = () => {
     goToEdit(id) {
       dispatch(routerRedux.push(`/base-info/company/edit/${id}`));
     },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
   })
 )
 @Form.create()
@@ -87,11 +91,15 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      goToException,
     } = this.props;
     // 获取详情
     fetchCompany({
       payload: {
         id,
+      },
+      error: () => {
+        goToException();
       },
     });
   }
@@ -123,7 +131,7 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
-        <DescriptionList>
+        <DescriptionList col={3}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
             {registerAddress || getEmptyData()}
@@ -161,7 +169,7 @@ export default class CompanyDetail extends PureComponent {
             companyStatusLabel,
             scaleLabel,
             licenseTypeLabel,
-            createDate,
+            createTime,
             groupName,
             businessScope,
           },
@@ -171,7 +179,7 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
-        <DescriptionList>
+        <DescriptionList col={3}>
           <Description term={fieldLabels.industryCategory}>
             {industryCategoryLabel || getEmptyData()}
           </Description>
@@ -185,7 +193,9 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.createDate}>{createDate || getEmptyData()}</Description>
+          <Description term={fieldLabels.createTime}>
+            {createTime ? moment(createTime).format('YYYY-MM-DD') : getEmptyData()}
+          </Description>
           <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
           <Description term={fieldLabels.businessScope}>
             {businessScope || getEmptyData()}
@@ -220,7 +230,7 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="其他信息" className={styles.card} bordered={false}>
-        <DescriptionList>
+        <DescriptionList col={3}>
           <Description term={fieldLabels.maintenanceId}>
             {maintenanceUnitName || getEmptyData()}
           </Description>
@@ -260,17 +270,20 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
+    const { loading } = this.props;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         wrapperClassName={styles.advancedForm}
       >
-        {this.renderBasicInfo()}
-        {this.renderMoreInfo()}
-        {/* {this.renderPersonalInfo()} */}
-        {this.renderOtherInfo()}
-        {this.renderFooterToolbar()}
+        <Spin spinning={loading}>
+          {this.renderBasicInfo()}
+          {this.renderMoreInfo()}
+          {/* {this.renderPersonalInfo()} */}
+          {this.renderOtherInfo()}
+          {this.renderFooterToolbar()}
+        </Spin>
       </PageHeaderLayout>
     );
   }

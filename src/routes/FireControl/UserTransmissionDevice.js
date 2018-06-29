@@ -179,7 +179,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-control/user-transmission-device-detail/${item.id}`}>
+                <Link to={`/fire-control/user-transmission-device-detail/${item.id}/detail`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined

@@ -16,7 +16,7 @@ const ButtonGroup = Button.Group;
 const breadcrumbList = [
   { title: '首页', href: '/' },
   { title: '消防维保' },
-  { title: '用户传输装置', href: '/fire-control/user-transmission-device' },
+  { title: '用户传输装置', href: '/fire-control/user-transmission-device/list' },
   { title: '详情页' },
 ];
 
@@ -369,7 +369,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
-        <DeviceDetailCard key={device.id} index={index} deviceData={device} {...cardParentMethods} />
+        <DeviceDetailCard key={device.id} index={index} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
       ));
 
     const deviceParentMethods = {

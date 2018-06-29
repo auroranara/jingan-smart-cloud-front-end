@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Card, Button, Switch, message } from 'antd';
-// import DescriptionList from 'components/DescriptionList';
+import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+
+import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
 // const { Description } = DescriptionList;
 
@@ -25,14 +27,43 @@ const breadcrumbList = [
   },
 ];
 
-@connect(({ maintenanceCompany, loading }) => ({
-  maintenanceCompany,
-  loading: loading.effects['maintenanceCompany/fetchDetail'],
-}))
+/* 默认分页参数 */
+const defaultPagination = {
+  pageNum: 1,
+  pageSize: 10,
+};
+
+@connect(
+  ({ maintenanceCompany, company, loading }) => ({
+    maintenanceCompany,
+    company,
+    loading: loading.effects['maintenanceCompany/fetchDetail'],
+  }),
+  dispatch => ({
+    // 获取维保单位
+    fetchModalList(action) {
+      dispatch({
+        type: 'company/fetchModalList',
+        ...action,
+      });
+    },
+    // 返回列表頁面
+    goBack() {
+      dispatch(routerRedux.push('/fire-control/maintenance-company/list'));
+    },
+    dispatch,
+  })
+)
 @Form.create()
 export default class MaintenanceCmpanyEdit extends PureComponent {
   state = {
-    hasSubcompany: false,
+    hasSubCompany: false,
+    maintenanceModal: {
+      visible: false,
+      loading: false,
+    },
+    // 用于存放选中的总公司的维保id
+    parentId: undefined,
   };
 
   componentDidMount() {
@@ -44,25 +75,35 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-
+    // 获取id对应的信息
     dispatch({
       type: 'maintenanceCompany/fetchDetail',
       payload: {
         id,
       },
-      callback(isBranch) {
-        // console.log(isBranch);
-        that.setState({ hasSubcompany: isBranch });
+      // 用于初始化state中的值
+      callback({ isBranch, parentId }) {
+        that.setState({
+          hasSubCompany: !!isBranch,
+          parentId,
+        });
       },
     });
   }
 
   switchOnchange = checked => {
-    this.setState({ hasSubcompany: checked });
+    this.setState({ hasSubCompany: checked });
   };
 
   handleUpdate(id) {
-    const { dispatch, form } = this.props;
+    const {
+      dispatch,
+      form,
+      goBack,
+      maintenanceCompany: {
+        detail: { companyId },
+      },
+    } = this.props;
 
     form.validateFields((err, values) => {
       if (err) {
@@ -70,25 +111,111 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
         return;
       }
 
-      const { companyId, usingStatus, isBranch, parentId } = values;
+      const { usingStatus, isBranch } = values;
+      const { parentId } = this.state;
       // console.log(values, usingStatus, usingStatus ? 1 : 0);
 
       dispatch({
         type: 'maintenanceCompany/updateMaintenanceCompanyAsync',
         payload: {
           id,
-          companyId,
           parentId,
-          usingStatus: usingStatus ? 1 : 0,
-          isBranch: isBranch ? 1 : 0,
+          companyId,
+          usingStatus: +usingStatus,
+          isBranch: +isBranch,
         },
         callback(code) {
           // console.log(code);
-          if (code === 200) message.info('修改成功');
+          if (code === 200)
+            message.success('修改成功', () => {
+              goBack();
+            });
           else message.error('修改失败');
         },
       });
     });
+  }
+
+  /* 显示选择维保模态框 */
+  handleShowMaintenanceModal = () => {
+    const {
+      fetchModalList,
+      maintenanceCompany: {
+        detail: { companyId },
+      },
+    } = this.props;
+    const { maintenanceModal } = this.state;
+    this.setState({
+      maintenanceModal: {
+        type: 'company/fetchModalList',
+        ...maintenanceModal,
+        visible: true,
+      },
+    });
+    fetchModalList({
+      payload: {
+        companyId,
+        ...defaultPagination,
+      },
+    });
+  };
+
+  /* 隐藏维保模态框 */
+  handleHideMaintenanceModal = () => {
+    const { maintenanceModal } = this.state;
+    this.setState({
+      maintenanceModal: {
+        ...maintenanceModal,
+        visible: false,
+      },
+    });
+  };
+
+  /* 选择按钮点击事件 */
+  handleSelectMaintenance = value => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ parentId: value.name });
+    this.setState({
+      parentId: value.id,
+    });
+    this.handleHideMaintenanceModal();
+  };
+
+  /* 渲染选择维保单位模态框 */
+  renderMaintenanceModal() {
+    const {
+      maintenanceModal: { loading, visible },
+    } = this.state;
+    const {
+      company: { modal },
+      maintenanceCompany: {
+        detail: { companyId },
+      },
+      fetchModalList,
+    } = this.props;
+    const modalProps = {
+      // 模态框是否显示
+      visible,
+      // 模态框点击关闭按钮回调
+      onClose: this.handleHideMaintenanceModal,
+      // 完全关闭后回调
+      afterClose: () => {
+        this.parentIdInput.blur();
+      },
+      modal,
+      payload: {
+        companyId,
+      },
+      fetch: fetchModalList,
+      // 选择回调
+      onSelect: this.handleSelectMaintenance,
+      // 表格是否正在加载
+      loading,
+    };
+
+    return <CompanyModal {...modalProps} />;
   }
 
   render() {
@@ -117,24 +244,16 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     const {
       maintenanceCompany: { detail: data },
     } = this.props;
-    const { hasSubcompany } = this.state;
+    const { hasSubCompany } = this.state;
 
     // console.log('data', data);
 
     return (
       <PageHeaderLayout title="修改维保单位" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
-          <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
+          <Form hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">
-              {getFieldDecorator('companyId', {
-                initialValue: data.companyId,
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择企业',
-                  },
-                ],
-              })(<Input placeholder="请选择企业" />)}
+              <div>{data.companyName}</div>
             </FormItem>
 
             <FormItem {...formItemLayout} label="企业状态">
@@ -169,24 +288,31 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
               )}
             </FormItem>
 
-            {hasSubcompany && (
+            {hasSubCompany && (
               <FormItem {...formItemLayout} label="所属总公司">
-                {getFieldDecorator('parentId	', {
-                  initialValue: data.parentId,
+                {getFieldDecorator('parentId', {
+                  initialValue: data.parnetUnitName || data.parentId,
                   rules: [
                     {
                       required: true,
                       message: '所属总公司',
                     },
                   ],
-                })(<Input placeholder="所属总公司" />)}
+                })(
+                  <Input
+                    placeholder="所属总公司"
+                    ref={input => {
+                      this.parentIdInput = input;
+                    }}
+                    onClick={this.handleShowMaintenanceModal}
+                  />
+                )}
               </FormItem>
             )}
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button
                 type="primary"
-                htmlType="submit"
                 loading={submitting}
                 onClick={() => this.handleUpdate(data.id)}
               >
@@ -195,6 +321,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
             </FormItem>
           </Form>
         </Card>
+        {this.renderMaintenanceModal()}
       </PageHeaderLayout>
     );
   }

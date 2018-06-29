@@ -120,7 +120,7 @@ export const getRouterData = app => {
     },
     // 新增维保公司
     '/fire-control/maintenance-company/add': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+      component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
         import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
       ),
     },
@@ -132,23 +132,23 @@ export const getRouterData = app => {
     },
     // 修改维保公司信息
     '/fire-control/maintenance-company/edit/:id': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+      component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
         import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyEdit.js')
       ),
     },
-    '/fire-control/user-transmission-device': {
+    '/fire-control/user-transmission-device/list': {
       name: '用户传输装置',
       component: dynamicWrapper(app, ['transmission'], () =>
         import('../routes/FireControl/UserTransmissionDevice.js')
       ),
     },
-    '/fire-control/user-transmission-device-detail/:companyId': {
+    '/fire-control/user-transmission-device-detail/:companyId/detail': {
       name: '查看详情',
       component: dynamicWrapper(app, ['transmission'], () =>
         import('../routes/FireControl/UserTransmissionDeviceDetail.js')
       ),
     },
-    '/fire-control/import-point-position/:hostId': {
+    '/fire-control/user-transmission-device-detail/:companyId/import-point-position/:hostId': {
       name: '导入点位数据',
       component: dynamicWrapper(app, ['pointPosition'], () =>
         import('../routes/FireControl/ImportPointPosition.js')

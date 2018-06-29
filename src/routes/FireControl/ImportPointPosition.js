@@ -5,6 +5,7 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
 import Result from '../../components/Result';
 
+
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.models.transmission,
@@ -12,30 +13,63 @@ import Result from '../../components/Result';
 @Form.create()
 export default class ImportPointPosition extends PureComponent {
   state = {
+    failed: 0,
+    success: 0,
+    total: 0,
+    updated: 0,
     loading: false,
     dataSource: [],
     showResult: false,
-    showError: false,
   };
   handleChange = (info) => {
+    const fileList = info.fileList.slice(-1);
+    this.setState({ fileList })
+
     if (info.file.status === 'uploading ') {
       this.setState({ loading: true })
     }
     if (info.file.response && info.file.response.code && info.file.response.code === 200) {
-      this.setState({ showResult: true, showError: false, loading: false })
-      if (info.file.response.data && info.file.response.data.list && info.file.response.data.list.length) {
-        this.setState({ showError: true, dataSource: info.file.response.data.list })
+      if (info.file.response.data) {
+        const { failed, success, updated, total } = info.file.response.data
+        this.setState({ failed, success, updated, total, showResult: true, loading: false, dataSource: info.file.response.data.list })
       }
     }
+  }
+  handleBack = () => {
+    history.back();
   }
   render() {
     const {
       match: {
-        params: { hostId },
+        params: { hostId, companyId },
+      },
+      location: {
+        query: { deviceCode },
       },
     } = this.props;
     // const { getFieldDecorator } = form;
     const FormItem = Form.Item;
+    // 面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        href: '/',
+      },
+      {
+        title: '消防维保',
+      },
+      {
+        title: '用户传输装置',
+        href: '/fire-control/user-transmission-device/list',
+      },
+      {
+        title: '详情页',
+        href: `/fire-control/user-transmission-device-detail/${companyId}/detail`,
+      },
+      {
+        title: '导入点位数据',
+      },
+    ];
     const errorStatus = (key, error) => {
       const index = error.findIndex(item => item.key === key);
       return index > -1;
@@ -62,6 +96,13 @@ export default class ImportPointPosition extends PureComponent {
         </div>
       )
     }
+    const message = (
+      <div style={{ color: '#4d4848', fontSize: '17px' }}>
+        <span>本次导入共{this.state.total}个点位。</span>
+        <span style={{ display: this.state.success > 0 ? 'inline' : 'none' }}>新建信息{this.state.success}条。</span>
+        <span style={{ display: this.state.updated > 0 ? 'inline' : 'none' }}>更新信息{this.state.updated}条。</span>
+        <span style={{ display: this.state.failed > 0 ? 'inline' : 'none' }}>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>
+      </div>)
     const columns = [
       {
         title: '行序号',
@@ -164,25 +205,21 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `http://118.126.110.115:3001/mock/28/acloud_new/v2/pointData/pointData/${hostId}`,
-      headers: {
-        authorization: 'authorization-text',
-      },
+      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
       accept: '.xls,.xlsx',
       onChange: this.handleChange,
     };
 
     return (
       <PageHeaderLayout
-        title="常熟市鑫博伟纺织有限公司"
-        logo={<Icon type="apple" />}
-        content={description(hostId)}
+        content={description(deviceCode)}
+        breadcrumbList={breadcrumbList}
       >
         <Card title="导入点位数据" className={styles.cardContainer}>
           <Form>
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
-              <Upload {...props}>
-                <Button>
+              <Upload {...props} fileList={this.state.fileList}>
+                <Button type="primary" loading={this.state.loading}>
                   <Icon type="upload" /> 选择文件
                 </Button>
               </Upload>
@@ -192,19 +229,16 @@ export default class ImportPointPosition extends PureComponent {
         <Spin spinning={this.state.loading}>
           <Card className={styles.cardContainer} style={{ display: this.state.showResult ? 'block' : 'none' }}>
             <Result
-              style={{ display: this.state.showError ? 'none' : 'block', width: '100%' }}
-              type="success"
-              title="提交成功"
+              style={{ fontSize: '72px' }}
+              type={this.state.failed > 0 ? "error" : "success"}
+              title={this.state.failed > 0 ? "校验失败" : "校验成功"}
+              description={message}
             />
-            <Result
-              style={{ display: this.state.showError ? 'block' : 'none', width: '100%' }}
-              type="error"
-              title="提交失败"
-            />
-            <div style={{ display: this.state.showError ? 'block' : 'none' }}>
-              <span className={styles.tableTitle}>错误信息提示框：</span>
+            <div style={{ display: this.state.failed > 0 ? 'block' : 'none' }}>
+              {/* <span className={styles.tableTitle}>错误信息提示框：</span> */}
               <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
             </div>
+            <Button style={{ margin: '0 auto', display: 'block', marginTop: '20px' }} type="primary" onClick={this.handleBack}>返回</Button>
           </Card>
         </Spin>
       </PageHeaderLayout>

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Link } from 'react-router-dom';
-import { Form, Input, Card, Switch } from 'antd';
+import { Form, Input, Card, Switch, Button } from 'antd';
 // import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 
@@ -32,6 +32,10 @@ const breadcrumbList = [
 }))
 @Form.create()
 export default class MaintenanceCmpanyDetail extends PureComponent {
+  state = {
+    hasSubCompany: false,
+  };
+
   componentDidMount() {
     const {
       dispatch,
@@ -45,6 +49,9 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
       payload: {
         id,
       },
+      callback: ({ isBranch }) => {
+        this.setState({ hasSubCompany: !!isBranch });
+      },
     });
   }
 
@@ -54,7 +61,10 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      maintenanceCompany: { detail: data },
     } = this.props;
+    const { hasSubCompany } = this.state;
+
     const { getFieldDecorator } = form;
 
     const formItemLayout = {
@@ -76,10 +86,6 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
       },
     };
 
-    const {
-      maintenanceCompany: { detail: data },
-    } = this.props;
-
     return (
       <PageHeaderLayout title="维保单位详情" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
@@ -92,52 +98,52 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
                     required: true,
                   },
                 ],
-              })(<Input style={{ border: 0 }} />)}
+              })(<Input disabled style={{ border: 0 }} />)}
             </FormItem>
 
-            <FormItem {...formItemLayout} label="企业状态">
+            <FormItem {...formItemLayout} label="启用状态">
               {getFieldDecorator('usingStatus', {
-                initialValue: data.usingStatus === 1 ? '启用' : '禁用',
+                valuePropName: 'checked',
+                initialValue: !!data.usingStatus,
                 rules: [
                   {
                     required: true,
                   },
                 ],
-              })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
+              })(<Switch disabled checkedChildren="启用" unCheckedChildren="禁用" />)}
             </FormItem>
 
             <FormItem {...formItemLayout} label="是否为分公司">
               {getFieldDecorator('isBranch', {
-                initialValue: data.isBranch === 1 ? '是' : '否',
+                valuePropName: 'checked',
+                initialValue: !!data.isBranch,
                 rules: [
                   {
                     required: true,
                     message: '是否为分公司',
                   },
                 ],
-              })(
-                <Switch
-                  checkedChildren="是"
-                  unCheckedChildren="否"
-                  onChange={this.switchOnchange}
-                />
-              )}
+              })(<Switch disabled checkedChildren="是" unCheckedChildren="否" />)}
             </FormItem>
 
-            <FormItem {...formItemLayout} label="所属总公司">
-              {getFieldDecorator('parnetUnitName	', {
-                initialValue: data.parnetUnitName,
-                rules: [
-                  {
-                    required: true,
-                    message: '所属总公司',
-                  },
-                ],
-              })(<Input style={{ border: 0 }} />)}
-            </FormItem>
+            {hasSubCompany && (
+              <FormItem {...formItemLayout} label="所属总公司">
+                {getFieldDecorator('parentId	', {
+                  initialValue: data.parnetUnitName,
+                  rules: [
+                    {
+                      required: true,
+                      message: '所属总公司',
+                    },
+                  ],
+                })(<Input disabled style={{ border: 0 }} />)}
+              </FormItem>
+            )}
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Link to={`/fire-control/maintenance-company/edit/${id}`}>编辑</Link>
+              <Button type="primary">
+                <Link to={`/fire-control/maintenance-company/edit/${id}`}>编辑</Link>
+              </Button>
             </FormItem>
           </Form>
         </Card>
