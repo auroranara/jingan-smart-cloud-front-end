@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Card, Modal, Spin, message } from 'antd';
+import { Button, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -140,9 +140,15 @@ export default class UserTransmissionDeviceDetail extends Component {
     dispatch({ type: 'transmission/fetchCompanyDetail', payload: companyId });
   }
 
-  downloadPointPositionTemplate = () => { };
+  downloadPointPositionTemplate = () => {
+    // message.info('小姐姐，这个功能暂未开放哦');
+    message.info('这个功能暂未开放');
+  };
   // importPointPositionClick = () => {};
-  exportPointPositionClick = () => { };
+  exportPointPositionClick = () => {
+    // message.info('小姐姐，这个功能暂未开放哦');
+    message.info('这个功能暂未开放');
+  };
 
   hideDeviceModal = () => {
     this.setState({ deviceModalVisible: false, deviceRecord: null });
@@ -350,14 +356,16 @@ export default class UserTransmissionDeviceDetail extends Component {
     // console.log('detailList in render', deviceList);
     // console.log('transmission', this.props.transmission);
 
-    let cards = (
-      <Card style={{ textAlign: 'center', fontSize: 16 }}>
-        暂无数据，您现在可以
-        <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 16, marginLeft: 5 }}>
-          新增传输装置
-        </Button>
-      </Card>
-    );
+    // let cards = (
+    //   <Card style={{ textAlign: 'center', fontSize: 16 }}>
+    //     暂无数据，您现在可以
+    //     <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 16, marginLeft: 5 }}>
+    //       新增传输装置
+    //     </Button>
+    //   </Card>
+    // );
+
+    let cards = <div style={{ fontSize: 20, textAlign: 'center' }}>暂无数据</div>;
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
