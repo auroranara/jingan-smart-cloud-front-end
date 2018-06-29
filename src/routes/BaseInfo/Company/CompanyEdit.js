@@ -722,7 +722,7 @@ export default class CompanyDetail extends PureComponent {
               <Form.Item label={fieldLabels.createTime}>
                 {getFieldDecorator('createTime', {
                   initialValue: createTime
-                    ? moment(moment(createTime).format('YYYY/MM/DD'), 'YYYY/MM/DD')
+                    ? moment(+createTime)
                     : undefined,
                 })(
                   <DatePicker
