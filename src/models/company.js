@@ -10,25 +10,76 @@ import {
   upload,
 } from '../services/company/company.js';
 
+const mergeArea = (area, ids, list) => {
+  return ids.length === 0
+  ? list
+  : area.map(province => {
+      if (province.id === ids[0]) {
+        if (ids.length !== 1) {
+          return {
+            ...province,
+            children: province.children.map(city => {
+              if (city.id === ids[1]) {
+                if (ids.length !== 2) {
+                  return {
+                    ...city,
+                    children: city.children.map(district => {
+                      if (district.id === ids[2]) {
+                        return {
+                          ...district,
+                          children: list,
+                          loading: false,
+                        };
+                      }
+                      return district;
+                    }),
+                  };
+                } else {
+                  return {
+                    ...city,
+                    children: list,
+                    loading: false,
+                  };
+                }
+              }
+              return city;
+            }),
+          };
+        } else {
+          return {
+            ...province,
+            children: list,
+            loading: false,
+          };
+        }
+      }
+      return province;
+    });
+};
+
 export default {
   namespace: 'company',
 
   state: {
     list: [],
+    // 行业类别
     industryCategories: [],
+    // 经济类型
     economicTypes: [],
+    // 企业状态
     companyStatuses: [],
+    // 规模情况
     scales: [],
+    // 执照类别
     licenseTypes: [],
-    area: [],
+    // 注册地址
+    registerAddress: [],
+    // 实际地址
+    practicalAddress: [],
     pageNum: 1,
     isLast: false,
     detail: {
       data: {
-        province: undefined,
-        city: undefined,
-        district: undefined,
-        town: undefined,
         businessScope: undefined,
         code: undefined,
         companyIchnography: undefined,
@@ -43,9 +94,26 @@ export default {
         maintenanceContract: undefined,
         maintenanceId: undefined,
         name: undefined,
-        practicalAddress: undefined,
-        registerAddress: undefined,
         scale: undefined,
+        registerProvince: undefined,
+        registerCity: undefined,
+        registerDistrict: undefined,
+        registerTown: undefined,
+        registerAddress: undefined,
+        practicalProvince: undefined,
+        practicalCity: undefined,
+        practicalDistrict: undefined,
+        practicalTown: undefined,
+        practicalAddress: undefined,
+        legalName: undefined,
+        legalPhone: undefined,
+        legalEmail: undefined,
+        principalName: undefined,
+        principalPhone: undefined,
+        principalEmail: undefined,
+        safetyName: undefined,
+        safetyPhone: undefined,
+        safetyEmail: undefined,
       },
     },
     modal: {
@@ -176,7 +244,7 @@ export default {
     // 追加行政区域
     *fetchArea(
       {
-        payload: { parentId, ids },
+        payload: { parentId, ids, keys },
         success,
         error,
       },
@@ -189,6 +257,7 @@ export default {
           payload: {
             ids,
             list: response.data.list,
+            keys,
           },
         });
         if (success) {
@@ -201,7 +270,6 @@ export default {
     /* 上传文件 */
     *upload({ payload, success, error }, { call }) {
       const response = yield call(upload, payload);
-      console.log(response);
       if (response.code === 200) {
         if (success) {
           success(response);
@@ -298,56 +366,14 @@ export default {
     queryArea(
       state,
       {
-        payload: { ids, list },
+        payload: { ids, list, keys },
       }
     ) {
+      const fields = {};
+      keys.forEach(key => { fields[key] = mergeArea(state[key], ids, list); });
       return {
         ...state,
-        area:
-          ids.length === 0
-            ? list
-            : state.area.map(province => {
-                if (province.id === ids[0]) {
-                  if (ids.length !== 1) {
-                    return {
-                      ...province,
-                      children: province.children.map(city => {
-                        if (city.id === ids[1]) {
-                          if (ids.length !== 2) {
-                            return {
-                              ...city,
-                              children: city.children.map(district => {
-                                if (district.id === ids[2]) {
-                                  return {
-                                    ...district,
-                                    children: list,
-                                    loading: false,
-                                  };
-                                }
-                                return district;
-                              }),
-                            };
-                          } else {
-                            return {
-                              ...city,
-                              children: list,
-                              loading: false,
-                            };
-                          }
-                        }
-                        return city;
-                      }),
-                    };
-                  } else {
-                    return {
-                      ...province,
-                      children: list,
-                      loading: false,
-                    };
-                  }
-                }
-                return province;
-              }),
+        ...fields,
       };
     },
   },

@@ -74,19 +74,12 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount() {
-    const { fetch, fetchDict } = this.props;
+    const { fetch } = this.props;
     // 获取企业列表
     fetch({
       payload: {
         pageSize,
         pageNum: 1,
-      },
-    });
-    // 获取类别列表
-    fetchDict({
-      payload: {
-        type: 'industryTypeId',
-        key: 'industryCategories',
       },
     });
   }
@@ -272,10 +265,10 @@ export default class CompanyList extends PureComponent {
                     行业类别：{item.industryCategoryLabel || getEmptyData()}
                   </Ellipsis>
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    负责人：{item.principal || getEmptyData()}
+                    负责人：{item.safetyName || getEmptyData()}
                   </Ellipsis>
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    联系电话：{item.contact || getEmptyData()}
+                    联系电话：{item.safetyPhone || getEmptyData()}
                   </Ellipsis>
                 </div>
               </Card>
