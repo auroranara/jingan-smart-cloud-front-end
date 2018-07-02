@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Card, Modal, Spin, message } from 'antd';
+import { Button, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -31,7 +31,7 @@ const DESCRIP_MAP = {
   scaleLabel: '规模',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
-  createTime: '成立时间',
+  createTime: '成立时间', // response中传过来的值是个毫秒数，所以需要定义一个函数转成日期字符串
 };
 
 const deviceModalFormItems = [
@@ -113,6 +113,11 @@ function dispatchCallback(code, successMsg, failMsg) {
     message.warn(failMsg);
 }
 
+function convertMsToString(ms) {
+  const date = new Date(ms);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+
 @connect(({ transmission, loading }) => ({
   transmission,
   loading: loading.effects['transmission/fetchDetail'],
@@ -141,11 +146,13 @@ export default class UserTransmissionDeviceDetail extends Component {
   }
 
   downloadPointPositionTemplate = () => {
-    message.info('小姐姐，这个功能暂未开放哦');
+    // message.info('小姐姐，这个功能暂未开放哦');
+    message.info('这个功能暂未开放');
   };
   // importPointPositionClick = () => {};
   exportPointPositionClick = () => {
-    message.info('小姐姐，这个功能暂未开放哦');
+    // message.info('小姐姐，这个功能暂未开放哦');
+    message.info('这个功能暂未开放');
   };
 
   hideDeviceModal = () => {
@@ -331,7 +338,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             // 兼容实际地址 practical pratical
             companyDetail[k] === undefined ? null : (
               <Description key={k} term={DESCRIP_MAP[k]}>
-                {companyDetail[k] === null ? '暂无信息' : companyDetail[k].toString()}
+                {companyDetail[k] === null ? '暂无信息' : k.toLowerCase().includes('time') ? convertMsToString(companyDetail[k]) : companyDetail[k].toString()}
               </Description>
             )
         )}
@@ -354,14 +361,16 @@ export default class UserTransmissionDeviceDetail extends Component {
     // console.log('detailList in render', deviceList);
     // console.log('transmission', this.props.transmission);
 
-    let cards = (
-      <Card style={{ textAlign: 'center', fontSize: 16 }}>
-        暂无数据，您现在可以
-        <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 16, marginLeft: 5 }}>
-          新增传输装置
-        </Button>
-      </Card>
-    );
+    // let cards = (
+    //   <Card style={{ textAlign: 'center', fontSize: 16 }}>
+    //     暂无数据，您现在可以
+    //     <Button type="primary" onClick={this.handleDeviceAddClick} icon="plus" style={{ fontSize: 16, marginLeft: 5 }}>
+    //       新增传输装置
+    //     </Button>
+    //   </Card>
+    // );
+
+    let cards = <div style={{ fontSize: 20, textAlign: 'center' }}>暂无数据</div>;
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (

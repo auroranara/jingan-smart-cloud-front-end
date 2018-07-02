@@ -101,7 +101,7 @@ export default class MaintenanceCompanyList extends PureComponent {
             if (res.code === 200) {
               message.success('删除成功！');
             } else {
-              message.error(res.msg);
+              message.error('删除失败，该维保单位正为企业服务中！');
             }
           },
         });
