@@ -44,14 +44,16 @@ export default class ImportPointPosition extends PureComponent {
     if (info.file.status === 'uploading ') {
       this.setState({ loading: true })
     }
-    if (info.file.response && info.file.response.code && info.file.response.code === 200) {
-      if (info.file.response.data) {
-        const { failed, success, updated, total } = info.file.response.data
-        this.setState({ failed, success, updated, total, showResultCard: true, loading: false, dataSource: info.file.response.data.list, showErrorLogo: failed > 0, showErrorTable: failed > 0, uploadStatus: 200 })
+    if (info.file.response) {
+      if (info.file.response.code && info.file.response.code === 200) {
+        if (info.file.response.data) {
+          const { failed, success, updated, total } = info.file.response.data
+          this.setState({ failed, success, updated, total, showResultCard: true, loading: false, dataSource: info.file.response.data.list, showErrorLogo: failed > 0, showErrorTable: failed > 0, uploadStatus: 200 })
+        }
       }
-    }
-    if (info.file.response && info.file.response.code && info.file.response.code === 400) {
-      this.setState({ failed: 0, success: 0, total: 0, updated: 0, loading: false, showResultCard: true, showErrorTable: false, showErrorLogo: true, uploadStatus: info.file.response.code, msg: info.file.response.msg })
+      else {
+        this.setState({ failed: 0, success: 0, total: 0, updated: 0, loading: false, showResultCard: true, showErrorTable: false, showErrorLogo: true, uploadStatus: info.file.response.code, msg: info.file.response.msg })
+      }
     }
   }
 
@@ -146,7 +148,7 @@ export default class ImportPointPosition extends PureComponent {
     const message = (
       <div style={{ color: '#4d4848', fontSize: '17px' }}>
         <span style={{ display: this.state.uploadStatus === 200 ? 'none' : 'inline' }}>{this.state.msg}</span>
-        <span style={{ display: this.state.total > 0 ? 'inline' : 'none' }}>本次导入共{this.state.total}个点位，只校验20条。</span>
+        <span style={{ display: this.state.total > 0 ? 'inline' : 'none' }}>本次只校验20条。</span>
         <span style={{ display: this.state.success > 0 ? 'inline' : 'none' }}>新建信息{this.state.success}条。</span>
         <span style={{ display: this.state.updated > 0 ? 'inline' : 'none' }}>更新信息{this.state.updated}条。</span>
         <span style={{ display: this.state.failed > 0 ? 'inline' : 'none' }}>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>
@@ -257,7 +259,7 @@ export default class ImportPointPosition extends PureComponent {
     ];
     const props = {
       name: 'file',
-      action: `/acloud_new/v2/pointData/pointData/${hostId}`,
+      action: `http://118.126.110.115:3001/mock/28/acloud_new/v2/pointData/pointData/${hostId}`,
       accept: '.xls,.xlsx',
       onChange: this.handleChange,
     };
