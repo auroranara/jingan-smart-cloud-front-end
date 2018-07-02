@@ -19,7 +19,11 @@ export default class ImportPointPosition extends PureComponent {
     updated: 0,
     loading: false,
     dataSource: [],
-    showResult: false,
+    showResultCard: false,
+    showErrorTable: false,
+    showErrorLogo: false,
+    uploadStatus: 200,
+    msg: '',
   };
 
   componentDidMount() {
@@ -32,6 +36,7 @@ export default class ImportPointPosition extends PureComponent {
     dispatch({ type: 'pointPosition/fetchHostDetail', payload: hostId })
   }
 
+  // 上传时多个阶段会调用
   handleChange = (info) => {
     const fileList = info.fileList.slice(-1);
     this.setState({ fileList })
@@ -42,10 +47,15 @@ export default class ImportPointPosition extends PureComponent {
     if (info.file.response && info.file.response.code && info.file.response.code === 200) {
       if (info.file.response.data) {
         const { failed, success, updated, total } = info.file.response.data
-        this.setState({ failed, success, updated, total, showResult: true, loading: false, dataSource: info.file.response.data.list })
+        this.setState({ failed, success, updated, total, showResultCard: true, loading: false, dataSource: info.file.response.data.list, showErrorLogo: failed > 0, showErrorTable: failed > 0, uploadStatus: 200 })
       }
     }
+    if (info.file.response && info.file.response.code && info.file.response.code === 400) {
+      this.setState({ failed: 0, success: 0, total: 0, updated: 0, loading: false, showResultCard: true, showErrorTable: false, showErrorLogo: true, uploadStatus: info.file.response.code, msg: info.file.response.msg })
+    }
   }
+
+  // 返回上个页面
   handleBack = () => {
     history.back();
   }
@@ -83,16 +93,25 @@ export default class ImportPointPosition extends PureComponent {
       },
     ];
 
+    // 判断error数组中是否存在当前单元格key
     const errorStatus = (key, error) => {
       const index = error.findIndex(item => item.key === key);
       return index > -1;
     };
 
+    // 表格错误提示的信息
     const content = (arr, key) => {
       const result = arr.find(item => item.key === key);
       return <div>{result.value}</div>;
     };
 
+    // 表格首列错误提示信息
+    const firstContent = (arr) => {
+      let num = 0
+      return (<div>{arr.map(item => { num += 1; return (<p key={item.key}>（{num}）{item.value}</p>) })}</div>)
+    }
+
+    // 表格单元格单元格
     const tableCell = (val, rows, key) => {
       if (errorStatus(key, rows.error)) {
         return (
@@ -104,6 +123,17 @@ export default class ImportPointPosition extends PureComponent {
       } else return <span>{val}</span>;
     };
 
+    // 首列单元格
+    const firstColumn = (val, rows) => {
+      return (
+        <Popover content={firstContent(rows.error)} title="错误提示" trigger="hover">
+          <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
+          <span className={styles.error}>{val}</span>
+        </Popover>
+      );
+    }
+
+    // 主机信息
     const description = (id) => {
       return (
         <div>
@@ -112,9 +142,11 @@ export default class ImportPointPosition extends PureComponent {
       )
     }
 
+    // 上传后的统计信息
     const message = (
       <div style={{ color: '#4d4848', fontSize: '17px' }}>
-        <span>本次导入共{this.state.total}个点位。</span>
+        <span style={{ display: this.state.uploadStatus === 200 ? 'none' : 'inline' }}>{this.state.msg}</span>
+        <span style={{ display: this.state.total > 0 ? 'inline' : 'none' }}>本次导入共{this.state.total}个点位，只校验20条。</span>
         <span style={{ display: this.state.success > 0 ? 'inline' : 'none' }}>新建信息{this.state.success}条。</span>
         <span style={{ display: this.state.updated > 0 ? 'inline' : 'none' }}>更新信息{this.state.updated}条。</span>
         <span style={{ display: this.state.failed > 0 ? 'inline' : 'none' }}>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>
@@ -129,7 +161,7 @@ export default class ImportPointPosition extends PureComponent {
         fixed: 'left',
         width: 100,
         render(val, rows) {
-          return tableCell(val, rows, 'others');
+          return firstColumn(val, rows);
         },
       },
       {
@@ -247,18 +279,17 @@ export default class ImportPointPosition extends PureComponent {
           </Form>
         </Card>
         <Spin spinning={this.state.loading}>
-          <Card className={styles.cardContainer} style={{ display: this.state.showResult ? 'block' : 'none' }}>
+          <Card className={styles.cardContainer} style={{ display: this.state.showResultCard ? 'block' : 'none' }}>
             <Result
               style={{ fontSize: '72px' }}
-              type={this.state.failed > 0 ? "error" : "success"}
-              title={this.state.failed > 0 ? "校验失败" : "校验成功"}
+              type={this.state.showErrorLogo ? "error" : "success"}
+              title={this.state.showErrorLogo ? "校验失败" : "校验成功"}
               description={message}
             />
-            <div style={{ display: this.state.failed > 0 ? 'block' : 'none' }}>
-              {/* <span className={styles.tableTitle}>错误信息提示框：</span> */}
+            <div style={{ display: this.state.showErrorTable ? 'block' : 'none' }}>
               <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
             </div>
-            <Button style={{ margin: '0 auto', display: 'block', marginTop: '20px' }} type="primary" onClick={this.handleBack}>返回</Button>
+            <Button style={{ margin: '0 auto', display: 'block', marginTop: '20px' }} type="primary" onClick={this.handleBack}>确定</Button>
           </Card>
         </Spin>
       </PageHeaderLayout>
