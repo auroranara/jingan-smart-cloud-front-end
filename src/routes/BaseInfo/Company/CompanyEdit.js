@@ -309,6 +309,7 @@ export default class CompanyDetail extends PureComponent {
             ichnographyList: [ichnography],
             contractList: [contract],
           } = this.state;
+          const { company } = this.props;
           editCompany({
             payload: {
               id,
@@ -319,7 +320,7 @@ export default class CompanyDetail extends PureComponent {
               town,
               industryCategory: industryCategory.join(','),
               createTime: createTime && createTime.format('YYYY-MM-DD'),
-              maintenanceId: maintenanceId || this.props.company.detail.data.maintenanceId,
+              maintenanceId: maintenanceId || company.detail.data.maintenanceId,
               companyIchnography: ichnography && ichnography.dbUrl,
               ichnographyName: ichnography && ichnography.name,
               maintenanceContract: contract && contract.dbUrl,
@@ -348,15 +349,16 @@ export default class CompanyDetail extends PureComponent {
     const { file } = info;
     if (file.status === 'uploading') {
       this.setState({
-        ichnographyList: [
-          file,
-        ],
+        ichnographyList: [file],
       });
-    }
-    else if (file.status === 'done') {
+    } else if (file.status === 'done') {
       if (file.response.code === 200) {
-        const { data: { list: [ result ] } } = file.response;
-        if (result){
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
           this.setState({
             ichnographyList: [
               {
@@ -366,30 +368,26 @@ export default class CompanyDetail extends PureComponent {
               },
             ],
           });
-        }
-        else {
+        } else {
           // 没有返回值
           message.error('上传失败！');
           this.setState({
             ichnographyList: [],
           });
         }
-      }
-      else {
+      } else {
         // code为500
         message.error('上传失败！');
         this.setState({
           ichnographyList: [],
         });
       }
-    }
-    else if (file.status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         ichnographyList: [],
       });
-    }
-    else {
+    } else {
       // error
       message.error('上传失败！');
       this.setState({
@@ -403,15 +401,16 @@ export default class CompanyDetail extends PureComponent {
     const { file } = info;
     if (file.status === 'uploading') {
       this.setState({
-        contractList: [
-          file,
-        ],
+        contractList: [file],
       });
-    }
-    else if (file.status === 'done') {
+    } else if (file.status === 'done') {
       if (file.response.code === 200) {
-        const { data: { list: [ result ] } } = file.response;
-        if (result){
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
           this.setState({
             contractList: [
               {
@@ -421,30 +420,26 @@ export default class CompanyDetail extends PureComponent {
               },
             ],
           });
-        }
-        else {
+        } else {
           // 没有返回值
           message.error('上传失败！');
           this.setState({
             contractList: [],
           });
         }
-      }
-      else {
+      } else {
         // code为500
         message.error('上传失败！');
         this.setState({
           contractList: [],
         });
       }
-    }
-    else if (file.status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         contractList: [],
       });
-    }
-    else {
+    } else {
       // error
       message.error('上传失败！');
       this.setState({
@@ -495,10 +490,11 @@ export default class CompanyDetail extends PureComponent {
 
   /* 行政区域动态加载 */
   handleLoadData = selectedOptions => {
+    const { fetchArea } = this.props;
     const ids = selectedOptions.map(item => item.id);
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
-    this.props.fetchArea({
+    fetchArea({
       payload: {
         ids,
         parentId: targetOption.id,
@@ -771,9 +767,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.createTime}>
                 {getFieldDecorator('createTime', {
-                  initialValue: createTime
-                    ? moment(+createTime)
-                    : undefined,
+                  initialValue: createTime ? moment(+createTime) : undefined,
                 })(
                   <DatePicker
                     placeholder="请选择成立时间"
@@ -868,7 +862,9 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染错误信息 */
   renderErrorInfo() {
-    const { getFieldsError } = this.props.form;
+    const {
+      form: { getFieldsError },
+    } = this.props;
     const errors = getFieldsError();
     const errorCount = Object.keys(errors).filter(key => errors[key]).length;
     if (!errors || errorCount === 0) {
