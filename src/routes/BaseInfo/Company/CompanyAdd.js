@@ -301,7 +301,7 @@ export default class CompanyDetail extends PureComponent {
     const { file } = info;
     if (file.status === 'uploading') {
       this.setState({
-        ichnographyList: [
+        contractList: [
           file,
         ],
       });
