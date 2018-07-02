@@ -6,10 +6,7 @@ export interface IHeaderSearchProps {
   onChange?: (value: string) => void;
   onPressEnter?: (value: string) => void;
   style?: React.CSSProperties;
-<<<<<<< HEAD
   className?: string;
-=======
->>>>>>> init
 }
 
 export default class HeaderSearch extends React.Component<IHeaderSearchProps, any> {}

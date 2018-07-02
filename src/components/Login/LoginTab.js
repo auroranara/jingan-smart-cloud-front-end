@@ -17,7 +17,6 @@ class LoginTab extends Component {
     super(props);
     this.uniqueId = generateId('login-tab-');
   }
-<<<<<<< HEAD
 
   componentDidMount() {
     const { tabUtil } = this.props;
@@ -27,13 +26,6 @@ class LoginTab extends Component {
   render() {
     const { children } = this.props;
     return <TabPane {...this.props}>{children}</TabPane>;
-=======
-  componentDidMount() {
-    this.props.tabUtil.addTab(this.uniqueId);
-  }
-  render() {
-    return <TabPane {...this.props}>{this.props.children}</TabPane>;
->>>>>>> init
   }
 }
 

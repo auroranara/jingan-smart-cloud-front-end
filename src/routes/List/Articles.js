@@ -30,12 +30,8 @@ export default class SearchList extends Component {
   };
 
   fetchMore = () => {
-<<<<<<< HEAD
     const { dispatch } = this.props;
     dispatch({
-=======
-    this.props.dispatch({
->>>>>>> init
       type: 'list/appendFetch',
       payload: {
         count: pageSize,
@@ -44,15 +40,11 @@ export default class SearchList extends Component {
   };
 
   render() {
-<<<<<<< HEAD
     const {
       form,
       list: { list },
       loading,
     } = this.props;
-=======
-    const { form, list: { list }, loading } = this.props;
->>>>>>> init
     const { getFieldDecorator } = form;
 
     const owners = [
@@ -90,12 +82,8 @@ export default class SearchList extends Component {
         <div className={styles.description}>{content}</div>
         <div className={styles.extra}>
           <Avatar src={avatar} size="small" />
-<<<<<<< HEAD
           <a href={href}>{owner}</a> 发布在
           <a href={href}>{href}</a>
-=======
-          <a href={href}>{owner}</a> 发布在 <a href={href}>{href}</a>
->>>>>>> init
           <em>{moment(updatedAt).format('YYYY-MM-DD HH:mm')}</em>
         </div>
       </div>

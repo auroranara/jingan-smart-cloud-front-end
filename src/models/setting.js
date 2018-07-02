@@ -9,7 +9,6 @@ const defaultSetting = {
   fixSiderbar: true,
   colorWeak: 'close',
 };
->>>>>>> init
 export default {
   namespace: 'setting',
   state: defaultSetting,

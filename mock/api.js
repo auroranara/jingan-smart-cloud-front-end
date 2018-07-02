@@ -127,12 +127,7 @@ export function getFakeList(req, res) {
 export function postFakeList(req, res) {
   const { /* url = '', */ body } = req;
   // const params = getUrlParams(url);
-<<<<<<< HEAD
   const { method, id } = body;
-=======
-  const { method, id, ...restParams } = body;
-
->>>>>>> init
   // const count = (params.count * 1) || 20;
   let result = sourceData;
 
@@ -143,21 +138,13 @@ export function postFakeList(req, res) {
     case 'update':
       result.forEach((item, i) => {
         if (item.id === id) {
-<<<<<<< HEAD
           result[i] = Object.assign(item, body);
-=======
-          result[i] = Object.assign(item, restParams);
->>>>>>> init
         }
       });
       break;
     case 'post':
       result.unshift({
-<<<<<<< HEAD
         body,
-=======
-        ...restParams,
->>>>>>> init
         id: `fake-list-${result.length}`,
         createdAt: new Date().getTime(),
       });

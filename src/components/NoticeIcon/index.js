@@ -21,22 +21,11 @@ export default class NoticeIcon extends PureComponent {
     },
     emptyImage: 'https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg',
   };
-<<<<<<< HEAD
 
-=======
-  constructor(props) {
-    super(props);
-    this.state = {};
-    if (props.children && props.children[0]) {
-      this.state.tabType = props.children[0].props.title;
-    }
-  }
->>>>>>> init
   onItemClick = (item, tabProps) => {
     const { onItemClick } = this.props;
     onItemClick(item, tabProps);
   };
-<<<<<<< HEAD
 
   onTabChange = tabType => {
     const { onTabChange } = this.props;
@@ -45,14 +34,6 @@ export default class NoticeIcon extends PureComponent {
 
   getNotificationBox() {
     const { children, loading, locale, onClear } = this.props;
-=======
-  onTabChange = tabType => {
-    this.setState({ tabType });
-    this.props.onTabChange(tabType);
-  };
-  getNotificationBox() {
-    const { children, loading, locale } = this.props;
->>>>>>> init
     if (!children) {
       return null;
     }
@@ -67,11 +48,7 @@ export default class NoticeIcon extends PureComponent {
             {...child.props}
             data={child.props.list}
             onClick={item => this.onItemClick(item, child.props)}
-<<<<<<< HEAD
             onClear={() => onClear(child.props.title)}
-=======
-            onClear={() => this.props.onClear(child.props.title)}
->>>>>>> init
             title={child.props.title}
             locale={locale}
           />
@@ -86,14 +63,9 @@ export default class NoticeIcon extends PureComponent {
       </Spin>
     );
   }
-<<<<<<< HEAD
 
   render() {
     const { className, count, popupAlign, popupVisible, onPopupVisibleChange } = this.props;
-=======
-  render() {
-    const { className, count, popupAlign, onPopupVisibleChange } = this.props;
->>>>>>> init
     const noticeButtonClass = classNames(className, styles.noticeButton);
     const notificationBox = this.getNotificationBox();
     const trigger = (
@@ -108,11 +80,7 @@ export default class NoticeIcon extends PureComponent {
     }
     const popoverProps = {};
     if ('popupVisible' in this.props) {
-<<<<<<< HEAD
       popoverProps.visible = popupVisible;
-=======
-      popoverProps.visible = this.props.popupVisible;
->>>>>>> init
     }
     return (
       <Popover

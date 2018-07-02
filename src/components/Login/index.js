@@ -23,7 +23,6 @@ class Login extends Component {
     onSubmit: () => {},
   };
 
-<<<<<<< HEAD
   constructor(props) {
     super(props);
     this.state = {
@@ -33,18 +32,10 @@ class Login extends Component {
     };
   }
 
-=======
-  state = {
-    type: this.props.defaultActiveKey,
-    tabs: [],
-    active: {},
-  };
->>>>>>> init
   onSwitch = type => {
     this.setState({
       type,
     });
-<<<<<<< HEAD
     const { onTabChange } = this.props;
     onTabChange(type);
   };
@@ -52,37 +43,20 @@ class Login extends Component {
   getContext = () => {
     const { tabs } = this.state;
     const { form } = this.props;
-=======
-    this.props.onTabChange(type);
-  };
-  getContext = () => {
->>>>>>> init
     return {
       tabUtil: {
         addTab: id => {
           this.setState({
-<<<<<<< HEAD
             tabs: [...tabs, id],
-=======
-            tabs: [...this.state.tabs, id],
->>>>>>> init
           });
         },
         removeTab: id => {
           this.setState({
-<<<<<<< HEAD
             tabs: tabs.filter(currentId => currentId !== id),
           });
         },
       },
       form,
-=======
-            tabs: this.state.tabs.filter(currentId => currentId !== id),
-          });
-        },
-      },
-      form: this.props.form,
->>>>>>> init
       updateActive: activeItem => {
         const { type, active } = this.state;
         if (active[type]) {
@@ -96,27 +70,17 @@ class Login extends Component {
       },
     };
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   handleSubmit = e => {
     e.preventDefault();
     const { active, type } = this.state;
     const activeFileds = active[type];
-<<<<<<< HEAD
     const { form, onSubmit } = this.props;
     form.validateFields(activeFileds, { force: true }, (err, values) => {
       onSubmit(err, values);
     });
   };
 
-=======
-    this.props.form.validateFields(activeFileds, { force: true }, (err, values) => {
-      this.props.onSubmit(err, values);
-    });
-  };
->>>>>>> init
   render() {
     const { className, children } = this.props;
     const { type, tabs } = this.state;

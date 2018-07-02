@@ -23,10 +23,7 @@ class StandardTable extends PureComponent {
       needTotalList,
     };
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   static getDerivedStateFromProps(nextProps) {
     // clean state
     if (nextProps.selectedRows.length === 0) {
@@ -38,14 +35,9 @@ class StandardTable extends PureComponent {
     }
     return null;
   }
-<<<<<<< HEAD
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
     let { needTotalList } = this.state;
-=======
-  handleRowSelectChange = (selectedRowKeys, selectedRows) => {
-    let needTotalList = [...this.state.needTotalList];
->>>>>>> init
     needTotalList = needTotalList.map(item => {
       return {
         ...item,
@@ -54,29 +46,19 @@ class StandardTable extends PureComponent {
         }, 0),
       };
     });
-<<<<<<< HEAD
     const { onSelectRow } = this.props;
     if (onSelectRow) {
       onSelectRow(selectedRows);
-=======
-
-    if (this.props.onSelectRow) {
-      this.props.onSelectRow(selectedRows);
->>>>>>> init
     }
 
     this.setState({ selectedRowKeys, needTotalList });
   };
 
   handleTableChange = (pagination, filters, sorter) => {
-<<<<<<< HEAD
     const { onChange } = this.props;
     if (onChange) {
       onChange(pagination, filters, sorter);
     }
-=======
-    this.props.onChange(pagination, filters, sorter);
->>>>>>> init
   };
 
   cleanSelectedKeys = () => {
@@ -115,12 +97,8 @@ class StandardTable extends PureComponent {
                 已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
                 {needTotalList.map(item => (
                   <span style={{ marginLeft: 8 }} key={item.dataIndex}>
-<<<<<<< HEAD
                     {item.title}
                     总计&nbsp;
-=======
-                    {item.title}总计&nbsp;
->>>>>>> init
                     <span style={{ fontWeight: 600 }}>
                       {item.render ? item.render(item.total) : item.total}
                     </span>

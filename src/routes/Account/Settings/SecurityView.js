@@ -37,10 +37,7 @@ export default class SecurityView extends Component {
       },
     ];
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   render() {
     return (
       <Fragment>

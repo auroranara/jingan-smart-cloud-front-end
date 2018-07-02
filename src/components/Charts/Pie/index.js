@@ -19,7 +19,6 @@ export default class Pie extends Component {
   };
 
   componentDidMount() {
-<<<<<<< HEAD
     window.addEventListener(
       'resize',
       () => {
@@ -32,22 +31,12 @@ export default class Pie extends Component {
   componentDidUpdate(preProps) {
     const { data } = this.props;
     if (data !== preProps.data) {
-=======
-    window.addEventListener('resize', this.resize, { passive: true });
-  }
-
-  componentDidUpdate(preProps) {
-    if (this.props.data !== preProps.data) {
->>>>>>> init
       // because of charts data create when rendered
       // so there is a trick for get rendered time
       this.getLegendData();
     }
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   componentWillUnmount() {
     window.removeEventListener('resize', this.resize);
     this.resize.cancel();
@@ -81,33 +70,6 @@ export default class Pie extends Component {
     });
   };
 
-<<<<<<< HEAD
-=======
-  // for window resize auto responsive legend
-  @Bind()
-  @Debounce(300)
-  resize() {
-    requestAnimationFrame(() => {
-      const { hasLegend } = this.props;
-      if (!hasLegend || !this.root) {
-        window.removeEventListener('resize', this.resize);
-        return;
-      }
-      if (this.root.parentNode.clientWidth <= 380) {
-        if (!this.state.legendBlock) {
-          this.setState({
-            legendBlock: true,
-          });
-        }
-      } else if (this.state.legendBlock) {
-        this.setState({
-          legendBlock: false,
-        });
-      }
-    });
-  }
-
->>>>>>> init
   handleRoot = n => {
     this.root = n;
   };
@@ -130,7 +92,6 @@ export default class Pie extends Component {
     });
   };
 
-<<<<<<< HEAD
   // for window resize auto responsive legend
   @Bind()
   @Debounce(300)
@@ -154,8 +115,6 @@ export default class Pie extends Component {
     }
   }
 
-=======
->>>>>>> init
   render() {
     const {
       valueFormat,
@@ -181,16 +140,10 @@ export default class Pie extends Component {
     });
 
     const defaultColors = colors;
-<<<<<<< HEAD
     let { data, selected, tooltip } = this.props;
     data = data || [];
     selected = selected || true;
     tooltip = tooltip || true;
-=======
-    let data = this.props.data || [];
-    let selected = this.props.selected || true;
-    let tooltip = this.props.tooltip || true;
->>>>>>> init
     let formatColor;
 
     const scale = {

@@ -17,10 +17,7 @@ class EditableLinkGroup extends PureComponent {
     onAdd: () => {},
     linkElement: 'a',
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   render() {
     const { links, linkElement, onAdd } = this.props;
     return (

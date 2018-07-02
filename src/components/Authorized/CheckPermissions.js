@@ -1,10 +1,6 @@
 import React from 'react';
 import PromiseRender from './PromiseRender';
-<<<<<<< HEAD
 import { CURRENT } from './renderAuthorize';
-=======
-import { CURRENT } from './index';
->>>>>>> init
 
 function isPromise(obj) {
   return (
@@ -53,13 +49,10 @@ const checkPermissions = (authority, currentAuthority, target, Exception) => {
   if (typeof authority === 'function') {
     try {
       const bool = authority(currentAuthority);
-<<<<<<< HEAD
       // 函数执行后返回值是 Promise
       if (isPromise(bool)) {
         return <PromiseRender ok={target} error={Exception} promise={bool} />;
       }
-=======
->>>>>>> init
       if (bool) {
         return target;
       }

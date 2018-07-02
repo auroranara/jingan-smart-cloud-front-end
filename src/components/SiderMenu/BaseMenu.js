@@ -32,10 +32,7 @@ export default class BaseMenu extends PureComponent {
     super(props);
     this.flatMenuKeys = this.getFlatMenuKeys(props.menuData);
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   /**
    * Recursively flatten the data
    * [{path:string},{path:string}] => {path,path2}
@@ -51,10 +48,7 @@ export default class BaseMenu extends PureComponent {
     });
     return keys;
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   /**
    * 获得菜单子节点
    * @memberof SiderMenu
@@ -72,10 +66,7 @@ export default class BaseMenu extends PureComponent {
       })
       .filter(item => item);
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   // Get the currently selected menu
   getSelectedMenuKeys = () => {
     const {
@@ -83,10 +74,7 @@ export default class BaseMenu extends PureComponent {
     } = this.props;
     return urlToList(pathname).map(itemPath => getMenuMatches(this.flatMenuKeys, itemPath).pop());
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   /**
    * get SubMenu or Item
    */
@@ -113,10 +101,7 @@ export default class BaseMenu extends PureComponent {
       return <Menu.Item key={item.path}>{this.getMenuItemPath(item)}</Menu.Item>;
     }
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   /**
    * 判断是否是http链接.返回 Link 或 a
    * Judge whether it is http link.return a or Link
@@ -135,27 +120,16 @@ export default class BaseMenu extends PureComponent {
         </a>
       );
     }
-<<<<<<< HEAD
     const { location, isMobile, onCollapse } = this.props;
-=======
->>>>>>> init
     return (
       <Link
         to={itemPath}
         target={target}
-<<<<<<< HEAD
         replace={itemPath === location.pathname}
         onClick={
           isMobile
             ? () => {
                 onCollapse(true);
-=======
-        replace={itemPath === this.props.location.pathname}
-        onClick={
-          this.props.isMobile
-            ? () => {
-                this.props.onCollapse(true);
->>>>>>> init
               }
             : undefined
         }
@@ -165,27 +139,17 @@ export default class BaseMenu extends PureComponent {
       </Link>
     );
   };
-<<<<<<< HEAD
 
   // permission to check
   checkPermissionItem = (authority, ItemDom) => {
     const { Authorized } = this.props;
     if (Authorized && Authorized.check) {
       const { check } = Authorized;
-=======
-  // permission to check
-  checkPermissionItem = (authority, ItemDom) => {
-    if (this.props.Authorized && this.props.Authorized.check) {
-      const { check } = this.props.Authorized;
->>>>>>> init
       return check(authority, ItemDom);
     }
     return ItemDom;
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   conversionPath = path => {
     if (path && path.indexOf('http') === 0) {
       return path;
@@ -193,10 +157,7 @@ export default class BaseMenu extends PureComponent {
       return `/${path || ''}`.replace(/\/+/g, '/');
     }
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   render() {
     const { openKeys, theme, mode } = this.props;
     // if pathname can't match, use the nearest parent's key
@@ -210,30 +171,18 @@ export default class BaseMenu extends PureComponent {
         openKeys,
       };
     }
-<<<<<<< HEAD
     const { handleOpenChange, style, menuData } = this.props;
-=======
->>>>>>> init
     return (
       <Menu
         key="Menu"
         mode={mode}
         theme={theme}
-<<<<<<< HEAD
         onOpenChange={handleOpenChange}
         selectedKeys={selectedKeys}
         style={style}
         {...props}
       >
         {this.getNavMenuItems(menuData)}
-=======
-        onOpenChange={this.props.handleOpenChange}
-        selectedKeys={selectedKeys}
-        style={this.props.style}
-        {...props}
-      >
-        {this.getNavMenuItems(this.props.menuData)}
->>>>>>> init
       </Menu>
     );
   }

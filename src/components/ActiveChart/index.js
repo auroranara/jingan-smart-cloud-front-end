@@ -32,10 +32,7 @@ export default class ActiveChart extends Component {
   componentWillUnmount() {
     clearTimeout(this.timer);
   }
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   loopData = () => {
     this.timer = setTimeout(() => {
       this.setState(
@@ -50,10 +47,7 @@ export default class ActiveChart extends Component {
       );
     }, 1000);
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   render() {
     const { activeData = [] } = this.state;
 

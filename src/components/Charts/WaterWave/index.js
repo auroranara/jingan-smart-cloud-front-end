@@ -13,7 +13,6 @@ export default class WaterWave extends PureComponent {
   };
 
   componentDidMount() {
-<<<<<<< HEAD
     this.renderChart();
     this.resize();
     window.addEventListener(
@@ -23,13 +22,6 @@ export default class WaterWave extends PureComponent {
       },
       { passive: true }
     );
-=======
-    requestAnimationFrame(() => {
-      this.renderChart();
-      this.resize();
-    });
-    window.addEventListener('resize', this.resize, { passive: true });
->>>>>>> init
   }
 
   componentWillUnmount() {
@@ -41,7 +33,6 @@ export default class WaterWave extends PureComponent {
   }
 
   resize = () => {
-<<<<<<< HEAD
     if (this.root) {
       const { height } = this.props;
       const { offsetWidth } = this.root.parentNode;
@@ -49,17 +40,6 @@ export default class WaterWave extends PureComponent {
         radio: offsetWidth < height ? offsetWidth / height : 1,
       });
     }
-=======
-    requestAnimationFrame(() => {
-      if (this.root) {
-        const { height } = this.props;
-        const { offsetWidth } = this.root.parentNode;
-        this.setState({
-          radio: offsetWidth < height ? offsetWidth / height : 1,
-        });
-      }
-    });
->>>>>>> init
   };
 
   renderChart() {
@@ -67,11 +47,7 @@ export default class WaterWave extends PureComponent {
     const data = percent / 100;
     const self = this;
 
-<<<<<<< HEAD
     if (!this.node || (data !== 0 && !data)) {
-=======
-    if (!this.node || !data) {
->>>>>>> init
       return;
     }
 
@@ -220,14 +196,10 @@ export default class WaterWave extends PureComponent {
         </div>
         <div className={styles.text} style={{ width: height }}>
           {title && <span>{title}</span>}
-<<<<<<< HEAD
           <h4>
             {percent}
             %
           </h4>
-=======
-          <h4>{percent}%</h4>
->>>>>>> init
         </div>
       </div>
     );

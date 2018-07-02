@@ -61,7 +61,6 @@ class AdvancedForm extends PureComponent {
   state = {
     width: '100%',
   };
-<<<<<<< HEAD
 
   componentDidMount() {
     window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
@@ -71,32 +70,17 @@ class AdvancedForm extends PureComponent {
     window.removeEventListener('resize', this.resizeFooterToolbar);
   }
 
-=======
-  componentDidMount() {
-    window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
-  }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.resizeFooterToolbar);
-  }
->>>>>>> init
   resizeFooterToolbar = () => {
     requestAnimationFrame(() => {
       const sider = document.querySelectorAll('.ant-layout-sider')[0];
       const width = `calc(100% - ${sider.style.width})`;
-<<<<<<< HEAD
       const { width: stateWidth } = this.state;
       if (stateWidth !== width) {
-=======
-      if (this.state.width !== width) {
->>>>>>> init
         this.setState({ width });
       }
     });
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> init
   render() {
     const { form, dispatch, submitting } = this.props;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError } = form;
@@ -150,10 +134,7 @@ class AdvancedForm extends PureComponent {
         </span>
       );
     };
-<<<<<<< HEAD
     const { width } = this.state;
-=======
->>>>>>> init
     return (
       <PageHeaderLayout
         title="高级表单"
@@ -310,11 +291,7 @@ class AdvancedForm extends PureComponent {
             initialValue: tableData,
           })(<TableForm />)}
         </Card>
-<<<<<<< HEAD
         <FooterToolbar style={{ width }}>
-=======
-        <FooterToolbar style={{ width: this.state.width }}>
->>>>>>> init
           {getErrorInfo()}
           <Button type="primary" onClick={validate} loading={submitting}>
             提交

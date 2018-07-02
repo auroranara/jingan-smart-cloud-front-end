@@ -5,10 +5,6 @@ import { getFakeChartData } from './mock/chart';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
-<<<<<<< HEAD
-=======
-import { format, delay } from 'roadhog-api-doc';
->>>>>>> init
 import { getProvince, getCity } from './mock/geographic';
 
 import { deviceResponse, deviceDetailResponse } from './mock/transmission';
@@ -25,48 +21,6 @@ const initProxy = key => {
     'POST /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
     'PUT /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
     'DELETE /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
-
-  'GET /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
-  'POST /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
-  'PUT /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
-  'DELETE /acloud_new/v2/(.*)': 'http://118.126.110.115:3001/mock/28/acloud_new/v2/',
-
-  // 'GET /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
-  // 'POST /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
-  // 'PUT /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
-  // 'DELETE /acloud_new/v2/(.*)': 'http://192.168.10.56/acloud_new/v2/',
-
-  // 吕旻
-  // 'GET /acloud_new/v2/(.*)': 'http://192.168.10.2/acloud_new/v2/',
-  // 'POST /acloud_new/v2/(.*)': 'http://192.168.10.2/acloud_new/v2/',
-  // 'PUT /acloud_new/v2/(.*)': 'http://192.168.10.2/acloud_new/v2/',
-  // 'DELETE /acloud_new/v2/(.*)': 'http://192.168.10.2/acloud_new/v2/',
-
-  // 'GET /acloud_new/v2/(.*)': 'http://192.168.10.55/acloud_new/v2/',
-  // 'POST /acloud_new/v2/(.*)': 'http://192.168.10.55/acloud_new/v2/',
-  // 'PUT /acloud_new/v2/(.*)': 'http://192.168.10.55/acloud_new/v2/',
-  // 'DELETE /acloud_new/v2/(.*)': 'http://192.168.10.55/acloud_new/v2/',
-
-  'GET /api/currentUser': {
-    $desc: '获取当前用户接口',
-    $params: {
-      pageSize: {
-        desc: '分页',
-        exp: 2,
-      },
-      {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-      },
-      {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-      },
-    ],
     'GET /api/project/notice': getNotice,
     'GET /api/activities': getActivities,
     'GET /api/rule': getRule,
@@ -170,6 +124,5 @@ const hosts = {
 };
 
 const key = 'test';
-// const key = 'test';
 
-export default (noProxy ? {} : delay(initProxy(key), 1000));
+export default (noProxy ? {} : initProxy(key));

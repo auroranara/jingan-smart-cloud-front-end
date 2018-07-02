@@ -23,7 +23,6 @@ const initTime = props => {
 };
 
 class CountDown extends Component {
-<<<<<<< HEAD
   timer = 0;
 
   interval = 1000;
@@ -31,42 +30,18 @@ class CountDown extends Component {
   constructor(props) {
     super(props);
     const { lastTime } = initTime(props);
-=======
-  constructor(props) {
-    super(props);
-
-    const { lastTime } = initTime(props);
-
->>>>>>> init
     this.state = {
       lastTime,
     };
   }
 
-<<<<<<< HEAD
-=======
-  static getDerivedStateFromProps(nextProps, preState) {
-    const { lastTime } = initTime(nextProps);
-    if (preState.lastTime !== lastTime) {
-      return {
-        lastTime,
-      };
-    }
-    return null;
-  }
-
->>>>>>> init
   componentDidMount() {
     this.tick();
   }
 
   componentDidUpdate(prevProps) {
-<<<<<<< HEAD
     const { target } = this.props;
     if (target !== prevProps.target) {
-=======
-    if (this.props.target !== prevProps.target) {
->>>>>>> init
       clearTimeout(this.timer);
       this.tick();
     }
@@ -76,7 +51,6 @@ class CountDown extends Component {
     clearTimeout(this.timer);
   }
 
-<<<<<<< HEAD
   static getDerivedStateFromProps(nextProps, preState) {
     const { lastTime } = initTime(nextProps);
     if (preState.lastTime !== lastTime) {
@@ -87,10 +61,6 @@ class CountDown extends Component {
     return null;
   }
 
-=======
-  timer = 0;
-  interval = 1000;
->>>>>>> init
   // defaultFormat = time => (
   //  <span>{moment(time).format('hh:mm:ss')}</span>
   // );
@@ -103,7 +73,6 @@ class CountDown extends Component {
     const s = Math.floor((time - h * hours - m * minutes) / 1000);
     return (
       <span>
-<<<<<<< HEAD
         {fixedZero(h)}
         :
         {fixedZero(m)}
@@ -113,12 +82,6 @@ class CountDown extends Component {
     );
   };
 
-=======
-        {fixedZero(h)}:{fixedZero(m)}:{fixedZero(s)}
-      </span>
-    );
-  };
->>>>>>> init
   tick = () => {
     const { onEnd } = this.props;
     let { lastTime } = this.state;
