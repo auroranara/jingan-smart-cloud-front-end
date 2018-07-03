@@ -5,7 +5,6 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
 import Result from '../../components/Result';
 
-
 @connect(({ pointPosition, loading }) => ({
   pointPosition,
   loading: loading.models.pointPosition,
@@ -32,43 +31,80 @@ export default class ImportPointPosition extends PureComponent {
       match: {
         params: { hostId },
       },
-    } = this.props
-    dispatch({ type: 'pointPosition/fetchHostDetail', payload: hostId })
+    } = this.props;
+    dispatch({ type: 'pointPosition/fetchHostDetail', payload: hostId });
   }
 
   // 上传时多个阶段会调用
-  handleChange = (info) => {
+  handleChange = info => {
     const fileList = info.fileList.slice(-1);
-    this.setState({ fileList })
+    this.setState({ fileList });
 
     if (info.file.status === 'uploading ') {
-      this.setState({ loading: true })
+      this.setState({ loading: true });
     }
     if (info.file.response) {
       if (info.file.response.code && info.file.response.code === 200) {
         if (info.file.response.data) {
-          const { failed, success, updated, total } = info.file.response.data
-          this.setState({ failed, success, updated, total, showResultCard: true, loading: false, dataSource: info.file.response.data.list, showErrorLogo: failed > 0, showErrorTable: failed > 0, uploadStatus: 200 })
+          const { failed, success, updated, total } = info.file.response.data;
+          this.setState({
+            failed,
+            success,
+            updated,
+            total,
+            showResultCard: true,
+            loading: false,
+            dataSource: info.file.response.data.list,
+            showErrorLogo: failed > 0,
+            showErrorTable: failed > 0,
+            uploadStatus: 200,
+          });
         }
-      }
-      else {
-        this.setState({ failed: 0, success: 0, total: 0, updated: 0, loading: false, showResultCard: true, showErrorTable: false, showErrorLogo: true, uploadStatus: info.file.response.code, msg: info.file.response.msg })
+      } else {
+        this.setState({
+          failed: 0,
+          success: 0,
+          total: 0,
+          updated: 0,
+          loading: false,
+          showResultCard: true,
+          showErrorTable: false,
+          showErrorLogo: true,
+          uploadStatus: info.file.response.code,
+          msg: info.file.response.msg,
+        });
       }
     }
-  }
+  };
 
   // 返回上个页面
   handleBack = () => {
     history.back();
-  }
+  };
+
   render() {
     const {
       match: {
         params: { hostId, companyId },
       },
-      pointPosition: { hostDetail: { deviceCode } },
+      pointPosition: {
+        hostDetail: { deviceCode },
+      },
     } = this.props;
-
+    const {
+      uploadStatus,
+      msg,
+      total,
+      success,
+      updated,
+      failed,
+      showResultCard,
+      loading,
+      fileList,
+      showErrorLogo,
+      dataSource,
+      showErrorTable,
+    } = this.state;
     // const { getFieldDecorator } = form;
 
     const FormItem = Form.Item;
@@ -108,10 +144,21 @@ export default class ImportPointPosition extends PureComponent {
     };
 
     // 表格首列错误提示信息
-    const firstContent = (arr) => {
-      let num = 0
-      return (<div>{arr.map(item => { num += 1; return (<p key={item.key}>（{num}）{item.value}</p>) })}</div>)
-    }
+    const firstContent = arr => {
+      let num = 0;
+      return (
+        <div>
+          {arr.map(item => {
+            num += 1;
+            return (
+              <p key={item.key}>
+                （{num}）{item.value}
+              </p>
+            );
+          })}
+        </div>
+      );
+    };
 
     // 表格单元格单元格
     const tableCell = (val, rows, key) => {
@@ -133,26 +180,28 @@ export default class ImportPointPosition extends PureComponent {
           <span className={styles.error}>{val}</span>
         </Popover>
       );
-    }
+    };
 
     // 主机信息
-    const description = (id) => {
+    const description = id => {
       return (
         <div>
           <span>主机编号：{id}</span>
         </div>
-      )
-    }
+      );
+    };
 
     // 上传后的统计信息
     const message = (
       <div style={{ color: '#4d4848', fontSize: '17px' }}>
-        {this.state.uploadStatus !== 200 && <span>{this.state.msg}</span>}
-        {this.state.total > 0 && <span>本次只校验20条。</span>}
-        {this.state.success > 0 && <span>新建信息{this.state.success}条。</span>}
-        {this.state.updated > 0 && <span>更新信息{this.state.updated}条。</span>}
-        {this.state.failed > 0 && <span>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>}
-      </div>)
+        {uploadStatus !== 200 && <span>{msg}</span>}
+        {failed === 0 && uploadStatus === 200 && <span>本次导入数据共计{total}条。</span>}
+        {success > 0 && <span>新建信息{success}条。</span>}
+        {updated > 0 && <span>更新信息{updated}条。</span>}
+        {failed > 0 && <span>错误信息共计<span style={{ color: 'red' }}>{failed}</span>条，请核对后再试。</span>}
+        {!showErrorLogo && <span>错误信息0条。</span>}
+      </div>
+    );
 
     const columns = [
       {
@@ -265,35 +314,46 @@ export default class ImportPointPosition extends PureComponent {
     };
 
     return (
-      <PageHeaderLayout
-        content={description(deviceCode)}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout content={description(deviceCode)} breadcrumbList={breadcrumbList}>
         <Card title="导入点位数据" className={styles.cardContainer}>
           <Form>
             <FormItem label="上传附件" labelCol={{ span: 2 }} wrapperCol={{ span: 18 }}>
-              <Upload {...props} fileList={this.state.fileList}>
-                <Button type="primary" loading={this.state.loading}>
+              <Upload {...props} fileList={fileList}>
+                <Button type="primary" loading={loading}>
                   <Icon type="upload" /> 选择文件
                 </Button>
               </Upload>
             </FormItem>
           </Form>
         </Card>
-        <Spin spinning={this.state.loading}>
-          {this.state.showResultCard && (
-            <Card className={styles.cardContainer}>
+        <Spin spinning={loading}>
+          {showResultCard && (
+            <Card
+              className={styles.cardContainer}
+            >
               <Result
                 style={{ fontSize: '72px' }}
-                type={this.state.showErrorLogo ? "error" : "success"}
-                title={this.state.showErrorLogo ? "校验失败" : "校验成功"}
+                type={showErrorLogo ? 'error' : 'success'}
+                title={showErrorLogo ? '校验失败' : '校验成功'}
                 description={message}
               />
-              {this.state.showErrorTable && (
+              {showErrorTable && (
                 <div>
-                  <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
+                  <Table
+                    rowKey="row"
+                    pagination={false}
+                    dataSource={dataSource}
+                    columns={columns}
+                    scroll={{ x: 1500 }}
+                  />
                 </div>)}
-              <Button style={{ margin: '0 auto', display: 'block', marginTop: '20px' }} type="primary" onClick={this.handleBack}>确定</Button>
+              <Button
+                style={{ margin: '0 auto', display: 'block', marginTop: '20px' }}
+                type="primary"
+                onClick={this.handleBack}
+              >
+                确定
+              </Button>
             </Card>)}
         </Spin>
       </PageHeaderLayout>
