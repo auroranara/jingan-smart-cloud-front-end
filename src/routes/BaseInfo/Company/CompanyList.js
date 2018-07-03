@@ -231,49 +231,63 @@ export default class CompanyList extends PureComponent {
           // loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card
-                title={item.name}
-                className={styles.card}
-                actions={[
-                  <Link to={`/base-info/company/detail/${item.id}`}>查看</Link>,
-                  <Link to={`/base-info/company/edit/${item.id}`}>编辑</Link>,
-                ]}
-                extra={
-                  <Button
-                    onClick={() => {
-                      this.handleShowDeleteConfirm(item.id);
-                    }}
-                    shape="circle"
-                    style={{ border: 'none', fontSize: '20px' }}
-                  >
-                    <Icon type="close" />
-                  </Button>
-                }
-              >
-                <div
-                  onClick={() => {
-                    goToDetail(`/base-info/company/detail/${item.id}`);
-                  }}
-                  style={{ cursor: 'pointer' }}
+          renderItem={item => {
+            const {
+              id,
+              name,
+              practicalAddress,
+              industryCategoryLabel,
+              safetyName,
+              safetyPhone,
+              practicalProvinceLabel,
+              practicalCityLabel,
+              practicalDistrictLabel,
+              practicalTownLabel,
+            } = item;
+            const practicalAddressLabel = (practicalProvinceLabel || '') + (practicalCityLabel || '') + (practicalDistrictLabel || '') + (practicalTownLabel || '') + (practicalAddress || '');
+            return (
+              <List.Item key={id}>
+                <Card
+                  title={name}
+                  className={styles.card}
+                  actions={[
+                    <Link to={`/base-info/company/detail/${id}`}>查看</Link>,
+                    <Link to={`/base-info/company/edit/${id}`}>编辑</Link>,
+                  ]}
+                  extra={
+                    <Button
+                      onClick={() => {
+                        this.handleShowDeleteConfirm(id);
+                      }}
+                      shape="circle"
+                      style={{ border: 'none', fontSize: '20px' }}
+                    >
+                      <Icon type="close" />
+                    </Button>
+                  }
                 >
-                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    地址：{item.practicalAddress || getEmptyData()}
-                  </Ellipsis>
-                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    行业类别：{item.industryCategoryLabel || getEmptyData()}
-                  </Ellipsis>
-                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    负责人：{item.safetyName || getEmptyData()}
-                  </Ellipsis>
-                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    联系电话：{item.safetyPhone || getEmptyData()}
-                  </Ellipsis>
-                </div>
-              </Card>
-            </List.Item>
-          )}
+                  <div
+                    onClick={() => {
+                      goToDetail(`/base-info/company/detail/${id}`);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    地址：{practicalAddressLabel || getEmptyData()}
+                    </Ellipsis>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    行业类别：{industryCategoryLabel || getEmptyData()}
+                    </Ellipsis>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    负责人：{safetyName || getEmptyData()}
+                    </Ellipsis>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    联系电话：{safetyPhone || getEmptyData()}
+                    </Ellipsis>
+                  </div>
+                </Card>
+              </List.Item>
+          )}}
         />
       </div>
     );
