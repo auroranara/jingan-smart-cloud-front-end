@@ -156,16 +156,28 @@ export const getRouterData = app => {
     },
     // 账号管理列表
     '/role-authorization/account-management/list': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
         import('../routes/RoleAuthorization/AccountManagement/AccountManagementList.js')
       ),
     },
     // 新增账号
-    '/role-authorization/account-management/Add': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+    '/role-authorization/account-management/add': {
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
         import('../routes/RoleAuthorization/AccountManagement/AccountManagementAdd.js')
       ),
     },
+    // 编辑账号
+    '/role-authorization/account-management/edit/:id': {
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
+        import('../routes/RoleAuthorization/AccountManagement/AccountManagementEdit.js')
+      ),
+    },
+    // 查看账号
+    // '/role-authorization/account-management/detail/:id': {
+    //   component: dynamicWrapper(app, ['accountmanagement'], () =>
+    //     import('../routes/RoleAuthorization/AccountManagement/AccountManagementDetail.js')
+    //   ),
+    // },
     '/form/step-form/confirm': {
       name: '分步表单（确认转账信息）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),
