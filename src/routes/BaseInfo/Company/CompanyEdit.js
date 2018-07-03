@@ -636,6 +636,26 @@ export default class CompanyDetail extends PureComponent {
                 })(<Input placeholder="请输入社会信用代码" />)}
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.longitude}>
+                {getFieldDecorator('longitude', {
+                  initialValue: longitude,
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="请输入经度" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.latitude}>
+                {getFieldDecorator('latitude', {
+                  initialValue: latitude,
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="请输入纬度" />)}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>
               <Form.Item label={fieldLabels.registerAddress}>
                 <Row gutter={24}>
@@ -702,22 +722,6 @@ export default class CompanyDetail extends PureComponent {
                     })(<Input placeholder="请输入详细地址" />)}
                   </Col>
                 </Row>
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.longitude}>
-                {getFieldDecorator('longitude', {
-                  initialValue: longitude,
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入经度" />)}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.latitude}>
-                {getFieldDecorator('latitude', {
-                  initialValue: latitude,
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入纬度" />)}
               </Form.Item>
             </Col>
           </Row>
