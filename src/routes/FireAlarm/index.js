@@ -6,18 +6,18 @@ import Ellipsis from 'components/Ellipsis';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
-import styles from './UserTransmissionDevice.less';
+import styles from './index.less';
 
 const PAGE_SIZE = 18;
 
 // div[id="root"]下的唯一子元素相对于定高的root滚动
 const rootElement = document.getElementById('root');
 
-@connect(({ transmission, loading }) => ({
-  transmission,
-  loading: loading.models.transmission,
+@connect(({ fireAlarm, loading }) => ({
+  fireAlarm,
+  loading: loading.models.fireAlarm,
 }))
-export default class UserTransmissionDevice extends PureComponent {
+export default class FireAlarm extends PureComponent {
   state = {
     company: '',
     address: '',
@@ -30,7 +30,7 @@ export default class UserTransmissionDevice extends PureComponent {
     rootElement.addEventListener('scroll', this.handleScroll, false);
 
     this.props.dispatch({
-      type: 'transmission/fetch',
+      type: 'fireAlarm/fetch',
       payload: {
         pageNum: 1,
         pageSize: PAGE_SIZE,
@@ -71,7 +71,7 @@ export default class UserTransmissionDevice extends PureComponent {
     this.setState({ hasMore: true });
     this.currentpageNum = 2;
     this.props.dispatch({
-      type: 'transmission/fetch',
+      type: 'fireAlarm/fetch',
       payload: {
         pageNum: 1,
         pageSize: PAGE_SIZE,
@@ -91,7 +91,7 @@ export default class UserTransmissionDevice extends PureComponent {
     this.setState({ company: '', address: '', hasMore: true });
     this.currentpageNum = 2;
     this.props.dispatch({
-      type: 'transmission/fetch',
+      type: 'fireAlarm/fetch',
       payload: {
         pageNum: 1,
         pageSize: PAGE_SIZE,
@@ -118,7 +118,7 @@ export default class UserTransmissionDevice extends PureComponent {
     this.setState({ scrollLoading: true });
 
     this.props.dispatch({
-      type: 'transmission/fetch',
+      type: 'fireAlarm/fetch',
       payload: {
         pageNum: this.currentpageNum,
         pageSize: PAGE_SIZE,
@@ -136,13 +136,13 @@ export default class UserTransmissionDevice extends PureComponent {
 
   render() {
     const {
-      transmission: { list },
+      fireAlarm: { list },
       loading,
     } = this.props;
     const { company, address, scrollLoading, hasMore } = this.state;
 
     return (
-      <PageHeaderLayout title="用户传输装置">
+      <PageHeaderLayout title="企业列表">
         <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>
@@ -179,7 +179,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-control/user-transmission-device-detail/${item.id}/detail`}>
+                <Link to={`/fire-alarm/company/${item.id}`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined
@@ -188,10 +188,10 @@ export default class UserTransmissionDevice extends PureComponent {
                     </Ellipsis>
                     <p>安全负责人：{item.safetyName ? item.safetyName : '暂无信息'}</p>
                     <p>联系电话：{item.safetyPhone ? item.safetyPhone : '暂无信息'}</p>
-                    <p>消防主机数量：{item.fireCount}</p>
+                    <p>火警主机数量：{item.hostNumber}</p>
                     <div className={styles.quantityContainer}>
-                      <div className={styles.quantity}>{item.transmissionCount}</div>
-                      <p className={styles.quantityDescrip}>传输装置数</p>
+                      <div className={styles.quantity}>{item.alarmNumber}</div>
+                      <p className={styles.quantityDescrip}>警情数量</p>
                     </div>
                   </Card>
                 </Link>

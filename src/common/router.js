@@ -154,6 +154,18 @@ export const getRouterData = app => {
         import('../routes/FireControl/ImportPointPosition.js')
       ),
     },
+    '/fire-alarm/index': {
+      name: '火灾自动报警系统',
+      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/index')),
+    },
+    '/fire-alarm/company/:companyId': {
+      name: '单位页面',
+      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/AutoFireAlarm')),
+    },
+    '/fire-alarm/company/detail/:companyId/:detailId': {
+      name: '详情信息',
+      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/FireAlarmDetail')),
+    },
     '/form/step-form/confirm': {
       name: '分步表单（确认转账信息）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),
