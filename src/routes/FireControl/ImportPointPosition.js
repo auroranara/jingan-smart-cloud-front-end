@@ -104,7 +104,6 @@ export default class ImportPointPosition extends PureComponent {
       showErrorLogo,
       dataSource,
       showErrorTable,
-      tshowErrorLogo,
     } = this.state;
     // const { getFieldDecorator } = form;
 
@@ -195,13 +194,12 @@ export default class ImportPointPosition extends PureComponent {
     // 上传后的统计信息
     const message = (
       <div style={{ color: '#4d4848', fontSize: '17px' }}>
-        <span style={{ display: uploadStatus === 200 ? 'none' : 'inline' }}>{msg}</span>
-        <span style={{ display: total > 0 ? 'inline' : 'none' }}>本次只校验20条。</span>
-        <span style={{ display: success > 0 ? 'inline' : 'none' }}>新建信息{success}条。</span>
-        <span style={{ display: updated > 0 ? 'inline' : 'none' }}>更新信息{updated}条。</span>
-        <span style={{ display: failed > 0 ? 'inline' : 'none' }}>
-          信息错误<span style={{ color: 'red' }}>{failed}</span>条。
-        </span>
+        {uploadStatus !== 200 && <span>{msg}</span>}
+        {failed === 0 && uploadStatus === 200 && <span>本次导入数据共计{total}条。</span>}
+        {success > 0 && <span>新建信息{success}条。</span>}
+        {updated > 0 && <span>更新信息{updated}条。</span>}
+        {failed > 0 && <span>错误信息共计<span style={{ color: 'red' }}>{failed}</span>条，请核对后再试。</span>}
+        {!showErrorLogo && <span>错误信息0条。</span>}
       </div>
     );
 
@@ -329,33 +327,34 @@ export default class ImportPointPosition extends PureComponent {
           </Form>
         </Card>
         <Spin spinning={loading}>
-          <Card
-            className={styles.cardContainer}
-            style={{ display: showResultCard ? 'block' : 'none' }}
-          >
-            <Result
-              style={{ fontSize: '72px' }}
-              type={tshowErrorLogo ? 'error' : 'success'}
-              title={showErrorLogo ? '校验失败' : '校验成功'}
-              description={message}
-            />
-            <div style={{ display: showErrorTable ? 'block' : 'none' }}>
-              <Table
-                rowKey="row"
-                pagination={false}
-                dataSource={dataSource}
-                columns={columns}
-                scroll={{ x: 1500 }}
-              />
-            </div>
-            <Button
-              style={{ margin: '0 auto', display: 'block', marginTop: '20px' }}
-              type="primary"
-              onClick={this.handleBack}
+          {showResultCard && (
+            <Card
+              className={styles.cardContainer}
             >
-              确定
-            </Button>
-          </Card>
+              <Result
+                style={{ fontSize: '72px' }}
+                type={showErrorLogo ? 'error' : 'success'}
+                title={showErrorLogo ? '校验失败' : '校验成功'}
+                description={message}
+              />
+              {showErrorTable && (
+                <div>
+                  <Table
+                    rowKey="row"
+                    pagination={false}
+                    dataSource={dataSource}
+                    columns={columns}
+                    scroll={{ x: 1500 }}
+                  />
+                </div>)}
+              <Button
+                style={{ margin: '0 auto', display: 'block', marginTop: '20px' }}
+                type="primary"
+                onClick={this.handleBack}
+              >
+                确定
+              </Button>
+            </Card>)}
         </Spin>
       </PageHeaderLayout>
     );
