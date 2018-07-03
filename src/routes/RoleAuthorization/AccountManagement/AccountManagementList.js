@@ -1,19 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  List,
-  Card,
-  Button,
-  Icon,
-  Input,
-  BackTop,
-  Spin,
-  Affix,
-  Col,
-  Row,
-  Cascader,
-} from 'antd';
+import { Form, List, Card, Button, Icon, Input, BackTop, Spin, Col, Row, Cascader } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -161,60 +148,58 @@ export default class AccountManagementList extends PureComponent {
     } = this.props;
 
     return (
-      <Affix offsetTop={10} target={() => document.getElementById('root')}>
-        <Card>
-          <Form layout="inline">
-            <Col span={15}>
-              <FormItem label="用户">
-                {getFieldDecorator('user', {
-                  initialValue: defaultFormData.user,
-                  getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="用户名/姓名/手机号" />)}
-              </FormItem>
-              <FormItem label="权限">
-                {getFieldDecorator('permission', {
-                  initialValue: defaultFormData.permission,
-                  getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="角色/权限" />)}
-              </FormItem>
-              <FormItem label="单位类型">
-                {getFieldDecorator('unitType', {
-                  initialValue: defaultFormData.unitType,
-                  getValueFromEvent: e => e.target.value.trim(),
-                })(
-                  <Cascader
-                    // options={ }
-                    placeholder="政府机构"
-                  />
-                )}
-              </FormItem>
-              <FormItem label="所属单位">
-                {getFieldDecorator('hasUnit', {
-                  initialValue: defaultFormData.hasUnit,
-                  getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="所属单位" />)}
-              </FormItem>
-            </Col>
+      <Card>
+        <Form layout="inline">
+          <Col span={15}>
+            <FormItem label="用户">
+              {getFieldDecorator('user', {
+                initialValue: defaultFormData.user,
+                getValueFromEvent: e => e.target.value.trim(),
+              })(<Input placeholder="用户名/姓名/手机号" />)}
+            </FormItem>
+            <FormItem label="权限">
+              {getFieldDecorator('permission', {
+                initialValue: defaultFormData.permission,
+                getValueFromEvent: e => e.target.value.trim(),
+              })(<Input placeholder="角色/权限" />)}
+            </FormItem>
+            <FormItem label="单位类型">
+              {getFieldDecorator('unitType', {
+                initialValue: defaultFormData.unitType,
+                getValueFromEvent: e => e.target.value.trim(),
+              })(
+                <Cascader
+                  // options={ }
+                  placeholder="政府机构"
+                />
+              )}
+            </FormItem>
+            <FormItem label="所属单位">
+              {getFieldDecorator('hasUnit', {
+                initialValue: defaultFormData.hasUnit,
+                getValueFromEvent: e => e.target.value.trim(),
+              })(<Input placeholder="所属单位" />)}
+            </FormItem>
+          </Col>
 
-            {/* 按钮 */}
-            <Col span={9}>
-              <FormItem style={{ float: 'right' }}>
-                <Button type="primary" href="#/role-authorization/account-management/Add">
-                  新增
-                </Button>
-              </FormItem>
-              <FormItem style={{ float: 'right' }}>
-                <Button onClick={this.handleClickToReset}>重置</Button>
-              </FormItem>
-              <FormItem style={{ float: 'right' }}>
-                <Button type="primary" onClick={this.handleClickToQuery}>
-                  查询
-                </Button>
-              </FormItem>
-            </Col>
-          </Form>
-        </Card>
-      </Affix>
+          {/* 按钮 */}
+          <Col span={9}>
+            <FormItem style={{ float: 'right' }}>
+              <Button type="primary" href="#/role-authorization/account-management/Add">
+                新增
+              </Button>
+            </FormItem>
+            <FormItem style={{ float: 'right' }}>
+              <Button onClick={this.handleClickToReset}>重置</Button>
+            </FormItem>
+            <FormItem style={{ float: 'right' }}>
+              <Button type="primary" onClick={this.handleClickToQuery}>
+                查询
+              </Button>
+            </FormItem>
+          </Col>
+        </Form>
+      </Card>
     );
   }
 
@@ -237,7 +222,7 @@ export default class AccountManagementList extends PureComponent {
                 title={item.name}
                 className={styles.card}
                 actions={[
-                  <Link to={`/${item.id}`}>查看</Link>,
+                  <Link to={`/role-authorization/account-management/detail/${item.id}`}>查看</Link>,
                   <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
                 ]}
                 extra={
