@@ -718,11 +718,8 @@ export default class CompanyDetail extends PureComponent {
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('legalPhone', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [
-                      { required: true, message: '请输入法定代表人联系方式' },
-                      { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' },
-                    ],
-                  })(<Input placeholder="请输入联系方式" type="number" />)}
+                    rules: [{ required: true, message: '请输入法定代表人联系方式' }, { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' }],
+                  })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('legalEmail', {
