@@ -493,9 +493,9 @@ export default class CompanyDetail extends PureComponent {
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>
-              <Form.Item label={fieldLabels.registerAddress}>
-                <Row gutter={24}>
-                  <Col md={12} sm={24}>
+              <Row gutter={24}>
+                <Col md={12} sm={24}>
+                  <Form.Item label={fieldLabels.registerAddress}>
                     {getFieldDecorator('registerAddressArea', {
                       initialValue: [],
                       rules: [{ required: true, message: '请选择注册地址' }],
@@ -515,20 +515,22 @@ export default class CompanyDetail extends PureComponent {
                         getPopupContainer={getRootChild}
                       />
                     )}
-                  </Col>
-                  <Col md={12} sm={24}>
+                  </Form.Item>
+                </Col>
+                <Col md={12} sm={24}>
+                  <Form.Item style={{ paddingTop: '29px' }}>
                     {getFieldDecorator('registerAddress', {
                       getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请输入注册地址详细地址' }],
                     })(<Input placeholder="请输入详细地址" />)}
-                  </Col>
-                </Row>
-              </Form.Item>
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
             <Col span={24}>
-              <Form.Item label={fieldLabels.practicalAddress}>
-                <Row gutter={24}>
-                  <Col md={12} sm={24}>
+              <Row gutter={24}>
+                <Col md={12} sm={24}>
+                  <Form.Item label={fieldLabels.practicalAddress}>
                     {getFieldDecorator('practicalAddressArea', {
                       initialValue: [],
                       rules: [{ required: true, message: '请选择实际经营地址' }],
@@ -548,15 +550,17 @@ export default class CompanyDetail extends PureComponent {
                         getPopupContainer={getRootChild}
                       />
                     )}
-                  </Col>
-                  <Col md={12} sm={24}>
+                  </Form.Item>
+                </Col>
+                <Col md={12} sm={24}>
+                  <Form.Item style={{ paddingTop: '29px' }}>
                     {getFieldDecorator('practicalAddress', {
                       getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请输入实际经营地址详细地址' }],
                     })(<Input placeholder="请输入详细地址" />)}
-                  </Col>
-                </Row>
-              </Form.Item>
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
