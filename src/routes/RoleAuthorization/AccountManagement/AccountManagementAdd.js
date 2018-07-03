@@ -1,16 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Row,
-  Col,
-  Input,
-  Cascader,
-  Select,
-  // FooterToolbar,
-  // Button
-} from 'antd';
+import { Form, Card, Row, Col, Input, Cascader, Select, Button } from 'antd';
+import FooterToolbar from 'components/FooterToolbar';
 // import moment from 'moment';
 
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
@@ -39,9 +30,8 @@ const breadcrumbList = [
   },
 ];
 
-@connect(({ company, loading }) => ({
-  company,
-  loading: loading.models.company,
+@connect(({ loading }) => ({
+  loading: loading.models,
 }))
 @Form.create()
 export default class AccountManagementAdd extends PureComponent {
@@ -110,18 +100,17 @@ export default class AccountManagementAdd extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  // renderFooterToolbar() {
-  //   const { loading } = this.props;
-  //   const { submitting } = this.state;
-  //   return (
-  //     <FooterToolbar>
-  //       <Button>取消</Button>
-  //       <Button type="primary" loading={loading || submitting}>
-  //         提交
-  //       </Button>
-  //     </FooterToolbar>
-  //   );
-  // }
+  renderFooterToolbar() {
+    const { loading } = this.props;
+    return (
+      <FooterToolbar>
+        <Button>取消</Button>
+        <Button type="primary" loading={loading}>
+          提交
+        </Button>
+      </FooterToolbar>
+    );
+  }
 
   render() {
     const content = (
@@ -138,6 +127,7 @@ export default class AccountManagementAdd extends PureComponent {
         content={content}
       >
         {this.renderBasicInfo()}
+        {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
   }

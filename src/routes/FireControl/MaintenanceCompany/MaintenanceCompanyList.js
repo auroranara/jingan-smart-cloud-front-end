@@ -197,9 +197,7 @@ export default class MaintenanceCompanyList extends PureComponent {
               </Button>
             </FormItem>
             <FormItem>
-              <Button onClick={this.handleClickToReset}>
-                重置
-              </Button>
+              <Button onClick={this.handleClickToReset}>重置</Button>
             </FormItem>
             <FormItem style={{ float: 'right' }}>
               <Button type="primary" href="#/fire-control/maintenance-company/add">

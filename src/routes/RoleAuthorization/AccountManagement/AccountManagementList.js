@@ -40,41 +40,39 @@ const breadcrumbList = [
 ];
 
 const FormItem = Form.Item;
+
 // 默认页面显示数量
 const pageSize = 18;
+
 // 默认表单值
 const defaultFormData = {
-  name: undefined,
-  practicalAddress: undefined,
+  user: undefined,
+  permission: undefined,
+  unitType: undefined,
+  hasUnit: undefined,
 };
 
 @connect(
-  ({ maintenanceCompany, loading }) => ({
-    maintenanceCompany,
-    loading: loading.models.maintenanceCompany,
+  ({ accountmanagement, loading }) => ({
+    accountmanagement,
+    loading: loading.models.accountmanagement,
   }),
   dispatch => ({
     fetch(action) {
       dispatch({
-        type: 'maintenanceCompany/fetch',
+        type: 'accountmanagement/fetch',
         ...action,
       });
     },
     appendFetch(action) {
       dispatch({
-        type: 'maintenanceCompany/appendFetch',
-        ...action,
-      });
-    },
-    remove(action) {
-      dispatch({
-        type: 'maintenanceCompany/remove',
+        type: 'accountmanagement/appendFetch',
         ...action,
       });
     },
     updateFormData(action) {
       dispatch({
-        type: 'maintenanceCompany/updateFormData',
+        type: 'accountmanagement/updateFormData',
         ...action,
       });
     },
@@ -139,12 +137,12 @@ export default class AccountManagementList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    if (!flag || this.props.maintenanceCompany.isLast) {
+    if (!flag || this.props.accountmanagement.isLast) {
       return;
     }
     const {
       appendFetch,
-      maintenanceCompany: { pageNum },
+      accountmanagement: { pageNum },
     } = this.props;
     // 请求数据
     appendFetch({
@@ -180,8 +178,8 @@ export default class AccountManagementList extends PureComponent {
                 })(<Input placeholder="角色/权限" />)}
               </FormItem>
               <FormItem label="单位类型">
-                {getFieldDecorator('type', {
-                  initialValue: defaultFormData.type,
+                {getFieldDecorator('unitType', {
+                  initialValue: defaultFormData.unitType,
                   getValueFromEvent: e => e.target.value.trim(),
                 })(
                   <Cascader
@@ -191,8 +189,8 @@ export default class AccountManagementList extends PureComponent {
                 )}
               </FormItem>
               <FormItem label="所属单位">
-                {getFieldDecorator('unit', {
-                  initialValue: defaultFormData.unit,
+                {getFieldDecorator('hasUnit', {
+                  initialValue: defaultFormData.hasUnit,
                   getValueFromEvent: e => e.target.value.trim(),
                 })(<Input placeholder="所属单位" />)}
               </FormItem>
@@ -223,7 +221,7 @@ export default class AccountManagementList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      maintenanceCompany: { list },
+      accountmanagement: { list },
       goToDetail,
     } = this.props;
 
@@ -240,7 +238,7 @@ export default class AccountManagementList extends PureComponent {
                 className={styles.card}
                 actions={[
                   <Link to={`/${item.id}`}>查看</Link>,
-                  <Link to={`/${item.id}`}>编辑</Link>,
+                  <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
                 ]}
                 extra={
                   <Button
@@ -290,7 +288,7 @@ export default class AccountManagementList extends PureComponent {
 
   render() {
     const {
-      maintenanceCompany: { list, isLast },
+      accountmanagement: { list, isLast },
       loading,
     } = this.props;
 
