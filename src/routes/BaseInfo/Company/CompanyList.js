@@ -295,7 +295,7 @@ export default class CompanyList extends PureComponent {
 
   render() {
     const {
-      company: { list },
+      company: { list, isLast },
       loading,
     } = this.props;
 
@@ -304,7 +304,7 @@ export default class CompanyList extends PureComponent {
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading && (
+        {loading && !isLast && (
           <div style={{ paddingTop: '50px', textAlign: 'center' }}>
             <Spin />
           </div>
