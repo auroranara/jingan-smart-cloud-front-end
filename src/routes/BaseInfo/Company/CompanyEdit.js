@@ -917,6 +917,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入法定代表人姓名' }],
                   })(<Input placeholder="请输入姓名" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('legalPhone', {
                     initialValue: legalPhone,
@@ -924,6 +926,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入法定代表人联系方式' }, { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' }],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('legalEmail', {
                     initialValue: legalEmail,
@@ -946,6 +950,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入主要负责人姓名' }],
                   })(<Input placeholder="请输入姓名" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('principalPhone', {
                     initialValue: principalPhone,
@@ -953,6 +959,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入主要负责人联系方式' }, { pattern: phoneRegExp, message: '主要负责人联系方式格式不正确' }],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('principalEmail', {
                     initialValue: principalEmail,
@@ -975,6 +983,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入安全负责人姓名' }],
                   })(<Input placeholder="请输入姓名" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('safetyPhone', {
                     initialValue: safetyPhone,
@@ -982,6 +992,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入安全负责人联系方式' }, { pattern: phoneRegExp, message: '安全负责人联系方式格式不正确' }],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('safetyEmail', {
                     initialValue: safetyEmail,
