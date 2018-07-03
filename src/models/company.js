@@ -12,49 +12,49 @@ import {
 
 const mergeArea = (area, ids, list) => {
   return ids.length === 0
-  ? list
-  : area.map(province => {
-      if (province.id === ids[0]) {
-        if (ids.length !== 1) {
-          return {
-            ...province,
-            children: province.children.map(city => {
-              if (city.id === ids[1]) {
-                if (ids.length !== 2) {
-                  return {
-                    ...city,
-                    children: city.children.map(district => {
-                      if (district.id === ids[2]) {
-                        return {
-                          ...district,
-                          children: list,
-                          loading: false,
-                        };
-                      }
-                      return district;
-                    }),
-                  };
-                } else {
-                  return {
-                    ...city,
-                    children: list,
-                    loading: false,
-                  };
+    ? list
+    : area.map(province => {
+        if (province.id === ids[0]) {
+          if (ids.length !== 1) {
+            return {
+              ...province,
+              children: province.children.map(city => {
+                if (city.id === ids[1]) {
+                  if (ids.length !== 2) {
+                    return {
+                      ...city,
+                      children: city.children.map(district => {
+                        if (district.id === ids[2]) {
+                          return {
+                            ...district,
+                            children: list,
+                            loading: false,
+                          };
+                        }
+                        return district;
+                      }),
+                    };
+                  } else {
+                    return {
+                      ...city,
+                      children: list,
+                      loading: false,
+                    };
+                  }
                 }
-              }
-              return city;
-            }),
-          };
-        } else {
-          return {
-            ...province,
-            children: list,
-            loading: false,
-          };
+                return city;
+              }),
+            };
+          } else {
+            return {
+              ...province,
+              children: list,
+              loading: false,
+            };
+          }
         }
-      }
-      return province;
-    });
+        return province;
+      });
 };
 
 export default {
@@ -370,7 +370,9 @@ export default {
       }
     ) {
       const fields = {};
-      keys.forEach(key => { fields[key] = mergeArea(state[key], ids, list); });
+      keys.forEach(key => {
+        fields[key] = mergeArea(state[key], ids, list);
+      });
       return {
         ...state,
         ...fields,

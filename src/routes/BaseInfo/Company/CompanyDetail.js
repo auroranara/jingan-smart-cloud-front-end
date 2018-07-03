@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card, Button, Spin } from 'antd';
 import moment from 'moment';
@@ -53,9 +53,6 @@ const fieldLabels = {
   practicalAddress: '实际经营地址',
   registerAddress: '注册地址',
   scale: '规模情况',
-  principalName: '姓名',
-  principalPhone: '联系方式',
-  principalEmail: '邮箱',
 };
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -114,41 +111,40 @@ export default class CompanyDetail extends PureComponent {
         detail: {
           data: {
             name,
+            registerAddress,
             code,
+            practicalAddress,
             longitude,
             latitude,
+            provinceLabel,
+            cityLabel,
+            districtLabel,
+            townLabel,
             companyIchnography,
-            registerAddress,
-            registerProvinceLabel,
-            registerCityLabel,
-            registerDistrictLabel,
-            registerTownLabel,
-            practicalAddress,
-            practicalProvinceLabel,
-            practicalCityLabel,
-            practicalDistrictLabel,
-            practicalTownLabel,
           },
         },
       },
     } = this.props;
 
-    const registerAddressLabel = (registerProvinceLabel || '') + (registerCityLabel || '') + (registerDistrictLabel || '') + (registerTownLabel || '') + (registerAddress || '');
-    const practicalAddressLabel = (practicalProvinceLabel || '') + (practicalCityLabel || '') + (practicalDistrictLabel || '') + (practicalTownLabel || '') + (practicalAddress || '');
+    const administrativeDivision =
+      (provinceLabel || '') + (cityLabel || '') + (districtLabel || '') + (townLabel || '');
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
-            {registerAddressLabel || getEmptyData()}
+            {registerAddress || getEmptyData()}
           </Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.practicalAddress}>
-            {practicalAddressLabel || getEmptyData()}
+            {practicalAddress || getEmptyData()}
           </Description>
           <Description term={fieldLabels.longitude}>{longitude || getEmptyData()}</Description>
           <Description term={fieldLabels.latitude}>{latitude || getEmptyData()}</Description>
+          <Description term={fieldLabels.administrativeDivision}>
+            {administrativeDivision || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.companyIchnography}>
             {(companyIchnography && (
               <a href={companyIchnography} target="_bland">
@@ -210,62 +206,17 @@ export default class CompanyDetail extends PureComponent {
   }
 
   /* 渲染人员信息 */
-  renderPersonalInfo() {
-    const { company: { detail: { data: {
-      legalName,
-      legalPhone,
-      legalEmail,
-      principalName,
-      principalPhone,
-      principalEmail,
-      safetyName,
-      safetyPhone,
-      safetyEmail,
-     } } } } = this.props;
-    return (
-      <Fragment>
-        <Card title="法定代表人" className={styles.card} bordered={false}>
-          <DescriptionList col={3}>
-            <Description term={fieldLabels.principalName}>
-              {legalName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {legalPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {legalEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-        </Card>
-        <Card title="主要负责人" className={styles.card} bordered={false}>
-          <DescriptionList col={3}>
-            <Description term={fieldLabels.principalName}>
-              {principalName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {principalPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {principalEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-        </Card>
-        <Card title="安全负责人" className={styles.card} bordered={false}>
-          <DescriptionList col={3}>
-            <Description term={fieldLabels.principalName}>
-              {safetyName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {safetyPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {safetyEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-        </Card>
-      </Fragment>
-    );
-  }
+  // renderPersonalInfo() {
+  //   const {
+  //     form: { getFieldDecorator },
+  //   } = this.props;
+
+  //   return (
+  //     <Card title="人员信息" className={styles.card} bordered={false}>
+  //       <div>这里是人员信息</div>
+  //     </Card>
+  //   );
+  // }
 
   /* 渲染其他信息 */
   renderOtherInfo() {
@@ -329,8 +280,8 @@ export default class CompanyDetail extends PureComponent {
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
           {this.renderMoreInfo()}
-          {this.renderPersonalInfo()}
-          {/* {this.renderOtherInfo()} */}
+          {/* {this.renderPersonalInfo()} */}
+          {this.renderOtherInfo()}
           {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>

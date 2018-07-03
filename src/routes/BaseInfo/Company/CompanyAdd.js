@@ -202,7 +202,12 @@ export default class CompanyDetail extends PureComponent {
         error,
         {
           registerAddressArea: [registerProvince, registerCity, registerDistrict, registerTown],
-          practicalAddressArea: [practicalProvince, practicalCity, practicalDistrict, practicalTown],
+          practicalAddressArea: [
+            practicalProvince,
+            practicalCity,
+            practicalDistrict,
+            practicalTown,
+          ],
           createTime,
           industryCategory,
           ...restFields
@@ -259,15 +264,16 @@ export default class CompanyDetail extends PureComponent {
     const { file } = info;
     if (file.status === 'uploading') {
       this.setState({
-        ichnographyList: [
-          file,
-        ],
+        ichnographyList: [file],
       });
-    }
-    else if (file.status === 'done') {
+    } else if (file.status === 'done') {
       if (file.response.code === 200) {
-        const { data: { list: [ result ] } } = file.response;
-        if (result){
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
           this.setState({
             ichnographyList: [
               {
@@ -277,30 +283,26 @@ export default class CompanyDetail extends PureComponent {
               },
             ],
           });
-        }
-        else {
+        } else {
           // 没有返回值
           message.error('上传失败！');
           this.setState({
             ichnographyList: [],
           });
         }
-      }
-      else {
+      } else {
         // code为500
         message.error('上传失败！');
         this.setState({
           ichnographyList: [],
         });
       }
-    }
-    else if (file.status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         ichnographyList: [],
       });
-    }
-    else {
+    } else {
       // error
       message.error('上传失败！');
       this.setState({
@@ -314,15 +316,16 @@ export default class CompanyDetail extends PureComponent {
     const { file } = info;
     if (file.status === 'uploading') {
       this.setState({
-        contractList: [
-          file,
-        ],
+        contractList: [file],
       });
-    }
-    else if (file.status === 'done') {
+    } else if (file.status === 'done') {
       if (file.response.code === 200) {
-        const { data: { list: [ result ] } } = file.response;
-        if (result){
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
           this.setState({
             contractList: [
               {
@@ -332,30 +335,26 @@ export default class CompanyDetail extends PureComponent {
               },
             ],
           });
-        }
-        else {
+        } else {
           // 没有返回值
           message.error('上传失败！');
           this.setState({
             contractList: [],
           });
         }
-      }
-      else {
+      } else {
         // code为500
         message.error('上传失败！');
         this.setState({
           contractList: [],
         });
       }
-    }
-    else if (file.status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         contractList: [],
       });
-    }
-    else {
+    } else {
       // error
       message.error('上传失败！');
       this.setState({
@@ -406,10 +405,11 @@ export default class CompanyDetail extends PureComponent {
 
   /* 行政区域动态加载 */
   handleLoadData = (keys, selectedOptions) => {
+    const { fetchArea } = this.props;
     const ids = selectedOptions.map(item => item.id);
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
-    this.props.fetchArea({
+    fetchArea({
       payload: {
         ids,
         parentId: targetOption.id,
@@ -490,7 +490,9 @@ export default class CompanyDetail extends PureComponent {
                           children: 'children',
                           isLeaf: 'isLeaf',
                         }}
-                        loadData={selectedOptions => { this.handleLoadData(['registerAddress'], selectedOptions); }}
+                        loadData={selectedOptions => {
+                          this.handleLoadData(['registerAddress'], selectedOptions);
+                        }}
                         changeOnSelect
                         placeholder="请选择注册地址"
                         allowClear
@@ -523,7 +525,9 @@ export default class CompanyDetail extends PureComponent {
                           children: 'children',
                           isLeaf: 'isLeaf',
                         }}
-                        loadData={selectedOptions => { this.handleLoadData(['practicalAddress'], selectedOptions); }}
+                        loadData={selectedOptions => {
+                          this.handleLoadData(['practicalAddress'], selectedOptions);
+                        }}
                         changeOnSelect
                         placeholder="请选择实际经营地址"
                         allowClear
@@ -714,13 +718,19 @@ export default class CompanyDetail extends PureComponent {
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('legalPhone', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入法定代表人联系方式' }, { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' }],
+                    rules: [
+                      { required: true, message: '请输入法定代表人联系方式' },
+                      { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' },
+                    ],
                   })(<Input placeholder="请输入联系方式" type="number" />)}
                 </Form.Item>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('legalEmail', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入法定代表人邮箱' }, { pattern: emailRegExp, message: '法定代表人邮箱格式不正确' }],
+                    rules: [
+                      { required: true, message: '请输入法定代表人邮箱' },
+                      { pattern: emailRegExp, message: '法定代表人邮箱格式不正确' },
+                    ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
               </Col>
@@ -740,13 +750,19 @@ export default class CompanyDetail extends PureComponent {
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('principalPhone', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入主要负责人联系方式' }, { pattern: phoneRegExp, message: '主要负责人联系方式格式不正确' }],
+                    rules: [
+                      { required: true, message: '请输入主要负责人联系方式' },
+                      { pattern: phoneRegExp, message: '主要负责人联系方式格式不正确' },
+                    ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('principalEmail', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入主要负责人邮箱' }, { pattern: emailRegExp, message: '主要负责人邮箱格式不正确' }],
+                    rules: [
+                      { required: true, message: '请输入主要负责人邮箱' },
+                      { pattern: emailRegExp, message: '主要负责人邮箱格式不正确' },
+                    ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
               </Col>
@@ -766,13 +782,19 @@ export default class CompanyDetail extends PureComponent {
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('safetyPhone', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入安全负责人联系方式' }, { pattern: phoneRegExp, message: '安全负责人联系方式格式不正确' }],
+                    rules: [
+                      { required: true, message: '请输入安全负责人联系方式' },
+                      { pattern: phoneRegExp, message: '安全负责人联系方式格式不正确' },
+                    ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('safetyEmail', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入安全负责人邮箱' }, { pattern: emailRegExp, message: '安全负责人邮箱格式不正确' }],
+                    rules: [
+                      { required: true, message: '请输入安全负责人邮箱' },
+                      { pattern: emailRegExp, message: '安全负责人邮箱格式不正确' },
+                    ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
               </Col>
@@ -825,7 +847,9 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染错误信息 */
   renderErrorInfo() {
-    const { getFieldsError } = this.props.form;
+    const {
+      form: { getFieldsError },
+    } = this.props;
     const errors = getFieldsError();
     const errorCount = Object.keys(errors).filter(key => errors[key]).length;
     if (!errors || errorCount === 0) {

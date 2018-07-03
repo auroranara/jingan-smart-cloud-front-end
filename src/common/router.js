@@ -154,18 +154,6 @@ export const getRouterData = app => {
         import('../routes/FireControl/ImportPointPosition.js')
       ),
     },
-    // 账号管理列表
-    '/role-authorization/account-management/list': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
-        import('../routes/RoleAuthorization/AccountManagement/AccountManagementList.js')
-      ),
-    },
-    // 新增账号
-    '/role-authorization/account-management/Add': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
-        import('../routes/RoleAuthorization/AccountManagement/AccountManagementAdd.js')
-      ),
-    },
     '/form/step-form/confirm': {
       name: '分步表单（确认转账信息）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),

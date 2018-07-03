@@ -146,7 +146,6 @@ const hosts = {
   test: '192.168.10.67:9080', // 内网
 };
 
-// const key = 'sqz';
 const key = 'test';
 
-export default (noProxy ? {} : delay(initProxy(key), 1000));
+export default (noProxy ? {} : initProxy(key));
