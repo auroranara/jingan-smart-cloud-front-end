@@ -147,11 +147,11 @@ export default class ImportPointPosition extends PureComponent {
     // 上传后的统计信息
     const message = (
       <div style={{ color: '#4d4848', fontSize: '17px' }}>
-        <span style={{ display: this.state.uploadStatus === 200 ? 'none' : 'inline' }}>{this.state.msg}</span>
-        <span style={{ display: this.state.total > 0 ? 'inline' : 'none' }}>本次只校验20条。</span>
-        <span style={{ display: this.state.success > 0 ? 'inline' : 'none' }}>新建信息{this.state.success}条。</span>
-        <span style={{ display: this.state.updated > 0 ? 'inline' : 'none' }}>更新信息{this.state.updated}条。</span>
-        <span style={{ display: this.state.failed > 0 ? 'inline' : 'none' }}>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>
+        {this.state.uploadStatus !== 200 && <span>{this.state.msg}</span>}
+        {this.state.total > 0 && <span>本次只校验20条。</span>}
+        {this.state.success > 0 && <span>新建信息{this.state.success}条。</span>}
+        {this.state.updated > 0 && <span>更新信息{this.state.updated}条。</span>}
+        {this.state.failed > 0 && <span>信息错误<span style={{ color: 'red' }}>{this.state.failed}</span>条。</span>}
       </div>)
 
     const columns = [
@@ -281,18 +281,20 @@ export default class ImportPointPosition extends PureComponent {
           </Form>
         </Card>
         <Spin spinning={this.state.loading}>
-          <Card className={styles.cardContainer} style={{ display: this.state.showResultCard ? 'block' : 'none' }}>
-            <Result
-              style={{ fontSize: '72px' }}
-              type={this.state.showErrorLogo ? "error" : "success"}
-              title={this.state.showErrorLogo ? "校验失败" : "校验成功"}
-              description={message}
-            />
-            <div style={{ display: this.state.showErrorTable ? 'block' : 'none' }}>
-              <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
-            </div>
-            <Button style={{ margin: '0 auto', display: 'block', marginTop: '20px' }} type="primary" onClick={this.handleBack}>确定</Button>
-          </Card>
+          {this.state.showResultCard && (
+            <Card className={styles.cardContainer}>
+              <Result
+                style={{ fontSize: '72px' }}
+                type={this.state.showErrorLogo ? "error" : "success"}
+                title={this.state.showErrorLogo ? "校验失败" : "校验成功"}
+                description={message}
+              />
+              {this.state.showErrorTable && (
+                <div>
+                  <Table rowKey="row" pagination={false} dataSource={this.state.dataSource} columns={columns} scroll={{ x: 1500 }} />
+                </div>)}
+              <Button style={{ margin: '0 auto', display: 'block', marginTop: '20px' }} type="primary" onClick={this.handleBack}>确定</Button>
+            </Card>)}
         </Spin>
       </PageHeaderLayout>
     );
