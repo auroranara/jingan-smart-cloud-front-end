@@ -5,7 +5,6 @@ import { getFakeChartData } from './mock/chart';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
-import { format, delay } from 'roadhog-api-doc';
 import { getProvince, getCity } from './mock/geographic';
 
 import { deviceResponse, deviceDetailResponse } from './mock/transmission';
