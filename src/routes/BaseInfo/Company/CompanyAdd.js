@@ -474,6 +474,24 @@ export default class CompanyDetail extends PureComponent {
                 })(<Input placeholder="请输入社会信用代码" />)}
               </Form.Item>
             </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.longitude}>
+                {getFieldDecorator('longitude', {
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="请输入经度" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.latitude}>
+                {getFieldDecorator('latitude', {
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="请输入纬度" />)}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>
               <Form.Item label={fieldLabels.registerAddress}>
                 <Row gutter={24}>
@@ -542,20 +560,6 @@ export default class CompanyDetail extends PureComponent {
                     })(<Input placeholder="请输入详细地址" />)}
                   </Col>
                 </Row>
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.longitude}>
-                {getFieldDecorator('longitude', {
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入经度" />)}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.latitude}>
-                {getFieldDecorator('latitude', {
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入纬度" />)}
               </Form.Item>
             </Col>
           </Row>
@@ -715,12 +719,16 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入法定代表人姓名' }],
                   })(<Input placeholder="请输入姓名" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('legalPhone', {
                     getValueFromEvent: this.handleTrim,
                     rules: [{ required: true, message: '请输入法定代表人联系方式' }, { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' }],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('legalEmail', {
                     getValueFromEvent: this.handleTrim,
@@ -744,6 +752,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入主要负责人姓名' }],
                   })(<Input placeholder="请输入姓名" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('principalPhone', {
                     getValueFromEvent: this.handleTrim,
@@ -753,6 +763,8 @@ export default class CompanyDetail extends PureComponent {
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('principalEmail', {
                     getValueFromEvent: this.handleTrim,
@@ -776,6 +788,8 @@ export default class CompanyDetail extends PureComponent {
                     rules: [{ required: true, message: '请输入安全负责人姓名' }],
                   })(<Input placeholder="请输入姓名" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('safetyPhone', {
                     getValueFromEvent: this.handleTrim,
@@ -785,6 +799,8 @@ export default class CompanyDetail extends PureComponent {
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.principalEmail}>
                   {getFieldDecorator('safetyEmail', {
                     getValueFromEvent: this.handleTrim,
