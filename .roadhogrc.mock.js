@@ -21,6 +21,28 @@ const initProxy = key => {
     'POST /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
     'PUT /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
     'DELETE /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
+
+    // GET POST 可省略
+    'GET /api/users': [
+      {
+        key: '1',
+        name: 'John Brown',
+        age: 32,
+        address: 'New York No. 1 Lake Park',
+      },
+      {
+        key: '2',
+        name: 'Jim Green',
+        age: 42,
+        address: 'London No. 1 Lake Park',
+      },
+      {
+        key: '3',
+        name: 'Joe Black',
+        age: 32,
+        address: 'Sidney No. 1 Lake Park',
+      },
+    ],
     'GET /api/project/notice': getNotice,
     'GET /api/activities': getActivities,
     'GET /api/rule': getRule,
@@ -121,6 +143,7 @@ const hosts = {
   gjm: '192.168.10.55', // 顾家铭
   sqz: '192.168.10.56', //孙启政
   test: '192.168.10.67:9080', // 内网
+  mock: '118.126.110.115:3001/mock/28',
 };
 
 const key = 'test';

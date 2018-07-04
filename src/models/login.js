@@ -11,7 +11,7 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
+    *login({ payload, callback }, { call, put }) {
       const response = yield call(fakeAccountLogin, payload);
       yield put({
         type: 'changeLoginStatus',
@@ -19,6 +19,7 @@ export default {
       });
       // Login successfully
       if (response.status === 'ok') {
+        if (callback) callback(response)
         reloadAuthorized();
         yield put(routerRedux.push('/'));
       }

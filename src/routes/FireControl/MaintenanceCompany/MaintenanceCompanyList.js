@@ -11,7 +11,6 @@ import {
   message,
   BackTop,
   Spin,
-  Affix,
   Col,
   Badge,
   Row,
@@ -159,7 +158,7 @@ export default class MaintenanceCompanyList extends PureComponent {
     if (!flag || isLast) {
       return;
     }
-    // 请求数据
+
     appendFetch({
       payload: {
         pageSize,
@@ -176,37 +175,35 @@ export default class MaintenanceCompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <Affix offsetTop={10} target={() => document.getElementById('root')}>
-        <Card>
-          <Form layout="inline">
-            <FormItem>
-              {getFieldDecorator('name', {
-                initialValue: defaultFormData.name,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位名称" />)}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('practicalAddress', {
-                initialValue: defaultFormData.practicalAddress,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位地址" />)}
-            </FormItem>
-            <FormItem>
-              <Button type="primary" onClick={this.handleClickToQuery}>
-                查询
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button onClick={this.handleClickToReset}>重置</Button>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/fire-control/maintenance-company/add">
-                新增
-              </Button>
-            </FormItem>
-          </Form>
-        </Card>
-      </Affix>
+      <Card>
+        <Form layout="inline">
+          <FormItem>
+            {getFieldDecorator('name', {
+              initialValue: defaultFormData.name,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位名称" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('practicalAddress', {
+              initialValue: defaultFormData.practicalAddress,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位地址" />)}
+          </FormItem>
+          <FormItem>
+            <Button type="primary" onClick={this.handleClickToQuery}>
+              查询
+            </Button>
+          </FormItem>
+          <FormItem>
+            <Button onClick={this.handleClickToReset}>重置</Button>
+          </FormItem>
+          <FormItem style={{ float: 'right' }}>
+            <Button type="primary" href="#/fire-control/maintenance-company/add">
+              新增
+            </Button>
+          </FormItem>
+        </Form>
+      </Card>
     );
   }
 

@@ -85,11 +85,7 @@ export default class SiderMenu extends PureComponent {
     return null;
   }
 
-  /**
-   * Convert pathname to openKeys
-   * /list/search/articles = > ['list','/list/search']
-   * @param  props
-   */
+  // list/search/articles = > ['list','/list/search']
   getDefaultCollapsedSubMenus(props) {
     const {
       location: { pathname },
@@ -250,7 +246,7 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} key="logo" id="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>Ant Design Pro</h1>
+            <h1> 晶安智慧云 </h1>
           </Link>
         </div>
         <BaseMenu

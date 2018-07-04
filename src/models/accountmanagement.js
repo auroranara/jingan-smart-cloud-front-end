@@ -1,6 +1,5 @@
 import {
   queryMaintenanceCompanies,
-  deleteMaintenanceCompany,
   queryMaintenanceCompany,
   queryMaintenanceCompanyinfo,
   updateMaintenanceCompany,
@@ -9,12 +8,11 @@ import {
 } from '../services/maintenanceCompany.js';
 
 export default {
-  namespace: 'maintenanceCompany',
+  namespace: 'accountmanagement',
 
   state: {
     list: [],
     detail: {},
-    categories: [],
     pageNum: 1,
     isLast: false,
     modal: {
@@ -45,16 +43,6 @@ export default {
           payload: response.data,
         });
       }
-    },
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(deleteMaintenanceCompany, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'delete',
-          payload: payload.id,
-        });
-      }
-      if (callback) callback(response);
     },
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload.id);
@@ -138,18 +126,6 @@ export default {
       return {
         ...state,
         detail: payload,
-      };
-    },
-    queryCategories(state, { payload }) {
-      return {
-        ...state,
-        categories: payload,
-      };
-    },
-    delete(state, { payload }) {
-      return {
-        ...state,
-        list: state.list.filter(item => item.id !== payload),
       };
     },
     updateFormData(state, { payload }) {

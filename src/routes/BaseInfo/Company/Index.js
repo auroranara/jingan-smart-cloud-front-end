@@ -38,11 +38,6 @@ const { Search, TextArea } = Input;
 }))
 @Form.create()
 export default class BasicList extends PureComponent {
-  formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 13 },
-  };
-
   state = { visible: false, done: false };
 
   componentDidMount() {
@@ -54,6 +49,11 @@ export default class BasicList extends PureComponent {
       },
     });
   }
+
+  formLayout = {
+    labelCol: { span: 7 },
+    wrapperCol: { span: 13 },
+  };
 
   showModal = () => {
     this.setState({
@@ -86,8 +86,8 @@ export default class BasicList extends PureComponent {
 
   handleSubmit = e => {
     e.preventDefault();
-    const { current } = this.state;
     const { dispatch, form } = this.props;
+    const { current } = this.state;
     const id = current ? current.id : '';
 
     setTimeout(() => this.addBtn.blur(), 0);

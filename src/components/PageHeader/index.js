@@ -139,6 +139,7 @@ export default class PageHeader extends PureComponent {
         />
       );
     }
+
     // 根据 location 生成 面包屑
     // Generate breadcrumbs based on location
     if (routerLocation && routerLocation.pathname) {
