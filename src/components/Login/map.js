@@ -7,7 +7,7 @@ export default {
     props: {
       size: 'large',
       prefix: <Icon type="user" className={styles.prefixIcon} />,
-      placeholder: 'admin',
+      placeholder: '用户名/邮箱',
     },
     rules: [
       {
@@ -21,7 +21,7 @@ export default {
       size: 'large',
       prefix: <Icon type="lock" className={styles.prefixIcon} />,
       type: 'password',
-      placeholder: '888888',
+      placeholder: '密码',
     },
     rules: [
       {

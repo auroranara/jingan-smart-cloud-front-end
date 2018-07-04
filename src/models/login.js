@@ -20,7 +20,7 @@ export default {
         payload: response,
       });
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.code === 200) {
         if (callback) callback(response)
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
