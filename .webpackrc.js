@@ -17,11 +17,6 @@ export default {
   alias: {
     components: path.resolve(__dirname, 'src/components/'),
   },
-  externals: {
-    '@antv/data-set': 'DataSet',
-    bizcharts: 'BizCharts',
-    rollbar: 'rollbar',
-  },
   ignoreMomentLocale: true,
   theme: './src/theme.js',
   html: {
@@ -30,4 +25,24 @@ export default {
   publicPath: '/acloud_new',
   disableDynamicImport: true,
   hash: true,
+  lessLoaderOptions: {
+    javascriptEnabled: true,
+  },
+  cssLoaderOptions: {
+    modules: true,
+    getLocalIdent: (context, localIdentName, localName) => {
+      if (
+        context.resourcePath.includes('node_modules') ||
+        context.resourcePath.includes('ant.design.pro.less')
+      ) {
+        return localName;
+      }
+      const antdProPath = context.resourcePath.match(/src(.*)/)[1].replace('.less', '');
+      const arr = antdProPath
+        .split('/')
+        .map(a => a.replace(/([A-Z])/g, '-$1'))
+        .map(a => a.toLowerCase());
+      return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-');
+    },
+  },
 };
