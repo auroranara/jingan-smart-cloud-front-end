@@ -25,6 +25,10 @@ const menuData = [
         name: '用户传输装置',
         path: 'user-transmission-device/list',
       },
+      {
+        name: '维保合同管理',
+        path: 'contract/list',
+      },
     ],
   },
   {

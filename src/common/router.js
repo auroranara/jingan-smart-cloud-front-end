@@ -301,6 +301,12 @@ export const getRouterData = app => {
         import('../routes/Account/Settings/NotificationView')
       ),
     },
+    /* 维保合同列表 */
+    '/fire-control/contract/list': {
+      component: dynamicWrapper(app, ['contract'], () =>
+        import('../routes/Contract/ContractList')
+      ),
+    },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },
