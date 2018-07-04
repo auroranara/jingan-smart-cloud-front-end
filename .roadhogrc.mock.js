@@ -5,7 +5,6 @@ import { getFakeChartData } from './mock/chart';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
-import { format, delay } from 'roadhog-api-doc';
 import { getProvince, getCity } from './mock/geographic';
 
 import { deviceResponse, deviceDetailResponse } from './mock/transmission';
@@ -147,8 +146,6 @@ const hosts = {
   mock: '118.126.110.115:3001/mock/28',
 };
 
-// const key = 'sqz';
-// const key = 'test';
-const key = 'mock';
+const key = 'test';
 
-export default (noProxy ? {} : delay(initProxy(key), 1000));
+export default (noProxy ? {} : initProxy(key));

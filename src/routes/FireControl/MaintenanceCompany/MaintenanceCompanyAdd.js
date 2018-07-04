@@ -59,7 +59,7 @@ const defaultPagination = {
   })
 )
 @Form.create()
-export default class MaintenanceCompanyAdd extends PureComponent {
+export default class BasicForms extends PureComponent {
   state = {
     current: {
       isBranch: false,
@@ -268,13 +268,11 @@ export default class MaintenanceCompanyAdd extends PureComponent {
   }
 
   render() {
-    const { submitting } = this.props;
-    const { current } = this.state;
-    //
     const {
-      getFieldDecorator,
-      // getFieldValue
-    } = this.props.form;
+      submitting,
+      form: { getFieldDecorator },
+    } = this.props;
+    const { current } = this.state;
 
     const formItemLayout = {
       labelCol: {
