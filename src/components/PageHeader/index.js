@@ -181,6 +181,7 @@ export default class PageHeader extends PureComponent {
       tabBarExtraContent,
       loading = false,
     } = this.props;
+    const { breadcrumb } = this.state;
 
     const clsString = classNames(styles.pageHeader, className);
     const activeKeyProps = {};
@@ -190,7 +191,6 @@ export default class PageHeader extends PureComponent {
     if (tabActiveKey !== undefined) {
       activeKeyProps.activeKey = tabActiveKey;
     }
-    const { breadcrumb } = this.state;
     return (
       <Card className={clsString} bodyStyle={{ padding: 0 }} loading={loading}>
         {breadcrumb}
