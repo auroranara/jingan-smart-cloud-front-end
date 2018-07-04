@@ -172,8 +172,6 @@ export default class CompanyDetail extends PureComponent {
     // 获取行政区域省
     fetchArea({
       payload: {
-        parentId: 0,
-        ids: [],
         keys: ['registerAddress', 'practicalAddress'],
       },
     });
@@ -406,13 +404,12 @@ export default class CompanyDetail extends PureComponent {
   /* 行政区域动态加载 */
   handleLoadData = (keys, selectedOptions) => {
     const { fetchArea } = this.props;
-    const ids = selectedOptions.map(item => item.id);
+    const cityIds = selectedOptions.map(item => item.id).join(',');
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
     fetchArea({
       payload: {
-        ids,
-        parentId: targetOption.id,
+        cityIds,
         keys,
       },
       success: () => {
@@ -728,7 +725,10 @@ export default class CompanyDetail extends PureComponent {
                 <Form.Item label={fieldLabels.principalPhone}>
                   {getFieldDecorator('legalPhone', {
                     getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入法定代表人联系方式' }, { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' }],
+                    rules: [
+                      { required: true, message: '请输入法定代表人联系方式' },
+                      { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' },
+                    ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
               </Col>
