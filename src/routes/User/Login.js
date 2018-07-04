@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Link } from 'dva/router';
-import { Checkbox, Alert, Icon } from 'antd';
+// import { Link } from 'dva/router';
+import { Checkbox, Alert } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 
@@ -95,9 +95,9 @@ export default class LoginPage extends Component {
             {login.status === 'error' &&
               login.type === 'account' &&
               !submitting &&
-              this.renderMessage('账户或密码错误（admin/888888）')}
-            <UserName name="userName" placeholder="admin/user" />
-            <Password name="password" placeholder="888888/123456" />
+              this.renderMessage('账户或密码错误')}
+            <UserName name="userName" />
+            <Password name="password" />
           </Tab>
           <Tab key="mobile" tab="手机号登录">
             {login.status === 'error' &&
@@ -109,14 +109,14 @@ export default class LoginPage extends Component {
           </Tab>
           <div>
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
-              自动登录
+              保存为本地常用账号
             </Checkbox>
-            <a style={{ float: 'right' }} href="">
+            {/* <a style={{ float: 'right' }} href="">
               忘记密码
-            </a>
+            </a> */}
           </div>
           <Submit loading={submitting}>登录</Submit>
-          <div className={styles.other}>
+          {/* <div className={styles.other}>
             其他登录方式
             <Icon className={styles.icon} type="alipay-circle" />
             <Icon className={styles.icon} type="taobao-circle" />
@@ -124,7 +124,10 @@ export default class LoginPage extends Component {
             <Link className={styles.register} to="/user/register">
               注册账户
             </Link>
-          </div>
+          </div> */}
+          {/* <div className={styles.other}>
+            <span className={styles.download}><Icon type="download" />APP下载</span>
+          </div> */}
         </Login>
       </div>
     );
