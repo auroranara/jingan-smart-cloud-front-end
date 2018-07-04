@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Row, Col, Input, Select, Button, Spin } from 'antd';
+import { Form, Card, Row, Col, Input, Select, Button } from 'antd';
+import { routerRedux } from 'dva/router';
 import FooterToolbar from 'components/FooterToolbar';
-import debounce from 'lodash/debounce';
 
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 
@@ -32,8 +32,9 @@ const breadcrumbList = [
 
 /* 表单标签 */
 const fieldLabels = {
-  user: '用户名',
-  name: '姓名',
+  loginName: '用户名',
+  password: '密码',
+  userName: '姓名',
   phone: '手机号',
   unitType: '单位类型',
   hasUnit: '所属单位',
@@ -42,6 +43,7 @@ const fieldLabels = {
 
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
+
 @connect(
   ({ accountmanagement, loading }) => ({
     accountmanagement,
@@ -54,25 +56,33 @@ const getRootChild = () => document.querySelector('#root>div');
         ...action,
       });
     },
+    fetchUnitList(action) {
+      dispatch({
+        type: 'accountmanagement/fetchUnitList',
+        ...action,
+      });
+    },
+    addAccount(action) {
+      dispatch({
+        type: 'accountmanagement/addAccount',
+        ...action,
+      });
+    },
+    goBack() {
+      dispatch(routerRedux.push(href));
+    },
   })
 )
 @Form.create()
 export default class AccountManagementAdd extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.lastFetchId = 0;
-    this.fetchUnit = debounce(this.fetchUnit, 800);
-  }
-
   state = {
-    data: [],
-    value: [],
-    fetching: false,
+    submitting: false,
   };
 
   /* 生命周期函数 */
   componentWillMount() {
-    const { fetchOptions } = this.props;
+    const { fetchOptions, fetchUnitList } = this.props;
+
     // 获取单位类型
     fetchOptions({
       payload: {
@@ -80,111 +90,163 @@ export default class AccountManagementAdd extends PureComponent {
         key: 'unitTypes',
       },
     });
+    // 获取账号状态
+    fetchOptions({
+      payload: {
+        type: 'accountStatus',
+        key: 'accountStatuses',
+      },
+    });
+    // 获取账号状态
+    fetchUnitList({
+      payload: {
+        type: 'hasUnit',
+        key: 'hasUnits',
+      },
+    });
   }
 
-  fetchUnit = () => {
-    this.lastFetchId += 1;
-    const fetchId = this.lastFetchId;
-    this.setState({ data: [], fetching: true });
-    fetch()
-      .then(response => response.json())
-      .then(body => {
-        if (fetchId !== this.lastFetchId) {
-          return;
-        }
-        const data = body.results.map(hasUnit => ({
-          text: `${hasUnit.name.first} ${hasUnit.name.last}`,
-          value: hasUnit,
-        }));
-        this.setState({ data, fetching: false });
-      });
-  };
+  /* 点击提交按钮验证表单信息 */
+  // handleClickForm = e => {
+  //   e.preventDefault();
+  //   const {
+  //     addAccount,
+  //     goBack,
+  //     form: { validateFieldsAndScroll },
+  //   } = this.props,
+  //   validateFieldsAndScroll(
 
-  // '所属单位'选择器点击事件
-  handleChange = value => {
-    this.setState({
-      value,
-      data: [],
-      fetching: false,
+  //   );
+  // };
+
+  /* 选择单位类型以后查询所属单位 */
+  handleQueryUnit = value => {
+    const { fetchUnitList } = this.props;
+    fetchUnitList({
+      payload: {
+        unitType: value,
+      },
     });
   };
-
-  /* 去除左右两边空白 */
-  handleTrim = e => e.target.value.trim();
 
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
-      accountmanagement: { unitTypes },
+      accountmanagement: { unitTypes, accountStatuses, hasUnits },
       form: { getFieldDecorator },
     } = this.props;
 
     const { Option } = Select;
-
-    const { fetching, data, value } = this.state;
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.user}>
-                {getFieldDecorator('user', {
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入用户名" />)}
+              <Form.Item label={fieldLabels.loginName}>
+                {getFieldDecorator('loginName', {
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                    },
+                  ],
+                })(<Input placeholder="请输入用户名" min={1} max={20} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.name}>
-                {getFieldDecorator('name', {
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入姓名" />)}
+              <Form.Item label={fieldLabels.password}>
+                {getFieldDecorator('password', {
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                    },
+                  ],
+                })(<Input placeholder="请输入密码" min={6} max={20} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.phone}>
-                {getFieldDecorator('phone', {
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入手机号" />)}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitType}>
-                <Select placeholder="请选择单位类型" getPopupContainer={getRootChild}>
-                  {unitTypes.map(item => (
-                    <Option setFieldsValue={item.id} key={item.id}>
-                      {item.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.hasUnit}>
-                {getFieldDecorator('hasUnit', {
-                  getValueFromEvent: this.handleTrim,
+              <Form.Item label={fieldLabels.accountStatus}>
+                {getFieldDecorator('accountStatus', {
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'integer',
+                    },
+                  ],
                 })(
-                  <Select
-                    mode="multiple"
-                    labelInValue
-                    value={value}
-                    placeholder="所属单位"
-                    notFoundContent={fetching ? <Spin size="small" /> : null}
-                    filterOption={false}
-                    onSearch={this.fetchUnit}
-                    onChange={this.handleChange}
-                  >
-                    {data.map(d => <Option key={d.value}>{d.text}</Option>)}
+                  <Select placeholder="请选择账号状态" getPopupContainer={getRootChild}>
+                    {accountStatuses.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
                   </Select>
                 )}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.accountStatus}>
-                <Select defaultValue="启用">
-                  <Option value="1">启用</Option>
-                  <Option value="0">禁用</Option>
-                </Select>
+              <Form.Item label={fieldLabels.userName}>
+                {getFieldDecorator('userName', {
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                    },
+                  ],
+                })(<Input placeholder="请输入姓名" min={1} max={10} />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.phone}>
+                {getFieldDecorator('phone', {
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                    },
+                  ],
+                })(<Input placeholder="请输入手机号" min={11} max={11} />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.unitType}>
+                {getFieldDecorator('unitType', {
+                  rules: [{ required: true }],
+                })(
+                  <Select
+                    placeholder="请选择单位类型"
+                    getPopupContainer={getRootChild}
+                    onChange={this.handleQueryUnit}
+                  >
+                    {unitTypes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.hasUnit}>
+                {getFieldDecorator('hasUnit', {
+                  rules: [{ required: true }],
+                })(
+                  <Select placeholder="请选择所属单位" getPopupContainer={getRootChild}>
+                    {hasUnits.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
               </Form.Item>
             </Col>
           </Row>
@@ -196,10 +258,11 @@ export default class AccountManagementAdd extends PureComponent {
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const { loading } = this.props;
+    const { submitting } = this.state;
     return (
       <FooterToolbar>
         <Button>取消</Button>
-        <Button type="primary" loading={loading}>
+        <Button type="primary" onClick={this.handleClickForm} loading={loading || submitting}>
           提交
         </Button>
       </FooterToolbar>

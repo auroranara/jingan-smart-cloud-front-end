@@ -1,4 +1,8 @@
-import { queryAddaccountoptions } from '../services/maintenanceCompany.js';
+import {
+  queryAddaccountoptions,
+  queryUnitlist,
+  addAccount,
+} from '../services/accountManagement.js';
 
 export default {
   namespace: 'accountmanagement',
@@ -9,14 +13,8 @@ export default {
     pageNum: 1,
     isLast: false,
     unitTypes: [],
-    modal: {
-      list: [],
-      pagination: {
-        total: 0,
-        pageNum: 1,
-        pageSize: 10,
-      },
-    },
+    accountStatuses: [],
+    hasUnits: [],
   },
 
   effects: {
@@ -30,21 +28,13 @@ export default {
     //   }
     // },
 
-    *fetchOptions(
-      {
-        payload: { type, key },
-        success,
-        error,
-      },
-      { call, put }
-    ) {
-      const response = yield call(queryAddaccountoptions, { type });
+    *fetchOptions({ success, error }, { call, put }) {
+      const response = yield call(queryAddaccountoptions);
       if (response.code === 200) {
         yield put({
           type: 'queryAddaccountoptions',
           payload: {
-            key,
-            list: response.data.list,
+            data: response.data,
           },
         });
         if (success) {
@@ -54,35 +44,78 @@ export default {
         error(response.msg);
       }
     },
+
+    *fetchUnitList({ payload, callback }, { call, put }) {
+      const response = yield call(queryUnitlist, payload);
+      const { code } = response;
+      if (callback) callback(code);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryUnitlist',
+          payload: response.data.list,
+        });
+      }
+    },
+
+    *addAccount({ payload, callback }, { call, put }) {
+      const response = yield call(addAccount, payload);
+      const { code } = response;
+      if (callback) callback(code);
+      if (code === 200) {
+        yield put({
+          type: 'addAccount',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
-    query(
+    // query(
+    //   state,
+    //   {
+    //     payload: {
+    //       list,
+    //       pagination: { pageNum, pageSize, total },
+    //     },
+    //   }
+    // ) {
+    //   return {
+    //     ...state,
+    //     list,
+    //     pageNum: 1,
+    //     isLast: pageNum * pageSize >= total,
+    //   };
+    // },
+    queryAddaccountoptions(
       state,
       {
         payload: {
-          list,
-          pagination: { pageNum, pageSize, total },
+          data: { unitType, accountStatus },
         },
       }
     ) {
       return {
         ...state,
-        list,
-        pageNum: 1,
-        isLast: pageNum * pageSize >= total,
+        unitTypes: unitType,
+        accountStatuses: accountStatus,
       };
     },
-    // 新增账号-初始化页面选项
-    queryAddaccountoptions(
-      state,
-      {
-        payload: { key, list },
-      }
-    ) {
+
+    queryUnitlist(state, { payload }) {
       return {
         ...state,
-        [key]: list,
+        hasUnits: payload,
+      };
+    },
+
+    addAccount(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
   },

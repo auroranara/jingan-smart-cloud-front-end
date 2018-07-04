@@ -150,18 +150,12 @@ export default class AccountManagementList extends PureComponent {
     return (
       <Card>
         <Form layout="inline">
-          <Col span={15}>
+          <Col span={18}>
             <FormItem label="用户">
               {getFieldDecorator('user', {
                 initialValue: defaultFormData.user,
                 getValueFromEvent: e => e.target.value.trim(),
               })(<Input placeholder="用户名/姓名/手机号" />)}
-            </FormItem>
-            <FormItem label="权限">
-              {getFieldDecorator('permission', {
-                initialValue: defaultFormData.permission,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="角色/权限" />)}
             </FormItem>
             <FormItem label="单位类型">
               {getFieldDecorator('unitType', {
@@ -183,7 +177,7 @@ export default class AccountManagementList extends PureComponent {
           </Col>
 
           {/* 按钮 */}
-          <Col span={9}>
+          <Col span={6}>
             <FormItem style={{ float: 'right' }}>
               <Button type="primary" href="#/role-authorization/account-management/Add">
                 新增
