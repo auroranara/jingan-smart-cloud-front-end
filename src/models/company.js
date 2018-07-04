@@ -10,52 +10,52 @@ import {
   upload,
 } from '../services/company/company.js';
 
-const mergeArea = (area, ids, list) => {
-  return ids.length === 0
-  ? list
-  : area.map(province => {
-      if (province.id === ids[0]) {
-        if (ids.length !== 1) {
-          return {
-            ...province,
-            children: province.children.map(city => {
-              if (city.id === ids[1]) {
-                if (ids.length !== 2) {
-                  return {
-                    ...city,
-                    children: city.children.map(district => {
-                      if (district.id === ids[2]) {
-                        return {
-                          ...district,
-                          children: list,
-                          loading: false,
-                        };
-                      }
-                      return district;
-                    }),
-                  };
-                } else {
-                  return {
-                    ...city,
-                    children: list,
-                    loading: false,
-                  };
-                }
-              }
-              return city;
-            }),
-          };
-        } else {
-          return {
-            ...province,
-            children: list,
-            loading: false,
-          };
-        }
-      }
-      return province;
-    });
-};
+// const mergeArea = (area, ids, list) => {
+//   return ids.length === 0
+//   ? list
+//   : area.map(province => {
+//       if (province.id === ids[0]) {
+//         if (ids.length !== 1) {
+//           return {
+//             ...province,
+//             children: province.children.map(city => {
+//               if (city.id === ids[1]) {
+//                 if (ids.length !== 2) {
+//                   return {
+//                     ...city,
+//                     children: city.children.map(district => {
+//                       if (district.id === ids[2]) {
+//                         return {
+//                           ...district,
+//                           children: list,
+//                           loading: false,
+//                         };
+//                       }
+//                       return district;
+//                     }),
+//                   };
+//                 } else {
+//                   return {
+//                     ...city,
+//                     children: list,
+//                     loading: false,
+//                   };
+//                 }
+//               }
+//               return city;
+//             }),
+//           };
+//         } else {
+//           return {
+//             ...province,
+//             children: list,
+//             loading: false,
+//           };
+//         }
+//       }
+//       return province;
+//     });
+// };
 
 export default {
   namespace: 'company',
@@ -244,18 +244,17 @@ export default {
     // 追加行政区域
     *fetchArea(
       {
-        payload: { parentId, ids, keys },
+        payload: { cityIds, keys },
         success,
         error,
       },
       { call, put }
     ) {
-      const response = yield call(fetchArea, { parentId });
+      const response = yield call(fetchArea, { cityIds });
       if (response.code === 200) {
         yield put({
           type: 'queryArea',
           payload: {
-            ids,
             list: response.data.list,
             keys,
           },
@@ -366,11 +365,11 @@ export default {
     queryArea(
       state,
       {
-        payload: { ids, list, keys },
+        payload: { list, keys },
       }
     ) {
       const fields = {};
-      keys.forEach(key => { fields[key] = mergeArea(state[key], ids, list); });
+      keys.forEach(key => { fields[key] = list; });
       return {
         ...state,
         ...fields,

@@ -165,122 +165,65 @@ export default class CompanyDetail extends PureComponent {
       goToException,
     } = this.props;
 
-    // 获取行政区域省
-    fetchArea({
+    // 获取详情
+    fetchCompany({
       payload: {
-        parentId: 0,
-        ids: [],
-        keys: ['registerAddress', 'practicalAddress'],
+        id,
       },
-      success: () => {
-        // 获取详情
-        fetchCompany({
+      success: ({
+        maintenanceId,
+        registerProvince,
+        registerCity,
+        registerDistrict,
+        practicalProvince,
+        practicalCity,
+        practicalDistrict,
+        companyIchnography,
+        ichnographyName,
+        maintenanceContract,
+        contractName,
+      }) => {
+        // 初始化上传文件
+        this.setState({
+          maintenanceId,
+          ichnographyList: companyIchnography
+            ? [
+                {
+                  uid: -1,
+                  status: 'done',
+                  name: ichnographyName,
+                  url: companyIchnography,
+                },
+              ]
+            : [],
+          contractList: maintenanceContract
+            ? [
+                {
+                  uid: -1,
+                  status: 'done',
+                  name: contractName,
+                  url: maintenanceContract,
+                },
+              ]
+            : [],
+        });
+        // 获取注册地址列表
+        fetchArea({
           payload: {
-            id,
-          },
-          success: ({
-            maintenanceId,
-            registerProvince,
-            registerCity,
-            registerDistrict,
-            practicalProvince,
-            practicalCity,
-            practicalDistrict,
-            companyIchnography,
-            ichnographyName,
-            maintenanceContract,
-            contractName,
-          }) => {
-            this.setState({
-              maintenanceId,
-              ichnographyList: companyIchnography
-                ? [
-                    {
-                      uid: -1,
-                      status: 'done',
-                      name: ichnographyName,
-                      url: companyIchnography,
-                    },
-                  ]
-                : [],
-              contractList: maintenanceContract
-                ? [
-                    {
-                      uid: -1,
-                      status: 'done',
-                      name: contractName,
-                      url: maintenanceContract,
-                    },
-                  ]
-                : [],
-            });
-            if (registerProvince) {
-              fetchArea({
-                payload: {
-                  parentId: registerProvince,
-                  ids: [registerProvince],
-                  keys: ['registerAddress'],
-                },
-                success: () => {
-                  if (registerCity) {
-                    fetchArea({
-                      payload: {
-                        parentId: registerCity,
-                        ids: [registerProvince, registerCity],
-                        keys: ['registerAddress'],
-                      },
-                      success: () => {
-                        if (registerDistrict) {
-                          fetchArea({
-                            payload: {
-                              parentId: registerDistrict,
-                              ids: [registerProvince, registerCity, registerDistrict],
-                              keys: ['registerAddress'],
-                            },
-                          });
-                        }
-                      },
-                    });
-                  }
-                },
-              });
-            }
-            if (practicalProvince) {
-              fetchArea({
-                payload: {
-                  parentId: practicalProvince,
-                  ids: [practicalProvince],
-                  keys: ['practicalAddress'],
-                },
-                success: () => {
-                  if (practicalCity) {
-                    fetchArea({
-                      payload: {
-                        parentId: practicalCity,
-                        ids: [practicalProvince, practicalCity],
-                        keys: ['practicalAddress'],
-                      },
-                      success: () => {
-                        if (practicalDistrict) {
-                          fetchArea({
-                            payload: {
-                              parentId: practicalDistrict,
-                              ids: [practicalProvince, practicalCity, practicalDistrict],
-                              keys: ['practicalAddress'],
-                            },
-                          });
-                        }
-                      },
-                    });
-                  }
-                },
-              });
-            }
-          },
-          error: () => {
-            goToException();
+            cityIds: [registerProvince, registerCity, registerDistrict].filter(item=>item).join(','),
+            keys: ['registerAddress'],
           },
         });
+        // 获取两实际地址列表
+        fetchArea({
+          payload: {
+            cityIds: [practicalProvince, practicalCity, practicalDistrict].filter(item=>item).join(','),
+            keys: ['practicalAddress'],
+          },
+        });
+      },
+      error: () => {
+        goToException();
       },
     });
 
@@ -545,13 +488,12 @@ export default class CompanyDetail extends PureComponent {
 
   /* 区域动态加载 */
   handleLoadData = (keys, selectedOptions) => {
-    const ids = selectedOptions.map(item => item.id);
+    const cityIds = selectedOptions.map(item => item.id).join(',');
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
     this.props.fetchArea({
       payload: {
-        ids,
-        parentId: targetOption.id,
+        cityIds,
         keys,
       },
       success: () => {

@@ -172,8 +172,6 @@ export default class CompanyDetail extends PureComponent {
     // 获取行政区域省
     fetchArea({
       payload: {
-        parentId: 0,
-        ids: [],
         keys: ['registerAddress', 'practicalAddress'],
       },
     });
@@ -406,13 +404,12 @@ export default class CompanyDetail extends PureComponent {
 
   /* 行政区域动态加载 */
   handleLoadData = (keys, selectedOptions) => {
-    const ids = selectedOptions.map(item => item.id);
+    const cityIds = selectedOptions.map(item => item.id).join(',');
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
     this.props.fetchArea({
       payload: {
-        ids,
-        parentId: targetOption.id,
+        cityIds,
         keys,
       },
       success: () => {
