@@ -172,5 +172,5 @@ export async function deleteMaintenanceCompany(id) {
 
 // 查看指定维保单位信息
 export async function queryMaintenanceCompanyinfo(id) {
-  return request(`acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`);
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`);
 }
