@@ -345,7 +345,7 @@ export default class Center extends PureComponent {
       </div>
     );
   }
-  
+
   render() {
     const {
       list: { list },

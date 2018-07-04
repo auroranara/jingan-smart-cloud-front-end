@@ -23,10 +23,6 @@ const initTime = props => {
 };
 
 class CountDown extends Component {
-  timer = 0;
-
-  interval = 1000;
-
   constructor(props) {
     super(props);
     const { lastTime } = initTime(props);
@@ -60,6 +56,10 @@ class CountDown extends Component {
     }
     return null;
   }
+
+  timer = 0;
+
+  interval = 1000;
 
   // defaultFormat = time => (
   //  <span>{moment(time).format('hh:mm:ss')}</span>

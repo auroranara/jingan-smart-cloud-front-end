@@ -38,7 +38,7 @@ class WarpFormItem extends Component {
       this.runGetCaptchaCountDown();
     }
   };
-  
+
   getFormItemOptions = ({ onChange, defaultValue, rules }) => {
     const options = {
       rules: rules || this.customprops.rules,

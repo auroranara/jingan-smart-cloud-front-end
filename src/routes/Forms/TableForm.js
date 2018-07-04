@@ -4,10 +4,6 @@ import isEqual from 'lodash.isequal';
 import styles from './style.less';
 
 export default class TableForm extends PureComponent {
-  index = 0;
-
-  cacheOriginData = {};
-
   constructor(props) {
     super(props);
 
@@ -33,6 +29,10 @@ export default class TableForm extends PureComponent {
     const { data } = this.state;
     return (newData || data).filter(item => item.key === key)[0];
   }
+
+  index = 0;
+
+  cacheOriginData = {};
 
   toggleEditable = (e, key) => {
     e.preventDefault();

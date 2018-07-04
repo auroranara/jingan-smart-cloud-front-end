@@ -1,0 +1,32 @@
+.tabNum {
+  width: 72px;
+  height: 72px;
+  text-align: center;
+  line-height: 62px;
+  font-size: 24px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.chosen:extend(.tabNum) {
+  border: 5px solid #1890ff;
+  color: #1890ff;
+}
+
+.unchosen:extend(.tabNum) {
+  border: 5px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.tabName {
+  font-size: 16px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.tabs {
+  :global {
+    .ant-tabs-nav { width: 100%; }
+    .ant-tabs-tab { width: calc(100% / 6 - 6%); text-align: center; margin: 0 3% 0 3%; min-width: 104px; }
+  }
+}

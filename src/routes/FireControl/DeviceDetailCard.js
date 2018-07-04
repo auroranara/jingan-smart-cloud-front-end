@@ -64,12 +64,12 @@ export default class DeviceDetailCard extends Component {
     const deviceInfo = this.props.deviceData;
     return (
       <DescriptionList size="small" col={3}>
-        <Description term="装置编号">{deviceInfo.deviceCode}</Description>
-        <Description term="品牌">{deviceInfo.brand}</Description>
-        <Description term="型号">{deviceInfo.model}</Description>
-        <Description term="安装位置">{deviceInfo.installLocation}</Description>
-        <Description term="生产日期">{deviceInfo.productionDate}</Description>
-        <Description term="接入主机数量">
+        <Description term="装置编号" key="deviceCode">{deviceInfo.deviceCode}</Description>
+        <Description term="品牌" key="brand">{deviceInfo.brand}</Description>
+        <Description term="型号" key="model">{deviceInfo.model}</Description>
+        <Description term="安装位置" key="installLocation">{deviceInfo.installLocation}</Description>
+        <Description term="生产日期" key="productionDate">{deviceInfo.productionDate}</Description>
+        <Description term="接入主机数量" key="hostList">
           {deviceInfo.hostList ? deviceInfo.hostList.length.toString() : '0'}
         </Description>
       </DescriptionList>
