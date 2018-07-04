@@ -49,6 +49,19 @@ export default class LoginPage extends Component {
           ...values,
           type,
         },
+        callback(response) {
+          if (response.currentAuthority === 'admin') {
+            dispatch({
+              type: 'setting/changeSetting',
+              payload: { grid: 'Fluid', layout: 'sidemenu' },
+            });
+          } else if (response.currentAuthority === 'user') {
+            dispatch({
+              type: 'setting/changeSetting',
+              payload: { grid: 'Wide', layout: 'topmenu' },
+            });
+          }
+        },
       });
     }
   };
