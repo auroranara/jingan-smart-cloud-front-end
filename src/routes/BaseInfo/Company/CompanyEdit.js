@@ -716,24 +716,11 @@ export default class CompanyDetail extends PureComponent {
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.industryCategory}>
-                {getFieldDecorator('industryCategory', {
-                  initialValue: industryCategory ? industryCategory.split(',') : [],
-                })(
-                  <Cascader
-                    options={industryCategories}
-                    filedNames={{
-                      value: 'id',
-                      label: 'name',
-                      children: 'children',
-                      isLeaf: 'isLeaf',
-                    }}
-                    allowClear
-                    changeOnSelect
-                    placeholder="请选择行业类别"
-                    getPopupContainer={getRootChild}
-                  />
-                )}
+              <Form.Item label={fieldLabels.groupName}>
+                {getFieldDecorator('groupName', {
+                  initialValue: groupName,
+                  getValueFromEvent: this.handleTrim,
+                })(<Input placeholder="请输入集团公司名称" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -814,12 +801,25 @@ export default class CompanyDetail extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.groupName}>
-                {getFieldDecorator('groupName', {
-                  initialValue: groupName,
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入集团公司名称" />)}
+            <Col lg={12} md={18} sm={24}>
+              <Form.Item label={fieldLabels.industryCategory}>
+                {getFieldDecorator('industryCategory', {
+                  initialValue: industryCategory ? industryCategory.split(',') : [],
+                })(
+                  <Cascader
+                    options={industryCategories}
+                    filedNames={{
+                      value: 'id',
+                      label: 'name',
+                      children: 'children',
+                      isLeaf: 'isLeaf',
+                    }}
+                    allowClear
+                    changeOnSelect
+                    placeholder="请选择行业类别"
+                    getPopupContainer={getRootChild}
+                  />
+                )}
               </Form.Item>
             </Col>
           </Row>
