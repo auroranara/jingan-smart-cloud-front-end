@@ -373,6 +373,7 @@ export default class AccountManagementEdit extends PureComponent {
       </FooterToolbar>
     );
   }
+
   render() {
     const content = (
       <div>

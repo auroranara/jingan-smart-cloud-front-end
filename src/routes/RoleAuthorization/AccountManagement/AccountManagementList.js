@@ -69,8 +69,9 @@ export default class AccountManagementList extends PureComponent {
   }
 
   componentDidMount() {
+    const { fetch } = this.props;
     // 获取账号列表
-    this.props.fetch({
+    fetch({
       payload: {
         pageSize,
       },
@@ -117,7 +118,8 @@ export default class AccountManagementList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    if (!flag || this.props.accountmanagement.isLast) {
+    const { accountmanagement } = this.props;
+    if (!flag || accountmanagement.isLast) {
       return;
     }
     const {

@@ -104,7 +104,7 @@ export async function updateFakeList(params) {
 }
 
 export async function fakeAccountLogin(params) {
-  return request('/api/login/account', {
+  return request('/acloud_new/v2/login', {
     method: 'POST',
     body: params,
   });
@@ -172,5 +172,5 @@ export async function deleteMaintenanceCompany(id) {
 
 // 查看指定维保单位信息
 export async function queryMaintenanceCompanyinfo(id) {
-  return request(`acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`);
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`);
 }

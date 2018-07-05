@@ -133,10 +133,10 @@ export default class CompanyDetail extends PureComponent {
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
+          <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
             {registerAddress || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.practicalAddress}>
             {practicalAddress || getEmptyData()}
           </Description>

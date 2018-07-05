@@ -95,47 +95,6 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     this.setState({ hasSubCompany: checked });
   };
 
-  handleUpdate(id) {
-    const {
-      dispatch,
-      form,
-      goBack,
-      maintenanceCompany: {
-        detail: { companyId },
-      },
-    } = this.props;
-
-    form.validateFields((err, values) => {
-      if (err) {
-        // console.log(err);
-        return;
-      }
-
-      const { usingStatus, isBranch } = values;
-      const { parentId } = this.state;
-      // console.log(values, usingStatus, usingStatus ? 1 : 0);
-
-      dispatch({
-        type: 'maintenanceCompany/updateMaintenanceCompanyAsync',
-        payload: {
-          id,
-          parentId,
-          companyId,
-          usingStatus: +usingStatus,
-          isBranch: +isBranch,
-        },
-        callback(code) {
-          // console.log(code);
-          if (code === 200)
-            message.success('修改成功', () => {
-              goBack();
-            });
-          else message.error('修改失败');
-        },
-      });
-    });
-  }
-
   /* 显示选择维保模态框 */
   handleShowMaintenanceModal = () => {
     const {
@@ -183,6 +142,47 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     this.handleHideMaintenanceModal();
   };
 
+  handleUpdate(id) {
+    const {
+      dispatch,
+      form,
+      goBack,
+      maintenanceCompany: {
+        detail: { companyId },
+      },
+    } = this.props;
+
+    form.validateFields((err, values) => {
+      if (err) {
+        // console.log(err);
+        return;
+      }
+
+      const { usingStatus, isBranch } = values;
+      const { parentId } = this.state;
+      // console.log(values, usingStatus, usingStatus ? 1 : 0);
+
+      dispatch({
+        type: 'maintenanceCompany/updateMaintenanceCompanyAsync',
+        payload: {
+          id,
+          parentId,
+          companyId,
+          usingStatus: +usingStatus,
+          isBranch: +isBranch,
+        },
+        callback(code) {
+          // console.log(code);
+          if (code === 200)
+            message.success('修改成功', () => {
+              goBack();
+            });
+          else message.error('修改失败');
+        },
+      });
+    });
+  }
+
   /* 渲染选择维保单位模态框 */
   renderMaintenanceModal() {
     const {
@@ -219,8 +219,10 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
   }
 
   render() {
-    const { submitting } = this.props;
-    const { getFieldDecorator } = this.props.form;
+    const {
+      submitting,
+      form: { getFieldDecorator },
+    } = this.props;
 
     const formItemLayout = {
       labelCol: {
@@ -249,7 +251,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     // console.log('data', data);
 
     return (
-      <PageHeaderLayout title="修改维保单位" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title="新增维保单位" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
           <Form hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">

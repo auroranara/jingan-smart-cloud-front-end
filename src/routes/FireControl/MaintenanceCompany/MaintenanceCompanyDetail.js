@@ -28,7 +28,7 @@ const breadcrumbList = [
 
 @connect(({ maintenanceCompany, loading }) => ({
   maintenanceCompany,
-  loading: loading.effects['maintenanceCompany/fetchDetail'],
+  loading: loading.models.maintenanceCompany,
 }))
 @Form.create()
 export default class MaintenanceCmpanyDetail extends PureComponent {
@@ -43,7 +43,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
-
+    // console.log(id);
     dispatch({
       type: 'maintenanceCompany/fetchDetail',
       payload: {
@@ -87,7 +87,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
     };
 
     return (
-      <PageHeaderLayout title="维保单位详情" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title="维保公司详情" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="企业名称">
