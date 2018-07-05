@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Row, Col, Input, Select, Button } from 'antd';
+import { Form, Card, Row, Col, Input, Select, Button, message, Icon, Popover, Spin } from 'antd';
 import { routerRedux } from 'dva/router';
 import FooterToolbar from 'components/FooterToolbar';
 
@@ -35,9 +35,9 @@ const fieldLabels = {
   loginName: '用户名',
   password: '密码',
   userName: '姓名',
-  phone: '手机号',
+  phoneNumber: '手机号',
   unitType: '单位类型',
-  hasUnit: '所属单位',
+  unitId: '所属单位',
   accountStatus: '账号状态',
 };
 
@@ -90,6 +90,7 @@ export default class AccountManagementAdd extends PureComponent {
         key: 'unitTypes',
       },
     });
+
     // 获取账号状态
     fetchOptions({
       payload: {
@@ -97,34 +98,56 @@ export default class AccountManagementAdd extends PureComponent {
         key: 'accountStatuses',
       },
     });
-    // 获取账号状态
+
+    // 获取所属单位
     fetchUnitList({
       payload: {
-        type: 'hasUnit',
-        key: 'hasUnits',
+        type: 'unitId',
+        key: 'unitIds',
       },
     });
   }
 
   /* 点击提交按钮验证表单信息 */
-  // handleClickForm = e => {
-  //   e.preventDefault();
-  //   const {
-  //     addAccount,
-  //     goBack,
-  //     form: { validateFieldsAndScroll },
-  //   } = this.props,
-  //   validateFieldsAndScroll(
-
-  //   );
-  // };
+  handleClickValidate = () => {
+    const {
+      addAccount,
+      goBack,
+      form: { validateFieldsAndScroll },
+    } = this.props;
+    // 如果验证通过则提交，没有通过则滚动到错误处
+    validateFieldsAndScroll((error, values) => {
+      if (!error) {
+        this.setState({
+          submitting: true,
+        });
+        addAccount({
+          payload: {
+            ...values,
+          },
+          success: () => {
+            message.success('新建成功！', () => {
+              goBack();
+            });
+          },
+          error: err => {
+            message.error(err, () => {
+              this.setState({
+                submitting: false,
+              });
+            });
+          },
+        });
+      }
+    });
+  };
 
   /* 选择单位类型以后查询所属单位 */
   handleQueryUnit = value => {
     const { fetchUnitList } = this.props;
     fetchUnitList({
       payload: {
-        unitType: value,
+        unitIds: value,
       },
     });
   };
@@ -132,7 +155,7 @@ export default class AccountManagementAdd extends PureComponent {
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
-      accountmanagement: { unitTypes, accountStatuses, hasUnits },
+      accountmanagement: { unitTypes, accountStatuses, unitIds },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -150,6 +173,7 @@ export default class AccountManagementAdd extends PureComponent {
                       required: true,
                       whitespace: true,
                       type: 'string',
+                      message: '请输入用户名',
                     },
                   ],
                 })(<Input placeholder="请输入用户名" min={1} max={20} />)}
@@ -163,6 +187,7 @@ export default class AccountManagementAdd extends PureComponent {
                       required: true,
                       whitespace: true,
                       type: 'string',
+                      message: '请输入密码',
                     },
                   ],
                 })(<Input placeholder="请输入密码" min={6} max={20} />)}
@@ -176,6 +201,7 @@ export default class AccountManagementAdd extends PureComponent {
                       required: true,
                       whitespace: true,
                       type: 'integer',
+                      message: '请选择账号状态',
                     },
                   ],
                 })(
@@ -197,19 +223,21 @@ export default class AccountManagementAdd extends PureComponent {
                       required: true,
                       whitespace: true,
                       type: 'string',
+                      message: '请输入姓名',
                     },
                   ],
                 })(<Input placeholder="请输入姓名" min={1} max={10} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.phone}>
-                {getFieldDecorator('phone', {
+              <Form.Item label={fieldLabels.phoneNumber}>
+                {getFieldDecorator('phoneNumber', {
                   rules: [
                     {
                       required: true,
                       whitespace: true,
                       type: 'string',
+                      message: '请输入手机号',
                     },
                   ],
                 })(<Input placeholder="请输入手机号" min={11} max={11} />)}
@@ -218,7 +246,12 @@ export default class AccountManagementAdd extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
-                  rules: [{ required: true }],
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择单位类型',
+                    },
+                  ],
                 })(
                   <Select
                     placeholder="请选择单位类型"
@@ -235,12 +268,22 @@ export default class AccountManagementAdd extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.hasUnit}>
-                {getFieldDecorator('hasUnit', {
-                  rules: [{ required: true }],
+              <Form.Item label={fieldLabels.unitId}>
+                {getFieldDecorator('unitId', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择所属单位',
+                    },
+                  ],
                 })(
-                  <Select placeholder="请选择所属单位" getPopupContainer={getRootChild}>
-                    {hasUnits.map(item => (
+                  <Select
+                    // mode="multiple"
+                    // labelInValue
+                    placeholder="请选择所属单位"
+                    getPopupContainer={getRootChild}
+                  >
+                    {unitIds.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
                       </Option>
@@ -255,14 +298,56 @@ export default class AccountManagementAdd extends PureComponent {
     );
   }
 
+  /* 渲染错误信息 */
+  renderErrorInfo() {
+    const { getFieldsError } = this.props.form;
+    const errors = getFieldsError();
+    const errorCount = Object.keys(errors).filter(key => errors[key]).length;
+    if (!errors || errorCount === 0) {
+      return null;
+    }
+    const scrollToField = fieldKey => {
+      const labelNode = document.querySelector(`label[for="${fieldKey}"]`);
+      if (labelNode) {
+        labelNode.scrollIntoView(true);
+      }
+    };
+    const errorList = Object.keys(errors).map(key => {
+      if (!errors[key]) {
+        return null;
+      }
+      return (
+        <li key={key} className={styles.errorListItem} onClick={() => scrollToField(key)}>
+          <Icon type="cross-circle-o" className={styles.errorIcon} />
+          <div className={styles.errorMessage}>{errors[key][0]}</div>
+          <div className={styles.errorField}>{fieldLabels[key]}</div>
+        </li>
+      );
+    });
+    return (
+      <span className={styles.errorIcon}>
+        <Popover
+          title="表单校验信息"
+          content={errorList}
+          overlayClassName={styles.errorPopover}
+          trigger="click"
+          getPopupContainer={trigger => trigger.parentNode}
+        >
+          <Icon type="exclamation-circle" />
+          {errorCount}
+        </Popover>
+      </span>
+    );
+  }
+
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const { loading } = this.props;
     const { submitting } = this.state;
     return (
       <FooterToolbar>
-        <Button>取消</Button>
-        <Button type="primary" onClick={this.handleClickForm} loading={loading || submitting}>
+        {this.renderErrorInfo()}
+        <Button type="primary" onClick={this.handleClickValidate} loading={loading || submitting}>
           提交
         </Button>
       </FooterToolbar>
@@ -270,12 +355,13 @@ export default class AccountManagementAdd extends PureComponent {
   }
 
   render() {
+    const { loading } = this.props;
+    const { submitting } = this.state;
     const content = (
       <div>
         <p>创建单个账号，包括基本信息、角色权限等</p>
       </div>
     );
-
     return (
       <PageHeaderLayout
         title={title}
@@ -283,8 +369,10 @@ export default class AccountManagementAdd extends PureComponent {
         wrapperClassName={styles.advancedForm}
         content={content}
       >
-        {this.renderBasicInfo()}
-        {this.renderFooterToolbar()}
+        <Spin spinning={loading || submitting}>
+          {this.renderBasicInfo()}
+          {this.renderFooterToolbar()}
+        </Spin>
       </PageHeaderLayout>
     );
   }

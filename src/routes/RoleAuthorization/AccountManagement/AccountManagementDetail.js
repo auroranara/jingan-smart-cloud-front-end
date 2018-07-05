@@ -34,12 +34,13 @@ const breadcrumbList = [
 
 /* 表单标签 */
 const fieldLabels = {
-  user: '用户名',
-  name: '姓名',
-  phone: '手机号',
+  loginName: '用户名',
+  password: '密码',
+  userName: '姓名',
+  phoneNumber: '手机号',
   unitType: '单位类型',
-  hasUnit: '所属单位',
-  status: '账号状态',
+  unitId: '所属单位',
+  accountStatus: '账号状态',
 };
 
 /* 获取无数据 */
@@ -53,12 +54,20 @@ const getEmptyData = () => {
     loading: loading.models.accountmanagement,
   }),
   dispatch => ({
-    // 获取详情
+    
+    // 查看详情
+    fetchAccountDetail(action) {
+      dispatch({
+        type: 'accountmanagement/fetchAccountDetail',
+        ...action,
+      });
+    },
 
     // 跳转到编辑页面
     goToEdit(id) {
       dispatch(routerRedux.push(`/role-authorization/account-management/edit/${id}`));
     },
+
     // 异常
     goToException() {
       dispatch(routerRedux.push('/exception/500'));
@@ -67,24 +76,54 @@ const getEmptyData = () => {
 )
 @Form.create()
 export default class AccountManagementDetail extends PureComponent {
-  /* 生命周期函数 */
-  componentWillMount() {}
+   /* 生命周期函数 */
+  componentWillMount() {
+    const {
+      fetchAccountDetail,
+      match: {
+        params: { id },
+      },
+      goToException,
+    } = this.props;
+    // 获取详情
+    fetchAccountDetail({
+      payload: {
+        id,
+      },
+      error: () => {
+        goToException();
+      },
+    });
+  }
 
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      accountmanagement: { detail: data },
+      company: {
+        detail: {
+          data: {
+            loginName,
+            password,
+            userName,
+            phoneNumber,
+            unitType,
+            unitId,
+            accountStatus,      
+          },
+        },
+      },
     } = this.props;
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
-          <Description term={fieldLabels.user}>{data.user || getEmptyData()}</Description>
-          <Description term={fieldLabels.name}>{data.name || getEmptyData()}</Description>
-          <Description term={fieldLabels.phone}>{data.phone || getEmptyData()}</Description>
-          <Description term={fieldLabels.unitType}>{data.unitType || getEmptyData()}</Description>
-          <Description term={fieldLabels.hasUnit}>{data.hasUnit || getEmptyData()}</Description>
-          <Description term={fieldLabels.status}>{data.status || getEmptyData()}</Description>
+          <Description term={fieldLabels.loginName}>{loginName || getEmptyData()}</Description>
+          <Description term={fieldLabels.password}>{password || getEmptyData()}</Description>
+          <Description term={fieldLabels.userName}>{userName || getEmptyData()}</Description>
+          <Description term={fieldLabels.phoneNumber}>{phoneNumber || getEmptyData()}</Description>
+          <Description term={fieldLabels.unitType}>{unitType || getEmptyData()}</Description>
+          <Description term={fieldLabels.unitId}>{unitId || getEmptyData()}</Description>
+          <Description term={fieldLabels.accountStatus}>{accountStatus || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
     );

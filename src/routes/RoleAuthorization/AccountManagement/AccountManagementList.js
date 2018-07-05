@@ -34,9 +34,8 @@ const pageSize = 18;
 // 默认表单值
 const defaultFormData = {
   user: undefined,
-  permission: undefined,
   unitType: undefined,
-  hasUnit: undefined,
+  unitId: undefined,
 };
 
 @connect(
@@ -54,12 +53,6 @@ const defaultFormData = {
     appendFetch(action) {
       dispatch({
         type: 'accountmanagement/appendFetch',
-        ...action,
-      });
-    },
-    updateFormData(action) {
-      dispatch({
-        type: 'accountmanagement/updateFormData',
         ...action,
       });
     },
@@ -166,15 +159,15 @@ export default class AccountManagementList extends PureComponent {
               })(
                 <Cascader
                   // options={ }
-                  placeholder="政府机构"
+                  placeholder="请选择单位类型"
                 />
               )}
             </FormItem>
             <FormItem label="所属单位">
-              {getFieldDecorator('hasUnit', {
-                initialValue: defaultFormData.hasUnit,
+              {getFieldDecorator('unitId', {
+                initialValue: defaultFormData.unitId,
                 getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="所属单位" />)}
+              })(<Input placeholder="请选择所属单位" />)}
             </FormItem>
           </Col>
 
