@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Row, Col, Input, Cascader, Spin } from 'antd';
-import { routerRedux } from 'dva/router';
+import { Form, Card, Button, Row, Col, Input, Cascader, Select } from 'antd';
+// import { routerRedux } from 'dva/router';
 
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
@@ -36,38 +36,13 @@ const fieldLabels = {
   phone: '手机号',
   unitType: '单位类型',
   hasUnit: '所属单位',
+  accountStatus: '账号状态',
 };
 
-@connect(
-  ({ accountmanagement, loading }) => ({
-    accountmanagement,
-    loading: loading.models.accountmanagement,
-  }),
-  dispatch => ({
-    // 修改
-    editCompany(action) {
-      dispatch({
-        type: 'accountmanagement/',
-        ...action,
-      });
-    },
-    // 获取详情
-    fetchCompany(action) {
-      dispatch({
-        type: 'accountmanagement/',
-        ...action,
-      });
-    },
-    // 返回
-    goBack() {
-      dispatch(routerRedux.push('/role-authorization/account-management/list'));
-    },
-    // 异常
-    goToException() {
-      dispatch(routerRedux.push('/exception/500'));
-    },
-  })
-)
+@connect(({ accountmanagement, loading }) => ({
+  accountmanagement,
+  loading: loading.models.accountmanagement,
+}))
 @Form.create()
 export default class AccountManagementEdit extends PureComponent {
   /* 生命周期函数 */
@@ -79,11 +54,11 @@ export default class AccountManagementEdit extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      detail: {
-        data: { user, name, unitType, hasUnit },
-      },
+      accountmanagement: { detail: data },
       form: { getFieldDecorator },
     } = this.props;
+
+    const { Option } = Select;
 
     return (
       <Card title="账号基础信息" className={styles.card} bordered={false}>
@@ -92,37 +67,54 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.user}>
                 {getFieldDecorator('user', {
-                  initialValue: user,
+                  initialValue: data.user,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入用户名' }],
+                  rules: [{ message: '请输入用户名' }],
                 })(<Input placeholder="请输入用户名" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.name}>
                 {getFieldDecorator('name', {
-                  initialValue: name,
+                  initialValue: data.name,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入手机号' }],
+                  rules: [{ message: '请输入姓名' }],
+                })(<Input placeholder="请输入姓名" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.phone}>
+                {getFieldDecorator('phone', {
+                  initialValue: data.phone,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ message: '请输入手机号' }],
                 })(<Input placeholder="请输入手机号" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
-                  initialValue: unitType,
+                  initialValue: data.unitType,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '政府单位' }],
+                  rules: [{ message: '政府单位' }],
                 })(<Cascader placeholder="政府单位" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.hasUnit}>
                 {getFieldDecorator('hasUnit', {
-                  initialValue: hasUnit,
+                  initialValue: data.hasUnit,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '所属单位' }],
+                  rules: [{ message: '所属单位' }],
                 })(<Cascader placeholder="所属单位" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.accountStatus}>
+                <Select defaultValue="启用">
+                  <Option value="启用">启用</Option>
+                  <Option value="禁用">禁用</Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -134,29 +126,31 @@ export default class AccountManagementEdit extends PureComponent {
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const { loading } = this.props;
-    const { submitting } = this.state;
     return (
       <FooterToolbar>
-        {this.renderErrorInfo()}
-        <Button type="primary" onClick={this.handleClickValidate} loading={loading || submitting}>
+        <Button type="primary" loading={loading}>
           提交
         </Button>
       </FooterToolbar>
     );
   }
+
   render() {
-    const { loading } = this.props;
-    const { submitting } = this.state;
+    const content = (
+      <div>
+        <p>编辑单个账号的基本信息，角色权限、数据权限</p>
+      </div>
+    );
+
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         wrapperClassName={styles.advancedForm}
+        content={content}
       >
-        <Spin spinning={loading || submitting}>
-          {this.renderBasicInfo()}
-          {this.renderFooterToolbar()}
-        </Spin>
+        {this.renderBasicInfo()}
+        {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
   }

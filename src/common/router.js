@@ -185,11 +185,11 @@ export const getRouterData = app => {
       ),
     },
     // 查看账号
-    // '/role-authorization/account-management/detail/:id': {
-    //   component: dynamicWrapper(app, ['accountmanagement'], () =>
-    //     import('../routes/RoleAuthorization/AccountManagement/AccountManagementDetail.js')
-    //   ),
-    // },
+    '/role-authorization/account-management/detail/:id': {
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
+        import('../routes/RoleAuthorization/AccountManagement/AccountManagementDetail.js')
+      ),
+    },
     '/form/step-form/confirm': {
       name: '分步表单（确认转账信息）',
       component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),
