@@ -64,7 +64,7 @@ class mergeLessPlugin {
       }
       loopAllLess(options.stylesDir).then(() => {
         fs.writeFileSync(outFile, lessArray.join('\n'));
-        callback();
+        if (callback) callback();
       });
     });
   }
