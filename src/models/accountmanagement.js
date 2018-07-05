@@ -2,6 +2,8 @@ import {
   queryAddaccountoptions,
   queryUnitlist,
   addAccount,
+  queryAccountDetail,
+  updateAccountDetail,
 } from '../services/accountManagement.js';
 
 export default {
@@ -14,7 +16,7 @@ export default {
     isLast: false,
     unitTypes: [],
     accountStatuses: [],
-    hasUnits: [],
+    unitIds: [],
   },
 
   effects: {
@@ -57,15 +59,47 @@ export default {
       }
     },
 
-    *addAccount({ payload, callback }, { call, put }) {
+    // 新增账号
+    *addAccount({ payload, success, error }, { call }) {
       const response = yield call(addAccount, payload);
-      const { code } = response;
-      if (callback) callback(code);
-      if (code === 200) {
+      if (response.code === 200) {
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 查看账号详情
+    *fetchAccountDetail({ payload, success, error }, { call, put }) {
+      const response = yield call(queryAccountDetail, payload);
+      if (response.code === 200) {
         yield put({
-          type: 'addAccount',
+          type: 'queryAccountDetail',
           payload: response.data,
         });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 修改账号
+    *updateAccountDetail({ payload, success, error }, { call, put }) {
+      const response = yield call(updateAccountDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updateAccountDetail',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
   },
@@ -105,11 +139,21 @@ export default {
     queryUnitlist(state, { payload }) {
       return {
         ...state,
-        hasUnits: payload,
+        unitIds: payload,
       };
     },
 
-    addAccount(state, { payload }) {
+    queryAccountDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    updateAccountDetail(state, { payload }) {
       return {
         ...state,
         detail: {
