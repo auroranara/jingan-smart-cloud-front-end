@@ -59,18 +59,13 @@ class mergeLessPlugin {
       // covert less
       if (fs.existsSync(outFile)) {
         fs.unlinkSync(outFile);
-        loopAllLess(options.stylesDir).then(() => {
-          fs.writeFileSync(outFile, lessArray.join('\n'));
-          callback();
-        });
       } else {
-        fs.mkdir(path.dirname(outFile), () => {
-          loopAllLess(options.stylesDir).then(() => {
-            fs.writeFileSync(outFile, lessArray.join('\n'));
-            callback();
-          });
-        });
+        fs.mkdirSync(path.dirname(outFile));
       }
+      loopAllLess(options.stylesDir).then(() => {
+        fs.writeFileSync(outFile, lessArray.join('\n'));
+        callback();
+      });
     });
   }
 }
