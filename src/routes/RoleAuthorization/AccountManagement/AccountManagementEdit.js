@@ -14,11 +14,9 @@ const title = '编辑账号';
 const breadcrumbList = [
   {
     title: '首页',
-    href: '/',
   },
   {
     title: '权限管理',
-    href: '/',
   },
   {
     title: '账号管理',
@@ -40,9 +38,6 @@ const fieldLabels = {
   accountStatus: '账号状态',
 };
 
-/* root下的div */
-const getRootChild = () => document.querySelector('#root>div');
-
 @connect(
   ({ accountmanagement, loading }) => ({
     accountmanagement,
@@ -52,11 +47,20 @@ const getRootChild = () => document.querySelector('#root>div');
     // 修改账号
     updateAccountDetail(action) {
       dispatch({
-        type: 'company/updateAccountDetail',
+        type: 'accountmanagement/updateAccountDetail',
         ...action,
       });
     },
 
+    // 获取账号详情
+    fetchAccountDetail(action) {
+      dispatch({
+        type: 'accountmanagement/fetchAccountDetail',
+        ...action,
+      });
+    },
+
+    // 获取单位类型与账号状态
     fetchOptions(action) {
       dispatch({
         type: 'accountmanagement/fetchOptions',
@@ -64,6 +68,7 @@ const getRootChild = () => document.querySelector('#root>div');
       });
     },
 
+    // 获取所属单位（根据所选单位类型选择所属单位）
     fetchUnitList(action) {
       dispatch({
         type: 'accountmanagement/fetchUnitList',
@@ -75,7 +80,6 @@ const getRootChild = () => document.querySelector('#root>div');
     goBack() {
       dispatch(routerRedux.push('/role-authorization/account-management/list'));
     },
-    dispatch,
   })
 )
 @Form.create()
@@ -86,7 +90,25 @@ export default class AccountManagementEdit extends PureComponent {
 
   /* 生命周期函数 */
   componentWillMount() {
-    const { fetchOptions, fetchUnitList } = this.props;
+    const {
+      fetchAccountDetail,
+      match: {
+        params: { id },
+      },
+      fetchOptions,
+      fetchUnitList,
+      goToException,
+    } = this.props;
+
+    // 获取详情
+    fetchAccountDetail({
+      payload: {
+        id,
+      },
+      error: () => {
+        goToException();
+      },
+    });
 
     // 获取单位类型
     fetchOptions({
@@ -102,7 +124,8 @@ export default class AccountManagementEdit extends PureComponent {
         key: 'accountStatuses',
       },
     });
-    // 获取账号状态
+
+    // 获取所属单位
     fetchUnitList({
       payload: {
         type: 'unitId',
@@ -112,7 +135,7 @@ export default class AccountManagementEdit extends PureComponent {
   }
 
   /* 点击提交按钮验证表单信息 */
-  handleClickValidate = () => {
+  handleClickValidate = id => {
     const {
       updateAccountDetail,
       goBack,
@@ -126,6 +149,7 @@ export default class AccountManagementEdit extends PureComponent {
         });
         updateAccountDetail({
           payload: {
+            id,
             ...values,
           },
           success: () => {
@@ -145,15 +169,12 @@ export default class AccountManagementEdit extends PureComponent {
     });
   };
 
-  /* 去除左右两边空白 */
-  handleTrim = e => e.target.value.trim();
-
   /* 选择单位类型以后查询所属单位 */
   handleQueryUnit = value => {
     const { fetchUnitList } = this.props;
     fetchUnitList({
       payload: {
-        unitIds: value,
+        unitType: value,
       },
     });
   };
@@ -161,7 +182,14 @@ export default class AccountManagementEdit extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      accountmanagement: { detail: data, unitTypes, accountStatuses, unitIds },
+      accountmanagement: {
+        detail: {
+          data: { loginName, password, userName, phoneNumber, unitType, unitId, accountStatus },
+        },
+        unitTypes,
+        accountStatuses,
+        unitIds,
+      },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -174,8 +202,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.loginName}>
                 {getFieldDecorator('loginName', {
-                  initialValue: data.loginName,
-                  getValueFromEvent: this.handleTrim,
+                  initialValue: loginName,
                   rules: [
                     {
                       required: true,
@@ -190,8 +217,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.password}>
                 {getFieldDecorator('password', {
-                  initialValue: data.password,
-                  getValueFromEvent: this.handleTrim,
+                  initialValue: password,
                   rules: [
                     {
                       required: true,
@@ -206,8 +232,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.accountStatus}>
                 {getFieldDecorator('accountStatus', {
-                  initialValue: data.accountStatus,
-                  getValueFromEvent: this.handleTrim,
+                  initialValue: accountStatus,
                   rules: [
                     {
                       required: true,
@@ -217,7 +242,7 @@ export default class AccountManagementEdit extends PureComponent {
                     },
                   ],
                 })(
-                  <Select placeholder="请选择账号状态" getPopupContainer={getRootChild}>
+                  <Select placeholder="请选择账号状态">
                     {accountStatuses.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -230,8 +255,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.userName}>
                 {getFieldDecorator('userName', {
-                  initialValue: data.userName,
-                  getValueFromEvent: this.handleTrim,
+                  initialValue: userName,
                   rules: [
                     {
                       required: true,
@@ -246,8 +270,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.phoneNumber}>
                 {getFieldDecorator('phoneNumber', {
-                  initialValue: data.phoneNumber,
-                  getValueFromEvent: this.handleTrim,
+                  initialValue: phoneNumber,
                   rules: [
                     {
                       required: true,
@@ -262,8 +285,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
-                  initialValue: data.unitType,
-                  getValueFromEvent: this.handleTrim,
+                  initialValue: unitType,
                   rules: [
                     {
                       required: true,
@@ -271,11 +293,7 @@ export default class AccountManagementEdit extends PureComponent {
                     },
                   ],
                 })(
-                  <Select
-                    placeholder="请选择单位类型"
-                    getPopupContainer={getRootChild}
-                    onChange={this.handleQueryUnit}
-                  >
+                  <Select placeholder="请选择单位类型" onChange={this.handleQueryUnit}>
                     {unitTypes.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -288,8 +306,7 @@ export default class AccountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitId}>
                 {getFieldDecorator('unitId', {
-                  initialValue: data.unitId,
-                  getValueFromEvent: this.handleTrim,
+                  initialValue: unitId,
                   rules: [
                     {
                       required: true,
@@ -298,14 +315,13 @@ export default class AccountManagementEdit extends PureComponent {
                   ],
                 })(
                   <Select
-                    mode="multiple"
-                    labelInValue
+                    // mode="multiple"
+                    // labelInValue
                     placeholder="请选择所属单位"
-                    getPopupContainer={getRootChild}
                   >
                     {unitIds.map(item => (
                       <Option value={item.id} key={item.id}>
-                        {item.label}
+                        {item.name}
                       </Option>
                     ))}
                   </Select>
@@ -320,7 +336,9 @@ export default class AccountManagementEdit extends PureComponent {
 
   /* 渲染错误信息 */
   renderErrorInfo() {
-    const { getFieldsError } = this.props.form;
+    const {
+      form: { getFieldsError },
+    } = this.props;
     const errors = getFieldsError();
     const errorCount = Object.keys(errors).filter(key => errors[key]).length;
     if (!errors || errorCount === 0) {
@@ -362,12 +380,11 @@ export default class AccountManagementEdit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.props;
     const { submitting } = this.state;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" onClick={this.handleClickValidate} loading={loading || submitting}>
+        <Button type="primary" onClick={this.handleClickValidate} loading={submitting}>
           提交
         </Button>
       </FooterToolbar>

@@ -1,6 +1,11 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
 
+/* 查询账号列表 */
+export async function queryAccountList(params) {
+  return request(`/acloud_new/v2/rolePermission/users.json?${stringify(params)}`);
+}
+
 /* 新增账号-初始化页面选项 */
 export async function queryAddaccountoptions() {
   return request(`/acloud_new/v2/rolePermission/user/options.json`);
@@ -13,12 +18,12 @@ export async function queryUnitlist(params) {
 
 /* 查看账号详情 */
 export async function queryAccountDetail({ id }) {
-  return request(`/acloud_new/v2/rolePermission/user/${id}`);
+  return request(`/acloud_new/v2/rolePermission/user/${id}.json`);
 }
 
 /* 修改账号信息 */
 export async function updateAccountDetail(params) {
-  return request(`/acloud_new/v2/rolePermission/user`, {
+  return request(`/acloud_new/v2/rolePermission/user.json`, {
     method: 'PUT',
     body: params,
   });
