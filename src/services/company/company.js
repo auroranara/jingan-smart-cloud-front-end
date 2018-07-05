@@ -59,5 +59,5 @@ export async function upload(params) {
 
 /* 获取行政区域 */
 export async function fetchArea(params) {
-  return request(`/acloud_new/v2/baseInfo/city?${stringify(params)}`);
+  return request(`/acloud_new/v2/baseInfo/city/new?${stringify(params)}`);
 }

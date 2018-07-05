@@ -74,20 +74,20 @@ export const getRouterData = app => {
         import('../layouts/LoadingPage')
       ),
     },
-    '/dashboard/analysis': {
-      component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
-    },
-    '/dashboard/monitor': {
-      component: dynamicWrapper(app, ['monitor'], () => import('../routes/Dashboard/Monitor')),
-    },
-    '/dashboard/workplace': {
-      component: dynamicWrapper(app, ['user', 'project', 'activities', 'chart'], () =>
-        import('../routes/Dashboard/Workplace')
-      ),
-      // hideInBreadcrumb: true,
-      // name: '工作台',
-      // authority: 'admin',
-    },
+    // '/dashboard/analysis': {
+    //   component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
+    // },
+    // '/dashboard/monitor': {
+    //   component: dynamicWrapper(app, ['monitor'], () => import('../routes/Dashboard/Monitor')),
+    // },
+    // '/dashboard/workplace': {
+    //   component: dynamicWrapper(app, ['user', 'project', 'activities', 'chart'], () =>
+    //     import('../routes/Dashboard/Workplace')
+    //   ),
+    //   // hideInBreadcrumb: true,
+    //   // name: '工作台',
+    //   // authority: 'admin',
+    // },
     /* 企业列表 */
     '/base-info/company-list': {
       component: dynamicWrapper(app, ['company'], () =>
@@ -152,6 +152,42 @@ export const getRouterData = app => {
       name: '导入点位数据',
       component: dynamicWrapper(app, ['pointPosition'], () =>
         import('../routes/FireControl/ImportPointPosition.js')
+      ),
+    },
+    '/fire-alarm/index': {
+      name: '火灾自动报警系统',
+      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/index')),
+    },
+    '/fire-alarm/company/:companyId': {
+      name: '单位页面',
+      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/AutoFireAlarm')),
+    },
+    '/fire-alarm/company/detail/:companyId/:detailId': {
+      name: '详情信息',
+      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/FireAlarmDetail')),
+    },
+    // 账号管理列表
+    '/role-authorization/account-management/list': {
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
+        import('../routes/RoleAuthorization/AccountManagement/AccountManagementList.js')
+      ),
+    },
+    // 新增账号
+    '/role-authorization/account-management/add': {
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
+        import('../routes/RoleAuthorization/AccountManagement/AccountManagementAdd.js')
+      ),
+    },
+    // 编辑账号
+    '/role-authorization/account-management/edit/:id': {
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
+        import('../routes/RoleAuthorization/AccountManagement/AccountManagementEdit.js')
+      ),
+    },
+    // 查看账号
+    '/role-authorization/account-management/detail/:id': {
+      component: dynamicWrapper(app, ['accountmanagement'], () =>
+        import('../routes/RoleAuthorization/AccountManagement/AccountManagementDetail.js')
       ),
     },
     '/form/step-form/confirm': {
@@ -263,6 +299,12 @@ export const getRouterData = app => {
     '/account/settings/notification': {
       component: dynamicWrapper(app, ['geographic'], () =>
         import('../routes/Account/Settings/NotificationView')
+      ),
+    },
+    /* 维保合同列表 */
+    '/fire-control/contract/list': {
+      component: dynamicWrapper(app, ['contract'], () =>
+        import('../routes/Contract/ContractList')
       ),
     },
     // '/user/:id': {

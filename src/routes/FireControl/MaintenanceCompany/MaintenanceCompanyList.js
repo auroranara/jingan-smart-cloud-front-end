@@ -11,7 +11,6 @@ import {
   message,
   BackTop,
   Spin,
-  Affix,
   Col,
   Badge,
   Row,
@@ -77,8 +76,9 @@ export default class MaintenanceCompanyList extends PureComponent {
   }
 
   componentDidMount() {
+    const { fetch } = this.props;
     // 获取维保单位列表
-    this.props.fetch({
+    fetch({
       payload: {
         pageSize,
       },
@@ -87,13 +87,14 @@ export default class MaintenanceCompanyList extends PureComponent {
 
   /* 显示删除确认提示框 */
   handleShowDeleteConfirm = id => {
+    const { remove } = this.props;
     Modal.confirm({
       title: '你确定要删除这个维保单位吗?',
       content: '如果你确定要删除这个维保单位，点击确定按钮',
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
-        this.props.remove({
+        remove({
           payload: {
             id,
           },
@@ -149,14 +150,15 @@ export default class MaintenanceCompanyList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    if (!flag || this.props.maintenanceCompany.isLast) {
-      return;
-    }
     const {
       appendFetch,
-      maintenanceCompany: { pageNum },
+      maintenanceCompany: { pageNum, isLast },
     } = this.props;
-    // 请求数据
+
+    if (!flag || isLast) {
+      return;
+    }
+
     appendFetch({
       payload: {
         pageSize,
@@ -173,37 +175,35 @@ export default class MaintenanceCompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <Affix offsetTop={10} target={() => document.getElementById('root')}>
-        <Card>
-          <Form layout="inline">
-            <FormItem>
-              {getFieldDecorator('name', {
-                initialValue: defaultFormData.name,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位名称" />)}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('practicalAddress', {
-                initialValue: defaultFormData.practicalAddress,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入单位地址" />)}
-            </FormItem>
-            <FormItem>
-              <Button type="primary" onClick={this.handleClickToQuery}>
-                查询
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button onClick={this.handleClickToReset}>重置</Button>
-            </FormItem>
-            <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/fire-control/maintenance-company/add">
-                新增
-              </Button>
-            </FormItem>
-          </Form>
-        </Card>
-      </Affix>
+      <Card>
+        <Form layout="inline">
+          <FormItem>
+            {getFieldDecorator('name', {
+              initialValue: defaultFormData.name,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位名称" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('practicalAddress', {
+              initialValue: defaultFormData.practicalAddress,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入单位地址" />)}
+          </FormItem>
+          <FormItem>
+            <Button type="primary" onClick={this.handleClickToQuery}>
+              查询
+            </Button>
+          </FormItem>
+          <FormItem>
+            <Button onClick={this.handleClickToReset}>重置</Button>
+          </FormItem>
+          <FormItem style={{ float: 'right' }}>
+            <Button type="primary" href="#/fire-control/maintenance-company/add">
+              新增
+            </Button>
+          </FormItem>
+        </Form>
+      </Card>
     );
   }
 

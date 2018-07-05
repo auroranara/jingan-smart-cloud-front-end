@@ -3,7 +3,7 @@ import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import NoticeIcon from '../NoticeIcon';
-import HeaderSearch from '../HeaderSearch';
+// import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
 
 export default class GlobalHeaderRight extends PureComponent {
@@ -38,6 +38,7 @@ export default class GlobalHeaderRight extends PureComponent {
     });
     return groupBy(newNotices, 'type');
   }
+
   render() {
     const {
       currentUser,
@@ -45,6 +46,7 @@ export default class GlobalHeaderRight extends PureComponent {
       onNoticeVisibleChange,
       onMenuClick,
       onNoticeClear,
+      theme,
     } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
@@ -65,31 +67,20 @@ export default class GlobalHeaderRight extends PureComponent {
     );
     const noticeData = this.getNoticeData();
     let className = styles.right;
-    if (this.props.theme === 'dark') {
+    if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
     }
     return (
       <div className={className}>
-        <HeaderSearch
-          className={`${styles.action} ${styles.search}`}
-          placeholder="站内搜索"
-          dataSource={['搜索提示一', '搜索提示二', '搜索提示三']}
-          onSearch={value => {
-            console.log('input', value); // eslint-disable-line
-          }}
-          onPressEnter={value => {
-            console.log('enter', value); // eslint-disable-line
-          }}
-        />
-        <Tooltip title="使用文档">
+        <Tooltip title="数据大屏">
           <a
             target="_blank"
-            href="http://pro.ant.design/docs/getting-started"
+            href="/acloud_new/v2/hdf/fireIndex.htm"
             rel="noopener noreferrer"
             className={styles.action}
-            title="使用文档"
+            title="数据大屏"
           >
-            <Icon type="question-circle-o" />
+            <Icon type="line-chart" />
           </a>
         </Tooltip>
         <NoticeIcon

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Modal, Spin, message } from 'antd';
+import { Button, Spin, message } from 'antd';
+// import { Button, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -10,7 +11,7 @@ import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
 
 const { Description } = DescriptionList;
-const { confirm } = Modal;
+// const { confirm } = Modal;
 const ButtonGroup = Button.Group;
 
 const breadcrumbList = [
@@ -202,15 +203,19 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleDeviceDeleteClick = deviceId => {
-    const that = this;
-    confirm({
-      title: '确定删除当前用户传输装置？',
-      onOk() {
-        that.handleDeviceDelete(deviceId);
-      },
-    });
+  handleDeviceDeleteClick = () => {
+    message.warn('删除功能暂未开放');
   };
+
+  // handleDeviceDeleteClick = deviceId => {
+  //   const that = this;
+  //   confirm({
+  //     title: '确定删除当前用户传输装置？',
+  //     onOk() {
+  //       that.handleDeviceDelete(deviceId);
+  //     },
+  //   });
+  // };
 
   handleDeviceDelete = deviceId => {
     const {
@@ -277,15 +282,19 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleHostDeleteClick = (transmissionId, hostId) => {
-    const that = this;
-    confirm({
-      title: '确认删除当前消防主机？',
-      onOk() {
-        that.handleHostDelete(transmissionId, hostId);
-      },
-    });
-  };
+  handleHostDeleteClick = () => {
+    message.warn('删除功能暂未开放');
+  }
+
+  // handleHostDeleteClick = (transmissionId, hostId) => {
+  //   const that = this;
+  //   confirm({
+  //     title: '确认删除当前消防主机？',
+  //     onOk() {
+  //       that.handleHostDelete(transmissionId, hostId);
+  //     },
+  //   });
+  // };
 
   handleHostDelete = (transmissionId, hostId) => {
     const {
