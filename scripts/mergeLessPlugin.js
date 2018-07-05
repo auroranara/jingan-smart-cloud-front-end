@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const _ = require('lodash');
 const getLocalIdentName = require('./getLocalIdentName');
 const AddlocalIdentName = require('./AddlocalIdentName');
 const replacedefaultLess = require('./replacedefaultLess');
@@ -64,7 +65,7 @@ class mergeLessPlugin {
       }
       loopAllLess(options.stylesDir).then(() => {
         fs.writeFileSync(outFile, lessArray.join('\n'));
-        if (callback) callback();
+        if (_.isFunction(callback)) callback();
       });
     });
   }
