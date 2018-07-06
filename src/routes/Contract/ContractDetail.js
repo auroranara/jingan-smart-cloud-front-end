@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card, Button, Spin } from 'antd';
-// import moment from 'moment';
+import moment from 'moment';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -48,7 +48,7 @@ const getEmptyData = () => {
     /* 获取详情 */
     fetchContract(action) {
       dispatch({
-        type: 'company/fetchContract',
+        type: 'contract/fetchContract',
         ...action,
       });
     },
@@ -90,36 +90,56 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染详情 */
   renderDetail() {
-    const { goBack, goToEdit, contract: { detail: { number, maintanceName, serviceName, signDate, signPlace, servicePeriod, serviceContent, contract } } } = this.props;
+    const {
+      goBack,
+      goToEdit,
+      contract: {
+        detail: {
+          contractCode,
+          signingDate,
+          startTime,
+          endTime,
+          signingAddr,
+          serviceContent,
+          contractAppendix,
+          maintenanceName,
+          companyName,
+        },
+      },
+    } = this.props;
+
+    const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime && moment(+endTime).format('YYYY-MM-DD')) || '?'}`;
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term="合同编号">
-            {number || getEmptyData()}
+            {contractCode || getEmptyData()}
           </Description>
           <Description term="维保单位">
-            {maintanceName || getEmptyData()}
+            {maintenanceName || getEmptyData()}
           </Description>
           <Description term="服务单位">
-            {serviceName || getEmptyData()}
+            {companyName || getEmptyData()}
           </Description>
           <Description term="签订日期">
-            {signDate || getEmptyData()}
+            {signingDate? moment(+signingDate).format('YYYY-MM-DD') : getEmptyData()}
           </Description>
           <Description term="签订地点">
-            {signPlace || getEmptyData()}
+            {signingAddr || getEmptyData()}
           </Description>
           <Description term="服务期限">
-            {servicePeriod || getEmptyData()}
+            {period || getEmptyData()}
           </Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="服务内容">
-            {serviceContent || getEmptyData()}
+            {serviceContent? <pre style={{ margin: '0', color: 'inherit', font: 'inherit' }}>{serviceContent}</pre> : getEmptyData()}
           </Description>
           <Description term="合同附件">
-            {contract || getEmptyData()}
+            {contractAppendix ? contractAppendix.map(({ webUrl }, index) => (
+              <a href={webUrl} target="_blank" rel="noopener noreferrer">{`合同附件${index+1}`}</a>
+            )) : getEmptyData()}
           </Description>
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
