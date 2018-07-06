@@ -1,7 +1,7 @@
 import {
   queryCompanies,
-  queryAlarmNums,
-  queryAlarmTableData,
+  // queryAlarmNums,
+  queryAlarmData,
   queryAlarmDetail,
 } from '../services/fireAlarm';
 
@@ -10,8 +10,8 @@ export default {
 
   state: {
     list: [],
-    alarmNums: [0, 0, 0, 0, 0, 0],
-    tableList: [],
+    // alarmNums: [0, 0, 0, 0, 0, 0],
+    tableLists: [],
     pagination: {},
     alarmDetail: {},
   },
@@ -37,28 +37,28 @@ export default {
         payload: { pageNum, list },
       });
     },
-    *fetchAlarmNums({ payload, callback }, { call, put }) {
-      const response = yield call(queryAlarmNums, payload);
-      const { code, data: { alarmNums } } = response;
-      if (callback) callback(code);
-      if (code !== 200) return;
-      yield put({ type: 'saveAlarmNums', payload: alarmNums });
-    },
-    *fetchAlarmTableData({ payload, callback }, { call, put }) {
-      const response = yield call(queryAlarmTableData, payload);
-      const { code, data: { tableList } } = response;
+    // *fetchAlarmNums({ payload, callback }, { call, put }) {
+    //   const response = yield call(queryAlarmNums, payload);
+    //   const { code, data: { alarmNums } } = response;
+    //   if (callback) callback(code);
+    //   if (code !== 200) return;
+    //   yield put({ type: 'saveAlarmNums', payload: alarmNums });
+    // },
+    *fetchAlarmData({ payload, callback }, { call, put }) {
+      const response = yield call(queryAlarmData, payload);
+      const { code, data } = response;
       if (callback) callback(code);
       if (code !== 200) return;
       // const pagin = {};
       // ['pageNum', 'pageSize', 'total'].forEach(p => { pagin[p] = Number.parseInt(pagination[p], 10) });
-      yield put({ type: 'saveAlarmTableData', payload: { tableList } });
+      yield put({ type: 'saveAlarmData', payload: data });
     },
     *fetchAlarmDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryAlarmDetail, payload);
-      const { code, data: { alarmDetail } } = response;
+      const { code, data } = response;
       if (callback) callback(code);
       if (code !== 200) return;
-      yield put({ type: 'saveAlarmDetail', payload: alarmDetail });
+      yield put({ type: 'saveAlarmDetail', payload: data });
     },
   },
 
@@ -70,12 +70,11 @@ export default {
 
       return { ...state, list: nextList };
     },
-    saveAlarmNums(state, action) {
-      return { ...state, alarmNums: action.payload };
-    },
-    saveAlarmTableData(state, action) {
-      const { tableList, pagination } = action.payload;
-      return { ...state, tableList, pagination };
+    // saveAlarmNums(state, action) {
+    //   return { ...state, alarmNums: action.payload };
+    // },
+    saveAlarmData(state, action) {
+      return { ...state, tableLists: action.payload };
     },
     saveAlarmDetail(state, action) {
       return { ...state, alarmDetail: action.payload };

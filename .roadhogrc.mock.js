@@ -146,6 +146,6 @@ const hosts = {
   mock: '118.126.110.115:3001/mock/28',
 };
 
-const key = 'test';
+const key = 'sqz';
 
 export default (noProxy ? {} : initProxy(key));

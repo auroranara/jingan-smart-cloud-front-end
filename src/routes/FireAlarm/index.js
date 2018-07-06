@@ -76,7 +76,7 @@ export default class FireAlarm extends PureComponent {
         pageNum: 1,
         pageSize: PAGE_SIZE,
         name: company,
-        practicalAddress: address,
+        address,
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
@@ -182,15 +182,13 @@ export default class FireAlarm extends PureComponent {
                 <Link to={`/fire-alarm/company/${item.id}`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
-                      地址：{item.practicalAddress !== undefined
-                        ? item.practicalAddress
-                        : item.praticalAddress}
+                      地址：{item.searchArea ? item.searchArea : '暂无信息'}
                     </Ellipsis>
                     <p>安全负责人：{item.safetyName ? item.safetyName : '暂无信息'}</p>
                     <p>联系电话：{item.safetyPhone ? item.safetyPhone : '暂无信息'}</p>
-                    <p>火警主机数量：{item.hostNumber}</p>
+                    <p>火警主机数量：{item.hostCount}</p>
                     <div className={styles.quantityContainer}>
-                      <div className={styles.quantity}>{item.alarmNumber}</div>
+                      <div className={styles.quantity}>{item.alertCount}</div>
                       <p className={styles.quantityDescrip}>警情数量</p>
                     </div>
                   </Card>

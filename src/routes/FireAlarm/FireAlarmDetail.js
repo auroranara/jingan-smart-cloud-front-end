@@ -6,6 +6,8 @@ import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
+import { convertMsToDate } from './AutoFireAlarm';
+
 const { Description } = DescriptionList;
 
 const DETAIL_ITEMS = ['name', 'time', 'code', 'failureCode', 'type', 'position', 'alarmStatus', 'hostStatus', 'operateTime', 'safetyName', 'safetyPhone'];
@@ -35,7 +37,14 @@ export default class AutoFireAlarm extends PureComponent {
       <PageHeaderLayout title="详情信息" breadcrumbList={breadcrumbList}>
         <Card title={alarmDetail.name}>
           <DescriptionList>
-            {DETAIL_ITEMS.map((item, index) => <Description term={DETAIL_ITEMS_CHINESE[index]} key={item}>{alarmDetail[item]}</Description>)}
+            {DETAIL_ITEMS.map((item, index) => (
+              <Description
+                term={DETAIL_ITEMS_CHINESE[index]}
+                key={item}
+              >
+                {alarmDetail[item] === null ? '暂无信息' : item.toLowerCase().includes('time') ? convertMsToDate(alarmDetail[item]) : alarmDetail[item]}
+              </Description>
+            ))}
           </DescriptionList>
         </Card>
       </PageHeaderLayout>

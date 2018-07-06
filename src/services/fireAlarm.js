@@ -9,12 +9,12 @@ export async function queryCompanies(params) {
   return request(`${URL_PREFIX}/companies.json?${stringify(params)}`);
 }
 
-export async function queryAlarmNums(companyId) {
-  return request(`${URL_PREFIX}/company/${companyId}`);
-}
+// export async function queryAlarmNums(companyId) {
+//   return request(`${URL_PREFIX}/company/${companyId}`);
+// }
 
-export async function queryAlarmTableData({ companyId, item }) {
-  return request(`${URL_PREFIX}/company/${companyId}/item/${item}`);
+export async function queryAlarmData(companyId) {
+  return request(`${URL_PREFIX}/company/${companyId}`);
 }
 
 export async function queryAlarmDetail({ companyId, detailId }) {
