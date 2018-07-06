@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Form, Card, Button, Spin, message, Row, Col, Input, Select, DatePicker, Upload, Icon } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
-// import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
@@ -22,21 +22,11 @@ const backUrl = '/fire-control/contract/list';
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
 /* 模糊查询默认显示数量 */
-// const defaultPageSize = 20;
+const defaultPageSize = 20;
 // 上传文件地址
 const uploadUrl = '/acloud_new/v2/uploadFile';
 // 上传文件夹
 const folder = 'fireControl';
-// const temp = [
-//   number,
-//   maintanceId,
-//   serviceId,
-//   signDate,
-//   signPlace,
-//   servicePeriod,
-//   serviceContent,
-//   contract,
-// ];
 
 @connect(
   ({ contract, loading }) => ({
@@ -47,7 +37,7 @@ const folder = 'fireControl';
     /* 获取详情 */
     fetchContract(action) {
       dispatch({
-        type: 'company/fetchContract',
+        type: 'contract/fetchContract',
         ...action,
       });
     },
@@ -72,16 +62,16 @@ const folder = 'fireControl';
       });
     },
     /* 获取维保单位列表 */
-    fetchMaintanceList(action) {
+    fetchMaintenanceList(action) {
       dispatch({
-        type: 'company/fetchMaintanceList',
+        type: 'contract/fetchMaintenanceList',
         ...action,
       });
     },
     /* 获取服务单位列表 */
     fetchServiceList(action) {
       dispatch({
-        type: 'company/fetchServiceList',
+        type: 'contract/fetchServiceList',
         ...action,
       });
     },
@@ -94,6 +84,12 @@ const folder = 'fireControl';
 )
 @Form.create()
 export default class ContractHandler extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.handleSearchMaintenanceList = debounce(this.handleSearchMaintenanceList, 800);
+    this.handleSearchServiceList = debounce(this.handleSearchServiceList, 800);
+  }
+
   state = {
     submitting: false,
     fileList: [],
@@ -108,10 +104,16 @@ export default class ContractHandler extends PureComponent {
         payload: {
           id,
         },
-        success: ({ contract }) => {
-          if (contract) {
+        success: ({ contractAppendix }) => {
+          if (contractAppendix) {
             this.setState({
-              fileList: contract,
+              fileList: contractAppendix.map(({ dbUrl, webUrl }, index) => ({
+                id: index,
+                status: 'done',
+                name: `合同附件${index+1}`,
+                url: webUrl,
+                dbUrl,
+              })),
             });
           }
         },
@@ -134,28 +136,32 @@ export default class ContractHandler extends PureComponent {
           submitting: true,
         });
         const {
-          number,
-          maintanceId,
-          serviceId,
-          signDate,
-          signPlace,
-          servicePeriod: [start, end],
+          contractCode,
+          maintenanceId,
+          companyId,
+          signingDate,
+          signingAddr,
+          period: [startTime, endTime],
           serviceContent,
         } = values;
         const { fileList } = this.state;
+        const payload = {
+          contractCode: contractCode.trim(),
+          maintenanceId: maintenanceId.key,
+          companyId: companyId.key,
+          signingDate: signingDate.format('YYYY-MM-DD'),
+          signingAddr: signingAddr.trim(),
+          startTime: startTime.format('YYYY-MM-DD'),
+          endTime: endTime.format('YYYY-MM-DD'),
+          serviceContent,
+          contractAppendix: fileList.map(file => file.dbUrl).join(','),
+        };
         // 如果id存在，则为编辑，否则为新增
         if (id) {
           updateContract({
             payload: {
-              number: number.trim(),
-              maintanceId: maintanceId.key,
-              serviceId: serviceId.key,
-              signDate: signDate.format('YYYY-MM-DD'),
-              signPlace: signPlace.trim(),
-              start: start.format('YYYY-MM-DD'),
-              end: end.format('YYYY-MM-DD'),
-              serviceContent,
-              contract: fileList,
+              id,
+              ...payload,
             },
             success: () => {
               message.success('编辑成功！', 1, () => {
@@ -172,9 +178,7 @@ export default class ContractHandler extends PureComponent {
         }
         else {
           insertContract({
-            payload: {
-              ...values,
-            },
+            payload,
             success: () => {
               message.success('新增成功！', 1, () => {
                 goBack();
@@ -193,39 +197,37 @@ export default class ContractHandler extends PureComponent {
   }
 
   /* 模糊查询维保单位列表 */
-  handleSearchMaintanceList = (value) => {
-    console.log(value)
-    // const { fetchMaintanceList } = this.props;
-    // fetchMaintanceList({
-    //   payload: {
-    //     name: value.trim(),
-    //     pageSize: defaultPageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+  handleSearchMaintenanceList = (value) => {
+    const { fetchMaintenanceList } = this.props;
+    fetchMaintenanceList({
+      payload: {
+        name: value && value.trim(),
+        pageSize: defaultPageSize,
+        pageNum: 1,
+      },
+    });
   }
 
   /* 模糊查询维保单位列表 */
   handleSearchServiceList = (value) => {
-    console.log(value)
-    // const { fetchServiceList } = this.props;
-    // fetchServiceList({
-    //   payload: {
-    //     name: value.trim(),
-    //     pageSize: defaultPageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    const { fetchServiceList } = this.props;
+    fetchServiceList({
+      payload: {
+        name: value && value.trim(),
+        pageSize: defaultPageSize,
+        pageNum: 1,
+      },
+    });
   }
 
   /* 判断清除维保单位 */
-  handleClearMaintance = (value) => {
+  handleClearMaintenance = (value) => {
     if (value && value.key === value.label) {
       const { form: { setFieldsValue, validateFields } } = this.props;
       setFieldsValue({
-        maintanceId: undefined,
+        maintenanceId: undefined,
       });
-      validateFields(['maintanceId']);
+      validateFields(['maintenanceId']);
     }
   }
 
@@ -234,12 +236,12 @@ export default class ContractHandler extends PureComponent {
     if (value && value.key === value.label) {
       const { form: { setFieldsValue, validateFields } } = this.props;
       setFieldsValue({
-        serviceId: {
+        companyId: {
           key: '',
           label: '',
         },
       });
-      validateFields(['serviceId']);
+      validateFields(['companyId']);
     }
   }
 
@@ -319,7 +321,7 @@ export default class ContractHandler extends PureComponent {
         multiple
         onChange={this.handleUpload}
       >
-        <Button type="primary" >
+        <Button type="primary">
           <Icon type="upload" /> 上传附件
         </Button>
       </Upload>
@@ -331,18 +333,18 @@ export default class ContractHandler extends PureComponent {
     const {
       goBack,
       contract: {
-        maintanceList,
+        maintenanceList,
         serviceList,
         detail: {
-          number,
-          maintanceId,
-          maintanceIdLabel,
-          serviceId,
-          serviceIdLabel,
-          signDate,
-          signPlace,
-          start,
-          end,
+          contractCode,
+          maintenanceId,
+          maintenanceName,
+          companyId,
+          companyName,
+          signingDate,
+          signingAddr,
+          startTime,
+          endTime,
           serviceContent,
         },
       },
@@ -358,18 +360,18 @@ export default class ContractHandler extends PureComponent {
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="合同编号">
-                {getFieldDecorator('number', {
-                  initialValue: number,
+                {getFieldDecorator('contractCode', {
+                  initialValue: contractCode,
                   rules: [{ required: true, message: '请输入合同编号', whitespace: true }],
                 })(<Input placeholder="请输入合同编号" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="维保单位">
-                {getFieldDecorator('maintanceId', {
-                  initialValue: (maintanceId && maintanceIdLabel) ? {
-                    key: maintanceId,
-                    label: maintanceIdLabel,
+                {getFieldDecorator('maintenanceId', {
+                  initialValue: (maintenanceId && maintenanceName) ? {
+                    key: maintenanceId,
+                    label: maintenanceName,
                   } : undefined,
                   rules: [{ required: true, message: '请选择维保单位', transform: value => value && value.label }],
                 })(
@@ -380,12 +382,12 @@ export default class ContractHandler extends PureComponent {
                     defaultActiveFirstOption={false}
                     filterOption={false}
                     notFoundContent={loading ? <Spin size="small" /> : null}
-                    onSearch={this.handleSearchMaintanceList}
-                    onBlur={this.handleClearMaintance}
+                    onSearch={this.handleSearchMaintenanceList}
+                    onBlur={this.handleClearMaintenance}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
-                    {maintanceList.map(item => (
+                    {maintenanceList.map(item => (
                       <Option key={item.id}>
                         {item.name}
                       </Option>
@@ -396,10 +398,10 @@ export default class ContractHandler extends PureComponent {
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="服务单位">
-                {getFieldDecorator('serviceId', {
-                  initialValue: (serviceId && serviceIdLabel) ? {
-                    key: serviceId,
-                    label: serviceIdLabel,
+                {getFieldDecorator('companyId', {
+                  initialValue: (companyId && companyName) ? {
+                    key: companyId,
+                    label: companyName,
                   } : undefined,
                   rules: [{ required: true, message: '请选择服务单位', whitespace: true, transform: value => value && value.label }],
                 })(
@@ -417,7 +419,7 @@ export default class ContractHandler extends PureComponent {
                   >
                     {serviceList.map(item => (
                       <Option key={item.id}>
-                        {item.label}
+                        {item.name}
                       </Option>
                     ))}
                   </Select>
@@ -426,8 +428,8 @@ export default class ContractHandler extends PureComponent {
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="签订日期">
-                {getFieldDecorator('signDate', {
-                  initialValue: signDate ? moment(+signDate, 'YYYY-MM-DD'): moment(new Date(), 'YYYY-MM-DD'),
+                {getFieldDecorator('signingDate', {
+                  initialValue: signingDate ? moment(+signingDate) : moment(),
                   rules: [{ required: true, message: '请选择签订日期' }],
                 })(
                   <DatePicker
@@ -440,16 +442,16 @@ export default class ContractHandler extends PureComponent {
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="签订地点">
-                {getFieldDecorator('signPlace', {
-                  initialValue: signPlace,
+                {getFieldDecorator('signingAddr', {
+                  initialValue: signingAddr,
                   rules: [{ required: true, message: '请输入签订地点', whitespace: true }],
                 })(<Input placeholder="请输入签订地点" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="服务期限">
-                {getFieldDecorator('servicePeriod', {
-                  initialValue: (start && end) ? [moment(+start, 'YYYY-MM-DD'), moment(+end, 'YYYY-MM-DD')]: undefined,
+                {getFieldDecorator('period', {
+                  initialValue: (startTime && endTime) ? [moment(+startTime), moment(+endTime)] : [],
                   rules: [{ required: true, message: '请选择服务期限' }],
                 })(
                   <RangePicker
