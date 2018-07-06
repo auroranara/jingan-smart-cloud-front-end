@@ -8,7 +8,7 @@ import {
 } from '../services/accountManagement.js';
 
 export default {
-  namespace: 'accountmanagement',
+  namespace: 'accountManagement',
 
   state: {
     list: [],
@@ -17,12 +17,12 @@ export default {
     detail: {
       data: {
         loginName: undefined,
-        password: undefined,
         userName: undefined,
         phoneNumber: undefined,
         unitType: undefined,
         unitId: undefined,
         accountStatus: undefined,
+        unitName: undefined,
       },
     },
     unitTypes: [],

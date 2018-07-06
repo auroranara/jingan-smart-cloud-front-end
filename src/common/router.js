@@ -172,25 +172,25 @@ export const getRouterData = app => {
     },
     // 账号管理列表
     '/role-authorization/account-management/list': {
-      component: dynamicWrapper(app, ['accountmanagement'], () =>
+      component: dynamicWrapper(app, ['accountManagement'], () =>
         import('../routes/RoleAuthorization/AccountManagement/AccountManagementList.js')
       ),
     },
     // 新增账号
     '/role-authorization/account-management/add': {
-      component: dynamicWrapper(app, ['accountmanagement'], () =>
+      component: dynamicWrapper(app, ['accountManagement'], () =>
         import('../routes/RoleAuthorization/AccountManagement/AccountManagementAdd.js')
       ),
     },
     // 编辑账号
     '/role-authorization/account-management/edit/:id': {
-      component: dynamicWrapper(app, ['accountmanagement'], () =>
+      component: dynamicWrapper(app, ['accountManagement'], () =>
         import('../routes/RoleAuthorization/AccountManagement/AccountManagementEdit.js')
       ),
     },
     // 查看账号
     '/role-authorization/account-management/detail/:id': {
-      component: dynamicWrapper(app, ['accountmanagement'], () =>
+      component: dynamicWrapper(app, ['accountManagement'], () =>
         import('../routes/RoleAuthorization/AccountManagement/AccountManagementDetail.js')
       ),
     },

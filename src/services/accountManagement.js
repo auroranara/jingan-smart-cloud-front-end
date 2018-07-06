@@ -23,7 +23,7 @@ export async function queryAccountDetail({ id }) {
 
 /* 修改账号信息 */
 export async function updateAccountDetail(params) {
-  return request(`/acloud_new/v2/rolePermission/user.json`, {
+  return request(`/acloud_new/v2/rolePermission/user`, {
     method: 'PUT',
     body: params,
   });

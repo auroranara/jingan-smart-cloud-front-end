@@ -32,6 +32,17 @@ const menuData = [
     ],
   },
   {
+    name: '角色权限',
+    icon: 'table',
+    path: 'role-authorization',
+    children: [
+      {
+        name: '账号管理',
+        path: 'account-management/list',
+      },
+    ],
+  },
+  {
     name: '账户',
     icon: 'user',
     path: 'user',
