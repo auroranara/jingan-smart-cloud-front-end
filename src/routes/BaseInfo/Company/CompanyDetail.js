@@ -121,6 +121,7 @@ export default class CompanyDetail extends PureComponent {
             districtLabel,
             townLabel,
             companyIchnography,
+            ichnographyName,
           },
         },
       },
@@ -147,8 +148,8 @@ export default class CompanyDetail extends PureComponent {
           </Description>
           <Description term={fieldLabels.companyIchnography}>
             {(companyIchnography && (
-              <a href={companyIchnography} target="_bland">
-                预览
+              <a href={companyIchnography[0].webUrl} target="_bland">
+                {ichnographyName || '预览'}
               </a>
             )) ||
               getEmptyData()}
