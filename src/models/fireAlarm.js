@@ -37,13 +37,6 @@ export default {
         payload: { pageNum, list },
       });
     },
-    // *fetchAlarmNums({ payload, callback }, { call, put }) {
-    //   const response = yield call(queryAlarmNums, payload);
-    //   const { code, data: { alarmNums } } = response;
-    //   if (callback) callback(code);
-    //   if (code !== 200) return;
-    //   yield put({ type: 'saveAlarmNums', payload: alarmNums });
-    // },
     *fetchAlarmData({ payload, callback }, { call, put }) {
       const response = yield call(queryAlarmData, payload);
       const { code, data } = response;
@@ -70,9 +63,6 @@ export default {
 
       return { ...state, list: nextList };
     },
-    // saveAlarmNums(state, action) {
-    //   return { ...state, alarmNums: action.payload };
-    // },
     saveAlarmData(state, action) {
       return { ...state, tableLists: action.payload };
     },
