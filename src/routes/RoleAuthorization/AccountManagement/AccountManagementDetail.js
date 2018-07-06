@@ -41,21 +41,23 @@ const fieldLabels = {
   accountStatus: '账号状态',
 };
 
+const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '一般企业'];
+
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
 @connect(
-  ({ accountmanagement, loading }) => ({
-    accountmanagement,
-    loading: loading.models.accountmanagement,
+  ({ accountManagement, loading }) => ({
+    accountManagement,
+    loading: loading.models.accountManagement,
   }),
   dispatch => ({
     // 查看详情
     fetchAccountDetail(action) {
       dispatch({
-        type: 'accountmanagement/fetchAccountDetail',
+        type: 'accountManagement/fetchAccountDetail',
         ...action,
       });
     },
@@ -72,7 +74,7 @@ const getEmptyData = () => {
   })
 )
 @Form.create()
-export default class AccountManagementDetail extends PureComponent {
+export default class accountManagementDetail extends PureComponent {
   /* 生命周期函数 */
   componentWillMount() {
     const {
@@ -96,9 +98,9 @@ export default class AccountManagementDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      accountmanagement: {
+      accountManagement: {
         detail: {
-          data: { loginName, password, userName, phoneNumber, unitType, unitId, accountStatus },
+          data: { loginName, userName, phoneNumber, unitType, unitName, accountStatus },
         },
       },
     } = this.props;
@@ -107,13 +109,14 @@ export default class AccountManagementDetail extends PureComponent {
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
           <Description term={fieldLabels.loginName}>{loginName || getEmptyData()}</Description>
-          <Description term={fieldLabels.password}>{password || getEmptyData()}</Description>
           <Description term={fieldLabels.userName}>{userName || getEmptyData()}</Description>
           <Description term={fieldLabels.phoneNumber}>{phoneNumber || getEmptyData()}</Description>
-          <Description term={fieldLabels.unitType}>{unitType || getEmptyData()}</Description>
-          <Description term={fieldLabels.unitId}>{unitId || getEmptyData()}</Description>
+          <Description term={fieldLabels.unitType}>
+            {UnitTypes[unitType] || getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.unitId}>{unitName || getEmptyData()}</Description>
           <Description term={fieldLabels.accountStatus}>
-            {accountStatus || getEmptyData()}
+            {accountStatus === 1 ? '启用' : '禁用' || getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>

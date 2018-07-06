@@ -15,11 +15,9 @@ const title = '账号管理';
 const breadcrumbList = [
   {
     title: '首页',
-    href: '/',
   },
   {
     title: '权限管理',
-    href: '/',
   },
   {
     title,
@@ -39,30 +37,28 @@ const defaultFormData = {
   unitType: undefined,
   unitId: undefined,
 };
-/* root下的div */
-const getRootChild = () => document.querySelector('#root>div');
 
 @connect(
-  ({ accountmanagement, loading }) => ({
-    accountmanagement,
-    loading: loading.models.accountmanagement,
+  ({ accountManagement, loading }) => ({
+    accountManagement,
+    loading: loading.models.accountManagement,
   }),
   dispatch => ({
     fetch(action) {
       dispatch({
-        type: 'accountmanagement/fetch',
+        type: 'accountManagement/fetch',
         ...action,
       });
     },
     fetchOptions(action) {
       dispatch({
-        type: 'accountmanagement/fetchOptions',
+        type: 'accountManagement/fetchOptions',
         ...action,
       });
     },
     fetchUnitList(action) {
       dispatch({
-        type: 'accountmanagement/fetchUnitList',
+        type: 'accountManagement/fetchUnitList',
         ...action,
       });
     },
@@ -72,7 +68,7 @@ const getRootChild = () => document.querySelector('#root>div');
   })
 )
 @Form.create()
-export default class AccountManagementList extends PureComponent {
+export default class accountManagementList extends PureComponent {
   constructor(props) {
     super(props);
     this.formData = defaultFormData;
@@ -146,13 +142,13 @@ export default class AccountManagementList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    const { accountmanagement } = this.props;
-    if (!flag || accountmanagement.isLast) {
+    const { accountManagement } = this.props;
+    if (!flag || accountManagement.isLast) {
       return;
     }
     const {
       fetch,
-      accountmanagement: { pageNum },
+      accountManagement: { pageNum },
     } = this.props;
     // 请求数据
     fetch({
@@ -177,7 +173,7 @@ export default class AccountManagementList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      accountmanagement: { unitTypes, unitIds },
+      accountManagement: { unitTypes, unitIds },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -194,7 +190,6 @@ export default class AccountManagementList extends PureComponent {
               {getFieldDecorator('unitType')(
                 <Select
                   placeholder="请选择单位类型"
-                  getPopupContainer={getRootChild}
                   onChange={this.handleQueryUnit}
                   style={{ width: 180 }}
                 >
@@ -208,11 +203,7 @@ export default class AccountManagementList extends PureComponent {
             </FormItem>
             <FormItem label="所属单位">
               {getFieldDecorator('unitId')(
-                <Select
-                  placeholder="请选择所属单位"
-                  getPopupContainer={getRootChild}
-                  style={{ width: 180 }}
-                >
+                <Select placeholder="请选择所属单位" style={{ width: 180 }}>
                   {unitIds.map(item => (
                     <Option value={item.id} key={item.id}>
                       {item.name}
@@ -247,7 +238,7 @@ export default class AccountManagementList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      accountmanagement: { list },
+      accountManagement: { list },
       goToDetail,
     } = this.props;
 
@@ -295,12 +286,12 @@ export default class AccountManagementList extends PureComponent {
                   </Ellipsis>
                   <Col span={12}>
                     <p>
-                      角色：<a href="">查看</a>
+                      角色：<a href="#">查看</a>
                     </p>
                   </Col>
                   <Col span={12}>
                     <p>
-                      权限：<a href="">查看</a>
+                      权限：<a href="#">查看</a>
                     </p>
                   </Col>
                 </Row>
@@ -314,7 +305,7 @@ export default class AccountManagementList extends PureComponent {
 
   render() {
     const {
-      accountmanagement: { list, isLast },
+      accountManagement: { list, isLast },
       loading,
     } = this.props;
 

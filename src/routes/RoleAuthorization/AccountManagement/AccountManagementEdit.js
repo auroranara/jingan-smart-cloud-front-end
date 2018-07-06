@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Row, Col, Input, Select, message, Icon, Popover } from 'antd';
+import { Form, Card, Button, Row, Col, Input, Select, message, Icon, Popover, Spin } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import FooterToolbar from 'components/FooterToolbar';
@@ -39,15 +39,15 @@ const fieldLabels = {
 };
 
 @connect(
-  ({ accountmanagement, loading }) => ({
-    accountmanagement,
-    loading: loading.models.accountmanagement,
+  ({ accountManagement, loading }) => ({
+    accountManagement,
+    loading: loading.models.accountManagement,
   }),
   dispatch => ({
     // 修改账号
     updateAccountDetail(action) {
       dispatch({
-        type: 'accountmanagement/updateAccountDetail',
+        type: 'accountManagement/updateAccountDetail',
         ...action,
       });
     },
@@ -55,7 +55,7 @@ const fieldLabels = {
     // 获取账号详情
     fetchAccountDetail(action) {
       dispatch({
-        type: 'accountmanagement/fetchAccountDetail',
+        type: 'accountManagement/fetchAccountDetail',
         ...action,
       });
     },
@@ -63,7 +63,7 @@ const fieldLabels = {
     // 获取单位类型与账号状态
     fetchOptions(action) {
       dispatch({
-        type: 'accountmanagement/fetchOptions',
+        type: 'accountManagement/fetchOptions',
         ...action,
       });
     },
@@ -71,7 +71,7 @@ const fieldLabels = {
     // 获取所属单位（根据所选单位类型选择所属单位）
     fetchUnitList(action) {
       dispatch({
-        type: 'accountmanagement/fetchUnitList',
+        type: 'accountManagement/fetchUnitList',
         ...action,
       });
     },
@@ -83,7 +83,7 @@ const fieldLabels = {
   })
 )
 @Form.create()
-export default class AccountManagementEdit extends PureComponent {
+export default class accountManagementEdit extends PureComponent {
   state = {
     submitting: false,
   };
@@ -117,6 +117,7 @@ export default class AccountManagementEdit extends PureComponent {
         key: 'unitTypes',
       },
     });
+
     // 获取账号状态
     fetchOptions({
       payload: {
@@ -135,11 +136,14 @@ export default class AccountManagementEdit extends PureComponent {
   }
 
   /* 点击提交按钮验证表单信息 */
-  handleClickValidate = id => {
+  handleClickValidate = () => {
     const {
       updateAccountDetail,
       goBack,
       form: { validateFieldsAndScroll },
+      match: {
+        params: { id },
+      },
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll((error, values) => {
@@ -182,9 +186,9 @@ export default class AccountManagementEdit extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      accountmanagement: {
+      accountManagement: {
         detail: {
-          data: { loginName, password, userName, phoneNumber, unitType, unitId, accountStatus },
+          data: { loginName, userName, phoneNumber, unitType, unitId, accountStatus },
         },
         unitTypes,
         accountStatuses,
@@ -203,30 +207,8 @@ export default class AccountManagementEdit extends PureComponent {
               <Form.Item label={fieldLabels.loginName}>
                 {getFieldDecorator('loginName', {
                   initialValue: loginName,
-                  rules: [
-                    {
-                      required: true,
-                      whitespace: true,
-                      type: 'string',
-                      message: '请输入用户名',
-                    },
-                  ],
-                })(<Input placeholder="请输入用户名" min={1} max={20} />)}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.password}>
-                {getFieldDecorator('password', {
-                  initialValue: password,
-                  rules: [
-                    {
-                      required: true,
-                      whitespace: true,
-                      type: 'string',
-                      message: '请输入密码',
-                    },
-                  ],
-                })(<Input placeholder="请输入密码" min={6} max={20} />)}
+                })}
+                <span> {loginName} </span>
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -380,11 +362,12 @@ export default class AccountManagementEdit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
+    const { loading } = this.props;
     const { submitting } = this.state;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" onClick={this.handleClickValidate} loading={submitting}>
+        <Button type="primary" onClick={this.handleClickValidate} loading={loading || submitting}>
           提交
         </Button>
       </FooterToolbar>
@@ -392,6 +375,8 @@ export default class AccountManagementEdit extends PureComponent {
   }
 
   render() {
+    const { loading } = this.props;
+    const { submitting } = this.state;
     const content = (
       <div>
         <p>编辑单个账号的基本信息，角色权限、数据权限</p>
@@ -405,8 +390,10 @@ export default class AccountManagementEdit extends PureComponent {
         wrapperClassName={styles.advancedForm}
         content={content}
       >
-        {this.renderBasicInfo()}
-        {this.renderFooterToolbar()}
+        <Spin spinning={loading || submitting}>
+          {this.renderBasicInfo()}
+          {this.renderFooterToolbar()}
+        </Spin>
       </PageHeaderLayout>
     );
   }

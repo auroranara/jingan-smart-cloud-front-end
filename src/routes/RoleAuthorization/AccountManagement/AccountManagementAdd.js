@@ -41,30 +41,27 @@ const fieldLabels = {
   accountStatus: '账号状态',
 };
 
-/* root下的div */
-const getRootChild = () => document.querySelector('#root>div');
-
 @connect(
-  ({ accountmanagement, loading }) => ({
-    accountmanagement,
-    loading: loading.models.accountmanagement,
+  ({ accountManagement, loading }) => ({
+    accountManagement,
+    loading: loading.models.accountManagement,
   }),
   dispatch => ({
     fetchOptions(action) {
       dispatch({
-        type: 'accountmanagement/fetchOptions',
+        type: 'accountManagement/fetchOptions',
         ...action,
       });
     },
     fetchUnitList(action) {
       dispatch({
-        type: 'accountmanagement/fetchUnitList',
+        type: 'accountManagement/fetchUnitList',
         ...action,
       });
     },
     addAccount(action) {
       dispatch({
-        type: 'accountmanagement/addAccount',
+        type: 'accountManagement/addAccount',
         ...action,
       });
     },
@@ -74,7 +71,7 @@ const getRootChild = () => document.querySelector('#root>div');
   })
 )
 @Form.create()
-export default class AccountManagementAdd extends PureComponent {
+export default class accountManagementAdd extends PureComponent {
   state = {
     submitting: false,
   };
@@ -155,9 +152,11 @@ export default class AccountManagementAdd extends PureComponent {
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
-      accountmanagement: { unitTypes, accountStatuses, unitIds },
+      accountManagement: { unitTypes, accountStatuses, unitIds },
       form: { getFieldDecorator },
     } = this.props;
+
+    const { fetching } = this.state;
 
     const { Option } = Select;
 
@@ -205,7 +204,7 @@ export default class AccountManagementAdd extends PureComponent {
                     },
                   ],
                 })(
-                  <Select placeholder="请选择账号状态" getPopupContainer={getRootChild}>
+                  <Select placeholder="请选择账号状态">
                     {accountStatuses.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -215,82 +214,80 @@ export default class AccountManagementAdd extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.userName}>
-                {getFieldDecorator('userName', {
-                  rules: [
-                    {
-                      required: true,
-                      whitespace: true,
-                      type: 'string',
-                      message: '请输入姓名',
-                    },
-                  ],
-                })(<Input placeholder="请输入姓名" min={1} max={10} />)}
-              </Form.Item>
+            <Col span={24}>
+              <Col lg={8} md={8} sm={24} style={{ paddingRight: 30 }}>
+                <Form.Item label={fieldLabels.userName}>
+                  {getFieldDecorator('userName', {
+                    rules: [
+                      {
+                        required: true,
+                        whitespace: true,
+                        type: 'string',
+                        message: '请输入姓名',
+                      },
+                    ],
+                  })(<Input placeholder="请输入姓名" min={1} max={10} />)}
+                </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24} style={{ paddingLeft: 15, paddingRight: 15 }}>
+                <Form.Item label={fieldLabels.phoneNumber}>
+                  {getFieldDecorator('phoneNumber', {
+                    rules: [
+                      {
+                        required: true,
+                        whitespace: true,
+                        type: 'string',
+                        message: '请输入手机号',
+                      },
+                    ],
+                  })(<Input placeholder="请输入手机号" min={11} max={11} />)}
+                </Form.Item>
+              </Col>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.phoneNumber}>
-                {getFieldDecorator('phoneNumber', {
-                  rules: [
-                    {
-                      required: true,
-                      whitespace: true,
-                      type: 'string',
-                      message: '请输入手机号',
-                    },
-                  ],
-                })(<Input placeholder="请输入手机号" min={11} max={11} />)}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitType}>
-                {getFieldDecorator('unitType', {
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择单位类型',
-                    },
-                  ],
-                })(
-                  <Select
-                    placeholder="请选择单位类型"
-                    getPopupContainer={getRootChild}
-                    onChange={this.handleQueryUnit}
-                  >
-                    {unitTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitId}>
-                {getFieldDecorator('unitId', {
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择所属单位',
-                    },
-                  ],
-                })(
-                  <Select
-                    // mode="multiple"
-                    // labelInValue
-                    placeholder="请选择所属单位"
-                    getPopupContainer={getRootChild}
-                  >
-                    {unitIds.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </Form.Item>
+            <Col span={24}>
+              <Col lg={8} md={12} sm={24} style={{ paddingRight: 30 }}>
+                <Form.Item label={fieldLabels.unitType}>
+                  {getFieldDecorator('unitType', {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请选择单位类型',
+                      },
+                    ],
+                  })(
+                    <Select placeholder="请选择单位类型" onChange={this.handleQueryUnit}>
+                      {unitTypes.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col lg={8} md={12} sm={24} style={{ paddingLeft: 15, paddingRight: 15 }}>
+                <Form.Item label={fieldLabels.unitId}>
+                  {getFieldDecorator('unitId', {
+                    rules: [
+                      {
+                        required: true,
+                        message: '请选择所属单位',
+                      },
+                    ],
+                  })(
+                    <Select
+                      placeholder="请选择所属单位"
+                      notFoundContent={fetching ? <Spin size="small" /> : '暂无数据'}
+                    >
+                      {unitIds.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
             </Col>
           </Row>
         </Form>
