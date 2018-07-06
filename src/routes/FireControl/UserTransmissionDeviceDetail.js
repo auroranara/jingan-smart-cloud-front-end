@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Button, Modal, Spin, message } from 'antd';
+import { Button, Spin, message } from 'antd';
+// import { Button, Modal, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -10,7 +11,7 @@ import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
 
 const { Description } = DescriptionList;
-const { confirm } = Modal;
+// const { confirm } = Modal;
 const ButtonGroup = Button.Group;
 
 const breadcrumbList = [
@@ -31,7 +32,7 @@ const DESCRIP_MAP = {
   scaleLabel: '规模',
   practicalAddress: '实际经营地址',
   praticalAddress: '实际经营地址',
-  createTime: '成立时间',
+  createTime: '成立时间', // response中传过来的值是个毫秒数，所以需要定义一个函数转成日期字符串
 };
 
 const deviceModalFormItems = [
@@ -111,6 +112,11 @@ function dispatchCallback(code, successMsg, failMsg) {
     message.success(successMsg);
   else
     message.warn(failMsg);
+}
+
+function convertMsToString(ms) {
+  const date = new Date(ms);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
 @connect(({ transmission, loading }) => ({
@@ -197,15 +203,19 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleDeviceDeleteClick = deviceId => {
-    const that = this;
-    confirm({
-      title: '确定删除当前用户传输装置？',
-      onOk() {
-        that.handleDeviceDelete(deviceId);
-      },
-    });
+  handleDeviceDeleteClick = () => {
+    message.warn('删除功能暂未开放');
   };
+
+  // handleDeviceDeleteClick = deviceId => {
+  //   const that = this;
+  //   confirm({
+  //     title: '确定删除当前用户传输装置？',
+  //     onOk() {
+  //       that.handleDeviceDelete(deviceId);
+  //     },
+  //   });
+  // };
 
   handleDeviceDelete = deviceId => {
     const {
@@ -272,15 +282,19 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleHostDeleteClick = (transmissionId, hostId) => {
-    const that = this;
-    confirm({
-      title: '确认删除当前消防主机？',
-      onOk() {
-        that.handleHostDelete(transmissionId, hostId);
-      },
-    });
-  };
+  handleHostDeleteClick = () => {
+    message.warn('删除功能暂未开放');
+  }
+
+  // handleHostDeleteClick = (transmissionId, hostId) => {
+  //   const that = this;
+  //   confirm({
+  //     title: '确认删除当前消防主机？',
+  //     onOk() {
+  //       that.handleHostDelete(transmissionId, hostId);
+  //     },
+  //   });
+  // };
 
   handleHostDelete = (transmissionId, hostId) => {
     const {
@@ -333,7 +347,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             // 兼容实际地址 practical pratical
             companyDetail[k] === undefined ? null : (
               <Description key={k} term={DESCRIP_MAP[k]}>
-                {companyDetail[k] === null ? '暂无信息' : companyDetail[k].toString()}
+                {companyDetail[k] === null ? '暂无信息' : k.toLowerCase().includes('time') ? convertMsToString(companyDetail[k]) : companyDetail[k].toString()}
               </Description>
             )
         )}

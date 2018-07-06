@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Select, message, List, Switch, Divider, Icon } from 'antd';
 import DrawerMenu from 'rc-drawer';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { connect } from 'dva';
 import styles from './index.less';
 import ThemeColor from './ThemeColor';
@@ -21,7 +22,9 @@ const Body = ({ children, title, style }) => (
 @connect(({ setting }) => ({ setting }))
 class SettingDarwer extends PureComponent {
   componentDidMount() {
-    const { themeColor, colorWeak } = this.props.setting;
+    const {
+      setting: { themeColor, colorWeak },
+    } = this.props;
     if (themeColor !== '#1890FF') {
       window.less.refresh().then(() => {
         this.colorChange(themeColor);
@@ -31,8 +34,11 @@ class SettingDarwer extends PureComponent {
       document.body.className = 'colorWeak';
     }
   }
+
   getLayOutSetting = () => {
-    const { grid, fixedHeader, autoHideHeader, fixSiderbar } = this.props.setting;
+    const {
+      setting: { grid, fixedHeader, autoHideHeader, fixSiderbar },
+    } = this.props;
     return [
       {
         title: '栅格模式',
@@ -60,7 +66,7 @@ class SettingDarwer extends PureComponent {
       },
       {
         title: '下滑时隐藏 Header',
-        hide: fixedHeader,
+        hide: !fixedHeader,
         action: [
           <Switch
             size="small"
@@ -83,8 +89,10 @@ class SettingDarwer extends PureComponent {
       return !item.hide;
     });
   };
+
   changeSetting = (key, value) => {
-    const nextState = { ...this.props.setting };
+    const { setting } = this.props;
+    const nextState = { ...setting };
     nextState[key] = value;
     if (key === 'layout') {
       if (value === 'topmenu') {
@@ -94,27 +102,31 @@ class SettingDarwer extends PureComponent {
       }
     }
     if (key === 'fixedHeader') {
-      if (value) {
+      if (!value) {
         nextState.autoHideHeader = false;
       }
     }
     if (key === 'colorWeak') {
-      if (value === 'open') {
+      if (value) {
         document.body.className = 'colorWeak';
       } else {
         document.body.className = '';
       }
     }
     this.setState(nextState, () => {
-      this.props.dispatch({
+      const { dispatch } = this.props;
+      dispatch({
         type: 'setting/changeSetting',
         payload: this.state,
       });
     });
   };
+
   togglerContent = () => {
-    this.changeSetting('collapse', !this.props.setting.collapse);
+    const { setting } = this.props;
+    this.changeSetting('collapse', !setting.collapse);
   };
+
   colorChange = color => {
     this.changeSetting('themeColor', color);
     const hideMessage = message.loading('正在编译主题！', 0);
@@ -122,6 +134,7 @@ class SettingDarwer extends PureComponent {
       window.less
         .modifyVars({
           '@primary-color': color,
+          '@input-hover-border-color': color,
         })
         .then(() => {
           hideMessage();
@@ -131,18 +144,20 @@ class SettingDarwer extends PureComponent {
         });
     }, 200);
   };
+
   render() {
-    const { collapse, silderTheme, themeColor, layout, colorWeak } = this.props.setting;
+    const { setting } = this.props;
+    const { collapse, silderTheme, themeColor, layout, colorWeak } = setting;
     return (
-      <div className={styles.settingDarwer}>
-        <DrawerMenu
-          parent={null}
-          level={null}
-          open={collapse}
-          mask={false}
-          onHandleClick={this.togglerContent}
-          handleChild={
-            !collapse ? (
+      <DrawerMenu
+        parent={null}
+        level={null}
+        open={collapse}
+        mask={false}
+        onHandleClick={this.togglerContent}
+        handler={
+          <div className="drawer-handle">
+            {!collapse ? (
               <Icon
                 type="setting"
                 style={{
@@ -158,82 +173,90 @@ class SettingDarwer extends PureComponent {
                   fontSize: 20,
                 }}
               />
-            )
-          }
-          placement="right"
-          width="336px"
-          style={{
-            zIndex: 999,
-          }}
-          onMaskClick={this.togglerContent}
-        >
-          <div className={styles.content}>
-            <Body title="整体风格设置">
-              <BlockChecbox
-                list={[
-                  {
-                    key: 'dark',
-                    url: 'https://gw.alipayobjects.com/zos/rmsportal/LCkqqYNmvBEbokSDscrm.svg',
-                  },
-                  {
-                    key: 'light',
-                    url: 'https://gw.alipayobjects.com/zos/rmsportal/jpRkZQMyYRryryPNtyIC.svg',
-                  },
-                ]}
-                value={silderTheme}
-                onChange={value => this.changeSetting('silderTheme', value)}
-              />
-            </Body>
-
-            <ThemeColor value={themeColor} onChange={this.colorChange} />
-
-            <Divider />
-
-            <Body title="导航设置 ">
-              <BlockChecbox
-                list={[
-                  {
-                    key: 'sidemenu',
-                    url: 'https://gw.alipayobjects.com/zos/rmsportal/JopDzEhOqwOjeNTXkoje.svg',
-                  },
-                  {
-                    key: 'topmenu',
-                    url: 'https://gw.alipayobjects.com/zos/rmsportal/KDNDBbriJhLwuqMoxcAr.svg',
-                  },
-                ]}
-                value={layout}
-                onChange={value => this.changeSetting('layout', value)}
-              />
-            </Body>
-
-            <List
-              split={false}
-              dataSource={this.getLayOutSetting()}
-              renderItem={item => <List.Item actions={item.action}>{item.title}</List.Item>}
-            />
-
-            <Divider />
-
-            <Body title="其他设置 ">
-              <List.Item
-                actions={[
-                  <Select
-                    value={colorWeak}
-                    size="small"
-                    onSelect={value => this.changeSetting('colorWeak', value)}
-                    style={{ width: 80 }}
-                  >
-                    <Select.Option value="close">close</Select.Option>
-                    <Select.Option value="open">open</Select.Option>
-                  </Select>,
-                ]}
-              >
-                色弱模式
-              </List.Item>
-            </Body>
+            )}
           </div>
-        </DrawerMenu>
-      </div>
+        }
+        placement="right"
+        width="336px"
+        style={{
+          zIndex: 999,
+        }}
+        onMaskClick={this.togglerContent}
+      >
+        <div className={styles.content}>
+          <CopyToClipboard
+            text={JSON.stringify(setting)}
+            onCopy={() => message.success('copy success')}
+          >
+            <div className={styles.clipboard}>
+              <img
+                src="https://gw.alipayobjects.com/zos/rmsportal/YuWymXLusbplhCwgZwMT.svg"
+                alt="Copy To Clipboard"
+                width={18}
+              />
+            </div>
+          </CopyToClipboard>
+          <Body title="整体风格设置">
+            <BlockChecbox
+              list={[
+                {
+                  key: 'dark',
+                  url: 'https://gw.alipayobjects.com/zos/rmsportal/LCkqqYNmvBEbokSDscrm.svg',
+                },
+                {
+                  key: 'light',
+                  url: 'https://gw.alipayobjects.com/zos/rmsportal/jpRkZQMyYRryryPNtyIC.svg',
+                },
+              ]}
+              value={silderTheme}
+              onChange={value => this.changeSetting('silderTheme', value)}
+            />
+          </Body>
+
+          <ThemeColor value={themeColor} onChange={this.colorChange} />
+
+          <Divider />
+
+          <Body title="导航设置 ">
+            <BlockChecbox
+              list={[
+                {
+                  key: 'sidemenu',
+                  url: 'https://gw.alipayobjects.com/zos/rmsportal/JopDzEhOqwOjeNTXkoje.svg',
+                },
+                {
+                  key: 'topmenu',
+                  url: 'https://gw.alipayobjects.com/zos/rmsportal/KDNDBbriJhLwuqMoxcAr.svg',
+                },
+              ]}
+              value={layout}
+              onChange={value => this.changeSetting('layout', value)}
+            />
+          </Body>
+
+          <List
+            split={false}
+            dataSource={this.getLayOutSetting()}
+            renderItem={item => <List.Item actions={item.action}>{item.title}</List.Item>}
+          />
+
+          <Divider />
+
+          <Body title="其他设置 ">
+            <List.Item
+              actions={[
+                <Switch
+                  size="small"
+                  checked={!!colorWeak}
+                  onChange={checked => this.changeSetting('colorWeak', checked)}
+                />,
+              ]}
+            >
+              色弱模式
+            </List.Item>
+          </Body>
+        </div>
+      </DrawerMenu>
     );
   }
 }

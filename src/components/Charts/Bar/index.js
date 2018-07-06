@@ -19,35 +19,6 @@ class Bar extends Component {
     window.removeEventListener('resize', this.resize);
   }
 
-  @Bind()
-  @Debounce(400)
-  resize() {
-    if (!this.node) {
-      return;
-    }
-    requestAnimationFrame(() => {
-      const canvasWidth = this.node.parentNode.clientWidth;
-      const { data = [], autoLabel = true } = this.props;
-      if (!autoLabel) {
-        return;
-      }
-      const minWidth = data.length * 30;
-      const { autoHideXLabels } = this.state;
-
-      if (canvasWidth <= minWidth) {
-        if (!autoHideXLabels) {
-          this.setState({
-            autoHideXLabels: true,
-          });
-        }
-      } else if (autoHideXLabels) {
-        this.setState({
-          autoHideXLabels: false,
-        });
-      }
-    });
-  }
-
   handleRoot = n => {
     this.root = n;
   };
@@ -55,6 +26,33 @@ class Bar extends Component {
   handleRef = n => {
     this.node = n;
   };
+
+  @Bind()
+  @Debounce(400)
+  resize() {
+    if (!this.node) {
+      return;
+    }
+    const canvasWidth = this.node.parentNode.clientWidth;
+    const { data = [], autoLabel = true } = this.props;
+    if (!autoLabel) {
+      return;
+    }
+    const minWidth = data.length * 30;
+    const { autoHideXLabels } = this.state;
+
+    if (canvasWidth <= minWidth) {
+      if (!autoHideXLabels) {
+        this.setState({
+          autoHideXLabels: true,
+        });
+      }
+    } else if (autoHideXLabels) {
+      this.setState({
+        autoHideXLabels: false,
+      });
+    }
+  }
 
   render() {
     const {
