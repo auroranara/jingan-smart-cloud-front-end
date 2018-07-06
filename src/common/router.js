@@ -160,11 +160,15 @@ export const getRouterData = app => {
     },
     '/fire-alarm/company/:companyId': {
       name: '单位页面',
-      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/AutoFireAlarm')),
+      component: dynamicWrapper(app, ['fireAlarm'], () =>
+        import('../routes/FireAlarm/AutoFireAlarm')
+      ),
     },
     '/fire-alarm/company/detail/:companyId/:detailId': {
       name: '详情信息',
-      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/FireAlarmDetail')),
+      component: dynamicWrapper(app, ['fireAlarm'], () =>
+        import('../routes/FireAlarm/FireAlarmDetail')
+      ),
     },
     // 账号管理列表
     '/role-authorization/account-management/list': {
@@ -303,9 +307,7 @@ export const getRouterData = app => {
     },
     /* 维保合同列表 */
     '/fire-control/contract/list': {
-      component: dynamicWrapper(app, ['contract'], () =>
-        import('../routes/Contract/ContractList')
-      ),
+      component: dynamicWrapper(app, ['contract'], () => import('../routes/Contract/ContractList')),
     },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),

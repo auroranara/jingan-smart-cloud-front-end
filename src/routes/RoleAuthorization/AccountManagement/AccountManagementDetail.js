@@ -17,11 +17,9 @@ const title = '查看账号';
 const breadcrumbList = [
   {
     title: '首页',
-    href: '/',
   },
   {
     title: '权限管理',
-    href: '/',
   },
   {
     title: '账号管理',
@@ -54,7 +52,6 @@ const getEmptyData = () => {
     loading: loading.models.accountmanagement,
   }),
   dispatch => ({
-    
     // 查看详情
     fetchAccountDetail(action) {
       dispatch({
@@ -76,7 +73,7 @@ const getEmptyData = () => {
 )
 @Form.create()
 export default class AccountManagementDetail extends PureComponent {
-   /* 生命周期函数 */
+  /* 生命周期函数 */
   componentWillMount() {
     const {
       fetchAccountDetail,
@@ -99,17 +96,9 @@ export default class AccountManagementDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      company: {
+      accountmanagement: {
         detail: {
-          data: {
-            loginName,
-            password,
-            userName,
-            phoneNumber,
-            unitType,
-            unitId,
-            accountStatus,      
-          },
+          data: { loginName, password, userName, phoneNumber, unitType, unitId, accountStatus },
         },
       },
     } = this.props;
@@ -123,7 +112,9 @@ export default class AccountManagementDetail extends PureComponent {
           <Description term={fieldLabels.phoneNumber}>{phoneNumber || getEmptyData()}</Description>
           <Description term={fieldLabels.unitType}>{unitType || getEmptyData()}</Description>
           <Description term={fieldLabels.unitId}>{unitId || getEmptyData()}</Description>
-          <Description term={fieldLabels.accountStatus}>{accountStatus || getEmptyData()}</Description>
+          <Description term={fieldLabels.accountStatus}>
+            {accountStatus || getEmptyData()}
+          </Description>
         </DescriptionList>
       </Card>
     );

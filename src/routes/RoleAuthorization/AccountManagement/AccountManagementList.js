@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, BackTop, Spin, Col, Row, Cascader } from 'antd';
+import { Form, List, Card, Button, Icon, Input, BackTop, Spin, Col, Row, Select } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -33,10 +33,14 @@ const pageSize = 18;
 
 // 默认表单值
 const defaultFormData = {
-  user: undefined,
+  loginName: undefined,
+  userName: undefined,
+  phoneNumber: undefined,
   unitType: undefined,
   unitId: undefined,
 };
+/* root下的div */
+const getRootChild = () => document.querySelector('#root>div');
 
 @connect(
   ({ accountmanagement, loading }) => ({
@@ -50,9 +54,15 @@ const defaultFormData = {
         ...action,
       });
     },
-    appendFetch(action) {
+    fetchOptions(action) {
       dispatch({
-        type: 'accountmanagement/appendFetch',
+        type: 'accountmanagement/fetchOptions',
+        ...action,
+      });
+    },
+    fetchUnitList(action) {
+      dispatch({
+        type: 'accountmanagement/fetchUnitList',
         ...action,
       });
     },
@@ -69,11 +79,29 @@ export default class AccountManagementList extends PureComponent {
   }
 
   componentDidMount() {
-    const { fetch } = this.props;
+    const { fetch, fetchOptions, fetchUnitList } = this.props;
+
     // 获取账号列表
     fetch({
       payload: {
         pageSize,
+        pageNum: 1,
+      },
+    });
+
+    // 获取单位类型
+    fetchOptions({
+      payload: {
+        type: 'unitType',
+        key: 'unitTypes',
+      },
+    });
+
+    // 获取所属单位
+    fetchUnitList({
+      payload: {
+        type: 'unitId',
+        key: 'unitIds',
       },
     });
   }
@@ -123,11 +151,11 @@ export default class AccountManagementList extends PureComponent {
       return;
     }
     const {
-      appendFetch,
+      fetch,
       accountmanagement: { pageNum },
     } = this.props;
     // 请求数据
-    appendFetch({
+    fetch({
       payload: {
         pageSize,
         pageNum,
@@ -136,38 +164,62 @@ export default class AccountManagementList extends PureComponent {
     });
   };
 
+  /* 选择单位类型以后查询所属单位 */
+  handleQueryUnit = value => {
+    const { fetchUnitList } = this.props;
+    fetchUnitList({
+      payload: {
+        unitType: value,
+      },
+    });
+  };
+
   /* 渲染form表单 */
   renderForm() {
     const {
+      accountmanagement: { unitTypes, unitIds },
       form: { getFieldDecorator },
     } = this.props;
+
+    const { Option } = Select;
 
     return (
       <Card>
         <Form layout="inline">
           <Col span={18}>
             <FormItem label="用户">
-              {getFieldDecorator('user', {
-                initialValue: defaultFormData.user,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="用户名/姓名/手机号" />)}
+              {getFieldDecorator('input')(<Input placeholder="用户名/姓名/手机号" />)}
             </FormItem>
             <FormItem label="单位类型">
-              {getFieldDecorator('unitType', {
-                initialValue: defaultFormData.unitType,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(
-                <Cascader
-                  // options={ }
+              {getFieldDecorator('unitType')(
+                <Select
                   placeholder="请选择单位类型"
-                />
+                  getPopupContainer={getRootChild}
+                  onChange={this.handleQueryUnit}
+                  style={{ width: 180 }}
+                >
+                  {unitTypes.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.label}
+                    </Option>
+                  ))}
+                </Select>
               )}
             </FormItem>
             <FormItem label="所属单位">
-              {getFieldDecorator('unitId', {
-                initialValue: defaultFormData.unitId,
-                getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请选择所属单位" />)}
+              {getFieldDecorator('unitId')(
+                <Select
+                  placeholder="请选择所属单位"
+                  getPopupContainer={getRootChild}
+                  style={{ width: 180 }}
+                >
+                  {unitIds.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Option>
+                  ))}
+                </Select>
+              )}
             </FormItem>
           </Col>
 
@@ -208,7 +260,7 @@ export default class AccountManagementList extends PureComponent {
           renderItem={item => (
             <List.Item key={item.id}>
               <Card
-                title={item.name}
+                title={item.loginName}
                 className={styles.card}
                 actions={[
                   <Link to={`/role-authorization/account-management/detail/${item.id}`}>查看</Link>,
@@ -216,9 +268,9 @@ export default class AccountManagementList extends PureComponent {
                 ]}
                 extra={
                   <Button
-                    onClick={() => {
-                      this.handleShowDeleteConfirm(item.id);
-                    }}
+                    // onClick={() => {
+                    //   this.handleShowDeleteConfirm(item.id);
+                    // }}
                     shape="circle"
                     style={{ border: 'none', fontSize: '20px' }}
                   >
@@ -228,18 +280,18 @@ export default class AccountManagementList extends PureComponent {
               >
                 <Row
                   onClick={() => {
-                    goToDetail(`/${item.id}`);
+                    goToDetail(`/role-authorization/account-management/detail/${item.id}`);
                   }}
                   style={{ cursor: 'pointer' }}
                 >
                   <Col span={12}>
-                    <p>{`姓名：${item.subordinateCompanyCount}`}</p>
+                    <p>{`姓名：${item.userName}`}</p>
                   </Col>
                   <Col span={12}>
-                    <p>{`电话: ${item.subordinateCompanyCount}`}</p>
+                    <p>{`电话: ${item.phoneNumber}`}</p>
                   </Col>
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    {`公司名称：${item.practicalAddress}`}
+                    {`公司名称：${item.unitName}`}
                   </Ellipsis>
                   <Col span={12}>
                     <p>

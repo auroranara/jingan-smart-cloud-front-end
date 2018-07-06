@@ -147,7 +147,7 @@ export default class AccountManagementAdd extends PureComponent {
     const { fetchUnitList } = this.props;
     fetchUnitList({
       payload: {
-        unitIds: value,
+        unitType: value,
       },
     });
   };
@@ -285,7 +285,7 @@ export default class AccountManagementAdd extends PureComponent {
                   >
                     {unitIds.map(item => (
                       <Option value={item.id} key={item.id}>
-                        {item.label}
+                        {item.name}
                       </Option>
                     ))}
                   </Select>
@@ -300,7 +300,9 @@ export default class AccountManagementAdd extends PureComponent {
 
   /* 渲染错误信息 */
   renderErrorInfo() {
-    const { getFieldsError } = this.props.form;
+    const {
+      form: { getFieldsError },
+    } = this.props;
     const errors = getFieldsError();
     const errorCount = Object.keys(errors).filter(key => errors[key]).length;
     if (!errors || errorCount === 0) {

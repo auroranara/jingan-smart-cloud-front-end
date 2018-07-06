@@ -1,4 +1,5 @@
 import {
+  queryAccountList,
   queryAddaccountoptions,
   queryUnitlist,
   addAccount,
@@ -11,25 +12,37 @@ export default {
 
   state: {
     list: [],
-    detail: {},
     pageNum: 1,
     isLast: false,
+    detail: {
+      data: {
+        loginName: undefined,
+        password: undefined,
+        userName: undefined,
+        phoneNumber: undefined,
+        unitType: undefined,
+        unitId: undefined,
+        accountStatus: undefined,
+      },
+    },
     unitTypes: [],
     accountStatuses: [],
     unitIds: [],
   },
 
   effects: {
-    // *fetch({ payload }, { call, put }) {
-    //   const response = yield call(queryMaintenanceCompanies, payload);
-    //   if (response.code === 200) {
-    //     yield put({
-    //       type: 'query',
-    //       payload: response.data,
-    //     });
-    //   }
-    // },
+    // 查询账号列表
+    *fetch({ payload }, { call, put }) {
+      const response = yield call(queryAccountList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryAccountList',
+          payload: response.data,
+        });
+      }
+    },
 
+    // 新增账号-初始化页面选项
     *fetchOptions({ success, error }, { call, put }) {
       const response = yield call(queryAddaccountoptions);
       if (response.code === 200) {
@@ -47,6 +60,7 @@ export default {
       }
     },
 
+    // 新增账号-根据所选单位类型查询单位列表
     *fetchUnitList({ payload, callback }, { call, put }) {
       const response = yield call(queryUnitlist, payload);
       const { code } = response;
@@ -105,22 +119,22 @@ export default {
   },
 
   reducers: {
-    // query(
-    //   state,
-    //   {
-    //     payload: {
-    //       list,
-    //       pagination: { pageNum, pageSize, total },
-    //     },
-    //   }
-    // ) {
-    //   return {
-    //     ...state,
-    //     list,
-    //     pageNum: 1,
-    //     isLast: pageNum * pageSize >= total,
-    //   };
-    // },
+    queryAccountList(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        list,
+        pageNum: 1,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
     queryAddaccountoptions(
       state,
       {
