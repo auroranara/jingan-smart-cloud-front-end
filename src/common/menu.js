@@ -28,6 +28,17 @@ const menuData = [
     ],
   },
   {
+    name: '动态监测',
+    icon: 'dashboard',
+    path: 'fire-alarm',
+    children: [
+      {
+        name: '火灾自动报警系统',
+        path: 'index',
+      },
+    ],
+  },
+  {
     name: '账户',
     icon: 'user',
     path: 'user',
