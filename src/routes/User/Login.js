@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { Checkbox, Alert } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
+import { aesEncrypt } from '../../utils/utils';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
@@ -47,6 +48,7 @@ export default class LoginPage extends Component {
         type: 'login/login',
         payload: {
           ...values,
+          password: aesEncrypt(values.password),
           type,
         },
         callback(response) {
