@@ -148,7 +148,7 @@ export default class CompanyDetail extends PureComponent {
           </Description>
           <Description term={fieldLabels.companyIchnography}>
             {(companyIchnography && (
-              <a href={companyIchnography[0].webUrl} target="_bland">
+              <a href={companyIchnography[0].webUrl} target="_blank" rel="noopener noreferrer">
                 {ichnographyName || '预览'}
               </a>
             )) ||
