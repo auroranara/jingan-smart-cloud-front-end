@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { Checkbox, Alert } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
+import { aesEncrypt } from '../../utils/utils';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
@@ -47,6 +48,7 @@ export default class LoginPage extends Component {
         type: 'login/login',
         payload: {
           ...values,
+          password: aesEncrypt(values.password),
           type,
         },
         callback(response) {
@@ -96,7 +98,7 @@ export default class LoginPage extends Component {
               login.type === 'account' &&
               !submitting &&
               this.renderMessage('账户或密码错误')}
-            <UserName name="userName" />
+            <UserName name="username" />
             <Password name="password" />
           </Tab>
           <Tab key="mobile" tab="手机号登录">
