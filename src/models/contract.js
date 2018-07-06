@@ -1,4 +1,4 @@
-// import { queryContractList, queryStatusList, queryContract, addContract, queryMaintanceList, queryServiceList } from '../services/contract/contract.js';
+import { queryContractList, queryStatusList, queryContract, addContract, queryMaintenanceList, queryServiceList, editContract } from '../services/contract/contract.js';
 
 export default {
   namespace: 'contract',
@@ -8,41 +8,21 @@ export default {
       list: [],
       pagination: {
         total: 0,
-        pageSize: 1,
+        pageSize: 24,
         pageNum: 1,
       },
     },
     isLast: false,
     statusList: [],
     detail: {},
-    maintanceList: [{
-      id: 1,
-      name: '陆华',
-    }],
+    maintenanceList: [],
     serviceList: [],
   },
 
   effects: {
     /* 获取合同列表 */
-    *fetchList({ payload, success, error }, { put }) {
-      // const response = yield call(queryContractList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [{
-            id: 1,
-            name: '陆华',
-            number: 'x00001',
-            safetyName: '陆华',
-            safetyPhone: '15911111111',
-          }],
-          pagination: {
-            total: 2,
-            pageSize: payload.pageSize,
-            pageNum: payload.pageNum,
-          },
-        },
-      };
+    *fetchList({ payload, success, error }, { call, put }) {
+      const response = yield call(queryContractList, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryList',
@@ -56,23 +36,8 @@ export default {
       }
     },
     /* 追加维保合同列表 */
-    *appendList({ payload, success, error }, { put }) {
-      // const response = yield call(queryContractList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [{
-            id: 2,
-            name: '虫二',
-            number: 'x00001',
-          }],
-          pagination: {
-            total: 2,
-            pageSize: payload.pageSize,
-            pageNum: payload.pageNum,
-          },
-        },
-      };
+    *appendList({ payload, success, error }, { call, put }) {
+      const response = yield call(queryContractList, payload);
       if (response.code === 200) {
         yield put({
           type: 'pushList',
@@ -86,31 +51,8 @@ export default {
       }
     },
     /* 获取企业状态列表 */
-    *fetchStatusList({ payload, success, error }, { put }) {
-      // const response = yield call(queryStatusList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [{
-            id: 1,
-            label: '已过期',
-          }, {
-            id: 2,
-            label: '服务中',
-          }, {
-            id: 3,
-            label: '即将过期',
-          }, {
-            id: 4,
-            label: '未开始',
-          }],
-          pagination: {
-            total: 0,
-            pageSize: payload.pageSize,
-            pageNum: payload.pageNum,
-          },
-        },
-      };
+    *fetchStatusList({ payload, success, error }, { call, put }) {
+      const response = yield call(queryStatusList, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryStatusList',
@@ -124,16 +66,8 @@ export default {
       }
     },
     /* 获取合同详情 */
-    *fetchContract({ payload, success, error }, { put }) {
-      // const response = yield call(queryContract, payload);
-      const response = {
-        code: 200,
-        data: {
-          id: payload.id,
-          name: '陆华',
-          number: 'x00001',
-        },
-      };
+    *fetchContract({ payload, success, error }, { call, put }) {
+      const response = yield call(queryContract, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryContract',
@@ -147,16 +81,8 @@ export default {
       }
     },
     /* 新增合同 */
-    *insertContract({ payload, success, error }, { put }) {
-      // const response = yield call(addContract, payload);
-      const response = {
-        code: 200,
-        data: {
-          id: payload.id,
-          name: '陆华',
-          number: 'x00001',
-        },
-      };
+    *insertContract({ payload, success, error }, { call, put }) {
+      const response = yield call(addContract, payload);
       if (response.code === 200) {
         yield put({
           type: 'addContract',
@@ -170,16 +96,8 @@ export default {
       }
     },
     /* 修改合同 */
-    *updateContract({ payload, success, error }, { put }) {
-      // const response = yield call(addContract, payload);
-      const response = {
-        code: 200,
-        data: {
-          id: payload.id,
-          name: '陆华',
-          number: 'x00001',
-        },
-      };
+    *updateContract({ payload, success, error }, { call, put }) {
+      const response = yield call(editContract, payload);
       if (response.code === 200) {
         yield put({
           type: 'editContract',
@@ -192,22 +110,11 @@ export default {
         error(response.msg);
       }
     },
-    *fetchMaintanceList({ payload, success, error }, { put }) {
-      // const response = yield call(queryMaintanceList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [],
-          pagination: {
-            total: 0,
-            pageSize: payload.pageSize,
-            pageNum: payload.pageNum,
-          },
-        },
-      };
+    *fetchMaintenanceList({ payload, success, error }, { call, put }) {
+      const response = yield call(queryMaintenanceList, payload);
       if (response.code === 200) {
         yield put({
-          type: 'queryMaintanceList',
+          type: 'queryMaintenanceList',
           payload: response.data.list,
         });
         if (success) {
@@ -217,19 +124,8 @@ export default {
         error(response.msg);
       }
     },
-    *fetchServiceList({ payload, success, error }, { put }) {
-      // const response = yield call(queryServiceList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [],
-          pagination: {
-            total: 0,
-            pageSize: payload.pageSize,
-            pageNum: payload.pageNum,
-          },
-        },
-      };
+    *fetchServiceList({ payload, success, error }, { call, put }) {
+      const response = yield call(queryServiceList, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryServiceList',
@@ -302,10 +198,10 @@ export default {
       };
     },
     /* 获取维保单位列表 */
-    queryMaintanceList(state, { payload }) {
+    queryMaintenanceList(state, { payload }) {
       return {
         ...state,
-        maintanceList: payload,
+        maintenanceList: payload,
       };
     },
     /* 获取维保单位列表 */

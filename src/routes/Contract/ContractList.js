@@ -4,6 +4,7 @@ import { Form, List, Card, Input, Button, Select, message, Spin, DatePicker } fr
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 import Ellipsis from 'components/Ellipsis';
+import moment from 'moment';
 
 import InlineForm from '../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
@@ -30,7 +31,18 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 /* 标记 */
-const markList = ['warning-mark', 'processing-mark', 'error-mark', 'default-mark'];
+const markList = {
+  1: 'processing-mark',
+  2: 'error-mark',
+  3: 'warning-mark',
+  4: 'default-mark',
+};
+const markLabelList = {
+  1: '服务中',
+  2: '即将到期',
+  3: '已到期',
+  4: '未开始',
+};
 
 @connect(({ contract, loading }) => ({
   contract,
@@ -94,19 +106,8 @@ export default class ContractList extends PureComponent {
       },
     });
     /* 获取单位状态列表 */
-    fetchStatusList({
-      payload: {
-
-      },
-    });
+    fetchStatusList();
   }
-
-
-  /* 获取标签 */
-  getMark = (index) => {
-    const { contract: { statusList } } = this.props;
-    return <div className={styles[markList[index]]}>{statusList[index].label}</div>
-  };
 
   /* 滚动加载 */
   handleLoadMore = flag => {
@@ -126,12 +127,12 @@ export default class ContractList extends PureComponent {
   };
 
   /* 查询点击事件 */
-  handleSearch = ({ signPeriod, ...restValues }) => {
+  handleSearch = ({ period: [startTime, endTime], ...restValues }) => {
     const { fetchList, contract: { data: { pagination: { pageSize } } } } = this.props;
 
     const formData = {
-      start: signPeriod && signPeriod[0].format('YYYY-MM-DD'),
-      end: signPeriod && signPeriod[1].format('YYYY-MM-DD'),
+      startTime: startTime && startTime.format('YYYY-MM-DD'),
+      endTime: endTime && endTime.format('YYYY-MM-DD'),
       ...restValues,
     };
     fetchList({
@@ -185,14 +186,14 @@ export default class ContractList extends PureComponent {
         transform,
       },
       {
-        id: 'address',
+        id: 'searchArea',
         render() {
           return <Input placeholder='请输入单位地址' />;
         },
         transform,
       },
       {
-        id: 'status',
+        id: 'contractStatus',
         render() {
           return (
             <Select
@@ -203,7 +204,7 @@ export default class ContractList extends PureComponent {
             >
               {statusList.map(item => (
                 <Option value={item.id} key={item.id}>
-                  {item.label}
+                  {item.value}
                 </Option>
               ))}
             </Select>
@@ -211,14 +212,17 @@ export default class ContractList extends PureComponent {
         },
       },
       {
-        id: 'number',
+        id: 'contractCode',
         render() {
           return <Input placeholder='请输入合同编号' />;
         },
         transform,
       },
       {
-        id: 'signPeriod',
+        id: 'period',
+        options: {
+          initialValue: [],
+        },
         render() {
           return (
             <RangePicker
@@ -259,24 +263,22 @@ export default class ContractList extends PureComponent {
           renderItem={item => {
             const {
               id,
-              number,
-              name,
-              safetyName,
-              safetyPhone,
-              practicalProvinceLabel,
-              practicalCityLabel,
-              practicalDistrictLabel,
-              practicalTownLabel,
-              practicalAddress,
-              start,
-              end,
+              contractCode,
+              startTime,
+              endTime,
+              contractStatus,
+              companyBasicInfo: {
+                name,
+                safetyName,
+                safetyPhone,
+                searchArea,
+              },
             } = item;
-            const practicalAddressLabel = (practicalProvinceLabel || '') + (practicalCityLabel || '') + (practicalDistrictLabel || '') + (practicalTownLabel || '') + (practicalAddress || '');
-            const period = start && `${start || '?'} 至 ${end || '?'}`;
+            const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} 至 ${(endTime && moment(+endTime).format('YYYY-MM-DD')) || '?'}`;
             return (
               <List.Item key={id}>
                 <Card
-                  title={number}
+                  title={contractCode}
                   className={styles.card}
                   actions={[
                     <Link to={detailUrl+id}>查看</Link>,
@@ -304,7 +306,7 @@ export default class ContractList extends PureComponent {
                     服务单位：{name || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    地址：{practicalAddressLabel || getEmptyData()}
+                    地址：{searchArea || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                     安全负责人：{safetyName ? (<Fragment><span style={{ marginRight: '24px' }}>{safetyName}</span><span>{safetyPhone}</span></Fragment>) : getEmptyData()}
@@ -313,7 +315,7 @@ export default class ContractList extends PureComponent {
                     合同期限：{period || getEmptyData()}
                     </Ellipsis>
                   </div>
-                  {this.getMark(3)}
+                  {contractStatus && <div className={styles[markList[contractStatus]]}>{markLabelList[contractStatus]}</div>}
                 </Card>
               </List.Item>
           )}}
