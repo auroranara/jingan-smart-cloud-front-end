@@ -309,6 +309,24 @@ export const getRouterData = app => {
     '/fire-control/contract/list': {
       component: dynamicWrapper(app, ['contract'], () => import('../routes/Contract/ContractList')),
     },
+    /* 查看维保合同详情 */
+    '/fire-control/contract/detail/:id': {
+      component: dynamicWrapper(app, ['contract'], () =>
+        import('../routes/Contract/ContractDetail')
+      ),
+    },
+    /* 新增维保合同 */
+    '/fire-control/contract/add': {
+      component: dynamicWrapper(app, ['contract'], () =>
+        import('../routes/Contract/ContractHandler')
+      ),
+    },
+    /* 编辑维保合同 */
+    '/fire-control/contract/edit/:id': {
+      component: dynamicWrapper(app, ['contract'], () =>
+        import('../routes/Contract/ContractHandler')
+      ),
+    },
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },
