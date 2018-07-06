@@ -103,7 +103,7 @@ export const getRouterData = app => {
     /* 企业添加 */
     '/base-info/company/add': {
       component: dynamicWrapper(app, ['company'], () =>
-        import('../routes/BaseInfo/Company/CompanyAdd')
+        import('../routes/BaseInfo/Company/CompanyEdit')
       ),
     },
     /* 企业修改 */

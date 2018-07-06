@@ -375,5 +375,14 @@ export default {
         ...fields,
       };
     },
+    // 清空详情
+    clearDetail(state) {
+      return {
+        ...state,
+        detail: {
+          data: {},
+        },
+      };
+    },
   },
 };

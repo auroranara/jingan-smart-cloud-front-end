@@ -28,31 +28,16 @@ import styles from './Company.less';
 const { TextArea } = Input;
 const { Option } = Select;
 
-// 标题
-const title = '修改企业';
+// 修改页面标题
+const editTitle = '编辑企业';
+// 添加页面标题
+const addTitle = '新增企业';
 // 返回地址
 const href = '/base-info/company-list';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
 const folder = 'fireControl';
-// 面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    href: '/',
-  },
-  {
-    title: '基础信息',
-  },
-  {
-    title: '企业单位',
-    href,
-  },
-  {
-    title,
-  },
-];
 /* 表单标签 */
 const fieldLabels = {
   administrativeDivision: '行政区域',
@@ -102,6 +87,13 @@ const emailRegExp = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-
         ...action,
       });
     },
+    // 添加
+    insert(action) {
+      dispatch({
+        type: 'company/insertCompany',
+        ...action,
+      });
+    },
     // 获取详情
     fetchCompany(action) {
       dispatch({
@@ -138,6 +130,12 @@ const emailRegExp = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-
     goToException() {
       dispatch(routerRedux.push('/exception/500'));
     },
+    // 清空详情
+    clearDetail() {
+      dispatch({
+        type: 'company/clearDetail',
+      });
+    },
   })
 )
 @Form.create()
@@ -159,77 +157,93 @@ export default class CompanyDetail extends PureComponent {
       fetchCompany,
       fetchDict,
       fetchArea,
+      clearDetail,
       match: {
         params: { id },
       },
       goToException,
     } = this.props;
 
-    // 获取详情
-    fetchCompany({
-      payload: {
-        id,
-      },
-      success: ({
-        maintenanceId,
-        registerProvince,
-        registerCity,
-        registerDistrict,
-        practicalProvince,
-        practicalCity,
-        practicalDistrict,
-        companyIchnography,
-        ichnographyName,
-        maintenanceContract,
-        contractName,
-      }) => {
-        // 初始化上传文件
-        this.setState({
+    // 如果id存在的话，则编辑，否则新增
+    if (id) {
+      // 获取详情
+      fetchCompany({
+        payload: {
+          id,
+        },
+        success: ({
           maintenanceId,
-          ichnographyList: companyIchnography
-            ? [
-                {
-                  uid: -1,
-                  status: 'done',
-                  name: ichnographyName,
-                  url: companyIchnography,
-                },
-              ]
-            : [],
-          contractList: maintenanceContract
-            ? [
-                {
-                  uid: -1,
-                  status: 'done',
-                  name: contractName,
-                  url: maintenanceContract,
-                },
-              ]
-            : [],
-        });
-        // 获取注册地址列表
-        fetchArea({
-          payload: {
-            cityIds: [registerProvince, registerCity, registerDistrict]
-              .filter(item => item)
-              .join(','),
-            keys: ['registerAddress'],
-          },
-        });
-        // 获取两实际地址列表
-        fetchArea({
-          payload: {
-            cityIds: [practicalProvince, practicalCity, practicalDistrict]
-              .filter(item => item)
-              .join(','),
-            keys: ['practicalAddress'],
-          },
-        });
-      },
-      error: () => {
-        goToException();
-      },
-    });
+          registerProvince,
+          registerCity,
+          registerDistrict,
+          practicalProvince,
+          practicalCity,
+          practicalDistrict,
+          companyIchnography,
+          ichnographyName,
+          maintenanceContract,
+          contractName,
+        }) => {
+          // 初始化上传文件
+          this.setState({
+            maintenanceId,
+            ichnographyList: companyIchnography
+              ? [
+                  {
+                    uid: -1,
+                    status: 'done',
+                    name: ichnographyName,
+                    url: companyIchnography[0].webUrl,
+                    dbUrl: companyIchnography[0].dbUrl,
+                  },
+                ]
+              : [],
+            contractList: maintenanceContract
+              ? [
+                  {
+                    uid: -1,
+                    status: 'done',
+                    name: contractName,
+                    url: maintenanceContract[0].webUrl,
+                    dbUrl: maintenanceContract[0].dbUrl,
+                  },
+                ]
+              : [],
+          });
+          // 获取注册地址列表
+          fetchArea({
+            payload: {
+              cityIds: [registerProvince, registerCity, registerDistrict]
+                .filter(item => item)
+                .join(','),
+              keys: ['registerAddress'],
+            },
+          });
+          // 获取两实际地址列表
+          fetchArea({
+            payload: {
+              cityIds: [practicalProvince, practicalCity, practicalDistrict]
+                .filter(item => item)
+                .join(','),
+              keys: ['practicalAddress'],
+            },
+          });
+        },
+        error: () => {
+          goToException();
+        },
+      });
+    }
+    else {
+      // 清空详情
+      clearDetail();
+      // 获取行政区域省
+      fetchArea({
+        payload: {
+          keys: ['registerAddress', 'practicalAddress'],
+        },
+      });
+    }
 
     // 获取行业类别
     fetchDict({
@@ -275,12 +289,12 @@ export default class CompanyDetail extends PureComponent {
   handleClickValidate = () => {
     const {
       editCompany,
+      insert,
       goBack,
       form: { validateFieldsAndScroll },
       match: {
         params: { id },
       },
-      company,
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -308,39 +322,61 @@ export default class CompanyDetail extends PureComponent {
             ichnographyList: [ichnography],
             contractList: [contract],
           } = this.state;
-          editCompany({
-            payload: {
-              id,
-              ...restFields,
-              registerProvince,
-              registerCity,
-              registerDistrict,
-              registerTown,
-              practicalProvince,
-              practicalCity,
-              practicalDistrict,
-              practicalTown,
-              industryCategory: industryCategory.join(','),
-              createTime: createTime && createTime.format('YYYY-MM-DD'),
-              maintenanceId: maintenanceId || company.detail.data.maintenanceId,
-              companyIchnography: ichnography && ichnography.dbUrl,
-              ichnographyName: ichnography && ichnography.name,
-              maintenanceContract: contract && contract.dbUrl,
-              contractName: contract && contract.name,
-            },
-            success: () => {
-              message.success('修改成功！', () => {
-                goBack();
-              });
-            },
-            error: err => {
-              message.error(err, () => {
-                this.setState({
-                  submitting: false,
+          const payload = {
+            ...restFields,
+            registerProvince,
+            registerCity,
+            registerDistrict,
+            registerTown,
+            practicalProvince,
+            practicalCity,
+            practicalDistrict,
+            practicalTown,
+            industryCategory: industryCategory.join(','),
+            createTime: createTime && createTime.format('YYYY-MM-DD'),
+            maintenanceId,
+            companyIchnography: ichnography && ichnography.dbUrl,
+            ichnographyName: ichnography && ichnography.name,
+            maintenanceContract: contract && contract.dbUrl,
+            contractName: contract && contract.name,
+          };
+          if (id) {
+            editCompany({
+              payload: {
+                id,
+                ...payload,
+              },
+              success: () => {
+                message.success('编辑成功！', () => {
+                  goBack();
                 });
-              });
-            },
-          });
+              },
+              error: err => {
+                message.error(err, () => {
+                  this.setState({
+                    submitting: false,
+                  });
+                });
+              },
+            });
+          }
+          else {
+            insert({
+              payload,
+              success: () => {
+                message.success('新增成功！', () => {
+                  goBack();
+                });
+              },
+              error: err => {
+                message.error(err, () => {
+                  this.setState({
+                    submitting: false,
+                  });
+                });
+              },
+            });
+          }
         }
       }
     );
@@ -608,8 +644,8 @@ export default class CompanyDetail extends PureComponent {
                 <Col md={12} sm={24}>
                   <Form.Item label={fieldLabels.registerAddress}>
                     {getFieldDecorator('registerAddressArea', {
-                      initialValue:
-                        [registerProvince, registerCity, registerDistrict, registerTown] || [],
+                      initialValue: registerProvince ?
+                        [registerProvince, registerCity, registerDistrict, registerTown] : [],
                       rules: [{ required: true, message: '请选择注册地址' }],
                     })(
                       <Cascader
@@ -647,8 +683,8 @@ export default class CompanyDetail extends PureComponent {
                 <Col md={12} sm={24}>
                   <Form.Item label={fieldLabels.practicalAddress}>
                     {getFieldDecorator('practicalAddressArea', {
-                      initialValue:
-                        [practicalProvince, practicalCity, practicalDistrict, practicalTown] || [],
+                      initialValue: practicalProvince ?
+                        [practicalProvince, practicalCity, practicalDistrict, practicalTown] : [],
                       rules: [{ required: true, message: '请选择实际经营地址' }],
                     })(
                       <Cascader
@@ -1133,8 +1169,26 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
-    const { loading } = this.props;
+    const { loading, match: { params: { id } } } = this.props;
     const { submitting } = this.state;
+    const title = id ? editTitle : addTitle;
+    // 面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        href: '/',
+      },
+      {
+        title: '基础信息',
+      },
+      {
+        title: '企业单位',
+        href,
+      },
+      {
+        title,
+      },
+    ];
     return (
       <PageHeaderLayout
         title={title}
