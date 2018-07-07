@@ -1,11 +1,13 @@
 import React, { Fragment } from 'react';
-import { Link, Redirect, Switch, Route } from 'dva/router';
+import { Link } from 'dva/router';
 import DocumentTitle from 'react-document-title';
 import { Icon } from 'antd';
 import GlobalFooter from '../components/GlobalFooter';
 import styles from './UserLayout.less';
 import logo from '../assets/logo.svg';
-import { getRoutes, getPageQuery, getQueryPath } from '../utils/utils';
+
+// TODO:remove
+// import { getRoutes, getPageQuery, getQueryPath } from '../utils/utils';
 
 const links = [
   /* {
@@ -31,14 +33,14 @@ const copyright = (
     <p style={{ marginTop: '5px' }}>服务电话：400-928-5656</p>
   </Fragment>
 );
-
-function getLoginPathWithRedirectPath() {
-  const params = getPageQuery();
-  const { redirect } = params;
-  return getQueryPath('/user/login', {
-    redirect,
-  });
-}
+// TODO:remove
+// function getLoginPathWithRedirectPath() {
+//   const params = getPageQuery();
+//   const { redirect } = params;
+//   return getQueryPath('/user/login', {
+//     redirect,
+//   });
+// }
 
 class UserLayout extends React.PureComponent {
   getPageTitle() {
@@ -52,7 +54,7 @@ class UserLayout extends React.PureComponent {
   }
 
   render() {
-    const { routerData, match } = this.props;
+    const { children } = this.props;
     return (
       <DocumentTitle title={this.getPageTitle()}>
         <div className={styles.container}>
@@ -65,7 +67,8 @@ class UserLayout extends React.PureComponent {
                 </Link>
               </div>
             </div>
-            <Switch>
+            {children}
+            {/* <Switch>
               {getRoutes(match.path, routerData).map(item => (
                 <Route
                   key={item.key}
@@ -75,7 +78,7 @@ class UserLayout extends React.PureComponent {
                 />
               ))}
               <Redirect from="/user" to={getLoginPathWithRedirectPath()} />
-            </Switch>
+            </Switch> */}
           </div>
           <GlobalFooter links={links} copyright={copyright} />
         </div>
