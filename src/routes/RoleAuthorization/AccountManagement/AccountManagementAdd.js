@@ -163,7 +163,6 @@ export default class accountManagementAdd extends PureComponent {
   // };
   handleUnitTypeSelect = (value) => {
     const { fetchUnitsFuzzy, form: { getFieldValue, setFieldsValue } } = this.props
-    this.setState({ fetching: true })
     setFieldsValue({ unitId: '' })
     fetchUnitsFuzzy({
       payload: {
@@ -171,29 +170,25 @@ export default class accountManagementAdd extends PureComponent {
         unitName: getFieldValue('unitId') || null,
       },
     })
-    this.setState({ fetching: false })
   }
 
   handleUnitIdChange = (value) => {
     const { fetchUnitsFuzzy, form: { getFieldValue } } = this.props
-    this.setState({ fetching: true })
     fetchUnitsFuzzy({
       payload: {
         unitType: getFieldValue('unitType') || null,
         unitName: value || null,
       },
     })
-    this.setState({ fetching: false })
   }
 
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
       account: { unitTypes, accountStatuses, unitIds },
-      form: { getFieldDecorator },
+      form: { getFieldDecorator }, loading,
     } = this.props;
 
-    const { fetching } = this.state;
 
     const { Option } = Select;
 
@@ -316,8 +311,9 @@ export default class accountManagementAdd extends PureComponent {
                       mode="combobox"
                       optionLabelProp="children"
                       placeholder="请选择所属单位"
-                      notFoundContent={fetching ? <Spin size="small" /> : '暂无数据'}
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleUnitIdChange}
+                      filterOption={false}
                     >
                       {unitIds.map(item => (
                         <Option value={item.id} key={item.id}>
