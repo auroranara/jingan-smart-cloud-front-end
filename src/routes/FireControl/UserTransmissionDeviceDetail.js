@@ -109,13 +109,17 @@ const hostModalFormItems = [
   { label: '生产日期', type: 'date-picker', placehoder: '请选择日期', name: 'productionDate' },
 ];
 
-const hostModalFormItemsAdd = hostModalFormItems;
+const hostModalFormItemsUpdate = disableDeviceCode(hostModalFormItems);
+const deviceModalFormItemsUpdate = disableDeviceCode(deviceModalFormItems);
 
-// 添加消防主机时，用户传输装置是对应好的，所以在表单中用户传输装置编号是固定的
-// const hostModalFormItemsAdd = hostModalFormItems.map(item => {
-//   if (item.name === 'transmissionDeviceCode') return { ...item, disabled: true };
-//   return item;
-// });
+// 添加用户传输装置/消防主机时，装置编号不可修改
+function disableDeviceCode(items) {
+  return items.map(item => {
+    if (item.name === 'deviceCode')
+      return { ...item, disabled: true };
+    return item;
+  });
+}
 
 function dispatchCallback(code, successMsg, failMsg, msg) {
   if (code === 200)
@@ -422,7 +426,7 @@ export default class UserTransmissionDeviceDetail extends Component {
           title="用户传输装置"
           className={styles.modalForm}
           operation={operation}
-          items={deviceModalFormItems}
+          items={operation === 'add' ? deviceModalFormItems: deviceModalFormItemsUpdate}
           initialValues={deviceRecord}
         />
         <ModalForm
@@ -431,7 +435,7 @@ export default class UserTransmissionDeviceDetail extends Component {
           title="消防主机"
           className={styles.modalForm}
           operation={operation}
-          items={operation === 'add' ? hostModalFormItemsAdd : hostModalFormItems}
+          items={operation === 'add' ? hostModalFormItems : hostModalFormItemsUpdate}
           initialValues={hostRecord}
         />
       </PageHeaderLayout>
