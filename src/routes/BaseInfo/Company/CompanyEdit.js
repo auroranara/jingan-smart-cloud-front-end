@@ -22,6 +22,7 @@ import { routerRedux } from 'dva/router';
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 import CompanyModal from './CompanyModal';
+import { phoneReg, emailReg } from '../../../utils/validate';
 
 import styles from './Company.less';
 
@@ -69,10 +70,6 @@ const defaultPagination = {
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
-/* 联系方式正则 */
-const phoneRegExp = /^((0\d{2,3}-\d{7,8})|(1[3584]\d{9}))$/;
-/* 邮箱正则 */
-const emailRegExp = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
 
 @connect(
   ({ company, loading }) => ({
@@ -924,7 +921,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入法定代表人联系方式' },
-                      { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' },
+                      { pattern: phoneReg, message: '法定代表人联系方式格式不正确' },
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
@@ -936,7 +933,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入法定代表人邮箱' },
-                      { pattern: emailRegExp, message: '法定代表人邮箱格式不正确' },
+                      { pattern: emailReg, message: '法定代表人邮箱格式不正确' },
                     ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
@@ -963,7 +960,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入主要负责人联系方式' },
-                      { pattern: phoneRegExp, message: '主要负责人联系方式格式不正确' },
+                      { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
@@ -975,7 +972,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入主要负责人邮箱' },
-                      { pattern: emailRegExp, message: '主要负责人邮箱格式不正确' },
+                      { pattern: emailReg, message: '主要负责人邮箱格式不正确' },
                     ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
@@ -1002,7 +999,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入安全负责人联系方式' },
-                      { pattern: phoneRegExp, message: '安全负责人联系方式格式不正确' },
+                      { pattern: phoneReg, message: '安全负责人联系方式格式不正确' },
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
@@ -1014,7 +1011,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入安全负责人邮箱' },
-                      { pattern: emailRegExp, message: '安全负责人邮箱格式不正确' },
+                      { pattern: emailReg, message: '安全负责人邮箱格式不正确' },
                     ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
