@@ -15,12 +15,12 @@ export default {
   effects: {
     *login({ payload, callback }, { call, put }) {
       const response = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      });
       // Login successfully
       if (response.code === 200) {
+        yield put({
+          type: 'changeLoginStatus',
+          payload: { type: payload.type, status: true, currentAuthority: response.data.currentAuthority },
+        });
         if (callback) callback(response)
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
