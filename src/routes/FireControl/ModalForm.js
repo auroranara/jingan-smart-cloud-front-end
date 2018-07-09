@@ -1,7 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { Checkbox, DatePicker, Form, Input, Modal, Switch } from 'antd';
-// import { POINT_CONVERSION_COMPRESSED } from 'constants';
+import { Checkbox, DatePicker, Form, Input, InputNumber, Modal, Switch } from 'antd';
 
 // 封装的modal下带form的组件，需要传入的值查看props中传入的值
 
@@ -23,6 +22,7 @@ function ModalForm(props) {
     title = '', // 当前modal的title显示的一部分
     colSpan = [6, 15], // formItem的col配置
     initialValues = {}, // 每个formItem的初始值，也可以在items中传入，当需要改变form中的值时，在这里传入对应的对象
+    ...restProps
   } = props;
   // 解构中传入null时，initialValus认为传值了，所以并不会是{}
   // console.log('initialValues in ModalForm', initialValues);
@@ -46,6 +46,11 @@ function ModalForm(props) {
     const { type = 'input', disabled, placeholder = '', label, name, options } = item;
     // console.log('disabled in ModalForm-columns-item', disabled);
     let initialValue = initVals[name];
+
+    // 由于都提交的时候设置了whitespace=true来判断是否是空格，所以默认field value都是字符串，当初始值时数字时，提交时也是数字会校验错误
+    // 所以把所有数字都转为字符串，当然也可以校验时把type设为number，这里是为了防止传过来的值变成了字符串而不是数字
+    // if (typeof initialValue === 'number')
+    //   initialValue = initialValue.toString();
     if (isDateProp(name) && initialValue !== undefined && initialValue !== null)
       initialValue = moment(initialValue, DATE_FORMAT);
     let newOptions = options;
@@ -71,6 +76,7 @@ function ModalForm(props) {
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => hideModal()}
+      {...restProps}
     >
       <Form>{formItems}</Form>
     </Modal>
@@ -78,6 +84,7 @@ function ModalForm(props) {
 }
 
 function getComByType(type='input', disabled=false, placeholder='') {
+  // const inputType = type.slice(6, -1) || 'text'; // input的类型
   switch(type) {
     case 'checkbox':
       return <Checkbox disabled={disabled} />;
@@ -85,6 +92,8 @@ function getComByType(type='input', disabled=false, placeholder='') {
       return <Switch disabled={disabled} />;
     case 'date-picker':
       return <DatePicker disabled={disabled} />;
+    case 'inputNumber':
+      return <InputNumber disabled={disabled} />;
     default:
       return <Input disabled={disabled} placeholder={placeholder} />;
   }

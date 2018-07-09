@@ -25,30 +25,39 @@ export default {
     *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryTransmissionDevice, payload);
       const {
+        code,
         data: {
           list,
           pagination: { pageNum, total },
         },
       } = response;
 
-      const pIndex = Number.parseInt(pageNum, 10);
-      const pType = typeof pIndex;
-      if (pType !== 'number') {
-        console.error(`pageNum in transmission.js[models] is ${pType}, not a number!`);
-        return;
-      }
+      // const pIndex = Number.parseInt(pageNum, 10);
+      // const pType = typeof pIndex;
+      // if (pType !== 'number') {
+      //   console.error(`pageNum in transmission.js[models] is ${pType}, not a number!`);
+      //   return;
+      // }
+
+      // 回调函数，将total传入，在回调函数里判断是否数据库中数据已全部取出，以此来判断下拉是否还加载数据
+      if (callback) callback(total);
+
+      if (code !== 200) return;
 
       yield put({
         type: 'queryList',
         payload: { pageNum, list },
       });
-      // 回调函数，将total传入，在回调函数里判断是否数据库中数据已全部取出，以此来判断下拉是否还加载数据
-      if (callback) callback(total);
+
     },
-    *fetchDetail({ payload }, { call, put }) {
+    *fetchDetail({ payload, callback }, { call, put }) {
       // console.log('fetchDetail');
       const response = yield call(queryTransmissionDeviceDetail, payload);
       // console.log('response', response);
+      const { code } = response;
+      if (callback) callback(code);
+      if (code !== 200) return;
+
       const list = response.data.list.map(item => ({
         ...item.transmissionDevice,
         hostList: item.fireDevices,
@@ -58,71 +67,74 @@ export default {
     },
     *fetchCompanyDetail({ payload }, { call, put }) {
       const response = yield call(queryCompanyDetail, payload);
+      const { code } = response;
+      if (code !== 200) return;
+
       yield put({ type: 'queryCompanyDetail', payload: response.data });
     },
     *deviceAddAsync({ payload, callback }, { call, put }) {
       const response = yield call(transmissionDeviceAdd, payload);
+      const { code, data, msg } = response;
+      const responseData = data || {};
+      const { hostList } = responseData;
+      if (callback) callback(code, '添加成功', '添加失败', msg);
 
-      const { code, data } = response;
-      const { hostList } = data;
       // 返回的新增设备，hostList属性不存在时，赋给一个空数组
       if (code === 200)
         yield put({ type: 'addDevice', payload: { ...data, hostList: hostList || [] } });
-
-      if (callback) callback(code, '添加成功', '添加失败');
     },
     *deviceUpdateAsync({ payload, callback }, { call, put }) {
       const response = yield call(transmissionDeviceUpdate, payload);
 
-      const { code } = response;
+      const { code, msg } = response;
       const { data, transmissionId } = payload;
       // 传入的payload = { companyId, transmissionId, data: fieldsValue } fieldValue中已丢失id，所以要再传入一个id
       if (code === 200)
         yield put({ type: 'updateDevice', payload: { ...data, id: transmissionId } });
 
-      if (callback) callback(code, '更新成功', '更新失败');
+      if (callback) callback(code, '更新成功', '更新失败', msg);
     },
     *deviceDeleteAsync({ payload, callback }, { call, put }) {
       const response = yield call(transmissionDeviceDelete, payload);
 
-      const { code } = response;
+      const { code, msg } = response;
       // console.log(response, response.code, msg, msg === 'success');
       if (code === 200)
         yield put({ type: 'deleteDevice', payload: payload.transmissionId });
 
-      if (callback) callback(code, '删除成功', '删除失败');
+      if (callback) callback(code, '删除成功', '删除失败', msg);
     },
     *hostAddAsync({ payload, callback }, { call, put }) {
       const response = yield call(transmissionHostAdd, payload);
 
       const { transmissionId } = payload;
-      const { code, data } = response;
+      const { code, data, msg } = response;
       if (code === 200)
         yield put({ type: 'addHost', payload: { transmissionId, host: data } });
 
-      if (callback) callback(code, '添加成功', '添加失败');
+      if (callback) callback(code, '添加成功', '添加失败', msg);
     },
     *hostUpdateAsync({ payload, callback }, { call, put }) {
       const response = yield call(transmissionHostUpdate, payload);
 
       const { transmissionId, hostId, data } = payload;
-      const { code } = response;
+      const { code, msg } = response;
       if (code === 200)
         yield put({
           type: 'updateHost',
           payload: { transmissionId, updatedHost: { ...data, id: hostId } },
         });
 
-      if (callback) callback(code, '更新成功', '更新失败');
+      if (callback) callback(code, '更新成功', '更新失败', msg);
     },
     *hostDeleteAsync({ payload, callback }, { call, put }) {
       const response = yield call(transmissionHostDelete, payload);
 
       const { transmissionId, hostId } = payload;
-      const { code } = response;
+      const { code, msg } = response;
       if (code === 200) yield put({ type: 'deleteHost', payload: { transmissionId, hostId } });
 
-      if (callback) callback(code, '删除成功', '删除失败');
+      if (callback) callback(code, '删除成功', '删除失败', msg);
     },
   },
 
