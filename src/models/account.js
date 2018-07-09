@@ -77,17 +77,11 @@ export default {
     // 新增账号-根据单位类型和名称模糊搜索
     *fetchUnitListFuzzy({ payload, callback }, { call, put }) {
       const response = yield call(queryUnits, payload);
-      const { code } = response
-      if (callback) callback();
-      if (code === 200 && response.data && response.data.list) {
+      if (callback) callback(response);
+      if (response.code === 200) {
         yield put({
           type: 'queryUnits',
           payload: response.data.list,
-        })
-      } else {
-        yield put({
-          type: 'queryUnits',
-          payload: [],
         })
       }
     },

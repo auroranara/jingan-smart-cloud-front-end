@@ -162,23 +162,28 @@ export default class accountManagementAdd extends PureComponent {
   //   });
   // };
   handleUnitTypeSelect = (value) => {
-    const { fetchUnitsFuzzy, form: { getFieldValue } } = this.props
+    const { fetchUnitsFuzzy, form: { getFieldValue, setFieldsValue } } = this.props
+    this.setState({ fetching: true })
+    setFieldsValue({ unitId: '' })
     fetchUnitsFuzzy({
       payload: {
         unitType: value || null,
         unitName: getFieldValue('unitId') || null,
       },
     })
+    this.setState({ fetching: false })
   }
 
   handleUnitIdChange = (value) => {
     const { fetchUnitsFuzzy, form: { getFieldValue } } = this.props
+    this.setState({ fetching: true })
     fetchUnitsFuzzy({
       payload: {
         unitType: getFieldValue('unitType') || null,
         unitName: value || null,
       },
     })
+    this.setState({ fetching: false })
   }
 
   /* 渲染基本信息 */
