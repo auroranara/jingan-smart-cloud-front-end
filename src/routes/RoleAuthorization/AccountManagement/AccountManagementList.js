@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, BackTop, Spin, Col, Row, Select } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Col, Row, Select } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -36,6 +36,7 @@ const defaultFormData = {
   phoneNumber: undefined,
   unitType: undefined,
   unitId: undefined,
+  accountStatus: undefined,
 };
 
 @connect(
@@ -257,17 +258,17 @@ export default class accountManagementList extends PureComponent {
                   <Link to={`/role-authorization/account-management/detail/${item.id}`}>查看</Link>,
                   <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
                 ]}
-                extra={
-                  <Button
-                    // onClick={() => {
-                    //   this.handleShowDeleteConfirm(item.id);
-                    // }}
-                    shape="circle"
-                    style={{ border: 'none', fontSize: '20px' }}
-                  >
-                    <Icon type="close" />
-                  </Button>
-                }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
               >
                 <Row
                   onClick={() => {
@@ -284,7 +285,7 @@ export default class accountManagementList extends PureComponent {
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                     {`公司名称：${item.unitName}`}
                   </Ellipsis>
-                  <Col span={12}>
+                  {/* <Col span={12}>
                     <p>
                       角色：<a href="#">查看</a>
                     </p>
@@ -293,7 +294,7 @@ export default class accountManagementList extends PureComponent {
                     <p>
                       权限：<a href="#">查看</a>
                     </p>
-                  </Col>
+                  </Col> */}
                 </Row>
               </Card>
             </List.Item>
