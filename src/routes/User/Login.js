@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'dva/router';
-import { Checkbox, Alert } from 'antd';
+import { Checkbox, Alert, message } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
@@ -52,17 +52,19 @@ export default class LoginPage extends Component {
           type,
         },
         callback(response) {
-          if (response.data.currentAuthority === 'admin') {
-            dispatch({
-              type: 'setting/changeSetting',
-              payload: { grid: 'Fluid', layout: 'sidemenu' },
-            });
-          } else if (response.data.currentAuthority === 'user') {
-            dispatch({
-              type: 'setting/changeSetting',
-              payload: { grid: 'Wide', layout: 'topmenu' },
-            });
-          }
+          if (response.code === 200) {
+            if (response.data.currentAuthority === 'admin') {
+              dispatch({
+                type: 'setting/changeSetting',
+                payload: { grid: 'Fluid', layout: 'sidemenu' },
+              });
+            } else if (response.data.currentAuthority === 'user') {
+              dispatch({
+                type: 'setting/changeSetting',
+                payload: { grid: 'Wide', layout: 'topmenu' },
+              });
+            }
+          } else message.error(response.msg)
         },
       });
     }
