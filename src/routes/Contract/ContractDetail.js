@@ -109,6 +109,7 @@ export default class CompanyDetail extends PureComponent {
     } = this.props;
 
     const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime && moment(+endTime).format('YYYY-MM-DD')) || '?'}`;
+    const contractAppendixList = contractAppendix ? JSON.parse(contractAppendix) : [];
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
@@ -137,8 +138,8 @@ export default class CompanyDetail extends PureComponent {
             {serviceContent? <pre style={{ margin: '0', color: 'inherit', font: 'inherit' }}>{serviceContent}</pre> : getEmptyData()}
           </Description>
           <Description term="合同附件">
-            {contractAppendix ? contractAppendix.map(({ webUrl }, index) => (
-              <a href={webUrl} target="_blank" rel="noopener noreferrer">{`合同附件${index+1}`}</a>
+            {contractAppendixList.length !== 0 ? contractAppendixList.map(({ webUrl }, index) => (
+              <a style={{ display: 'block' }} href={webUrl} target="_blank" rel="noopener noreferrer">{`合同附件${index+1}`}</a>
             )) : getEmptyData()}
           </Description>
         </DescriptionList>
