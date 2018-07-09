@@ -5,10 +5,11 @@ import {
   addAccount,
   queryAccountDetail,
   updateAccountDetail,
+  queryUnits,
 } from '../services/accountManagement.js';
 
 export default {
-  namespace: 'accountManagement',
+  namespace: 'account',
 
   state: {
     list: [],
@@ -70,6 +71,18 @@ export default {
           type: 'queryUnitlist',
           payload: response.data.list,
         });
+      }
+    },
+
+    // 新增账号-根据单位类型和名称模糊搜索
+    *fetchUnitListFuzzy({ payload, callback }, { call, put }) {
+      const response = yield call(queryUnits, payload);
+      if (callback) callback(response);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryUnits',
+          payload: response.data.list,
+        })
       }
     },
 
@@ -155,6 +168,13 @@ export default {
         ...state,
         unitIds: payload,
       };
+    },
+
+    queryUnits(state, { payload }) {
+      return {
+        ...state,
+        unitIds: payload,
+      }
     },
 
     queryAccountDetail(state, { payload }) {

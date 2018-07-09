@@ -52,12 +52,12 @@ export default class LoginPage extends Component {
           type,
         },
         callback(response) {
-          if (response.currentAuthority === 'admin') {
+          if (response.data.currentAuthority === 'admin') {
             dispatch({
               type: 'setting/changeSetting',
               payload: { grid: 'Fluid', layout: 'sidemenu' },
             });
-          } else if (response.currentAuthority === 'user') {
+          } else if (response.data.currentAuthority === 'user') {
             dispatch({
               type: 'setting/changeSetting',
               payload: { grid: 'Wide', layout: 'topmenu' },

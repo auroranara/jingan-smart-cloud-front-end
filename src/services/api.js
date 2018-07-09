@@ -104,7 +104,7 @@ export async function updateFakeList(params) {
 }
 
 export async function fakeAccountLogin(params) {
-  return request('/acloud_new/v2/login', {
+  return request('/acloud_new/v2/login/account', {
     method: 'POST',
     body: params,
   });
