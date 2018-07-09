@@ -82,7 +82,7 @@ export default {
         yield put({
           type: 'queryUnits',
           payload: response.data.list,
-        })
+        });
       }
     },
 
@@ -119,7 +119,7 @@ export default {
       const response = yield call(updateAccountDetail, payload);
       if (response.code === 200) {
         yield put({
-          type: 'updateAccountDetail',
+          type: 'updateDetail',
           payload: response.data,
         });
         if (success) {
@@ -174,7 +174,7 @@ export default {
       return {
         ...state,
         unitIds: payload,
-      }
+      };
     },
 
     queryAccountDetail(state, { payload }) {
@@ -187,7 +187,7 @@ export default {
       };
     },
 
-    updateAccountDetail(state, { payload }) {
+    updateDetail(state, { payload }) {
       return {
         ...state,
         detail: {
