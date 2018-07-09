@@ -49,15 +49,15 @@ const getEmptyData = () => {
 };
 
 @connect(
-  ({ accountManagement, loading }) => ({
-    accountManagement,
-    loading: loading.models.accountManagement,
+  ({ account, loading }) => ({
+    account,
+    loading: loading.models.account,
   }),
   dispatch => ({
     // 查看详情
     fetchAccountDetail(action) {
       dispatch({
-        type: 'accountManagement/fetchAccountDetail',
+        type: 'account/fetchAccountDetail',
         ...action,
       });
     },
@@ -98,7 +98,7 @@ export default class accountManagementDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      accountManagement: {
+      account: {
         detail: {
           data: { loginName, userName, phoneNumber, unitType, unitName, accountStatus },
         },

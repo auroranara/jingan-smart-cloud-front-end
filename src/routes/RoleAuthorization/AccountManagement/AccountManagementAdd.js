@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Form, Card, Row, Col, Input, Select, Button, message, Icon, Popover, Spin } from 'antd';
 import { routerRedux } from 'dva/router';
 import FooterToolbar from 'components/FooterToolbar';
-
+import debounce from 'lodash/debounce';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementAdd.less';
@@ -42,26 +42,32 @@ const fieldLabels = {
 };
 
 @connect(
-  ({ accountManagement, loading }) => ({
-    accountManagement,
-    loading: loading.models.accountManagement,
+  ({ account, loading }) => ({
+    account,
+    loading: loading.models.account,
   }),
   dispatch => ({
     fetchOptions(action) {
       dispatch({
-        type: 'accountManagement/fetchOptions',
+        type: 'account/fetchOptions',
         ...action,
       });
     },
     fetchUnitList(action) {
       dispatch({
-        type: 'accountManagement/fetchUnitList',
+        type: 'account/fetchUnitList',
         ...action,
       });
     },
+    fetchUnitsFuzzy(action) {
+      dispatch({
+        type: 'account/fetchUnitListFuzzy',
+        ...action,
+      })
+    },
     addAccount(action) {
       dispatch({
-        type: 'accountManagement/addAccount',
+        type: 'account/addAccount',
         ...action,
       });
     },
@@ -72,13 +78,18 @@ const fieldLabels = {
 )
 @Form.create()
 export default class accountManagementAdd extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
+  }
+
   state = {
     submitting: false,
   };
 
   /* 生命周期函数 */
   componentWillMount() {
-    const { fetchOptions, fetchUnitList } = this.props;
+    const { fetchOptions } = this.props;
 
     // 获取单位类型
     fetchOptions({
@@ -97,12 +108,14 @@ export default class accountManagementAdd extends PureComponent {
     });
 
     // 获取所属单位
-    fetchUnitList({
-      payload: {
-        type: 'unitId',
-        key: 'unitIds',
-      },
-    });
+    // fetchUnitList({
+    //   payload: {
+    //     type: 'unitId',
+    //     key: 'unitIds',
+    //   },
+    // });
+
+
   }
 
   /* 点击提交按钮验证表单信息 */
@@ -140,19 +153,38 @@ export default class accountManagementAdd extends PureComponent {
   };
 
   /* 选择单位类型以后查询所属单位 */
-  handleQueryUnit = value => {
-    const { fetchUnitList } = this.props;
-    fetchUnitList({
+  // handleQueryUnit = value => {
+  //   const { fetchUnitList } = this.props;
+  //   fetchUnitList({
+  //     payload: {
+  //       unitType: value,
+  //     },
+  //   });
+  // };
+  handleUnitTypeSelect = (value) => {
+    const { fetchUnitsFuzzy, form: { getFieldValue } } = this.props
+    fetchUnitsFuzzy({
       payload: {
-        unitType: value,
+        unitType: value || null,
+        unitName: getFieldValue('unitId') || null,
       },
-    });
-  };
+    })
+  }
+
+  handleUnitIdChange = (value) => {
+    const { fetchUnitsFuzzy, form: { getFieldValue } } = this.props
+    fetchUnitsFuzzy({
+      payload: {
+        unitType: getFieldValue('unitType') || null,
+        unitName: value || null,
+      },
+    })
+  }
 
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
-      accountManagement: { unitTypes, accountStatuses, unitIds },
+      account: { unitTypes, accountStatuses, unitIds },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -255,7 +287,7 @@ export default class accountManagementAdd extends PureComponent {
                       },
                     ],
                   })(
-                    <Select placeholder="请选择单位类型" onChange={this.handleQueryUnit}>
+                    <Select placeholder="请选择单位类型" onSelect={this.handleUnitTypeSelect}>
                       {unitTypes.map(item => (
                         <Option value={item.id} key={item.id}>
                           {item.label}
@@ -276,8 +308,11 @@ export default class accountManagementAdd extends PureComponent {
                     ],
                   })(
                     <Select
+                      mode="combobox"
+                      optionLabelProp="children"
                       placeholder="请选择所属单位"
                       notFoundContent={fetching ? <Spin size="small" /> : '暂无数据'}
+                      onSearch={this.handleUnitIdChange}
                     >
                       {unitIds.map(item => (
                         <Option value={item.id} key={item.id}>

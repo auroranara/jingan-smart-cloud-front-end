@@ -36,3 +36,8 @@ export async function addAccount(params) {
     body: params,
   });
 }
+
+/* 新增账号-根据单位类型和名称模糊搜索单位 */
+export async function queryUnits(params) {
+  return request(`/acloud_new/v2/rolePermission/user/units?${stringify(params)}`)
+}
