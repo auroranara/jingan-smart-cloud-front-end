@@ -39,15 +39,15 @@ const fieldLabels = {
 };
 
 @connect(
-  ({ accountManagement, loading }) => ({
-    accountManagement,
-    loading: loading.models.accountManagement,
+  ({ account, loading }) => ({
+    account,
+    loading: loading.models.account,
   }),
   dispatch => ({
     // 修改账号
     updateAccountDetail(action) {
       dispatch({
-        type: 'accountManagement/updateAccountDetail',
+        type: 'account/updateAccountDetail',
         ...action,
       });
     },
@@ -55,7 +55,7 @@ const fieldLabels = {
     // 获取账号详情
     fetchAccountDetail(action) {
       dispatch({
-        type: 'accountManagement/fetchAccountDetail',
+        type: 'account/fetchAccountDetail',
         ...action,
       });
     },
@@ -63,7 +63,7 @@ const fieldLabels = {
     // 获取单位类型与账号状态
     fetchOptions(action) {
       dispatch({
-        type: 'accountManagement/fetchOptions',
+        type: 'account/fetchOptions',
         ...action,
       });
     },
@@ -71,7 +71,7 @@ const fieldLabels = {
     // 获取所属单位（根据所选单位类型选择所属单位）
     fetchUnitList(action) {
       dispatch({
-        type: 'accountManagement/fetchUnitList',
+        type: 'account/fetchUnitList',
         ...action,
       });
     },
@@ -186,7 +186,7 @@ export default class accountManagementEdit extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      accountManagement: {
+      account: {
         detail: {
           data: { loginName, userName, phoneNumber, unitType, unitId, accountStatus },
         },

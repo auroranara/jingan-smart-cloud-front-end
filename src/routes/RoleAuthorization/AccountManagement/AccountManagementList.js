@@ -39,26 +39,26 @@ const defaultFormData = {
 };
 
 @connect(
-  ({ accountManagement, loading }) => ({
-    accountManagement,
-    loading: loading.models.accountManagement,
+  ({ account, loading }) => ({
+    account,
+    loading: loading.models.account,
   }),
   dispatch => ({
     fetch(action) {
       dispatch({
-        type: 'accountManagement/fetch',
+        type: 'account/fetch',
         ...action,
       });
     },
     fetchOptions(action) {
       dispatch({
-        type: 'accountManagement/fetchOptions',
+        type: 'account/fetchOptions',
         ...action,
       });
     },
     fetchUnitList(action) {
       dispatch({
-        type: 'accountManagement/fetchUnitList',
+        type: 'account/fetchUnitList',
         ...action,
       });
     },
@@ -142,13 +142,13 @@ export default class accountManagementList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    const { accountManagement } = this.props;
-    if (!flag || accountManagement.isLast) {
+    const { account } = this.props;
+    if (!flag || account.isLast) {
       return;
     }
     const {
       fetch,
-      accountManagement: { pageNum },
+      account: { pageNum },
     } = this.props;
     // 请求数据
     fetch({
@@ -173,7 +173,7 @@ export default class accountManagementList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      accountManagement: { unitTypes, unitIds },
+      account: { unitTypes, unitIds },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -238,7 +238,7 @@ export default class accountManagementList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      accountManagement: { list },
+      account: { list },
       goToDetail,
     } = this.props;
 
@@ -305,7 +305,7 @@ export default class accountManagementList extends PureComponent {
 
   render() {
     const {
-      accountManagement: { list, isLast },
+      account: { list, isLast },
       loading,
     } = this.props;
 
