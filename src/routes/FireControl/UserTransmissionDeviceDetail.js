@@ -5,10 +5,12 @@ import { Button, Spin, message } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-// import styles from './UserTransmissionDeviceDetail.less';
+import styles from './UserTransmissionDeviceDetail.less';
 
 import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
+
+console.log(styles);
 
 const { Description } = DescriptionList;
 // const { confirm } = Modal;
@@ -44,7 +46,10 @@ const deviceModalFormItems = [
   {
     label: '装置编号',
     name: 'deviceCode',
-    options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置编号' }] },
+    type: 'inputNumber',
+    // deviceCode为数字，则要设置type=number，不然默认为string，下面主机中的两个deviceCode同理
+    options: { rules: [{ required: true, type: 'number', message: '请输入用户传输装置编号' }] },
+    // options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置编号' }] },
   },
   {
     label: '品牌',
@@ -69,7 +74,9 @@ const hostModalFormItems = [
     label: '传输装置编号',
     name: 'transmissionDeviceCode',
     disabled: true,
-    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机对应的用户传输装置编号' }] },
+    type: 'inputNumber',
+    options: { rules: [{ required: true, type: 'number', message: '请输入消防主机对应的用户传输装置编号' }] },
+    // options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机对应的用户传输装置编号' }] },
   },
   {
     label: '传输接口',
@@ -79,7 +86,10 @@ const hostModalFormItems = [
   {
     label: '主机编号',
     name: 'deviceCode',
-    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机编号' }] },
+    // deviceCode为数字，则要设置type=number，不然默认为string
+    type: 'inputNumber',
+    options: { rules: [{ required: true, type: 'number', message: '请输入消防主机对应的用户传输装置编号' }] },
+    // options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机编号' }] },
   },
   {
     label: '品牌',
@@ -107,11 +117,11 @@ const hostModalFormItemsAdd = hostModalFormItems;
 //   return item;
 // });
 
-function dispatchCallback(code, successMsg, failMsg) {
+function dispatchCallback(code, successMsg, failMsg, msg) {
   if (code === 200)
     message.success(successMsg);
   else
-    message.warn(failMsg);
+    message.error(msg ? `${failMsg} ${msg}` : failMsg);
 }
 
 function convertMsToString(ms) {
@@ -410,6 +420,7 @@ export default class UserTransmissionDeviceDetail extends Component {
           {...deviceParentMethods}
           modalVisible={deviceModalVisible}
           title="用户传输装置"
+          className={styles.modalForm}
           operation={operation}
           items={deviceModalFormItems}
           initialValues={deviceRecord}
@@ -418,6 +429,7 @@ export default class UserTransmissionDeviceDetail extends Component {
           {...hostParentMethods}
           modalVisible={hostModalVisible}
           title="消防主机"
+          className={styles.modalForm}
           operation={operation}
           items={operation === 'add' ? hostModalFormItemsAdd : hostModalFormItems}
           initialValues={hostRecord}
