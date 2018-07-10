@@ -57,7 +57,7 @@ export default class DeviceDetailCard extends Component {
   }
 
   renderDeviceInfo() {
-    const { deviceInfo } = this.props;
+    const { deviceData: deviceInfo } = this.props;
     return (
       <DescriptionList size="small" col={3}>
         <Description term="装置编号" key="deviceCode">
