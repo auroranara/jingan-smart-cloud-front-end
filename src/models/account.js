@@ -6,6 +6,7 @@ import {
   queryAccountDetail,
   updateAccountDetail,
   queryUnits,
+  updatePassword,
 } from '../services/accountManagement.js';
 
 export default {
@@ -129,6 +130,22 @@ export default {
         error(response.msg);
       }
     },
+
+    // 修改密码
+    *updateAccountPwd({ payload, success, error }, { call, put }) {
+      const response = yield call(updatePassword, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updatePassword',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
@@ -188,6 +205,16 @@ export default {
     },
 
     updateDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    updatePassword(state, { payload }) {
       return {
         ...state,
         detail: {
