@@ -87,7 +87,7 @@ export default class Info extends Component {
 
   render() {
     const { match, routerData, currentUser } = this.props;
-    if (!currentUser.userid) {
+    if (!currentUser.id) {
       return '';
     }
     const { mode, selectKey } = this.state;
