@@ -92,6 +92,7 @@ export default class ContractHandler extends PureComponent {
 
   state = {
     submitting: false,
+    uploading: false,
     fileList: [],
     filterMaintenanceId: undefined,
     filterCompanyId: undefined,
@@ -294,6 +295,7 @@ export default class ContractHandler extends PureComponent {
     if (file.status === 'uploading') {
       this.setState({
         fileList,
+        uploading: true,
       });
     } else if (file.status === 'done') {
       if (file.response.code === 200) {
@@ -333,6 +335,9 @@ export default class ContractHandler extends PureComponent {
           }),
         });
       }
+      this.setState({
+        uploading: false,
+      });
     } else if (file.status === 'removed') {
       // 删除
       this.setState({
@@ -347,6 +352,7 @@ export default class ContractHandler extends PureComponent {
         fileList: fileList.filter(item => {
           return item.status !== 'error';
         }),
+        uploading: false,
       });
     }
   }
@@ -397,7 +403,7 @@ export default class ContractHandler extends PureComponent {
       },
       loading,
     } = this.props;
-    const { filterMaintenanceId, filterCompanyId } = this.state;
+    const { filterMaintenanceId, filterCompanyId, uploading } = this.state;
     const filterMaintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     const filterMaintenanceCompanyId = filterMaintenance && filterMaintenance.companyId;
 
@@ -529,7 +535,7 @@ export default class ContractHandler extends PureComponent {
         </Form>
         <div style={{ textAlign: 'center' }}>
           <Button onClick={()=>{goBack()}} style={{ marginRight: '24px' }}>返回</Button>
-          <Button type="primary" onClick={this.handleSubmit}>确定</Button>
+          <Button type="primary" onClick={this.handleSubmit} loading={uploading}>确定</Button>
         </div>
       </Card>
     );
