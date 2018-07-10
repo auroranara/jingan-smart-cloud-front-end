@@ -164,7 +164,7 @@ export default class ContractHandler extends PureComponent {
 
     // 验证字段是否正确
     validateFieldsAndScroll((error, values) => {
-      console.log(values);
+      // console.log(values);
       if (!error) {
         this.setState({
           submitting: true,
