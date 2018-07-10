@@ -6,7 +6,7 @@ import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
 
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
+const { /* Tab, */ UserName, Password, /* Mobile, Captcha, */ Submit } = Login;
 
 @connect(({ login, loading }) => ({
   login,
@@ -96,24 +96,25 @@ export default class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          <Tab key="account" tab="账户密码登录">
+          <div className={styles.tab}>
+            <span className={styles.pane}>账户密码登录</span>
+            {/* <span className={styles.line}>.</span> */}
+          </div>
+          <div style={{ marginTop: '20px', display: 'block' }}>
             {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
-            {/* {login.status === 'error' &&
-              login.type === 'account' &&
-              !submitting &&
-              this.renderMessage('账户或密码错误')} */}
             <UserName name="username" />
             <Password name="password" />
-          </Tab>
-          <Tab key="mobile" tab="手机号登录">
+          </div>
+          {/* <Tab key="account" tab="账户密码登录">
             {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
-            {/* {login.status === 'error' &&
-              login.type === 'mobile' &&
-              !submitting &&
-              this.renderMessage('验证码错误')} */}
+            <UserName name="username" />
+            <Password name="password" />
+          </Tab> */}
+          {/* <Tab key="mobile" tab="手机号登录">
+            {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
             <Mobile name="mobile" />
             <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
-          </Tab>
+          </Tab> */}
           <div>
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
               保存为本地常用账号
