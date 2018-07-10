@@ -209,7 +209,7 @@ export default class accountManagementEdit extends PureComponent {
     const {
       account: {
         detail: {
-          data: { loginName, userName, phoneNumber, unitType, unitId, accountStatus },
+          data: { loginName, userName, phoneNumber, unitType, unitName, accountStatus },
         },
         unitTypes,
         accountStatuses,
@@ -310,7 +310,7 @@ export default class accountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitId}>
                 {getFieldDecorator('unitId', {
-                  initialValue: unitId,
+                  initialValue: unitName,
                   rules: [
                     {
                       required: true,

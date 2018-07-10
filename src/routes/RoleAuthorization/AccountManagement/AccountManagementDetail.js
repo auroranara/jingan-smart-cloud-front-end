@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button } from 'antd';
+import { Form, Card, Button, Modal, Input, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -48,52 +48,92 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(
-  ({ account, loading }) => ({
-    account,
-    loading: loading.models.account,
-  }),
-  dispatch => ({
-    // 查看详情
-    fetchAccountDetail(action) {
-      dispatch({
-        type: 'account/fetchAccountDetail',
-        ...action,
-      });
-    },
-
-    // 跳转到编辑页面
-    goToEdit(id) {
-      dispatch(routerRedux.push(`/role-authorization/account-management/edit/${id}`));
-    },
-
-    // 异常
-    goToException() {
-      dispatch(routerRedux.push('/exception/500'));
-    },
-  })
-)
+@connect(({ account, loading }) => ({
+  account,
+  loading: loading.models.account,
+}))
 @Form.create()
 export default class accountManagementDetail extends PureComponent {
+  state = { visible: false };
+
   /* 生命周期函数 */
-  componentWillMount() {
+  componentDidMount() {
     const {
-      fetchAccountDetail,
+      dispatch,
       match: {
         params: { id },
       },
-      goToException,
     } = this.props;
+
     // 获取详情
-    fetchAccountDetail({
-      payload: {
-        id,
-      },
-      error: () => {
-        goToException();
+    dispatch({
+      type: 'account/fetchAccountDetail',
+      payload: { id },
+      error() {
+        dispatch(routerRedux.push('/exception/500'));
       },
     });
   }
+
+  // 跳转到编辑页面
+  goToEdit = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/role-authorization/account-management/edit/${id}`));
+  };
+
+  /* 显示重置密码模态框 */
+  showModalPassword = () => {
+    this.setState({
+      visible: true,
+    });
+  };
+
+  /* 判断输入的两次密码是否一致 */
+  checkConfirm = (rule, value, callback) => {
+    const { form } = this.props;
+    if (value && value !== form.getFieldValue('newPassword')) {
+      callback('两次输入的密码不匹配!');
+    } else {
+      callback();
+    }
+  };
+
+  /* 点击提交按钮验证信息 */
+  handleOk = () => {
+    const {
+      form,
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    form.validateFields((err, { password }) => {
+      if (!err) {
+        dispatch({
+          type: 'account/updateAccountPwd',
+          payload: {
+            id,
+            password,
+          },
+          success: () => {
+            message.success('提交成功！', () => {
+              this.handleCancel();
+            });
+          },
+          err: () => {
+            message.err('提交失败！', () => {});
+          },
+        });
+      }
+    });
+  };
+
+  /* 隐藏模态框 */
+  handleCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  };
 
   /* 渲染基础信息 */
   renderBasicInfo() {
@@ -126,21 +166,74 @@ export default class accountManagementDetail extends PureComponent {
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const {
-      goToEdit,
       match: {
         params: { id },
       },
+      form: { getFieldDecorator },
     } = this.props;
+
+    const { visible } = this.state;
+
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+        md: { span: 10 },
+      },
+    };
     return (
       <FooterToolbar>
+        <Button type="primary" onClick={this.showModalPassword}>
+          重置密码
+        </Button>
         <Button
           type="primary"
           onClick={() => {
-            goToEdit(id);
+            this.goToEdit(id);
           }}
         >
           编辑
         </Button>
+        <Modal
+          title="重置密码"
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          okText="确认"
+          cancelText="取消"
+        >
+          <Form.Item {...formItemLayout} label="密码">
+            {getFieldDecorator('newPassword', {
+              rules: [
+                {
+                  required: true,
+                  whitespace: true,
+                  type: 'string',
+                  message: '请输入密码',
+                },
+              ],
+            })(<Input placeholder="请重新输入密码" />)}
+          </Form.Item>
+          <Form.Item {...formItemLayout} label="确认密码">
+            {getFieldDecorator('password', {
+              rules: [
+                {
+                  required: true,
+                  whitespace: true,
+                  type: 'string',
+                  message: '请重新输入密码',
+                },
+                {
+                  validator: this.checkConfirm,
+                },
+              ],
+            })(<Input placeholder="请重新输入密码" />)}
+          </Form.Item>
+        </Modal>
       </FooterToolbar>
     );
   }
