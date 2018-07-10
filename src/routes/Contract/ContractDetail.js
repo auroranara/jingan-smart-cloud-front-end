@@ -114,15 +114,7 @@ export default class ContractDetail extends PureComponent {
     const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime &&
       moment(+endTime).format('YYYY-MM-DD')) ||
       '?'}`;
-      console.log(contractAppendix && contractAppendix.charCodeAt(0));
-      let contractAppendixList = []
-      try {
-        contractAppendixList =  JSON.parse(contractAppendix);
-        console.log(contractAppendixList);
-      } catch (e) {
-        console.log('error',e);
-      }
-      // const contractAppendixList = contractAppendix ? JSON.parse(contractAppendix) : [];
+      const contractAppendixList = contractAppendix && contractAppendix.startsWith('[') ? JSON.parse(contractAppendix) : [];
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
