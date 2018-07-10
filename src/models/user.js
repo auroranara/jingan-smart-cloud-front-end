@@ -20,7 +20,7 @@ export default {
       const response = yield call(queryCurrent);
       yield put({
         type: 'saveCurrentUser',
-        payload: response.result, // TODO: 返回的result
+        payload: response.data,
       });
     },
   },

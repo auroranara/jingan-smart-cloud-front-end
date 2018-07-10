@@ -14,6 +14,7 @@ const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 }))
 export default class LoginPage extends Component {
   state = {
+    notice: '',
     type: 'account',
     autoLogin: true,
   };
@@ -51,18 +52,20 @@ export default class LoginPage extends Component {
           password: aesEncrypt(values.password),
           type,
         },
-        callback(response) {
-          if (response.data.currentAuthority === 'admin') {
-            dispatch({
-              type: 'setting/changeSetting',
-              payload: { grid: 'Fluid', layout: 'sidemenu' },
-            });
-          } else if (response.data.currentAuthority === 'user') {
-            dispatch({
-              type: 'setting/changeSetting',
-              payload: { grid: 'Wide', layout: 'topmenu' },
-            });
-          }
+        callback: (response) => {
+          if (response.code === 200) {
+            if (response.data.currentAuthority === 'admin') {
+              dispatch({
+                type: 'setting/changeSetting',
+                payload: { grid: 'Fluid', layout: 'sidemenu' },
+              });
+            } else if (response.data.currentAuthority === 'user') {
+              dispatch({
+                type: 'setting/changeSetting',
+                payload: { grid: 'Wide', layout: 'topmenu' },
+              });
+            }
+          } else this.setState({ notice: response.msg })
         },
       });
     }
@@ -81,8 +84,8 @@ export default class LoginPage extends Component {
   };
 
   render() {
-    const { login, submitting } = this.props;
-    const { type, autoLogin } = this.state;
+    const { submitting } = this.props;
+    const { type, autoLogin, notice } = this.state;
     return (
       <div className={styles.main}>
         <Login
@@ -94,18 +97,20 @@ export default class LoginPage extends Component {
           }}
         >
           <Tab key="account" tab="账户密码登录">
-            {login.status === 'error' &&
+            {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
+            {/* {login.status === 'error' &&
               login.type === 'account' &&
               !submitting &&
-              this.renderMessage('账户或密码错误')}
+              this.renderMessage('账户或密码错误')} */}
             <UserName name="username" />
             <Password name="password" />
           </Tab>
           <Tab key="mobile" tab="手机号登录">
-            {login.status === 'error' &&
+            {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
+            {/* {login.status === 'error' &&
               login.type === 'mobile' &&
               !submitting &&
-              this.renderMessage('验证码错误')}
+              this.renderMessage('验证码错误')} */}
             <Mobile name="mobile" />
             <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
           </Tab>

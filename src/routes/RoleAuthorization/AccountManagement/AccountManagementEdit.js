@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card, Button, Row, Col, Input, Select, message, Icon, Popover, Spin } from 'antd';
 import { routerRedux } from 'dva/router';
-
+import debounce from 'lodash/debounce';
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 
@@ -76,6 +76,14 @@ const fieldLabels = {
       });
     },
 
+    // 新增账号-根据单位类型和名称模糊搜索
+    fetchUnitsFuzzy(action) {
+      dispatch({
+        type: 'account/fetchUnitListFuzzy',
+        ...action,
+      });
+    },
+
     // 返回列表页面
     goBack() {
       dispatch(routerRedux.push('/role-authorization/account-management/list'));
@@ -84,6 +92,11 @@ const fieldLabels = {
 )
 @Form.create()
 export default class accountManagementEdit extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
+  }
+
   state = {
     submitting: false,
   };
@@ -96,7 +109,6 @@ export default class accountManagementEdit extends PureComponent {
         params: { id },
       },
       fetchOptions,
-      fetchUnitList,
       goToException,
     } = this.props;
 
@@ -123,14 +135,6 @@ export default class accountManagementEdit extends PureComponent {
       payload: {
         type: 'accountStatus',
         key: 'accountStatuses',
-      },
-    });
-
-    // 获取所属单位
-    fetchUnitList({
-      payload: {
-        type: 'unitId',
-        key: 'unitIds',
       },
     });
   }
@@ -173,12 +177,29 @@ export default class accountManagementEdit extends PureComponent {
     });
   };
 
-  /* 选择单位类型以后查询所属单位 */
-  handleQueryUnit = value => {
-    const { fetchUnitList } = this.props;
-    fetchUnitList({
+  handleUnitTypeSelect = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
+    setFieldsValue({ unitId: '' });
+    fetchUnitsFuzzy({
       payload: {
-        unitType: value,
+        unitType: value || null,
+        unitName: getFieldValue('unitId') || null,
+      },
+    });
+  };
+
+  handleUnitIdChange = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { getFieldValue },
+    } = this.props;
+    fetchUnitsFuzzy({
+      payload: {
+        unitType: getFieldValue('unitType') || null,
+        unitName: value || null,
       },
     });
   };
@@ -195,6 +216,7 @@ export default class accountManagementEdit extends PureComponent {
         unitIds,
       },
       form: { getFieldDecorator },
+      loading,
     } = this.props;
 
     const { Option } = Select;
@@ -275,7 +297,7 @@ export default class accountManagementEdit extends PureComponent {
                     },
                   ],
                 })(
-                  <Select placeholder="请选择单位类型" onChange={this.handleQueryUnit}>
+                  <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeSelect}>
                     {unitTypes.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -297,9 +319,12 @@ export default class accountManagementEdit extends PureComponent {
                   ],
                 })(
                   <Select
-                    // mode="multiple"
-                    // labelInValue
+                    mode="combobox"
+                    optionLabelProp="children"
                     placeholder="请选择所属单位"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleUnitIdChange}
+                    filterOption={false}
                   >
                     {unitIds.map(item => (
                       <Option value={item.id} key={item.id}>

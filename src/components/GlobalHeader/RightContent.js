@@ -39,6 +39,13 @@ export default class GlobalHeaderRight extends PureComponent {
     return groupBy(newNotices, 'type');
   }
 
+  generateStyle = () => {
+    const { currentUser } = this.props
+    const colors = ['#6666FF', '#66CCFF', '#9966FF', '#CC6666', '#FFCC66'];
+    const number = currentUser.userName.charCodeAt(0) % 5;
+    return { backgroundColor: colors[number], verticalAlign: 'middle' };
+  }
+
   render() {
     const {
       currentUser,
@@ -113,21 +120,23 @@ export default class GlobalHeaderRight extends PureComponent {
             emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
           />
         </NoticeIcon>
-        {currentUser.name ? (
+        {currentUser.userName ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
-              <Avatar
+              {/* <Avatar
                 size="small"
                 className={styles.avatar}
                 src={currentUser.avatar}
                 alt="avatar"
-              />
-              <span className={styles.name}>{currentUser.name}</span>
+              /> */}
+              <Avatar className={styles.avatar} style={this.generateStyle()} size="small">
+                {currentUser.userName.split('')[0]}
+              </Avatar>
+              <span className={styles.name}>{currentUser.userName}</span>
             </span>
           </Dropdown>
-        ) : (
-          <Spin size="small" style={{ marginLeft: 8 }} />
-        )}
+        ) : (<Spin size="small" style={{ marginLeft: 8 }} />
+          )}
       </div>
     );
   }

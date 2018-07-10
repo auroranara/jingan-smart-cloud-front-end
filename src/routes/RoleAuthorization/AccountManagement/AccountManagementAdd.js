@@ -63,7 +63,7 @@ const fieldLabels = {
       dispatch({
         type: 'account/fetchUnitListFuzzy',
         ...action,
-      })
+      });
     },
     addAccount(action) {
       dispatch({
@@ -114,8 +114,6 @@ export default class accountManagementAdd extends PureComponent {
     //     key: 'unitIds',
     //   },
     // });
-
-
   }
 
   /* 点击提交按钮验证表单信息 */
@@ -161,39 +159,40 @@ export default class accountManagementAdd extends PureComponent {
   //     },
   //   });
   // };
-  handleUnitTypeSelect = (value) => {
-    const { fetchUnitsFuzzy, form: { getFieldValue, setFieldsValue } } = this.props
-    this.setState({ fetching: true })
-    setFieldsValue({ unitId: '' })
+  handleUnitTypeSelect = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
+    setFieldsValue({ unitId: '' });
     fetchUnitsFuzzy({
       payload: {
         unitType: value || null,
         unitName: getFieldValue('unitId') || null,
       },
-    })
-    this.setState({ fetching: false })
-  }
+    });
+  };
 
-  handleUnitIdChange = (value) => {
-    const { fetchUnitsFuzzy, form: { getFieldValue } } = this.props
-    this.setState({ fetching: true })
+  handleUnitIdChange = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { getFieldValue },
+    } = this.props;
     fetchUnitsFuzzy({
       payload: {
         unitType: getFieldValue('unitType') || null,
         unitName: value || null,
       },
-    })
-    this.setState({ fetching: false })
-  }
+    });
+  };
 
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
       account: { unitTypes, accountStatuses, unitIds },
       form: { getFieldDecorator },
+      loading,
     } = this.props;
-
-    const { fetching } = this.state;
 
     const { Option } = Select;
 
@@ -226,7 +225,7 @@ export default class accountManagementAdd extends PureComponent {
                       message: '请输入密码',
                     },
                   ],
-                })(<Input placeholder="请输入密码" min={6} max={20} />)}
+                })(<Input placeholder="请输入密码" min={6} max={20} type="password" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -308,6 +307,7 @@ export default class accountManagementAdd extends PureComponent {
                     rules: [
                       {
                         required: true,
+                        whitespace: true,
                         message: '请选择所属单位',
                       },
                     ],
@@ -316,8 +316,9 @@ export default class accountManagementAdd extends PureComponent {
                       mode="combobox"
                       optionLabelProp="children"
                       placeholder="请选择所属单位"
-                      notFoundContent={fetching ? <Spin size="small" /> : '暂无数据'}
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleUnitIdChange}
+                      filterOption={false}
                     >
                       {unitIds.map(item => (
                         <Option value={item.id} key={item.id}>
