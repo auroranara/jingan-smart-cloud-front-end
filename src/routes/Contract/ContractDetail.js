@@ -67,7 +67,7 @@ const getEmptyData = () => {
   })
 )
 @Form.create()
-export default class CompanyDetail extends PureComponent {
+export default class ContractDetail extends PureComponent {
   /* 生命周期函数 */
   componentWillMount() {
     const {
@@ -114,10 +114,11 @@ export default class CompanyDetail extends PureComponent {
     const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime &&
       moment(+endTime).format('YYYY-MM-DD')) ||
       '?'}`;
-
+      console.log(contractAppendix && contractAppendix.charCodeAt(0));
       let contractAppendixList = []
       try {
         contractAppendixList =  JSON.parse(contractAppendix);
+        console.log(contractAppendixList);
       } catch (e) {
         console.log('error',e);
       }
@@ -146,7 +147,7 @@ export default class CompanyDetail extends PureComponent {
           <Description term="合同附件">
             {contractAppendixList.length !== 0
               ? contractAppendixList.map(({ webUrl }, index) => (
-                <a style={{ display: 'block' }} href={webUrl} target="_blank" rel="noopener noreferrer">
+                <a style={{ display: 'block' }} href={webUrl} target="_blank" rel="noopener noreferrer" key={webUrl}>
                   {`合同附件${index + 1}`}
                 </a>
                 ))
