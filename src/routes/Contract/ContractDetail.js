@@ -114,6 +114,7 @@ export default class ContractDetail extends PureComponent {
     const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime &&
       moment(+endTime).format('YYYY-MM-DD')) ||
       '?'}`;
+      console.log(`contractAppendix:${contractAppendix}`)
       console.log(contractAppendix && contractAppendix.charCodeAt(0));
       let contractAppendixList = []
       try {
