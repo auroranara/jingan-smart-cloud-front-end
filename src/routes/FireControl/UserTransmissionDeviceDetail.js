@@ -10,7 +10,7 @@ import styles from './UserTransmissionDeviceDetail.less';
 import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
 
-console.log(styles);
+// console.log(styles);
 
 const { Description } = DescriptionList;
 // const { confirm } = Modal;
