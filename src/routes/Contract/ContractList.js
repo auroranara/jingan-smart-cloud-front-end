@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Input, Button, Select, message, Spin, DatePicker } from 'antd';
+import { Form, List, Card, Input, Button, Select, Spin, DatePicker } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 import Ellipsis from 'components/Ellipsis';
@@ -81,6 +81,10 @@ const markLabelList = {
   goToEdit() {
     dispatch(routerRedux.push(editUrl));
   },
+  // 异常
+  goToException() {
+    dispatch(routerRedux.push('/exception/500'));
+  },
   dispatch,
 }))
 @Form.create()
@@ -128,7 +132,7 @@ export default class ContractList extends PureComponent {
 
   /* 查询点击事件 */
   handleSearch = ({ period: [startTime, endTime], ...restValues }) => {
-    const { fetchList, contract: { data: { pagination: { pageSize } } } } = this.props;
+    const { fetchList, goToException, contract: { data: { pagination: { pageSize } } } } = this.props;
 
     const formData = {
       startTime: startTime && startTime.format('YYYY-MM-DD'),
@@ -142,33 +146,35 @@ export default class ContractList extends PureComponent {
         pageNum: 1,
       },
       success: () => {
-        message.success('查询成功', 1);
+        // message.success('查询成功', 1);
         this.setState({
           formData,
         });
       },
       error: () => {
-        message.success('查询失败', 1);
+        // message.success('查询失败', 1);
+        goToException();
       },
     });
   }
 
   /* 重置点击事件 */
   handleReset = () => {
-    const { fetchList, contract: { data: { pagination: { pageSize } } } } = this.props;
+    const { fetchList, goToException, contract: { data: { pagination: { pageSize } } } } = this.props;
     fetchList({
       payload: {
         pageSize,
         pageNum: 1,
       },
       success: () => {
-        message.success('重置成功', 1);
+        // message.success('重置成功', 1);
         this.setState({
           formData: {},
         });
       },
       error: () => {
-        message.success('重置失败', 1);
+        // message.success('重置失败', 1);
+        goToException();
       },
     });
   }
@@ -332,7 +338,7 @@ export default class ContractList extends PureComponent {
     return (
       <PageHeaderLayout
         title={title}
-        content={<div>服务单位总数：{total} </div>}
+        content={<div>维保合同总数：{total} </div>}
       >
         {this.renderForm()}
         {this.renderList()}
