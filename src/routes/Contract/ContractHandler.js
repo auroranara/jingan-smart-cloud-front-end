@@ -93,22 +93,25 @@ export default class ContractHandler extends PureComponent {
   state = {
     submitting: false,
     fileList: [],
+    filterMaintenanceId: undefined,
+    filterCompanyId: undefined,
   }
 
   /* 挂载后 */
   componentWillMount() {
-    const { fetchContract, clearDetail, match: { params: { id } } } = this.props;
+    const { fetchContract, fetchMaintenanceList, fetchServiceList, clearDetail, match: { params: { id } } } = this.props;
     // 如果id存在，则为编辑，否则为新增
     if (id) {
       fetchContract({
         payload: {
           id,
         },
-        success: ({ contractAppendix }) => {
-          if (contractAppendix) {
+        success: ({ contractAppendix, maintenanceId, companyId, maintenanceName, companyName }) => {
+          const contractList = contractAppendix? JSON.parse(contractAppendix) : [];
+          if (contractList.length !== 0) {
             this.setState({
-              fileList: contractAppendix.map(({ dbUrl, webUrl }, index) => ({
-                id: index,
+              fileList: contractList.map(({ dbUrl, webUrl }, index) => ({
+                uid: index,
                 status: 'done',
                 name: `合同附件${index+1}`,
                 url: webUrl,
@@ -116,11 +119,41 @@ export default class ContractHandler extends PureComponent {
               })),
             });
           }
+          this.setState({
+            filterMaintenanceId: maintenanceId,
+            filterCompanyId: companyId,
+          });
+          fetchMaintenanceList({
+            payload: {
+              name: maintenanceName,
+              pageSize: defaultPageSize,
+              pageNum: 1,
+            },
+          });
+          fetchServiceList({
+            payload: {
+              name: companyName,
+              pageSize: defaultPageSize,
+              pageNum: 1,
+            },
+          });
         },
       });
     }
     else {
       clearDetail();
+      fetchMaintenanceList({
+        payload: {
+          pageSize: defaultPageSize,
+          pageNum: 1,
+        },
+      });
+      fetchServiceList({
+        payload: {
+          pageSize: defaultPageSize,
+          pageNum: 1,
+        },
+      });
     }
   }
 
@@ -199,23 +232,28 @@ export default class ContractHandler extends PureComponent {
   /* 模糊查询维保单位列表 */
   handleSearchMaintenanceList = (value) => {
     const { fetchMaintenanceList } = this.props;
+    const { filterCompanyId } = this.state;
     fetchMaintenanceList({
       payload: {
         name: value && value.trim(),
         pageSize: defaultPageSize,
         pageNum: 1,
+        companyId: filterCompanyId,
       },
     });
   }
 
-  /* 模糊查询维保单位列表 */
+  /* 模糊查询服务单位列表 */
   handleSearchServiceList = (value) => {
-    const { fetchServiceList } = this.props;
+    const { fetchServiceList, contract: { maintenanceList } } = this.props;
+    const { filterMaintenanceId } = this.state;
+    const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0]
     fetchServiceList({
       payload: {
         name: value && value.trim(),
         pageSize: defaultPageSize,
         pageNum: 1,
+        companyId: maintenance && maintenance.companyId,
       },
     });
   }
@@ -228,10 +266,13 @@ export default class ContractHandler extends PureComponent {
         maintenanceId: undefined,
       });
       validateFields(['maintenanceId']);
+      this.setState({
+        filterMaintenanceId: undefined,
+      });
     }
   }
 
-  /* 判断清除维保单位 */
+  /* 判断清除服务单位 */
   handleClearService = (value) => {
     if (value && value.key === value.label) {
       const { form: { setFieldsValue, validateFields } } = this.props;
@@ -242,6 +283,9 @@ export default class ContractHandler extends PureComponent {
         },
       });
       validateFields(['companyId']);
+      this.setState({
+        filterCompanyId: undefined,
+      });
     }
   }
 
@@ -353,6 +397,9 @@ export default class ContractHandler extends PureComponent {
       },
       loading,
     } = this.props;
+    const { filterMaintenanceId, filterCompanyId } = this.state;
+    const filterMaintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
+    const filterMaintenanceCompanyId = filterMaintenance && filterMaintenance.companyId;
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
@@ -381,14 +428,15 @@ export default class ContractHandler extends PureComponent {
                     labelInValue
                     defaultActiveFirstOption={false}
                     filterOption={false}
-                    notFoundContent={loading ? <Spin size="small" /> : null}
+                    notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchMaintenanceList}
                     onBlur={this.handleClearMaintenance}
+                    onSelect={(value) => {this.setState({filterMaintenanceId: value.key});}}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
                     {maintenanceList.map(item => (
-                      <Option key={item.id}>
+                      <Option key={item.id} disabled={item.companyId === filterCompanyId}>
                         {item.name}
                       </Option>
                     ))}
@@ -411,14 +459,15 @@ export default class ContractHandler extends PureComponent {
                     labelInValue
                     defaultActiveFirstOption={false}
                     filterOption={false}
-                    notFoundContent={loading ? <Spin size="small" /> : null}
+                    notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchServiceList}
                     onBlur={this.handleClearService}
+                    onSelect={(value) => {this.setState({filterCompanyId: value.key});}}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
                     {serviceList.map(item => (
-                      <Option key={item.id}>
+                      <Option key={item.id} disabled={item.id === filterMaintenanceCompanyId}>
                         {item.name}
                       </Option>
                     ))}

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Button } from 'antd';
+import { Form, Button, Row, Col } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -22,6 +22,17 @@ const FormItem = Form.Item;
 //     return value.trim();
 //   },
 // }];
+
+const defaultButtonSpan = {
+  xl: 8,
+  md: 12,
+  sm: 24,
+};
+const defaultInputSpan = {
+  lg: 8,
+  md: 12,
+  sm: 24,
+};
 
 @Form.create()
 export default class InlineForm extends PureComponent {
@@ -71,30 +82,42 @@ export default class InlineForm extends PureComponent {
       resetText,
       resetType,
       action,
-      extra,
       form: { getFieldDecorator },
+      hideSearch,
+      hideReset,
+      buttonSpan=defaultButtonSpan,
+      gutter={ md: 16 },
     } = this.props;
 
     return (
-      <Form layout="inline" className="clearfix">
-        {fields &&
-          fields.map(field => (
-            <FormItem label={field.label} key={field.id}>
-              {getFieldDecorator(field.id, field.options)(field.render())}
+      <Form layout="vertical" className="clearfix">
+        <Row gutter={gutter}>
+          {fields &&
+            fields.map(field => {
+              const { inputSpan=defaultInputSpan } = field;
+              return (
+                <Col key={field.id} {...inputSpan}>
+                  <FormItem label={field.label} style={{ margin: '0', padding: '4px 0' }}>
+                    {getFieldDecorator(field.id, field.options)(field.render())}
+                  </FormItem>
+                </Col>
+            )})}
+          <Col {...buttonSpan}>
+            <FormItem style={{ margin: '0', padding: '4px 0' }}>
+              {!hideSearch && (
+              <Button type={searchType || 'primary'} onClick={this.handleSearch} style={{ marginRight: '16px' }}>
+                {searchText || '查询'}
+              </Button>
+            )}
+              {!hideReset && (
+              <Button type={resetType || 'default'} onClick={this.handleReset} style={{ marginRight: '16px' }}>
+                {resetText || '重置'}
+              </Button>
+            )}
+              {action}
             </FormItem>
-          ))}
-        <FormItem>
-          <Button type={searchType || 'primary'} onClick={this.handleSearch}>
-            {searchText || '查询'}
-          </Button>
-        </FormItem>
-        <FormItem>
-          <Button type={resetType || 'default'} onClick={this.handleReset}>
-            {resetText || '重置'}
-          </Button>
-        </FormItem>
-        {action && <FormItem>{action}</FormItem>}
-        {extra && <FormItem style={{ float: 'right', marginRight: '0' }}>{extra}</FormItem>}
+          </Col>
+        </Row>
       </Form>
     );
   }

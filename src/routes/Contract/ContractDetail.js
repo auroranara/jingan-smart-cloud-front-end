@@ -106,6 +106,11 @@ export default class CompanyDetail extends PureComponent {
           companyName,
         },
       },
+      match: {
+        params: {
+          id,
+        },
+      },
     } = this.props;
 
     const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime && moment(+endTime).format('YYYY-MM-DD')) || '?'}`;
@@ -145,7 +150,7 @@ export default class CompanyDetail extends PureComponent {
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
           <Button onClick={()=>{goBack()}} style={{ marginRight: '24px' }}>返回</Button>
-          <Button type="primary" onClick={()=>{goToEdit()}}>编辑</Button>
+          <Button type="primary" onClick={()=>{goToEdit(id)}}>编辑</Button>
         </div>
       </Card>
     );

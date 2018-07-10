@@ -178,35 +178,23 @@ export default class CompanyDetail extends PureComponent {
           practicalDistrict,
           companyIchnography,
           ichnographyName,
-          maintenanceContract,
-          contractName,
         }) => {
-          // 初始化上传文件
-          this.setState({
-            maintenanceId,
-            ichnographyList: companyIchnography
-              ? [
-                  {
-                    uid: -1,
-                    status: 'done',
-                    name: ichnographyName,
-                    url: companyIchnography[0].webUrl,
-                    dbUrl: companyIchnography[0].dbUrl,
-                  },
-                ]
-              : [],
-            contractList: maintenanceContract
-              ? [
-                  {
-                    uid: -1,
-                    status: 'done',
-                    name: contractName,
-                    url: maintenanceContract[0].webUrl,
-                    dbUrl: maintenanceContract[0].dbUrl,
-                  },
-                ]
-              : [],
-          });
+          const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+          if (companyIchnographyList.length !== 0) {
+            // 初始化上传文件
+            this.setState({
+              maintenanceId,
+              ichnographyList:  [
+                {
+                  uid: -1,
+                  status: 'done',
+                  name: ichnographyName,
+                  url: companyIchnographyList[0].webUrl,
+                  dbUrl: companyIchnographyList[0].dbUrl,
+                },
+              ],
+            });
+          }
           // 获取注册地址列表
           fetchArea({
             payload: {
@@ -1023,53 +1011,6 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
-  /* 渲染其他信息 */
-  renderOtherInfo() {
-    const {
-      company: {
-        detail: {
-          data: { maintenanceUnitName },
-        },
-      },
-      form: { getFieldDecorator },
-    } = this.props;
-    const { contractList } = this.state;
-
-    return (
-      <Card title="其他信息" className={styles.card} bordered={false}>
-        <Form layout="vertical">
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.maintenanceId} className={styles.maintenanceIdForm}>
-                {getFieldDecorator('maintenanceId', {
-                  initialValue: maintenanceUnitName,
-                })(
-                  <Input
-                    placeholder="请选择消防维修单位"
-                    onClick={this.handleShowModal}
-                    ref={input => {
-                      this.maintenanceIdInput = input;
-                    }}
-                  />
-                )}
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.maintenanceContract}>
-                {this.renderUploadButton({
-                  fileList: contractList,
-                  onChange: this.handleUploadContract,
-                })}
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
-    );
-  }
-
   /* 渲染错误信息 */
   renderErrorInfo() {
     const {
@@ -1196,7 +1137,6 @@ export default class CompanyDetail extends PureComponent {
           {this.renderBasicInfo()}
           {this.renderMoreInfo()}
           {this.renderPersonalInfo()}
-          {/* {this.renderOtherInfo()} */}
           {this.renderFooterToolbar()}
           {this.renderModal()}
         </Spin>

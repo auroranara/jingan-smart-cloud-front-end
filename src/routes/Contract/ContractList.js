@@ -200,7 +200,7 @@ export default class ContractList extends PureComponent {
               allowClear
               placeholder="请选择单位状态"
               getPopupContainer={getRootChild}
-              style={{ width: '212px' }}
+              style={{ width: '100%' }}
             >
               {statusList.map(item => (
                 <Option value={item.id} key={item.id}>
@@ -226,7 +226,7 @@ export default class ContractList extends PureComponent {
         render() {
           return (
             <RangePicker
-              style={{ width: '212px' }}
+              style={{ width: '100%' }}
               getCalendarContainer={getRootChild}
             />
           );
@@ -238,7 +238,8 @@ export default class ContractList extends PureComponent {
       <Card>
         <InlineForm
           fields={fields}
-          extra={<Button type="primary" onClick={() => { goToAdd() }}>新增</Button>}
+          gutter={{ lg: 48, md: 24 }}
+          action={<Button type="primary" onClick={() => { goToAdd() }}>新增</Button>}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
