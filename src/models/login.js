@@ -1,7 +1,7 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { fakeAccountLogin, getFakeCaptcha } from '../services/api';
-import { setAuthority } from '../utils/authority';
+import { setAuthority, setToken } from '../utils/authority';
 import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
@@ -20,7 +20,7 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'changeLoginStatus',
-          payload: { type: payload.type, status: true, currentAuthority: response.data.currentAuthority },
+          payload: { type: payload.type, status: true, ...response.data },
         });
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
@@ -67,6 +67,7 @@ export default {
   reducers: {
     changeLoginStatus(state, { payload }) {
       setAuthority(payload.currentAuthority);
+      setToken(payload.token)
       return {
         ...state,
         status: payload.status,
