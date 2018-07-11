@@ -116,7 +116,7 @@ export default class accountManagementList extends PureComponent {
     fetchUnitList({
       payload: {
         type: 'unitId',
-        key: 'unitIds',
+        key: 'unitIdes',
       },
     });
   }
@@ -209,7 +209,7 @@ export default class accountManagementList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      account: { unitTypes, unitIds },
+      account: { unitTypes, unitIdes },
       form: { getFieldDecorator },
       loading,
     } = this.props;
@@ -256,7 +256,7 @@ export default class accountManagementList extends PureComponent {
                   filterOption={false}
                   style={{ width: 180 }}
                 >
-                  {unitIds.map(item => (
+                  {unitIdes.map(item => (
                     <Option value={item.id} key={item.id}>
                       {item.name}
                     </Option>

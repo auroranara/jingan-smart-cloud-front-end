@@ -160,7 +160,7 @@ export default class accountManagementAdd extends PureComponent {
   handleUnitIdChange = value => {
     const {
       fetchUnitsFuzzy,
-      form: { getFieldValue },
+      form: { getFieldValue, setFieldsValue },
     } = this.props;
     fetchUnitsFuzzy({
       payload: {
@@ -168,12 +168,41 @@ export default class accountManagementAdd extends PureComponent {
         unitName: value || null,
       },
     });
+    // 清除数据权限输入框的值
+    setFieldsValue({
+      treeIds: undefined,
+    });
+  };
+
+  handleDataPermissions = value => {
+    const {
+      account: { unitIdes },
+      form: { setFieldsValue },
+    } = this.props;
+    // 根据value从源数组中筛选出对应的数据，获取其
+    setFieldsValue({
+      treeIds: unitIdes.filter(item => item.id === value)[0].name,
+    });
+  };
+
+  /** 所属单位下拉框失焦 */
+  handleUnitIdBlur = value => {
+    const {
+      account: { unitIdes },
+      form: { setFieldsValue },
+    } = this.props;
+    // 从源数组中筛选出当前值对应的数据，如果存在，则意味着是通过选中赋值的
+    if (unitIdes.filter(item => item.id === value).length === 0) {
+      setFieldsValue({
+        unitId: undefined,
+      });
+    }
   };
 
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
-      account: { unitTypes, accountStatuses, unitIds },
+      account: { unitTypes, accountStatuses, unitIdes },
       form: { getFieldDecorator },
       loading,
     } = this.props;
@@ -302,9 +331,11 @@ export default class accountManagementAdd extends PureComponent {
                       placeholder="请选择所属单位"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleUnitIdChange}
+                      onSelect={this.handleDataPermissions}
+                      onBlur={this.handleUnitIdBlur}
                       filterOption={false}
                     >
-                      {unitIds.map(item => (
+                      {unitIdes.map(item => (
                         <Option value={item.id} key={item.id}>
                           {item.name}
                         </Option>
@@ -320,10 +351,9 @@ export default class accountManagementAdd extends PureComponent {
     );
   }
 
-  /* 渲染基本信息 */
+  /* 渲染角色权限信息 */
   renderRolePermission() {
     const {
-      account: { unitId },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -333,15 +363,7 @@ export default class accountManagementAdd extends PureComponent {
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.dataPermissions}>
-                {getFieldDecorator('unitId', {
-                  initialValue: unitId,
-                  rules: [
-                    {
-                      whitespace: true,
-                      message: '单位名称',
-                    },
-                  ],
-                })(<Input placeholder="单位名称" disabled />)}
+                {getFieldDecorator('treeIds')(<Input placeholder="单位名称" disabled />)}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
               </Form.Item>
             </Col>
