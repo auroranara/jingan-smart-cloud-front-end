@@ -7,12 +7,12 @@ export default {
     props: {
       size: 'large',
       prefix: <Icon type="user" className={styles.prefixIcon} />,
-      placeholder: '用户名/邮箱',
+      placeholder: '用户名',
     },
     rules: [
       {
         required: true,
-        message: '请输入用户名或邮箱!',
+        message: '请输入用户名!',
       },
     ],
   },
