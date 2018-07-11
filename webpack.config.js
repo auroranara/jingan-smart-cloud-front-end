@@ -20,6 +20,7 @@ export default webpackConfig => {
     mainLessFile: outFile,
     themeVariables: ['@primary-color'],
     indexFileName: 'index.html',
+    publicPath: process.env.publicPath,
   };
   const themePlugin = new AntDesignThemePlugin(options);
 
