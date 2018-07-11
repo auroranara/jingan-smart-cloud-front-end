@@ -522,7 +522,7 @@ export default class ContractHandler extends PureComponent {
                   initialValue: serviceContent,
                   rules: [{ required: true, message: '请输入服务内容', whitespace: true }],
                 })(
-                  <TextArea rows={4} placeholder="请输入服务内容" />
+                  <TextArea rows={4} placeholder="请输入服务内容" maxlength="4000" />
                 )}
               </Form.Item>
             </Col>

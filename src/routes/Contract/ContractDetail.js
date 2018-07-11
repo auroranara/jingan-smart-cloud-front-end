@@ -131,7 +131,7 @@ export default class ContractDetail extends PureComponent {
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="服务内容">
             {serviceContent ? (
-              <pre style={{ margin: '0', color: 'inherit', font: 'inherit' }}>{serviceContent}</pre>
+              <pre style={{ margin: '0', color: 'inherit', font: 'inherit', whiteSpace: 'pre-wrap' }}>{serviceContent}</pre>
             ) : (
               getEmptyData()
             )}
