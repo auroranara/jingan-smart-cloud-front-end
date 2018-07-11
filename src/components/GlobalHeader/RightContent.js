@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, setLocale, getLocale } from 'umi/locale';
 import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, Button } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
@@ -41,11 +41,11 @@ export default class GlobalHeaderRight extends PureComponent {
   }
 
   changLang = () => {
-    const locale = localStorage.getItem('locale');
+    const locale = getLocale();
     if (!locale || locale === 'zh-CN') {
-      localStorage.setItem('locale', 'en-US');
+      setLocale('en-US');
     } else {
-      localStorage.setItem('locale', 'zh-CN');
+      setLocale('zh-CN');
     }
     location.reload();
   };
@@ -145,7 +145,12 @@ export default class GlobalHeaderRight extends PureComponent {
         ) : (
           <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
         )}
-        <Button size="small" onClick={this.changLang}>
+        <Button
+          size="small"
+          onClick={() => {
+            this.changLang();
+          }}
+        >
           <FormattedMessage id="navbar.lang" />
         </Button>
       </div>
