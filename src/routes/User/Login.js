@@ -100,7 +100,7 @@ export default class LoginPage extends Component {
             <span className={styles.pane}>账户密码登录</span>
             {/* <span className={styles.line}>.</span> */}
           </div>
-          <div style={{ marginTop: '20px', display: 'block' }}>
+          <div style={{ marginTop: '28px', display: 'block' }}>
             {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
             <UserName name="username" />
             <Password name="password" />
