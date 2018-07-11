@@ -59,11 +59,7 @@ const fieldLabels = {
 };
 /* 获取无数据 */
 const getEmptyData = () => {
-  return (
-    <span style={{ color: 'rgba(0,0,0,0.45)' }}>
-暂无数据
-    </span>
-);
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
 @connect(
@@ -138,38 +134,41 @@ export default class CompanyDetail extends PureComponent {
       },
     } = this.props;
 
-    const registerAddressLabel = (registerProvinceLabel || '') + (registerCityLabel || '') + (registerDistrictLabel || '') + (registerTownLabel || '') + (registerAddress || '');
-    const practicalAddressLabel = (practicalProvinceLabel || '') + (practicalCityLabel || '') + (practicalDistrictLabel || '') + (practicalTownLabel || '') + (practicalAddress || '');
+    const registerAddressLabel =
+      (registerProvinceLabel || '') +
+      (registerCityLabel || '') +
+      (registerDistrictLabel || '') +
+      (registerTownLabel || '') +
+      (registerAddress || '');
+    const practicalAddressLabel =
+      (practicalProvinceLabel || '') +
+      (practicalCityLabel || '') +
+      (practicalDistrictLabel || '') +
+      (practicalTownLabel || '') +
+      (practicalAddress || '');
     const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
-          <Description term={fieldLabels.name}>
-            {name || getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.code}>
-            {code || getEmptyData()}
-          </Description>
+          <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
+          <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
             {registerAddressLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.practicalAddress}>
             {practicalAddressLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.longitude}>
-            {longitude || getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.latitude}>
-            {latitude || getEmptyData()}
-          </Description>
+          <Description term={fieldLabels.longitude}>{longitude || getEmptyData()}</Description>
+          <Description term={fieldLabels.latitude}>{latitude || getEmptyData()}</Description>
           <Description term={fieldLabels.companyIchnography}>
             {companyIchnographyList.length !== 0 ? (
               <a href={companyIchnographyList[0].webUrl} target="_blank" rel="noopener noreferrer">
                 {ichnographyName || '预览'}
               </a>
-            ) :
-              getEmptyData()}
+            ) : (
+              getEmptyData()
+            )}
           </Description>
         </DescriptionList>
       </Card>
@@ -207,18 +206,14 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.companyStatus}>
             {companyStatusLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.scale}>
-            {scaleLabel || getEmptyData()}
-          </Description>
+          <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.createTime}>
             {createTime ? moment(+createTime).format('YYYY-MM-DD') : getEmptyData()}
           </Description>
-          <Description term={fieldLabels.groupName}>
-            {groupName || getEmptyData()}
-          </Description>
+          <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
           <Description term={fieldLabels.businessScope}>
             {businessScope || getEmptyData()}
           </Description>
@@ -229,17 +224,23 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染人员信息 */
   renderPersonalInfo() {
-    const { company: { detail: { data: {
-      legalName,
-      legalPhone,
-      legalEmail,
-      principalName,
-      principalPhone,
-      principalEmail,
-      safetyName,
-      safetyPhone,
-      safetyEmail,
-     } } } } = this.props;
+    const {
+      company: {
+        detail: {
+          data: {
+            legalName,
+            legalPhone,
+            legalEmail,
+            principalName,
+            principalPhone,
+            principalEmail,
+            safetyName,
+            safetyPhone,
+            safetyEmail,
+          },
+        },
+      },
+    } = this.props;
     return (
       <Fragment>
         <Card title="法定代表人" className={styles.card} bordered={false}>
