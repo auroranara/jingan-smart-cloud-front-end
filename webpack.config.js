@@ -20,7 +20,8 @@ export default webpackConfig => {
     mainLessFile: outFile,
     themeVariables: ['@primary-color'],
     indexFileName: 'index.html',
-    publicPath: process.env.publicPath,
+    // TODO: 改成可配置的
+    publicPath: process.env.NODE_ENV === 'production' ? '/acloud_new' : '',
   };
   const themePlugin = new AntDesignThemePlugin(options);
 
