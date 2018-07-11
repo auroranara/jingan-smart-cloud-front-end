@@ -39,6 +39,7 @@ const fieldLabels = {
   unitType: '单位类型',
   unitId: '所属单位',
   accountStatus: '账号状态',
+  dataPermissions: '数据权限',
 };
 
 @connect(
@@ -106,14 +107,6 @@ export default class accountManagementAdd extends PureComponent {
         key: 'accountStatuses',
       },
     });
-
-    // 获取所属单位
-    // fetchUnitList({
-    //   payload: {
-    //     type: 'unitId',
-    //     key: 'unitIds',
-    //   },
-    // });
   }
 
   /* 点击提交按钮验证表单信息 */
@@ -150,15 +143,6 @@ export default class accountManagementAdd extends PureComponent {
     });
   };
 
-  /* 选择单位类型以后查询所属单位 */
-  // handleQueryUnit = value => {
-  //   const { fetchUnitList } = this.props;
-  //   fetchUnitList({
-  //     payload: {
-  //       unitType: value,
-  //     },
-  //   });
-  // };
   handleUnitTypeSelect = value => {
     const {
       fetchUnitsFuzzy,
@@ -225,7 +209,7 @@ export default class accountManagementAdd extends PureComponent {
                       message: '请输入密码',
                     },
                   ],
-                })(<Input placeholder="请输入密码" min={6} max={20} type="password" />)}
+                })(<Input placeholder="请输入密码" min={6} max={20} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -336,6 +320,37 @@ export default class accountManagementAdd extends PureComponent {
     );
   }
 
+  /* 渲染基本信息 */
+  renderRolePermission() {
+    const {
+      account: { unitId },
+      form: { getFieldDecorator },
+    } = this.props;
+
+    return (
+      <Card title="角色权限配置" className={styles.card} bordered={false}>
+        <Form layout="vertical">
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.dataPermissions}>
+                {getFieldDecorator('unitId', {
+                  initialValue: unitId,
+                  rules: [
+                    {
+                      whitespace: true,
+                      message: '单位名称',
+                    },
+                  ],
+                })(<Input placeholder="单位名称" disabled />)}
+                <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    );
+  }
+
   /* 渲染错误信息 */
   renderErrorInfo() {
     const {
@@ -411,6 +426,7 @@ export default class accountManagementAdd extends PureComponent {
       >
         <Spin spinning={loading || submitting}>
           {this.renderBasicInfo()}
+          {this.renderRolePermission()}
           {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>
