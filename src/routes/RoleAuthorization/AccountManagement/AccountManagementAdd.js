@@ -41,6 +41,8 @@ const fieldLabels = {
   accountStatus: '账号状态',
   dataPermissions: '数据权限',
 };
+// 默认的所属单位长度
+const defaultPageSize = 20;
 
 @connect(
   ({ account, loading }) => ({
@@ -51,12 +53,6 @@ const fieldLabels = {
     fetchOptions(action) {
       dispatch({
         type: 'account/fetchOptions',
-        ...action,
-      });
-    },
-    fetchUnitList(action) {
-      dispatch({
-        type: 'account/fetchUnitList',
         ...action,
       });
     },
@@ -90,21 +86,19 @@ export default class accountManagementAdd extends PureComponent {
 
   /* 生命周期函数 */
   componentWillMount() {
-    const { fetchOptions } = this.props;
+    const { fetchOptions, fetchUnitsFuzzy } = this.props;
 
-    // 获取单位类型
+    // 获取单位类型和账户状态
     fetchOptions({
-      payload: {
-        type: 'unitType',
-        key: 'unitTypes',
-      },
-    });
-
-    // 获取账号状态
-    fetchOptions({
-      payload: {
-        type: 'accountStatus',
-        key: 'accountStatuses',
+      success: ({ unitType }) => {
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: unitType[0].id,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
       },
     });
   }
@@ -117,55 +111,69 @@ export default class accountManagementAdd extends PureComponent {
       form: { validateFieldsAndScroll },
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
-    validateFieldsAndScroll((error, values) => {
-      if (!error) {
-        this.setState({
-          submitting: true,
-        });
-        addAccount({
-          payload: {
-            ...values,
-          },
-          success: () => {
-            message.success('新建成功！', () => {
-              goBack();
-            });
-          },
-          error: err => {
-            message.error(err, () => {
-              this.setState({
-                submitting: false,
+    validateFieldsAndScroll(
+      (error, { loginName, password, accountStatus, userName, phoneNumber, unitType, unitId }) => {
+        if (!error) {
+          this.setState({
+            submitting: true,
+          });
+          addAccount({
+            payload: {
+              loginName: loginName.trim(),
+              password: password.trim(),
+              accountStatus,
+              userName: userName.trim(),
+              phoneNumber: phoneNumber.trim(),
+              unitType,
+              unitId: unitId.key,
+            },
+            success: () => {
+              message.success('新建成功！', () => {
+                goBack();
               });
-            });
-          },
-        });
+            },
+            error: err => {
+              message.error(err, () => {
+                this.setState({
+                  submitting: false,
+                });
+              });
+            },
+          });
+        }
       }
-    });
+    );
   };
 
+  // 单位类型下拉框选择
   handleUnitTypeSelect = value => {
     const {
       fetchUnitsFuzzy,
-      form: { getFieldValue, setFieldsValue },
+      form: { setFieldsValue },
     } = this.props;
-    setFieldsValue({ unitId: '' });
+    // 清除所属单位
+    setFieldsValue({ unitId: undefined });
+    // 根据当前选中的单位类型获取对应的所属单位列表
     fetchUnitsFuzzy({
       payload: {
-        unitType: value || null,
-        unitName: getFieldValue('unitId') || null,
+        unitType: value,
+        pageNum: 1,
+        pageSize: defaultPageSize,
       },
     });
   };
 
+  // 所属单位下拉框输入
   handleUnitIdChange = value => {
     const {
       fetchUnitsFuzzy,
       form: { getFieldValue, setFieldsValue },
     } = this.props;
+    // 根据输入值获取列表
     fetchUnitsFuzzy({
       payload: {
-        unitType: getFieldValue('unitType') || null,
-        unitName: value || null,
+        unitType: getFieldValue('unitType'),
+        unitName: value && value.trim(),
       },
     });
     // 清除数据权限输入框的值
@@ -174,14 +182,14 @@ export default class accountManagementAdd extends PureComponent {
     });
   };
 
+  // 所属单位下拉框选择
   handleDataPermissions = value => {
     const {
-      account: { unitIdes },
       form: { setFieldsValue },
     } = this.props;
     // 根据value从源数组中筛选出对应的数据，获取其
     setFieldsValue({
-      treeIds: unitIdes.filter(item => item.id === value)[0].name,
+      treeIds: value.label,
     });
   };
 
@@ -191,11 +199,23 @@ export default class accountManagementAdd extends PureComponent {
       account: { unitIdes },
       form: { setFieldsValue },
     } = this.props;
-    // 从源数组中筛选出当前值对应的数据，如果存在，则意味着是通过选中赋值的
-    if (unitIdes.filter(item => item.id === value).length === 0) {
-      setFieldsValue({
-        unitId: undefined,
-      });
+    // 根据value判断是否是手动输入
+    if (value && value.key === value.label) {
+      // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
+      const unitId = unitIdes.filter(item => item.name === value.label)[0];
+      if (unitId) {
+        setFieldsValue({
+          unitId: {
+            key: unitId.id,
+            label: unitId.name,
+          },
+          treeIds: unitId.name,
+        });
+      } else {
+        setFieldsValue({
+          unitId: undefined,
+        });
+      }
     }
   };
 
@@ -297,6 +317,7 @@ export default class accountManagementAdd extends PureComponent {
               <Col lg={8} md={12} sm={24} style={{ paddingRight: 30 }}>
                 <Form.Item label={fieldLabels.unitType}>
                   {getFieldDecorator('unitType', {
+                    initialValue: unitTypes.length === 0 ? undefined : unitTypes[0].id,
                     rules: [
                       {
                         required: true,
@@ -320,13 +341,14 @@ export default class accountManagementAdd extends PureComponent {
                     rules: [
                       {
                         required: true,
-                        whitespace: true,
+                        transform: value => value && value.label,
                         message: '请选择所属单位',
                       },
                     ],
                   })(
                     <Select
                       mode="combobox"
+                      labelInValue
                       optionLabelProp="children"
                       placeholder="请选择所属单位"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
