@@ -1,7 +1,6 @@
 import {
   queryAccountList,
   queryAddAccountOptions,
-  queryUnitlist,
   addAccount,
   queryAccountDetail,
   updateAccountDetail,
@@ -56,23 +55,10 @@ export default {
           },
         });
         if (success) {
-          success();
+          success(response.data);
         }
       } else if (error) {
         error(response.msg);
-      }
-    },
-
-    // 新增账号-根据所选单位类型查询单位列表
-    *fetchUnitList({ payload, callback }, { call, put }) {
-      const response = yield call(queryUnitlist, payload);
-      const { code } = response;
-      if (callback) callback(code);
-      if (response.code === 200) {
-        yield put({
-          type: 'queryUnitlist',
-          payload: response.data.list,
-        });
       }
     },
 
@@ -178,13 +164,6 @@ export default {
         ...state,
         unitTypes: unitType,
         accountStatuses: accountStatus,
-      };
-    },
-
-    queryUnitlist(state, { payload }) {
-      return {
-        ...state,
-        unitIdes: payload,
       };
     },
 
