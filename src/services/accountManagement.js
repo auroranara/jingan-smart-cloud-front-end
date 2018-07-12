@@ -7,7 +7,7 @@ export async function queryAccountList(params) {
 }
 
 /* 新增账号-初始化页面选项 */
-export async function queryAddaccountoptions() {
+export async function queryAddAccountOptions() {
   return request(`/acloud_new/v2/rolePermission/user/options.json`);
 }
 

@@ -1,6 +1,6 @@
 import {
   queryAccountList,
-  queryAddaccountoptions,
+  queryAddAccountOptions,
   queryUnitlist,
   addAccount,
   queryAccountDetail,
@@ -25,11 +25,12 @@ export default {
         unitId: undefined,
         accountStatus: undefined,
         unitName: undefined,
+        treeIds: undefined,
       },
     },
     unitTypes: [],
     accountStatuses: [],
-    unitIds: [],
+    unitIdes: [],
   },
 
   effects: {
@@ -46,10 +47,10 @@ export default {
 
     // 新增账号-初始化页面选项
     *fetchOptions({ success, error }, { call, put }) {
-      const response = yield call(queryAddaccountoptions);
+      const response = yield call(queryAddAccountOptions);
       if (response.code === 200) {
         yield put({
-          type: 'queryAddaccountoptions',
+          type: 'queryAddAccountOptions',
           payload: {
             data: response.data,
           },
@@ -165,7 +166,7 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    queryAddaccountoptions(
+    queryAddAccountOptions(
       state,
       {
         payload: {
@@ -183,14 +184,14 @@ export default {
     queryUnitlist(state, { payload }) {
       return {
         ...state,
-        unitIds: payload,
+        unitIdes: payload,
       };
     },
 
     queryUnits(state, { payload }) {
       return {
         ...state,
-        unitIds: payload,
+        unitIdes: payload,
       };
     },
 

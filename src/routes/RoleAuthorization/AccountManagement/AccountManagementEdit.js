@@ -213,7 +213,7 @@ export default class accountManagementEdit extends PureComponent {
         },
         unitTypes,
         accountStatuses,
-        unitIds,
+        unitIdes,
       },
       form: { getFieldDecorator },
       loading,
@@ -326,7 +326,7 @@ export default class accountManagementEdit extends PureComponent {
                     onSearch={this.handleUnitIdChange}
                     filterOption={false}
                   >
-                    {unitIds.map(item => (
+                    {unitIdes.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.name}
                       </Option>
