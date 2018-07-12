@@ -86,8 +86,8 @@ const folder = 'fireControl';
 export default class ContractHandler extends PureComponent {
   constructor(props) {
     super(props);
-    this.handleSearchMaintenanceList = debounce(this.handleSearchMaintenanceList, 800);
-    this.handleSearchServiceList = debounce(this.handleSearchServiceList, 800);
+    this.handleSearchMaintenanceList = debounce(this.handleSearchMaintenanceList, 500);
+    this.handleSearchServiceList = debounce(this.handleSearchServiceList, 500);
   }
 
   state = {
@@ -248,7 +248,7 @@ export default class ContractHandler extends PureComponent {
   handleSearchServiceList = (value) => {
     const { fetchServiceList, contract: { maintenanceList } } = this.props;
     const { filterMaintenanceId } = this.state;
-    const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0]
+    const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     fetchServiceList({
       payload: {
         name: value && value.trim(),
@@ -262,31 +262,79 @@ export default class ContractHandler extends PureComponent {
   /* 判断清除维保单位 */
   handleClearMaintenance = (value) => {
     if (value && value.key === value.label) {
-      const { form: { setFieldsValue, validateFields } } = this.props;
-      setFieldsValue({
-        maintenanceId: undefined,
-      });
-      validateFields(['maintenanceId']);
-      this.setState({
-        filterMaintenanceId: undefined,
-      });
+      this.handleSearchMaintenanceList.cancel();
+      const { fetchMaintenanceList, contract: { maintenanceList }, form: { setFieldsValue, validateFields } } = this.props;
+      // 从数组中筛选出与value.label相等的数据
+      const maintenance = maintenanceList.filter(item => item.name === value.label)[0];
+      if (maintenance) {
+        // 如果筛选出的数据存在的话，则设置选中对应的下拉框选项
+        setFieldsValue({
+          maintenanceId: {
+            key: maintenance.id,
+            label: maintenance.name,
+          },
+        });
+      }
+      else {
+        const { filterCompanyId } = this.state;
+        // 否则清空维保单位输入框
+        setFieldsValue({
+          maintenanceId: undefined,
+        });
+        // 提示验证信息
+        validateFields(['maintenanceId']);
+        this.setState({
+          filterMaintenanceId: undefined,
+        });
+        // 获取维保单位列表
+        fetchMaintenanceList({
+          payload: {
+            pageSize: defaultPageSize,
+            pageNum: 1,
+            companyId: filterCompanyId,
+          },
+        });
+      }
     }
   }
 
   /* 判断清除服务单位 */
   handleClearService = (value) => {
     if (value && value.key === value.label) {
-      const { form: { setFieldsValue, validateFields } } = this.props;
-      setFieldsValue({
-        companyId: {
-          key: '',
-          label: '',
-        },
-      });
-      validateFields(['companyId']);
-      this.setState({
-        filterCompanyId: undefined,
-      });
+      this.handleSearchServiceList.cancel();
+      const { fetchServiceList, contract: { serviceList, maintenanceList }, form: { setFieldsValue, validateFields } } = this.props;
+      // 从数组中筛选出与value.label相等的数据
+      const service = serviceList.filter(item => item.name === value.label)[0];
+      if (service) {
+        // 如果筛选出的数据存在的话，则设置选中对应的下拉框选项
+        setFieldsValue({
+          companyId: {
+            key: service.id,
+            label: service.name,
+          },
+        });
+      }
+      else {
+        const { filterMaintenanceId } = this.state;
+        const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
+        // 否则清空服务单位输入框
+        setFieldsValue({
+          companyId: undefined,
+        });
+        // 提示验证信息
+        validateFields(['companyId']);
+        this.setState({
+          filterCompanyId: undefined,
+        });
+        // 获取服务单位列表
+        fetchServiceList({
+          payload: {
+            pageSize: defaultPageSize,
+            pageNum: 1,
+            companyId: maintenance && maintenance.companyId,
+          },
+        });
+      }
     }
   }
 
@@ -522,7 +570,7 @@ export default class ContractHandler extends PureComponent {
                   initialValue: serviceContent,
                   rules: [{ required: true, message: '请输入服务内容', whitespace: true }],
                 })(
-                  <TextArea rows={4} placeholder="请输入服务内容" maxlength="4000" />
+                  <TextArea rows={4} placeholder="请输入服务内容" maxLength="2000" />
                 )}
               </Form.Item>
             </Col>

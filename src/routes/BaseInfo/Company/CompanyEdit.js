@@ -858,7 +858,7 @@ export default class CompanyDetail extends PureComponent {
               <Form.Item label={fieldLabels.businessScope}>
                 {getFieldDecorator('businessScope', {
                   initialValue: businessScope,
-                })(<TextArea rows={4} placeholder="请输入经营范围" maxlength="1000" />)}
+                })(<TextArea rows={4} placeholder="请输入经营范围" maxLength="500" />)}
               </Form.Item>
             </Col>
           </Row>
