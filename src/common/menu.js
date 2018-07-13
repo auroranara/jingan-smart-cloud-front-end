@@ -4,11 +4,11 @@ const menuData = [
   {
     name: '一企一档',
     icon: 'form',
-    path: 'base-info',
+    path: 'baseInfo',
     children: [
       {
         name: '企业单位',
-        path: 'company-list',
+        path: 'company/list',
       },
     ],
   },

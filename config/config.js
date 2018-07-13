@@ -4,7 +4,22 @@
 
 const path = require('path');
 
+// const hosts = {
+//   lm: '192.168.10.2', // 吕旻
+//   gjm: '192.168.10.55', // 顾家铭
+//   sqz: '192.168.10.56', //孙启政
+//   test: '192.168.10.67:9080', // 内网
+//   mock: '118.126.110.115:3001/mock/28',
+// };
+
 export default {
+  proxy: {
+    '/acloud_new': {
+      target: 'http://192.168.10.67:9080',
+      changeOrigin: true,
+      pathRewrite: { '^/acloud_new': '/acloud_new' },
+    },
+  },
   // add for transfer to umi
   plugins: [
     'umi-plugin-dva',
