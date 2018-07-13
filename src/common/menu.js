@@ -61,30 +61,30 @@ const menuData = [
     authority: 'guest',
     children: [
       {
-        name: '登录',
+        name: 'login',
         path: 'login',
       },
       {
-        name: '注册',
+        name: 'register',
         path: 'register',
       },
       {
-        name: '注册结果',
+        name: 'register-result',
         path: 'register-result',
       },
     ],
   },
   {
-    name: '个人页',
+    name: 'account',
     icon: 'user',
     path: 'account',
     children: [
       {
-        name: '个人中心',
+        name: 'center',
         path: 'center',
       },
       {
-        name: '个人设置',
+        name: 'settings',
         path: 'settings',
       },
     ],
