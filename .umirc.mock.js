@@ -7,8 +7,6 @@ import { getProfileAdvancedData } from './mock/profile';
 import { getNotices } from './mock/notices';
 import { getProvince, getCity } from './mock/geographic';
 
-import { deviceResponse, deviceDetailResponse } from './mock/transmission';
-
 // 是否禁用代理
 const noProxy = process.env.NO_PROXY === 'true';
 
@@ -17,10 +15,10 @@ const initProxy = key => {
   const host = hosts[key];
   return {
     // 支持值为 Object 和 Array
-    'GET /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
-    'POST /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
-    'PUT /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
-    'DELETE /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
+    // 'GET /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
+    // 'POST /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
+    // 'PUT /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
+    // 'DELETE /acloud_new/v2/(.*)': `http://${host}/acloud_new/v2/`,
 
     // GET POST 可省略
     'GET /api/users': [
@@ -63,8 +61,6 @@ const initProxy = key => {
     }),
     'GET /api/fake_list': getFakeList,
     'POST /api/fake_list': postFakeList,
-    'GET /api/transmission_device_list': deviceResponse,
-    'GET /api/transmission_device_detail': deviceDetailResponse,
     'GET /api/fake_chart_data': getFakeChartData,
     'GET /api/profile/basic': getProfileBasicData,
     'GET /api/profile/advanced': getProfileAdvancedData,
