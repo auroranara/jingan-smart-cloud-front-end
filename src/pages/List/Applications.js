@@ -1,86 +1,73 @@
-import React, { PureComponent } from 'react';
-import { List, Card, Icon, Dropdown, Menu, Avatar, Tooltip } from 'antd';
-import numeral from 'numeral';
+import React, { Component } from 'react';
+import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
-import { formatWan } from '../../../utils/utils';
-import stylesApplications from '../../List/Applications.less';
+import { Input } from 'antd';
+import PageHeaderLayout from '../layouts/PageHeaderLayout';
 
-@connect(({ list }) => ({
-  list,
-}))
-export default class Center extends PureComponent {
+@connect()
+export default class SearchList extends Component {
+  handleTabChange = key => {
+    const { dispatch, match } = this.props;
+    switch (key) {
+      case 'Articles':
+        dispatch(routerRedux.push(`${match.url}/Articles`));
+        break;
+      case 'Applications':
+        dispatch(routerRedux.push(`${match.url}/Applications`));
+        break;
+      case 'Projects':
+        dispatch(routerRedux.push(`${match.url}/Projects`));
+        break;
+      default:
+        break;
+    }
+  };
+
   render() {
-    const {
-      list: { list },
-    } = this.props;
-    const itemMenu = (
-      <Menu>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
-            1st menu item
-          </a>
-        </Menu.Item>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
-            2nd menu item
-          </a>
-        </Menu.Item>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">
-            3d menu item
-          </a>
-        </Menu.Item>
-      </Menu>
-    );
-    const CardInfo = ({ activeUser, newUser }) => (
-      <div className={stylesApplications.cardInfo}>
-        <div>
-          <p>活跃用户</p>
-          <p>{activeUser}</p>
-        </div>
-        <div>
-          <p>新增用户</p>
-          <p>{newUser}</p>
-        </div>
+    const tabList = [
+      {
+        key: 'Articles',
+        tab: '文章',
+      },
+      {
+        key: 'Applications',
+        tab: '应用',
+      },
+      {
+        key: 'Projects',
+        tab: '项目',
+      },
+    ];
+
+    const mainSearch = (
+      <div style={{ textAlign: 'center' }}>
+        <Input.Search
+          placeholder="请输入"
+          enterButton="搜索"
+          size="large"
+          onSearch={this.handleFormSubmit}
+          style={{ width: 522 }}
+        />
       </div>
     );
+
+    const { match, children, location } = this.props;
+
     return (
-      <List
-        rowKey="id"
-        className={stylesApplications.filterCardList}
-        grid={{ gutter: 24, xxl: 3, xl: 2, lg: 2, md: 2, sm: 2, xs: 1 }}
-        dataSource={list}
-        renderItem={item => (
-          <List.Item key={item.id}>
-            <Card
-              hoverable
-              bodyStyle={{ paddingBottom: 20 }}
-              actions={[
-                <Tooltip title="下载">
-                  <Icon type="download" />
-                </Tooltip>,
-                <Tooltip title="编辑">
-                  <Icon type="edit" />
-                </Tooltip>,
-                <Tooltip title="分享">
-                  <Icon type="share-alt" />
-                </Tooltip>,
-                <Dropdown overlay={itemMenu}>
-                  <Icon type="ellipsis" />
-                </Dropdown>,
-              ]}
-            >
-              <Card.Meta avatar={<Avatar size="small" src={item.avatar} />} title={item.title} />
-              <div className={stylesApplications.cardItemContent}>
-                <CardInfo
-                  activeUser={formatWan(item.activeUser)}
-                  newUser={numeral(item.newUser).format('0,0')}
-                />
-              </div>
-            </Card>
-          </List.Item>
-        )}
-      />
+      <PageHeaderLayout
+        title="搜索列表"
+        content={mainSearch}
+        tabList={tabList}
+        tabActiveKey={location.pathname.replace(`${match.path}/`, '')}
+        onTabChange={this.handleTabChange}
+      >
+        {children}
+        {/* <Switch>
+          {routes.map(item => (
+            <Route key={item.key} path={item.path} component={item.component} exact={item.exact} />
+          ))}
+        </Switch> */}
+      </PageHeaderLayout>
     );
   }
 }
