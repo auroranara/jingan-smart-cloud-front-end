@@ -3,6 +3,7 @@
 // https://umijs.org/config/
 
 const path = require('path');
+const pageRoutes = require('../src/pages/_routes');
 
 // const hosts = {
 //   lm: '192.168.10.2', // 吕旻
@@ -28,6 +29,9 @@ export default {
       'umi-plugin-routes',
       {
         exclude: [/\.test\.js/],
+        update(routes) {
+          return [...pageRoutes, ...routes];
+        },
       },
     ],
   ],

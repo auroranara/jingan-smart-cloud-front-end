@@ -1,5 +1,6 @@
 import { isUrl } from '../utils/utils';
 
+// TODO: authority
 const menuData = [
   {
     name: '一企一档',
@@ -70,6 +71,21 @@ const menuData = [
       {
         name: '注册结果',
         path: 'register-result',
+      },
+    ],
+  },
+  {
+    name: '个人页',
+    icon: 'user',
+    path: 'Account',
+    children: [
+      {
+        name: '个人中心',
+        path: 'Center',
+      },
+      {
+        name: '个人设置',
+        path: 'Settings',
       },
     ],
   },
