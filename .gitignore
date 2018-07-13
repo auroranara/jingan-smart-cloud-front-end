@@ -29,3 +29,8 @@ jsconfig.json
 
 functions/mock
 .temp/**
+
+# umi
+.umi
+.umi-production
+
