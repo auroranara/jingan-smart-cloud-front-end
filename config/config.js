@@ -36,9 +36,9 @@ export default {
   },
   ignoreMomentLocale: true,
   theme: './src/theme.js',
-  html: {
-    template: './src/index.ejs',
-  },
+  // html: {
+  //   template: './src/index.ejs',
+  // },
   publicPath: '/',
   // TODO check hash config
   // hash: true,
