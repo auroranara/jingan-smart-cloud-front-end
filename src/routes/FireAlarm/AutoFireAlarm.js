@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'react-router-dom';
-import { Card, Modal, Tabs, Table } from 'antd';
+import { Button, Card, Modal, Tabs, Table } from 'antd';
 // import Ellipsis from 'components/Ellipsis';
 import DescriptionList from 'components/DescriptionList';
 
@@ -176,6 +176,8 @@ export default class AutoFireAlarm extends PureComponent {
       },
     ];
 
+    const okButton = <Button type="primary" onClick={() => { this.handleModalChange(false) }}>确认</Button>;
+
     return (
       <PageHeaderLayout title={tableLists.name} breadcrumbList={breadcrumbList}>
         <Card>
@@ -209,9 +211,11 @@ export default class AutoFireAlarm extends PureComponent {
         </Card>
         <Modal
           title="详情信息"
+          width="36%"
           visible={detailVisible}
           onOk={() => this.handleModalChange(false)}
           onCancel={() => this.handleModalChange(false)}
+          footer={okButton}
         >
           <DescriptionList>
             {DETAIL_ITEMS.map((item, index) => (
