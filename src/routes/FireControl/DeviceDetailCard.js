@@ -21,11 +21,7 @@ const deviceCardStyle = { marginBottom: 20 };
 
 export default class DeviceDetailCard extends Component {
   renderDeviceExtra() {
-    const {
-      deviceData,
-      handleDeviceUpdateClick,
-      handleDeviceDeleteClick,
-    } = this.props;
+    const { deviceData, handleDeviceUpdateClick, handleDeviceDeleteClick } = this.props;
 
     return (
       <ButtonGroup>
@@ -61,14 +57,24 @@ export default class DeviceDetailCard extends Component {
   }
 
   renderDeviceInfo() {
-    const deviceInfo = this.props.deviceData;
+    const { deviceData: deviceInfo } = this.props;
     return (
       <DescriptionList size="small" col={3}>
-        <Description term="装置编号" key="deviceCode">{deviceInfo.deviceCode}</Description>
-        <Description term="品牌" key="brand">{deviceInfo.brand}</Description>
-        <Description term="型号" key="model">{deviceInfo.model}</Description>
-        <Description term="安装位置" key="installLocation">{deviceInfo.installLocation}</Description>
-        <Description term="生产日期" key="productionDate">{deviceInfo.productionDate}</Description>
+        <Description term="装置编号" key="deviceCode">
+          {deviceInfo.deviceCode}
+        </Description>
+        <Description term="品牌" key="brand">
+          {deviceInfo.brand}
+        </Description>
+        <Description term="型号" key="model">
+          {deviceInfo.model}
+        </Description>
+        <Description term="安装位置" key="installLocation">
+          {deviceInfo.installLocation}
+        </Description>
+        <Description term="生产日期" key="productionDate">
+          {deviceInfo.productionDate}
+        </Description>
         <Description term="接入主机数量" key="hostList">
           {deviceInfo.hostList ? deviceInfo.hostList.length.toString() : '0'}
         </Description>
@@ -125,8 +131,20 @@ export default class DeviceDetailCard extends Component {
         render(text, record, index) {
           const menu = (
             <Menu>
-              <MenuItem><a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a></MenuItem>
-              <MenuItem><Link to={{ pathname: `/fire-control/user-transmission-device-detail/${companyId}/import-point-position/${record.id}` }}>导入点位</Link></MenuItem>
+              <MenuItem>
+                <a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a>
+              </MenuItem>
+              <MenuItem>
+                <Link
+                  to={{
+                    pathname: `/fire-control/user-transmission-device-detail/${companyId}/import-point-position/${
+                      record.id
+                    }`,
+                  }}
+                >
+                  导入点位
+                </Link>
+              </MenuItem>
             </Menu>
           );
 
@@ -145,7 +163,9 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a>
               <Dropdown overlay={menu}>
-                <a>更多<Icon type="down" /></a>
+                <a>
+                  更多<Icon type="down" />
+                </a>
               </Dropdown>
             </Fragment>
           );
@@ -179,12 +199,7 @@ export default class DeviceDetailCard extends Component {
         >
           {this.renderDeviceInfo()}
         </Card>
-        <Card
-          type="inner"
-          title="关联消防主机"
-          bordered={false}
-          extra={this.renderHostExtra()}
-        >
+        <Card type="inner" title="关联消防主机" bordered={false} extra={this.renderHostExtra()}>
           {this.renderHostTable()}
         </Card>
       </Card>

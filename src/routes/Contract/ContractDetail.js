@@ -58,7 +58,7 @@ const getEmptyData = () => {
     },
     /* 跳转到编辑页面 */
     goToEdit(id) {
-      dispatch(routerRedux.push(editUrl+id));
+      dispatch(routerRedux.push(editUrl + id));
     },
     /* 异常 */
     goToException() {
@@ -67,7 +67,7 @@ const getEmptyData = () => {
   })
 )
 @Form.create()
-export default class CompanyDetail extends PureComponent {
+export default class ContractDetail extends PureComponent {
   /* 生命周期函数 */
   componentWillMount() {
     const {
@@ -106,45 +106,63 @@ export default class CompanyDetail extends PureComponent {
           companyName,
         },
       },
+      match: {
+        params: { id },
+      },
     } = this.props;
 
-    const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime && moment(+endTime).format('YYYY-MM-DD')) || '?'}`;
+    const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime &&
+      moment(+endTime).format('YYYY-MM-DD')) ||
+      '?'}`;
+      const contractAppendixList = contractAppendix && contractAppendix.startsWith('[') ? JSON.parse(contractAppendix) : [];
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
-          <Description term="合同编号">
-            {contractCode || getEmptyData()}
-          </Description>
-          <Description term="维保单位">
-            {maintenanceName || getEmptyData()}
-          </Description>
-          <Description term="服务单位">
-            {companyName || getEmptyData()}
-          </Description>
+          <Description term="合同编号">{contractCode || getEmptyData()}</Description>
+          <Description term="维保单位">{maintenanceName || getEmptyData()}</Description>
+          <Description term="服务单位">{companyName || getEmptyData()}</Description>
           <Description term="签订日期">
-            {signingDate? moment(+signingDate).format('YYYY-MM-DD') : getEmptyData()}
+            {signingDate ? moment(+signingDate).format('YYYY-MM-DD') : getEmptyData()}
           </Description>
-          <Description term="签订地点">
-            {signingAddr || getEmptyData()}
-          </Description>
-          <Description term="服务期限">
-            {period || getEmptyData()}
-          </Description>
+          <Description term="签订地点">{signingAddr || getEmptyData()}</Description>
+          <Description term="服务期限">{period || getEmptyData()}</Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="服务内容">
-            {serviceContent? <pre style={{ margin: '0', color: 'inherit', font: 'inherit' }}>{serviceContent}</pre> : getEmptyData()}
+            {serviceContent ? (
+              <pre style={{ margin: '0', color: 'inherit', font: 'inherit', whiteSpace: 'pre-wrap' }}>{serviceContent}</pre>
+            ) : (
+              getEmptyData()
+            )}
           </Description>
           <Description term="合同附件">
-            {contractAppendix ? contractAppendix.map(({ webUrl }, index) => (
-              <a href={webUrl} target="_blank" rel="noopener noreferrer">{`合同附件${index+1}`}</a>
-            )) : getEmptyData()}
+            {contractAppendixList.length !== 0
+              ? contractAppendixList.map(({ webUrl }, index) => (
+                <a style={{ display: 'block' }} href={webUrl} target="_blank" rel="noopener noreferrer" key={webUrl}>
+                  {`合同附件${index + 1}`}
+                </a>
+                ))
+              : getEmptyData()}
           </Description>
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
-          <Button onClick={()=>{goBack()}} style={{ marginRight: '24px' }}>返回</Button>
-          <Button type="primary" onClick={()=>{goToEdit()}}>编辑</Button>
+          <Button
+            onClick={() => {
+              goBack();
+            }}
+            style={{ marginRight: '24px' }}
+          >
+            返回
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              goToEdit(id);
+            }}
+          >
+            编辑
+          </Button>
         </div>
       </Card>
     );
@@ -153,13 +171,8 @@ export default class CompanyDetail extends PureComponent {
   render() {
     const { loading } = this.props;
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
-        <Spin spinning={loading}>
-          {this.renderDetail()}
-        </Spin>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+        <Spin spinning={loading}>{this.renderDetail()}</Spin>
       </PageHeaderLayout>
     );
   }

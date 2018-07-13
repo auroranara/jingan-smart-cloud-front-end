@@ -148,12 +148,9 @@ export default class CompanyModal extends PureComponent {
 
   /* 渲染选择按钮 */
   renderSelectButton() {
+    const { selectedRowKeys } = this.state;
     return (
-      <Button
-        type="primary"
-        onClick={this.handleSelect}
-        disabled={!this.state.selectedRowKeys.length}
-      >
+      <Button type="primary" onClick={this.handleSelect} disabled={!selectedRowKeys.length}>
         选择
       </Button>
     );

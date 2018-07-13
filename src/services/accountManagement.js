@@ -7,13 +7,8 @@ export async function queryAccountList(params) {
 }
 
 /* 新增账号-初始化页面选项 */
-export async function queryAddaccountoptions() {
-  return request(`/acloud_new/v2/rolePermission/user/options.json`);
-}
-
-/* 新增账号-根据所选单位类型查询单位列表 */
-export async function queryUnitlist(params) {
-  return request(`/acloud_new/v2/rolePermission/user/units.json?${stringify(params)}`);
+export async function queryAddAccountOptions() {
+  return request(`/acloud_new/v2/rolePermission/user/options`);
 }
 
 /* 查看账号详情 */
@@ -39,5 +34,13 @@ export async function addAccount(params) {
 
 /* 新增账号-根据单位类型和名称模糊搜索单位 */
 export async function queryUnits(params) {
-  return request(`/acloud_new/v2/rolePermission/user/units?${stringify(params)}`)
+  return request(`/acloud_new/v2/rolePermission/user/units?${stringify(params)}`);
+}
+
+/* 修改密码 */
+export async function updatePassword(params) {
+  return request(`/acloud_new/v2/rolePermission/user/pwd`, {
+    method: 'POST',
+    body: params,
+  });
 }

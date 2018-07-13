@@ -39,7 +39,10 @@ const fieldLabels = {
   unitType: '单位类型',
   unitId: '所属单位',
   accountStatus: '账号状态',
+  dataPermissions: '数据权限',
 };
+// 默认的所属单位长度
+const defaultPageSize = 20;
 
 @connect(
   ({ account, loading }) => ({
@@ -53,17 +56,11 @@ const fieldLabels = {
         ...action,
       });
     },
-    fetchUnitList(action) {
-      dispatch({
-        type: 'account/fetchUnitList',
-        ...action,
-      });
-    },
     fetchUnitsFuzzy(action) {
       dispatch({
         type: 'account/fetchUnitListFuzzy',
         ...action,
-      })
+      });
     },
     addAccount(action) {
       dispatch({
@@ -89,33 +86,21 @@ export default class accountManagementAdd extends PureComponent {
 
   /* 生命周期函数 */
   componentWillMount() {
-    const { fetchOptions } = this.props;
+    const { fetchOptions, fetchUnitsFuzzy } = this.props;
 
-    // 获取单位类型
+    // 获取单位类型和账户状态
     fetchOptions({
-      payload: {
-        type: 'unitType',
-        key: 'unitTypes',
+      success: ({ unitType }) => {
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: unitType[0].id,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
       },
     });
-
-    // 获取账号状态
-    fetchOptions({
-      payload: {
-        type: 'accountStatus',
-        key: 'accountStatuses',
-      },
-    });
-
-    // 获取所属单位
-    // fetchUnitList({
-    //   payload: {
-    //     type: 'unitId',
-    //     key: 'unitIds',
-    //   },
-    // });
-
-
   }
 
   /* 点击提交按钮验证表单信息 */
@@ -126,74 +111,121 @@ export default class accountManagementAdd extends PureComponent {
       form: { validateFieldsAndScroll },
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
-    validateFieldsAndScroll((error, values) => {
-      if (!error) {
-        this.setState({
-          submitting: true,
-        });
-        addAccount({
-          payload: {
-            ...values,
-          },
-          success: () => {
-            message.success('新建成功！', () => {
-              goBack();
-            });
-          },
-          error: err => {
-            message.error(err, () => {
-              this.setState({
-                submitting: false,
+    validateFieldsAndScroll(
+      (error, { loginName, password, accountStatus, userName, phoneNumber, unitType, unitId }) => {
+        if (!error) {
+          this.setState({
+            submitting: true,
+          });
+          addAccount({
+            payload: {
+              loginName: loginName.trim(),
+              password: password.trim(),
+              accountStatus,
+              userName: userName.trim(),
+              phoneNumber: phoneNumber.trim(),
+              unitType,
+              unitId: unitId.key,
+            },
+            success: () => {
+              message.success('新建成功！', () => {
+                goBack();
               });
-            });
-          },
-        });
+            },
+            error: err => {
+              message.error(err, () => {
+                this.setState({
+                  submitting: false,
+                });
+              });
+            },
+          });
+        }
       }
+    );
+  };
+
+  // 单位类型下拉框选择
+  handleUnitTypeSelect = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { setFieldsValue },
+    } = this.props;
+    // 清除所属单位
+    setFieldsValue({ unitId: undefined });
+    // 根据当前选中的单位类型获取对应的所属单位列表
+    fetchUnitsFuzzy({
+      payload: {
+        unitType: value,
+        pageNum: 1,
+        pageSize: defaultPageSize,
+      },
     });
   };
 
-  /* 选择单位类型以后查询所属单位 */
-  // handleQueryUnit = value => {
-  //   const { fetchUnitList } = this.props;
-  //   fetchUnitList({
-  //     payload: {
-  //       unitType: value,
-  //     },
-  //   });
-  // };
-  handleUnitTypeSelect = (value) => {
-    const { fetchUnitsFuzzy, form: { getFieldValue, setFieldsValue } } = this.props
-    this.setState({ fetching: true })
-    setFieldsValue({ unitId: '' })
+  // 所属单位下拉框输入
+  handleUnitIdChange = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
+    // 根据输入值获取列表
     fetchUnitsFuzzy({
       payload: {
-        unitType: value || null,
-        unitName: getFieldValue('unitId') || null,
+        unitType: getFieldValue('unitType'),
+        unitName: value && value.trim(),
       },
-    })
-    this.setState({ fetching: false })
-  }
+    });
+    // 清除数据权限输入框的值
+    setFieldsValue({
+      treeIds: undefined,
+    });
+  };
 
-  handleUnitIdChange = (value) => {
-    const { fetchUnitsFuzzy, form: { getFieldValue } } = this.props
-    this.setState({ fetching: true })
-    fetchUnitsFuzzy({
-      payload: {
-        unitType: getFieldValue('unitType') || null,
-        unitName: value || null,
-      },
-    })
-    this.setState({ fetching: false })
-  }
+  // 所属单位下拉框选择
+  handleDataPermissions = value => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    // 根据value从源数组中筛选出对应的数据，获取其
+    setFieldsValue({
+      treeIds: value.label,
+    });
+  };
+
+  /** 所属单位下拉框失焦 */
+  handleUnitIdBlur = value => {
+    const {
+      account: { unitIdes },
+      form: { setFieldsValue },
+    } = this.props;
+    // 根据value判断是否是手动输入
+    if (value && value.key === value.label) {
+      // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
+      const unitId = unitIdes.filter(item => item.name === value.label)[0];
+      if (unitId) {
+        setFieldsValue({
+          unitId: {
+            key: unitId.id,
+            label: unitId.name,
+          },
+          treeIds: unitId.name,
+        });
+      } else {
+        setFieldsValue({
+          unitId: undefined,
+        });
+      }
+    }
+  };
 
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
-      account: { unitTypes, accountStatuses, unitIds },
+      account: { unitTypes, accountStatuses, unitIdes },
       form: { getFieldDecorator },
+      loading,
     } = this.props;
-
-    const { fetching } = this.state;
 
     const { Option } = Select;
 
@@ -285,6 +317,7 @@ export default class accountManagementAdd extends PureComponent {
               <Col lg={8} md={12} sm={24} style={{ paddingRight: 30 }}>
                 <Form.Item label={fieldLabels.unitType}>
                   {getFieldDecorator('unitType', {
+                    initialValue: unitTypes.length === 0 ? undefined : unitTypes[0].id,
                     rules: [
                       {
                         required: true,
@@ -308,18 +341,23 @@ export default class accountManagementAdd extends PureComponent {
                     rules: [
                       {
                         required: true,
+                        transform: value => value && value.label,
                         message: '请选择所属单位',
                       },
                     ],
                   })(
                     <Select
                       mode="combobox"
+                      labelInValue
                       optionLabelProp="children"
                       placeholder="请选择所属单位"
-                      notFoundContent={fetching ? <Spin size="small" /> : '暂无数据'}
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleUnitIdChange}
+                      onSelect={this.handleDataPermissions}
+                      onBlur={this.handleUnitIdBlur}
+                      filterOption={false}
                     >
-                      {unitIds.map(item => (
+                      {unitIdes.map(item => (
                         <Option value={item.id} key={item.id}>
                           {item.name}
                         </Option>
@@ -328,6 +366,28 @@ export default class accountManagementAdd extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    );
+  }
+
+  /* 渲染角色权限信息 */
+  renderRolePermission() {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+
+    return (
+      <Card title="角色权限配置" className={styles.card} bordered={false}>
+        <Form layout="vertical">
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.dataPermissions}>
+                {getFieldDecorator('treeIds')(<Input placeholder="单位名称" disabled />)}
+                <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
+              </Form.Item>
             </Col>
           </Row>
         </Form>
@@ -410,6 +470,7 @@ export default class accountManagementAdd extends PureComponent {
       >
         <Spin spinning={loading || submitting}>
           {this.renderBasicInfo()}
+          {this.renderRolePermission()}
           {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>

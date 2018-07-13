@@ -6,7 +6,7 @@ import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
 
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
+const { /* Tab, */ UserName, Password, /* Mobile, Captcha, */ Submit } = Login;
 
 @connect(({ login, loading }) => ({
   login,
@@ -14,6 +14,7 @@ const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 }))
 export default class LoginPage extends Component {
   state = {
+    notice: '',
     type: 'account',
     autoLogin: true,
   };
@@ -51,18 +52,20 @@ export default class LoginPage extends Component {
           password: aesEncrypt(values.password),
           type,
         },
-        callback(response) {
-          if (response.data.currentAuthority === 'admin') {
-            dispatch({
-              type: 'setting/changeSetting',
-              payload: { grid: 'Fluid', layout: 'sidemenu' },
-            });
-          } else if (response.data.currentAuthority === 'user') {
-            dispatch({
-              type: 'setting/changeSetting',
-              payload: { grid: 'Wide', layout: 'topmenu' },
-            });
-          }
+        callback: (response) => {
+          if (response.code === 200) {
+            if (response.data.currentAuthority === 'admin') {
+              dispatch({
+                type: 'setting/changeSetting',
+                payload: { grid: 'Fluid', layout: 'sidemenu' },
+              });
+            } else if (response.data.currentAuthority === 'user') {
+              dispatch({
+                type: 'setting/changeSetting',
+                payload: { grid: 'Wide', layout: 'topmenu' },
+              });
+            }
+          } else this.setState({ notice: response.msg })
         },
       });
     }
@@ -81,8 +84,8 @@ export default class LoginPage extends Component {
   };
 
   render() {
-    const { login, submitting } = this.props;
-    const { type, autoLogin } = this.state;
+    const { submitting } = this.props;
+    const { type, autoLogin, notice } = this.state;
     return (
       <div className={styles.main}>
         <Login
@@ -93,22 +96,25 @@ export default class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          <Tab key="account" tab="账户密码登录">
-            {login.status === 'error' &&
-              login.type === 'account' &&
-              !submitting &&
-              this.renderMessage('账户或密码错误')}
+          <div className={styles.tab}>
+            <span className={styles.pane}>账户密码登录</span>
+            {/* <span className={styles.line}>.</span> */}
+          </div>
+          <div style={{ marginTop: '28px', display: 'block' }}>
+            {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
             <UserName name="username" />
             <Password name="password" />
-          </Tab>
-          <Tab key="mobile" tab="手机号登录">
-            {login.status === 'error' &&
-              login.type === 'mobile' &&
-              !submitting &&
-              this.renderMessage('验证码错误')}
+          </div>
+          {/* <Tab key="account" tab="账户密码登录">
+            {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
+            <UserName name="username" />
+            <Password name="password" />
+          </Tab> */}
+          {/* <Tab key="mobile" tab="手机号登录">
+            {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
             <Mobile name="mobile" />
             <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
-          </Tab>
+          </Tab> */}
           <div>
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
               保存为本地常用账号

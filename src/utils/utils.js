@@ -216,7 +216,10 @@ export function formatWan(val) {
 // https://github.com/brix/crypto-js
 export function aesEncrypt(password, key = 'Bar12345Bar87690', iv = 'RandomInitVector') {
   const C = CryptoJS;
-  const ciphertext = C.AES.encrypt(password, C.enc.Utf8.parse(key),
-    { mode: C.mode.CBC, padding: C.pad.Pkcs7, iv: C.enc.Utf8.parse(iv) });
+  const ciphertext = C.AES.encrypt(password, C.enc.Utf8.parse(key), {
+    mode: C.mode.CBC,
+    padding: C.pad.Pkcs7,
+    iv: C.enc.Utf8.parse(iv),
+  });
   return ciphertext.toString();
 }

@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, BackTop, Spin, Col, Row, Select } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Col, Select } from 'antd';
 import { Link, routerRedux } from 'dva/router';
+import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
@@ -36,6 +37,17 @@ const defaultFormData = {
   phoneNumber: undefined,
   unitType: undefined,
   unitId: undefined,
+  // accountStatus: undefined,
+};
+
+/* 账号状态 */
+const statusList = {
+  0: 'error-mark',
+  1: 'processing-mark',
+};
+const statusLabelList = {
+  0: '已禁用',
+  1: '启用',
 };
 
 @connect(
@@ -62,6 +74,12 @@ const defaultFormData = {
         ...action,
       });
     },
+    fetchUnitsFuzzy(action) {
+      dispatch({
+        type: 'account/fetchUnitListFuzzy',
+        ...action,
+      });
+    },
     goToDetail(url) {
       dispatch(routerRedux.push(url));
     },
@@ -72,6 +90,7 @@ export default class accountManagementList extends PureComponent {
   constructor(props) {
     super(props);
     this.formData = defaultFormData;
+    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
   }
 
   componentDidMount() {
@@ -97,7 +116,7 @@ export default class accountManagementList extends PureComponent {
     fetchUnitList({
       payload: {
         type: 'unitId',
-        key: 'unitIds',
+        key: 'unitIdes',
       },
     });
   }
@@ -160,12 +179,29 @@ export default class accountManagementList extends PureComponent {
     });
   };
 
-  /* 选择单位类型以后查询所属单位 */
-  handleQueryUnit = value => {
-    const { fetchUnitList } = this.props;
-    fetchUnitList({
+  handleUnitTypeSelect = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { getFieldValue, setFieldsValue },
+    } = this.props;
+    setFieldsValue({ unitId: '' });
+    fetchUnitsFuzzy({
       payload: {
-        unitType: value,
+        unitType: value || null,
+        unitName: getFieldValue('unitId') || null,
+      },
+    });
+  };
+
+  handleUnitIdChange = value => {
+    const {
+      fetchUnitsFuzzy,
+      form: { getFieldValue },
+    } = this.props;
+    fetchUnitsFuzzy({
+      payload: {
+        unitType: getFieldValue('unitType') || null,
+        unitName: value || null,
       },
     });
   };
@@ -173,8 +209,9 @@ export default class accountManagementList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      account: { unitTypes, unitIds },
+      account: { unitTypes, unitIdes },
       form: { getFieldDecorator },
+      loading,
     } = this.props;
 
     const { Option } = Select;
@@ -190,7 +227,7 @@ export default class accountManagementList extends PureComponent {
               {getFieldDecorator('unitType')(
                 <Select
                   placeholder="请选择单位类型"
-                  onChange={this.handleQueryUnit}
+                  onSelect={this.handleUnitTypeSelect}
                   style={{ width: 180 }}
                 >
                   {unitTypes.map(item => (
@@ -202,9 +239,24 @@ export default class accountManagementList extends PureComponent {
               )}
             </FormItem>
             <FormItem label="所属单位">
-              {getFieldDecorator('unitId')(
-                <Select placeholder="请选择所属单位" style={{ width: 180 }}>
-                  {unitIds.map(item => (
+              {getFieldDecorator('unitId', {
+                rules: [
+                  {
+                    whitespace: true,
+                    message: '请选择所属单位',
+                  },
+                ],
+              })(
+                <Select
+                  mode="combobox"
+                  optionLabelProp="children"
+                  placeholder="请选择所属单位"
+                  notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                  onSearch={this.handleUnitIdChange}
+                  filterOption={false}
+                  style={{ width: 180 }}
+                >
+                  {unitIdes.map(item => (
                     <Option value={item.id} key={item.id}>
                       {item.name}
                     </Option>
@@ -248,56 +300,56 @@ export default class accountManagementList extends PureComponent {
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card
-                title={item.loginName}
-                className={styles.card}
-                actions={[
-                  <Link to={`/role-authorization/account-management/detail/${item.id}`}>查看</Link>,
-                  <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
-                ]}
-                extra={
-                  <Button
-                    // onClick={() => {
-                    //   this.handleShowDeleteConfirm(item.id);
-                    // }}
-                    shape="circle"
-                    style={{ border: 'none', fontSize: '20px' }}
-                  >
-                    <Icon type="close" />
-                  </Button>
-                }
-              >
-                <Row
-                  onClick={() => {
-                    goToDetail(`/role-authorization/account-management/detail/${item.id}`);
-                  }}
-                  style={{ cursor: 'pointer' }}
+          renderItem={item => {
+            const { id, loginName, accountStatus } = item;
+            return (
+              <List.Item key={id}>
+                <Card
+                  title={loginName}
+                  className={styles.card}
+                  actions={[
+                    <Link to={`/role-authorization/account-management/detail/${item.id}`}>
+                      查看
+                    </Link>,
+                    <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
+                  ]}
+                  // extra={
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // }
                 >
-                  <Col span={12}>
-                    <p>{`姓名：${item.userName}`}</p>
-                  </Col>
-                  <Col span={12}>
-                    <p>{`电话: ${item.phoneNumber}`}</p>
-                  </Col>
-                  <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    {`公司名称：${item.unitName}`}
-                  </Ellipsis>
-                  <Col span={12}>
-                    <p>
-                      角色：<a href="#">查看</a>
-                    </p>
-                  </Col>
-                  <Col span={12}>
-                    <p>
-                      权限：<a href="#">查看</a>
-                    </p>
-                  </Col>
-                </Row>
-              </Card>
-            </List.Item>
-          )}
+                  <div
+                    onClick={() => {
+                      goToDetail(`/role-authorization/account-management/detail/${item.id}`);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <Col span={12}>
+                      <p>{`姓名：${item.userName}`}</p>
+                    </Col>
+                    <Col span={12}>
+                      <p>{`电话: ${item.phoneNumber}`}</p>
+                    </Col>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      {`公司名称：${item.unitName}`}
+                    </Ellipsis>
+                  </div>
+                  {
+                    <div className={styles[statusList[accountStatus]]}>
+                      {statusLabelList[accountStatus]}
+                    </div>
+                  }
+                </Card>
+              </List.Item>
+            );
+          }}
         />
       </div>
     );

@@ -5,5 +5,5 @@ export async function query() {
 }
 
 export async function queryCurrent() {
-  return request('/acloud_new/v2/currentUser');
+  return request('/acloud_new/v2/login/currentUser');
 }

@@ -86,29 +86,33 @@ const folder = 'fireControl';
 export default class ContractHandler extends PureComponent {
   constructor(props) {
     super(props);
-    this.handleSearchMaintenanceList = debounce(this.handleSearchMaintenanceList, 800);
-    this.handleSearchServiceList = debounce(this.handleSearchServiceList, 800);
+    this.handleSearchMaintenanceList = debounce(this.handleSearchMaintenanceList, 500);
+    this.handleSearchServiceList = debounce(this.handleSearchServiceList, 500);
   }
 
   state = {
     submitting: false,
+    uploading: false,
     fileList: [],
+    filterMaintenanceId: undefined,
+    filterCompanyId: undefined,
   }
 
   /* 挂载后 */
   componentWillMount() {
-    const { fetchContract, clearDetail, match: { params: { id } } } = this.props;
+    const { fetchContract, fetchMaintenanceList, fetchServiceList, clearDetail, match: { params: { id } } } = this.props;
     // 如果id存在，则为编辑，否则为新增
     if (id) {
       fetchContract({
         payload: {
           id,
         },
-        success: ({ contractAppendix }) => {
-          if (contractAppendix) {
+        success: ({ contractAppendix, maintenanceId, companyId, maintenanceName, companyName }) => {
+          const contractList = contractAppendix? JSON.parse(contractAppendix) : [];
+          if (contractList.length !== 0) {
             this.setState({
-              fileList: contractAppendix.map(({ dbUrl, webUrl }, index) => ({
-                id: index,
+              fileList: contractList.map(({ dbUrl, webUrl }, index) => ({
+                uid: index,
                 status: 'done',
                 name: `合同附件${index+1}`,
                 url: webUrl,
@@ -116,11 +120,41 @@ export default class ContractHandler extends PureComponent {
               })),
             });
           }
+          this.setState({
+            filterMaintenanceId: maintenanceId,
+            filterCompanyId: companyId,
+          });
+          fetchMaintenanceList({
+            payload: {
+              name: maintenanceName,
+              pageSize: defaultPageSize,
+              pageNum: 1,
+            },
+          });
+          fetchServiceList({
+            payload: {
+              name: companyName,
+              pageSize: defaultPageSize,
+              pageNum: 1,
+            },
+          });
         },
       });
     }
     else {
       clearDetail();
+      fetchMaintenanceList({
+        payload: {
+          pageSize: defaultPageSize,
+          pageNum: 1,
+        },
+      });
+      fetchServiceList({
+        payload: {
+          pageSize: defaultPageSize,
+          pageNum: 1,
+        },
+      });
     }
   }
 
@@ -130,7 +164,7 @@ export default class ContractHandler extends PureComponent {
 
     // 验证字段是否正确
     validateFieldsAndScroll((error, values) => {
-      console.log(values);
+      // console.log(values);
       if (!error) {
         this.setState({
           submitting: true,
@@ -199,23 +233,28 @@ export default class ContractHandler extends PureComponent {
   /* 模糊查询维保单位列表 */
   handleSearchMaintenanceList = (value) => {
     const { fetchMaintenanceList } = this.props;
+    const { filterCompanyId } = this.state;
     fetchMaintenanceList({
       payload: {
         name: value && value.trim(),
         pageSize: defaultPageSize,
         pageNum: 1,
+        companyId: filterCompanyId,
       },
     });
   }
 
-  /* 模糊查询维保单位列表 */
+  /* 模糊查询服务单位列表 */
   handleSearchServiceList = (value) => {
-    const { fetchServiceList } = this.props;
+    const { fetchServiceList, contract: { maintenanceList } } = this.props;
+    const { filterMaintenanceId } = this.state;
+    const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     fetchServiceList({
       payload: {
         name: value && value.trim(),
         pageSize: defaultPageSize,
         pageNum: 1,
+        companyId: maintenance && maintenance.companyId,
       },
     });
   }
@@ -223,25 +262,79 @@ export default class ContractHandler extends PureComponent {
   /* 判断清除维保单位 */
   handleClearMaintenance = (value) => {
     if (value && value.key === value.label) {
-      const { form: { setFieldsValue, validateFields } } = this.props;
-      setFieldsValue({
-        maintenanceId: undefined,
-      });
-      validateFields(['maintenanceId']);
+      this.handleSearchMaintenanceList.cancel();
+      const { fetchMaintenanceList, contract: { maintenanceList }, form: { setFieldsValue, validateFields } } = this.props;
+      // 从数组中筛选出与value.label相等的数据
+      const maintenance = maintenanceList.filter(item => item.name === value.label)[0];
+      if (maintenance) {
+        // 如果筛选出的数据存在的话，则设置选中对应的下拉框选项
+        setFieldsValue({
+          maintenanceId: {
+            key: maintenance.id,
+            label: maintenance.name,
+          },
+        });
+      }
+      else {
+        const { filterCompanyId } = this.state;
+        // 否则清空维保单位输入框
+        setFieldsValue({
+          maintenanceId: undefined,
+        });
+        // 提示验证信息
+        validateFields(['maintenanceId']);
+        this.setState({
+          filterMaintenanceId: undefined,
+        });
+        // 获取维保单位列表
+        fetchMaintenanceList({
+          payload: {
+            pageSize: defaultPageSize,
+            pageNum: 1,
+            companyId: filterCompanyId,
+          },
+        });
+      }
     }
   }
 
-  /* 判断清除维保单位 */
+  /* 判断清除服务单位 */
   handleClearService = (value) => {
     if (value && value.key === value.label) {
-      const { form: { setFieldsValue, validateFields } } = this.props;
-      setFieldsValue({
-        companyId: {
-          key: '',
-          label: '',
-        },
-      });
-      validateFields(['companyId']);
+      this.handleSearchServiceList.cancel();
+      const { fetchServiceList, contract: { serviceList, maintenanceList }, form: { setFieldsValue, validateFields } } = this.props;
+      // 从数组中筛选出与value.label相等的数据
+      const service = serviceList.filter(item => item.name === value.label)[0];
+      if (service) {
+        // 如果筛选出的数据存在的话，则设置选中对应的下拉框选项
+        setFieldsValue({
+          companyId: {
+            key: service.id,
+            label: service.name,
+          },
+        });
+      }
+      else {
+        const { filterMaintenanceId } = this.state;
+        const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
+        // 否则清空服务单位输入框
+        setFieldsValue({
+          companyId: undefined,
+        });
+        // 提示验证信息
+        validateFields(['companyId']);
+        this.setState({
+          filterCompanyId: undefined,
+        });
+        // 获取服务单位列表
+        fetchServiceList({
+          payload: {
+            pageSize: defaultPageSize,
+            pageNum: 1,
+            companyId: maintenance && maintenance.companyId,
+          },
+        });
+      }
     }
   }
 
@@ -250,6 +343,7 @@ export default class ContractHandler extends PureComponent {
     if (file.status === 'uploading') {
       this.setState({
         fileList,
+        uploading: true,
       });
     } else if (file.status === 'done') {
       if (file.response.code === 200) {
@@ -289,6 +383,9 @@ export default class ContractHandler extends PureComponent {
           }),
         });
       }
+      this.setState({
+        uploading: false,
+      });
     } else if (file.status === 'removed') {
       // 删除
       this.setState({
@@ -303,6 +400,7 @@ export default class ContractHandler extends PureComponent {
         fileList: fileList.filter(item => {
           return item.status !== 'error';
         }),
+        uploading: false,
       });
     }
   }
@@ -353,6 +451,9 @@ export default class ContractHandler extends PureComponent {
       },
       loading,
     } = this.props;
+    const { filterMaintenanceId, filterCompanyId, uploading } = this.state;
+    const filterMaintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
+    const filterMaintenanceCompanyId = filterMaintenance && filterMaintenance.companyId;
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
@@ -381,14 +482,15 @@ export default class ContractHandler extends PureComponent {
                     labelInValue
                     defaultActiveFirstOption={false}
                     filterOption={false}
-                    notFoundContent={loading ? <Spin size="small" /> : null}
+                    notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchMaintenanceList}
                     onBlur={this.handleClearMaintenance}
+                    onSelect={(value) => {this.setState({filterMaintenanceId: value.key});}}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
                     {maintenanceList.map(item => (
-                      <Option key={item.id}>
+                      <Option key={item.id} disabled={item.companyId === filterCompanyId}>
                         {item.name}
                       </Option>
                     ))}
@@ -411,14 +513,15 @@ export default class ContractHandler extends PureComponent {
                     labelInValue
                     defaultActiveFirstOption={false}
                     filterOption={false}
-                    notFoundContent={loading ? <Spin size="small" /> : null}
+                    notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchServiceList}
                     onBlur={this.handleClearService}
+                    onSelect={(value) => {this.setState({filterCompanyId: value.key});}}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
                     {serviceList.map(item => (
-                      <Option key={item.id}>
+                      <Option key={item.id} disabled={item.id === filterMaintenanceCompanyId}>
                         {item.name}
                       </Option>
                     ))}
@@ -467,7 +570,7 @@ export default class ContractHandler extends PureComponent {
                   initialValue: serviceContent,
                   rules: [{ required: true, message: '请输入服务内容', whitespace: true }],
                 })(
-                  <TextArea rows={4} placeholder="请输入服务内容" />
+                  <TextArea rows={4} placeholder="请输入服务内容" maxLength="2000" />
                 )}
               </Form.Item>
             </Col>
@@ -480,7 +583,7 @@ export default class ContractHandler extends PureComponent {
         </Form>
         <div style={{ textAlign: 'center' }}>
           <Button onClick={()=>{goBack()}} style={{ marginRight: '24px' }}>返回</Button>
-          <Button type="primary" onClick={this.handleSubmit}>确定</Button>
+          <Button type="primary" onClick={this.handleSubmit} loading={uploading}>确定</Button>
         </div>
       </Card>
     );

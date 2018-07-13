@@ -4,7 +4,6 @@
   "description": "An out-of-box UI solution for enterprise applications",
   "private": true,
   "scripts": {
-    "precommit": "npm run lint-staged",
     "presite": "cd functions && npm install",
     "start": "cross-env ESLINT=none roadhog dev",
     "start:no-proxy": "cross-env NO_PROXY=true ESLINT=none roadhog dev",
@@ -20,6 +19,12 @@
     "test:component": "roadhog test ./src/components",
     "test:all": "node ./tests/run-tests.js",
     "prettier": "prettier --write ./src/**/**/**/*"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
   },
   "dependencies": {
     "@antv/data-set": "^0.8.0",
@@ -56,6 +61,8 @@
   },
   "devDependencies": {
     "@babel/polyfill": "^7.0.0-beta.36",
+    "@commitlint/cli": "^7.0.0",
+    "@commitlint/config-conventional": "^7.0.1",
     "@types/react": "^16.4.4",
     "@types/react-dom": "^16.0.6",
     "antd-theme-webpack-plugin": "^1.0.8",
@@ -78,7 +85,7 @@
     "eslint-plugin-markdown": "^1.0.0-beta.6",
     "eslint-plugin-react": "^7.9.1",
     "gh-pages": "^1.2.0",
-    "husky": "^0.14.3",
+    "husky": "^1.0.0-rc.8",
     "lint-staged": "^7.2.0",
     "mockjs": "^1.0.1-beta3",
     "prettier": "1.13.7",

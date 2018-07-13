@@ -86,13 +86,14 @@ export default class CompanyList extends PureComponent {
 
   /* 显示删除确认提示框 */
   handleShowDeleteConfirm = id => {
+    const { remove } = this.props;
     Modal.confirm({
       title: '你确定要删除这个企业单位吗?',
       content: '如果你确定要删除这个企业单位，点击确定按钮',
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
-        this.props.remove({
+        remove({
           payload: {
             id,
           },
@@ -147,7 +148,10 @@ export default class CompanyList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    if (!flag || this.props.company.isLast) {
+    const {
+      company: { isLast },
+    } = this.props;
+    if (!flag || isLast) {
       return;
     }
     const {
@@ -244,7 +248,12 @@ export default class CompanyList extends PureComponent {
               practicalDistrictLabel,
               practicalTownLabel,
             } = item;
-            const practicalAddressLabel = (practicalProvinceLabel || '') + (practicalCityLabel || '') + (practicalDistrictLabel || '') + (practicalTownLabel || '') + (practicalAddress || '');
+            const practicalAddressLabel =
+              (practicalProvinceLabel || '') +
+              (practicalCityLabel || '') +
+              (practicalDistrictLabel || '') +
+              (practicalTownLabel || '') +
+              (practicalAddress || '');
             return (
               <List.Item key={id}>
                 <Card
@@ -273,21 +282,22 @@ export default class CompanyList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    地址：{practicalAddressLabel || getEmptyData()}
+                      地址：{practicalAddressLabel || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    行业类别：{industryCategoryLabel || getEmptyData()}
+                      行业类别：{industryCategoryLabel || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    负责人：{safetyName || getEmptyData()}
+                      负责人：{safetyName || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                    联系电话：{safetyPhone || getEmptyData()}
+                      联系电话：{safetyPhone || getEmptyData()}
                     </Ellipsis>
                   </div>
                 </Card>
               </List.Item>
-          )}}
+            );
+          }}
         />
       </div>
     );
@@ -304,11 +314,12 @@ export default class CompanyList extends PureComponent {
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading && !isLast && (
-          <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-            <Spin />
-          </div>
-        )}
+        {loading &&
+          !isLast && (
+            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+              <Spin />
+            </div>
+          )}
       </PageHeaderLayout>
     );
   }

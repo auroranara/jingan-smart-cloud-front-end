@@ -2,6 +2,7 @@ import fetch from 'dva/fetch';
 import { notification } from 'antd';
 import { routerRedux } from 'dva/router';
 import store from '../index';
+import { getToken } from './authority'
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -43,7 +44,11 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
+  const token = getToken();
   const defaultOptions = {
+    headers: {
+      'JA-Token': token,
+    },
     credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };

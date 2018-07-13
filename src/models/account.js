@@ -1,11 +1,11 @@
 import {
   queryAccountList,
-  queryAddaccountoptions,
-  queryUnitlist,
+  queryAddAccountOptions,
   addAccount,
   queryAccountDetail,
   updateAccountDetail,
   queryUnits,
+  updatePassword,
 } from '../services/accountManagement.js';
 
 export default {
@@ -24,11 +24,12 @@ export default {
         unitId: undefined,
         accountStatus: undefined,
         unitName: undefined,
+        treeIds: undefined,
       },
     },
     unitTypes: [],
     accountStatuses: [],
-    unitIds: [],
+    unitIdes: [],
   },
 
   effects: {
@@ -45,32 +46,19 @@ export default {
 
     // 新增账号-初始化页面选项
     *fetchOptions({ success, error }, { call, put }) {
-      const response = yield call(queryAddaccountoptions);
+      const response = yield call(queryAddAccountOptions);
       if (response.code === 200) {
         yield put({
-          type: 'queryAddaccountoptions',
+          type: 'queryAddAccountOptions',
           payload: {
             data: response.data,
           },
         });
         if (success) {
-          success();
+          success(response.data);
         }
       } else if (error) {
         error(response.msg);
-      }
-    },
-
-    // 新增账号-根据所选单位类型查询单位列表
-    *fetchUnitList({ payload, callback }, { call, put }) {
-      const response = yield call(queryUnitlist, payload);
-      const { code } = response;
-      if (callback) callback(code);
-      if (response.code === 200) {
-        yield put({
-          type: 'queryUnitlist',
-          payload: response.data.list,
-        });
       }
     },
 
@@ -82,7 +70,7 @@ export default {
         yield put({
           type: 'queryUnits',
           payload: response.data.list,
-        })
+        });
       }
     },
 
@@ -119,7 +107,23 @@ export default {
       const response = yield call(updateAccountDetail, payload);
       if (response.code === 200) {
         yield put({
-          type: 'updateAccountDetail',
+          type: 'updateDetail',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 修改密码
+    *updateAccountPwd({ payload, success, error }, { call, put }) {
+      const response = yield call(updatePassword, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updatePassword',
           payload: response.data,
         });
         if (success) {
@@ -148,7 +152,7 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    queryAddaccountoptions(
+    queryAddAccountOptions(
       state,
       {
         payload: {
@@ -163,18 +167,11 @@ export default {
       };
     },
 
-    queryUnitlist(state, { payload }) {
-      return {
-        ...state,
-        unitIds: payload,
-      };
-    },
-
     queryUnits(state, { payload }) {
       return {
         ...state,
-        unitIds: payload,
-      }
+        unitIdes: payload,
+      };
     },
 
     queryAccountDetail(state, { payload }) {
@@ -187,7 +184,17 @@ export default {
       };
     },
 
-    updateAccountDetail(state, { payload }) {
+    updateDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    updatePassword(state, { payload }) {
       return {
         ...state,
         detail: {

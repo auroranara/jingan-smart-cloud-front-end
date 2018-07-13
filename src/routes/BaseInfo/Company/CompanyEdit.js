@@ -22,6 +22,7 @@ import { routerRedux } from 'dva/router';
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
 import CompanyModal from './CompanyModal';
+import { phoneReg, emailReg } from '../../../utils/validate';
 
 import styles from './Company.less';
 
@@ -69,10 +70,6 @@ const defaultPagination = {
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
-/* 联系方式正则 */
-const phoneRegExp = /^((0\d{2,3}-\d{7,8})|(1[3584]\d{9}))$/;
-/* 邮箱正则 */
-const emailRegExp = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
 
 @connect(
   ({ company, loading }) => ({
@@ -181,35 +178,23 @@ export default class CompanyDetail extends PureComponent {
           practicalDistrict,
           companyIchnography,
           ichnographyName,
-          maintenanceContract,
-          contractName,
         }) => {
-          // 初始化上传文件
-          this.setState({
-            maintenanceId,
-            ichnographyList: companyIchnography
-              ? [
-                  {
-                    uid: -1,
-                    status: 'done',
-                    name: ichnographyName,
-                    url: companyIchnography[0].webUrl,
-                    dbUrl: companyIchnography[0].dbUrl,
-                  },
-                ]
-              : [],
-            contractList: maintenanceContract
-              ? [
-                  {
-                    uid: -1,
-                    status: 'done',
-                    name: contractName,
-                    url: maintenanceContract[0].webUrl,
-                    dbUrl: maintenanceContract[0].dbUrl,
-                  },
-                ]
-              : [],
-          });
+          const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+          if (companyIchnographyList.length !== 0) {
+            // 初始化上传文件
+            this.setState({
+              maintenanceId,
+              ichnographyList:  [
+                {
+                  uid: -1,
+                  status: 'done',
+                  name: ichnographyName,
+                  url: companyIchnographyList[0].webUrl,
+                  dbUrl: companyIchnographyList[0].dbUrl,
+                },
+              ],
+            });
+          }
           // 获取注册地址列表
           fetchArea({
             payload: {
@@ -873,7 +858,7 @@ export default class CompanyDetail extends PureComponent {
               <Form.Item label={fieldLabels.businessScope}>
                 {getFieldDecorator('businessScope', {
                   initialValue: businessScope,
-                })(<TextArea rows={4} placeholder="请输入经营范围" />)}
+                })(<TextArea rows={4} placeholder="请输入经营范围" maxLength="500" />)}
               </Form.Item>
             </Col>
           </Row>
@@ -924,7 +909,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入法定代表人联系方式' },
-                      { pattern: phoneRegExp, message: '法定代表人联系方式格式不正确' },
+                      { pattern: phoneReg, message: '法定代表人联系方式格式不正确' },
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
@@ -936,7 +921,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入法定代表人邮箱' },
-                      { pattern: emailRegExp, message: '法定代表人邮箱格式不正确' },
+                      { pattern: emailReg, message: '法定代表人邮箱格式不正确' },
                     ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
@@ -963,7 +948,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入主要负责人联系方式' },
-                      { pattern: phoneRegExp, message: '主要负责人联系方式格式不正确' },
+                      { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
@@ -975,7 +960,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入主要负责人邮箱' },
-                      { pattern: emailRegExp, message: '主要负责人邮箱格式不正确' },
+                      { pattern: emailReg, message: '主要负责人邮箱格式不正确' },
                     ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
@@ -1002,7 +987,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入安全负责人联系方式' },
-                      { pattern: phoneRegExp, message: '安全负责人联系方式格式不正确' },
+                      { pattern: phoneReg, message: '安全负责人联系方式格式不正确' },
                     ],
                   })(<Input placeholder="请输入联系方式" />)}
                 </Form.Item>
@@ -1014,7 +999,7 @@ export default class CompanyDetail extends PureComponent {
                     getValueFromEvent: this.handleTrim,
                     rules: [
                       { required: true, message: '请输入安全负责人邮箱' },
-                      { pattern: emailRegExp, message: '安全负责人邮箱格式不正确' },
+                      { pattern: emailReg, message: '安全负责人邮箱格式不正确' },
                     ],
                   })(<Input placeholder="请输入邮箱" />)}
                 </Form.Item>
@@ -1023,53 +1008,6 @@ export default class CompanyDetail extends PureComponent {
           </Form>
         </Card>
       </Fragment>
-    );
-  }
-
-  /* 渲染其他信息 */
-  renderOtherInfo() {
-    const {
-      company: {
-        detail: {
-          data: { maintenanceUnitName },
-        },
-      },
-      form: { getFieldDecorator },
-    } = this.props;
-    const { contractList } = this.state;
-
-    return (
-      <Card title="其他信息" className={styles.card} bordered={false}>
-        <Form layout="vertical">
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.maintenanceId} className={styles.maintenanceIdForm}>
-                {getFieldDecorator('maintenanceId', {
-                  initialValue: maintenanceUnitName,
-                })(
-                  <Input
-                    placeholder="请选择消防维修单位"
-                    onClick={this.handleShowModal}
-                    ref={input => {
-                      this.maintenanceIdInput = input;
-                    }}
-                  />
-                )}
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.maintenanceContract}>
-                {this.renderUploadButton({
-                  fileList: contractList,
-                  onChange: this.handleUploadContract,
-                })}
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
     );
   }
 
@@ -1199,7 +1137,6 @@ export default class CompanyDetail extends PureComponent {
           {this.renderBasicInfo()}
           {this.renderMoreInfo()}
           {this.renderPersonalInfo()}
-          {/* {this.renderOtherInfo()} */}
           {this.renderFooterToolbar()}
           {this.renderModal()}
         </Spin>

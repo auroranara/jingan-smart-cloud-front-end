@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'react-router-dom';
-import { Card, Modal, Tabs, Table } from 'antd';
+import { Button, Card, Modal, Tabs, Table } from 'antd';
 // import Ellipsis from 'components/Ellipsis';
 import DescriptionList from 'components/DescriptionList';
 
@@ -14,7 +14,7 @@ const { Description } = DescriptionList;
 
 // const PAGE_SIZE = 10;
 // const WEBSOCKT_URL = 'ws://192.168.10.50:3000/test';
-const DELAY = 10000;
+const DELAY = 3 * 1000;
 const ALARM_ITEMS = ['fire', 'fault', 'start', 'supervise', 'shield', 'feedback'];
 const ALARM_ITEMS_CHINESE = ['火警', '故障', '联动', '监管', '屏蔽', '反馈'];
 
@@ -80,8 +80,6 @@ function addZero(n) {
   loading: loading.models.fireAlarm,
 }))
 export default class AutoFireAlarm extends PureComponent {
-  timer = null;
-
   state = {
     currentTabKey: ALARM_ITEMS[0],
     detailVisible: false,
@@ -118,6 +116,7 @@ export default class AutoFireAlarm extends PureComponent {
     clearInterval(this.timer);
   }
 
+  timer = null;
   // socket = null;
 
   handleWbMessage = msg => {
@@ -177,6 +176,8 @@ export default class AutoFireAlarm extends PureComponent {
       },
     ];
 
+    const okButton = <Button type="primary" onClick={() => { this.handleModalChange(false) }}>确认</Button>;
+
     return (
       <PageHeaderLayout title={tableLists.name} breadcrumbList={breadcrumbList}>
         <Card>
@@ -210,9 +211,11 @@ export default class AutoFireAlarm extends PureComponent {
         </Card>
         <Modal
           title="详情信息"
+          width="36%"
           visible={detailVisible}
           onOk={() => this.handleModalChange(false)}
           onCancel={() => this.handleModalChange(false)}
+          footer={okButton}
         >
           <DescriptionList>
             {DETAIL_ITEMS.map((item, index) => (
