@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
+import { injectIntl } from 'react-intl';
 import {
   Row,
   Col,
@@ -47,7 +48,24 @@ for (let i = 0; i < 7; i += 1) {
   chart,
   loading: loading.effects['chart/fetch'],
 }))
-export default class Analysis extends Component {
+class Analysis extends Component {
+  constructor(props) {
+    super(props);
+    const { intl } = props;
+    this.rankingListData = [];
+    for (let i = 0; i < 7; i += 1) {
+      this.rankingListData.push({
+        title: intl.formatMessage({ id: 'app.analysis.test' }, { no: i }),
+        total: 323234,
+      });
+    }
+    this.state = {
+      salesType: 'all',
+      currentTabKey: '',
+      rangePickerValue: getTimeDistance('year'),
+    };
+  }
+
   state = {
     salesType: 'all',
     currentTabKey: '',
@@ -354,7 +372,7 @@ export default class Analysis extends Component {
                     <div className={styles.salesRank}>
                       <h4 className={styles.rankingTitle}>门店销售额排名</h4>
                       <ul className={styles.rankingList}>
-                        {rankingListData.map((item, i) => (
+                        {this.rankingListData.map((item, i) => (
                           <li key={item.title}>
                             <span className={i < 3 ? styles.active : ''}>{i + 1}</span>
                             <span>{item.title}</span>
@@ -377,7 +395,7 @@ export default class Analysis extends Component {
                     <div className={styles.salesRank}>
                       <h4 className={styles.rankingTitle}>门店访问量排名</h4>
                       <ul className={styles.rankingList}>
-                        {rankingListData.map((item, i) => (
+                        {this.rankingListData.map((item, i) => (
                           <li key={item.title}>
                             <span className={i < 3 ? styles.active : ''}>{i + 1}</span>
                             <span>{item.title}</span>
@@ -503,3 +521,5 @@ export default class Analysis extends Component {
     );
   }
 }
+
+export default injectIntl(Analysis);
