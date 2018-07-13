@@ -22,7 +22,7 @@ import {
   Radio,
 } from 'antd';
 import StandardTable from 'components/StandardTable';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '../layouts/PageHeaderLayout';
 
 import styles from './TableList.less';
 
@@ -272,22 +272,6 @@ class UpdateForm extends PureComponent {
 }))
 @Form.create()
 export default class TableList extends PureComponent {
-  state = {
-    modalVisible: false,
-    updateModalVisible: false,
-    expandForm: false,
-    selectedRows: [],
-    formValues: {},
-    stepFormValues: {},
-  };
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'rule/fetch',
-    });
-  }
-
   columns = [
     {
       title: '规则名称',
@@ -348,6 +332,22 @@ export default class TableList extends PureComponent {
       ),
     },
   ];
+
+  state = {
+    modalVisible: false,
+    updateModalVisible: false,
+    expandForm: false,
+    selectedRows: [],
+    formValues: {},
+    stepFormValues: {},
+  };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'rule/fetch',
+    });
+  }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;

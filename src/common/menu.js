@@ -77,15 +77,15 @@ const menuData = [
   {
     name: '个人页',
     icon: 'user',
-    path: 'Account',
+    path: 'acount',
     children: [
       {
         name: '个人中心',
-        path: 'Center',
+        path: 'center',
       },
       {
         name: '个人设置',
-        path: 'Settings',
+        path: 'settings',
       },
     ],
   },
