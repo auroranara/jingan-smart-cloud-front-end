@@ -20,9 +20,9 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 
 import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import CompanyModal from './CompanyModal';
-import { phoneReg, emailReg } from '../../../utils/validate';
+import { phoneReg, emailReg } from 'utils/validate';
 
 import styles from './Company.less';
 
@@ -184,7 +184,7 @@ export default class CompanyDetail extends PureComponent {
             // 初始化上传文件
             this.setState({
               maintenanceId,
-              ichnographyList:  [
+              ichnographyList: [
                 {
                   uid: -1,
                   status: 'done',
@@ -218,8 +218,7 @@ export default class CompanyDetail extends PureComponent {
           goToException();
         },
       });
-    }
-    else {
+    } else {
       // 清空详情
       clearDetail();
       // 获取行政区域省
@@ -344,8 +343,7 @@ export default class CompanyDetail extends PureComponent {
                 });
               },
             });
-          }
-          else {
+          } else {
             insert({
               payload,
               success: () => {
@@ -629,8 +627,9 @@ export default class CompanyDetail extends PureComponent {
                 <Col md={12} sm={24}>
                   <Form.Item label={fieldLabels.registerAddress}>
                     {getFieldDecorator('registerAddressArea', {
-                      initialValue: registerProvince ?
-                        [registerProvince, registerCity, registerDistrict, registerTown] : [],
+                      initialValue: registerProvince
+                        ? [registerProvince, registerCity, registerDistrict, registerTown]
+                        : [],
                       rules: [{ required: true, message: '请选择注册地址' }],
                     })(
                       <Cascader
@@ -668,8 +667,9 @@ export default class CompanyDetail extends PureComponent {
                 <Col md={12} sm={24}>
                   <Form.Item label={fieldLabels.practicalAddress}>
                     {getFieldDecorator('practicalAddressArea', {
-                      initialValue: practicalProvince ?
-                        [practicalProvince, practicalCity, practicalDistrict, practicalTown] : [],
+                      initialValue: practicalProvince
+                        ? [practicalProvince, practicalCity, practicalDistrict, practicalTown]
+                        : [],
                       rules: [{ required: true, message: '请选择实际经营地址' }],
                     })(
                       <Cascader
@@ -1107,7 +1107,12 @@ export default class CompanyDetail extends PureComponent {
   }
 
   render() {
-    const { loading, match: { params: { id } } } = this.props;
+    const {
+      loading,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const { submitting } = this.state;
     const title = id ? editTitle : addTitle;
     // 面包屑

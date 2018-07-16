@@ -6,7 +6,7 @@ import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
 import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './Company.less';
 
@@ -88,7 +88,7 @@ const getEmptyData = () => {
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   /* 生命周期函数 */
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const {
       fetchCompany,
       match: {

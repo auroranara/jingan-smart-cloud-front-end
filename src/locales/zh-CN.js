@@ -3,6 +3,13 @@
 export default {
   'navbar.lang': '中文',
   'menu.home': '首页',
+  'menu.baseInfo': '一企一档',
+  'menu.baseInfo.company': '企业单位',
+  'menu.baseInfo.company.add': '新增企业',
+  'menu.baseInfo.company.edit': '编辑企业',
+  'menu.baseInfo.company.detail': '企业详情',
+  'menu.fireControl': '消防维保',
+  'menu.fireControl.maintenanceCompany': '维保公司',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

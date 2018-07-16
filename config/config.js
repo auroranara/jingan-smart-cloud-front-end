@@ -61,15 +61,42 @@ export default {
       component: './layouts/LoadingPage',
       routes: [
         // dashboard
-        { path: '/', redirect: '/dashboard/analysis' },
+        { path: '/', redirect: '/base-info/company/list' },
         {
-          path: '/dashboard',
-          name: 'dashboard',
+          path: '/base-info',
+          name: 'baseInfo',
           icon: 'dashboard',
           routes: [
-            { path: '/dashboard/analysis', name: 'analysis', component: './Dashboard/Analysis' },
-            { path: '/dashboard/monitor', name: 'monitor', component: './Dashboard/Monitor' },
-            { path: '/dashboard/workplace', name: 'workplace', component: './Dashboard/Workplace' },
+            {
+              path: '/base-info/company',
+              name: 'company',
+              component: './BaseInfo/Company/CompanyList',
+              hideChildren: true,
+              routes: [
+                {
+                  path: '/base-info/company/list',
+                  name: 'list',
+                  component: './BaseInfo/Company/CompanyList',
+                },
+                {
+                  path: '/base-info/company/add',
+                  name: 'add',
+                  component: './BaseInfo/Company/CompanyEdit',
+                },
+                {
+                  path: '/base-info/company/edit/:id',
+                  name: 'edit',
+                  component: './BaseInfo/Company/CompanyEdit',
+                },
+                {
+                  path: '/base-info/company/:id',
+                  name: 'detail',
+                  component: './BaseInfo/Company/CompanyDetail',
+                },
+              ],
+            },
+            // { path: '/dashboard/monitor', name: 'monitor', component: './Dashboard/Monitor' },
+            // { path: '/dashboard/workplace', name: 'workplace', component: './Dashboard/Workplace' },
           ],
         },
         // forms
@@ -165,54 +192,6 @@ export default {
               name: 'trigger',
               hideInMenu: true,
               component: './Exception/triggerException',
-            },
-          ],
-        },
-        {
-          name: 'account',
-          icon: 'user',
-          path: '/account',
-          routes: [
-            {
-              path: '/account/center',
-              name: 'center',
-              component: './Account/Center/Center',
-              routes: [
-                { path: '/account/center', redirect: '/account/center/articles' },
-                {
-                  path: '/account/center/articles',
-                  component: './Account/Center/Articles',
-                },
-                {
-                  path: '/account/center/applications',
-                  component: './Account/Center/Applications',
-                },
-                {
-                  path: '/account/center/projects',
-                  component: './Account/Center/Projects',
-                },
-              ],
-            },
-            {
-              path: '/account/settings',
-              name: 'settings',
-              component: './Account/Settings/Info',
-              routes: [
-                { path: '/account/settings', redirect: '/account/settings/base' },
-                {
-                  path: '/account/settings/base',
-                  component: './Account/Settings/BaseView',
-                },
-                {
-                  path: '/account/settings/security',
-                  component: './Account/Settings/SecurityView',
-                },
-                { path: '/account/settings/binding', component: './Account/Settings/BindingView' },
-                {
-                  path: '/account/settings/notification',
-                  component: './Account/Settings/NotificationView',
-                },
-              ],
             },
           ],
         },
