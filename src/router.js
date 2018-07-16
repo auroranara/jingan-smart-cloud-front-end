@@ -5,23 +5,20 @@ import dynamic from 'dva/dynamic';
 import { addLocaleData, IntlProvider } from 'react-intl';
 import { getRouterData } from './common/router';
 import Authorized from './utils/Authorized';
-// import { getQueryPath } from './utils/utils';
+import { getQueryPath } from './utils/utils';
 import styles from './index.less';
 import enLocale from './locale/en-US';
 import cnLocale from './locale/zh-CN';
 
 const { ConnectedRouter } = routerRedux;
 const { AuthorizedRoute } = Authorized;
-
 dynamic.setDefaultLoadingComponent(() => {
   return <Spin size="large" className={styles.globalSpin} />;
 });
 
 function getLang() {
-  if (window.localStorage && localStorage.getItem('locale')) {
-    return localStorage.getItem('locale');
-  }
-  return (navigator.language || navigator.browserLanguage).toLowerCase() === 'en-us'
+  return (window.localStorage && localStorage.getItem('locale')) ||
+    (navigator.language || navigator.browserLanguage).toLowerCase() === 'en-us'
     ? 'en-US'
     : 'zh-CN';
 }
@@ -42,7 +39,9 @@ function RouterConfig({ history, app }) {
               path="/"
               render={props => <BasicLayout {...props} />}
               authority={['admin', 'user']}
-              redirectPath="/user/login"
+              redirectPath={getQueryPath('/user/login', {
+                redirect: window.location.href,
+              })}
             />
           </Switch>
         </ConnectedRouter>
