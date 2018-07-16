@@ -1,6 +1,7 @@
 import fetch from 'dva/fetch';
 import { notification } from 'antd';
 import router from 'umi/router';
+import { getToken } from './authority'
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -96,6 +97,6 @@ export default function request(url, options) {
       if (status >= 404 && status < 422) {
         router.push('/exception/404');
       }
-      dispatch(routerRedux.push('/exception/500'));
+      router.push('/exception/500');
     });
 }

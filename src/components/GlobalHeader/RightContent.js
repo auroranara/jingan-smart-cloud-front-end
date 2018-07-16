@@ -3,6 +3,7 @@ import { FormattedMessage, setLocale, getLocale } from 'umi/locale';
 import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, Button } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
+import toUpper from 'lodash/toUpper'
 import NoticeIcon from '../NoticeIcon';
 // import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
@@ -48,6 +49,13 @@ export default class GlobalHeaderRight extends PureComponent {
     }
     location.reload();
   };
+
+  generateStyle = () => {
+    const { currentUser } = this.props
+    const colors = ['#6666FF', '#66CCFF', '#9966FF', '#CC6666', '#FFCC66'];
+    const number = currentUser.userName.charCodeAt(0) % 5;
+    return { backgroundColor: colors[number], verticalAlign: 'middle' };
+  }
 
   render() {
     const {
@@ -136,14 +144,14 @@ export default class GlobalHeaderRight extends PureComponent {
                 alt="avatar"
               /> */}
               <Avatar className={styles.avatar} style={this.generateStyle()} size="small">
-                {currentUser.userName.split('')[0]}
+                {toUpper(currentUser.userName.split('')[0])}
               </Avatar>
               <span className={styles.name}>{currentUser.userName}</span>
             </span>
           </Dropdown>
         ) : (
-          <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-        )}
+            <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+          )}
         <Button
           size="small"
           ghost={theme === 'dark'}
