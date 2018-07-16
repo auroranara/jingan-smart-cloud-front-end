@@ -75,6 +75,30 @@ const menuData = [
     ],
   },
   {
+    name: 'exception',
+    icon: 'warning',
+    path: 'exception',
+    children: [
+      {
+        name: 'not-permission',
+        path: '403',
+      },
+      {
+        name: 'not-find',
+        path: '404',
+      },
+      {
+        name: 'server-error',
+        path: '500',
+      },
+      {
+        name: 'trigger',
+        path: 'trigger',
+        hideInMenu: true,
+      },
+    ],
+  },
+  {
     name: 'account',
     icon: 'user',
     path: 'account',
