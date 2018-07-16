@@ -41,9 +41,11 @@ export default {
         yield put(routerRedux.replace(redirect || '/'));
       }
     },
+
     *getCaptcha({ payload }, { call }) {
       yield call(getFakeCaptcha, payload);
     },
+
     *logout(_, { put }) {
       yield put({
         type: 'changeLoginStatus',
