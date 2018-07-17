@@ -15,7 +15,7 @@ const { Description } = DescriptionList;
 // 标题
 const title = '企业详情';
 // 返回地址
-const href = '/base-info/company-list';
+const href = '/base-info/company/list';
 // 面包屑
 const breadcrumbList = [
   {
@@ -23,7 +23,7 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '基础信息',
+    title: '一企一档',
   },
   {
     title: '企业单位',
@@ -88,7 +88,7 @@ const getEmptyData = () => {
 @Form.create()
 export default class CompanyDetail extends PureComponent {
   /* 生命周期函数 */
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     const {
       fetchCompany,
       match: {
@@ -243,8 +243,8 @@ export default class CompanyDetail extends PureComponent {
     } = this.props;
     return (
       <Fragment>
-        <Card title="法定代表人" className={styles.card} bordered={false}>
-          <DescriptionList col={3}>
+        <Card title="人员信息" bordered={false}>
+          <DescriptionList title="法定代表人" col={3} style={{ marginBottom: 32 }}>
             <Description term={fieldLabels.principalName}>
               {legalName || getEmptyData()}
             </Description>
@@ -255,9 +255,7 @@ export default class CompanyDetail extends PureComponent {
               {legalEmail || getEmptyData()}
             </Description>
           </DescriptionList>
-        </Card>
-        <Card title="主要负责人" className={styles.card} bordered={false}>
-          <DescriptionList col={3}>
+          <DescriptionList title="主要负责人" col={3} style={{ marginBottom: 32 }}>
             <Description term={fieldLabels.principalName}>
               {principalName || getEmptyData()}
             </Description>
@@ -268,9 +266,7 @@ export default class CompanyDetail extends PureComponent {
               {principalEmail || getEmptyData()}
             </Description>
           </DescriptionList>
-        </Card>
-        <Card title="安全负责人" className={styles.card} bordered={false}>
-          <DescriptionList col={3}>
+          <DescriptionList title="安全负责人" col={3} style={{ marginBottom: 32 }}>
             <Description term={fieldLabels.principalName}>
               {safetyName || getEmptyData()}
             </Description>
@@ -298,6 +294,7 @@ export default class CompanyDetail extends PureComponent {
       <FooterToolbar>
         <Button
           type="primary"
+          size="large"
           onClick={() => {
             goToEdit(id);
           }}

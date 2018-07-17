@@ -7,7 +7,7 @@ import Ellipsis from 'components/Ellipsis';
 import moment from 'moment';
 
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../layouts/PageHeaderLayout.js';
 
 import styles from './Contract.less';
 
@@ -285,7 +285,7 @@ export default class ContractList extends PureComponent {
             return (
               <List.Item key={id}>
                 <Card
-                  title={contractCode}
+                  title={<Ellipsis tooltip lines={1} className={styles['card-title-ellipsis']}>{contractCode}</Ellipsis>}
                   className={styles.card}
                   actions={[
                     <Link to={detailUrl+id}>查看</Link>,

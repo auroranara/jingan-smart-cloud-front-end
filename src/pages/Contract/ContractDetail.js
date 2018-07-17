@@ -5,7 +5,7 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../layouts/PageHeaderLayout.js';
 
 import styles from './Contract.less';
 
@@ -69,7 +69,7 @@ const getEmptyData = () => {
 @Form.create()
 export default class ContractDetail extends PureComponent {
   /* 生命周期函数 */
-  componentWillMount() {
+  componentDidMount() {
     const {
       fetchContract,
       match: {

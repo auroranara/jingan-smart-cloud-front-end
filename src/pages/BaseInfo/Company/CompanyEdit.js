@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -34,7 +34,7 @@ const editTitle = '编辑企业';
 // 添加页面标题
 const addTitle = '新增企业';
 // 返回地址
-const href = '#/base-info/company/list';
+const href = '/base-info/company/list';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
@@ -149,7 +149,7 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 生命周期函数 */
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     const {
       fetchCompany,
       fetchDict,
@@ -634,7 +634,7 @@ export default class CompanyDetail extends PureComponent {
                     })(
                       <Cascader
                         options={registerAddressArea}
-                        filedNames={{
+                        fieldNames={{
                           value: 'id',
                           label: 'name',
                           children: 'children',
@@ -674,7 +674,7 @@ export default class CompanyDetail extends PureComponent {
                     })(
                       <Cascader
                         options={practicalAddressArea}
-                        filedNames={{
+                        fieldNames={{
                           value: 'id',
                           label: 'name',
                           children: 'children',
@@ -838,7 +838,7 @@ export default class CompanyDetail extends PureComponent {
                 })(
                   <Cascader
                     options={industryCategories}
-                    filedNames={{
+                    fieldNames={{
                       value: 'id',
                       label: 'name',
                       children: 'children',
@@ -889,125 +889,118 @@ export default class CompanyDetail extends PureComponent {
     } = this.props;
 
     return (
-      <Fragment>
-        <Card title="法定代表人" className={styles.card} bordered={false}>
-          <Form layout="vertical">
-            <Row gutter={{ lg: 48, md: 24 }}>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalName}>
-                  {getFieldDecorator('legalName', {
-                    initialValue: legalName,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入法定代表人姓名' }],
-                  })(<Input placeholder="请输入姓名" />)}
-                </Form.Item>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalPhone}>
-                  {getFieldDecorator('legalPhone', {
-                    initialValue: legalPhone,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [
-                      { required: true, message: '请输入法定代表人联系方式' },
-                      { pattern: phoneReg, message: '法定代表人联系方式格式不正确' },
-                    ],
-                  })(<Input placeholder="请输入联系方式" />)}
-                </Form.Item>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalEmail}>
-                  {getFieldDecorator('legalEmail', {
-                    initialValue: legalEmail,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [
-                      { required: true, message: '请输入法定代表人邮箱' },
-                      { pattern: emailReg, message: '法定代表人邮箱格式不正确' },
-                    ],
-                  })(<Input placeholder="请输入邮箱" />)}
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-        </Card>
-        <Card title="主要负责人" className={styles.card} bordered={false}>
-          <Form layout="vertical">
-            <Row gutter={{ lg: 48, md: 24 }}>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalName}>
-                  {getFieldDecorator('principalName', {
-                    initialValue: principalName,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入主要负责人姓名' }],
-                  })(<Input placeholder="请输入姓名" />)}
-                </Form.Item>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalPhone}>
-                  {getFieldDecorator('principalPhone', {
-                    initialValue: principalPhone,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [
-                      { required: true, message: '请输入主要负责人联系方式' },
-                      { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
-                    ],
-                  })(<Input placeholder="请输入联系方式" />)}
-                </Form.Item>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalEmail}>
-                  {getFieldDecorator('principalEmail', {
-                    initialValue: principalEmail,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [
-                      { required: true, message: '请输入主要负责人邮箱' },
-                      { pattern: emailReg, message: '主要负责人邮箱格式不正确' },
-                    ],
-                  })(<Input placeholder="请输入邮箱" />)}
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-        </Card>
-        <Card title="安全负责人" className={styles.card} bordered={false}>
-          <Form layout="vertical">
-            <Row gutter={{ lg: 48, md: 24 }}>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalName}>
-                  {getFieldDecorator('safetyName', {
-                    initialValue: safetyName,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [{ required: true, message: '请输入安全负责人姓名' }],
-                  })(<Input placeholder="请输入姓名" />)}
-                </Form.Item>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalPhone}>
-                  {getFieldDecorator('safetyPhone', {
-                    initialValue: safetyPhone,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [
-                      { required: true, message: '请输入安全负责人联系方式' },
-                      { pattern: phoneReg, message: '安全负责人联系方式格式不正确' },
-                    ],
-                  })(<Input placeholder="请输入联系方式" />)}
-                </Form.Item>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <Form.Item label={fieldLabels.principalEmail}>
-                  {getFieldDecorator('safetyEmail', {
-                    initialValue: safetyEmail,
-                    getValueFromEvent: this.handleTrim,
-                    rules: [
-                      { required: true, message: '请输入安全负责人邮箱' },
-                      { pattern: emailReg, message: '安全负责人邮箱格式不正确' },
-                    ],
-                  })(<Input placeholder="请输入邮箱" />)}
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-        </Card>
-      </Fragment>
+      <Card title="人员信息" bordered={false}>
+        <Form layout="vertical">
+          <h3 className={styles.subTitle}>法定代表人</h3>
+          <Row gutter={{ lg: 48, md: 24 }} className={styles.subBody}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalName}>
+                {getFieldDecorator('legalName', {
+                  initialValue: legalName,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入法定代表人姓名' }],
+                })(<Input placeholder="请输入姓名" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalPhone}>
+                {getFieldDecorator('legalPhone', {
+                  initialValue: legalPhone,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入法定代表人联系方式' },
+                    { pattern: phoneReg, message: '法定代表人联系方式格式不正确' },
+                  ],
+                })(<Input placeholder="请输入联系方式" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalEmail}>
+                {getFieldDecorator('legalEmail', {
+                  initialValue: legalEmail,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入法定代表人邮箱' },
+                    { pattern: emailReg, message: '法定代表人邮箱格式不正确' },
+                  ],
+                })(<Input placeholder="请输入邮箱" />)}
+              </Form.Item>
+            </Col>
+          </Row>
+          <h3 className={styles.subTitle}>主要负责人</h3>
+          <Row gutter={{ lg: 48, md: 24 }} className={styles.subBody}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalName}>
+                {getFieldDecorator('principalName', {
+                  initialValue: principalName,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入主要负责人姓名' }],
+                })(<Input placeholder="请输入姓名" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalPhone}>
+                {getFieldDecorator('principalPhone', {
+                  initialValue: principalPhone,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入主要负责人联系方式' },
+                    { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
+                  ],
+                })(<Input placeholder="请输入联系方式" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalEmail}>
+                {getFieldDecorator('principalEmail', {
+                  initialValue: principalEmail,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入主要负责人邮箱' },
+                    { pattern: emailReg, message: '主要负责人邮箱格式不正确' },
+                  ],
+                })(<Input placeholder="请输入邮箱" />)}
+              </Form.Item>
+            </Col>
+          </Row>
+          <h3 className={styles.subTitle}>安全负责人</h3>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalName}>
+                {getFieldDecorator('safetyName', {
+                  initialValue: safetyName,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请输入安全负责人姓名' }],
+                })(<Input placeholder="请输入姓名" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalPhone}>
+                {getFieldDecorator('safetyPhone', {
+                  initialValue: safetyPhone,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入安全负责人联系方式' },
+                    { pattern: phoneReg, message: '安全负责人联系方式格式不正确' },
+                  ],
+                })(<Input placeholder="请输入联系方式" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.principalEmail}>
+                {getFieldDecorator('safetyEmail', {
+                  initialValue: safetyEmail,
+                  getValueFromEvent: this.handleTrim,
+                  rules: [
+                    { required: true, message: '请输入安全负责人邮箱' },
+                    { pattern: emailReg, message: '安全负责人邮箱格式不正确' },
+                  ],
+                })(<Input placeholder="请输入邮箱" />)}
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
     );
   }
 
@@ -1062,7 +1055,7 @@ export default class CompanyDetail extends PureComponent {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" onClick={this.handleClickValidate} loading={loading || submitting}>
+        <Button type="primary" size="large" onClick={this.handleClickValidate} loading={loading || submitting}>
           提交
         </Button>
       </FooterToolbar>
@@ -1121,16 +1114,16 @@ export default class CompanyDetail extends PureComponent {
         title: '首页',
         href: '/',
       },
-      // {
-      //   title: '基础信息',
-      // },
-      // {
-      //   title: '企业单位',
-      //   href,
-      // },
-      // {
-      //   title,
-      // },
+      {
+        title: '一企一档',
+      },
+      {
+        title: '企业单位',
+        href,
+      },
+      {
+        title,
+      },
     ];
     return (
       <PageHeaderLayout

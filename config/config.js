@@ -104,6 +104,44 @@ export default {
             // { path: '/dashboard/workplace', name: 'workplace', component: './Dashboard/Workplace' },
           ],
         },
+        {
+          path: '/fire-control',
+          icon: 'dashboard',
+          name: 'fireControl',
+          routes: [
+            {
+              path: '/fire-control/contract',
+              name: 'contract',
+              hideChildren: true,
+              routes: [
+                {
+                  path: '/fire-control/contract',
+                  redirect: '/fire-control/contract/list',
+                },
+                {
+                  path: '/fire-control/contract/list',
+                  name: 'list',
+                  component: './Contract/ContractList',
+                },
+                {
+                  path: '/fire-control/contract/add',
+                  name: 'add',
+                  component: './Contract/ContractHandler',
+                },
+                {
+                  path: '/fire-control/contract/edit/:id',
+                  name: 'edit',
+                  component: './Contract/ContractHandler',
+                },
+                {
+                  path: '/fire-control/contract/detail/:id',
+                  name: 'detail',
+                  component: './Contract/ContractDetail',
+                },
+              ],
+            },
+          ],
+        },
         // forms
         {
           path: '/form',

@@ -20,11 +20,23 @@ const defaultFormData = {
   practicalAddress: undefined,
   industryCategory: undefined,
 };
-
-/* 获取无数据 */
+// 获取无数据
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+// 面包屑
+const breadcrumbList = [
+  {
+    title: '首页',
+    href: '/',
+  },
+  {
+    title: '一企一档',
+  },
+  {
+    title: '企业单位',
+  },
+];
 
 @connect(
   ({ company, loading }) => ({
@@ -310,7 +322,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <PageHeaderLayout title="企业单位">
+      <PageHeaderLayout title="企业单位" breadcrumbList={breadcrumbList}>
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}

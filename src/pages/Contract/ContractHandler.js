@@ -5,7 +5,7 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../layouts/PageHeaderLayout.js';
 
 import styles from './Contract.less';
 
@@ -99,7 +99,7 @@ export default class ContractHandler extends PureComponent {
   }
 
   /* 挂载后 */
-  componentWillMount() {
+  componentDidMount() {
     const { fetchContract, fetchMaintenanceList, fetchServiceList, clearDetail, match: { params: { id } } } = this.props;
     // 如果id存在，则为编辑，否则为新增
     if (id) {
