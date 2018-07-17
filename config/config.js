@@ -70,7 +70,8 @@ export default {
             {
               path: '/base-info/company',
               name: 'company',
-              component: './BaseInfo/Company/CompanyList',
+              // component: './BaseInfo/Company/CompanyList',
+              // redirect: '/base-info/company/list',
               hideChildren: true,
               routes: [
                 {
@@ -89,7 +90,7 @@ export default {
                   component: './BaseInfo/Company/CompanyEdit',
                 },
                 {
-                  path: '/base-info/company/:id',
+                  path: '/base-info/company/detail/:id',
                   name: 'detail',
                   component: './BaseInfo/Company/CompanyDetail',
                 },
