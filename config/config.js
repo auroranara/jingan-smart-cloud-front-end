@@ -90,7 +90,7 @@ export default {
                   component: './BaseInfo/Company/CompanyEdit',
                 },
                 {
-                  path: '/base-info/company/:id',
+                  path: '/base-info/company/detail/:id',
                   name: 'detail',
                   component: './BaseInfo/Company/CompanyDetail',
                 },
