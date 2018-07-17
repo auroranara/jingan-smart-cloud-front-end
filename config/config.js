@@ -73,7 +73,11 @@ export default {
               // component: './BaseInfo/Company/CompanyList',
               hideChildren: true,
               routes: [
-                { path: '/base-info/company', name: 'company', redirect: '/base-info/company/list' },
+                {
+                  path: '/base-info/company',
+                  name: 'company',
+                  redirect: '/base-info/company/list',
+                },
                 {
                   path: '/base-info/company/list',
                   name: 'list',
@@ -242,6 +246,7 @@ export default {
     },
   },
   disableFastClick: true,
+  hashHistory: true,
   manifest: {
     name: 'ant-design-pro',
     background_color: '#FFF',

@@ -149,7 +149,7 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 生命周期函数 */
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const {
       fetchCompany,
       fetchDict,
