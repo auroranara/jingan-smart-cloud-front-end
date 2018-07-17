@@ -71,9 +71,9 @@ export default {
               path: '/base-info/company',
               name: 'company',
               // component: './BaseInfo/Company/CompanyList',
-              // redirect: '/base-info/company/list',
               hideChildren: true,
               routes: [
+                { path: '/base-info/company', name: 'company', redirect: '/base-info/company/list' },
                 {
                   path: '/base-info/company/list',
                   name: 'list',
