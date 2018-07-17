@@ -34,7 +34,7 @@ const editTitle = '编辑企业';
 // 添加页面标题
 const addTitle = '新增企业';
 // 返回地址
-const href = '/base-info/company-list';
+const href = '#/base-info/company/list';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
@@ -1121,16 +1121,16 @@ export default class CompanyDetail extends PureComponent {
         title: '首页',
         href: '/',
       },
-      {
-        title: '基础信息',
-      },
-      {
-        title: '企业单位',
-        href,
-      },
-      {
-        title,
-      },
+      // {
+      //   title: '基础信息',
+      // },
+      // {
+      //   title: '企业单位',
+      //   href,
+      // },
+      // {
+      //   title,
+      // },
     ];
     return (
       <PageHeaderLayout
