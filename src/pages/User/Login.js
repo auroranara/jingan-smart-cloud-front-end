@@ -101,7 +101,7 @@ export default class LoginPage extends Component {
           <div style={{ marginTop: '28px', display: 'block' }}>
             {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
             <UserName name="username" />
-            <Password name="password" />
+            <Password name="password" onPressEnter={() => this.loginForm.validateFields(this.handleSubmit)} />
           </div>
           {/* <Tab key="account" tab="账户密码登录">
             {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
