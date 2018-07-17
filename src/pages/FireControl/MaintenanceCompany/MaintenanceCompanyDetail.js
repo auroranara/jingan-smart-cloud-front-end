@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Link } from 'react-router-dom';
 import { Form, Input, Card, Switch, Button } from 'antd';
 // import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 // const { Description } = DescriptionList;
 

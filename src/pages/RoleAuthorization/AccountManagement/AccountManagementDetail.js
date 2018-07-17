@@ -5,7 +5,7 @@ import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
 import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementEdit.less';
 
@@ -39,6 +39,7 @@ const fieldLabels = {
   unitType: '单位类型',
   unitId: '所属单位',
   accountStatus: '账号状态',
+  treeIds: '数据权限',
 };
 
 const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '一般企业'];
@@ -163,6 +164,28 @@ export default class accountManagementDetail extends PureComponent {
     );
   }
 
+  /* 渲染角色权限信息 */
+  renderRolePermission() {
+    const {
+      account: {
+        detail: {
+          data: { treeNames },
+        },
+      },
+    } = this.props;
+
+    return (
+      <Card title="角色权限配置" className={styles.card} bordered={false}>
+        <DescriptionList layout="vertical">
+          <Description term={fieldLabels.treeIds}>
+            <p style={{ paddingTop: 15 }}>{treeNames || getEmptyData()}</p>
+            <p style={{ fontSize: 12 }}>包括该组织下的所有数据</p>
+          </Description>
+        </DescriptionList>
+      </Card>
+    );
+  }
+
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const {
@@ -212,11 +235,10 @@ export default class accountManagementDetail extends PureComponent {
                 {
                   required: true,
                   whitespace: true,
-                  type: 'string',
                   message: '请输入密码',
                 },
               ],
-            })(<Input placeholder="请重新输入密码" />)}
+            })(<Input placeholder="请重新输入密码" type="password" />)}
           </Form.Item>
           <Form.Item {...formItemLayout} label="确认密码">
             {getFieldDecorator('password', {
@@ -224,14 +246,13 @@ export default class accountManagementDetail extends PureComponent {
                 {
                   required: true,
                   whitespace: true,
-                  type: 'string',
                   message: '请重新输入密码',
                 },
                 {
                   validator: this.checkConfirm,
                 },
               ],
-            })(<Input placeholder="请重新输入密码" />)}
+            })(<Input placeholder="请重新输入密码" type="password" />)}
           </Form.Item>
         </Modal>
       </FooterToolbar>
@@ -246,6 +267,7 @@ export default class accountManagementDetail extends PureComponent {
         wrapperClassName={styles.advancedForm}
       >
         {this.renderBasicInfo()}
+        {this.renderRolePermission()}
         {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );

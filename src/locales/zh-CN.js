@@ -11,6 +11,8 @@ export default {
   'menu.baseInfo.company.detail': '企业详情',
   'menu.fireControl': '消防维保',
   'menu.fireControl.maintenanceCompany': '维保公司',
+  'menu.roleAuthorization': '角色权限',
+  'menu.roleAuthorization.account': '账号管理',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
