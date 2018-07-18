@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Card, Button, Switch, message } from 'antd';
 import { routerRedux } from 'dva/router';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
@@ -10,20 +10,25 @@ import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
 const FormItem = Form.Item;
 
+// 面包屑
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
     href: '/',
   },
   {
     title: '消防维保',
+    name: '消防维保',
   },
   {
     title: '维保公司',
+    name: '维保公司',
     href: '/fire-control/maintenance-company/list',
   },
   {
     title: '修改维保单位',
+    name: '修改维保单位',
   },
 ];
 

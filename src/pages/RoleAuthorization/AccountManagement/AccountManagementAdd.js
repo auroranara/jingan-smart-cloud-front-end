@@ -4,9 +4,11 @@ import { Form, Card, Row, Col, Input, Select, Button, message, Icon, Popover, Sp
 import { routerRedux } from 'dva/router';
 import FooterToolbar from 'components/FooterToolbar';
 import debounce from 'lodash/debounce';
-import PageHeaderLayout from './../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementAdd.less';
+
+const { Option } = Select;
 
 // 标题
 const title = '新增账号';
@@ -16,17 +18,21 @@ const href = '/role-authorization/account-management/list';
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
     href: '/',
   },
   {
     title: '权限管理',
+    name:'权限管理',
   },
   {
     title: '账号管理',
+    name: '账号管理',
     href,
   },
   {
     title,
+    name:'新增账号',
   },
 ];
 
@@ -39,8 +45,9 @@ const fieldLabels = {
   unitType: '单位类型',
   unitId: '所属单位',
   accountStatus: '账号状态',
-  dataPermissions: '数据权限',
+  treeIds: '数据权限',
 };
+
 // 默认的所属单位长度
 const defaultPageSize = 20;
 
@@ -118,7 +125,10 @@ export default class accountManagementAdd extends PureComponent {
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
-      (error, { loginName, password, accountStatus, userName, phoneNumber, unitType, unitId }) => {
+      (
+        error,
+        { loginName, password, accountStatus, userName, phoneNumber, unitType, unitId, treeIds }
+      ) => {
         if (!error) {
           this.setState({
             submitting: true,
@@ -132,6 +142,7 @@ export default class accountManagementAdd extends PureComponent {
               phoneNumber: phoneNumber.trim(),
               unitType,
               unitId: unitId.key,
+              treeIds: treeIds.key,
             },
             success: () => {
               message.success('新建成功！', () => {
@@ -180,6 +191,8 @@ export default class accountManagementAdd extends PureComponent {
       payload: {
         unitType: getFieldValue('unitType'),
         unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: defaultPageSize,
       },
     });
     // 清除数据权限输入框的值
@@ -195,31 +208,42 @@ export default class accountManagementAdd extends PureComponent {
     } = this.props;
     // 根据value从源数组中筛选出对应的数据，获取其
     setFieldsValue({
-      treeIds: value.label,
+      treeIds: value,
     });
   };
 
   /** 所属单位下拉框失焦 */
   handleUnitIdBlur = value => {
     const {
+      fetchUnitsFuzzy,
       account: { unitIdes },
-      form: { setFieldsValue },
+      form: { setFieldsValue, getFieldValue },
     } = this.props;
     // 根据value判断是否是手动输入
     if (value && value.key === value.label) {
+      this.handleUnitIdChange.cancel();
       // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
       const unitId = unitIdes.filter(item => item.name === value.label)[0];
       if (unitId) {
+        const treeIds = {
+          key: unitId.id,
+          label: unitId.name,
+        };
         setFieldsValue({
-          unitId: {
-            key: unitId.id,
-            label: unitId.name,
-          },
-          treeIds: unitId.name,
+          unitId: treeIds,
+          treeIds,
         });
       } else {
         setFieldsValue({
           unitId: undefined,
+          treeIds: undefined,
+        });
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: getFieldValue('unitType'),
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
         });
       }
     }
@@ -265,8 +289,6 @@ export default class accountManagementAdd extends PureComponent {
       loading,
     } = this.props;
 
-    const { Option } = Select;
-
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -298,12 +320,13 @@ export default class accountManagementAdd extends PureComponent {
                       message: '请输入密码',
                     },
                   ],
-                })(<Input placeholder="请输入密码" min={6} max={20} />)}
+                })(<Input placeholder="请输入密码" min={6} max={20} type="password" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.accountStatus}>
                 {getFieldDecorator('accountStatus', {
+                  initialValue: accountStatuses.length === 0 ? undefined : accountStatuses[0].id,
                   rules: [
                     {
                       required: true,
@@ -419,6 +442,7 @@ export default class accountManagementAdd extends PureComponent {
   renderRolePermission() {
     const {
       form: { getFieldDecorator },
+      loading,
     } = this.props;
 
     return (
@@ -426,8 +450,31 @@ export default class accountManagementAdd extends PureComponent {
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.dataPermissions}>
-                {getFieldDecorator('treeIds')(<Input placeholder="单位名称" disabled />)}
+              <Form.Item label={fieldLabels.treeIds}>
+                {getFieldDecorator('treeIds', {
+                  rules: [
+                    {
+                      transform: value => value && value.label,
+                      message: '单位名称不能为空',
+                    },
+                  ],
+                })(
+                  <Select
+                    mode="combobox"
+                    labelInValue
+                    optionLabelProp="children"
+                    placeholder="请选择单位名称"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    filterOption={false}
+                    disabled
+                  >
+                    {[].map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
               </Form.Item>
             </Col>
@@ -488,7 +535,12 @@ export default class accountManagementAdd extends PureComponent {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" onClick={this.handleClickValidate} loading={loading || submitting}>
+        <Button
+          type="primary"
+          onClick={this.handleClickValidate}
+          loading={loading || submitting}
+          style={{ fontSize: 16 }}
+        >
           提交
         </Button>
       </FooterToolbar>

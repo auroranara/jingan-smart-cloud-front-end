@@ -46,6 +46,6 @@ export async function updatePassword(params) {
 }
 
 /* 查询用户名或手机号是否唯一 */
-export function checkAccountOrPhone(params){
-  return request(`/acloud_new/v2/rolePermission/user/check?${stringify(params)}`)
+export function checkAccountOrPhone(params) {
+  return request(`/acloud_new/v2/rolePermission/user/check?${stringify(params)}`);
 }

@@ -3,26 +3,31 @@ import { connect } from 'dva';
 import { Link } from 'react-router-dom';
 import { Form, Input, Card, Switch, Button } from 'antd';
 // import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 // const { Description } = DescriptionList;
 
 const FormItem = Form.Item;
 
+//面包屑
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
     href: '/',
   },
   {
     title: '消防维保',
+    name: '消防维保',
   },
   {
     title: '维保公司',
+    name: '维保公司',
     href: '/fire-control/maintenance-company/list',
   },
   {
     title: '维保单位详情',
+    name: '维保单位详情',
   },
 ];
 

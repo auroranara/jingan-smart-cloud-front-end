@@ -19,7 +19,7 @@ import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './MaintenanceCompanyList.less';
 

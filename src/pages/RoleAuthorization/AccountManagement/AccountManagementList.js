@@ -6,7 +6,7 @@ import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
-import PageHeaderLayout from './../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementList.less';
 
@@ -16,12 +16,15 @@ const title = '账号管理';
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
   },
   {
     title: '权限管理',
+    name: '权限管理',
   },
   {
     title,
+    name:'账号管理',
   },
 ];
 
@@ -29,6 +32,9 @@ const FormItem = Form.Item;
 
 // 默认页面显示数量
 const pageSize = 18;
+
+// 默认的所属单位长度
+const defaultPageSize = 20;
 
 // 默认表单值
 const defaultFormData = {
@@ -43,11 +49,9 @@ const defaultFormData = {
 /* 账号状态 */
 const statusList = {
   0: 'error-mark',
-  1: 'processing-mark',
 };
 const statusLabelList = {
   0: '已禁用',
-  1: '启用',
 };
 
 @connect(
@@ -65,12 +69,6 @@ const statusLabelList = {
     fetchOptions(action) {
       dispatch({
         type: 'account/fetchOptions',
-        ...action,
-      });
-    },
-    fetchUnitList(action) {
-      dispatch({
-        type: 'account/fetchUnitList',
         ...action,
       });
     },
@@ -94,7 +92,7 @@ export default class accountManagementList extends PureComponent {
   }
 
   componentDidMount() {
-    const { fetch, fetchOptions, fetchUnitList } = this.props;
+    const { fetch, fetchOptions, fetchUnitsFuzzy } = this.props;
 
     // 获取账号列表
     fetch({
@@ -104,22 +102,23 @@ export default class accountManagementList extends PureComponent {
       },
     });
 
-    // 获取单位类型
+    // 获取单位类型和账户状态
     fetchOptions({
-      payload: {
-        type: 'unitType',
-        key: 'unitTypes',
-      },
-    });
-
-    // 获取所属单位
-    fetchUnitList({
-      payload: {
-        type: 'unitId',
-        key: 'unitIdes',
+      success: ({ unitType }) => {
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: unitType[0].id,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
       },
     });
   }
+
+  /* 去除输入框里左右两边空白 */
+  handleTrim = e => e.target.value.trim();
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
@@ -179,20 +178,21 @@ export default class accountManagementList extends PureComponent {
     });
   };
 
+  // 单位类型下拉框选择
   handleUnitTypeSelect = value => {
     const {
       fetchUnitsFuzzy,
-      form: { getFieldValue, setFieldsValue },
+      form: { setFieldsValue },
     } = this.props;
-    setFieldsValue({ unitId: '' });
+    setFieldsValue({ unitId: undefined });
     fetchUnitsFuzzy({
       payload: {
-        unitType: value || null,
-        unitName: getFieldValue('unitId') || null,
+        unitType: value,
       },
     });
   };
 
+  // 所属单位下拉框输入
   handleUnitIdChange = value => {
     const {
       fetchUnitsFuzzy,
@@ -200,8 +200,8 @@ export default class accountManagementList extends PureComponent {
     } = this.props;
     fetchUnitsFuzzy({
       payload: {
-        unitType: getFieldValue('unitType') || null,
-        unitName: value || null,
+        unitType: getFieldValue('unitType'),
+        unitName: value && value.trim(),
       },
     });
   };
@@ -221,7 +221,9 @@ export default class accountManagementList extends PureComponent {
         <Form layout="inline">
           <Col span={18}>
             <FormItem label="用户">
-              {getFieldDecorator('input')(<Input placeholder="用户名/姓名/手机号" />)}
+              {getFieldDecorator('input', {
+                getValueFromEvent: this.handleTrim,
+              })(<Input placeholder="用户名/姓名/手机号" />)}
             </FormItem>
             <FormItem label="单位类型">
               {getFieldDecorator('unitType')(

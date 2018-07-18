@@ -62,6 +62,7 @@ export default {
       routes: [
         // dashboard
         { path: '/', redirect: '/base-info/company/list' },
+
         {
           path: '/base-info',
           name: 'baseInfo',
@@ -104,46 +105,89 @@ export default {
             // { path: '/dashboard/workplace', name: 'workplace', component: './Dashboard/Workplace' },
           ],
         },
-        // 账号管理
+
+        // FireControl
         {
-          path:'/role-authorization',
-          name:'roleAuthorization',
-          icon:'table',
-          routes:[
+          path: '/fire-control',
+          name: 'fireControl',
+          icon: 'table',
+          routes: [
             {
-              path:'/role-authorization/account-management',
-              name:'account',
+              path: '/fire-control/maintenance-company',
+              name: 'maintenanceCompany',
               hideChildren: true,
-              routes:[
+              routes: [
                 {
-                  path:'/role-authorization/account-management', 
-                  name:'account',
-                  redirect: '/role-authorization/account-management/list',
+                  path: '/fire-control/maintenance-company',
+                  name: 'maintenanceCompany',
+                  redirect: '/fire-control/maintenance-company/list',
                 },
                 {
-                  path:'/role-authorization/account-management/list', // 账号列表
-                  name:'list',
-                  component: '/RoleAuthorization/AccountManagement/AccountManagementList',
+                  path: '/fire-control/maintenance-company/list',
+                  name: 'list',
+                  component: './FireControl/MaintenanceCompany/MaintenanceCompanyList',
                 },
                 {
-                  path:'/role-authorization/account-management/add', // 添加账号
-                  name:'add',
-                  component: '/RoleAuthorization/AccountManagement/AccountManagementAdd',
+                  path: '/fire-control/maintenance-company/add',
+                  name: 'add',
+                  component: './FireControl/MaintenanceCompany/MaintenanceCompanyAdd',
                 },
                 {
-                  path:'/role-authorization/account-management/edit/:id', // 编辑账号
-                  name:'edit',
-                  component: '/RoleAuthorization/AccountManagement/AccountManagementEdit',
+                  path: '/fire-control/maintenance-company/edit/:id',
+                  name: 'edit',
+                  component: './FireControl/MaintenanceCompany/MaintenanceCompanyEdit',
                 },
                 {
-                  path:'/role-authorization/account-management/detail/:id', // 查看账号
-                  name:'detail',
-                  component: '/RoleAuthorization/AccountManagement/AccountManagementDetail',
+                  path: '/fire-control/maintenance-company/detail/:id',
+                  name: 'detail',
+                  component: './FireControl/MaintenanceCompany/MaintenanceCompanyDetail',
                 },
               ],
             },
           ],
         },
+
+        // RoleAuthorization
+        {
+          path: '/role-authorization',
+          name: 'roleAuthorization',
+          icon: 'table',
+          routes: [
+            {
+              path: '/role-authorization/account-management',
+              name: 'account',
+              hideChildren: true,
+              routes: [
+                {
+                  path: '/role-authorization/account-management',
+                  name: 'account',
+                  redirect: '/role-authorization/account-management/list',
+                },
+                {
+                  path: '/role-authorization/account-management/list',
+                  name: 'list',
+                  component: './RoleAuthorization/AccountManagement/AccountManagementList',
+                },
+                {
+                  path: '/role-authorization/account-management/add',
+                  name: 'add',
+                  component: './RoleAuthorization/AccountManagement/AccountManagementAdd',
+                },
+                {
+                  path: '/role-authorization/account-management/edit/:id',
+                  name: 'edit',
+                  component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
+                },
+                {
+                  path: '/role-authorization/account-management/detail/:id',
+                  name: 'detail',
+                  component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
+                },
+              ],
+            },
+          ],
+        },
+
         // forms
         {
           path: '/form',
