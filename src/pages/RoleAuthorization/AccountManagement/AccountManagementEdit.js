@@ -16,16 +16,20 @@ const title = '编辑账号';
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
   },
   {
     title: '权限管理',
+    name: '权限管理',
   },
   {
     title: '账号管理',
+    name: '账号管理',
     href: '/role-authorization/account-management/list',
   },
   {
     title,
+    name:'编辑账号',
   },
 ];
 
