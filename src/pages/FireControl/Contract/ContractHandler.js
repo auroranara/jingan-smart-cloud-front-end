@@ -99,7 +99,7 @@ export default class ContractHandler extends PureComponent {
   }
 
   /* 挂载后 */
-  componentWillMount() {
+  componentDidMount() {
     const { fetchContract, fetchMaintenanceList, fetchServiceList, clearDetail, match: { params: { id } } } = this.props;
     // 如果id存在，则为编辑，否则为新增
     if (id) {
@@ -597,17 +597,21 @@ export default class ContractHandler extends PureComponent {
     const breadcrumbList = [
       {
         title: '首页',
+        name: '首页',
         href: '/',
       },
       {
         title: '消防维保',
+        name: '消防维保',
       },
       {
         title: '维保合同管理',
+        name: '维保合同管理',
         href: backUrl,
       },
       {
         title,
+        name: title,
       },
     ];
     return (

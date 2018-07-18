@@ -3,7 +3,7 @@ import { Form, Card, Table, Upload, Button, Icon, Popover, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
-import Result from '../../components/Result';
+import Result from '../../../components/Result';
 
 @connect(({ pointPosition, loading }) => ({
   pointPosition,
@@ -113,21 +113,26 @@ export default class ImportPointPosition extends PureComponent {
     const breadcrumbList = [
       {
         title: '首页',
+        name: '首页',
         href: '/',
       },
       {
         title: '消防维保',
+        name: '消防维保',
       },
       {
         title: '用户传输装置',
+        name: '用户传输装置',
         href: '/fire-control/user-transmission-device/list',
       },
       {
         title: '详情页',
-        href: `/fire-control/user-transmission-device-detail/${companyId}/detail`,
+        name: '详情页',
+        href: `/fire-control/user-transmission-device/${companyId}/detail`,
       },
       {
         title: '导入点位数据',
+        name: '导入点位数据',
       },
     ];
 

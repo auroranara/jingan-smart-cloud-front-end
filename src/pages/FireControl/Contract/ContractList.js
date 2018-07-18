@@ -6,7 +6,7 @@ import VisibilitySensor from 'react-visibility-sensor';
 import Ellipsis from 'components/Ellipsis';
 import moment from 'moment';
 
-import InlineForm from '../BaseInfo/Company/InlineForm';
+import InlineForm from '../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './Contract.less';
@@ -285,7 +285,7 @@ export default class ContractList extends PureComponent {
             return (
               <List.Item key={id}>
                 <Card
-                  title={contractCode}
+                  title={<Ellipsis tooltip lines={1} className={styles['card-title-ellipsis']}>{contractCode}</Ellipsis>}
                   className={styles.card}
                   actions={[
                     <Link to={detailUrl+id}>查看</Link>,
@@ -334,10 +334,26 @@ export default class ContractList extends PureComponent {
   render() {
     const { loading, contract: { data: { pagination: { total } }, isLast } } = this.props;
     const { isInit } = this.state;
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+      {
+        title: '消防维保',
+        name: '消防维保',
+      },
+      {
+        title,
+        name: title,
+      },
+    ];
 
     return (
       <PageHeaderLayout
         title={title}
+        breadcrumbList={breadcrumbList}
         content={<div>维保合同总数：{total} </div>}
       >
         {this.renderForm()}

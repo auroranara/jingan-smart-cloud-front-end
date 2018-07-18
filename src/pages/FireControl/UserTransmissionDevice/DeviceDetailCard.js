@@ -137,7 +137,7 @@ export default class DeviceDetailCard extends Component {
               <MenuItem>
                 <Link
                   to={{
-                    pathname: `/fire-control/user-transmission-device-detail/${companyId}/import-point-position/${
+                    pathname: `/fire-control/user-transmission-device/${companyId}/import-point-position/${
                       record.id
                     }`,
                   }}

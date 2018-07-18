@@ -105,13 +105,71 @@ export default {
             // { path: '/dashboard/workplace', name: 'workplace', component: './Dashboard/Workplace' },
           ],
         },
-
         // FireControl
         {
           path: '/fire-control',
+          icon: 'dashboard',
           name: 'fireControl',
-          icon: 'table',
           routes: [
+            {
+              path: '/fire-control/contract',
+              name: 'contract',
+              hideChildren: true,
+              routes: [
+                {
+                  path: '/fire-control/contract',
+                  redirect: '/fire-control/contract/list',
+                },
+                {
+                  path: '/fire-control/contract/list',
+                  name: 'list',
+                  component: './FireControl/Contract/ContractList',
+                },
+                {
+                  path: '/fire-control/contract/add',
+                  name: 'add',
+                  component: './FireControl/Contract/ContractHandler',
+                },
+                {
+                  path: '/fire-control/contract/edit/:id',
+                  name: 'edit',
+                  component: './FireControl/Contract/ContractHandler',
+                },
+                {
+                  path: '/fire-control/contract/detail/:id',
+                  name: 'detail',
+                  component: './FireControl/Contract/ContractDetail',
+                },
+              ],
+            },
+            {
+              path: '/fire-control/user-transmission-device',
+              name: 'userTransmissionDevice',
+              hideChildren: true,
+              routes: [
+                {
+                  path: '/fire-control/user-transmission-device',
+                  name: 'userTransmissionDevice',
+                  redirect: '/fire-control/user-transmission-device/list',
+                },
+                {
+                  path: '/fire-control/user-transmission-device/list',
+                  name: 'list',
+                  component: './FireControl/UserTransmissionDevice/UserTransmissionDevice',
+                },
+                {
+                  path: '/fire-control/user-transmission-device/:companyId/detail',
+                  name: 'deviceDetail',
+                  component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail',
+                },
+                {
+                  path:
+                    '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
+                  name: 'importPointPosition',
+                  component: './FireControl/UserTransmissionDevice/ImportPointPosition',
+                },
+              ],
+            },
             {
               path: '/fire-control/maintenance-company',
               name: 'maintenanceCompany',

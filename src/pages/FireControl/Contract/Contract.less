@@ -75,3 +75,14 @@
   .mark;
   background-color: #faad14;
 }
+
+.card-title-ellipsis {
+  :global {
+    span {
+      display: block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+}

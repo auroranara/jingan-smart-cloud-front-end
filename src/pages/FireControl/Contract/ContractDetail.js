@@ -21,17 +21,21 @@ const editUrl = '/fire-control/contract/edit/';
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
     href: '/',
   },
   {
     title: '消防维保',
+    name: '消防维保',
   },
   {
     title: '维保合同管理',
+    name: '维保合同管理',
     href: backUrl,
   },
   {
     title,
+    name: title,
   },
 ];
 /* 获取无数据 */
@@ -69,7 +73,7 @@ const getEmptyData = () => {
 @Form.create()
 export default class ContractDetail extends PureComponent {
   /* 生命周期函数 */
-  componentWillMount() {
+  componentDidMount() {
     const {
       fetchContract,
       match: {

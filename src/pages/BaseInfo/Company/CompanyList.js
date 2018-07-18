@@ -12,6 +12,8 @@ import styles from './CompanyList.less';
 const FormItem = Form.Item;
 // const { Option } = Select;
 
+// 标题
+const title = '企业单位';
 // 默认页面显示数量
 const pageSize = 18;
 // 默认表单值
@@ -20,11 +22,26 @@ const defaultFormData = {
   practicalAddress: undefined,
   industryCategory: undefined,
 };
-
-/* 获取无数据 */
+// 获取无数据
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+// 面包屑
+const breadcrumbList = [
+  {
+    title: '首页',
+    name: '首页',
+    href: '/',
+  },
+  {
+    title: '一企一档',
+    name: '一企一档',
+  },
+  {
+    title,
+    name: title,
+  },
+];
 
 @connect(
   ({ company, loading }) => ({
@@ -310,7 +327,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <PageHeaderLayout title="企业单位">
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}

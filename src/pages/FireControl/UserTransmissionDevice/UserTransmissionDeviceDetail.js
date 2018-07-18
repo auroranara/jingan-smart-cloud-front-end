@@ -17,10 +17,10 @@ const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
 
 const breadcrumbList = [
-  { title: '首页', href: '/' },
-  { title: '消防维保' },
-  { title: '用户传输装置', href: '/fire-control/user-transmission-device/list' },
-  { title: '详情页' },
+  { title: '首页', name: '首页', href: '/' },
+  { title: '消防维保', name: '消防维保' },
+  { title: '用户传输装置', name: '用户传输装置', href: '/fire-control/user-transmission-device/list' },
+  { title: '详情页', name: '详情页' },
 ];
 
 // 若顺序不是按照当前顺序的话，改成数组
