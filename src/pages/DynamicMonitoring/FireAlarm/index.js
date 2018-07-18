@@ -179,7 +179,7 @@ export default class FireAlarm extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-alarm/company/${item.id}`}>
+                <Link to={`/dynamic-monitoring/fire-alarm/company/${item.id}`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.searchArea ? item.searchArea : '暂无信息'}

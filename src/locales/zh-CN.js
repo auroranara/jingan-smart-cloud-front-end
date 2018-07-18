@@ -9,6 +9,8 @@ export default {
   'menu.baseInfo.company.add': '新增企业',
   'menu.baseInfo.company.edit': '编辑企业',
   'menu.baseInfo.company.detail': '企业详情',
+  'menu.dynamicMonitoring': '动态监测',
+  'menu.dynamicMonitoring.fireAlarm': '火灾自动报警系统',
   'menu.fireControl': '消防维保',
   'menu.fireControl.maintenanceCompany': '维保公司',
   'menu.dashboard': 'Dashboard',
