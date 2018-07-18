@@ -104,6 +104,46 @@ export default {
             // { path: '/dashboard/workplace', name: 'workplace', component: './Dashboard/Workplace' },
           ],
         },
+        // 账号管理
+        {
+          path:'/role-authorization',
+          name:'roleAuthorization',
+          icon:'table',
+          routes:[
+            {
+              path:'/role-authorization/account-management',
+              name:'account',
+              hideChildren: true,
+              routes:[
+                {
+                  path:'/role-authorization/account-management', 
+                  name:'account',
+                  redirect: '/role-authorization/account-management/list',
+                },
+                {
+                  path:'/role-authorization/account-management/list', // 账号列表
+                  name:'list',
+                  component: '/RoleAuthorization/AccountManagement/AccountManagementList',
+                },
+                {
+                  path:'/role-authorization/account-management/add', // 添加账号
+                  name:'add',
+                  component: '/RoleAuthorization/AccountManagement/AccountManagementAdd',
+                },
+                {
+                  path:'/role-authorization/account-management/edit/:id', // 编辑账号
+                  name:'edit',
+                  component: '/RoleAuthorization/AccountManagement/AccountManagementEdit',
+                },
+                {
+                  path:'/role-authorization/account-management/detail/:id', // 查看账号
+                  name:'detail',
+                  component: '/RoleAuthorization/AccountManagement/AccountManagementDetail',
+                },
+              ],
+            },
+          ],
+        },
         // forms
         {
           path: '/form',

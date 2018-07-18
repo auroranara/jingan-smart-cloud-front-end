@@ -5,7 +5,7 @@ import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
 import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from './../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementEdit.less';
 
