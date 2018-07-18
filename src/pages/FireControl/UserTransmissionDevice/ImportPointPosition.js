@@ -3,7 +3,7 @@ import { Form, Card, Table, Upload, Button, Icon, Popover, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
-import Result from '../../components/Result';
+import Result from '../../../components/Result';
 
 @connect(({ pointPosition, loading }) => ({
   pointPosition,

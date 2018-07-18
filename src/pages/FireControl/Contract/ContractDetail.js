@@ -5,7 +5,7 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './Contract.less';
 
@@ -21,17 +21,21 @@ const editUrl = '/fire-control/contract/edit/';
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
     href: '/',
   },
   {
     title: '消防维保',
+    name: '消防维保',
   },
   {
     title: '维保合同管理',
+    name: '维保合同管理',
     href: backUrl,
   },
   {
     title,
+    name: title,
   },
 ];
 /* 获取无数据 */

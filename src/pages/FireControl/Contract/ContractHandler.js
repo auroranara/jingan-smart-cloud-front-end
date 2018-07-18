@@ -5,7 +5,7 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 
-import PageHeaderLayout from '../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './Contract.less';
 
@@ -597,17 +597,21 @@ export default class ContractHandler extends PureComponent {
     const breadcrumbList = [
       {
         title: '首页',
+        name: '首页',
         href: '/',
       },
       {
         title: '消防维保',
+        name: '消防维保',
       },
       {
         title: '维保合同管理',
+        name: '维保合同管理',
         href: backUrl,
       },
       {
         title,
+        name: title,
       },
     ];
     return (
