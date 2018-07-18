@@ -1,14 +1,15 @@
 import { isUrl } from '../utils/utils';
 
+// TODO: authority
 const menuData = [
   {
     name: '一企一档',
     icon: 'form',
-    path: 'base-info',
+    path: 'baseInfo',
     children: [
       {
         name: '企业单位',
-        path: 'company-list',
+        path: 'company/list',
       },
     ],
   },
@@ -60,34 +61,76 @@ const menuData = [
     authority: 'guest',
     children: [
       {
-        name: '登录',
+        name: 'login',
         path: 'login',
       },
       {
-        name: '注册',
+        name: 'register',
         path: 'register',
       },
       {
-        name: '注册结果',
+        name: 'register-result',
         path: 'register-result',
+      },
+    ],
+  },
+  {
+    name: 'exception',
+    icon: 'warning',
+    path: 'exception',
+    children: [
+      {
+        name: 'not-permission',
+        path: '403',
+      },
+      {
+        name: 'not-find',
+        path: '404',
+      },
+      {
+        name: 'server-error',
+        path: '500',
+      },
+      {
+        name: 'trigger',
+        path: 'trigger',
+        hideInMenu: true,
+      },
+    ],
+  },
+  {
+    name: 'account',
+    icon: 'user',
+    path: 'account',
+    children: [
+      {
+        name: 'center',
+        path: 'center',
+      },
+      {
+        name: 'settings',
+        path: 'settings',
       },
     ],
   },
 ];
 
-function formatter(data, parentPath = '/', parentAuthority) {
+function formatter(data, parentPath = '/', parentAuthority, parentName) {
   return data.map(item => {
     let { path } = item;
+    const id = parentName ? `${parentName}.${item.name}` : `menu.${item.name}`;
+
     if (!isUrl(path)) {
       path = parentPath + item.path;
     }
     const result = {
       ...item,
       path,
+      locale: id,
       authority: item.authority || parentAuthority,
     };
     if (item.children) {
-      result.children = formatter(item.children, `${parentPath}${item.path}/`, item.authority);
+      result.children = formatter(item.children, `${parentPath}${item.path}/`, item.authority, id);
     }
     return result;
   });
