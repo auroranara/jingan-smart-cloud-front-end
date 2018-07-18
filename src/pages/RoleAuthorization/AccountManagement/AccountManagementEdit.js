@@ -4,7 +4,8 @@ import { Form, Card, Button, Row, Col, Input, Select, message, Icon, Popover, Sp
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from './../../layouts/PageHeaderLayout.js';
+import { phoneReg,loginNameReg } from 'utils/validate';
 
 import styles from './AccountManagementEdit.less';
 
@@ -282,6 +283,7 @@ export default class accountManagementEdit extends PureComponent {
                       type: 'string',
                       message: '请输入手机号',
                     },
+                    { pattern: phoneReg, message: '手机号格式格式不正确' },
                   ],
                 })(<Input placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>

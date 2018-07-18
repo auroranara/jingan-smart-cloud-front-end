@@ -4,7 +4,7 @@ import { Form, Card, Row, Col, Input, Select, Button, message, Icon, Popover, Sp
 import { routerRedux } from 'dva/router';
 import FooterToolbar from 'components/FooterToolbar';
 import debounce from 'lodash/debounce';
-import PageHeaderLayout from '../../../layouts/PageHeaderLayout.js';
+import PageHeaderLayout from './../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementAdd.less';
 
@@ -71,6 +71,12 @@ const defaultPageSize = 20;
     goBack() {
       dispatch(routerRedux.push(href));
     },
+    checkAccountOrPhone(action) {
+      dispatch({
+        type: 'account/checkAccountOrPhone',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -85,7 +91,7 @@ export default class accountManagementAdd extends PureComponent {
   };
 
   /* 生命周期函数 */
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { fetchOptions, fetchUnitsFuzzy } = this.props;
 
     // 获取单位类型和账户状态
@@ -219,6 +225,38 @@ export default class accountManagementAdd extends PureComponent {
     }
   };
 
+  /* 异步验证用户名 */
+  validateUserName = (rule, value, callback) => {
+    if (value) {
+      const { checkAccountOrPhone } = this.props
+      checkAccountOrPhone({
+        payload: {
+          loginName: value,
+        },
+        callback(res) {
+          if (res.code === 200) callback()
+          else callback(res.msg)
+        },
+      })
+    } else callback()
+  }
+
+  /* 异步验证手机号 */
+  validatePhoneNumber = (rule, value, callback) => {
+    if (value) {
+      const { checkAccountOrPhone } = this.props
+      checkAccountOrPhone({
+        payload: {
+          phoneNumber: value,
+        },
+        callback(res) {
+          if (res.code === 200) callback()
+          else callback(res.msg)
+        },
+      })
+    } else callback()
+  }
+
   /* 渲染基本信息 */
   renderBasicInfo() {
     const {
@@ -236,6 +274,7 @@ export default class accountManagementAdd extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.loginName}>
                 {getFieldDecorator('loginName', {
+                  validateTrigger: 'onBlur',
                   rules: [
                     {
                       required: true,
@@ -243,6 +282,7 @@ export default class accountManagementAdd extends PureComponent {
                       type: 'string',
                       message: '请输入用户名',
                     },
+                    { validator: this.validateUserName },
                   ],
                 })(<Input placeholder="请输入用户名" min={1} max={20} />)}
               </Form.Item>
@@ -301,6 +341,7 @@ export default class accountManagementAdd extends PureComponent {
               <Col lg={8} md={12} sm={24} style={{ paddingLeft: 15, paddingRight: 15 }}>
                 <Form.Item label={fieldLabels.phoneNumber}>
                   {getFieldDecorator('phoneNumber', {
+                    validateTrigger: 'onBlur',
                     rules: [
                       {
                         required: true,
@@ -308,6 +349,7 @@ export default class accountManagementAdd extends PureComponent {
                         type: 'string',
                         message: '请输入手机号',
                       },
+                      { validator: this.validatePhoneNumber },
                     ],
                   })(<Input placeholder="请输入手机号" min={11} max={11} />)}
                 </Form.Item>
