@@ -46,9 +46,9 @@ const DETAIL_ITEMS_CHINESE = [
 ];
 
 const breadcrumbList = [
-  { title: '首页', href: '/' },
-  { title: '火灾自动报警系统', href: '/fire-alarm/index' },
-  { title: '单位页面' },
+  { title: '首页', name: '首页', href: '/' },
+  { title: '火灾自动报警系统', name: '火灾自动报警系统', href: '/dynamic-monitoring/fire-alarm/index' },
+  { title: '单位页面', name: '单位页面' },
 ];
 
 const CustomTab = ({ num, itemName, tabKey, currentTabKey }) => (

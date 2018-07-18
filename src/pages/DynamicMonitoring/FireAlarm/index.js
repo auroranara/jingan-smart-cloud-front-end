@@ -10,6 +10,12 @@ import styles from './index.less';
 
 const PAGE_SIZE = 18;
 
+const breadcrumbList = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '动态监测', name: '动态监测' },
+  { title: '火灾自动报警系统', name: '火灾自动报警系统' },
+];
+
 // div[id="root"]下的唯一子元素相对于定高的root滚动
 const rootElement = document.getElementById('root');
 
@@ -142,7 +148,7 @@ export default class FireAlarm extends PureComponent {
     const { company, address, scrollLoading, hasMore } = this.state;
 
     return (
-      <PageHeaderLayout title="企业列表">
+      <PageHeaderLayout title="企业列表" breadcrumbList={breadcrumbList}>
         <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>

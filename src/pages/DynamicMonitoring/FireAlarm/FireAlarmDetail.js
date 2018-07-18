@@ -27,10 +27,10 @@ export default class AutoFireAlarm extends PureComponent {
     const { match: { params: { companyId } }, fireAlarm: { alarmDetail } } = this.props;
 
     const breadcrumbList = [
-      { title: '首页', href: '/' },
-      { title: '火灾自动报警系统', href: '/fire-alarm/index' },
-      { title: '单位页面', href: `/fire-alarm/company/${companyId}` },
-      { title: '详情信息' },
+      { title: '首页', name: '首页', href: '/' },
+      { title: '火灾自动报警系统', name: '火灾自动报警系统', href: '/dynamic-monitoring/fire-alarm/index' },
+      { title: '单位页面', name: '单位页面', href: `/dynamic-monitoring/fire-alarm/company/${companyId}` },
+      { title: '详情信息', name: '详情信息' },
     ];
 
     return (
