@@ -28,11 +28,12 @@ export default {
   },
 
   effects: {
+    // 维保单位列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCompanies, payload);
       if (response.code === 200) {
         yield put({
-          type: 'query',
+          type: 'queryMaintenanceCompanyList',
           payload: response.data,
         });
       }
@@ -102,7 +103,7 @@ export default {
   },
 
   reducers: {
-    query(
+    queryMaintenanceCompanyList(
       state,
       {
         payload: {

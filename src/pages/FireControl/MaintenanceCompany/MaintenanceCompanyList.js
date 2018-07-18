@@ -12,7 +12,6 @@ import {
   BackTop,
   Spin,
   Col,
-  Badge,
   Row,
 } from 'antd';
 import { Link, routerRedux } from 'dva/router';
@@ -77,10 +76,12 @@ export default class MaintenanceCompanyList extends PureComponent {
 
   componentDidMount() {
     const { fetch } = this.props;
+
     // 获取维保单位列表
     fetch({
       payload: {
         pageSize,
+        pageNum: 1,
       },
     });
   }
@@ -251,12 +252,11 @@ export default class MaintenanceCompanyList extends PureComponent {
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {`地址：${item.practicalAddress}`}
                     </Ellipsis>
-                    <p>{`下属公司数：${item.subordinateCompanyCount}`}</p>
-                    <p>
-                      启用状态：
-                      <Badge status={item.usingStatus === 1 ? 'success' : 'error'} />
-                      {`${item.usingStatus === 1 ? '启用' : '禁用'}`}
-                    </p>
+                    <p>{`主要负责人：${item.principalName}`}</p>
+                    <p>{`联系电话：${item.principalPhone}`}</p>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      {`总公司：${item.parentUnitName}`}
+                    </Ellipsis>
                   </Col>
                   <Col span={8}>
                     <span className={styles.quantity}>{item.serviceCompanyCount}</span>

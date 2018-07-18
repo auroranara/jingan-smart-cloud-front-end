@@ -3,7 +3,7 @@ import request from '../utils/request';
 
 // 维保单位列表
 export async function queryMaintenanceCompanies(params) {
-  return request(`/acloud_new/v2/fireControl/maintenanceCompanies.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/fireControl/maintenanceCompanies?${stringify(params)}`);
 }
 
 // 查询维保单位列表
