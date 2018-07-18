@@ -20,17 +20,21 @@ const href = '/base-info/company/list';
 const breadcrumbList = [
   {
     title: '首页',
+    name: '首页',
     href: '/',
   },
   {
     title: '一企一档',
+    name: '一企一档',
   },
   {
     title: '企业单位',
+    name: '企业单位',
     href,
   },
   {
     title,
+    name: title,
   },
 ];
 /* 表单标签 */
