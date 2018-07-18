@@ -146,10 +146,9 @@ export default {
               hideChildren: true,
               routes: [
                 { path: '/fire-control/user-transmission-device', name: 'userTransmissionDevice', redirect: '/fire-control/user-transmission-device/list' },
-                { path: '/fire-control/user-transmission-device/list', name: 'list', component: './FireControl/UserTransmissionDevice/UserTransmissonDevice' },
-                { path: '/fire-control/user-transmission-device-detail/:companyId/detail', name: 'deviceDetail', component: './FireControl/UserTransmissionDevice/UserTransmissonDeviceDetail' },
-                { path: '/fire-control/user-transmission-device-detail/:companyId/import-point-position/:hostId', name: 'importPointPosition', component: './FireControl/UserTransmissionDevice/ImportPointPosition' },
-                { path: '', name: '', component: '' },
+                { path: '/fire-control/user-transmission-device/list', name: 'list', component: './FireControl/UserTransmissionDevice/UserTransmissionDevice' },
+                { path: '/fire-control/user-transmission-device/:companyId/detail', name: 'deviceDetail', component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail' },
+                { path: '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId', name: 'importPointPosition', component: './FireControl/UserTransmissionDevice/ImportPointPosition' },
               ],
             },
           ],

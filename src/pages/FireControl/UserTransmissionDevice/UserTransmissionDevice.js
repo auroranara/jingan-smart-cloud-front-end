@@ -10,6 +10,12 @@ import styles from './UserTransmissionDevice.less';
 
 const PAGE_SIZE = 18;
 
+const breadcrumbList = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '消防维保', name: '消防维保' },
+  { title: '用户传输装置', name: '用户传输装置' },
+];
+
 // div[id="root"]下的唯一子元素相对于定高的root滚动
 const rootElement = document.getElementById('root');
 
@@ -142,7 +148,7 @@ export default class UserTransmissionDevice extends PureComponent {
     const { company, address, scrollLoading, hasMore } = this.state;
 
     return (
-      <PageHeaderLayout title="用户传输装置">
+      <PageHeaderLayout title="用户传输装置" breadcrumbList={breadcrumbList}>
         <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>
@@ -179,7 +185,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-control/user-transmission-device-detail/${item.id}/detail`}>
+                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined

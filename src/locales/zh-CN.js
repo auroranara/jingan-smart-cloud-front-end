@@ -16,6 +16,7 @@ export default {
   'menu.fireControl.contract.add': '新增维保合同',
   'menu.fireControl.contract.edit': '编辑维保合同',
   'menu.fireControl.contract.detail': '维保合同详情',
+  'menu.fireControl.userTransmissionDevice': '用户传输装置',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
