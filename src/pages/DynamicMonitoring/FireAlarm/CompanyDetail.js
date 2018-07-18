@@ -7,7 +7,7 @@ import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
-import styles from './AutoFireAlarm.less';
+import styles from './CompanyDetail.less';
 
 const { TabPane } = Tabs;
 const { Description } = DescriptionList;
@@ -46,9 +46,9 @@ const DETAIL_ITEMS_CHINESE = [
 ];
 
 const breadcrumbList = [
-  { title: '首页', href: '/' },
-  { title: '火灾自动报警系统', href: '/fire-alarm/index' },
-  { title: '单位页面' },
+  { title: '首页', name: '首页', href: '/' },
+  { title: '火灾自动报警系统', name: '火灾自动报警系统', href: '/dynamic-monitoring/fire-alarm/index' },
+  { title: '单位页面', name: '单位页面' },
 ];
 
 const CustomTab = ({ num, itemName, tabKey, currentTabKey }) => (
@@ -79,7 +79,7 @@ function addZero(n) {
   fireAlarm,
   loading: loading.models.fireAlarm,
 }))
-export default class AutoFireAlarm extends PureComponent {
+export default class CompanyDetail extends PureComponent {
   state = {
     currentTabKey: ALARM_ITEMS[0],
     detailVisible: false,
@@ -165,7 +165,7 @@ export default class AutoFireAlarm extends PureComponent {
       { title: '回路故障号', dataIndex: 'failureCode', key: 'failureCode', align: 'center' },
       { title: '设施部件类型', dataIndex: 'type', key: 'type', align: 'center' },
       { title: '具体位置', dataIndex: 'installAddress', key: 'installAddress', align: 'center' },
-      // { title: '操作', key: 'operation', align: 'center', render: (text, record) => <Link to={`/fire-alarm/company/detail/${companyId}/${record.detailId}`}>查看</Link> },
+      // { title: '操作', key: 'operation', align: 'center', render: (text, record) => <Link to={`/dynamic-monitoring/fire-alarm/company/detail/${companyId}/${record.detailId}`}>查看</Link> },
       {
         title: '操作',
         key: 'operation',

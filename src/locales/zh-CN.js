@@ -15,6 +15,8 @@ export default {
   'menu.roleAuthorization.account.edit': '编辑账号',
   'menu.roleAuthorization.account.add': '添加账号',
   'menu.roleAuthorization.account.detail': '账号详情',
+  'menu.dynamicMonitoring': '动态监测',
+  'menu.dynamicMonitoring.fireAlarm': '火灾自动报警系统',
   'menu.fireControl': '消防维保',
   'menu.fireControl.maintenanceCompany': '维保公司',
   'menu.fireControl.maintenanceCompany.list': '维保公司列表',

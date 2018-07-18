@@ -42,6 +42,7 @@ export default {
     baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
     antd: true, // use antd, default is true
   },
+
   // 路由配置
   routes: [
     // user
@@ -60,7 +61,7 @@ export default {
       path: '/',
       component: './layouts/LoadingPage',
       routes: [
-        // dashboard
+        // baseInfo
         { path: '/', redirect: '/base-info/company/list' },
 
         {
@@ -71,7 +72,6 @@ export default {
             {
               path: '/base-info/company',
               name: 'company',
-              // component: './BaseInfo/Company/CompanyList',
               hideChildren: true,
               routes: [
                 {
@@ -101,8 +101,6 @@ export default {
                 },
               ],
             },
-            // { path: '/dashboard/monitor', name: 'monitor', component: './Dashboard/Monitor' },
-            // { path: '/dashboard/workplace', name: 'workplace', component: './Dashboard/Workplace' },
           ],
         },
         // FireControl
@@ -260,6 +258,37 @@ export default {
               name: 'trigger',
               hideInMenu: true,
               component: './Exception/triggerException',
+            },
+          ],
+        },
+        // dynamicMonitoring
+        {
+          path: '/dynamic-monitoring',
+          icon: 'dashboard',
+          name: 'dynamicMonitoring',
+          routes: [
+            {
+              path: '/dynamic-monitoring/fire-alarm',
+              name: 'fireAlarm',
+              hideChildren: true,
+              routes: [
+                {
+                  path: '/dynamic-monitoring/fire-alarm',
+                  name: 'fireAlarm',
+                  redirect: '/dynamic-monitoring/fire-alarm/index',
+                },
+                {
+                  path: '/dynamic-monitoring/fire-alarm/index',
+                  name: 'index',
+                  component: './DynamicMonitoring/FireAlarm/index',
+                },
+                {
+                  path: '/dynamic-monitoring/fire-alarm/company/:companyId',
+                  name: 'companyDetail',
+                  component: './DynamicMonitoring/FireAlarm/CompanyDetail',
+                },
+                // { path: '/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+              ],
             },
           ],
         },
