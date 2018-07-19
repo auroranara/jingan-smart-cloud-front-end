@@ -3,9 +3,7 @@ import { Spin } from 'antd';
 import { connect } from 'dva';
 import { enquireScreen, unenquireScreen } from 'enquire-js';
 import BasicLayout from './BasicLayout';
-// TODO: should use this.props.routes
-import config from '../../../config/config';
-const menuData = config['routes'];
+import routerConfig from '../../../config/router.config';
 
 // Conversion router to menu.
 function formatter(data, parentPath = '', parentAuthority, parentName) {
@@ -35,8 +33,8 @@ function formatter(data, parentPath = '', parentAuthority, parentName) {
 /**
  * 根据菜单取得重定向地址.
  */
-const MenuData = formatter(menuData[1].routes);
-const routerData = config.routes;
+const MenuData = formatter(routerConfig[1].routes);
+
 const getRedirectData = () => {
   const redirectData = [];
   const getRedirect = item => {
@@ -121,7 +119,7 @@ class LoadingPage extends PureComponent {
       <BasicLayout
         isMobile={isMobile}
         menuData={MenuData}
-        routerData={routerData}
+        routerData={routerConfig}
         redirectData={redirectData}
         {...this.props}
       />
