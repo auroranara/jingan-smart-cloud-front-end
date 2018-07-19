@@ -254,7 +254,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
 
     return (
       <PageHeaderLayout title="编辑维保单位" breadcrumbList={breadcrumbList}>
-        <Card bordered={false}>
+        <Card title="单位详情" bordered={false}>
           <Form hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="维保单位">
               <div>{data.companyName}</div>

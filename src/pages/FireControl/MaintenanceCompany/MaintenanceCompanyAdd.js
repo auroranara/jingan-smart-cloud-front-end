@@ -5,7 +5,7 @@ import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { phoneReg } from 'utils/validate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-import styles from './MaintenanceCompanyAdd.less';
+import styles from './MaintenanceCompany.less';
 
 const FormItem = Form.Item;
 

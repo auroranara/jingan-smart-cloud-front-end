@@ -142,6 +142,11 @@ export default {
                   name: 'detail',
                   component: './FireControl/MaintenanceCompany/MaintenanceCompanyDetail',
                 },
+                {
+                  path: '/fire-control/maintenance-company/serviceList/:id',
+                  name: 'serviceList',
+                  component: './FireControl/MaintenanceCompany/ServiceUnitList',
+                },
               ],
             },
           ],

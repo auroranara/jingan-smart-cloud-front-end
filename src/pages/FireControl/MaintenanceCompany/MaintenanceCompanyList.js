@@ -56,13 +56,10 @@ const defaultFormData = {
         ...action,
       });
     },
-    updateFormData(action) {
-      dispatch({
-        type: 'maintenanceCompany/updateFormData',
-        ...action,
-      });
-    },
     goToDetail(url) {
+      dispatch(routerRedux.push(url));
+    },
+    goToService(url) {
       dispatch(routerRedux.push(url));
     },
   })
@@ -76,7 +73,6 @@ export default class MaintenanceCompanyList extends PureComponent {
 
   componentDidMount() {
     const { fetch } = this.props;
-
     // 获取维保单位列表
     fetch({
       payload: {
@@ -213,6 +209,7 @@ export default class MaintenanceCompanyList extends PureComponent {
     const {
       maintenanceCompany: { list },
       goToDetail,
+      goToService,
     } = this.props;
 
     return (
@@ -242,13 +239,14 @@ export default class MaintenanceCompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Row
-                  onClick={() => {
-                    goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
-                  }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Col span={16}>
+                <Row>
+                  <Col
+                    span={16}
+                    onClick={() => {
+                      goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {`地址：${item.practicalAddress}`}
                     </Ellipsis>
@@ -258,7 +256,13 @@ export default class MaintenanceCompanyList extends PureComponent {
                       {`总公司：${item.parentUnitName}`}
                     </Ellipsis>
                   </Col>
-                  <Col span={8}>
+                  <Col
+                    span={8}
+                    onClick={() => {
+                      goToService(`/fire-control/maintenance-company/serviceList/${item.id}`);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <span className={styles.quantity}>{item.serviceCompanyCount}</span>
                     <span className={styles.servicenum}>服务单位数</span>
                   </Col>
@@ -273,12 +277,18 @@ export default class MaintenanceCompanyList extends PureComponent {
 
   render() {
     const {
-      maintenanceCompany: { list, isLast },
       loading,
+      maintenanceCompany: {
+        data: {
+          pagination: { total },
+        },
+        list,
+        isLast,
+      },
     } = this.props;
 
     return (
-      <PageHeaderLayout title="维保单位">
+      <PageHeaderLayout title="维保单位" content={<div>维保单位总数：{total} </div>}>
         <BackTop />
         {this.renderForm()}
         {this.renderList()}

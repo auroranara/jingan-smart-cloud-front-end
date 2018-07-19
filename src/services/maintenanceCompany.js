@@ -18,7 +18,7 @@ export async function deleteMaintenanceCompany({ id }) {
   });
 }
 
-// 查看指定维保单位信息
+/* 查看指定维保单位信息*/
 export async function queryMaintenanceCompanyinfo(id) {
   return request(`/acloud_new/v2/fireControl/maintenanceCompanies/${id}.json`);
 }
@@ -42,4 +42,9 @@ export async function addMaintenanceCompany(params) {
 /*  查询企业列表 */
 export async function queryCompanyList(params) {
   return request(`/acloud_new/v2/fireControl/companyList.json?${stringify(params)}`);
+}
+
+/* 根据维保单位id查询服务单位列表 */
+export async function queryServiceUnit(id) {
+  return request(`/acloud_new/v2/fireControl/companies/${id}`);
 }

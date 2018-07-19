@@ -21,6 +21,7 @@ export default {
   'menu.fireControl.maintenanceCompany.add': '新增维保公司',
   'menu.fireControl.maintenanceCompany.edit': '编辑维保公司',
   'menu.fireControl.maintenanceCompany.detail': '维保公司详情',
+  'menu.fireControl.maintenanceCompany.serviceList': '服务单位列表',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
