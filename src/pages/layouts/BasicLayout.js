@@ -161,6 +161,9 @@ class BasicLayout extends React.PureComponent {
       children,
       location: { pathname },
     } = this.props;
+
+    console.log('basicLayout', this.props);
+
     const isTop = PropsLayout === 'topmenu';
     const layout = (
       <Layout>
@@ -176,6 +179,9 @@ class BasicLayout extends React.PureComponent {
         <Layout style={this.getLayoutStyle()}>
           <Header handleMenuCollapse={this.handleMenuCollapse} logo={logo} {...this.props} />
           <Content style={this.getContentStyle()}>{children}</Content>
+          {/* <Content style={this.getContentStyle()}>
+            <Authorized authority={Math.random() > 0.5 ? () => true : () => false} noMatch={<h1>403</h1>}>{children}</Authorized>
+          </Content> */}
           <Footer />
         </Layout>
       </Layout>

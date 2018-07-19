@@ -26,8 +26,8 @@ const DETAIL_ITEMS = [
   'type',
   'position',
   'alarmStatus',
-  'hostStatus',
-  'operateTime',
+  // 'hostStatus',
+  // 'operateTime',
   'safetyName',
   'safetyPhone',
 ];
@@ -39,8 +39,8 @@ const DETAIL_ITEMS_CHINESE = [
   '设施部件类型',
   '具体位置',
   '警情状态',
-  '主机状态',
-  '复位/关机时间',
+  // '主机状态',
+  // '复位/关机时间',
   '安全负责人',
   '联系电话',
 ];

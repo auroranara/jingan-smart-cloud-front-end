@@ -63,7 +63,6 @@ export default {
       routes: [
         // baseInfo
         { path: '/', redirect: '/base-info/company/list' },
-
         {
           path: '/base-info',
           name: 'baseInfo',
