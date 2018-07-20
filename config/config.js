@@ -90,14 +90,14 @@ export default {
   disableFastClick: true,
   hashHistory: true,
   manifest: {
-    name: 'ant-design-pro',
+    name: 'jing-an-smart-cloud',
     background_color: '#FFF',
     description: 'An out-of-box UI solution for enterprise applications as a React boilerplate.',
     display: 'standalone',
     start_url: '/index.html',
     icons: [
       {
-        src: '/favicon.png',
+        src: '/acloud_new/static/favicon.png',
         sizes: '48x48',
         type: 'image/png',
       },
