@@ -15,6 +15,10 @@ import Footer from './Footer';
 import Header from './Header';
 import Context from './MenuContext';
 
+import Exception403 from '../Exception/403';
+import Exception404 from '../Exception/404';
+import { pathArray } from '../../components/_utils/AppMenu';
+
 const { Content } = Layout;
 const { check } = Authorized;
 
@@ -155,6 +159,7 @@ class BasicLayout extends React.PureComponent {
   }
   render() {
     const {
+      authorityFn,
       isMobile,
       silderTheme,
       layout: PropsLayout,
@@ -162,9 +167,10 @@ class BasicLayout extends React.PureComponent {
       location: { pathname },
     } = this.props;
 
-    console.log('basicLayout', this.props);
+    // console.log('basicLayout', this.props.location);
 
     const isTop = PropsLayout === 'topmenu';
+    const noMatch = pathArray.includes(pathname) ? <Exception403 /> : <Exception404 />;
     const layout = (
       <Layout>
         {isTop && !isMobile ? null : (
@@ -178,10 +184,10 @@ class BasicLayout extends React.PureComponent {
         )}
         <Layout style={this.getLayoutStyle()}>
           <Header handleMenuCollapse={this.handleMenuCollapse} logo={logo} {...this.props} />
-          <Content style={this.getContentStyle()}>{children}</Content>
-          {/* <Content style={this.getContentStyle()}>
-            <Authorized authority={Math.random() > 0.5 ? () => true : () => false} noMatch={<h1>403</h1>}>{children}</Authorized>
-          </Content> */}
+          {/* <Content style={this.getContentStyle()}>{children}</Content> */}
+          <Content style={this.getContentStyle()}>
+            <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>{children}</Authorized>
+          </Content>
           <Footer />
         </Layout>
       </Layout>

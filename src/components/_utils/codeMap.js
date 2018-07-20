@@ -26,6 +26,27 @@ function mapReverse(m) {
   return result;
 }
 
+function getCodeMap(menuData, result) {
+  for (let m of menuData) {
+    const { path, code, locale, children } = m;
+
+    if (path === '/' || result[path])
+      continue;
+
+    if (code) {
+      result[path] = code;
+      result[code] = path;
+    } else if(locale) {
+      const loc = locale.slice(5);
+      result[path] = loc;
+      result[loc] = path;
+    }
+
+    if (children)
+      getCodeMap(children, result);
+  }
+}
+
 const codeMap = mapReverse(pathMap);
 
 export default codeMap;
