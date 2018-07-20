@@ -97,7 +97,7 @@ getCodeMap(MenuData, codeMap)
 
 // console.log('codeMap', codeMap);
 
-// codeMap的键值数组，即所有路径及code
+// codeMap的路径键值数组，过滤了code
 const pathArray = Object.keys(codeMap).filter(path => path.includes('/'));
 console.log('pathArray', pathArray);
 
