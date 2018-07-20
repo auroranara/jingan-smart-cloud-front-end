@@ -38,27 +38,32 @@ const defaultFormData = {
     loading: loading.models.maintenanceCompany,
   }),
   dispatch => ({
+    // 维保单位列表
     fetch(action) {
       dispatch({
         type: 'maintenanceCompany/fetch',
         ...action,
       });
     },
+    // 查询维保单位
     appendFetch(action) {
       dispatch({
         type: 'maintenanceCompany/appendFetch',
         ...action,
       });
     },
+    // 删除维保单位
     remove(action) {
       dispatch({
         type: 'maintenanceCompany/remove',
         ...action,
       });
     },
+    // 跳转到维保单位详情页
     goToDetail(url) {
       dispatch(routerRedux.push(url));
     },
+    // 跳转到服务单位列表页
     goToService(url) {
       dispatch(routerRedux.push(url));
     },
@@ -70,7 +75,7 @@ export default class MaintenanceCompanyList extends PureComponent {
     super(props);
     this.formData = defaultFormData;
   }
-
+  // 生命周期函数
   componentDidMount() {
     const { fetch } = this.props;
     // 获取维保单位列表
@@ -148,18 +153,20 @@ export default class MaintenanceCompanyList extends PureComponent {
   /* 滚动加载 */
   handleLoadMore = flag => {
     const {
-      appendFetch,
-      maintenanceCompany: { pageNum, isLast },
+      maintenanceCompany: { isLast },
     } = this.props;
-
     if (!flag || isLast) {
       return;
     }
-
+    const {
+      appendFetch,
+      maintenanceCompany: { pageNum },
+    } = this.props;
+    // 请求数据
     appendFetch({
       payload: {
         pageSize,
-        pageNum,
+        pageNum: pageNum + 1,
         ...this.formData,
       },
     });

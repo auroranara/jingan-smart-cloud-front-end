@@ -45,6 +45,6 @@ export async function queryCompanyList(params) {
 }
 
 /* 根据维保单位id查询服务单位列表 */
-export async function queryServiceUnit(id) {
-  return request(`/acloud_new/v2/fireControl/companies/${id}`);
+export async function queryServiceUnit(params) {
+  return request(`/acloud_new/v2/fireControl/companies/${params.id}?${stringify(params)}`);
 }

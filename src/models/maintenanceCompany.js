@@ -117,7 +117,7 @@ export default {
     },
     // 根据维保单位id查询服务单位列表
     *fetchServiceUnit({ payload }, { call, put }) {
-      const response = yield call(queryServiceUnit, payload.id);
+      const response = yield call(queryServiceUnit, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryServiceUnit',
@@ -129,19 +129,15 @@ export default {
 
   reducers: {
     // 维保单位列表
-    queryMaintenanceCompanyList(
-      state,
-      {
-        payload: {
-          list,
-          pagination: { pageNum, pageSize, total },
-        },
-      }
-    ) {
+    queryMaintenanceCompanyList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
       return {
         ...state,
         list,
-        pageNum: 1,
+        data: payload,
         isLast: pageNum * pageSize >= total,
       };
     },

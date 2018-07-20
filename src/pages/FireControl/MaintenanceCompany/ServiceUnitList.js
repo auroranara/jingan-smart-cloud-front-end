@@ -80,7 +80,7 @@ export default class ServiceUnitList extends PureComponent {
   // 跳转到企业详情页
   goToCompany = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`../../base-info/company/detail/${id}`));
+    dispatch(routerRedux.push(`../../../base-info/company/detail/${id}`));
   };
 
   /* 查询按钮点击事件 */
@@ -88,14 +88,19 @@ export default class ServiceUnitList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      match: {
+        params: { id },
+      },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
+
     // 重新请求数据
     dispatch({
       type: 'maintenanceCompany/fetchServiceUnit',
       payload: {
+        id,
         pageSize,
         pageNum: 1,
         ...data,
@@ -108,6 +113,9 @@ export default class ServiceUnitList extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
+      match: {
+        params: { id },
+      },
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -117,6 +125,7 @@ export default class ServiceUnitList extends PureComponent {
     dispatch({
       type: 'maintenanceCompany/fetchServiceUnit',
       payload: {
+        id,
         pageSize,
         pageNum: 1,
       },
@@ -126,17 +135,20 @@ export default class ServiceUnitList extends PureComponent {
   /* 滚动加载 */
   handleLoadMore = flag => {
     const {
-      dispatch,
-      maintenanceCompany: { pageNum, isLast },
+      maintenanceCompany: { isLast },
     } = this.props;
     if (!flag || isLast) {
       return;
     }
+    const {
+      dispatch,
+      maintenanceCompany: { pageNum },
+    } = this.props;
     dispatch({
       type: 'maintenanceCompany/fetchServiceUnit',
       payload: {
         pageSize,
-        pageNum,
+        pageNum: pageNum + 1,
         ...this.formData,
       },
     });
@@ -177,9 +189,6 @@ export default class ServiceUnitList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      match: {
-        params: { id },
-      },
       maintenanceCompany: { list },
     } = this.props;
 
@@ -190,13 +199,20 @@ export default class ServiceUnitList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { name, searchArea, industryCategoryLabel, safetyName, safetyPhone } = item;
+            const {
+              companyId,
+              name,
+              searchArea,
+              industryCategoryLabel,
+              safetyName,
+              safetyPhone,
+            } = item;
             return (
-              <List.Item key={id}>
+              <List.Item key={companyId}>
                 <Card title={name} className={styles.card}>
                   <div
                     onClick={() => {
-                      this.goToCompany(id);
+                      this.goToCompany(companyId);
                     }}
                     style={{ cursor: 'pointer' }}
                   >
@@ -206,12 +222,8 @@ export default class ServiceUnitList extends PureComponent {
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       行业类别：{industryCategoryLabel || getEmptyData()}
                     </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      负责人：{safetyName || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      联系电话：{safetyPhone || getEmptyData()}
-                    </Ellipsis>
+                    <p>负责人：{safetyName || getEmptyData()}</p>
+                    <p>联系电话：{safetyPhone || getEmptyData()}</p>
                   </div>
                 </Card>
               </List.Item>

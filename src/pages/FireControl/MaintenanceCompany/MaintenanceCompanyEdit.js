@@ -69,6 +69,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     parentId: undefined,
   };
 
+  /* 生命周期函数 */
   componentDidMount() {
     const that = this;
 
@@ -93,6 +94,9 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
       },
     });
   }
+
+  /* 去除输入框左右两边空白 */
+  handleTrim = e => e.target.value.trim();
 
   switchOnchange = checked => {
     this.setState({ hasSubCompany: checked });
@@ -144,9 +148,6 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     });
     this.handleHideMaintenanceModal();
   };
-
-  /* 去除输入框左右两边空白 */
-  handleTrim = e => e.target.value.trim();
 
   // 点击提交按钮验证表单信息
   handleUpdate(id) {
@@ -224,6 +225,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     return <CompanyModal {...modalProps} />;
   }
 
+  // 渲染维保单位表单信息
   render() {
     const {
       submitting,

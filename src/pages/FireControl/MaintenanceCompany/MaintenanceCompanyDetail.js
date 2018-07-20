@@ -5,7 +5,6 @@ import { Form, Card, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import styles from './MaintenanceCompany.less';
 
 const { Description } = DescriptionList;
 
@@ -46,6 +45,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
     hasSubCompany: false,
   };
 
+  /* 生命周期函数 */
   componentDidMount() {
     const {
       dispatch,
@@ -97,15 +97,16 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
               <Description term="所属总公司"> {data.parnetUnitName || getEmptyData()}</Description>
             )}
           </DescriptionList>
-          <Button
-            type="primary"
-            className={styles.btn_detail}
-            onClick={() => {
-              this.goToEdit(id);
-            }}
-          >
-            编辑
-          </Button>
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <Button
+              type="primary"
+              onClick={() => {
+                this.goToEdit(id);
+              }}
+            >
+              编辑
+            </Button>
+          </div>
         </Card>
       </PageHeaderLayout>
     );
