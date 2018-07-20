@@ -4,9 +4,7 @@ import { Spin } from 'antd';
 import styles from '../../index.less';
 
 import config from '../../../config/config';
-import codeMap from './codeMap';
-
-const originMenuData = config['routes'];
+// import codeMap from './codeMap';
 
 function formatter(data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
@@ -34,13 +32,63 @@ function formatter(data, parentPath = '', parentAuthority, parentName) {
 }
 
 function filterMenus(MenuData, menus) {
-  return [];
+  const menuData = [];
+  for (let m of MenuData) {
+    const { path, children } = m;
+    // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
+    const menu = { ...m };
+    if (path !== '/' && !menus.includes(codeMap[path]))
+      continue;
+
+    if (children)
+      menu.children = filterMenus(children, menus);
+
+    menuData.push(menu);
+  }
+
+  return menuData;
 }
 
-function handleMenus(menuData, menus) {
-  const MenuData = formatter(menuData[1].routes);
-  return filterMenus(MenuData, menus);
+function getCodeMap(menuData, result) {
+  for (let m of menuData) {
+    const { path, code, locale, children } = m;
+
+    if (path === '/' || result[path])
+      continue;
+
+    if (code) {
+      result[path] = code;
+      result[code] = path;
+    } else if(locale) {
+      // locle = 'menu.fuck.me',去掉 'menu.'
+      const loc = locale.slice(5);
+      result[path] = loc;
+      result[loc] = path;
+    }
+
+    if (children)
+      getCodeMap(children, result);
+  }
 }
+
+function generateAuthFn(menus) {
+  return path => () => {
+    if (path.toLowerCase().includes('exception'))
+      return true;
+    return menus.includes(codeMap[path]);
+  };
+}
+
+const menuData = config['routes'];
+const MenuData = formatter(menuData[1].routes);
+let codeMap = {};
+getCodeMap(MenuData, codeMap)
+
+// console.log('codeMap', codeMap);
+
+// codeMap的键值数组，即所有路径及code
+const pathArray = Object.keys(codeMap);
+export { codeMap, pathArray };
 
 export default function AppMenu(WrappedComponent) {
   @connect(({ global }) => ({ global }))
@@ -57,18 +105,20 @@ export default function AppMenu(WrappedComponent) {
 
     render() {
       const { global: { menus }, ...rest } = this.props;
-      if (!this.menuHandled) {
+      if (!this.menuHandled && menus.length) {
         this.menuHandled = true;
-        this.menuData = handleMenus(originMenuData, menus);
+        this.menuData = filterMenus(MenuData, menus);
       }
 
       const menuHandled = this.menuHandled;
       const menuData = this.menuData;
 
-      if (menuHandled) {
+      // console.log(menuData);
+
+      if (!menuHandled) {
         return <Spin size="large" className={styles.globalSpin} />;
       } else {
-        return <WrappedComponent {...rest} menuData={menuData} />;
+        return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(menus)} />;
       }
     }
   }

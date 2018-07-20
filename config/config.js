@@ -65,36 +65,43 @@ export default {
         { path: '/', redirect: '/base-info/company/list' },
         {
           path: '/base-info',
+          code: 'baseInfo',
           name: 'baseInfo',
           icon: 'dashboard',
           routes: [
             {
               path: '/base-info/company',
+              code: 'baseInfo.company',
               name: 'company',
               hideChildren: true,
               routes: [
                 {
                   path: '/base-info/company',
+                  code: 'baseInfo.company',
                   name: 'company',
                   redirect: '/base-info/company/list',
                 },
                 {
                   path: '/base-info/company/list',
+                  code: 'baseInfo.company.listView',
                   name: 'list',
                   component: './BaseInfo/Company/CompanyList',
                 },
                 {
                   path: '/base-info/company/add',
+                  code: 'baseInfo.company.add',
                   name: 'add',
                   component: './BaseInfo/Company/CompanyEdit',
                 },
                 {
                   path: '/base-info/company/edit/:id',
+                  code: 'baseInfo.company.edit',
                   name: 'edit',
                   component: './BaseInfo/Company/CompanyEdit',
                 },
                 {
                   path: '/base-info/company/detail/:id',
+                  code: 'baseInfo.company.view',
                   name: 'detail',
                   component: './BaseInfo/Company/CompanyDetail',
                 },
@@ -105,11 +112,13 @@ export default {
         // FireControl
         {
           path: '/fire-control',
+          code: 'fireControl',
           icon: 'dashboard',
           name: 'fireControl',
           routes: [
             {
               path: '/fire-control/contract',
+              code: 'fireControl.contract',
               name: 'contract',
               hideChildren: true,
               routes: [
@@ -119,6 +128,7 @@ export default {
                 },
                 {
                   path: '/fire-control/contract/list',
+                  code: 'fireControl.contract.listView',
                   name: 'list',
                   component: './FireControl/Contract/ContractList',
                 },
@@ -134,6 +144,7 @@ export default {
                 },
                 {
                   path: '/fire-control/contract/detail/:id',
+                  code: 'fireControl.contract.view',
                   name: 'detail',
                   component: './FireControl/Contract/ContractDetail',
                 },
@@ -151,17 +162,19 @@ export default {
                 },
                 {
                   path: '/fire-control/user-transmission-device/list',
+                  code: 'fireControl.userTransmissionDevice.listView',
                   name: 'list',
                   component: './FireControl/UserTransmissionDevice/UserTransmissionDevice',
                 },
                 {
                   path: '/fire-control/user-transmission-device/:companyId/detail',
+                  code: 'fireControl.userTransmissionDevice.view',
                   name: 'deviceDetail',
                   component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail',
                 },
                 {
-                  path:
-                    '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
+                  path:'/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
+                  code: 'fireControl.userTransmissionDevice.host.importPointPosition',
                   name: 'importPointPosition',
                   component: './FireControl/UserTransmissionDevice/ImportPointPosition',
                 },
@@ -179,6 +192,7 @@ export default {
                 },
                 {
                   path: '/fire-control/maintenance-company/list',
+                  code: 'fireControl.maintenanceCompany.listView',
                   name: 'list',
                   component: './FireControl/MaintenanceCompany/MaintenanceCompanyList',
                 },
@@ -194,6 +208,7 @@ export default {
                 },
                 {
                   path: '/fire-control/maintenance-company/detail/:id',
+                  code: 'fireControl.maintenanceCompany.view',
                   name: 'detail',
                   component: './FireControl/MaintenanceCompany/MaintenanceCompanyDetail',
                 },
@@ -210,6 +225,7 @@ export default {
           routes: [
             {
               path: '/role-authorization/account-management',
+              code: 'roleAuthorization.accountManagement',
               name: 'account',
               hideChildren: true,
               routes: [
@@ -220,6 +236,7 @@ export default {
                 },
                 {
                   path: '/role-authorization/account-management/list',
+                  code: 'roleAuthorization.accountManagement.listView',
                   name: 'list',
                   component: './RoleAuthorization/AccountManagement/AccountManagementList',
                 },
@@ -235,6 +252,7 @@ export default {
                 },
                 {
                   path: '/role-authorization/account-management/detail/:id',
+                  code: 'roleAuthorization.accountManagement.view',
                   name: 'detail',
                   component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
                 },
@@ -268,6 +286,7 @@ export default {
           routes: [
             {
               path: '/dynamic-monitoring/fire-alarm',
+              code: 'dynamicMonitoring.fireAlarm',
               name: 'fireAlarm',
               hideChildren: true,
               routes: [
@@ -278,11 +297,13 @@ export default {
                 },
                 {
                   path: '/dynamic-monitoring/fire-alarm/index',
+                  code: 'dynamicMonitoring.fireAlarm.alarmDetailView',
                   name: 'index',
                   component: './DynamicMonitoring/FireAlarm/index',
                 },
                 {
                   path: '/dynamic-monitoring/fire-alarm/company/:companyId',
+                  code: 'dynamicMonitoring.fireAlarm.companyDetailView',
                   name: 'companyDetail',
                   component: './DynamicMonitoring/FireAlarm/CompanyDetail',
                 },

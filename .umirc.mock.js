@@ -1,6 +1,6 @@
 import mockjs from 'mockjs';
 import { getRule, postRule } from './mock/rule';
-import { getActivities, getNotice, getFakeList, postFakeList, getFakeCaptcha } from './mock/api';
+import { getActivities, getNotice, getFakeList, postFakeList, getFakeCaptcha, getMenus } from './mock/api';
 import { getFakeChartData } from './mock/chart';
 import { getProfileBasicData } from './mock/profile';
 import { getProfileAdvancedData } from './mock/profile';
@@ -123,6 +123,7 @@ const proxy = {
   'GET /api/geographic/province': getProvince,
   'GET /api/geographic/city/:province': getCity,
   'GET /api/captcha': getFakeCaptcha,
+  'GET /api/menus': getMenus,
 };
 
 export default (noProxy ? {} : proxy);
