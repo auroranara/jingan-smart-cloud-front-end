@@ -34,17 +34,17 @@ function formatter(data, parentPath = '', parentAuthority, parentName) {
 }
 
 // 将menus数组中不存在的路径过滤掉，使其再菜单中不显示
-function filterMenus(MenuData, menus) {
+function filterMenus(MenuData, codes) {
   const menuData = [];
   for (let m of MenuData) {
     const { path, children } = m;
     // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
     const menu = { ...m };
-    if (path !== '/' && !menus.includes(codeMap[path]))
+    if (path !== '/' && !codes.includes(codeMap[path]))
       continue;
 
     if (children)
-      menu.children = filterMenus(children, menus);
+      menu.children = filterMenus(children, codes);
 
     menuData.push(menu);
   }
@@ -113,11 +113,11 @@ const pathArray = Object.keys(codeMap).filter(path => path.includes('/'));
 export { codeMap, pathArray, getPath };
 
 export default function AppMenu(WrappedComponent) {
-  @connect(({ global }) => ({ global }))
+  @connect(({ user }) => ({ user }))
   class AppMenuInner extends React.Component {
     componentDidMount() {
-      const { global: { menus } } = this.props;
-      if (!menus.length) {
+      const { user: { currentUser: { permissionCodes: codes } } } = this.props;
+      if (!codes.length) {
         this.props.dispatch({ type: 'global/fetchMenus' });
       }
     }
@@ -126,13 +126,13 @@ export default function AppMenu(WrappedComponent) {
     menuData = [];
 
     render() {
-      const { global: { menus }, ...rest } = this.props;
+      const { user: { currentUser: { permissionCodes: codes } }, ...rest } = this.props;
       // console.log(this.props);
 
       // menuHandled防止重复生成menuData，因为这里只需要在初始化时生成一次
-      if (!this.menuHandled && menus.length) {
+      if (!this.menuHandled && codes.length) {
         this.menuHandled = true;
-        this.menuData = filterMenus(MenuData, menus);
+        this.menuData = filterMenus(MenuData, codes);
       }
 
       const menuHandled = this.menuHandled;
@@ -140,11 +140,13 @@ export default function AppMenu(WrappedComponent) {
 
       // console.log(menuData);
 
-      if (!menuHandled) {
-        return <Spin size="large" className={styles.globalSpin} />;
-      } else {
-        return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(menus)} />;
-      }
+      // if (!menuHandled) {
+      //   return <Spin size="large" className={styles.globalSpin} />;
+      // } else {
+      //   return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(codes)} />;
+      // }
+
+      return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(codes)} />;
     }
   }
 
