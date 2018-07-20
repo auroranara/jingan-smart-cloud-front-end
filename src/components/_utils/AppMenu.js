@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Spin } from 'antd';
 import styles from '../../index.less';
 
+import pathToRegexp from 'path-to-regexp';
 import config from '../../../config/config';
 // import codeMap from './codeMap';
 
@@ -72,11 +73,21 @@ function getCodeMap(menuData, result) {
 }
 
 function generateAuthFn(menus) {
-  return path => () => {
-    if (path.toLowerCase().includes('exception'))
+  return pathname => () => {
+    if (pathname.toLowerCase().includes('exception'))
       return true;
-    return menus.includes(codeMap[path]);
+    return menus.includes(codeMap[getPath(pathname, pathArray)]);
   };
+}
+
+function getPath(pathname, pathArray) {
+  for (let path of pathArray) {
+    const pathRegexp = pathToRegexp(path);
+    const menuKey = pathRegexp.test(pathname);
+    console.log('menuKey', menuKey);
+    if (menuKey)
+      return path;
+  }
 }
 
 const menuData = config['routes'];
@@ -87,8 +98,10 @@ getCodeMap(MenuData, codeMap)
 // console.log('codeMap', codeMap);
 
 // codeMap的键值数组，即所有路径及code
-const pathArray = Object.keys(codeMap);
-export { codeMap, pathArray };
+const pathArray = Object.keys(codeMap).filter(path => path.includes('/'));
+console.log('pathArray', pathArray);
+
+export { codeMap, pathArray, getPath };
 
 export default function AppMenu(WrappedComponent) {
   @connect(({ global }) => ({ global }))
