@@ -1,0 +1,276 @@
+// import { queryList, queryDetail, queryPermissionTree, addRole, editRole, deleteRole } from '../services/role/role';
+
+export default {
+  namespace: 'role',
+
+  state: {
+    detail: {},
+    permissionTree: [],
+    data: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 24,
+        total: 0,
+      },
+    },
+    isLast: false,
+  },
+
+  effects: {
+    /* 获取列表 */
+    *fetchList({ payload, success, error }, { call, put }) {
+      // const response = yield call(queryList, payload);
+      const response = {
+        code: 200,
+        data: {
+          list: [
+            {
+              id: 1,
+              name: 'admin',
+              description: '管理员',
+            },
+          ],
+          pagination: {
+            pageNum: 1,
+            pageSize: 24,
+            total: 1,
+          },
+        },
+        msg: '获取成功',
+      };
+      if (response.code === 200) {
+        yield put({
+          type: 'queryList',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    /* 追加列表 */
+    *appendList({ payload, success, error }, { call, put }) {
+      // const response = yield call(queryList, payload);
+      const response = {
+        code: 200,
+        data: {
+          list: [],
+          pagination: {
+            pageNum: 1,
+            pageSize: 24,
+            total: 0,
+          },
+        },
+        msg: '获取成功',
+      };
+      if (response.code === 200) {
+        yield put({
+          type: 'pushList',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    /* 获取详情 */
+    *fetchDetail({ payload, success, error }, { call, put }) {
+      // const response = yield call(queryDetail, payload);
+      const response = {
+        code: 200,
+        data: {
+
+        },
+        msg: '获取成功',
+      };
+      if (response.code === 200) {
+        yield put({
+          type: 'queryDetail',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    /* 获取权限树 */
+    *fetchPermissionTree({ payload, success, error }, { call, put }) {
+      // const response = yield call(queryPermissionTree, payload);
+      const response = {
+        code: 200,
+        data: {
+          list: [
+            {
+              id: 1,
+              title: '一企一档',
+              children: [
+                {
+                  id: 2,
+                  title: '企业管理',
+                },
+              ],
+            },
+          ],
+        },
+        msg: '获取成功',
+      };
+      if (response.code === 200) {
+        yield put({
+          type: 'queryPermissionTree',
+          payload: response.data.list,
+        });
+        if (success) {
+          success(response.data.list);
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    /* 新增角色 */
+    *insertRole({ payload, success, error }, { call, put }) {
+      // const response = yield call(addRole, payload);
+      const response = {
+        code: 200,
+        data: {
+
+        },
+        msg: '获取成功',
+      };
+      if (response.code === 200) {
+        yield put({
+          type: 'addRole',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    /* 编辑角色 */
+    *updateRole({ payload, success, error }, { call, put }) {
+      // const response = yield call(editRole, payload);
+      const response = {
+        code: 200,
+        data: {
+
+        },
+        msg: '获取成功',
+      };
+      if (response.code === 200) {
+        yield put({
+          type: 'editRole',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    /* 删除角色 */
+    *remove({ payload, success, error }, { call, put }) {
+      // const response = yield call(deleteRole, payload);
+      const response = {
+        code: 200,
+        msg: '获取成功',
+      };
+      if (response.code === 200) {
+        yield put({
+          type: 'deleteRole',
+          payload: payload.id,
+        });
+        if (success) {
+          success();
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+  },
+
+  reducers: {
+    /* 获取列表 */
+    queryList(state, { payload }) {
+      const { pagination: { pageNum, pageSize, total } } = payload;
+      return {
+        ...state,
+        data: payload,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+    /* 追加列表 */
+    pushList(state, { payload: { list, pagination } }) {
+      const { pageNum, pageSize, total } = pagination;
+      return {
+        ...state,
+        data: {
+          list: state.data.list.concat(list),
+          pagination,
+        },
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+    /* 获取详情 */
+    queryDetail(state, { payload: detail }) {
+      return {
+        ...state,
+        detail,
+      };
+    },
+    /* 获取权限树 */
+    queryPermissionTree(state, { payload: permissionTree }) {
+      return {
+        ...state,
+        permissionTree,
+      };
+    },
+    /* 新增角色 */
+    addRole(state, { payload: detail }) {
+      return {
+        ...state,
+        detail,
+      };
+    },
+    /* 编辑角色 */
+    editRole(state, { payload: detail }) {
+      return {
+        ...state,
+        detail,
+      };
+    },
+    /* 清除详情 */
+    clearDetail(state) {
+      return {
+        ...state,
+        detail: {},
+      };
+    },
+    /* 删除角色 */
+    deleteRole(state, { payload: id }) {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          list: state.data.list.filter(item => item.id !== id),
+        },
+      };
+    },
+  },
+}

@@ -75,27 +75,26 @@ export default {
               hideChildren: true,
               routes: [
                 {
-                  path: '/base-info/company',
-                  name: 'company',
-                  redirect: '/base-info/company/list',
+                  path: '.',
+                  redirect: 'list',
                 },
                 {
-                  path: '/base-info/company/list',
+                  path: 'list',
                   name: 'list',
                   component: './BaseInfo/Company/CompanyList',
                 },
                 {
-                  path: '/base-info/company/add',
+                  path: 'add',
                   name: 'add',
                   component: './BaseInfo/Company/CompanyEdit',
                 },
                 {
-                  path: '/base-info/company/edit/:id',
+                  path: 'edit/:id',
                   name: 'edit',
                   component: './BaseInfo/Company/CompanyEdit',
                 },
                 {
-                  path: '/base-info/company/detail/:id',
+                  path: 'detail/:id',
                   name: 'detail',
                   component: './BaseInfo/Company/CompanyDetail',
                 },
@@ -238,6 +237,37 @@ export default {
                   path: '/role-authorization/account-management/detail/:id',
                   name: 'detail',
                   component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
+                },
+              ],
+            },
+            {
+              path: '/role-authorization/role',
+              name: 'role',
+              hideChildren: true,
+              routes: [
+                {
+                  path: '.',
+                  redirect: 'list',
+                },
+                {
+                  path: 'list',
+                  name: 'list',
+                  component: './RoleAuthorization/Role/RoleList',
+                },
+                {
+                  path: 'detail/:id',
+                  name: 'detail',
+                  component: './RoleAuthorization/Role/RoleDetail',
+                },
+                {
+                  path: 'Add',
+                  name: 'Add',
+                  component: './RoleAuthorization/Role/RoleHandler',
+                },
+                {
+                  path: 'edit/:id',
+                  name: 'edit',
+                  component: './RoleAuthorization/Role/RoleHandler',
                 },
               ],
             },
