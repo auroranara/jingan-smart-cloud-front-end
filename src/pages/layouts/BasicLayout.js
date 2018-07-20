@@ -17,7 +17,7 @@ import Context from './MenuContext';
 
 import Exception403 from '../Exception/403';
 import Exception404 from '../Exception/404';
-import { pathArray } from '../../components/_utils/AppMenu';
+import { pathArray, getPath } from '../../components/_utils/AppMenu';
 
 const { Content } = Layout;
 const { check } = Authorized;
@@ -167,10 +167,10 @@ class BasicLayout extends React.PureComponent {
       location: { pathname },
     } = this.props;
 
-    // console.log('basicLayout', this.props.location);
+    console.log('basicLayout', pathname);
 
     const isTop = PropsLayout === 'topmenu';
-    const noMatch = pathArray.includes(pathname) ? <Exception403 /> : <Exception404 />;
+    const noMatch = getPath(pathname, pathArray) ? <Exception403 /> : <Exception404 />;
     const layout = (
       <Layout>
         {isTop && !isMobile ? null : (
