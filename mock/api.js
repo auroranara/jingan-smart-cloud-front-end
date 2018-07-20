@@ -332,7 +332,15 @@ export function getFakeCaptcha(req, res) {
   }
 }
 
-const MENUS = ['baseInfo', 'baseInfo.company', 'baseInfo.company.listView', 'fireControl', 'fireControl.userTransmissionDevice', 'fireControl.userTransmissionDevice.listView'];
+const MENUS = [
+  'baseInfo',
+  'baseInfo.company',
+  'baseInfo.company.listView',
+  'fireControl',
+  'fireControl.userTransmissionDevice',
+  'fireControl.userTransmissionDevice.listView',
+  'fireControl.userTransmissionDevice.view',
+];
 
 export function getMenus(req, res) {
   if (res && res.json)

@@ -7,6 +7,7 @@ import pathToRegexp from 'path-to-regexp';
 import config from '../../../config/config';
 // import codeMap from './codeMap';
 
+// 将router.config.js配置转化成路由，源码中的函数，并未改动
 function formatter(data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
     let locale = 'menu';
@@ -32,6 +33,7 @@ function formatter(data, parentPath = '', parentAuthority, parentName) {
   });
 }
 
+// 将menus数组中不存在的路径过滤掉，使其再菜单中不显示
 function filterMenus(MenuData, menus) {
   const menuData = [];
   for (let m of MenuData) {
@@ -50,6 +52,7 @@ function filterMenus(MenuData, menus) {
   return menuData;
 }
 
+// 根据formatter之后的路由来生成一个path -> code, code -> path的映射对象
 function getCodeMap(menuData, result) {
   for (let m of menuData) {
     const { path, code, locale, children } = m;
@@ -72,20 +75,26 @@ function getCodeMap(menuData, result) {
   }
 }
 
+// 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
 function generateAuthFn(menus) {
   return pathname => () => {
+    // exception页面无需拦截
     if (pathname.toLowerCase().includes('exception'))
       return true;
-    return menus.includes(codeMap[getPath(pathname, pathArray)]);
+    const hasPath = menus.includes(codeMap[getPath(pathname, pathArray)]);
+    // console.log('menus', menus);
+    // console.log(getPath(pathname, pathArray), codeMap[getPath(pathname, pathArray)], 'hasPath', hasPath);
+    return hasPath;
   };
 }
 
+// 找到路径数组中与当前pathname匹配的路径path，如 company/1 => company/:id
 function getPath(pathname, pathArray) {
   for (let path of pathArray) {
     const pathRegexp = pathToRegexp(path);
-    const menuKey = pathRegexp.test(pathname);
-    console.log('menuKey', menuKey);
-    if (menuKey)
+    const isMatch = pathRegexp.test(pathname);
+    // console.log('isMatch', isMatch);
+    if (isMatch)
       return path;
   }
 }
@@ -93,13 +102,13 @@ function getPath(pathname, pathArray) {
 const menuData = config['routes'];
 const MenuData = formatter(menuData[1].routes);
 let codeMap = {};
-getCodeMap(MenuData, codeMap)
+getCodeMap(MenuData, codeMap);
 
 // console.log('codeMap', codeMap);
 
-// codeMap的路径键值数组，过滤了code
+// codeMap的路径键值数组，过滤了code，即路由配置中的所有路径
 const pathArray = Object.keys(codeMap).filter(path => path.includes('/'));
-console.log('pathArray', pathArray);
+// console.log('pathArray', pathArray);
 
 export { codeMap, pathArray, getPath };
 
@@ -118,6 +127,9 @@ export default function AppMenu(WrappedComponent) {
 
     render() {
       const { global: { menus }, ...rest } = this.props;
+      // console.log(this.props);
+
+      // menuHandled防止重复生成menuData，因为这里只需要在初始化时生成一次
       if (!this.menuHandled && menus.length) {
         this.menuHandled = true;
         this.menuData = filterMenus(MenuData, menus);

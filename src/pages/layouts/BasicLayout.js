@@ -167,9 +167,11 @@ class BasicLayout extends React.PureComponent {
       location: { pathname },
     } = this.props;
 
-    console.log('basicLayout', pathname);
+    // console.log('basicLayout', pathname);
 
     const isTop = PropsLayout === 'topmenu';
+    // authority对应的函数返回值是true时，包含两种情况，即当前用户无权限403和网页不存在404，所以得在这里做一下判断
+    // 当由router.config.js中配置生成的路径数组中不包含当前pathname时，则路径不存在，剩下的情况就是用户无权限访问当前路径
     const noMatch = getPath(pathname, pathArray) ? <Exception403 /> : <Exception404 />;
     const layout = (
       <Layout>
