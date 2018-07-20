@@ -7,7 +7,7 @@ export default {
   state: {
     collapsed: false,
     notices: [],
-    menus: [],
+    menus: [], // code权限数组
   },
 
   effects: {
