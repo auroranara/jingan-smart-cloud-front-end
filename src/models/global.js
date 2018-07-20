@@ -7,18 +7,18 @@ export default {
   state: {
     collapsed: false,
     notices: [],
-    menus: [], // code权限数组
+    // menus: [], // code权限数组
   },
 
   effects: {
-    *fetchMenus(_, { call, put }) {
-      const menuData = yield call(queryMenus);
+    // *fetchMenus(_, { call, put }) {
+    //   const menuData = yield call(queryMenus);
 
-      yield put({
-        type: 'saveMenus',
-        payload: menuData,
-      })
-    },
+    //   yield put({
+    //     type: 'saveMenus',
+    //     payload: menuData,
+    //   })
+    // },
     *fetchNotices(_, { call, put }) {
       const data = yield call(queryNotices);
       yield put({
@@ -44,12 +44,12 @@ export default {
   },
 
   reducers: {
-    saveMenus(state, { payload }) {
-      return {
-        ...state,
-        menus: payload,
-      }
-    },
+    // saveMenus(state, { payload }) {
+    //   return {
+    //     ...state,
+    //     menus: payload,
+    //   }
+    // },
     changeLayoutCollapsed(state, { payload }) {
       return {
         ...state,

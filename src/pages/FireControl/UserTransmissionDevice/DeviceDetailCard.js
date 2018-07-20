@@ -17,7 +17,7 @@ const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
 const MenuItem = Menu.Item;
 
-const hostTableAStyle = { marginRight: 10 };
+// const hostTableAStyle = { marginRight: 10 };
 // const deviceButtonStyle = { marginRight: 8 };
 // const hostColumnsActionPStyle = { marginBottom: 0 };
 
@@ -164,7 +164,7 @@ export default class DeviceDetailCard extends Component {
           return (
             <Fragment>
               <a
-                style={hostTableAStyle}
+                style={getDisabled(HOST_UPDATE_CODE, codes) ? styles.tableAStyleNotAllowed : styles.tableAStyle }
                 onClick={getOnClick(HOST_UPDATE_CODE, codes, () =>
                   handleHostUpdateClick({
                     ...hostList[index],
@@ -176,7 +176,7 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a>
               <Dropdown overlay={menu}>
-                <a>
+                <a style={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}>
                   更多<Icon type="down" />
                 </a>
               </Dropdown>
