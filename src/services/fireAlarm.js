@@ -6,7 +6,7 @@ const URL_PREFIX = '/acloud_new/v2/automaticFireAlarmSystem';
 // 公司列表
 export async function queryCompanies(params) {
   // return request(`/api/transmission_device_list?${stringify(params)}`);
-  return request(`${URL_PREFIX}/companies.json?${stringify(params)}`);
+  return request(`${URL_PREFIX}/companies?${stringify(params)}`);
 }
 
 export async function queryAlarmData(companyId) {

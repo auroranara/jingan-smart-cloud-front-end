@@ -38,11 +38,11 @@ export async function queryStatusList() {
 
 /* 查询维保单位列表 */
 export async function queryMaintenanceList(params) {
-  return request(`/acloud_new/v2/baseInfo/maintenanceCompanies.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/baseInfo/maintenanceCompanies?${stringify(params)}`);
 }
 
 /* 查询服务单位列表 */
 export async function queryServiceList(params) {
-  return request(`/acloud_new/v2/baseInfo/companies.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
 }
 

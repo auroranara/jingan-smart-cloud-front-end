@@ -21,9 +21,9 @@ const breadcrumbList = [
 // div[id="root"]下的唯一子元素相对于定高的root滚动
 const rootElement = document.getElementById('root');
 
-@connect(({ transmission, global, loading }) => ({
+@connect(({ transmission, user, loading }) => ({
   transmission,
-  global,
+  user,
   loading: loading.models.transmission,
 }))
 export default class UserTransmissionDevice extends PureComponent {
@@ -146,7 +146,7 @@ export default class UserTransmissionDevice extends PureComponent {
   render() {
     const {
       transmission: { list },
-      global: { menus },
+      user: { currentUser: { permissionCodes: codes } },
       loading,
     } = this.props;
     const { company, address, scrollLoading, hasMore } = this.state;
@@ -189,7 +189,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}  onClick={getOnClick(CODE, menus)}>
+                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}  onClick={getOnClick(CODE, codes)}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined

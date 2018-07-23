@@ -3,7 +3,7 @@ import request from '../../utils/request';
 
 /* 查询企业 */
 export async function queryCompanies(params) {
-  return request(`/acloud_new/v2/baseInfo/companies.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
 }
 
 /* 删除企业 */
@@ -20,7 +20,7 @@ export async function queryDict(params) {
 
 /* 获取企业详情 */
 export async function queryCompany({ id }) {
-  return request(`/acloud_new/v2/baseInfo/company/${id}.json`);
+  return request(`/acloud_new/v2/baseInfo/company/${id}`);
 }
 
 /* 新建企业 */
@@ -41,7 +41,7 @@ export async function updateCompany({ id, ...restParams }) {
 
 /* 获取维保单位列表 */
 export async function queryMaintenanceCompanies(params) {
-  return request(`/acloud_new/v2/baseInfo/maintenanceCompanies.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/baseInfo/maintenanceCompanies?${stringify(params)}`);
 }
 
 /* 文件上传 */

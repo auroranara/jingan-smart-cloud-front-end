@@ -4,12 +4,20 @@ import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
 import styles from './DeviceDetailCard.less';
+import { getDisabled, getOnClick } from '../../../utils/customAuth';
+
+const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
+const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
+const HOST_ADD_CODE = 'fireControl.userTransmissionDevice.host.add';
+const HOST_UPDATE_CODE = 'fireControl.userTransmissionDevice.host.edit';
+const HOST_DELETE_CODE = 'fireControl.userTransmissionDevice.host.delete';
+const HOST_IMPORT_CODE = 'fireControl.userTransmissionDevice.host.importPointPosition';
 
 const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
 const MenuItem = Menu.Item;
 
-const hostTableAStyle = { marginRight: 10 };
+// const hostTableAStyle = { marginRight: 10 };
 // const deviceButtonStyle = { marginRight: 8 };
 // const hostColumnsActionPStyle = { marginBottom: 0 };
 
@@ -21,20 +29,22 @@ const deviceCardStyle = { marginBottom: 20 };
 
 export default class DeviceDetailCard extends Component {
   renderDeviceExtra() {
-    const { deviceData, handleDeviceUpdateClick, handleDeviceDeleteClick } = this.props;
+    const { codes, deviceData, handleDeviceUpdateClick, handleDeviceDeleteClick } = this.props;
 
     return (
       <ButtonGroup>
         <Button
           // type="primary"
           // style={deviceButtonStyle}
-          onClick={() => handleDeviceUpdateClick(deviceData)}
+          disabled={getDisabled(DEVICE_UPDATE_CODE, codes)}
+          onClick={() =>{ handleDeviceUpdateClick(deviceData); } }
         >
           编辑
         </Button>
         <Button
           // type="primary"
           // style={deviceButtonStyle}
+          disabled={getDisabled(DEVICE_DELETE_CODE, codes)}
           onClick={() => handleDeviceDeleteClick(deviceData.id)}
         >
           删除
@@ -44,11 +54,12 @@ export default class DeviceDetailCard extends Component {
   }
 
   renderHostExtra() {
-    const { deviceData, handleHostAddClick } = this.props;
+    const { codes, deviceData, handleHostAddClick } = this.props;
 
     return (
       <Button
         type="primary"
+        disabled={getDisabled(HOST_ADD_CODE, codes)}
         onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
       >
         新增主机
@@ -84,6 +95,7 @@ export default class DeviceDetailCard extends Component {
 
   renderHostTable() {
     const {
+      codes,
       companyId,
       deviceData,
       handleHostUpdateClick,
@@ -132,7 +144,7 @@ export default class DeviceDetailCard extends Component {
           const menu = (
             <Menu>
               <MenuItem>
-                <a onClick={() => handleHostDeleteClick(id, record.id)}>删除</a>
+                <a onClick={getOnClick(HOST_DELETE_CODE, codes, () => handleHostDeleteClick(id, record.id))}>删除</a>
               </MenuItem>
               <MenuItem>
                 <Link
@@ -141,6 +153,7 @@ export default class DeviceDetailCard extends Component {
                       record.id
                     }`,
                   }}
+                  onClick={getOnClick(HOST_IMPORT_CODE, codes)}
                 >
                   导入点位
                 </Link>
@@ -151,19 +164,19 @@ export default class DeviceDetailCard extends Component {
           return (
             <Fragment>
               <a
-                style={hostTableAStyle}
-                onClick={() =>
+                className={getDisabled(HOST_UPDATE_CODE, codes) ? styles.tableAStyleNotAllowed : styles.tableAStyle }
+                onClick={getOnClick(HOST_UPDATE_CODE, codes, () =>
                   handleHostUpdateClick({
                     ...hostList[index],
                     transmissionDeviceCode: deviceCode,
                     transmissionId: id,
-                  })
+                  }))
                 }
               >
                 编辑
               </a>
               <Dropdown overlay={menu}>
-                <a>
+                <a className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : {}}>
                   更多<Icon type="down" />
                 </a>
               </Dropdown>

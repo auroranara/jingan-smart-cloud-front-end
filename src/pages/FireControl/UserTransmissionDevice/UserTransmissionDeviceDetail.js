@@ -136,9 +136,9 @@ function convertMsToString(ms) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
-@connect(({ transmission, global, loading }) => ({
+@connect(({ transmission, user, loading }) => ({
   transmission,
-  global,
+  user,
   loading: loading.effects['transmission/fetchDetail'],
 }))
 export default class UserTransmissionDeviceDetail extends Component {
@@ -331,7 +331,7 @@ export default class UserTransmissionDeviceDetail extends Component {
   render() {
     const {
       transmission: { deviceList, companyDetail },
-      global: { menus },
+      user: { currentUser: { permissionCodes: codes } },
       loading,
     } = this.props;
 
@@ -353,7 +353,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             导出点位数据
           </Button>
         </ButtonGroup>
-        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(DEVICE_ADD_CODE, menus)}>
+        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(DEVICE_ADD_CODE, codes)}>
           新增传输装置
         </Button>
       </Fragment>
@@ -402,7 +402,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
-        <DeviceDetailCard key={device.id} index={index} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
+        <DeviceDetailCard key={device.id} index={index} codes={codes} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
       ));
 
     const deviceParentMethods = {
