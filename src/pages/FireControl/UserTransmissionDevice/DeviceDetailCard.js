@@ -164,7 +164,7 @@ export default class DeviceDetailCard extends Component {
           return (
             <Fragment>
               <a
-                style={getDisabled(HOST_UPDATE_CODE, codes) ? styles.tableAStyleNotAllowed : styles.tableAStyle }
+                className={getDisabled(HOST_UPDATE_CODE, codes) ? styles.tableAStyleNotAllowed : styles.tableAStyle }
                 onClick={getOnClick(HOST_UPDATE_CODE, codes, () =>
                   handleHostUpdateClick({
                     ...hostList[index],
@@ -176,7 +176,7 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a>
               <Dropdown overlay={menu}>
-                <a style={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}>
+                <a className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : {}}>
                   更多<Icon type="down" />
                 </a>
               </Dropdown>
