@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-// import { Link } from 'react-router-dom';
-import { Button, Card, Modal, Tabs, Table } from 'antd';
+import { Link } from 'react-router-dom';
+import { Button, Card, Modal, Tabs, Table, Icon } from 'antd';
 // import Ellipsis from 'components/Ellipsis';
 import DescriptionList from 'components/DescriptionList';
 
@@ -146,6 +146,11 @@ export default class CompanyDetail extends PureComponent {
   render() {
     // const { fireAlarm: { tableLists }, match: { params: { companyId } } } = this.props;
     const {
+      match: {
+        params: {
+          companyId,
+        },
+      },
       fireAlarm: { tableLists, alarmDetail },
     } = this.props;
     const { currentTabKey, detailVisible } = this.state;
@@ -177,9 +182,10 @@ export default class CompanyDetail extends PureComponent {
     ];
 
     const okButton = <Button type="primary" onClick={() => { this.handleModalChange(false) }}>确认</Button>;
+    const action = <Link to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}><Button>历史纪录<Icon type="double-right" /></Button></Link>
 
     return (
-      <PageHeaderLayout title={tableLists.name} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={tableLists.name} breadcrumbList={breadcrumbList} action={action}>
         <Card>
           <Tabs className={styles.tabs} onChange={this.handleTabChange}>
             {ALARM_ITEMS.map((item, index) => {

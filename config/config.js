@@ -287,6 +287,11 @@ export default {
                   name: 'companyDetail',
                   component: './DynamicMonitoring/FireAlarm/CompanyDetail',
                 },
+                {
+                  path: '/dynamic-monitoring/fire-alarm/history-record/:companyId',
+                  name: 'historyRecord',
+                  component: './DynamicMonitoring/FireAlarm/HistoryRecord',
+                },
                 // { path: '/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
               ],
             },

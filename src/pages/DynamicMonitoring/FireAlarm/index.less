@@ -1,14 +1,12 @@
 @import '~antd/lib/style/themes/default.less';
 @import '../../../utils/utils.less';
-
 .cardList {
   margin-bottom: -24px;
-
   .card {
     :global {
       .ant-card-meta-title {
         margin-bottom: 12px;
-        & > a {
+        &>a {
           color: @heading-color;
           display: inline-block;
           max-width: 100%;
@@ -18,18 +16,16 @@
         background: #f7f9fa;
       }
       .ant-card-body:hover {
-        .ant-card-meta-title > a {
+        .ant-card-meta-title>a {
           color: @primary-color;
         }
       }
-
       position: relative;
     }
   }
   .item {
     height: 64px;
   }
-
   :global {
     .ant-list .ant-list-item-content-single {
       max-width: 100%;
@@ -90,6 +86,7 @@
     }
   }
 }
+
 @media screen and (max-width: @screen-md) {
   .extraImg {
     display: none;
