@@ -3,7 +3,7 @@ import request from '../utils/request';
 
 /* 查询账号列表 */
 export async function queryAccountList(params) {
-  return request(`/acloud_new/v2/rolePermission/users.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/rolePermission/users?${stringify(params)}`);
 }
 
 /* 新增账号-初始化页面选项 */
@@ -13,7 +13,7 @@ export async function queryAddAccountOptions() {
 
 /* 查看账号详情 */
 export async function queryAccountDetail({ id }) {
-  return request(`/acloud_new/v2/rolePermission/user/${id}.json`);
+  return request(`/acloud_new/v2/rolePermission/user/${id}`);
 }
 
 /* 修改账号信息 */
@@ -43,4 +43,9 @@ export async function updatePassword(params) {
     method: 'POST',
     body: params,
   });
+}
+
+/* 查询用户名或手机号是否唯一 */
+export function checkAccountOrPhone(params) {
+  return request(`/acloud_new/v2/rolePermission/user/check?${stringify(params)}`);
 }

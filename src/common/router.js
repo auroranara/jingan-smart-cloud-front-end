@@ -1,58 +1,5 @@
-import { createElement } from 'react';
-import dynamic from 'dva/dynamic';
 import pathToRegexp from 'path-to-regexp';
 import { getMenuData } from './menu';
-
-let routerDataCache;
-
-const modelNotExisted = (app, model) =>
-  // eslint-disable-next-line
-  !app._models.some(({ namespace }) => {
-    return namespace === model.substring(model.lastIndexOf('/') + 1);
-  });
-
-// wrapper of dynamic
-const dynamicWrapper = (app, models, component) => {
-  // () => require('module')
-  // transformed by babel-plugin-dynamic-import-node-sync
-  if (component.toString().indexOf('.then(') < 0) {
-    models.forEach(model => {
-      if (modelNotExisted(app, model)) {
-        // eslint-disable-next-line
-        app.model(require(`../models/${model}`).default);
-      }
-    });
-    return props => {
-      if (!routerDataCache) {
-        routerDataCache = getRouterData(app);
-      }
-      return createElement(component().default, {
-        ...props,
-        routerData: routerDataCache,
-      });
-    };
-  }
-  // () => import('module')
-  return dynamic({
-    app,
-    models: () =>
-      models.filter(model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)),
-    // add routerData prop
-    component: () => {
-      if (!routerDataCache) {
-        routerDataCache = getRouterData(app);
-      }
-      return component().then(raw => {
-        const Component = raw.default || raw;
-        return props =>
-          createElement(Component, {
-            ...props,
-            routerData: routerDataCache,
-          });
-      });
-    },
-  });
-};
 
 function getFlatMenuData(menus) {
   let keys = {};
@@ -67,270 +14,290 @@ function getFlatMenuData(menus) {
   return keys;
 }
 
-export const getRouterData = app => {
+export const getRouterData = () => {
   const routerConfig = {
     '/': {
-      component: dynamicWrapper(app, ['user', 'login', 'setting'], () =>
-        import('../layouts/LoadingPage')
-      ),
+      name: 'Ant-Design-Pro',
     },
-    // '/dashboard/analysis': {
-    //   component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
-    // },
-    // '/dashboard/monitor': {
-    //   component: dynamicWrapper(app, ['monitor'], () => import('../routes/Dashboard/Monitor')),
-    // },
-    // '/dashboard/workplace': {
-    //   component: dynamicWrapper(app, ['user', 'project', 'activities', 'chart'], () =>
-    //     import('../routes/Dashboard/Workplace')
-    //   ),
-    //   // hideInBreadcrumb: true,
-    //   // name: '工作台',
-    //   // authority: 'admin',
-    // },
-    /* 企业列表 */
-    '/base-info/company-list': {
-      component: dynamicWrapper(app, ['company'], () =>
-        import('../routes/BaseInfo/Company/CompanyList')
-      ),
+    '/Dashboard/Analysis': {
+      name: '分析页',
     },
-    /* 企业详情 */
-    '/base-info/company/detail/:id': {
-      component: dynamicWrapper(app, ['company'], () =>
-        import('../routes/BaseInfo/Company/CompanyDetail')
-      ),
+    '/Dashboard/Monitor': {},
+    '/Dashboard/Workplace': {},
+    '/Forms/BasicForm': {},
+    '/Forms/StepForm': {},
+    '/Forms/StepForm/Step1': {
+      name: '分步表单（填写转账信息）',
     },
-    /* 企业添加 */
-    '/base-info/company/add': {
-      component: dynamicWrapper(app, ['company'], () =>
-        import('../routes/BaseInfo/Company/CompanyEdit')
-      ),
-    },
-    /* 企业修改 */
-    '/base-info/company/edit/:id': {
-      component: dynamicWrapper(app, ['company'], () =>
-        import('../routes/BaseInfo/Company/CompanyEdit')
-      ),
-    },
-    // 维保公司
-    '/fire-control/maintenance-company/list': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
-        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyList.js')
-      ),
-    },
-    // 新增维保公司
-    '/fire-control/maintenance-company/add': {
-      component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
-        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
-      ),
-    },
-    // 查看维保公司详情
-    '/fire-control/maintenance-company/detail/:id': {
-      component: dynamicWrapper(app, ['maintenanceCompany'], () =>
-        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyDetail.js')
-      ),
-    },
-    // 修改维保公司信息
-    '/fire-control/maintenance-company/edit/:id': {
-      component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
-        import('../routes/FireControl/MaintenanceCompany/MaintenanceCompanyEdit.js')
-      ),
-    },
-    '/fire-control/user-transmission-device/list': {
-      name: '用户传输装置',
-      component: dynamicWrapper(app, ['transmission'], () =>
-        import('../routes/FireControl/UserTransmissionDevice.js')
-      ),
-    },
-    '/fire-control/user-transmission-device-detail/:companyId/detail': {
-      name: '查看详情',
-      component: dynamicWrapper(app, ['transmission'], () =>
-        import('../routes/FireControl/UserTransmissionDeviceDetail.js')
-      ),
-    },
-    '/fire-control/user-transmission-device-detail/:companyId/import-point-position/:hostId': {
-      name: '导入点位数据',
-      component: dynamicWrapper(app, ['pointPosition'], () =>
-        import('../routes/FireControl/ImportPointPosition.js')
-      ),
-    },
-    '/fire-alarm/index': {
-      name: '火灾自动报警系统',
-      component: dynamicWrapper(app, ['fireAlarm'], () => import('../routes/FireAlarm/index')),
-    },
-    '/fire-alarm/company/:companyId': {
-      name: '单位页面',
-      component: dynamicWrapper(app, ['fireAlarm'], () =>
-        import('../routes/FireAlarm/AutoFireAlarm')
-      ),
-    },
-    '/fire-alarm/company/detail/:companyId/:detailId': {
-      name: '详情信息',
-      component: dynamicWrapper(app, ['fireAlarm'], () =>
-        import('../routes/FireAlarm/FireAlarmDetail')
-      ),
-    },
-    // 账号管理列表
-    '/role-authorization/account-management/list': {
-      component: dynamicWrapper(app, ['account'], () =>
-        import('../routes/RoleAuthorization/AccountManagement/AccountManagementList.js')
-      ),
-    },
-    // 新增账号
-    '/role-authorization/account-management/add': {
-      component: dynamicWrapper(app, ['account'], () =>
-        import('../routes/RoleAuthorization/AccountManagement/AccountManagementAdd.js')
-      ),
-    },
-    // 编辑账号
-    '/role-authorization/account-management/edit/:id': {
-      component: dynamicWrapper(app, ['account'], () =>
-        import('../routes/RoleAuthorization/AccountManagement/AccountManagementEdit.js')
-      ),
-    },
-    // 查看账号
-    '/role-authorization/account-management/detail/:id': {
-      component: dynamicWrapper(app, ['account'], () =>
-        import('../routes/RoleAuthorization/AccountManagement/AccountManagementDetail.js')
-      ),
-    },
-    '/form/step-form/confirm': {
+    '/Forms/StepForm/Step2': {
       name: '分步表单（确认转账信息）',
-      component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),
     },
-    '/form/step-form/result': {
+    '/Forms/StepForm/Step3': {
       name: '分步表单（完成）',
-      component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step3')),
     },
-    '/form/advanced-form': {
-      component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/AdvancedForm')),
-    },
-    '/list/table-list': {
-      component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
-    },
-    '/list/basic-list': {
-      component: dynamicWrapper(app, ['list'], () => import('../routes/List/BasicList')),
-    },
-    '/list/card-list': {
-      component: dynamicWrapper(app, ['list'], () => import('../routes/List/CardList')),
-    },
-    '/list/search': {
-      component: dynamicWrapper(app, ['list'], () => import('../routes/List/List')),
-    },
-    '/list/search/projects': {
-      component: dynamicWrapper(app, ['list'], () => import('../routes/List/Projects')),
-    },
-    '/list/search/applications': {
-      component: dynamicWrapper(app, ['list'], () => import('../routes/List/Applications')),
-    },
-    '/list/search/articles': {
-      component: dynamicWrapper(app, ['list'], () => import('../routes/List/Articles')),
-    },
-    '/profile/basic': {
-      component: dynamicWrapper(app, ['profile'], () => import('../routes/Profile/BasicProfile')),
-    },
-    '/profile/advanced': {
-      component: dynamicWrapper(app, ['profile'], () =>
-        import('../routes/Profile/AdvancedProfile')
-      ),
-    },
-    '/result/success': {
-      component: dynamicWrapper(app, [], () => import('../routes/Result/Success')),
-    },
-    '/result/fail': {
-      component: dynamicWrapper(app, [], () => import('../routes/Result/Error')),
-    },
-    '/exception/403': {
-      component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
-    },
-    '/exception/404': {
-      component: dynamicWrapper(app, [], () => import('../routes/Exception/404')),
-    },
-    '/exception/500': {
-      component: dynamicWrapper(app, [], () => import('../routes/Exception/500')),
-    },
-    '/exception/trigger': {
-      component: dynamicWrapper(app, ['error'], () =>
-        import('../routes/Exception/triggerException')
-      ),
-    },
-    '/user': {
-      component: dynamicWrapper(app, [], () => import('../layouts/UserLayout')),
-    },
-    '/user/login': {
-      component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
-    },
-    '/user/register': {
-      component: dynamicWrapper(app, ['register'], () => import('../routes/User/Register')),
-    },
-    '/user/register-result': {
-      component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),
-    },
-    '/account/center': {
-      component: dynamicWrapper(app, ['list', 'user', 'project'], () =>
-        import('../routes/Account/Center/Center')
-      ),
-    },
-    '/account/center/articles': {
-      component: dynamicWrapper(app, [], () => import('../routes/Account/Center/Articles')),
-    },
-    '/account/center/applications': {
-      component: dynamicWrapper(app, [], () => import('../routes/Account/Center/Applications')),
-    },
-    '/account/center/projects': {
-      component: dynamicWrapper(app, [], () => import('../routes/Account/Center/Projects')),
-    },
-    '/account/settings': {
-      component: dynamicWrapper(app, ['geographic'], () =>
-        import('../routes/Account/Settings/Info')
-      ),
-    },
-    '/account/settings/base': {
-      component: dynamicWrapper(app, ['geographic'], () =>
-        import('../routes/Account/Settings/BaseView')
-      ),
-    },
-    '/account/settings/security': {
-      component: dynamicWrapper(app, ['geographic'], () =>
-        import('../routes/Account/Settings/SecurityView')
-      ),
-    },
-    '/account/settings/binding': {
-      component: dynamicWrapper(app, ['geographic'], () =>
-        import('../routes/Account/Settings/BindingView')
-      ),
-    },
-    '/account/settings/notification': {
-      component: dynamicWrapper(app, ['geographic'], () =>
-        import('../routes/Account/Settings/NotificationView')
-      ),
-    },
-    /* 维保合同列表 */
-    '/fire-control/contract/list': {
-      component: dynamicWrapper(app, ['contract'], () => import('../routes/Contract/ContractList')),
-    },
-    /* 查看维保合同详情 */
-    '/fire-control/contract/detail/:id': {
-      component: dynamicWrapper(app, ['contract'], () =>
-        import('../routes/Contract/ContractDetail')
-      ),
-    },
-    /* 新增维保合同 */
-    '/fire-control/contract/add': {
-      component: dynamicWrapper(app, ['contract'], () =>
-        import('../routes/Contract/ContractHandler')
-      ),
-    },
-    /* 编辑维保合同 */
-    '/fire-control/contract/edit/:id': {
-      component: dynamicWrapper(app, ['contract'], () =>
-        import('../routes/Contract/ContractHandler')
-      ),
-    },
-    // '/user/:id': {
-    //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
+    '/Forms/AdvancedForm': {},
+    '/List/TableList': {},
+    '/List/BasicList': {},
+    '/List/CardList': {},
+    '/List': {},
+    '/List/Search/Projects': {},
+    '/List/Search/Applications': {},
+    '/List/Search/Articles': {},
+    '/Profile/BasicProfile': {},
+    '/Profile/AdvancedProfile': {},
+    '/Result/success': {},
+    '/Result/Error': {},
+    '/Exception/403': {},
+    '/Exception/404': {},
+    '/Exception/500': {},
+    '/Exception/triggerException': {},
+    '/User': {},
+    '/User/Login': {},
+    '/User/Register': {},
+    '/User/RegisterResult': {},
+    // '/': {
+    //   component: dynamicWrapper(app, ['user', 'login', 'setting'], () =>
+    //     import('../layouts/LoadingPage')
+    //   ),
+    // },
+    // /* 企业列表 */
+    // '/base-info/company-list': {
+    //   component: dynamicWrapper(app, ['company'], () =>
+    //     import('../pages/BaseInfo/Company/CompanyList')
+    //   ),
+    // },
+    // /* 企业详情 */
+    // '/base-info/company/detail/:id': {
+    //   component: dynamicWrapper(app, ['company'], () =>
+    //     import('../pages/BaseInfo/Company/CompanyDetail')
+    //   ),
+    // },
+    // /* 企业添加 */
+    // '/base-info/company/add': {
+    //   component: dynamicWrapper(app, ['company'], () =>
+    //     import('../pages/BaseInfo/Company/CompanyEdit')
+    //   ),
+    // },
+    // /* 企业修改 */
+    // '/base-info/company/edit/:id': {
+    //   component: dynamicWrapper(app, ['company'], () =>
+    //     import('../pages/BaseInfo/Company/CompanyEdit')
+    //   ),
+    // },
+    // '/fire-control/maintenance-company/list': {
+    //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+    //     import('../pages/FireControl/MaintenanceCompany/MaintenanceCompanyList.js')
+    //   ),
+    // },
+    // // 新增维保公司
+    // '/fire-control/maintenance-company/add': {
+    //   component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
+    //     import('../pages/FireControl/MaintenanceCompany/MaintenanceCompanyAdd.js')
+    //   ),
+    // },
+    // // 查看维保公司详情
+    // '/fire-control/maintenance-company/detail/:id': {
+    //   component: dynamicWrapper(app, ['maintenanceCompany'], () =>
+    //     import('../pages/FireControl/MaintenanceCompany/MaintenanceCompanyDetail.js')
+    //   ),
+    // },
+    // // 修改维保公司信息
+    // '/fire-control/maintenance-company/edit/:id': {
+    //   component: dynamicWrapper(app, ['maintenanceCompany', 'company'], () =>
+    //     import('../pages/FireControl/MaintenanceCompany/MaintenanceCompanyEdit.js')
+    //   ),
+    // },
+    // '/fire-control/user-transmission-device/list': {
+    //   name: '用户传输装置',
+    //   component: dynamicWrapper(app, ['transmission'], () =>
+    //     import('../pages/FireControl/UserTransmissionDevice.js')
+    //   ),
+    // },
+    // '/fire-control/user-transmission-device-detail/:companyId/detail': {
+    //   name: '查看详情',
+    //   component: dynamicWrapper(app, ['transmission'], () =>
+    //     import('../pages/FireControl/UserTransmissionDeviceDetail.js')
+    //   ),
+    // },
+    // '/fire-control/user-transmission-device-detail/:companyId/import-point-position/:hostId': {
+    //   name: '导入点位数据',
+    //   component: dynamicWrapper(app, ['pointPosition'], () =>
+    //     import('../pages/FireControl/ImportPointPosition.js')
+    //   ),
+    // },
+    // '/fire-alarm/index': {
+    //   name: '火灾自动报警系统',
+    //   component: dynamicWrapper(app, ['fireAlarm'], () => import('../pages/FireAlarm/index')),
+    // },
+    // '/fire-alarm/company/:companyId': {
+    //   name: '单位页面',
+    //   component: dynamicWrapper(app, ['fireAlarm'], () =>
+    //     import('../pages/FireAlarm/AutoFireAlarm')
+    //   ),
+    // },
+    // '/fire-alarm/company/detail/:companyId/:detailId': {
+    //   name: '详情信息',
+    //   component: dynamicWrapper(app, ['fireAlarm'], () =>
+    //     import('../pages/FireAlarm/FireAlarmDetail')
+    //   ),
+    // },
+    // // 账号管理列表
+    // '/role-authorization/account-management/list': {
+    //   component: dynamicWrapper(app, ['account'], () =>
+    //     import('../pages/RoleAuthorization/AccountManagement/AccountManagementList.js')
+    //   ),
+    // },
+    // // 新增账号
+    // '/role-authorization/account-management/add': {
+    //   component: dynamicWrapper(app, ['account'], () =>
+    //     import('../pages/RoleAuthorization/AccountManagement/AccountManagementAdd.js')
+    //   ),
+    // },
+    // // 编辑账号
+    // '/role-authorization/account-management/edit/:id': {
+    //   component: dynamicWrapper(app, ['account'], () =>
+    //     import('../pages/RoleAuthorization/AccountManagement/AccountManagementEdit.js')
+    //   ),
+    // },
+    // // 查看账号
+    // '/role-authorization/account-management/detail/:id': {
+    //   component: dynamicWrapper(app, ['account'], () =>
+    //     import('../pages/RoleAuthorization/AccountManagement/AccountManagementDetail.js')
+    //   ),
+    // },
+    // '/form/step-form/confirm': {
+    //   name: '分步表单（确认转账信息）',
+    //   component: dynamicWrapper(app, ['form'], () => import('../pages/Forms/StepForm/Step2')),
+    // },
+    // '/form/step-form/result': {
+    //   name: '分步表单（完成）',
+    //   component: dynamicWrapper(app, ['form'], () => import('../pages/Forms/StepForm/Step3')),
+    // },
+    // '/form/advanced-form': {
+    //   component: dynamicWrapper(app, ['form'], () => import('../pages/Forms/AdvancedForm')),
+    // },
+    // '/list/table-list': {
+    //   component: dynamicWrapper(app, ['rule'], () => import('../pages/List/TableList')),
+    // },
+    // '/list/basic-list': {
+    //   component: dynamicWrapper(app, ['list'], () => import('../pages/List/BasicList')),
+    // },
+    // '/list/card-list': {
+    //   component: dynamicWrapper(app, ['list'], () => import('../pages/List/CardList')),
+    // },
+    // '/list/search': {
+    //   component: dynamicWrapper(app, ['list'], () => import('../pages/List/List')),
+    // },
+    // '/list/search/projects': {
+    //   component: dynamicWrapper(app, ['list'], () => import('../pages/List/Projects')),
+    // },
+    // '/list/search/applications': {
+    //   component: dynamicWrapper(app, ['list'], () => import('../pages/List/Applications')),
+    // },
+    // '/list/search/articles': {
+    //   component: dynamicWrapper(app, ['list'], () => import('../pages/List/Articles')),
+    // },
+    // '/profile/basic': {
+    //   component: dynamicWrapper(app, ['profile'], () => import('../pages/Profile/BasicProfile')),
+    // },
+    // '/profile/advanced': {
+    //   component: dynamicWrapper(app, ['profile'], () => import('../pages/Profile/AdvancedProfile')),
+    // },
+    // '/result/success': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Result/Success')),
+    // },
+    // '/result/fail': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Result/Error')),
+    // },
+    // '/exception/403': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Exception/403')),
+    // },
+    // '/exception/404': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Exception/404')),
+    // },
+    // '/exception/500': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Exception/500')),
+    // },
+    // '/exception/trigger': {
+    //   component: dynamicWrapper(app, ['error'], () =>
+    //     import('../pages/Exception/triggerException')
+    //   ),
+    // },
+    // '/user': {
+    //   component: dynamicWrapper(app, [], () => import('../layouts/UserLayout')),
+    // },
+    // '/user/login': {
+    //   component: dynamicWrapper(app, ['login'], () => import('../pages/User/Login')),
+    // },
+    // '/user/register': {
+    //   component: dynamicWrapper(app, ['register'], () => import('../pages/User/Register')),
+    // },
+    // '/user/register-result': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/User/RegisterResult')),
+    // },
+    // '/account/center': {
+    //   component: dynamicWrapper(app, ['list', 'user', 'project'], () =>
+    //     import('../pages/Account/Center/Center')
+    //   ),
+    // },
+    // '/account/center/articles': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Account/Center/Articles')),
+    // },
+    // '/account/center/applications': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Account/Center/Applications')),
+    // },
+    // '/account/center/projects': {
+    //   component: dynamicWrapper(app, [], () => import('../pages/Account/Center/Projects')),
+    // },
+    // '/account/settings': {
+    //   component: dynamicWrapper(app, ['geographic'], () =>
+    //     import('../pages/Account/Settings/Info')
+    //   ),
+    // },
+    // '/account/settings/base': {
+    //   component: dynamicWrapper(app, ['geographic'], () =>
+    //     import('../pages/Account/Settings/BaseView')
+    //   ),
+    // },
+    // '/account/settings/security': {
+    //   component: dynamicWrapper(app, ['geographic'], () =>
+    //     import('../pages/Account/Settings/SecurityView')
+    //   ),
+    // },
+    // '/account/settings/binding': {
+    //   component: dynamicWrapper(app, ['geographic'], () =>
+    //     import('../pages/Account/Settings/BindingView')
+    //   ),
+    // },
+    // '/account/settings/notification': {
+    //   component: dynamicWrapper(app, ['geographic'], () =>
+    //     import('../pages/Account/Settings/NotificationView')
+    //   ),
+    // },
+    // /* 维保合同列表 */
+    // '/fire-control/contract/list': {
+    //   component: dynamicWrapper(app, ['contract'], () => import('../pages/Contract/ContractList')),
+    // },
+    // /* 查看维保合同详情 */
+    // '/fire-control/contract/detail/:id': {
+    //   component: dynamicWrapper(app, ['contract'], () =>
+    //     import('../pages/Contract/ContractDetail')
+    //   ),
+    // },
+    // /* 新增维保合同 */
+    // '/fire-control/contract/add': {
+    //   component: dynamicWrapper(app, ['contract'], () =>
+    //     import('../pages/Contract/ContractHandler')
+    //   ),
+    // },
+    // /* 编辑维保合同 */
+    // '/fire-control/contract/edit/:id': {
+    //   component: dynamicWrapper(app, ['contract'], () =>
+    //     import('../pages/Contract/ContractHandler')
+    //   ),
     // },
   };
+
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());
 
@@ -356,9 +323,9 @@ export const getRouterData = app => {
       ...router,
       name: router.name || menuItem.name,
       authority: router.authority || menuItem.authority,
-      hideInBreadcrumb: router.hideInBreadcrumb || menuItem.hideInBreadcrumb,
     };
     routerData[path] = router;
   });
+
   return routerData;
 };

@@ -1,4 +1,5 @@
 import { queryNotices } from '../services/api';
+import { queryMenus } from '../services/menu';
 
 export default {
   namespace: 'global',
@@ -6,9 +7,18 @@ export default {
   state: {
     collapsed: false,
     notices: [],
+    // menus: [], // code权限数组
   },
 
   effects: {
+    // *fetchMenus(_, { call, put }) {
+    //   const menuData = yield call(queryMenus);
+
+    //   yield put({
+    //     type: 'saveMenus',
+    //     payload: menuData,
+    //   })
+    // },
     *fetchNotices(_, { call, put }) {
       const data = yield call(queryNotices);
       yield put({
@@ -34,6 +44,12 @@ export default {
   },
 
   reducers: {
+    // saveMenus(state, { payload }) {
+    //   return {
+    //     ...state,
+    //     menus: payload,
+    //   }
+    // },
     changeLayoutCollapsed(state, { payload }) {
       return {
         ...state,

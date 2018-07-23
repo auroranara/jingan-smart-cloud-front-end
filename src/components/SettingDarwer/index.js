@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Select, message, List, Switch, Divider, Icon } from 'antd';
-import DrawerMenu from 'rc-drawer';
+import { Select, message, Drawer, List, Switch, Divider, Icon, Button } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { connect } from 'dva';
 import styles from './index.less';
@@ -21,23 +20,9 @@ const Body = ({ children, title, style }) => (
 
 @connect(({ setting }) => ({ setting }))
 class SettingDarwer extends PureComponent {
-  componentDidMount() {
-    const {
-      setting: { themeColor, colorWeak },
-    } = this.props;
-    if (themeColor !== '#1890FF') {
-      window.less.refresh().then(() => {
-        this.colorChange(themeColor);
-      });
-    }
-    if (colorWeak === 'open') {
-      document.body.className = 'colorWeak';
-    }
-  }
-
   getLayOutSetting = () => {
     const {
-      setting: { grid, fixedHeader, autoHideHeader, fixSiderbar },
+      setting: { grid, fixedHeader, layout, autoHideHeader, fixSiderbar },
     } = this.props;
     return [
       {
@@ -77,6 +62,7 @@ class SettingDarwer extends PureComponent {
       },
       {
         title: '固定 Siderbar',
+        hide: layout === 'topmenu',
         action: [
           <Switch
             size="small"
@@ -106,13 +92,6 @@ class SettingDarwer extends PureComponent {
         nextState.autoHideHeader = false;
       }
     }
-    if (key === 'colorWeak') {
-      if (value) {
-        document.body.className = 'colorWeak';
-      } else {
-        document.body.className = '';
-      }
-    }
     this.setState(nextState, () => {
       const { dispatch } = this.props;
       dispatch({
@@ -127,75 +106,40 @@ class SettingDarwer extends PureComponent {
     this.changeSetting('collapse', !setting.collapse);
   };
 
-  colorChange = color => {
-    this.changeSetting('themeColor', color);
-    const hideMessage = message.loading('正在编译主题！', 0);
-    setTimeout(() => {
-      window.less
-        .modifyVars({
-          '@primary-color': color,
-          '@input-hover-border-color': color,
-        })
-        .then(() => {
-          hideMessage();
-        })
-        .catch(() => {
-          message.error(`Failed to update theme`);
-        });
-    }, 200);
-  };
-
   render() {
     const { setting } = this.props;
     const { collapse, silderTheme, themeColor, layout, colorWeak } = setting;
     return (
-      <DrawerMenu
-        parent={null}
-        level={null}
-        open={collapse}
-        mask={false}
-        onHandleClick={this.togglerContent}
-        handler={
-          <div className="drawer-handle">
-            {!collapse ? (
-              <Icon
-                type="setting"
-                style={{
-                  color: '#FFF',
-                  fontSize: 20,
-                }}
-              />
-            ) : (
-              <Icon
-                type="close"
-                style={{
-                  color: '#FFF',
-                  fontSize: 20,
-                }}
-              />
-            )}
-          </div>
-        }
+      <Drawer
+        firstEnter={true}
+        visible={collapse}
+        width={273}
+        onClose={this.togglerContent}
         placement="right"
-        width="336px"
         style={{
           zIndex: 999,
         }}
-        onMaskClick={this.togglerContent}
       >
+        <div className={styles.handle} onClick={this.togglerContent}>
+          {!collapse ? (
+            <Icon
+              type="setting"
+              style={{
+                color: '#FFF',
+                fontSize: 20,
+              }}
+            />
+          ) : (
+            <Icon
+              type="close"
+              style={{
+                color: '#FFF',
+                fontSize: 20,
+              }}
+            />
+          )}
+        </div>
         <div className={styles.content}>
-          <CopyToClipboard
-            text={JSON.stringify(setting)}
-            onCopy={() => message.success('copy success')}
-          >
-            <div className={styles.clipboard}>
-              <img
-                src="https://gw.alipayobjects.com/zos/rmsportal/YuWymXLusbplhCwgZwMT.svg"
-                alt="Copy To Clipboard"
-                width={18}
-              />
-            </div>
-          </CopyToClipboard>
           <Body title="整体风格设置">
             <BlockChecbox
               list={[
@@ -213,7 +157,10 @@ class SettingDarwer extends PureComponent {
             />
           </Body>
 
-          <ThemeColor value={themeColor} onChange={this.colorChange} />
+          <ThemeColor
+            value={themeColor}
+            onChange={color => this.changeSetting('themeColor', color)}
+          />
 
           <Divider />
 
@@ -255,8 +202,21 @@ class SettingDarwer extends PureComponent {
               色弱模式
             </List.Item>
           </Body>
+          <Divider />
+          <CopyToClipboard
+            text={JSON.stringify(setting)}
+            onCopy={() => message.success('copy success')}
+          >
+            <Button
+              style={{
+                width: 224,
+              }}
+            >
+              <Icon type="copy" />拷贝代码
+            </Button>
+          </CopyToClipboard>
         </div>
-      </DrawerMenu>
+      </Drawer>
     );
   }
 }

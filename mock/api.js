@@ -332,10 +332,30 @@ export function getFakeCaptcha(req, res) {
   }
 }
 
+const MENUS = [
+  'baseInfo',
+  'baseInfo.company',
+  'baseInfo.company.listView',
+  'fireControl',
+  'fireControl.userTransmissionDevice',
+  'fireControl.userTransmissionDevice.listView',
+  'fireControl.userTransmissionDevice.view',
+  'fireControl.userTransmissionDevice.add',
+  'fireControl.userTransmissionDevice.edit',
+  'fireControl.userTransmissionDevice.host.edit',
+];
+
+export function getMenus(req, res) {
+  if (res && res.json)
+    res.json(MENUS);
+  return MENUS;
+}
+
 export default {
   getNotice,
   getActivities,
   getFakeList,
   postFakeList,
   getFakeCaptcha,
+  getMenus,
 };

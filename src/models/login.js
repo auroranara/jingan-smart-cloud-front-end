@@ -1,9 +1,11 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin, getFakeCaptcha } from '../services/api';
+import { getFakeCaptcha } from '../services/api';
 import { setAuthority, setToken } from '../utils/authority';
 import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
+
+import { accountLogin } from '../services/account';
 
 export default {
   namespace: 'login',
@@ -14,7 +16,7 @@ export default {
 
   effects: {
     *login({ payload, callback }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(accountLogin, payload);
       if (callback) callback(response)
       // Login successfully
       if (response.code === 200) {
@@ -41,9 +43,11 @@ export default {
         yield put(routerRedux.replace(redirect || '/'));
       }
     },
+
     *getCaptcha({ payload }, { call }) {
       yield call(getFakeCaptcha, payload);
     },
+
     *logout(_, { put }) {
       yield put({
         type: 'changeLoginStatus',

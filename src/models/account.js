@@ -6,12 +6,21 @@ import {
   updateAccountDetail,
   queryUnits,
   updatePassword,
+  checkAccountOrPhone,
 } from '../services/accountManagement.js';
 
 export default {
   namespace: 'account',
 
   state: {
+    data: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 24,
+        pageNum: 1,
+      },
+    },
     list: [],
     pageNum: 1,
     isLast: false,
@@ -131,6 +140,14 @@ export default {
         }
       } else if (error) {
         error(response.msg);
+      }
+    },
+
+    // 查询用户名和手机号是否唯一
+    *checkAccountOrPhone({ payload, callback }, { call, put }) {
+      const response = yield call(checkAccountOrPhone, payload);
+      if (response.code && response.msg) {
+        if (callback) callback(response);
       }
     },
   },
