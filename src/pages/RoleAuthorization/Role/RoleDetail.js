@@ -75,7 +75,7 @@ const getEmptyData = () => {
 export default class RoleDetail extends PureComponent {
   /* 挂载后 */
   componentDidMount() {
-    const { fetchDetail, fetchPermissionTree, goToException, match: { params: { id } } } = this.props;
+    const { fetchDetail, fetchPermissionTree, goToException, role: { permissionTree }, match: { params: { id } } } = this.props;
     // 根据id获取详情
     fetchDetail({
       payload: {
@@ -86,18 +86,20 @@ export default class RoleDetail extends PureComponent {
       },
     });
     // 获取权限树
-    fetchPermissionTree();
+    if (permissionTree.length === 0) {
+      fetchPermissionTree();
+    }
   }
 
   /* 渲染基础信息 */
   renderBasicInfo() {
-    const { role: { detail: { name, remark } } } = this.props;
+    const { role: { detail: { name, description } } } = this.props;
 
     return (
       <Card title="基本信息">
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="角色名称">{name || getEmptyData()}</Description>
-          <Description term="角色描述">{remark || getEmptyData()}</Description>
+          <Description term="角色描述">{<div style={{ whiteSpace: 'pre-wrap' }}>{description}</div> || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
     );
@@ -106,21 +108,21 @@ export default class RoleDetail extends PureComponent {
   /* 树节点 */
   renderTreeNodes(data) {
     return data.map((item) => {
-      const { id, title, children, disable } = item;
+      const { id, showZname: title, childMenus: children } = item;
       if (children) {
         return (
-          <TreeNode title={title} key={id} dataRef={item} disable={disable} selectable={false}>
+          <TreeNode title={title} key={id} dataRef={item} selectable={false}>
             {this.renderTreeNodes(children)}
           </TreeNode>
         );
       }
-      return <TreeNode title={title} key={id} dataRef={item} disable={disable} selectable={false} />;
+      return <TreeNode title={title} key={id} dataRef={item} selectable={false} />;
     });
   }
 
   /* 权限配置 */
   renderAuthorizationConfiguration() {
-    const { role: { permissionTree, detail: { permission } }, form: { getFieldDecorator } } = this.props;
+    const { role: { detail: { treeMap } } } = this.props;
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
@@ -128,9 +130,8 @@ export default class RoleDetail extends PureComponent {
           <Description  term="权限树">
             <Tree
               defaultExpandAll
-              defaultCheckedKeys={permission}
             >
-              {this.renderTreeNodes(permissionTree)}
+              {this.renderTreeNodes(treeMap || [])}
             </Tree>
           </Description>
         </DescriptionList>

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Input, Card, Button, Spin, List, Icon, Modal, message } from 'antd';
+import { Form, Input, Card, Button, Spin, List, Modal, message, TreeSelect } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -8,6 +8,8 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 
 import styles from './Role.less';
+
+const { TreeNode } = TreeSelect;
 
 // 标题
 const title = '角色管理';
@@ -39,6 +41,8 @@ const transform = value => value.trim();
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+/* 设置相对定位 */
+const getRootChild = () => document.querySelector('#root>div');
 
 @connect(({ role, loading }) => ({
   role,
@@ -58,11 +62,17 @@ const getEmptyData = () => {
       ...action,
     });
   },
-  /* remove */
+  /* 删除 */
   remove(action) {
     dispatch({
       type: 'role/remove',
       ...action,
+    });
+  },
+  // 获取权限树
+  fetchPermissionTree() {
+    dispatch({
+      type: 'role/fetchPermissionTree',
     });
   },
   /* 跳转到详情页面 */
@@ -91,7 +101,7 @@ export default class RoleList extends PureComponent {
   }
 
   componentDidMount() {
-    const { fetchList, goToException, role: { data: { pagination: { pageSize } } } } = this.props;
+    const { fetchList, goToException, fetchPermissionTree, role: { permissionTree, data: { pagination: { pageSize } } } } = this.props;
     // 获取列表
     fetchList({
       payload: {
@@ -107,6 +117,10 @@ export default class RoleList extends PureComponent {
         goToException();
       },
     });
+    // 获取权限树
+    if (permissionTree.length === 0) {
+      fetchPermissionTree();
+    }
   }
 
   /* 滚动加载 */
@@ -194,8 +208,24 @@ export default class RoleList extends PureComponent {
     });
   };
 
+  /* 渲染树节点 */
+  renderTreeNodes(data) {
+    return data.map((item) => {
+      const { id, showZname: title, childMenus: children } = item;
+      if (children) {
+        return (
+          <TreeNode title={title} key={id} value={id}>
+            {this.renderTreeNodes(children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode title={title} key={id} value={id} />;
+    });
+  }
+
+  /* 渲染表单 */
   renderForm() {
-    const { goToAdd } = this.props;
+    const { goToAdd, role: { permissionTree } } = this.props;
     /* 表单字段 */
     const fields = [
       {
@@ -206,9 +236,19 @@ export default class RoleList extends PureComponent {
         transform,
       },
       {
-        id: 'permission',
-        render() {
-          return <Input placeholder='请输入角色权限' />;
+        id: 'permissionId',
+        render: () => {
+          return (
+            <TreeSelect
+              style={{ width: '100%' }}
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              placeholder="请选择权限"
+              allowClear
+              getPopupContainer={getRootChild}
+            >
+              {this.renderTreeNodes(permissionTree)}
+            </TreeSelect>
+          );
         },
         transform,
       },
@@ -256,17 +296,17 @@ export default class RoleList extends PureComponent {
                     <Link to={detailUrl+id}>查看</Link>,
                     <Link to={editUrl+id}>编辑</Link>,
                   ]}
-                  extra={
-                    <Button
-                      onClick={() => {
-                        this.handleShowDeleteConfirm(id);
-                      }}
-                      shape="circle"
-                      style={{ border: 'none', fontSize: '20px' }}
-                    >
-                      <Icon type="close" />
-                    </Button>
-                  }
+                  // extra={
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // }
                 >
                   <div
                     onClick={() => {

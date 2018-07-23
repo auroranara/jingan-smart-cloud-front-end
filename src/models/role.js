@@ -1,4 +1,4 @@
-// import { queryList, queryDetail, queryPermissionTree, addRole, editRole, deleteRole } from '../services/role/role';
+import { queryList, queryDetail, queryPermissionTree, addRole, editRole, deleteRole } from '../services/role/role';
 
 export default {
   namespace: 'role',
@@ -20,25 +20,7 @@ export default {
   effects: {
     /* 获取列表 */
     *fetchList({ payload, success, error }, { call, put }) {
-      // const response = yield call(queryList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [
-            {
-              id: 1,
-              name: 'admin',
-              description: '管理员',
-            },
-          ],
-          pagination: {
-            pageNum: 1,
-            pageSize: 24,
-            total: 1,
-          },
-        },
-        msg: '获取成功',
-      };
+      const response = yield call(queryList, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryList',
@@ -54,19 +36,7 @@ export default {
     },
     /* 追加列表 */
     *appendList({ payload, success, error }, { call, put }) {
-      // const response = yield call(queryList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [],
-          pagination: {
-            pageNum: 1,
-            pageSize: 24,
-            total: 0,
-          },
-        },
-        msg: '获取成功',
-      };
+      const response = yield call(queryList, payload);
       if (response.code === 200) {
         yield put({
           type: 'pushList',
@@ -82,14 +52,7 @@ export default {
     },
     /* 获取详情 */
     *fetchDetail({ payload, success, error }, { call, put }) {
-      // const response = yield call(queryDetail, payload);
-      const response = {
-        code: 200,
-        data: {
-
-        },
-        msg: '获取成功',
-      };
+      const response = yield call(queryDetail, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryDetail',
@@ -105,32 +68,14 @@ export default {
     },
     /* 获取权限树 */
     *fetchPermissionTree({ payload, success, error }, { call, put }) {
-      // const response = yield call(queryPermissionTree, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [
-            {
-              id: 1,
-              title: '一企一档',
-              children: [
-                {
-                  id: 2,
-                  title: '企业管理',
-                },
-              ],
-            },
-          ],
-        },
-        msg: '获取成功',
-      };
+      const response = yield call(queryPermissionTree, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryPermissionTree',
-          payload: response.data.list,
+          payload: response.data.menu,
         });
         if (success) {
-          success(response.data.list);
+          success(response.data.menu);
         }
       }
       else if (error) {
@@ -138,20 +83,13 @@ export default {
       }
     },
     /* 新增角色 */
-    *insertRole({ payload, success, error }, { call, put }) {
-      // const response = yield call(addRole, payload);
-      const response = {
-        code: 200,
-        data: {
-
-        },
-        msg: '获取成功',
-      };
+    *insertRole({ payload, success, error }, { call }) {
+      const response = yield call(addRole, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'addRole',
-          payload: response.data,
-        });
+        // yield put({
+        //   type: 'addRole',
+        //   payload: response.data,
+        // });
         if (success) {
           success(response.data);
         }
@@ -161,20 +99,13 @@ export default {
       }
     },
     /* 编辑角色 */
-    *updateRole({ payload, success, error }, { call, put }) {
-      // const response = yield call(editRole, payload);
-      const response = {
-        code: 200,
-        data: {
-
-        },
-        msg: '获取成功',
-      };
+    *updateRole({ payload, success, error }, { call }) {
+      const response = yield call(editRole, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'editRole',
-          payload: response.data,
-        });
+        // yield put({
+        //   type: 'editRole',
+        //   payload: response.data,
+        // });
         if (success) {
           success(response.data);
         }
@@ -185,11 +116,7 @@ export default {
     },
     /* 删除角色 */
     *remove({ payload, success, error }, { call, put }) {
-      // const response = yield call(deleteRole, payload);
-      const response = {
-        code: 200,
-        msg: '获取成功',
-      };
+      const response = yield call(deleteRole, payload);
       if (response.code === 200) {
         yield put({
           type: 'deleteRole',

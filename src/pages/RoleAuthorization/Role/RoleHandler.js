@@ -67,7 +67,7 @@ export default class RoleHandler extends PureComponent {
 
   /* 挂载后 */
   componentDidMount() {
-    const { fetchDetail, fetchPermissionTree, clearDetail, match: { params: { id } } } = this.props;
+    const { fetchDetail, fetchPermissionTree, clearDetail, role: { permissionTree }, match: { params: { id } } } = this.props;
     // 根据params.id是否存在判断当前为新增还是编辑
     if (id) {
       // 根据id获取详情
@@ -82,7 +82,9 @@ export default class RoleHandler extends PureComponent {
       clearDetail();
     }
     // 获取权限树
-    fetchPermissionTree();
+    if (permissionTree.length === 0) {
+      fetchPermissionTree();
+    }
   }
 
   /* 提交 */
@@ -95,11 +97,11 @@ export default class RoleHandler extends PureComponent {
         this.setState({
           submitting: true,
         });
-        const { name, remark, permission } = values;
+        const { name, description, permissions } = values;
         const payload = {
           name: name.trim(),
-          remark,
-          permission: permission.join(','),
+          description,
+          permissions: permissions.join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -134,7 +136,7 @@ export default class RoleHandler extends PureComponent {
 
   /* 基本信息 */
   renderBasicInfo() {
-    const { role: { detail: { name, remark } }, form: { getFieldDecorator } } = this.props;
+    const { role: { detail: { name, description } }, form: { getFieldDecorator } } = this.props;
 
     return (
       <Card title="基本信息">
@@ -170,8 +172,8 @@ export default class RoleHandler extends PureComponent {
               lg: { span: 17 },
             }}
           >
-            {getFieldDecorator('remark', {
-              initialValue: remark,
+            {getFieldDecorator('description', {
+              initialValue: description,
               rules: [{ required: true, message: '请输入角色描述', whitespace: true }],
             })(<TextArea rows={4} maxLength="500" placeholder="请输入角色描述" />)}
           </Form.Item>
@@ -183,21 +185,21 @@ export default class RoleHandler extends PureComponent {
   /* 树节点 */
   renderTreeNodes(data) {
     return data.map((item) => {
-      const { id, title, children, disable } = item;
+      const { id, zname: title, childMenus: children } = item;
       if (children) {
         return (
-          <TreeNode title={title} key={id} dataRef={item} disable={disable} selectable={false}>
+          <TreeNode title={title} key={id} dataRef={item} selectable={false}>
             {this.renderTreeNodes(children)}
           </TreeNode>
         );
       }
-      return <TreeNode title={title} key={id} dataRef={item} disable={disable} selectable={false} />;
+      return <TreeNode title={title} key={id} dataRef={item} selectable={false} />;
     });
   }
 
   /* 权限配置 */
   renderAuthorizationConfiguration() {
-    const { role: { permissionTree, detail: { permission } }, form: { getFieldDecorator } } = this.props;
+    const { role: { permissionTree, detail: { permissions } }, form: { getFieldDecorator } } = this.props;
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
@@ -213,8 +215,8 @@ export default class RoleHandler extends PureComponent {
               md: { span: 21 },
             }}
           >
-            {getFieldDecorator('permission', {
-              initialValue: permission || [],
+            {getFieldDecorator('permissions', {
+              initialValue: permissions ? permissions.split(',') : [],
               trigger: 'onCheck',
               validateTrigger: 'onCheck',
               rules: [{ required: true, message: '请选择权限', transform: value => value && value.join(',') }],
