@@ -19,6 +19,7 @@ export default {
   'menu.dynamicMonitoring.fireAlarm': '火灾自动报警系统',
   'menu.dynamicMonitoring.fireAlarm.index': '企业列表',
   'menu.dynamicMonitoring.fireAlarm.companyDetail': '单位页面',
+  'menu.dynamicMonitoring.fireAlarm.historyRecord': '历史纪录',
   'menu.fireControl': '消防维保',
   'menu.fireControl.maintenanceCompany': '维保公司',
   'menu.fireControl.maintenanceCompany.list': '维保公司列表',
