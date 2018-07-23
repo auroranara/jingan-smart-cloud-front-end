@@ -189,7 +189,11 @@ export default class BasicForms extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    setFieldsValue({ companyId: value.name });
+    setFieldsValue({
+      companyId: value.name,
+      principalName: value.principalName,
+      principalPhone: value.principalPhone,
+    });
     this.setState({
       companyId: value.id,
     });

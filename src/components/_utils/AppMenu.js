@@ -40,11 +40,9 @@ function filterMenus(MenuData, codes) {
     const { path, children } = m;
     // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
     const menu = { ...m };
-    if (path !== '/' && !codes.includes(codeMap[path]))
-      continue;
+    if (path !== '/' && !codes.includes(codeMap[path])) continue;
 
-    if (children)
-      menu.children = filterMenus(children, codes);
+    if (children) menu.children = filterMenus(children, codes);
 
     menuData.push(menu);
   }
@@ -57,21 +55,19 @@ function getCodeMap(menuData, result) {
   for (let m of menuData) {
     const { path, code, locale, children } = m;
 
-    if (path === '/' || result[path])
-      continue;
+    if (path === '/' || result[path]) continue;
 
     if (code) {
       result[path] = code;
       result[code] = path;
-    } else if(locale) {
+    } else if (locale) {
       // locle = 'menu.fuck.me',去掉 'menu.'
       const loc = locale.slice(5);
       result[path] = loc;
       result[loc] = path;
     }
 
-    if (children)
-      getCodeMap(children, result);
+    if (children) getCodeMap(children, result);
   }
 }
 
@@ -79,8 +75,7 @@ function getCodeMap(menuData, result) {
 function generateAuthFn(menus) {
   return pathname => () => {
     // exception页面无需拦截
-    if (pathname.toLowerCase().includes('exception'))
-      return true;
+    if (pathname.toLowerCase().includes('exception')) return true;
     const hasPath = menus.includes(codeMap[getPath(pathname, pathArray)]);
     // console.log('menus', menus);
     // console.log(getPath(pathname, pathArray), codeMap[getPath(pathname, pathArray)], 'hasPath', hasPath);
@@ -94,8 +89,7 @@ function getPath(pathname, pathArray) {
     const pathRegexp = pathToRegexp(path);
     const isMatch = pathRegexp.test(pathname);
     // console.log('isMatch', isMatch);
-    if (isMatch)
-      return path;
+    if (isMatch) return path;
   }
 }
 
@@ -116,7 +110,11 @@ export default function AppMenu(WrappedComponent) {
   @connect(({ user }) => ({ user }))
   class AppMenuInner extends React.Component {
     componentDidMount() {
-      const { user: { currentUser: { permissionCodes: codes } } } = this.props;
+      const {
+        user: {
+          currentUser: { permissionCodes: codes },
+        },
+      } = this.props;
       if (!codes.length) {
         this.props.dispatch({ type: 'global/fetchMenus' });
       }
@@ -126,7 +124,12 @@ export default function AppMenu(WrappedComponent) {
     menuData = [];
 
     render() {
-      const { user: { currentUser: { permissionCodes: codes } }, ...rest } = this.props;
+      const {
+        user: {
+          currentUser: { permissionCodes: codes },
+        },
+        ...rest
+      } = this.props;
       // console.log(this.props);
 
       // menuHandled防止重复生成menuData，因为这里只需要在初始化时生成一次
@@ -151,4 +154,4 @@ export default function AppMenu(WrappedComponent) {
   }
 
   return AppMenuInner;
-};
+}

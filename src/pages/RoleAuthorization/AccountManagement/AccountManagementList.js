@@ -165,24 +165,22 @@ export default class accountManagementList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    if (!flag) {
+    const {
+      account: { isLast },
+    } = this.props;
+    if (!flag || isLast) {
       return;
     }
     const {
       fetch,
-      account: {
-        data: {
-          pagination: { pageSize, pageNum },
-        },
-      },
+      account: { pageNum },
     } = this.props;
-    const { formData } = this.state;
     // 请求数据
     fetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...formData,
+        ...this.formData,
       },
     });
   };

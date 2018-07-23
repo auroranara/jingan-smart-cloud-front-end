@@ -129,7 +129,8 @@ module.exports = [
                 component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail',
               },
               {
-                path:'/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
+                path:
+                  '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
                 code: 'fireControl.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './FireControl/UserTransmissionDevice/ImportPointPosition',
@@ -170,6 +171,12 @@ module.exports = [
                 code: 'fireControl.maintenanceCompany.view',
                 name: 'detail',
                 component: './FireControl/MaintenanceCompany/MaintenanceCompanyDetail',
+              },
+              {
+                path: '/fire-control/maintenance-company/serviceList/:id',
+                code: 'fireControl.maintenanceCompany.serviceListView',
+                name: 'serviceList',
+                component: './FireControl/MaintenanceCompany/ServiceUnitList',
               },
             ],
           },

@@ -188,7 +188,9 @@ class BasicLayout extends React.PureComponent {
           <Header handleMenuCollapse={this.handleMenuCollapse} logo={logo} {...this.props} />
           {/* <Content style={this.getContentStyle()}>{children}</Content> */}
           <Content style={this.getContentStyle()}>
-            <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>{children}</Authorized>
+            <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>
+              {children}
+            </Authorized>
           </Content>
           <Footer />
         </Layout>

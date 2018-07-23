@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'react-router-dom';
 import { Form, Card, Button } from 'antd';
+import FooterToolbar from 'components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -73,41 +74,57 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
   };
 
   // 渲染单位详情
-  render() {
+  renderUnitInfo() {
     const {
-      match: {
-        params: { id },
-      },
       maintenanceCompany: { detail: data },
     } = this.props;
 
     const { hasSubCompany } = this.state;
 
     return (
+      <Card title="单位详情" bordered={false}>
+        <DescriptionList col={3}>
+          <Description term="维保单位">{data.companyName || getEmptyData()}</Description>
+          <Description term="主要负责人">{data.principalName || getEmptyData()}</Description>
+          <Description term="联系电话">{data.principalPhone || getEmptyData()}</Description>
+          <Description term="是否为分公司">
+            {data.isBranch === 1 ? '是' : '否' || getEmptyData()}
+          </Description>
+          {hasSubCompany && (
+            <Description term="所属总公司"> {data.parnetUnitName || getEmptyData()}</Description>
+          )}
+        </DescriptionList>
+      </Card>
+    );
+  }
+
+  /* 渲染底部工具栏 */
+  renderFooterToolbar() {
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    return (
+      <FooterToolbar>
+        <Button
+          type="primary"
+          onClick={() => {
+            this.goToEdit(id);
+          }}
+          style={{ fontSize: 16 }}
+        >
+          编辑
+        </Button>
+      </FooterToolbar>
+    );
+  }
+
+  render() {
+    return (
       <PageHeaderLayout title="维保公司详情" breadcrumbList={breadcrumbList}>
-        <Card title="单位详情" bordered={false}>
-          <DescriptionList col={3}>
-            <Description term="维保单位">{data.companyName || getEmptyData()}</Description>
-            <Description term="主要负责人">{data.principalName || getEmptyData()}</Description>
-            <Description term="联系电话">{data.principalPhone || getEmptyData()}</Description>
-            <Description term="是否为分公司">
-              {data.isBranch === 1 ? '是' : '否' || getEmptyData()}
-            </Description>
-            {hasSubCompany && (
-              <Description term="所属总公司"> {data.parnetUnitName || getEmptyData()}</Description>
-            )}
-          </DescriptionList>
-          <div style={{ textAlign: 'center', marginTop: 20 }}>
-            <Button
-              type="primary"
-              onClick={() => {
-                this.goToEdit(id);
-              }}
-            >
-              编辑
-            </Button>
-          </div>
-        </Card>
+        {this.renderUnitInfo()}
+        {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
   }
