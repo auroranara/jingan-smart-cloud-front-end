@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
 import styles from './DeviceDetailCard.less';
-import { getDisabled, getOnClick } from '../../../utils/customAuth';
+import { getDisabled, getOnClick, ERROR_MSG } from '../../../utils/customAuth';
 
 const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
 const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
@@ -144,7 +144,13 @@ export default class DeviceDetailCard extends Component {
           const menu = (
             <Menu>
               <MenuItem>
-                <a onClick={getOnClick(HOST_DELETE_CODE, codes, () => handleHostDeleteClick(id, record.id))}>删除</a>
+                <a
+                  onClick={getOnClick(HOST_DELETE_CODE, codes, () => handleHostDeleteClick(id, record.id))}
+                  // className={styles.itemNotAllowed}
+                  className={getDisabled(HOST_DELETE_CODE, codes) ? styles.notAllowed : null}
+                >
+                  删除
+                </a>
               </MenuItem>
               <MenuItem>
                 <Link
@@ -153,7 +159,9 @@ export default class DeviceDetailCard extends Component {
                       record.id
                     }`,
                   }}
-                  onClick={getOnClick(HOST_IMPORT_CODE, codes)}
+                  onClick={getOnClick(HOST_IMPORT_CODE, codes, ERROR_MSG)}
+                  // className={styles.itemNotAllowed}
+                  className={getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
                 >
                   导入点位
                 </Link>
@@ -165,6 +173,7 @@ export default class DeviceDetailCard extends Component {
             <Fragment>
               <a
                 className={getDisabled(HOST_UPDATE_CODE, codes) ? styles.tableAStyleNotAllowed : styles.tableAStyle }
+                // className = {styles.tableAStyleNotAllowed}
                 onClick={getOnClick(HOST_UPDATE_CODE, codes, () =>
                   handleHostUpdateClick({
                     ...hostList[index],
@@ -176,7 +185,10 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a>
               <Dropdown overlay={menu}>
-                <a className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : {}}>
+                <a
+                  className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
+                  // className={styles.notAllowed}
+                >
                   更多<Icon type="down" />
                 </a>
               </Dropdown>
