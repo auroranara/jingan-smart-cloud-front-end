@@ -7,7 +7,7 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
-import { getOnClick } from '../../../utils/customAuth';
+import { getOnClick, ERROR_MSG } from '../../../utils/customAuth';
 
 const PAGE_SIZE = 18;
 const CODE = 'fireControl.userTransmissionDevice.view';
@@ -189,7 +189,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}  onClick={getOnClick(CODE, codes)}>
+                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}  onClick={getOnClick(CODE, codes, ERROR_MSG)}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined
