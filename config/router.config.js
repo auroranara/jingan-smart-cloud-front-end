@@ -179,7 +179,7 @@ module.exports = [
       // RoleAuthorization
       {
         path: '/role-authorization',
-        code: 'roleuthorization',
+        code: 'roleAuthorization',
         name: 'roleAuthorization',
         icon: 'table',
         routes: [
