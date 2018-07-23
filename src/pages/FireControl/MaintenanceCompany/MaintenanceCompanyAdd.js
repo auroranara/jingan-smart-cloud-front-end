@@ -3,7 +3,9 @@ import { connect } from 'dva';
 import { Form, Input, Button, Card, Switch, message } from 'antd';
 import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { phoneReg } from 'utils/validate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
+import styles from './MaintenanceCompany.less';
 
 const FormItem = Form.Item;
 
@@ -81,8 +83,6 @@ export default class BasicForms extends PureComponent {
     parentId: undefined,
   };
 
-  componentDidMount() {}
-
   switchOnchange = checked => {
     this.setState({
       current: {
@@ -91,18 +91,16 @@ export default class BasicForms extends PureComponent {
     });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  // 提交表单验证信息
+  handleSubmit = () => {
     const { dispatch, form, goBack } = this.props;
 
     form.validateFields((err, values) => {
       if (err) {
-        // console.log(err);
         return;
       }
 
-      const { usingStatus, isBranch } = values;
-      // console.log(values, usingStatus, usingStatus ? 1 : 0);
+      const { isBranch, principalName, principalPhone } = values;
       const { companyId, parentId } = this.state;
 
       dispatch({
@@ -110,11 +108,11 @@ export default class BasicForms extends PureComponent {
         payload: {
           companyId,
           parentId,
-          usingStatus: +usingStatus,
+          principalName,
+          principalPhone,
           isBranch: +isBranch,
         },
         callback(code) {
-          // console.log(code);
           if (code === 200)
             message.success('保存成功', () => {
               goBack();
@@ -272,6 +270,7 @@ export default class BasicForms extends PureComponent {
     return <CompanyModal {...modalProps} />;
   }
 
+  // 渲染维保单位表单信息
   render() {
     const {
       submitting,
@@ -300,19 +299,19 @@ export default class BasicForms extends PureComponent {
 
     return (
       <PageHeaderLayout title="新增维保单位" breadcrumbList={breadcrumbList}>
-        <Card bordered={false}>
-          <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="企业名称">
+        <Card title="单位详情" className={styles.card} bordered={false}>
+          <Form hideRequiredMark style={{ marginTop: 8 }}>
+            <FormItem {...formItemLayout} label="维保单位">
               {getFieldDecorator('companyId', {
                 rules: [
                   {
                     required: true,
-                    message: '请选择企业',
+                    message: '请选择维保单位',
                   },
                 ],
               })(
                 <Input
-                  placeholder="请选择企业"
+                  placeholder="请选择维保单位"
                   ref={input => {
                     this.CompanyIdInput = input;
                   }}
@@ -321,10 +320,24 @@ export default class BasicForms extends PureComponent {
               )}
             </FormItem>
 
-            <FormItem {...formItemLayout} label="是否启用">
-              {getFieldDecorator('usingStatus', {
-                initialValue: '1',
-              })(<Switch checkedChildren="是" unCheckedChildren="否" defaultChecked />)}
+            <FormItem {...formItemLayout} label="主要负责人">
+              {getFieldDecorator('principalName', {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入主要负责人',
+                  },
+                ],
+              })(<Input placeholder="请输入主要负责人" />)}
+            </FormItem>
+
+            <FormItem {...formItemLayout} label="联系电话">
+              {getFieldDecorator('principalPhone', {
+                rules: [
+                  { required: true, message: '请输入主要负责人联系方式' },
+                  { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
+                ],
+              })(<Input placeholder="请输入联系电话" />)}
             </FormItem>
 
             <FormItem {...formItemLayout} label="是否为分公司">
@@ -342,7 +355,12 @@ export default class BasicForms extends PureComponent {
             {current.isBranch && (
               <FormItem {...formItemLayout} label="总公司名称">
                 {getFieldDecorator('parentId', {
-                  rules: [{ message: '请选择一家维保公司为总公司' }],
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择一家维保公司为总公司',
+                    },
+                  ],
                   initialValue: current.parentId,
                 })(
                   <Input
@@ -357,7 +375,7 @@ export default class BasicForms extends PureComponent {
             )}
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary" htmlType="submit" loading={submitting}>
+              <Button type="primary" onClick={this.handleSubmit} loading={submitting}>
                 保存
               </Button>
             </FormItem>

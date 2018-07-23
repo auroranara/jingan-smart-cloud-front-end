@@ -34,6 +34,7 @@ export default {
   'menu.fireControl.userTransmissionDevice.list': '企业列表',
   'menu.fireControl.userTransmissionDevice.deviceDetail': '详情页',
   'menu.fireControl.userTransmissionDevice.importPointPosition': '导入点位数据',
+  'menu.fireControl.maintenanceCompany.serviceList': '服务单位列表',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

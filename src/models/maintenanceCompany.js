@@ -6,12 +6,21 @@ import {
   updateMaintenanceCompany,
   addMaintenanceCompany,
   queryCompanyList,
+  queryServiceUnit,
 } from '../services/maintenanceCompany.js';
 
 export default {
   namespace: 'maintenanceCompany',
 
   state: {
+    data: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 24,
+        pageNum: 1,
+      },
+    },
     list: [],
     detail: {},
     categories: [],
@@ -28,15 +37,17 @@ export default {
   },
 
   effects: {
+    // 维保单位列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCompanies, payload);
       if (response.code === 200) {
         yield put({
-          type: 'query',
+          type: 'queryMaintenanceCompanyList',
           payload: response.data,
         });
       }
     },
+    // 查询维保单位列表
     *appendFetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCompany, payload);
       if (response.code === 200) {
@@ -46,6 +57,7 @@ export default {
         });
       }
     },
+    // 删除维保单位信息
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(deleteMaintenanceCompany, payload);
       if (response.code === 200) {
@@ -56,6 +68,7 @@ export default {
       }
       if (callback) callback(response);
     },
+    //  查看指定维保单位信息
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload.id);
       if (response.code === 200) {
@@ -66,6 +79,7 @@ export default {
         if (callback) callback(response.data);
       }
     },
+    // 修改维保单位信息
     *updateMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
       const response = yield call(updateMaintenanceCompany, payload);
       const { code } = response;
@@ -77,6 +91,7 @@ export default {
         });
       }
     },
+    // 新增维保单位信息
     *addMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
       const response = yield call(addMaintenanceCompany, payload);
       const { code } = response;
@@ -88,6 +103,7 @@ export default {
         });
       }
     },
+    // 查询企业列表
     *fetchCompanyList({ payload, callback }, { call, put }) {
       const response = yield call(queryCompanyList, payload);
       const { code } = response;
@@ -99,25 +115,33 @@ export default {
         });
       }
     },
+    // 根据维保单位id查询服务单位列表
+    *fetchServiceUnit({ payload }, { call, put }) {
+      const response = yield call(queryServiceUnit, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryServiceUnit',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
-    query(
-      state,
-      {
-        payload: {
-          list,
-          pagination: { pageNum, pageSize, total },
-        },
-      }
-    ) {
+    // 维保单位列表
+    queryMaintenanceCompanyList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
       return {
         ...state,
         list,
-        pageNum: 1,
+        data: payload,
         isLast: pageNum * pageSize >= total,
       };
     },
+    // 查询维保单位列表
     appendList(
       state,
       {
@@ -134,30 +158,21 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
+    //  查看指定维保单位信息
     queryDetail(state, { payload }) {
       return {
         ...state,
         detail: payload,
       };
     },
-    queryCategories(state, { payload }) {
-      return {
-        ...state,
-        categories: payload,
-      };
-    },
+    // 删除维保单位信息
     delete(state, { payload }) {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
       };
     },
-    updateFormData(state, { payload }) {
-      return {
-        ...state,
-        formData: payload,
-      };
-    },
+    // 修改维保单位信息
     updateMaintenanceCompany(state, { payload }) {
       return {
         ...state,
@@ -167,6 +182,7 @@ export default {
         },
       };
     },
+    // 新增维保单位信息
     addMaintenanceCompany(state, { payload }) {
       return {
         ...state,
@@ -176,10 +192,28 @@ export default {
         },
       };
     },
+    // 查询企业列表
     queryCompanyList(state, { payload }) {
       return {
         ...state,
         modal: payload,
+      };
+    },
+    // 根据维保单位id查询服务单位列表
+    queryServiceUnit(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        list,
+        pageNum: 1,
+        isLast: pageNum * pageSize >= total,
       };
     },
   },
