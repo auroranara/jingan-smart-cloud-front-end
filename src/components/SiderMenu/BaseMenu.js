@@ -29,10 +29,10 @@ export const getMenuMatches = (flatMenuKeys, path) => {
 };
 
 export default class BaseMenu extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.flatMenuKeys = this.getFlatMenuKeys(props.menuData);
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.flatMenuKeys = this.getFlatMenuKeys(props.menuData); // 一开始menuData = []，所以flatMenuKeys = []
+  // }
 
   /**
    * Recursively flatten the data
@@ -72,8 +72,12 @@ export default class BaseMenu extends PureComponent {
   getSelectedMenuKeys = () => {
     const {
       location: { pathname },
+      // menuData,
+      flatMenuKeys,
     } = this.props;
-    return urlToList(pathname).map(itemPath => getMenuMatches(this.flatMenuKeys, itemPath).pop());
+    // return urlToList(pathname).map(itemPath => getMenuMatches(this.flatMenuKeys, itemPath).pop());
+    // return urlToList(pathname).map(itemPath => getMenuMatches(this.getFlatMenuKeys(menuData), itemPath).pop());
+    return urlToList(pathname).map(itemPath => getMenuMatches(flatMenuKeys, itemPath).pop());
   };
 
   /**
@@ -169,6 +173,7 @@ export default class BaseMenu extends PureComponent {
       selectedKeys = [openKeys[openKeys.length - 1]];
     }
     let props = {};
+    // console.log('keys in menu', selectedKeys, openKeys);
     if (openKeys) {
       props = {
         openKeys,
