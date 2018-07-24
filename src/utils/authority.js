@@ -23,5 +23,5 @@ export function getToken() {
 }
 
 export function setToken(authority) {
-  return localStorage.setItem('JA-Token', authority);
+  return localStorage.setItem('JA-Token', authority || '');
 }
