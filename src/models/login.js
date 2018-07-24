@@ -56,6 +56,7 @@ export default {
           currentAuthority: 'guest',
         },
       });
+      yield put({ type: 'user/saveCurrentUser' })
       reloadAuthorized();
       yield put(
         routerRedux.push({

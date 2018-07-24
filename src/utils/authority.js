@@ -19,9 +19,9 @@ export function setAuthority(authority) {
 }
 
 export function getToken() {
-  return localStorage.getItem('smart-token') || '';
+  return localStorage.getItem('JA-Token') || '';
 }
 
 export function setToken(authority) {
-  return localStorage.setItem('smart-token', authority);
+  return localStorage.setItem('JA-Token', authority);
 }
