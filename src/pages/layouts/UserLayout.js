@@ -4,6 +4,7 @@ import { Icon } from 'antd';
 import GlobalFooter from '../../components/GlobalFooter';
 import styles from './UserLayout.less';
 import logo from '../../assets/logo.svg';
+import DocumentTitle from 'react-document-title';
 
 const links = [
   /* {
@@ -45,22 +46,23 @@ class UserLayout extends React.PureComponent {
   render() {
     const { children } = this.props;
     return (
-      // @TODO <DocumentTitle title={this.getPageTitle()}>
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <div className={styles.top}>
-            <div className={styles.header}>
-              <Link to="/">
+      <DocumentTitle title="登录">
+        <div className={styles.container}>
+          <div className={styles.content}>
+            <div className={styles.top}>
+              <div className={styles.header}>
+                {/* <Link to="/"> */}
                 <img alt="logo" className={styles.logo} src={logo} />
                 <span className={styles.title}>晶安智慧云平台</span>
-              </Link>
+                {/* </Link> */}
+              </div>
+              <div className={styles.desc} />
             </div>
-            <div className={styles.desc} />
+            {children}
           </div>
-          {children}
+          <GlobalFooter links={links} copyright={copyright} />
         </div>
-        <GlobalFooter links={links} copyright={copyright} />
-      </div>
+      </DocumentTitle>
     );
   }
 }
