@@ -144,12 +144,12 @@ export default class RoleDetail extends PureComponent {
 
   /* 按钮组 */
   renderButtonGroup() {
-    const { goBack, goToEdit } = this.props;
+    const { goBack, goToEdit, match: { params: { id } } } = this.props;
 
     return (
       <div style={{ textAlign: 'center' }}>
         <Button onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
-        <Button type="primary" onClick={goToEdit}>编辑</Button>
+        <Button type="primary" onClick={() => {goToEdit(id)}}>编辑</Button>
       </div>
     );
   }

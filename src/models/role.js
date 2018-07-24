@@ -4,7 +4,9 @@ export default {
   namespace: 'role',
 
   state: {
-    detail: {},
+    detail: {
+      sysRole: {},
+    },
     permissionTree: [],
     data: {
       list: [],
@@ -186,7 +188,9 @@ export default {
     clearDetail(state) {
       return {
         ...state,
-        detail: {},
+        detail: {
+          sysRole: {},
+        },
       };
     },
     /* 删除角色 */
