@@ -30,6 +30,13 @@ export default function AppMenu(WrappedComponent) {
       // }
     // }
 
+    // 当前组件注销时，情况user.currentUser内的codes数组，不然当用户重新登陆但并未刷新时
+    // store.user.currentUser中原来的数据会污染新角色的数据，造成菜单渲染为原角色菜单
+    componentWillUnmount() {
+      const { dispatch } = this.props;
+      dispatch({ type: 'user/saveCurrentUser', payload: { permissionCodes: [] } });
+    }
+
     menuHandled = false;
     menuData = [];
 
