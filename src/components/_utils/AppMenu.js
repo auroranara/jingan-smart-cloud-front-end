@@ -30,23 +30,23 @@ export default function AppMenu(WrappedComponent) {
       // }
     // }
 
-    // 当前组件注销时，情况user.currentUser内的codes数组，不然当用户重新登陆但并未刷新时
-    // store.user.currentUser中原来的数据会污染新角色的数据，造成菜单渲染为原角色菜单
-    componentWillUnmount() {
-      const { dispatch } = this.props;
-      dispatch({ type: 'user/saveCurrentUser', payload: { permissionCodes: [] } });
-    }
+    /* 当前组件注销时，情况user.currentUser内的codes数组，不然当用户重新登陆但并未刷新时
+     * store.user.currentUser中原来的数据会污染新角色的数据，造成菜单渲染为原角色菜单，但是每次redirect会重新渲染整个页面，
+     * 从而引起AppMenu ummount，造成每次redirect时候会有一次codes为空数组，从而有个403一闪而过
+     * 所以，在login out的时候将store.user.currentUser.permissionCodes置空
+     */
+    // componentWillUnmount() {
+    //   console.log('AppMenu unmount');
+    //   const { dispatch } = this.props;
+    //   dispatch({ type: 'user/saveCurrentUser', payload: { permissionCodes: [] } });
+    // }
 
     menuHandled = false;
     menuData = [];
 
     render() {
-      const {
-        user: {
-          currentUser: { permissionCodes: codes },
-        },
-        ...rest
-      } = this.props;
+      // codes = []，为了防止从store.user.currentUser.permissionCodes获取的是undefined
+      const { user: { currentUser: { permissionCodes: codes = [] } }, ...rest } = this.props;
       // console.log(this.props);
 
       // menuHandled防止重复生成menuData，因为这里只需要在初始化时生成一次

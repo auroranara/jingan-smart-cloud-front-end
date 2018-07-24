@@ -3,7 +3,8 @@ import { message } from 'antd';
 
 // const emptyFn = () => { };
 
-export function hasAuthority(code, codes) {
+// 为了防止从store.user.currentUser.permissionCodes获取的codes是个undefined
+export function hasAuthority(code, codes = []) {
   return codes.includes(code);
 }
 
@@ -97,8 +98,8 @@ export function formatter(data, parentPath = '', parentAuthority, parentName) {
   });
 }
 
-// 将menus数组中不存在的路径过滤掉，使其再菜单中不显示
-export function filterMenus(MenuData, codes, codeMap) {
+// 将menus数组中不存在的路径过滤掉，使其再菜单中不显示，codes=[]也是为了防止从store.user.currentUser.permissionCodes获取的是undefined
+export function filterMenus(MenuData, codes = [], codeMap) {
   const menuData = [];
   for (let m of MenuData) {
     const { path, children } = m;
@@ -141,6 +142,9 @@ export function getCodeMap(menuData, result) {
 
 // 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
 export function generateAuthFn(codes, codeMap, pathArray) {
+  // console.log('codes', codes);
+  // console.log('codeMap', codeMap);
+  // console.log('pathArray', pathArray);
   return pathname => () => {
     // exception页面无需拦截
     if (pathname.toLowerCase().includes('exception'))

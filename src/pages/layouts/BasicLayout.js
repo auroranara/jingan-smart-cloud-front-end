@@ -168,7 +168,7 @@ class BasicLayout extends React.PureComponent {
       location: { pathname },
     } = this.props;
 
-    // console.log('basicLayout', pathname);
+    // console.log('basicLayout', pathname, authorityFn(pathname)());
 
     const isTop = PropsLayout === 'topmenu';
     // authority对应的函数返回值是true时，包含两种情况，即当前用户无权限403和网页不存在404，所以得在这里做一下判断
