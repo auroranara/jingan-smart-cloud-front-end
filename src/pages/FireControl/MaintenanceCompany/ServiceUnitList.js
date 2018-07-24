@@ -222,7 +222,7 @@ export default class ServiceUnitList extends PureComponent {
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       行业类别：{industryCategoryLabel || getEmptyData()}
                     </Ellipsis>
-                    <p>负责人：{safetyName || getEmptyData()}</p>
+                    <p>安全负责人：{safetyName || getEmptyData()}</p>
                     <p>联系电话：{safetyPhone || getEmptyData()}</p>
                   </div>
                 </Card>

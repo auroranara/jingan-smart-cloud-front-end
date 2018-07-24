@@ -66,6 +66,12 @@ const statusLabelList = {
         ...action,
       });
     },
+    appendfetch(action) {
+      dispatch({
+        type: 'account/appendfetch',
+        ...action,
+      });
+    },
     fetchOptions(action) {
       dispatch({
         type: 'account/fetchOptions',
@@ -85,10 +91,6 @@ const statusLabelList = {
 )
 @Form.create()
 export default class accountManagementList extends PureComponent {
-  state = {
-    formData: {},
-  };
-
   constructor(props) {
     super(props);
     this.formData = defaultFormData;
@@ -128,14 +130,14 @@ export default class accountManagementList extends PureComponent {
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
     const {
-      fetch,
+      appendfetch,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
-    fetch({
+    appendfetch({
       payload: {
         pageSize,
         pageNum: 1,
