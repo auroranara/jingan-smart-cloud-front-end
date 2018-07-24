@@ -17,6 +17,7 @@ const getDefaultCollapsedSubMenus = props => {
     location: { pathname },
     flatMenuKeys,
   } = props;
+  // console.log(props);
   return urlToList(pathname)
     .map(item => {
       return getMenuMatches(flatMenuKeys, item)[0];
@@ -86,6 +87,7 @@ export default class SiderMenu extends PureComponent {
   };
   render() {
     const { logo, collapsed, onCollapse, fixSiderbar, theme } = this.props;
+    // console.log('siderMenu.js', this.props, Date.now());
     const { openKeys } = this.state;
     // 若openKeys为空数组，则更新一下它的值(当然第一次render返回还是空数组，当menuData不为空数组时，更新后为新的值)，若不是空数组即用原来的值
     const defaultProps = collapsed ? {} : { openKeys: openKeys.length ? openKeys : getDefaultCollapsedSubMenus(this.props) };
