@@ -123,16 +123,15 @@ export default class RoleDetail extends PureComponent {
   /* 权限配置 */
   renderAuthorizationConfiguration() {
     const { role: { detail: { treeMap } } } = this.props;
+    const menu = treeMap ? (treeMap.menu || []) : [];
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="权限树">
             {treeMap ? (
-              <Tree
-                defaultExpandAll
-              >
-                {this.renderTreeNodes(treeMap || [])}
+              <Tree>
+                {this.renderTreeNodes(menu)}
               </Tree>
             ) : getEmptyData()}
           </Description>

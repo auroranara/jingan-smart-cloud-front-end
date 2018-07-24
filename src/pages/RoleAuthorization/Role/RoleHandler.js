@@ -99,6 +99,7 @@ export default class RoleHandler extends PureComponent {
         });
         const { name, description, permissions } = values;
         const payload = {
+          id,
           name: name.trim(),
           description,
           permissions: permissions.join(','),
@@ -200,7 +201,6 @@ export default class RoleHandler extends PureComponent {
   /* 权限配置 */
   renderAuthorizationConfiguration() {
     const { role: { permissionTree, detail: { permissions } }, form: { getFieldDecorator } } = this.props;
-
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
         <Form>
@@ -219,6 +219,7 @@ export default class RoleHandler extends PureComponent {
               initialValue: permissions ? permissions.split(',') : [],
               trigger: 'onCheck',
               validateTrigger: 'onCheck',
+              valuePropName: 'checkedKeys',
               rules: [{ required: true, message: '请选择权限', transform: value => value && value.join(',') }],
             })(
               <Tree
