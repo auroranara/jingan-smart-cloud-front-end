@@ -10,6 +10,7 @@ module.exports = [
       { path: '/user/register-result', component: './User/RegisterResult' },
     ],
   },
+
   // app
   {
     path: '/',
@@ -129,7 +130,7 @@ module.exports = [
                 component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail',
               },
               {
-                path:'/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
+                path: '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
                 code: 'fireControl.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './FireControl/UserTransmissionDevice/ImportPointPosition',
@@ -275,6 +276,15 @@ module.exports = [
           },
         ],
       },
+    ],
+  },
+
+  {
+    path: '/big-platform',
+    // component: './layouts/UserLayout',
+    routes: [
+      { path: '/big-platform', redirect: '/big-platform/risk-point' },
+      { path: '/big-platform/risk-point', component: '/BigPlatform/RiskPoint' },
     ],
   },
 ];
