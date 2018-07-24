@@ -18,10 +18,12 @@ export default {
     },
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
-      yield put({
-        type: 'saveCurrentUser',
-        payload: response.data,
-      });
+      if (response && response.data) {
+        yield put({
+          type: 'saveCurrentUser',
+          payload: response.data,
+        });
+      }
     },
   },
 
