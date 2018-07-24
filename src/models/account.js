@@ -42,12 +42,23 @@ export default {
   },
 
   effects: {
-    // 查询账号列表
+    // 账号列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryAccountList, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryAccountList',
+          payload: response.data,
+        });
+      }
+    },
+
+    // 查询账号列表
+    *appendfetch({ payload }, { call, put }) {
+      const response = yield call(queryAccountList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryList',
           payload: response.data,
         });
       }
@@ -164,8 +175,24 @@ export default {
     ) {
       return {
         ...state,
+        list: [...state.list, ...list],
+        pageNum,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+    queryList(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
         list,
-        pageNum: 1,
+        pageNum,
         isLast: pageNum * pageSize >= total,
       };
     },
