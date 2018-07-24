@@ -1,7 +1,7 @@
 import pathToRegexp from 'path-to-regexp';
 import { message } from 'antd';
 
-// const emptyFn = () => { };
+// import styles from './customAutho.less';
 
 // 为了防止从store.user.currentUser.permissionCodes获取的codes是个undefined
 export function hasAuthority(code, codes = []) {
@@ -170,5 +170,13 @@ export function getPath(pathname, pathArray) {
     // console.log('isMatch', isMatch);
     if (isMatch)
       return path;
+  }
+}
+
+export function authWrapper(code, codes, WrappedComponent) {
+  return function (props) {
+    if (hasAuthority(code, codes))
+      return <WrappedComponent {...props} />;
+    return <WrappedComponent />
   }
 }

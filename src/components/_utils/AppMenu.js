@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
-// import { Spin } from 'antd';
-// import styles from '../../index.less';
+import { Spin } from 'antd';
+import styles from '../../index.less';
 
 import config from '../../../config/config';
 import { formatter, getCodeMap, filterMenus, generateAuthFn } from '../../utils/customAuth';
@@ -45,29 +45,30 @@ export default function AppMenu(WrappedComponent) {
     menuData = [];
 
     render() {
-      // codes = []，为了防止从store.user.currentUser.permissionCodes获取的是undefined
-      const { user: { currentUser: { permissionCodes: codes = [] } }, ...rest } = this.props;
+      // store.user.currentUser初始值是空对象，所以当没有请求到currentUser时，permissionCodes(codes)是undefined
+      // 请求返回的permissionCodes(codes)是个数组，可能是空数组
+      const { user: { currentUser: { permissionCodes: codes } }, ...rest } = this.props;
       // console.log(this.props);
 
-      // menuHandled防止重复生成menuData，因为这里只需要在初始化时生成一次
-      if (!this.menuHandled && codes.length) {
+      // 判断currentUser是否已加载，因为currentUser得渲染BasicLayout才会发起请求，所以需要往下传到BasicLayout中处理
+      const currentUserLoaded = !!codes;
+
+      // menuHandled防止重复处理menuData，当未handle时且codes已经获取时处理一次
+      if (!this.menuHandled && currentUserLoaded) {
         this.menuHandled = true;
         this.menuData = filterMenus(MenuData, codes, codeMap);
       }
 
-      // const menuHandled = this.menuHandled;
       const menuData = this.menuData;
       // console.log(menuData);
 
-      // console.log(menuData);
-
-      // if (!menuHandled) {
+      // if (!codes) {
       //   return <Spin size="large" className={styles.globalSpin} />;
       // } else {
-      //   return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(codes)} />;
+      //   return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(codes, codeMap, pathArray)} />;
       // }
 
-      return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(codes, codeMap, pathArray)} />;
+      return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(codes, codeMap, pathArray)} currentUserLoaded={currentUserLoaded} />;
     }
   }
 
