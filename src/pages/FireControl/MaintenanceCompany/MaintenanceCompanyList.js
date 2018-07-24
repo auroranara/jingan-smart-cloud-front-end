@@ -5,10 +5,10 @@ import {
   List,
   Card,
   Button,
-  Icon,
+  // Icon,
   Input,
-  Modal,
-  message,
+  // Modal,
+  // message,
   BackTop,
   Spin,
   Col,
@@ -23,6 +23,23 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import styles from './MaintenanceCompanyList.less';
 
 const FormItem = Form.Item;
+
+//面包屑
+const breadcrumbList = [
+  {
+    title: '首页',
+    name: '首页',
+    href: '/',
+  },
+  {
+    title: '消防维保',
+    name: '消防维保',
+  },
+  {
+    title: '维保单位管理',
+    name: '维保单位管理',
+  },
+];
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -88,29 +105,29 @@ export default class MaintenanceCompanyList extends PureComponent {
   }
 
   /* 显示删除确认提示框 */
-  handleShowDeleteConfirm = id => {
-    const { remove } = this.props;
-    Modal.confirm({
-      title: '你确定要删除这个维保单位吗?',
-      content: '如果你确定要删除这个维保单位，点击确定按钮',
-      okText: '确定',
-      cancelText: '取消',
-      onOk: () => {
-        remove({
-          payload: {
-            id,
-          },
-          callback: res => {
-            if (res.code === 200) {
-              message.success('删除成功！');
-            } else {
-              message.error('删除失败，该维保单位正为企业服务中！');
-            }
-          },
-        });
-      },
-    });
-  };
+  // handleShowDeleteConfirm = id => {
+  //   const { remove } = this.props;
+  //   Modal.confirm({
+  //     title: '你确定要删除这个维保单位吗?',
+  //     content: '如果你确定要删除这个维保单位，点击确定按钮',
+  //     okText: '确定',
+  //     cancelText: '取消',
+  //     onOk: () => {
+  //       remove({
+  //         payload: {
+  //           id,
+  //         },
+  //         callback: res => {
+  //           if (res.code === 200) {
+  //             message.success('删除成功！');
+  //           } else {
+  //             message.error('删除失败，该维保单位正为企业服务中！');
+  //           }
+  //         },
+  //       });
+  //     },
+  //   });
+  // };
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
@@ -234,17 +251,17 @@ export default class MaintenanceCompanyList extends PureComponent {
                   <Link to={`/fire-control/maintenance-company/detail/${item.id}`}>查看</Link>,
                   <Link to={`/fire-control/maintenance-company/edit/${item.id}`}>编辑</Link>,
                 ]}
-                extra={
-                  <Button
-                    onClick={() => {
-                      this.handleShowDeleteConfirm(item.id);
-                    }}
-                    shape="circle"
-                    style={{ border: 'none', fontSize: '20px' }}
-                  >
-                    <Icon type="close" />
-                  </Button>
-                }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(item.id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
               >
                 <Row>
                   <Col
@@ -295,7 +312,11 @@ export default class MaintenanceCompanyList extends PureComponent {
     } = this.props;
 
     return (
-      <PageHeaderLayout title="维保单位" content={<div>维保单位总数：{total} </div>}>
+      <PageHeaderLayout
+        title="维保单位管理"
+        breadcrumbList={breadcrumbList}
+        content={<div>维保单位总数：{total} </div>}
+      >
         <BackTop />
         {this.renderForm()}
         {this.renderList()}

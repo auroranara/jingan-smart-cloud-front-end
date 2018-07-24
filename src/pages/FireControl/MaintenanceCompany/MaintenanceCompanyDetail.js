@@ -122,7 +122,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
 
   render() {
     return (
-      <PageHeaderLayout title="维保公司详情" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title="维保单位详情" breadcrumbList={breadcrumbList}>
         {this.renderUnitInfo()}
         {this.renderFooterToolbar()}
       </PageHeaderLayout>
