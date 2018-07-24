@@ -93,7 +93,7 @@ export default class RoleDetail extends PureComponent {
 
   /* 渲染基础信息 */
   renderBasicInfo() {
-    const { role: { detail: { name, description } } } = this.props;
+    const { role: { detail: { sysRole: { name, description } } } } = this.props;
 
     return (
       <Card title="基本信息">
@@ -127,12 +127,14 @@ export default class RoleDetail extends PureComponent {
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description  term="权限树">
-            <Tree
-              defaultExpandAll
-            >
-              {this.renderTreeNodes(treeMap || [])}
-            </Tree>
+          <Description term="权限树">
+            {treeMap ? (
+              <Tree
+                defaultExpandAll
+              >
+                {this.renderTreeNodes(treeMap || [])}
+              </Tree>
+            ) : getEmptyData()}
           </Description>
         </DescriptionList>
         {this.renderButtonGroup()}

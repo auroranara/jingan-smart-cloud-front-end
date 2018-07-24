@@ -234,29 +234,29 @@ module.exports = [
             hideChildren: true,
             routes: [
               {
-                path: '.',
+                path: '/role-authorization/role',
                 redirect: 'list',
               },
               {
-                path: 'list',
+                path: '/role-authorization/role/list',
                 name: 'list',
                 code: 'roleAuthorization.role.listView',
                 component: './RoleAuthorization/Role/RoleList',
               },
               {
-                path: 'detail/:id',
+                path: '/role-authorization/role/detail/:id',
                 name: 'detail',
                 code: 'roleAuthorization.role.view',
                 component: './RoleAuthorization/Role/RoleDetail',
               },
               {
-                path: 'Add',
-                name: 'Add',
+                path: '/role-authorization/role/add',
+                name: 'add',
                 code: 'roleAuthorization.role.add',
                 component: './RoleAuthorization/Role/RoleHandler',
               },
               {
-                path: 'edit/:id',
+                path: '/role-authorization/role/edit/:id',
                 name: 'edit',
                 code: 'roleAuthorization.role.edit',
                 component: './RoleAuthorization/Role/RoleHandler',

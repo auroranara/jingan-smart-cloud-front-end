@@ -136,7 +136,7 @@ export default class RoleHandler extends PureComponent {
 
   /* 基本信息 */
   renderBasicInfo() {
-    const { role: { detail: { name, description } }, form: { getFieldDecorator } } = this.props;
+    const { role: { detail: { sysRole: { name, description } } }, form: { getFieldDecorator } } = this.props;
 
     return (
       <Card title="基本信息">
