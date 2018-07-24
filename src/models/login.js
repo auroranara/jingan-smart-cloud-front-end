@@ -57,6 +57,7 @@ export default {
         },
       });
       yield put({ type: 'user/saveCurrentUser' })
+      setToken()
       reloadAuthorized();
       yield put(
         routerRedux.push({
