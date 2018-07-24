@@ -141,6 +141,9 @@ export function getCodeMap(menuData, result) {
 
 // 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
 export function generateAuthFn(codes, codeMap, pathArray) {
+  console.log('codes', codes);
+  console.log('codeMap', codeMap);
+  console.log('pathArray', pathArray);
   return pathname => () => {
     // exception页面无需拦截
     if (pathname.toLowerCase().includes('exception'))
