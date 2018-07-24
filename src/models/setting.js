@@ -8,10 +8,12 @@ const defaultSetting = {
   fixedHeader: true,
   autoHideHeader: false,
   fixSiderbar: true,
-  colorWeak: 'close',
+  // colorWeak: 'close',
+  colorWeak: false,
 };
 
 const buildLessAndWeak = (themeColor, colorWeak) => {
+  // console.log('colorWeak', colorWeak);
   // Determine if the component is remounted
   if (themeColor && themeColor !== '#1890FF' && themeColor !== window['antd_pro_less_color']) {
     window.less.refresh().then(() => {
