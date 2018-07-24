@@ -5,7 +5,8 @@ export default {
 
   state: {
     list: [],
-    currentUser: { permissionCodes: [] },
+    currentUser: {},
+    // currentUser: { permissionCodes: [] },
   },
 
   effects: {
