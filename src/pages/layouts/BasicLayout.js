@@ -19,6 +19,8 @@ import Exception403 from '../Exception/403';
 import Exception404 from '../Exception/404';
 import { pathArray } from '../../components/_utils/AppMenu';
 import { getPath } from '../../utils/customAuth';
+import { Spin } from 'antd';
+import styles from '../../index.less';
 
 const { Content } = Layout;
 const { check } = Authorized;
@@ -161,6 +163,7 @@ class BasicLayout extends React.PureComponent {
   render() {
     const {
       authorityFn,
+      currentUserLoaded, // 判断currentUser的数据是否已经请求到，没有请求到时渲染Spin，请求到后渲染目标组件
       isMobile,
       silderTheme,
       layout: PropsLayout,
@@ -189,7 +192,11 @@ class BasicLayout extends React.PureComponent {
           <Header handleMenuCollapse={this.handleMenuCollapse} logo={logo} {...this.props} />
           {/* <Content style={this.getContentStyle()}>{children}</Content> */}
           <Content style={this.getContentStyle()}>
-            <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>{children}</Authorized>
+            {
+              currentUserLoaded
+                ? <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>{children}</Authorized>
+                : <Spin size="large" className={styles.globalSpin} />
+            }
           </Content>
           <Footer />
         </Layout>

@@ -24,7 +24,7 @@ class SettingDarwer extends PureComponent {
     const {
       setting: { grid, fixedHeader, layout, autoHideHeader, fixSiderbar },
     } = this.props;
-    console.log('grid', grid);
+    // console.log('grid', grid);
     return [
       {
         title: '栅格模式',
