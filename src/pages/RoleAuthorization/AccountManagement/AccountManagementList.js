@@ -24,7 +24,7 @@ const breadcrumbList = [
   },
   {
     title,
-    name:'账号管理',
+    name: '账号管理',
   },
 ];
 
@@ -85,12 +85,17 @@ const statusLabelList = {
 )
 @Form.create()
 export default class accountManagementList extends PureComponent {
+  state = {
+    formData: {},
+  };
+
   constructor(props) {
     super(props);
     this.formData = defaultFormData;
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
   }
 
+  // 生命周期函数
   componentDidMount() {
     const { fetch, fetchOptions, fetchUnitsFuzzy } = this.props;
 
@@ -160,8 +165,10 @@ export default class accountManagementList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = flag => {
-    const { account } = this.props;
-    if (!flag || account.isLast) {
+    const {
+      account: { isLast },
+    } = this.props;
+    if (!flag || isLast) {
       return;
     }
     const {
@@ -172,7 +179,7 @@ export default class accountManagementList extends PureComponent {
     fetch({
       payload: {
         pageSize,
-        pageNum,
+        pageNum: pageNum + 1,
         ...this.formData,
       },
     });

@@ -6,7 +6,7 @@ import styles from './UserLayout.less';
 import logo from '../../assets/logo.svg';
 
 const links = [
-  {
+  /* {
     key: 'help',
     title: '帮助',
     href: '',
@@ -20,12 +20,13 @@ const links = [
     key: 'terms',
     title: '条款',
     href: '',
-  },
+  }, */
 ];
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2018 晶安科技有限公司
+    <p>Copyright <Icon type="copyright" /> 2018 &nbsp;技术支持：晶安智慧科技有限公司</p>
+    <p style={{ marginTop: '5px' }}>服务电话：400-928-5656</p>
   </Fragment>
 );
 
@@ -51,7 +52,7 @@ class UserLayout extends React.PureComponent {
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>Ant Design</span>
+                <span className={styles.title}>晶安智慧云平台</span>
               </Link>
             </div>
             <div className={styles.desc} />

@@ -12,7 +12,6 @@ import {
   BackTop,
   Spin,
   Col,
-  Badge,
   Row,
 } from 'antd';
 import { Link, routerRedux } from 'dva/router';
@@ -39,31 +38,33 @@ const defaultFormData = {
     loading: loading.models.maintenanceCompany,
   }),
   dispatch => ({
+    // 维保单位列表
     fetch(action) {
       dispatch({
         type: 'maintenanceCompany/fetch',
         ...action,
       });
     },
+    // 查询维保单位
     appendFetch(action) {
       dispatch({
         type: 'maintenanceCompany/appendFetch',
         ...action,
       });
     },
+    // 删除维保单位
     remove(action) {
       dispatch({
         type: 'maintenanceCompany/remove',
         ...action,
       });
     },
-    updateFormData(action) {
-      dispatch({
-        type: 'maintenanceCompany/updateFormData',
-        ...action,
-      });
-    },
+    // 跳转到维保单位详情页
     goToDetail(url) {
+      dispatch(routerRedux.push(url));
+    },
+    // 跳转到服务单位列表页
+    goToService(url) {
       dispatch(routerRedux.push(url));
     },
   })
@@ -74,13 +75,14 @@ export default class MaintenanceCompanyList extends PureComponent {
     super(props);
     this.formData = defaultFormData;
   }
-
+  // 生命周期函数
   componentDidMount() {
     const { fetch } = this.props;
     // 获取维保单位列表
     fetch({
       payload: {
         pageSize,
+        pageNum: 1,
       },
     });
   }
@@ -151,18 +153,20 @@ export default class MaintenanceCompanyList extends PureComponent {
   /* 滚动加载 */
   handleLoadMore = flag => {
     const {
-      appendFetch,
-      maintenanceCompany: { pageNum, isLast },
+      maintenanceCompany: { isLast },
     } = this.props;
-
     if (!flag || isLast) {
       return;
     }
-
+    const {
+      appendFetch,
+      maintenanceCompany: { pageNum },
+    } = this.props;
+    // 请求数据
     appendFetch({
       payload: {
         pageSize,
-        pageNum,
+        pageNum: pageNum + 1,
         ...this.formData,
       },
     });
@@ -212,6 +216,7 @@ export default class MaintenanceCompanyList extends PureComponent {
     const {
       maintenanceCompany: { list },
       goToDetail,
+      goToService,
     } = this.props;
 
     return (
@@ -241,24 +246,30 @@ export default class MaintenanceCompanyList extends PureComponent {
                   </Button>
                 }
               >
-                <Row
-                  onClick={() => {
-                    goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
-                  }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Col span={16}>
+                <Row>
+                  <Col
+                    span={16}
+                    onClick={() => {
+                      goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {`地址：${item.practicalAddress}`}
                     </Ellipsis>
-                    <p>{`下属公司数：${item.subordinateCompanyCount}`}</p>
-                    <p>
-                      启用状态：
-                      <Badge status={item.usingStatus === 1 ? 'success' : 'error'} />
-                      {`${item.usingStatus === 1 ? '启用' : '禁用'}`}
-                    </p>
+                    <p>{`主要负责人：${item.principalName}`}</p>
+                    <p>{`联系电话：${item.principalPhone}`}</p>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      {`总公司：${item.parentUnitName}`}
+                    </Ellipsis>
                   </Col>
-                  <Col span={8}>
+                  <Col
+                    span={8}
+                    onClick={() => {
+                      goToService(`/fire-control/maintenance-company/serviceList/${item.id}`);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <span className={styles.quantity}>{item.serviceCompanyCount}</span>
                     <span className={styles.servicenum}>服务单位数</span>
                   </Col>
@@ -273,12 +284,18 @@ export default class MaintenanceCompanyList extends PureComponent {
 
   render() {
     const {
-      maintenanceCompany: { list, isLast },
       loading,
+      maintenanceCompany: {
+        data: {
+          pagination: { total },
+        },
+        list,
+        isLast,
+      },
     } = this.props;
 
     return (
-      <PageHeaderLayout title="维保单位">
+      <PageHeaderLayout title="维保单位" content={<div>维保单位总数：{total} </div>}>
         <BackTop />
         {this.renderForm()}
         {this.renderList()}

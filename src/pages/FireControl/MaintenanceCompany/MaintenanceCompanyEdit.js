@@ -3,10 +3,8 @@ import { connect } from 'dva';
 import { Form, Input, Card, Button, Switch, message } from 'antd';
 import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-
-// const { Description } = DescriptionList;
+import { phoneReg } from 'utils/validate';
 
 const FormItem = Form.Item;
 
@@ -71,6 +69,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     parentId: undefined,
   };
 
+  /* 生命周期函数 */
   componentDidMount() {
     const that = this;
 
@@ -95,6 +94,9 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
       },
     });
   }
+
+  /* 去除输入框左右两边空白 */
+  handleTrim = e => e.target.value.trim();
 
   switchOnchange = checked => {
     this.setState({ hasSubCompany: checked });
@@ -147,6 +149,7 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     this.handleHideMaintenanceModal();
   };
 
+  // 点击提交按钮验证表单信息
   handleUpdate(id) {
     const {
       dispatch,
@@ -159,21 +162,20 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
 
     form.validateFields((err, values) => {
       if (err) {
-        // console.log(err);
         return;
       }
 
-      const { usingStatus, isBranch } = values;
+      const { isBranch, principalName, principalPhone } = values;
       const { parentId } = this.state;
-      // console.log(values, usingStatus, usingStatus ? 1 : 0);
 
       dispatch({
         type: 'maintenanceCompany/updateMaintenanceCompanyAsync',
         payload: {
           id,
-          parentId,
           companyId,
-          usingStatus: +usingStatus,
+          parentId,
+          principalName,
+          principalPhone,
           isBranch: +isBranch,
         },
         callback(code) {
@@ -223,11 +225,15 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
     return <CompanyModal {...modalProps} />;
   }
 
+  // 渲染维保单位表单信息
   render() {
     const {
       submitting,
       form: { getFieldDecorator },
+      maintenanceCompany: { detail: data },
     } = this.props;
+
+    const { hasSubCompany } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -248,32 +254,36 @@ export default class MaintenanceCmpanyEdit extends PureComponent {
       },
     };
 
-    const {
-      maintenanceCompany: { detail: data },
-    } = this.props;
-    const { hasSubCompany } = this.state;
-
-    // console.log('data', data);
-
     return (
-      <PageHeaderLayout title="新增维保单位" breadcrumbList={breadcrumbList}>
-        <Card bordered={false}>
+      <PageHeaderLayout title="编辑维保单位" breadcrumbList={breadcrumbList}>
+        <Card title="单位详情" bordered={false}>
           <Form hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="企业名称">
+            <FormItem {...formItemLayout} label="维保单位">
               <div>{data.companyName}</div>
             </FormItem>
 
-            <FormItem {...formItemLayout} label="企业状态">
-              {getFieldDecorator('usingStatus', {
-                valuePropName: 'checked',
-                initialValue: !!data.usingStatus,
+            <FormItem {...formItemLayout} label="主要负责人">
+              {getFieldDecorator('principalName', {
+                initialValue: data.principalName,
+                getValueFromEvent: this.handleTrim,
                 rules: [
                   {
                     required: true,
-                    message: '企业状态',
+                    message: '请输入主要负责人',
                   },
                 ],
-              })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
+              })(<Input placeholder="请输入主要负责人" />)}
+            </FormItem>
+
+            <FormItem {...formItemLayout} label="联系电话">
+              {getFieldDecorator('principalPhone', {
+                initialValue: data.principalPhone,
+                getValueFromEvent: this.handleTrim,
+                rules: [
+                  { required: true, message: '请输入主要负责人联系方式' },
+                  { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
+                ],
+              })(<Input placeholder="请输入联系电话" />)}
             </FormItem>
 
             <FormItem {...formItemLayout} label="是否为分公司">

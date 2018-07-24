@@ -3,6 +3,9 @@ import {
   // queryAlarmNums,
   queryAlarmData,
   queryAlarmDetail,
+  queryCompanyHistories,
+  queryOptions,
+  queryHistoryDetail,
 } from '../services/fireAlarm';
 
 export default {
@@ -14,6 +17,28 @@ export default {
     tableLists: [],
     pagination: {},
     alarmDetail: {},
+    historyData: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    },
+    deviceCodes: [], // 主机编号
+    dictDataList: [], // 设施部件类型
+    // 历史纪录详情
+    historyDetail: {
+      name: "",
+      time: "",
+      code: "",
+      failureCode: "",
+      type: "",
+      position: "",
+      alarmStatus: "",
+      safetyName: "",
+      safetyPhone: "",
+    },
   },
 
   effects: {
@@ -53,6 +78,26 @@ export default {
       if (code !== 200) return;
       yield put({ type: 'saveAlarmDetail', payload: data });
     },
+    *fetchCompanyHistories({ payload, callback }, { call, put }) {
+      const response = yield call(queryCompanyHistories, payload)
+      const { code, pagination, list } = response
+      if (callback) callback()
+      if (code !== 200) return
+      yield put({ type: 'saveCompanyHistories', payload: { pagination, list } })
+    },
+    *fetchOptions({ payload }, { call, put }) {
+      const response = yield call(queryOptions, payload)
+      const { code, data } = response
+      if (code !== 200) return;
+      yield put({ type: 'saveOptions', payload: data })
+
+    },
+    *fetchHistoryDetail({ payload }, { call, put }) {
+      const response = yield call(queryHistoryDetail, payload)
+      const { code, data } = response
+      if (code !== 200) return
+      yield put({ type: 'saveHistoryDetail', payload: data })
+    },
   },
 
   reducers: {
@@ -68,6 +113,15 @@ export default {
     },
     saveAlarmDetail(state, action) {
       return { ...state, alarmDetail: action.payload };
+    },
+    saveCompanyHistories(state, action) {
+      return { ...state, historyData: action.payload }
+    },
+    saveOptions(state, action) {
+      return { ...state, deviceCodes: action.payload.deviceCodes, dictDataList: action.payload.dictDataList }
+    },
+    saveHistoryDetail(state, action) {
+      return { ...state, historyDetail: action.payload }
     },
   },
 };

@@ -7,8 +7,10 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
+import { getOnClick, ERROR_MSG } from '../../../utils/customAuth';
 
 const PAGE_SIZE = 18;
+const CODE = 'fireControl.userTransmissionDevice.view';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -19,8 +21,9 @@ const breadcrumbList = [
 // div[id="root"]下的唯一子元素相对于定高的root滚动
 const rootElement = document.getElementById('root');
 
-@connect(({ transmission, loading }) => ({
+@connect(({ transmission, user, loading }) => ({
   transmission,
+  user,
   loading: loading.models.transmission,
 }))
 export default class UserTransmissionDevice extends PureComponent {
@@ -143,6 +146,7 @@ export default class UserTransmissionDevice extends PureComponent {
   render() {
     const {
       transmission: { list },
+      user: { currentUser: { permissionCodes: codes } },
       loading,
     } = this.props;
     const { company, address, scrollLoading, hasMore } = this.state;
@@ -185,7 +189,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}>
+                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}  onClick={getOnClick(CODE, codes, ERROR_MSG)}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined

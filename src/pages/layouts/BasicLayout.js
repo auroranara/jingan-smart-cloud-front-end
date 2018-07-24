@@ -15,6 +15,11 @@ import Footer from './Footer';
 import Header from './Header';
 import Context from './MenuContext';
 
+import Exception403 from '../Exception/403';
+import Exception404 from '../Exception/404';
+import { pathArray } from '../../components/_utils/AppMenu';
+import { getPath } from '../../utils/customAuth';
+
 const { Content } = Layout;
 const { check } = Authorized;
 
@@ -155,13 +160,20 @@ class BasicLayout extends React.PureComponent {
   }
   render() {
     const {
+      authorityFn,
       isMobile,
       silderTheme,
       layout: PropsLayout,
       children,
       location: { pathname },
     } = this.props;
+
+    // console.log('basicLayout', pathname, authorityFn(pathname)());
+
     const isTop = PropsLayout === 'topmenu';
+    // authority对应的函数返回值是true时，包含两种情况，即当前用户无权限403和网页不存在404，所以得在这里做一下判断
+    // 当由router.config.js中配置生成的路径数组中不包含当前pathname时，则路径对应的页面不存在，剩下的情况就是用户无权限访问当前路径对应的页面
+    const noMatch = getPath(pathname, pathArray) ? <Exception403 /> : <Exception404 />;
     const layout = (
       <Layout>
         {isTop && !isMobile ? null : (
@@ -175,7 +187,12 @@ class BasicLayout extends React.PureComponent {
         )}
         <Layout style={this.getLayoutStyle()}>
           <Header handleMenuCollapse={this.handleMenuCollapse} logo={logo} {...this.props} />
-          <Content style={this.getContentStyle()}>{children}</Content>
+          {/* <Content style={this.getContentStyle()}>{children}</Content> */}
+          <Content style={this.getContentStyle()}>
+            <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>
+              {children}
+            </Authorized>
+          </Content>
           <Footer />
         </Layout>
       </Layout>

@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Link } from 'react-router-dom';
-import { Form, Input, Card, Switch, Button } from 'antd';
-// import DescriptionList from 'components/DescriptionList';
+// import { Link } from 'react-router-dom';
+import { Form, Card, Button } from 'antd';
+import FooterToolbar from 'components/FooterToolbar';
+import { routerRedux } from 'dva/router';
+import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
-// const { Description } = DescriptionList;
-
-const FormItem = Form.Item;
+const { Description } = DescriptionList;
 
 //面包屑
 const breadcrumbList = [
@@ -31,6 +31,11 @@ const breadcrumbList = [
   },
 ];
 
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 @connect(({ maintenanceCompany, loading }) => ({
   maintenanceCompany,
   loading: loading.models.maintenanceCompany,
@@ -41,6 +46,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
     hasSubCompany: false,
   };
 
+  /* 生命周期函数 */
   componentDidMount() {
     const {
       dispatch,
@@ -48,7 +54,8 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
-    // console.log(id);
+
+    // 获取维保单位详情
     dispatch({
       type: 'maintenanceCompany/fetchDetail',
       payload: {
@@ -60,98 +67,64 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
     });
   }
 
-  render() {
+  // 跳转到编辑页面
+  goToEdit = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/fire-control/maintenance-company/edit/${id}`));
+  };
+
+  // 渲染单位详情
+  renderUnitInfo() {
     const {
-      form,
+      maintenanceCompany: { detail: data },
+    } = this.props;
+
+    const { hasSubCompany } = this.state;
+
+    return (
+      <Card title="单位详情" bordered={false}>
+        <DescriptionList col={3}>
+          <Description term="维保单位">{data.companyName || getEmptyData()}</Description>
+          <Description term="主要负责人">{data.principalName || getEmptyData()}</Description>
+          <Description term="联系电话">{data.principalPhone || getEmptyData()}</Description>
+          <Description term="是否为分公司">
+            {data.isBranch === 1 ? '是' : '否' || getEmptyData()}
+          </Description>
+          {hasSubCompany && (
+            <Description term="所属总公司"> {data.parnetUnitName || getEmptyData()}</Description>
+          )}
+        </DescriptionList>
+      </Card>
+    );
+  }
+
+  /* 渲染底部工具栏 */
+  renderFooterToolbar() {
+    const {
       match: {
         params: { id },
       },
-      maintenanceCompany: { detail: data },
     } = this.props;
-    const { hasSubCompany } = this.state;
+    return (
+      <FooterToolbar>
+        <Button
+          type="primary"
+          onClick={() => {
+            this.goToEdit(id);
+          }}
+          style={{ fontSize: 16 }}
+        >
+          编辑
+        </Button>
+      </FooterToolbar>
+    );
+  }
 
-    const { getFieldDecorator } = form;
-
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 },
-        md: { span: 10 },
-      },
-    };
-
-    const submitFormLayout = {
-      wrapperCol: {
-        xs: { span: 24, offset: 0 },
-        sm: { span: 10, offset: 7 },
-      },
-    };
-
+  render() {
     return (
       <PageHeaderLayout title="维保公司详情" breadcrumbList={breadcrumbList}>
-        <Card bordered={false}>
-          <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="企业名称">
-              {getFieldDecorator('companyName', {
-                initialValue: data.companyName,
-                rules: [
-                  {
-                    required: true,
-                  },
-                ],
-              })(<Input disabled style={{ border: 0 }} />)}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="启用状态">
-              {getFieldDecorator('usingStatus', {
-                valuePropName: 'checked',
-                initialValue: !!data.usingStatus,
-                rules: [
-                  {
-                    required: true,
-                  },
-                ],
-              })(<Switch disabled checkedChildren="启用" unCheckedChildren="禁用" />)}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label="是否为分公司">
-              {getFieldDecorator('isBranch', {
-                valuePropName: 'checked',
-                initialValue: !!data.isBranch,
-                rules: [
-                  {
-                    required: true,
-                    message: '是否为分公司',
-                  },
-                ],
-              })(<Switch disabled checkedChildren="是" unCheckedChildren="否" />)}
-            </FormItem>
-
-            {hasSubCompany && (
-              <FormItem {...formItemLayout} label="所属总公司">
-                {getFieldDecorator('parentId	', {
-                  initialValue: data.parnetUnitName,
-                  rules: [
-                    {
-                      required: true,
-                      message: '所属总公司',
-                    },
-                  ],
-                })(<Input disabled style={{ border: 0 }} />)}
-              </FormItem>
-            )}
-
-            <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary">
-                <Link to={`/fire-control/maintenance-company/edit/${id}`}>编辑</Link>
-              </Button>
-            </FormItem>
-          </Form>
-        </Card>
+        {this.renderUnitInfo()}
+        {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );
   }

@@ -7,3 +7,37 @@
 
   margin-bottom: 30px;
 }
+
+.notAllowed {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.notAllowed:hover {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
+:global(.ant-dropdown) {
+  .itemNotAllowed {
+    &:extend(.notAllowed);
+  }
+}
+
+:global(.ant-dropdown) {
+  .itemNotAllowed:hover {
+    &:extend(.notAllowed:hover);
+  }
+}
+
+.tableAStyle {
+  margin-right: 10px;
+}
+
+.tableAStyleNotAllowed {
+  &:extend(.notAllowed);
+  margin-right: 10px;
+}
+
+.tableAStyleNotAllowed:hover {
+  &:extend(.notAllowed:hover);
+}

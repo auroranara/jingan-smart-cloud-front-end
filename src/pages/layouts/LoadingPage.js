@@ -3,41 +3,43 @@ import { Spin } from 'antd';
 import { connect } from 'dva';
 import { enquireScreen, unenquireScreen } from 'enquire-js';
 import BasicLayout from './BasicLayout';
-// TODO: should use this.props.routes
-import config from '../../../config/config';
-const menuData = config['routes'];
+import routerConfig from '../../../config/router.config';
+
+import AppMenu from '../../components/_utils/AppMenu';
+
+// const menuData = config['routes'];
 
 // Conversion router to menu.
-function formatter(data, parentPath = '', parentAuthority, parentName) {
-  return data.map(item => {
-    let locale = 'menu';
-    if (parentName && item.name) {
-      locale = `${parentName}.${item.name}`;
-    } else if (item.name) {
-      locale = `menu.${item.name}`;
-    } else if (parentName) {
-      locale = parentName;
-    }
-    const result = {
-      ...item,
-      locale,
-      authority: item.authority || parentAuthority,
-    };
-    if (item.routes) {
-      const children = formatter(item.routes, `${parentPath}${item.path}/`, item.authority, locale);
-      // Reduce memory usage
-      result.children = children;
-    }
-    delete result.routes;
-    return result;
-  });
-}
+// function formatter(data, parentPath = '', parentAuthority, parentName) {
+//   return data.map(item => {
+//     let locale = 'menu';
+//     if (parentName && item.name) {
+//       locale = `${parentName}.${item.name}`;
+//     } else if (item.name) {
+//       locale = `menu.${item.name}`;
+//     } else if (parentName) {
+//       locale = parentName;
+//     }
+//     const result = {
+//       ...item,
+//       locale,
+//       authority: item.authority || parentAuthority,
+//     };
+//     if (item.routes) {
+//       const children = formatter(item.routes, `${parentPath}${item.path}/`, item.authority, locale);
+//       // Reduce memory usage
+//       result.children = children;
+//     }
+//     delete result.routes;
+//     return result;
+//   });
+// }
 /**
  * 根据菜单取得重定向地址.
  */
-const MenuData = formatter(menuData[1].routes);
-const routerData = config.routes;
-const getRedirectData = () => {
+// const MenuData = formatter(menuData[1].routes);
+// const routerData = routerConfig.routes;
+const getRedirectData = (MenuData) => {
   const redirectData = [];
   const getRedirect = item => {
     if (item && item.children) {
@@ -55,7 +57,7 @@ const getRedirectData = () => {
   MenuData.forEach(getRedirect);
   return redirectData;
 };
-const redirectData = getRedirectData();
+// const redirectData = getRedirectData();
 
 class LoadingPage extends PureComponent {
   state = {
@@ -101,7 +103,11 @@ class LoadingPage extends PureComponent {
   }
 
   render() {
+    const { menuData: MenuData } = this.props;
+    const redirectData = getRedirectData(MenuData);
+
     const { loading, isMobile } = this.state;
+
     if (loading) {
       return (
         <div
@@ -121,7 +127,7 @@ class LoadingPage extends PureComponent {
       <BasicLayout
         isMobile={isMobile}
         menuData={MenuData}
-        routerData={routerData}
+        routerData={routerConfig}
         redirectData={redirectData}
         {...this.props}
       />
@@ -129,4 +135,4 @@ class LoadingPage extends PureComponent {
   }
 }
 
-export default connect()(LoadingPage);
+export default connect()(AppMenu(LoadingPage));
