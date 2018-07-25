@@ -4,6 +4,9 @@ import { Form, Card, Input, Button, Spin, Tree, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
 
 // import styles from './Role.less';
 
@@ -13,11 +16,14 @@ const { TextArea } = Input
 // 标题
 const addTitle = '新增角色';
 const editTitle = '编辑角色';
-// 返回地址
-const backUrl = '/role-authorization/role/list';
+// 获取链接地址
+const { role: { list: backUrl } } = urls;
+// 获取code
+const { role: { list: listCode } } = codes;
 
-@connect(({ role, loading }) => ({
+@connect(({ role, user, loading }) => ({
   role,
+  user,
   loading: loading.models.role,
 }), (dispatch) => ({
   // 获取详情
@@ -237,19 +243,22 @@ export default class RoleHandler extends PureComponent {
 
   /* 按钮组 */
   renderButtonGroup() {
-    const { goBack, loading } = this.props;
+    const { goBack, loading, user: { currentUser: { permissionCodes } } } = this.props;
+    const hasListAuthority = hasAuthority(listCode, permissionCodes);
 
     return (
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
+        <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>返回</Button>
         <Button type="primary" onClick={this.handleSubmit} loading={loading}>确定</Button>
       </div>
     );
   }
 
   render() {
-    const { loading, match: { params: { id } } } = this.props;
+    const { loading, match: { params: { id } },  user: { currentUser: { permissionCodes } } } = this.props;
     const { submitting } = this.state;
+    // 是否有列表权限
+    const hasListAuthority = hasAuthority(listCode, permissionCodes);
     // 根据params.id是否存在判断当前为新增还是编辑
     const title = id ? editTitle : addTitle;
     // 面包屑
@@ -266,7 +275,7 @@ export default class RoleHandler extends PureComponent {
       {
         title: '角色管理',
         name: '角色管理',
-        href: backUrl,
+        href: hasListAuthority ? backUrl : undefined,
       },
       {
         title,
