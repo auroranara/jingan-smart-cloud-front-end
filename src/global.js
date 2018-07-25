@@ -1,2 +1,2 @@
 import './polyfill';
-import 'moment/locale/zh-cn';
+// import 'moment/locale/zh-cn';
