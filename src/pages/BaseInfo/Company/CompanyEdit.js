@@ -819,6 +819,7 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
+              <DatePicker />
               <Form.Item label={fieldLabels.createTime}>
                 {getFieldDecorator('createTime', {
                   // initialValue: createTime ? moment(+createTime) : moment(),
