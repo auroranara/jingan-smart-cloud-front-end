@@ -20,8 +20,8 @@ const breadcrumbList = [
     name: '消防维保',
   },
   {
-    title: '维保公司',
-    name: '维保公司',
+    title: '维保单位',
+    name: '维保单位',
     href: '/fire-control/maintenance-company/list',
   },
   {

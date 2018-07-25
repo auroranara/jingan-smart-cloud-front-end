@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import DescriptionList from 'components/DescriptionList';
 
 import styles from './DeviceDetailCard.less';
-import { getDisabled, getOnClick } from '../../../utils/customAuth';
+import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton, ERROR_MSG } from '../../../utils/customAuth';
 
 const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
 const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
@@ -17,7 +17,7 @@ const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
 const MenuItem = Menu.Item;
 
-// const hostTableAStyle = { marginRight: 10 };
+const hostTableAStyle = { marginRight: 10 };
 // const deviceButtonStyle = { marginRight: 8 };
 // const hostColumnsActionPStyle = { marginBottom: 0 };
 
@@ -57,13 +57,21 @@ export default class DeviceDetailCard extends Component {
     const { codes, deviceData, handleHostAddClick } = this.props;
 
     return (
-      <Button
+      // <Button
+      //   type="primary"
+      //   disabled={getDisabled(HOST_ADD_CODE, codes)}
+      //   onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
+      // >
+      //   新增主机
+      // </Button>
+      <AuthButton
         type="primary"
-        disabled={getDisabled(HOST_ADD_CODE, codes)}
+        code={HOST_ADD_CODE}
+        codes={codes}
         onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
       >
         新增主机
-      </Button>
+      </AuthButton>
     );
   }
 
@@ -144,27 +152,44 @@ export default class DeviceDetailCard extends Component {
           const menu = (
             <Menu>
               <MenuItem>
-                <a onClick={getOnClick(HOST_DELETE_CODE, codes, () => handleHostDeleteClick(id, record.id))}>删除</a>
+                {/* <a
+                  onClick={getOnClick(HOST_DELETE_CODE, codes, () => handleHostDeleteClick(id, record.id))}
+                  // className={styles.itemNotAllowed}
+                  className={getDisabled(HOST_DELETE_CODE, codes) ? styles.notAllowed : null}
+                >
+                  删除
+                </a> */}
+                <AuthA code={HOST_DELETE_CODE} codes={codes} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
               </MenuItem>
               <MenuItem>
-                <Link
+                {/* <Link
                   to={{
                     pathname: `/fire-control/user-transmission-device/${companyId}/import-point-position/${
                       record.id
                     }`,
                   }}
-                  onClick={getOnClick(HOST_IMPORT_CODE, codes)}
+                  onClick={getOnClick(HOST_IMPORT_CODE, codes, ERROR_MSG)}
+                  // className={styles.itemNotAllowed}
+                  className={getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
                 >
                   导入点位
-                </Link>
+                </Link> */}
+                <AuthLink
+                  code={HOST_IMPORT_CODE}
+                  codes={codes}
+                  to={`/fire-control/user-transmission-device/${companyId}/import-point-position/${record.id}`}
+                >
+                  导入点位
+                </AuthLink>
               </MenuItem>
             </Menu>
           );
 
           return (
             <Fragment>
-              <a
+              {/* <a
                 className={getDisabled(HOST_UPDATE_CODE, codes) ? styles.tableAStyleNotAllowed : styles.tableAStyle }
+                // className = {styles.tableAStyleNotAllowed}
                 onClick={getOnClick(HOST_UPDATE_CODE, codes, () =>
                   handleHostUpdateClick({
                     ...hostList[index],
@@ -174,11 +199,34 @@ export default class DeviceDetailCard extends Component {
                 }
               >
                 编辑
-              </a>
+              </a> */}
+              <AuthA
+                code={HOST_UPDATE_CODE}
+                codes={codes}
+                style={hostTableAStyle}
+                onClick={() =>
+                  handleHostUpdateClick({
+                    ...hostList[index],
+                    transmissionDeviceCode: deviceCode,
+                    transmissionId: id,
+                  })
+                }
+              >
+                编辑
+              </AuthA>
               <Dropdown overlay={menu}>
-                <a className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : {}}>
+                {/* <a
+                  className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
+                  // className={styles.notAllowed}
+                >
                   更多<Icon type="down" />
-                </a>
+                </a> */}
+                <AuthA
+                  hasAuth={hasAuthority(HOST_DELETE_CODE, codes) || hasAuthority(HOST_IMPORT_CODE, codes)}
+                  // className={styles.notAllowed}
+                >
+                  更多<Icon type="down" />
+                </AuthA>
               </Dropdown>
             </Fragment>
           );

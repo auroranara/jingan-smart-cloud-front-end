@@ -167,6 +167,8 @@ export function getRoutes(path, routerData) {
 
 export function getPageQuery() {
   return parse(window.location.href.split('?')[1]);
+  // const arr = window.location.href.split('?')
+  // return parse(arr[arr.length - 1]);
 }
 
 export function getQueryPath(path = '', query = {}) {

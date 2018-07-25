@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
-import { getOnClick } from '../../../utils/customAuth';
+import { AuthLink, ERROR_MSG } from '../../../utils/customAuth';
 
 const PAGE_SIZE = 18;
 const CODE = 'fireControl.userTransmissionDevice.view';
@@ -189,7 +189,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/fire-control/user-transmission-device/${item.id}/detail`}  onClick={getOnClick(CODE, codes)}>
+                <AuthLink code={CODE} codes={codes} to={`/fire-control/user-transmission-device/${item.id}/detail`}  errMsg={ERROR_MSG}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined
@@ -204,7 +204,7 @@ export default class UserTransmissionDevice extends PureComponent {
                       <p className={styles.quantityDescrip}>传输装置数</p>
                     </div>
                   </Card>
-                </Link>
+                </AuthLink>
               </List.Item>
             )}
           />

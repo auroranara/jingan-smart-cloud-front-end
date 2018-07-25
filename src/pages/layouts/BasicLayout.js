@@ -17,7 +17,10 @@ import Context from './MenuContext';
 
 import Exception403 from '../Exception/403';
 import Exception404 from '../Exception/404';
-import { pathArray, getPath } from '../../components/_utils/AppMenu';
+import { pathArray } from '../../components/_utils/AppMenu';
+import { getPath } from '../../utils/customAuth';
+import { Spin } from 'antd';
+import styles from '../../index.less';
 
 const { Content } = Layout;
 const { check } = Authorized;
@@ -92,13 +95,13 @@ class BasicLayout extends React.PureComponent {
       }
     });
     if (!currRouterData) {
-      return 'Ant Design Pro';
+      return '晶安智慧云';
     }
     const message = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name,
     });
-    return `${message} - Ant Design Pro`;
+    return `${message} - 晶安智慧云`;
   };
 
   getLayoutStyle = () => {
@@ -160,6 +163,7 @@ class BasicLayout extends React.PureComponent {
   render() {
     const {
       authorityFn,
+      currentUserLoaded, // 判断currentUser的数据是否已经请求到，没有请求到时渲染Spin，请求到后渲染目标组件
       isMobile,
       silderTheme,
       layout: PropsLayout,
@@ -167,11 +171,11 @@ class BasicLayout extends React.PureComponent {
       location: { pathname },
     } = this.props;
 
-    // console.log('basicLayout', pathname);
+    // console.log('basicLayout', pathname, authorityFn(pathname)());
 
     const isTop = PropsLayout === 'topmenu';
     // authority对应的函数返回值是true时，包含两种情况，即当前用户无权限403和网页不存在404，所以得在这里做一下判断
-    // 当由router.config.js中配置生成的路径数组中不包含当前pathname时，则路径不存在，剩下的情况就是用户无权限访问当前路径
+    // 当由router.config.js中配置生成的路径数组中不包含当前pathname时，则路径对应的页面不存在，剩下的情况就是用户无权限访问当前路径对应的页面
     const noMatch = getPath(pathname, pathArray) ? <Exception403 /> : <Exception404 />;
     const layout = (
       <Layout>
@@ -188,7 +192,11 @@ class BasicLayout extends React.PureComponent {
           <Header handleMenuCollapse={this.handleMenuCollapse} logo={logo} {...this.props} />
           {/* <Content style={this.getContentStyle()}>{children}</Content> */}
           <Content style={this.getContentStyle()}>
-            <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>{children}</Authorized>
+            {
+              currentUserLoaded
+                ? <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>{children}</Authorized>
+                : <Spin size="large" className={styles.globalSpin} />
+            }
           </Content>
           <Footer />
         </Layout>

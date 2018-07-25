@@ -30,7 +30,7 @@ const breadcrumbList = [
   },
   {
     title,
-    name:'查看账号',
+    name: '查看账号',
   },
 ];
 
@@ -45,8 +45,7 @@ const fieldLabels = {
   accountStatus: '账号状态',
   treeIds: '数据权限',
 };
-
-const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '一般企业'];
+const UnitTypes = ['', '企事业主体', '政府机构', '运营企业', '维保企业'];
 
 /* 获取无数据 */
 const getEmptyData = () => {

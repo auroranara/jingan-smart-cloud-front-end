@@ -24,12 +24,14 @@ class SettingDarwer extends PureComponent {
     const {
       setting: { grid, fixedHeader, layout, autoHideHeader, fixSiderbar },
     } = this.props;
+    // console.log('grid', grid);
     return [
       {
         title: '栅格模式',
         action: [
           <Select
             value={grid}
+            // value="Wide"
             size="small"
             onSelect={value => this.changeSetting('grid', value)}
             style={{ width: 80 }}
@@ -94,6 +96,7 @@ class SettingDarwer extends PureComponent {
     }
     this.setState(nextState, () => {
       const { dispatch } = this.props;
+      // console.log('state in SettinDrawer', this.state);
       dispatch({
         type: 'setting/changeSetting',
         payload: this.state,

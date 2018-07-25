@@ -12,7 +12,7 @@ export default {
     rules: [
       {
         required: true,
-        message: '请输入用户名!',
+        message: '请输入用户名/手机号!',
       },
     ],
   },
