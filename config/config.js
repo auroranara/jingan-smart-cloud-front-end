@@ -16,8 +16,9 @@ const pageRoutes = require('./router.config');
 export default {
   proxy: {
     '/acloud_new': {
-      target: 'http://192.168.10.67:9080',
       // target: 'http://192.168.10.56',
+      target: 'http://192.168.10.67:9080',
+      // target: 'http://192.168.10.68:9080',
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },

@@ -1,10 +1,12 @@
 import pathToRegexp from 'path-to-regexp';
-import { message } from 'antd';
+import { Link } from 'react-router-dom';
+import { message, Button } from 'antd';
 
 // import styles from './customAutho.less';
 
 // 为了防止从store.user.currentUser.permissionCodes获取的codes是个undefined
 export function hasAuthority(code, codes = []) {
+  // console.log(code, codes);
   return codes.includes(code);
 }
 
@@ -179,10 +181,58 @@ export function getPath(pathname, pathArray) {
   }
 }
 
-export function authWrapper(code, codes, WrappedComponent) {
+export function authWrapper(WrappedComponent) {
   return function (props) {
-    if (hasAuthority(code, codes))
-      return <WrappedComponent {...props} />;
-    return <WrappedComponent />
-  }
+    // console.log(props);
+    // 将需要的属性分离出来
+    const { code, codes, hasAuth, errMsg, children = null, ...restProps } = props;
+    // 将无权限时需要改变的属性：超链接，样式，onClick等剥离出来
+    const { href, to, onClick, style = {}, ...disabledRestProps } = restProps;
+
+    let authorized;
+    // 如果自定义disabled，则不通过hasAuthority(code, codes)判断是否有权限
+    if (hasAuth !== undefined)
+      authorized = hasAuth;
+    else
+      authorized = hasAuthority(code, codes);
+
+    // console.log(authorized);
+
+    if (authorized)
+      // 若有权限，则原样返回组件
+      return <WrappedComponent {...restProps}>{children}</WrappedComponent>;
+    // 没权限，则将上述剥离出来的属性丢弃或重新处理
+    return (
+      <WrappedComponent
+        {...disabledRestProps}
+        to=""
+        disabled
+        style={{ ...style, color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed', pointerEvents: 'auto' }}
+        onClick={(ev) => {
+          if (errMsg)
+            message.warn(errMsg);
+          ev.preventDefault();
+        }}
+      >
+        {children}
+      </WrappedComponent>
+    );
+  };
+}
+
+// export function AuthA(props) {
+//   const { code, codes, style, children, onClick, ...restProps } = props;
+//   if (hasAuthority(code, codes))
+//     return <a {...restProps} onClick={onClick} style={style}>{children}</a>;
+//   return <a {...restProps} style={{...style, color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed'}}>{children}</a>;
+// }
+
+export const AuthA = authWrapper('a');
+
+export const AuthSpan = authWrapper('span');
+
+export const AuthLink = authWrapper(Link);
+
+export function AuthButton({ code, codes, ...restProps }) {
+  return <Button {...restProps} disabled={getDisabled(code, codes)} />;
 }
