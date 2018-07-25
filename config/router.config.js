@@ -129,7 +129,8 @@ module.exports = [
                 component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail',
               },
               {
-                path: '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
+                path:
+                  '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
                 code: 'fireControl.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './FireControl/UserTransmissionDevice/ImportPointPosition',
@@ -170,6 +171,12 @@ module.exports = [
                 code: 'fireControl.maintenanceCompany.view',
                 name: 'detail',
                 component: './FireControl/MaintenanceCompany/MaintenanceCompanyDetail',
+              },
+              {
+                path: '/fire-control/maintenance-company/serviceList/:id',
+                code: 'fireControl.maintenanceCompany.serviceListView',
+                name: 'serviceList',
+                component: './FireControl/MaintenanceCompany/ServiceUnitList',
               },
             ],
           },
@@ -217,6 +224,42 @@ module.exports = [
                 code: 'roleAuthorization.accountManagement.view',
                 name: 'detail',
                 component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
+              },
+            ],
+          },
+          {
+            path: '/role-authorization/role',
+            code: 'roleAuthorization.role',
+            name: 'role',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/role-authorization/role',
+                redirect: 'list',
+              },
+              {
+                path: '/role-authorization/role/list',
+                name: 'list',
+                code: 'roleAuthorization.role.listView',
+                component: './RoleAuthorization/Role/RoleList',
+              },
+              {
+                path: '/role-authorization/role/detail/:id',
+                name: 'detail',
+                code: 'roleAuthorization.role.view',
+                component: './RoleAuthorization/Role/RoleDetail',
+              },
+              {
+                path: '/role-authorization/role/add',
+                name: 'add',
+                code: 'roleAuthorization.role.add',
+                component: './RoleAuthorization/Role/RoleHandler',
+              },
+              {
+                path: '/role-authorization/role/edit/:id',
+                name: 'edit',
+                code: 'roleAuthorization.role.edit',
+                component: './RoleAuthorization/Role/RoleHandler',
               },
             ],
           },
@@ -273,7 +316,7 @@ module.exports = [
               {
                 path: '/dynamic-monitoring/fire-alarm/history-record/:companyId',
                 name: 'historyRecord',
-                code: 'dynamicMonitoring.fireAlarm.historyRecord',
+                code: 'dynamicMonitoring.fireAlarm.historyRecordView',
                 component: './DynamicMonitoring/FireAlarm/HistoryRecord',
               },
               // { path: '/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },

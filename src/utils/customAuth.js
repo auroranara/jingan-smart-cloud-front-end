@@ -1,9 +1,12 @@
 import pathToRegexp from 'path-to-regexp';
-import { message } from 'antd';
+import { Link } from 'react-router-dom';
+import { message, Button } from 'antd';
 
-// const emptyFn = () => { };
+// import styles from './customAutho.less';
 
-export function hasAuthority(code, codes) {
+// 为了防止从store.user.currentUser.permissionCodes获取的codes是个undefined
+export function hasAuthority(code, codes = []) {
+  // console.log(code, codes);
   return codes.includes(code);
 }
 
@@ -12,36 +15,6 @@ export function getDisabled(code, codes) {
 }
 
 export const ERROR_MSG = '您没有进行当前操作的权限';
-
-// 不传回调函数只传msg或传不带参数的回调函数
-export function getOnClick(code, codes, callbackOrMsg, msg) {
-  // 不传回调函数只传msg
-  if (typeof callbackOrMsg === 'string')
-    return getOnClickByArg(code, codes, undefined, undefined, callbackOrMsg);
-  // 传入无参的回调函数，msg可传可不传
-  return getOnClickByArg(code, codes, callbackOrMsg, [], msg);
-}
-
-/* 传带参数的回调函数，只有一个参数且不是数组时，可以直接传，或者可以将参数放入数组中
- * 注意特殊的是当只有一个参数，且参数为数组时，为了不与上述的传参方式冲突，必须将数组参数放入数组中，如f([0,1]) -> getOnClickByArg(code, codes, f, [[0,1]])
- * 否则若getOnClickByArg(code, menus, f, [0,1])这么传时，会f(...[0,1])这么调用函数
- */
-export function getOnClickByArg(code, codes, callback, args, msg) {
-  return ev => {
-    if (hasAuthority(code, codes)) {
-      if (callback && Array.isArray(args))
-        callback(...args);
-      else if (callback)
-        callback(args);
-      return;
-    }
-
-    if (msg)
-      message.error(msg);
-
-    ev.preventDefault();
-  }
-}
 
 // 将router.config.js配置转化成路由，源码中的函数，并未改动
 export function formatter(data, parentPath = '', parentAuthority, parentName) {
@@ -69,8 +42,8 @@ export function formatter(data, parentPath = '', parentAuthority, parentName) {
   });
 }
 
-// 将menus数组中不存在的路径过滤掉，使其再菜单中不显示
-export function filterMenus(MenuData, codes, codeMap) {
+// 将menus数组中不存在的路径过滤掉，使其再菜单中不显示，codes=[]也是为了防止从store.user.currentUser.permissionCodes获取的是undefined
+export function filterMenus(MenuData, codes = [], codeMap) {
   const menuData = [];
   for (let m of MenuData) {
     const { path, children } = m;
@@ -113,6 +86,9 @@ export function getCodeMap(menuData, result) {
 
 // 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
 export function generateAuthFn(codes, codeMap, pathArray) {
+  // console.log('codes', codes);
+  // console.log('codeMap', codeMap);
+  // console.log('pathArray', pathArray);
   return pathname => () => {
     // exception页面无需拦截
     if (pathname.toLowerCase().includes('exception'))
@@ -140,3 +116,117 @@ export function getPath(pathname, pathArray) {
       return path;
   }
 }
+
+export function authWrapper(WrappedComponent) {
+  return function (props) {
+    // console.log(props);
+    // 将需要的属性分离出来
+    const { code, codes, hasAuth, errMsg, children = null, ...restProps } = props;
+    // 将无权限时需要改变的属性：超链接，样式，onClick等剥离出来
+    const { href, to, onClick, style = {}, ...disabledRestProps } = restProps;
+
+    let authorized;
+    // 如果自定义disabled，则不通过hasAuthority(code, codes)判断是否有权限
+    if (hasAuth !== undefined)
+      authorized = hasAuth;
+    else
+      authorized = hasAuthority(code, codes);
+
+    // console.log(authorized);
+
+    if (authorized)
+      // 若有权限，则原样返回组件
+      return <WrappedComponent {...restProps}>{children}</WrappedComponent>;
+    // 没权限，则将上述剥离出来的属性丢弃或重新处理
+    return (
+      <WrappedComponent
+        {...disabledRestProps}
+        to=""
+        disabled
+        style={{ ...style, color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed', pointerEvents: 'auto' }}
+        onClick={(ev) => {
+          if (errMsg)
+            message.warn(errMsg);
+          ev.preventDefault();
+        }}
+      >
+        {children}
+      </WrappedComponent>
+    );
+  };
+}
+
+// 组件中需要多传入code, codes, 如果要message提示，还需传入errMsg，需要自己判断权限，传入hasAuth
+export const AuthA = authWrapper('a');
+
+export const AuthSpan = authWrapper('span');
+
+export const AuthLink = authWrapper(Link);
+
+export function AuthButton({ code, codes, ...restProps }) {
+  return <Button {...restProps} disabled={getDisabled(code, codes)} />;
+}
+
+/* 六种传参方式
+ * f(code, codes)
+ * f(code, codes, msg)
+ * f(code, codes, callback)
+ * f(code, codes, callback, args)
+ * f(code, codes, callback, msg)
+ * f(code, codes, callback, args, msg)
+ */
+// export function getOnClick(code, codes, callbackOrMsg, argsOrMsg, msg) {
+//   const callbackOrMsgType = typeof callbackOrMsg;
+//   const argsOrMsgType = typeof argsOrMsg;
+//   const isArray = Array.isArray(argsOrMsg);
+//   const msgType = typeof msg;
+//   // console.log(code,'callbackOrMsgType', callbackOrMsgType,'argsOrMsgType', argsOrMsgType, 'isArray', isArray, 'msgType', msgType);
+
+//   // getOnClick(code, codes)
+//   if (callbackOrMsgType === 'undefined') {
+//     return getOnClickInner(code, codes, undefined, undefined, undefined);
+//   }
+//   // getOnClick(code, codes, msg)
+//   else if (callbackOrMsgType === 'string') {
+//     // console.log('f(code, codes, msg)')
+//     return getOnClickInner(code, codes, undefined, undefined, callbackOrMsg);
+//   }
+//   // getOnClick(code, codes, callback)
+//   else if (callbackOrMsgType === 'function' && argsOrMsgType === 'undefined') {
+//     // console.log('f(code, codes, callback)');
+//     return getOnClickInner(code, codes, callbackOrMsg, []);
+//   }
+//   // getOnClick(code, codes, callback, args)
+//   else if (callbackOrMsgType === 'function' && isArray) {
+//     // console.log('f(code, codes, callback, args)');
+//     return getOnClickInner(code, codes, callbackOrMsg, argsOrMsg);
+//   }
+//   // getOnClick(code, codes, callback, msg)
+//   else if (callbackOrMsgType === 'function' && argsOrMsgType === 'string') {
+//     // console.log('f(code, codes, callback, msg)');
+//     return getOnClickInner(code, codes, callbackOrMsg, [], msg);
+//   }
+//   // getOnClick(code, codes, callback, args, msg)
+//   else if (callbackOrMsgType === 'function' && isArray && msgType === 'string') {
+//     // console.log('f(code, codes, callback, args, msg)');
+//     return getOnClickInner(code, codes, callbackOrMsg, argsOrMsg, msg);
+//   }
+//   else
+//     console.warn('Arguments in getOnClick function in customAuth.js is wrong');
+// }
+
+// export function getOnClickInner(code, codes = [], callback, args, msg) {
+//   return ev => {
+//     if (hasAuthority(code, codes)) {
+//       if (callback && Array.isArray(args)) {
+//         callback(...args);
+//       }
+//       return;
+//     }
+
+//     if (msg)
+//       message.error(msg);
+
+//     ev.preventDefault();
+//   }
+// }

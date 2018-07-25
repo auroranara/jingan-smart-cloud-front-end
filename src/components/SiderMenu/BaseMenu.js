@@ -28,11 +28,13 @@ export const getMenuMatches = (flatMenuKeys, path) => {
   });
 };
 
+
+// BaseMenu布局不同时，在TopNavHeader及SiderMenu组件中引入
 export default class BaseMenu extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.flatMenuKeys = this.getFlatMenuKeys(props.menuData);
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.flatMenuKeys = this.getFlatMenuKeys(props.menuData); // 一开始menuData = []，所以flatMenuKeys = []
+  // }
 
   /**
    * Recursively flatten the data
@@ -72,8 +74,16 @@ export default class BaseMenu extends PureComponent {
   getSelectedMenuKeys = () => {
     const {
       location: { pathname },
+      menuData,
+      flatMenuKeys,
     } = this.props;
-    return urlToList(pathname).map(itemPath => getMenuMatches(this.flatMenuKeys, itemPath).pop());
+
+    // flatMenuKeys存在时，则由SiderMenu传入，父组件为SiderMenu，布局为菜单栏在左边，当flatMenuKeys不存在时，则父组件为TopNavBar，布局为菜单栏在上面
+    // 当然其实可以直接fmKeys = this.getFlatMenuKeys(menuData)，而不论布局，但是这样每次渲染都会进行计算，所以当在左边时，直接传入就避免了一直调用getFlatMenuKeys
+    const fMKeys = flatMenuKeys || this.getFlatMenuKeys(menuData);
+    // return urlToList(pathname).map(itemPath => getMenuMatches(this.flatMenuKeys, itemPath).pop());
+    // return urlToList(pathname).map(itemPath => getMenuMatches(this.getFlatMenuKeys(menuData), itemPath).pop());
+    return urlToList(pathname).map(itemPath => getMenuMatches(fMKeys, itemPath).pop());
   };
 
   /**
@@ -163,12 +173,14 @@ export default class BaseMenu extends PureComponent {
 
   render() {
     const { openKeys, theme, mode } = this.props;
+    // console.log('baseMenu', this.props, Date.now());
     // if pathname can't match, use the nearest parent's key
     let selectedKeys = this.getSelectedMenuKeys();
     if (!selectedKeys.length && openKeys) {
       selectedKeys = [openKeys[openKeys.length - 1]];
     }
     let props = {};
+    // console.log('keys in menu', selectedKeys, openKeys);
     if (openKeys) {
       props = {
         openKeys,

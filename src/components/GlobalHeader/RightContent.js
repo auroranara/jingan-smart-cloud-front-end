@@ -7,6 +7,7 @@ import toUpper from 'lodash/toUpper';
 import NoticeIcon from '../NoticeIcon';
 // import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
+import { getToken } from 'utils/authority';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -86,7 +87,8 @@ export default class GlobalHeaderRight extends PureComponent {
         </Menu.Item>
       </Menu>
     );
-    const noticeData = this.getNoticeData();
+    // const noticeData = this.getNoticeData();
+    const url = `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}`;
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
@@ -96,7 +98,7 @@ export default class GlobalHeaderRight extends PureComponent {
         <Tooltip title="数据大屏">
           <a
             target="_blank"
-            href="/acloud_new/v2/hdf/fireIndex.htm"
+            href={url}
             rel="noopener noreferrer"
             className={styles.action}
             title="数据大屏"
@@ -104,36 +106,6 @@ export default class GlobalHeaderRight extends PureComponent {
             <Icon type="line-chart" />
           </a>
         </Tooltip>
-        <NoticeIcon
-          className={styles.action}
-          count={currentUser ? currentUser.notifyCount : 0}
-          onItemClick={(item, tabProps) => {
-            console.log(item, tabProps); // eslint-disable-line
-          }}
-          onClear={onNoticeClear}
-          onPopupVisibleChange={onNoticeVisibleChange}
-          loading={fetchingNotices}
-          popupAlign={{ offset: [20, -16] }}
-        >
-          <NoticeIcon.Tab
-            list={noticeData['通知']}
-            title="通知"
-            emptyText="你已查看所有通知"
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
-          />
-          <NoticeIcon.Tab
-            list={noticeData['消息']}
-            title="消息"
-            emptyText="您已读完所有消息"
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/sAuJeJzSKbUmHfBQRzmZ.svg"
-          />
-          <NoticeIcon.Tab
-            list={noticeData['待办']}
-            title="待办"
-            emptyText="你已完成所有待办"
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
-          />
-        </NoticeIcon>
         {currentUser.userName ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
