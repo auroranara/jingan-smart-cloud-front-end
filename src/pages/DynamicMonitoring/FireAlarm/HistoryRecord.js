@@ -131,7 +131,8 @@ export default class HistoryRecord extends PureComponent {
               <Select
                 allowClear
                 placeholder="设施部件类型"
-                style={{ width: 130 }}
+                style={{ width: 200 }}
+                dropdownMatchSelectWidth={false}
               >
                 {dictDataList.map(item => (
                   <Option value={item.id} key={item.id}>
@@ -145,7 +146,7 @@ export default class HistoryRecord extends PureComponent {
             {getFieldDecorator('specificLocation')(
               <Input
                 placeholder="请输入具体位置"
-                style={{ width: 130 }} />
+                style={{ width: 150 }} />
             )}
           </FormItem>
           <FormItem>
