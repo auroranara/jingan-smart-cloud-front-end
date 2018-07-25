@@ -46,3 +46,15 @@
     }
   }
 }
+
+:global {
+  .ant-card-actions > li > span a[disabled] {
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+    text-decoration: none;
+    pointer-events: auto;
+  }
+  .ant-card-actions > li > span a[disabled]:hover {
+    color: rgba(0, 0, 0, 0.25);
+  }
+}

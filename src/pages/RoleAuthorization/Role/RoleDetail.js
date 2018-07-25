@@ -4,16 +4,19 @@ import { Form, Card, Spin, Tree, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
 
 const { Description } = DescriptionList;
 const { TreeNode } = Tree;
 
 // 标题
 const title = '角色详情';
-// 返回地址
-const backUrl = '/role-authorization/role/list';
-// 编辑地址
-const editUrl = '/role-authorization/role/edit/';
+// 获取链接地址
+const { role: { list: backUrl, edit: editUrl } } = urls;
+// 获取code
+const { role: { list: listCode, edit: editCode } } = codes;
 // 面包屑
 const breadcrumbList = [
   {
@@ -40,8 +43,9 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(({ role, loading }) => ({
+@connect(({ role, user, loading }) => ({
   role,
+  user,
   loading: loading.models.role,
 }), (dispatch) => ({
   // 获取详情
@@ -143,12 +147,16 @@ export default class RoleDetail extends PureComponent {
 
   /* 按钮组 */
   renderButtonGroup() {
-    const { goBack, goToEdit, match: { params: { id } } } = this.props;
+    const { goBack, goToEdit, match: { params: { id } }, user: { currentUser: { permissionCodes } } } = this.props;
+    // 是否有列表权限
+    const hasListAuthority = hasAuthority(listCode, permissionCodes);
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
-        <Button type="primary" onClick={() => {goToEdit(id)}}>编辑</Button>
+        <Button disabled={!hasListAuthority} onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
+        <Button type="primary" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
       </div>
     );
   }

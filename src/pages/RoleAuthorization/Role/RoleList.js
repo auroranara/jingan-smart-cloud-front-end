@@ -6,6 +6,9 @@ import VisibilitySensor from 'react-visibility-sensor';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
 
 import styles from './Role.less';
 
@@ -29,12 +32,10 @@ const breadcrumbList = [
     name: title,
   },
 ];
-/* 详情页面地址 */
-const detailUrl = '/role-authorization/role/detail/';
-/* 编辑页面地址 */
-const editUrl = '/role-authorization/role/edit/';
-/* 新增页面地址 */
-const addUrl = '/role-authorization/role/add';
+// 获取链接地址
+const { role: { detail: detailUrl, edit: editUrl, add: addUrl } } = urls;
+// 获取code
+const { role: { detail: detailCode, edit: editCode, add: addCode } } = codes;
 /* 去除两边空格 */
 const transform = value => value.trim();
 /* 获取无数据 */
@@ -43,9 +44,12 @@ const getEmptyData = () => {
 };
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
+// 阻止默认行为
+const preventDefault = (e) => {e.preventDefault()};
 
-@connect(({ role, loading }) => ({
+@connect(({ role, user, loading }) => ({
   role,
+  user,
   loading: loading.models.role,
 }), (dispatch) => ({
   /* 获取角色列表 */
@@ -225,7 +229,7 @@ export default class RoleList extends PureComponent {
 
   /* 渲染表单 */
   renderForm() {
-    const { goToAdd, role: { permissionTree } } = this.props;
+    const { goToAdd, role: { permissionTree }, user: { currentUser: { permissionCodes } } } = this.props;
     /* 表单字段 */
     const fields = [
       {
@@ -253,13 +257,15 @@ export default class RoleList extends PureComponent {
         transform,
       },
     ];
+    // 是否有新增权限
+    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
 
     return (
       <Card>
         <InlineForm
           fields={fields}
           gutter={{ lg: 48, md: 24 }}
-          action={<Button type="primary" onClick={goToAdd}>新增</Button>}
+          action={<Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>新增</Button>}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
@@ -271,8 +277,13 @@ export default class RoleList extends PureComponent {
   renderList() {
     const {
       role: { data: { list } },
+      user: { currentUser: { permissionCodes } },
       goToDetail,
     } = this.props;
+    // 是否有查看权限
+    const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -293,8 +304,8 @@ export default class RoleList extends PureComponent {
                   title={name}
                   className={styles.card}
                   actions={[
-                    <Link to={detailUrl+id}>查看</Link>,
-                    <Link to={editUrl+id}>编辑</Link>,
+                    <Link to={detailUrl+id} onClick={hasDetailAuthority ? null : preventDefault} disabled={!hasDetailAuthority}>查看</Link>,
+                    <Link to={editUrl+id} onClick={hasEditAuthority ? null : preventDefault} disabled={!hasEditAuthority}>编辑</Link>,
                   ]}
                   // extra={
                   //   <Button
@@ -309,10 +320,10 @@ export default class RoleList extends PureComponent {
                   // }
                 >
                   <div
-                    onClick={() => {
+                    onClick={hasDetailAuthority ? () => {
                       goToDetail(id);
-                    }}
-                    style={{ cursor: 'pointer' }}
+                    } : null}
+                    style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
                     <p>{description || getEmptyData()}</p>
                   </div>
