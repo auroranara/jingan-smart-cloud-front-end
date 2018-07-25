@@ -14,7 +14,8 @@ export function getDisabled(code, codes) {
 
 export const ERROR_MSG = '您没有进行当前操作的权限';
 
-/* 五种传参方式
+/* 六种传参方式
+ * f(code, codes)
  * f(code, codes, msg)
  * f(code, codes, callback)
  * f(code, codes, callback, args)
@@ -27,8 +28,13 @@ export function getOnClick(code, codes, callbackOrMsg, argsOrMsg, msg) {
   const isArray = Array.isArray(argsOrMsg);
   const msgType = typeof msg;
   // console.log(code,'callbackOrMsgType', callbackOrMsgType,'argsOrMsgType', argsOrMsgType, 'isArray', isArray, 'msgType', msgType);
+
+  // getOnClick(code, codes)
+  if (callbackOrMsgType === 'undefined') {
+    return getOnClickInner(code, codes, undefined, undefined, undefined);
+  }
   // getOnClick(code, codes, msg)
-  if (callbackOrMsgType === 'string') {
+  else if (callbackOrMsgType === 'string') {
     // console.log('f(code, codes, msg)')
     return getOnClickInner(code, codes, undefined, undefined, callbackOrMsg);
   }
@@ -56,7 +62,7 @@ export function getOnClick(code, codes, callbackOrMsg, argsOrMsg, msg) {
     console.warn('Arguments in getOnClick function in customAuth.js is wrong');
 }
 
-export function getOnClickInner(code, codes, callback, args, msg) {
+export function getOnClickInner(code, codes = [], callback, args, msg) {
   return ev => {
     if (hasAuthority(code, codes)) {
       if (callback && Array.isArray(args)) {
