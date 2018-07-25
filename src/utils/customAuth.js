@@ -139,6 +139,7 @@ export function authWrapper(WrappedComponent) {
           color: 'rgba(0,0,0,0.25)',
           cursor: 'not-allowed',
           pointerEvents: 'auto',
+          textDecoration: 'none',
         }}
         onClick={ev => {
           if (errMsg) message.warn(errMsg);
@@ -155,6 +156,8 @@ export function authWrapper(WrappedComponent) {
 export const AuthA = authWrapper('a');
 
 export const AuthSpan = authWrapper('span');
+
+export const AuthDiv = authWrapper('div');
 
 export const AuthLink = authWrapper(Link);
 

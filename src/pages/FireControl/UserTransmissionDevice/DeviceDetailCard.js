@@ -4,14 +4,15 @@ import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import styles from './DeviceDetailCard.less';
-import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton, ERROR_MSG } from '../../../utils/customAuth';
+import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton } from '../../../utils/customAuth';
+import buttonCodes from '../../../utils/codes';
 
-const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
-const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
-const HOST_ADD_CODE = 'fireControl.userTransmissionDevice.host.add';
-const HOST_UPDATE_CODE = 'fireControl.userTransmissionDevice.host.edit';
-const HOST_DELETE_CODE = 'fireControl.userTransmissionDevice.host.delete';
-const HOST_IMPORT_CODE = 'fireControl.userTransmissionDevice.host.importPointPosition';
+// const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
+// const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
+// const HOST_ADD_CODE = 'fireControl.userTransmissionDevice.host.add';
+// const HOST_UPDATE_CODE = 'fireControl.userTransmissionDevice.host.edit';
+// const HOST_DELETE_CODE = 'fireControl.userTransmissionDevice.host.delete';
+// const HOST_IMPORT_CODE = 'fireControl.userTransmissionDevice.host.importPointPosition';
 
 const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
@@ -36,7 +37,7 @@ export default class DeviceDetailCard extends Component {
         <Button
           // type="primary"
           // style={deviceButtonStyle}
-          disabled={getDisabled(DEVICE_UPDATE_CODE, codes)}
+          disabled={getDisabled(buttonCodes.transmission.update, codes)}
           onClick={() =>{ handleDeviceUpdateClick(deviceData); } }
         >
           编辑
@@ -44,7 +45,7 @@ export default class DeviceDetailCard extends Component {
         <Button
           // type="primary"
           // style={deviceButtonStyle}
-          disabled={getDisabled(DEVICE_DELETE_CODE, codes)}
+          disabled={getDisabled(buttonCodes.transmission.delete, codes)}
           onClick={() => handleDeviceDeleteClick(deviceData.id)}
         >
           删除
@@ -66,7 +67,7 @@ export default class DeviceDetailCard extends Component {
       // </Button>
       <AuthButton
         type="primary"
-        code={HOST_ADD_CODE}
+        code={buttonCodes.transmission.host.add}
         codes={codes}
         onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
       >
@@ -159,7 +160,7 @@ export default class DeviceDetailCard extends Component {
                 >
                   删除
                 </a> */}
-                <AuthA code={HOST_DELETE_CODE} codes={codes} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
+                <AuthA code={buttonCodes.transmission.host.delete} codes={codes} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
               </MenuItem>
               <MenuItem>
                 {/* <Link
@@ -175,7 +176,7 @@ export default class DeviceDetailCard extends Component {
                   导入点位
                 </Link> */}
                 <AuthLink
-                  code={HOST_IMPORT_CODE}
+                  code={buttonCodes.transmission.host.import}
                   codes={codes}
                   to={`/fire-control/user-transmission-device/${companyId}/import-point-position/${record.id}`}
                 >
@@ -201,7 +202,7 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a> */}
               <AuthA
-                code={HOST_UPDATE_CODE}
+                code={buttonCodes.transmission.host.update}
                 codes={codes}
                 style={hostTableAStyle}
                 onClick={() =>
@@ -222,7 +223,7 @@ export default class DeviceDetailCard extends Component {
                   更多<Icon type="down" />
                 </a> */}
                 <AuthA
-                  hasAuth={hasAuthority(HOST_DELETE_CODE, codes) || hasAuthority(HOST_IMPORT_CODE, codes)}
+                  hasAuth={hasAuthority(buttonCodes.transmission.host.delete, codes) || hasAuthority(buttonCodes.transmission.host.import, codes)}
                   // className={styles.notAllowed}
                 >
                   更多<Icon type="down" />
