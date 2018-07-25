@@ -316,7 +316,7 @@ module.exports = [
               {
                 path: '/dynamic-monitoring/fire-alarm/history-record/:companyId',
                 name: 'historyRecord',
-                code: 'dynamicMonitoring.fireAlarm.historyRecord',
+                code: 'dynamicMonitoring.fireAlarm.historyRecordView',
                 component: './DynamicMonitoring/FireAlarm/HistoryRecord',
               },
               // { path: '/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
