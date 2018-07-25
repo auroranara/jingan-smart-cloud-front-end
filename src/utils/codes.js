@@ -6,4 +6,7 @@ export default {
     edit: 'roleAuthorization.role.edit',
     delete: 'roleAuthorization.role.delete',
   },
+  account: {
+    edit: 'roleAuthorization.accountManagement.edit',
+  },
 };

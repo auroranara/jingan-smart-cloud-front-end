@@ -49,11 +49,9 @@ export function filterMenus(MenuData, codes = [], codeMap) {
     const { path, children } = m;
     // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
     const menu = { ...m };
-    if (path !== '/' && !codes.includes(codeMap[path]))
-      continue;
+    if (path !== '/' && !codes.includes(codeMap[path])) continue;
 
-    if (children)
-      menu.children = filterMenus(children, codes, codeMap);
+    if (children) menu.children = filterMenus(children, codes, codeMap);
 
     menuData.push(menu);
   }
@@ -66,21 +64,19 @@ export function getCodeMap(menuData, result) {
   for (let m of menuData) {
     const { path, code, locale, children } = m;
 
-    if (path === '/' || result[path])
-      continue;
+    if (path === '/' || result[path]) continue;
 
     if (code) {
       result[path] = code;
       result[code] = path;
-    } else if(locale) {
+    } else if (locale) {
       // locle = 'menu.fuck.me',去掉 'menu.'
       const loc = locale.slice(5);
       result[path] = loc;
       result[loc] = path;
     }
 
-    if (children)
-      getCodeMap(children, result);
+    if (children) getCodeMap(children, result);
   }
 }
 
@@ -91,13 +87,11 @@ export function generateAuthFn(codes, codeMap, pathArray) {
   // console.log('pathArray', pathArray);
   return pathname => () => {
     // exception页面无需拦截
-    if (pathname.toLowerCase().includes('exception'))
-      return true;
+    if (pathname.toLowerCase().includes('exception')) return true;
 
     // 为了防止出现 codeMap[undefined]的情况，所以要判断下path是否存在，不存在则是pathname对应页面不存在，直接返回false
     const path = getPath(pathname, pathArray);
-    if (!path)
-      return false;
+    if (!path) return false;
 
     const hasPath = codes.includes(codeMap[path]);
     // console.log('codes', codes);
@@ -112,13 +106,12 @@ export function getPath(pathname, pathArray) {
     const pathRegexp = pathToRegexp(path);
     const isMatch = pathRegexp.test(pathname);
     // console.log('isMatch', isMatch);
-    if (isMatch)
-      return path;
+    if (isMatch) return path;
   }
 }
 
 export function authWrapper(WrappedComponent) {
-  return function (props) {
+  return function(props) {
     // console.log(props);
     // 将需要的属性分离出来
     const { code, codes, hasAuth, errMsg, children = null, ...restProps } = props;
@@ -127,10 +120,8 @@ export function authWrapper(WrappedComponent) {
 
     let authorized;
     // 如果自定义disabled，则不通过hasAuthority(code, codes)判断是否有权限
-    if (hasAuth !== undefined)
-      authorized = hasAuth;
-    else
-      authorized = hasAuthority(code, codes);
+    if (hasAuth !== undefined) authorized = hasAuth;
+    else authorized = hasAuthority(code, codes);
 
     // console.log(authorized);
 
@@ -143,10 +134,14 @@ export function authWrapper(WrappedComponent) {
         {...disabledRestProps}
         to=""
         disabled
-        style={{ ...style, color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed', pointerEvents: 'auto' }}
-        onClick={(ev) => {
-          if (errMsg)
-            message.warn(errMsg);
+        style={{
+          ...style,
+          color: 'rgba(0,0,0,0.25)',
+          cursor: 'not-allowed',
+          pointerEvents: 'auto',
+        }}
+        onClick={ev => {
+          if (errMsg) message.warn(errMsg);
           ev.preventDefault();
         }}
       >
