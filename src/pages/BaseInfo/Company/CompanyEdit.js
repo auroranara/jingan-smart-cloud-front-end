@@ -822,13 +822,7 @@ export default class CompanyDetail extends PureComponent {
               <Form.Item label={fieldLabels.createTime}>
                 {getFieldDecorator('createTime', {
                   initialValue: createTime ? moment(+createTime) : moment(),
-                })(
-                  <DatePicker
-                    placeholder="请选择成立时间"
-                    style={{ width: '100%' }}
-                    getCalendarContainer={getRootChild}
-                  />
-                )}
+                })(<DatePicker />)}
               </Form.Item>
             </Col>
             <Col lg={12} md={18} sm={24}>
