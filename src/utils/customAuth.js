@@ -16,70 +16,6 @@ export function getDisabled(code, codes) {
 
 export const ERROR_MSG = '您没有进行当前操作的权限';
 
-/* 六种传参方式
- * f(code, codes)
- * f(code, codes, msg)
- * f(code, codes, callback)
- * f(code, codes, callback, args)
- * f(code, codes, callback, msg)
- * f(code, codes, callback, args, msg)
- */
-export function getOnClick(code, codes, callbackOrMsg, argsOrMsg, msg) {
-  const callbackOrMsgType = typeof callbackOrMsg;
-  const argsOrMsgType = typeof argsOrMsg;
-  const isArray = Array.isArray(argsOrMsg);
-  const msgType = typeof msg;
-  // console.log(code,'callbackOrMsgType', callbackOrMsgType,'argsOrMsgType', argsOrMsgType, 'isArray', isArray, 'msgType', msgType);
-
-  // getOnClick(code, codes)
-  if (callbackOrMsgType === 'undefined') {
-    return getOnClickInner(code, codes, undefined, undefined, undefined);
-  }
-  // getOnClick(code, codes, msg)
-  else if (callbackOrMsgType === 'string') {
-    // console.log('f(code, codes, msg)')
-    return getOnClickInner(code, codes, undefined, undefined, callbackOrMsg);
-  }
-  // getOnClick(code, codes, callback)
-  else if (callbackOrMsgType === 'function' && argsOrMsgType === 'undefined') {
-    // console.log('f(code, codes, callback)');
-    return getOnClickInner(code, codes, callbackOrMsg, []);
-  }
-  // getOnClick(code, codes, callback, args)
-  else if (callbackOrMsgType === 'function' && isArray) {
-    // console.log('f(code, codes, callback, args)');
-    return getOnClickInner(code, codes, callbackOrMsg, argsOrMsg);
-  }
-  // getOnClick(code, codes, callback, msg)
-  else if (callbackOrMsgType === 'function' && argsOrMsgType === 'string') {
-    // console.log('f(code, codes, callback, msg)');
-    return getOnClickInner(code, codes, callbackOrMsg, [], msg);
-  }
-  // getOnClick(code, codes, callback, args, msg)
-  else if (callbackOrMsgType === 'function' && isArray && msgType === 'string') {
-    // console.log('f(code, codes, callback, args, msg)');
-    return getOnClickInner(code, codes, callbackOrMsg, argsOrMsg, msg);
-  }
-  else
-    console.warn('Arguments in getOnClick function in customAuth.js is wrong');
-}
-
-export function getOnClickInner(code, codes = [], callback, args, msg) {
-  return ev => {
-    if (hasAuthority(code, codes)) {
-      if (callback && Array.isArray(args)) {
-        callback(...args);
-      }
-      return;
-    }
-
-    if (msg)
-      message.error(msg);
-
-    ev.preventDefault();
-  }
-}
-
 // 将router.config.js配置转化成路由，源码中的函数，并未改动
 export function formatter(data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
@@ -220,13 +156,7 @@ export function authWrapper(WrappedComponent) {
   };
 }
 
-// export function AuthA(props) {
-//   const { code, codes, style, children, onClick, ...restProps } = props;
-//   if (hasAuthority(code, codes))
-//     return <a {...restProps} onClick={onClick} style={style}>{children}</a>;
-//   return <a {...restProps} style={{...style, color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed'}}>{children}</a>;
-// }
-
+// 组件中需要多传入code, codes, 如果要message提示，还需传入errMsg，需要自己判断权限，传入hasAuth
 export const AuthA = authWrapper('a');
 
 export const AuthSpan = authWrapper('span');
@@ -236,3 +166,67 @@ export const AuthLink = authWrapper(Link);
 export function AuthButton({ code, codes, ...restProps }) {
   return <Button {...restProps} disabled={getDisabled(code, codes)} />;
 }
+
+/* 六种传参方式
+ * f(code, codes)
+ * f(code, codes, msg)
+ * f(code, codes, callback)
+ * f(code, codes, callback, args)
+ * f(code, codes, callback, msg)
+ * f(code, codes, callback, args, msg)
+ */
+// export function getOnClick(code, codes, callbackOrMsg, argsOrMsg, msg) {
+//   const callbackOrMsgType = typeof callbackOrMsg;
+//   const argsOrMsgType = typeof argsOrMsg;
+//   const isArray = Array.isArray(argsOrMsg);
+//   const msgType = typeof msg;
+//   // console.log(code,'callbackOrMsgType', callbackOrMsgType,'argsOrMsgType', argsOrMsgType, 'isArray', isArray, 'msgType', msgType);
+
+//   // getOnClick(code, codes)
+//   if (callbackOrMsgType === 'undefined') {
+//     return getOnClickInner(code, codes, undefined, undefined, undefined);
+//   }
+//   // getOnClick(code, codes, msg)
+//   else if (callbackOrMsgType === 'string') {
+//     // console.log('f(code, codes, msg)')
+//     return getOnClickInner(code, codes, undefined, undefined, callbackOrMsg);
+//   }
+//   // getOnClick(code, codes, callback)
+//   else if (callbackOrMsgType === 'function' && argsOrMsgType === 'undefined') {
+//     // console.log('f(code, codes, callback)');
+//     return getOnClickInner(code, codes, callbackOrMsg, []);
+//   }
+//   // getOnClick(code, codes, callback, args)
+//   else if (callbackOrMsgType === 'function' && isArray) {
+//     // console.log('f(code, codes, callback, args)');
+//     return getOnClickInner(code, codes, callbackOrMsg, argsOrMsg);
+//   }
+//   // getOnClick(code, codes, callback, msg)
+//   else if (callbackOrMsgType === 'function' && argsOrMsgType === 'string') {
+//     // console.log('f(code, codes, callback, msg)');
+//     return getOnClickInner(code, codes, callbackOrMsg, [], msg);
+//   }
+//   // getOnClick(code, codes, callback, args, msg)
+//   else if (callbackOrMsgType === 'function' && isArray && msgType === 'string') {
+//     // console.log('f(code, codes, callback, args, msg)');
+//     return getOnClickInner(code, codes, callbackOrMsg, argsOrMsg, msg);
+//   }
+//   else
+//     console.warn('Arguments in getOnClick function in customAuth.js is wrong');
+// }
+
+// export function getOnClickInner(code, codes = [], callback, args, msg) {
+//   return ev => {
+//     if (hasAuthority(code, codes)) {
+//       if (callback && Array.isArray(args)) {
+//         callback(...args);
+//       }
+//       return;
+//     }
+
+//     if (msg)
+//       message.error(msg);
+
+//     ev.preventDefault();
+//   }
+// }
