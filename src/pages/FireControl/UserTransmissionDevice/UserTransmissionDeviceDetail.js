@@ -10,6 +10,7 @@ import styles from './UserTransmissionDeviceDetail.less';
 import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
 import { getDisabled } from '../../../utils/customAuth';
+import buttonCodes from '../../../utils/codes';
 
 // console.log(styles);
 
@@ -24,7 +25,7 @@ const breadcrumbList = [
   { title: '详情页', name: '详情页' },
 ];
 
-const DEVICE_ADD_CODE = 'fireControl.userTransmissionDevice.add';
+// const DEVICE_ADD_CODE = 'fireControl.userTransmissionDevice.add';
 
 // 若顺序不是按照当前顺序的话，改成数组
 const DESCRIP_MAP = {
@@ -353,7 +354,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             导出点位数据
           </Button>
         </ButtonGroup>
-        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(DEVICE_ADD_CODE, codes)}>
+        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(buttonCodes.transmission.add, codes)}>
           新增传输装置
         </Button>
       </Fragment>
