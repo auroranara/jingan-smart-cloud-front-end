@@ -8,6 +8,7 @@ module.exports = [
       { path: '/user/login', component: '/User/Login' },
       { path: '/user/register', component: './User/Register' },
       { path: '/user/register-result', component: './User/RegisterResult' },
+      { path: '/user/risk-point', name:'risk-point', component: './User/RiskPoint' },
     ],
   },
 
