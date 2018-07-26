@@ -175,8 +175,7 @@ export default {
         if (success) {
           success(response.data.list);
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -194,7 +193,7 @@ export default {
     ) {
       return {
         ...state,
-        list: [...state.list, ...list],
+        list: pageNum === 1 ? list : [...state.list, ...list],
         pageNum,
         isLast: pageNum * pageSize >= total,
       };
@@ -275,7 +274,6 @@ export default {
         },
       };
     },
-
 
     /* 获取角色列表 */
     queryRoles(state, { payload: roles }) {
