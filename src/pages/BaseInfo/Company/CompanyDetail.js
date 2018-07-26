@@ -13,7 +13,7 @@ import styles from './Company.less';
 const { Description } = DescriptionList;
 
 // 标题
-const title = '企业详情';
+const title = '单位详情';
 // 返回地址
 const href = '/base-info/company/list';
 // 面包屑
@@ -28,8 +28,8 @@ const breadcrumbList = [
     name: '一企一档',
   },
   {
-    title: '企业单位',
-    name: '企业单位',
+    title: '单位单位',
+    name: '单位单位',
     href,
   },
   {
@@ -41,25 +41,23 @@ const breadcrumbList = [
 const fieldLabels = {
   administrativeDivision: '行政区域',
   businessScope: '经营范围',
-  code: '企业社会信用码',
-  companyIchnography: '企业平面图',
-  companyStatus: '企业状态',
+  code: '社会信用代码',
+  companyIchnography: '单位平面图',
+  companyStatus: '单位状态',
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
-  latitude: '纬度',
+  coordinate: '经纬度',
   licenseType: '营业执照类别',
-  longitude: '经度',
-  maintenanceContract: '维保合同',
-  maintenanceId: '选择消防维修单位',
-  name: '	企业名称',
+  name: '	单位名称',
   practicalAddress: '实际经营地址',
   registerAddress: '注册地址',
   scale: '规模情况',
   principalName: '姓名',
   principalPhone: '联系方式',
   principalEmail: '邮箱',
+  companyNature: '单位性质',
 };
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -121,8 +119,8 @@ export default class CompanyDetail extends PureComponent {
             code,
             longitude,
             latitude,
+            companyNatureLabel,
             companyIchnography,
-            ichnographyName,
             registerAddress,
             registerProvinceLabel,
             registerCityLabel,
@@ -156,21 +154,29 @@ export default class CompanyDetail extends PureComponent {
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
+          <Description term={fieldLabels.companyNature}>{companyNatureLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
+          <Description term={fieldLabels.coordinate}>{longitude && latitude ? `${longitude},${latitude}` : getEmptyData()}</Description>
+        </DescriptionList>
+        <DescriptionList col={1} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.registerAddress}>
             {registerAddressLabel || getEmptyData()}
           </Description>
+        </DescriptionList>
+        <DescriptionList col={1} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.practicalAddress}>
             {practicalAddressLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.longitude}>{longitude || getEmptyData()}</Description>
-          <Description term={fieldLabels.latitude}>{latitude || getEmptyData()}</Description>
+        </DescriptionList>
+        <DescriptionList col={1} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.companyIchnography}>
-            {companyIchnographyList.length !== 0 ? (
-              <a href={companyIchnographyList[0].webUrl} target="_blank" rel="noopener noreferrer">
-                {ichnographyName || '预览'}
-              </a>
-            ) : (
+            {companyIchnographyList.length !== 0 ? companyIchnographyList.map(({ name, webUrl }) => (
+              <div>
+                <a href={webUrl} target="_blank" rel="noopener noreferrer">
+                  {name || '预览'}
+                </a>
+              </div>
+            )) : (
               getEmptyData()
             )}
           </Description>

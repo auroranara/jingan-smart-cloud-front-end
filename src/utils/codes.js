@@ -21,4 +21,11 @@ export default {
       import: 'fireControl.userTransmissionDevice.host.importPointPosition',
     },
   },
+  company: {
+    list: 'baseInfo.company.listView',
+    detail: 'baseInfo.company.view',
+    add: 'baseInfo.company.add',
+    edit: 'baseInfo.company.edit',
+    delete: 'baseInfo.company.delete',
+  },
 };
