@@ -5,6 +5,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { Button, Card, Table, Select, Form, Input, DatePicker, Pagination, Modal, Tooltip } from 'antd';
 import styles from './HistoryRecord.less'
+import Ellipsis from 'components/Ellipsis';
 
 const FormItem = Form.Item;
 const Option = Select.Option
@@ -170,7 +171,7 @@ export default class HistoryRecord extends PureComponent {
   // Modal底部按钮
   ModalFooter() {
     return (
-      <Button type="primary" onClick={this.handleCloseModal}>关闭</Button>
+      <Button type="primary" onClick={this.handleCloseModal}>确定</Button>
     )
   }
 
@@ -184,13 +185,13 @@ export default class HistoryRecord extends PureComponent {
       { title: '历史纪录', name: '历史纪录' },
     ]
     const columns = [
-      { title: '警情状态', dataIndex: 'status', key: "警情状态", width: 130, align: 'center', render: (val, rows) => (<Tooltip title={val}><div style={{ width: 120 }} className={styles.tooltipText}>{val}</div></Tooltip>) },
-      { title: '发生时间', dataIndex: 'createTime', key: "发生时间", width: 180, align: 'center', render: (val, rows) => (<Tooltip title={moment(val).format('YYYY-MM-DD HH:mm:ss')}><div style={{ width: 130 }} className={styles.tooltipText}>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</div></Tooltip>) },
-      { title: '主机编号', dataIndex: 'clientAddr', key: "主机编号", width: 120, align: 'center', render: (val, rows) => (<Tooltip title={val}><div style={{ width: 90 }} className={styles.tooltipText}>{val}</div></Tooltip>) },
-      { title: '回路故障号', dataIndex: 'failureCode', key: "回路故障号", width: 130, align: 'center', render: (val, rows) => (<Tooltip title={val}><div style={{ width: 100 }} className={styles.tooltipText}>{val}</div></Tooltip>) },
-      { title: '设施部件类型', dataIndex: 'type', key: "设施部件类型", width: 150, align: 'center', render: (val, rows) => (<Tooltip title={val}><div style={{ width: 170 }} className={styles.tooltipText}>{val}</div></Tooltip>) },
-      { title: '具体位置', dataIndex: 'installAddress', key: "具体位置", width: 250, align: 'center', render: (val, rows) => (<Tooltip title={val}><div style={{ width: 250 }} className={styles.tooltipText}>{val}</div></Tooltip>) },
-      { title: '操作', width: 100, key: '操作', render: (val, rows) => (<a style={{ width: '90px' }} onClick={() => this.handleViewDetail(rows)}>查看</a>), align: 'center' },
+      { title: '警情状态', dataIndex: 'status', key: "警情状态", width: 130, align: 'center', render: (val, rows) => <Ellipsis tooltip lines={1}>{val}</Ellipsis> },
+      { title: '发生时间', dataIndex: 'createTime', key: "发生时间", width: 180, align: 'center', render: (val, rows) => <Ellipsis tooltip lines={1}>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</Ellipsis> },
+      { title: '主机编号', dataIndex: 'clientAddr', key: "主机编号", width: 120, align: 'center', render: (val, rows) => <Ellipsis tooltip lines={1}>{val}</Ellipsis> },
+      { title: '回路故障号', dataIndex: 'failureCode', key: "回路故障号", width: 130, align: 'center', render: (val, rows) => <Ellipsis tooltip lines={1}>{val}</Ellipsis> },
+      { title: '设施部件类型', dataIndex: 'type', key: "设施部件类型", width: 150, align: 'center', render: (val, rows) => <Ellipsis tooltip lines={1}>{val}</Ellipsis> },
+      { title: '具体位置', dataIndex: 'installAddress', key: "具体位置", width: 250, align: 'center', render: (val, rows) => <Ellipsis tooltip lines={1}>{val}</Ellipsis> },
+      { title: '操作', width: 100, key: '操作', align: 'center', render: (val, rows) => (<a style={{ width: '90px' }} onClick={() => this.handleViewDetail(rows)}>查看</a>) },
     ]
 
     const formItemLayout = {
@@ -206,7 +207,7 @@ export default class HistoryRecord extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} >
         {this.renderQuery()}
         <Card>
-          <Table scroll={{ x: 1120 }} rowKey="detailId" bordered loading={loading} columns={columns} dataSource={list} pagination={false} />
+          <Table rowKey="detailId" bordered loading={loading} columns={columns} dataSource={list} pagination={false} />
           <Pagination style={{ marginTop: '20px' }}
             showQuickJumper
             showSizeChanger
