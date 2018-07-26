@@ -211,7 +211,7 @@ module.exports = [
                 path: '/role-authorization/account-management/add',
                 code: 'roleAuthorization.accountManagement.add',
                 name: 'add',
-                component: './RoleAuthorization/AccountManagement/AccountManagementAdd',
+                component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
               },
               {
                 path: '/role-authorization/account-management/edit/:id',

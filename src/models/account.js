@@ -7,6 +7,7 @@ import {
   queryUnits,
   updatePassword,
   checkAccountOrPhone,
+  queryRoles,
 } from '../services/accountManagement.js';
 
 export default {
@@ -39,6 +40,7 @@ export default {
     unitTypes: [],
     accountStatuses: [],
     unitIdes: [],
+    roles: [],
   },
 
   effects: {
@@ -161,6 +163,23 @@ export default {
         if (callback) callback(response);
       }
     },
+
+    // 查询角色列表
+    *fetchRoles({ payload, success, error }, { call, put }) {
+      const response = yield call(queryRoles, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryRoles',
+          payload: response.data.list,
+        });
+        if (success) {
+          success(response.data.list);
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -245,6 +264,24 @@ export default {
           ...state.detail,
           data: payload,
         },
+      };
+    },
+
+    clearDetail(state) {
+      return {
+        ...state,
+        detail: {
+          data: {},
+        },
+      };
+    },
+
+
+    /* 获取角色列表 */
+    queryRoles(state, { payload: roles }) {
+      return {
+        ...state,
+        roles,
       };
     },
   },
