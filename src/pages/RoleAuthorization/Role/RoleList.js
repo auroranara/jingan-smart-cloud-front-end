@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Form, Input, Card, Button, Spin, List, Modal, message, TreeSelect } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
+import Ellipsis from 'components/Ellipsis';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
@@ -325,7 +326,7 @@ export default class RoleList extends PureComponent {
                     } : null}
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
-                    <p>{description || getEmptyData()}</p>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>{description ? <span>{description}</span> : getEmptyData()}</Ellipsis>
                   </div>
                 </Card>
               </List.Item>
