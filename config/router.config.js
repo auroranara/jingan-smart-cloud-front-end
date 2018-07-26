@@ -21,7 +21,7 @@ module.exports = [
         path: '/base-info',
         code: 'baseInfo',
         name: 'baseInfo',
-        icon: 'dashboard',
+        icon: 'datebase',
         routes: [
           {
             path: '/base-info/company',
@@ -66,7 +66,7 @@ module.exports = [
       {
         path: '/fire-control',
         code: 'fireControl',
-        icon: 'dashboard',
+        icon: 'tool',
         name: 'fireControl',
         routes: [
           {
@@ -188,7 +188,7 @@ module.exports = [
         path: '/role-authorization',
         code: 'roleAuthorization',
         name: 'roleAuthorization',
-        icon: 'table',
+        icon: 'user',
         routes: [
           {
             path: '/role-authorization/account-management',
