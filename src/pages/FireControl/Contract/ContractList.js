@@ -44,70 +44,59 @@ const markLabelList = {
   4: '未开始',
 };
 
-@connect(
-  ({ contract, loading }) => ({
-    contract,
-    loading: loading.models.contract,
-  }),
-  dispatch => ({
-    /* 获取合同列表 */
-    fetchList(action) {
-      dispatch({
-        type: 'contract/fetchList',
-        ...action,
-      });
-    },
-    /* 追加维保合同列表 */
-    appendList(action) {
-      dispatch({
-        type: 'contract/appendList',
-        ...action,
-      });
-    },
-    /* 获取单位状态 */
-    fetchStatusList(action) {
-      dispatch({
-        type: 'contract/fetchStatusList',
-        ...action,
-      });
-    },
-    /* 跳转到详情页面 */
-    goToDetail(id) {
-      dispatch(routerRedux.push(detailUrl + id));
-    },
-    /* 跳转到新增页面 */
-    goToAdd() {
-      dispatch(routerRedux.push(addUrl));
-    },
-    /* 跳转到编辑页面 */
-    goToEdit() {
-      dispatch(routerRedux.push(editUrl));
-    },
-    // 异常
-    goToException() {
-      dispatch(routerRedux.push('/exception/500'));
-    },
-    dispatch,
-  })
-)
+@connect(({ contract, loading }) => ({
+  contract,
+  loading: loading.models.contract,
+}), (dispatch) => ({
+  /* 获取合同列表 */
+  fetchList(action) {
+    dispatch({
+      type: 'contract/fetchList',
+      ...action,
+    });
+  },
+  /* 追加维保合同列表 */
+  appendList(action) {
+    dispatch({
+      type: 'contract/appendList',
+      ...action,
+    });
+  },
+  /* 获取单位状态 */
+  fetchStatusList(action) {
+    dispatch({
+      type: 'contract/fetchStatusList',
+      ...action,
+    });
+  },
+  /* 跳转到详情页面 */
+  goToDetail(id) {
+    dispatch(routerRedux.push(detailUrl+id));
+  },
+  /* 跳转到新增页面 */
+  goToAdd() {
+    dispatch(routerRedux.push(addUrl));
+  },
+  /* 跳转到编辑页面 */
+  goToEdit() {
+    dispatch(routerRedux.push(editUrl));
+  },
+  // 异常
+  goToException() {
+    dispatch(routerRedux.push('/exception/500'));
+  },
+  dispatch,
+}))
 @Form.create()
 export default class ContractList extends PureComponent {
   state = {
     formData: {},
     isInit: false,
-  };
+  }
 
   /* 挂载后 */
   componentDidMount() {
-    const {
-      fetchList,
-      fetchStatusList,
-      contract: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
+    const { fetchList, fetchStatusList, contract: { data: { pagination: { pageSize } } } } = this.props;
     /* 获取合同列表 */
     fetchList({
       payload: {
@@ -129,14 +118,7 @@ export default class ContractList extends PureComponent {
     if (!flag) {
       return;
     }
-    const {
-      appendList,
-      contract: {
-        data: {
-          pagination: { pageSize, pageNum },
-        },
-      },
-    } = this.props;
+    const { appendList, contract: { data: { pagination: { pageSize, pageNum } } } } = this.props;
     const { formData } = this.state;
     // 请求数据
     appendList({
@@ -150,15 +132,7 @@ export default class ContractList extends PureComponent {
 
   /* 查询点击事件 */
   handleSearch = ({ period: [startTime, endTime], ...restValues }) => {
-    const {
-      fetchList,
-      goToException,
-      contract: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
+    const { fetchList, goToException, contract: { data: { pagination: { pageSize } } } } = this.props;
 
     const formData = {
       startTime: startTime && startTime.format('YYYY-MM-DD'),
@@ -182,19 +156,11 @@ export default class ContractList extends PureComponent {
         goToException();
       },
     });
-  };
+  }
 
   /* 重置点击事件 */
   handleReset = () => {
-    const {
-      fetchList,
-      goToException,
-      contract: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
+    const { fetchList, goToException, contract: { data: { pagination: { pageSize } } } } = this.props;
     fetchList({
       payload: {
         pageSize,
@@ -211,27 +177,24 @@ export default class ContractList extends PureComponent {
         goToException();
       },
     });
-  };
+  }
 
   /* 渲染表单 */
   renderForm() {
-    const {
-      contract: { statusList },
-      goToAdd,
-    } = this.props;
+    const { contract: { statusList }, goToAdd } = this.props;
     /* 表单字段 */
     const fields = [
       {
         id: 'name',
         render() {
-          return <Input placeholder="请输入单位名称" />;
+          return <Input placeholder='请输入单位名称' />;
         },
         transform,
       },
       {
         id: 'searchArea',
         render() {
-          return <Input placeholder="请输入单位地址" />;
+          return <Input placeholder='请输入单位地址' />;
         },
         transform,
       },
@@ -257,17 +220,22 @@ export default class ContractList extends PureComponent {
       {
         id: 'contractCode',
         render() {
-          return <Input placeholder="请输入合同编号" />;
+          return <Input placeholder='请输入合同编号' />;
         },
         transform,
       },
       {
         id: 'period',
-        // options: {
-        //   initialValue: [],
-        // },
+        options: {
+          initialValue: [],
+        },
         render() {
-          return <RangePicker style={{ width: '100%' }} getCalendarContainer={getRootChild} />;
+          return (
+            <RangePicker
+              style={{ width: '100%' }}
+              getCalendarContainer={getRootChild}
+            />
+          );
         },
       },
     ];
@@ -277,16 +245,7 @@ export default class ContractList extends PureComponent {
         <InlineForm
           fields={fields}
           gutter={{ lg: 48, md: 24 }}
-          action={
-            <Button
-              type="primary"
-              onClick={() => {
-                goToAdd();
-              }}
-            >
-              新增
-            </Button>
-          }
+          action={<Button type="primary" onClick={() => { goToAdd() }}>新增</Button>}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
@@ -297,9 +256,7 @@ export default class ContractList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      contract: {
-        data: { list },
-      },
+      contract: { data: { list } },
       goToDetail,
     } = this.props;
 
@@ -317,22 +274,22 @@ export default class ContractList extends PureComponent {
               startTime,
               endTime,
               contractStatus,
-              companyBasicInfo: { name, safetyName, safetyPhone, searchArea },
+              companyBasicInfo: {
+                name,
+                safetyName,
+                safetyPhone,
+                searchArea,
+              },
             } = item;
-            const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) ||
-              '?'} 至 ${(endTime && moment(+endTime).format('YYYY-MM-DD')) || '?'}`;
+            const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} 至 ${(endTime && moment(+endTime).format('YYYY-MM-DD')) || '?'}`;
             return (
               <List.Item key={id}>
                 <Card
-                  title={
-                    <Ellipsis tooltip lines={1} className={styles['card-title-ellipsis']}>
-                      {contractCode}
-                    </Ellipsis>
-                  }
+                  title={<Ellipsis tooltip lines={1} className={styles['card-title-ellipsis']}>{contractCode}</Ellipsis>}
                   className={styles.card}
                   actions={[
-                    <Link to={detailUrl + id}>查看</Link>,
-                    <Link to={editUrl + id}>编辑</Link>,
+                    <Link to={detailUrl+id}>查看</Link>,
+                    <Link to={editUrl+id}>编辑</Link>,
                   ]}
                   // extra={
                   //   <Button
@@ -353,49 +310,29 @@ export default class ContractList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      服务单位：{name || getEmptyData()}
+                    服务单位：{name || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      地址：{searchArea || getEmptyData()}
+                    地址：{searchArea || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      安全负责人：{safetyName ? (
-                        <Fragment>
-                          <span style={{ marginRight: '24px' }}>{safetyName}</span>
-                          <span>{safetyPhone}</span>
-                        </Fragment>
-                      ) : (
-                        getEmptyData()
-                      )}
+                    安全负责人：{safetyName ? (<Fragment><span style={{ marginRight: '24px' }}>{safetyName}</span><span>{safetyPhone}</span></Fragment>) : getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      合同期限：{period || getEmptyData()}
+                    合同期限：{period || getEmptyData()}
                     </Ellipsis>
                   </div>
-                  {contractStatus && (
-                    <div className={styles[markList[contractStatus]]}>
-                      {markLabelList[contractStatus]}
-                    </div>
-                  )}
+                  {contractStatus && <div className={styles[markList[contractStatus]]}>{markLabelList[contractStatus]}</div>}
                 </Card>
               </List.Item>
-            );
-          }}
+          )}}
         />
       </div>
     );
   }
 
   render() {
-    const {
-      loading,
-      contract: {
-        data: {
-          pagination: { total },
-        },
-        isLast,
-      },
-    } = this.props;
+    const { loading, contract: { data: { pagination: { total } }, isLast } } = this.props;
     const { isInit } = this.state;
     const breadcrumbList = [
       {
@@ -422,12 +359,11 @@ export default class ContractList extends PureComponent {
         {this.renderForm()}
         {this.renderList()}
         {isInit && !isLast && <VisibilitySensor onChange={this.handleLoadMore} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
-            </div>
-          )}
+        {loading && !isLast && (
+          <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+            <Spin />
+          </div>
+        )}
       </PageHeaderLayout>
     );
   }
