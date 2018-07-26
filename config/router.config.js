@@ -21,7 +21,7 @@ module.exports = [
         path: '/base-info',
         code: 'baseInfo',
         name: 'baseInfo',
-        icon: 'datebase',
+        icon: 'database',
         routes: [
           {
             path: '/base-info/company',
