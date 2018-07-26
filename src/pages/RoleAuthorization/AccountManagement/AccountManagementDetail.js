@@ -46,7 +46,7 @@ const fieldLabels = {
   treeIds: '数据权限',
   roleIds: '配置角色',
 };
-const UnitTypes = ['', '企事业主体', '政府机构', '运营企业', '维保企业'];
+const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '企事业主体'];
 
 /* 获取无数据 */
 const getEmptyData = () => {
