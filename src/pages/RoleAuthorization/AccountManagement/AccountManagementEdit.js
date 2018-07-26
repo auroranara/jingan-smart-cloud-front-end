@@ -1,6 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Row, Col, Input, Select, message, Icon, Popover, Spin, Transfer } from 'antd';
+import {
+  Form,
+  Card,
+  Button,
+  Row,
+  Col,
+  Input,
+  Select,
+  message,
+  Icon,
+  Popover,
+  Spin,
+  Transfer,
+} from 'antd';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import FooterToolbar from 'components/FooterToolbar';
@@ -88,7 +101,7 @@ const defaultPageSize = 20;
       dispatch({
         type: 'account/checkAccountOrPhone',
         ...action,
-      })
+      });
     },
 
     // 清除详情
@@ -149,8 +162,7 @@ export default class accountManagementEdit extends PureComponent {
           goToException();
         },
       });
-    }
-    else {
+    } else {
       clearDetail();
     }
 
@@ -190,7 +202,20 @@ export default class accountManagementEdit extends PureComponent {
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
-      (error, { loginName, accountStatus, userName, phoneNumber, unitType, unitId, treeIds, password, roleIds }) => {
+      (
+        error,
+        {
+          loginName,
+          accountStatus,
+          userName,
+          phoneNumber,
+          unitType,
+          unitId,
+          treeIds,
+          password,
+          roleIds,
+        }
+      ) => {
         if (!error) {
           this.setState({
             submitting: true,
@@ -212,7 +237,7 @@ export default class accountManagementEdit extends PureComponent {
             const msg = id ? '编辑成功！' : '新增成功！';
             message.success(msg, 1, goBack);
           };
-          const error = (err) => {
+          const error = err => {
             message.error(err, 1);
             this.setState({
               submitting: false,
@@ -225,8 +250,7 @@ export default class accountManagementEdit extends PureComponent {
               success,
               error,
             });
-          }
-          else {
+          } else {
             addAccount({
               payload,
               success,
@@ -328,35 +352,40 @@ export default class accountManagementEdit extends PureComponent {
   /* 异步验证用户名 */
   validateUserName = (rule, value, callback) => {
     if (value) {
-      const { checkAccountOrPhone } = this.props
+      const { checkAccountOrPhone } = this.props;
       checkAccountOrPhone({
         payload: {
           loginName: value,
         },
         callback(res) {
-          if (res.code === 200) callback()
-          else callback(res.msg)
+          if (res.code === 200) callback();
+          else callback(res.msg);
         },
-      })
-    } else callback()
-  }
+      });
+    } else callback();
+  };
 
   /* 异步验证手机号 */
   validatePhoneNumber = (rule, value, callback) => {
     if (value) {
-      const { checkAccountOrPhone, match: { params: { id } } } = this.props
+      const {
+        checkAccountOrPhone,
+        match: {
+          params: { id },
+        },
+      } = this.props;
       checkAccountOrPhone({
         payload: {
           id,
           phoneNumber: value,
         },
         callback(res) {
-          if (res.code === 200) callback()
-          else callback(res.msg)
+          if (res.code === 200) callback();
+          else callback(res.msg);
         },
-      })
-    } else callback()
-  }
+      });
+    } else callback();
+  };
 
   /* 渲染基础信息 */
   renderBasicInfo() {
@@ -370,7 +399,9 @@ export default class accountManagementEdit extends PureComponent {
         unitIdes,
       },
       form: { getFieldDecorator },
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       loading,
     } = this.props;
 
@@ -394,7 +425,13 @@ export default class accountManagementEdit extends PureComponent {
                     },
                     ...isValidateLoginName,
                   ],
-                })(id ? <span>{loginName}</span> : <Input placeholder="请输入用户名" min={1} max={20} />)}
+                })(
+                  id ? (
+                    <span>{loginName}</span>
+                  ) : (
+                    <Input placeholder="请输入用户名" min={1} max={20} />
+                  )
+                )}
               </Form.Item>
             </Col>
             {id ? null : (
@@ -416,7 +453,11 @@ export default class accountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.accountStatus}>
                 {getFieldDecorator('accountStatus', {
-                  initialValue: id ? accountStatus : (accountStatuses.length === 0 ? undefined : accountStatuses[0].id),
+                  initialValue: id
+                    ? accountStatus
+                    : accountStatuses.length === 0
+                      ? undefined
+                      : accountStatuses[0].id,
                   rules: [
                     {
                       required: true,
@@ -473,7 +514,11 @@ export default class accountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
-                  initialValue: id ? unitType : (unitTypes.length === 0 ? undefined : unitTypes[0].id),
+                  initialValue: id
+                    ? unitType
+                    : unitTypes.length === 0
+                      ? undefined
+                      : unitTypes[0].id,
                   rules: [
                     {
                       required: true,
@@ -550,24 +595,24 @@ export default class accountManagementEdit extends PureComponent {
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>
               <Form.Item label={fieldLabels.roleIds}>
-                  {getFieldDecorator('roleIds', {
-                    initialValue: roleIds ? roleIds.split(',') : [],
-                    valuePropName: "targetKeys",
-                    rules: [
-                      {
-                        required: true,
-                        transform: value => value && value.join(','),
-                        message: '请配置角色',
-                      },
-                    ],
-                  })(
-                    <Transfer
-                      dataSource={roleList}
-                      titles={['所选角色', '角色列表']}
-                      render={item => item.title}
-                    />
-                  )}
-                </Form.Item>
+                {getFieldDecorator('roleIds', {
+                  initialValue: roleIds ? roleIds.split(',') : [],
+                  valuePropName: 'targetKeys',
+                  rules: [
+                    {
+                      required: true,
+                      transform: value => value && value.join(','),
+                      message: '请配置角色',
+                    },
+                  ],
+                })(
+                  <Transfer
+                    dataSource={roleList}
+                    titles={['所选角色', '角色列表']}
+                    render={item => item.title}
+                  />
+                )}
+              </Form.Item>
             </Col>
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
@@ -577,9 +622,7 @@ export default class accountManagementEdit extends PureComponent {
                   initialValue: { key: treeIds, label: treeNames },
                   rules: [
                     {
-                      required: true,
                       transform: value => value && value.label,
-                      message: '单位名称不能为空',
                     },
                   ],
                 })(
@@ -673,12 +716,21 @@ export default class accountManagementEdit extends PureComponent {
   }
 
   render() {
-    const { loading, match: { params: { id } } } = this.props;
+    const {
+      loading,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const { submitting } = this.state;
     const title = id ? editTitle : addTitle;
     const content = (
       <div>
-        <p>{id ? '编辑单个账号的基本信息，角色权限、数据权限' : '创建单个账号，包括基本信息、角色权限等'}</p>
+        <p>
+          {id
+            ? '编辑单个账号的基本信息，角色权限、数据权限'
+            : '创建单个账号，包括基本信息、角色权限等'}
+        </p>
       </div>
     );
 
