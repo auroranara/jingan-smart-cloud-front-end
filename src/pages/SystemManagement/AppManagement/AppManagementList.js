@@ -16,7 +16,7 @@ import StandardTable from 'components/StandardTable';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './AppManagementList.less';
-import { getToken } from 'utils/authority';
+// import { getToken } from 'utils/authority';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -45,12 +45,12 @@ const CreateForm = Form.create()((props) => {
   };
 
   // console.log(getToken());
-  const token = getToken();
+  // const token = getToken();
   const uploadProps = {
     name: 'files',
     action: '/eye/api/uploadAPKFile',
     headers: {
-      'Ja-Token': token,
+      // 'Eye-Token': token,
     },
     onChange(info) {
       if (info.file.status === 'uploading') {
@@ -104,7 +104,7 @@ const CreateForm = Form.create()((props) => {
 
 @connect(({ app, loading }) => ({
   app,
-  loading: loading.models.app,
+  loading: loading.effects['app/fetch'],
 }))
 @Form.create()
 export default class AppManagement extends PureComponent {

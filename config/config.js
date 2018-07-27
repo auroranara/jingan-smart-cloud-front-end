@@ -23,6 +23,11 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
+    '/eye': {
+      target: 'http://192.168.10.2',
+      changeOrigin: true,
+      pathRewrite: { '^/eye': '/eye' },
+    },
   },
   // add for transfer to umi
   plugins: [

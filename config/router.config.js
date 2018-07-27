@@ -354,37 +354,30 @@ module.exports = [
               },
             ],
           },
+        ],
+      },
+      {
+        path: '/system-management',
+        code: 'systemManagement',
+        name: 'systemManagement',
+        icon: 'setting',
+        routes: [
           {
-            path: '/system-management',
-            code: 'systemManagement',
-            name: 'systemManagement',
-            icon: 'setting',
+            path: '/system-management/app-management',
+            code: 'systemManagement.appManagement',
+            name: 'appManagement',
+            hideChildren: true,
             routes: [
               {
                 path: '/system-management/app-management',
-                code: 'systemManagement.appManagement',
                 name: 'appManagement',
-                hideChildren: true,
-                routes: [
-                  {
-                    path: '/system-management/app-management',
-                    name: 'appManagement',
-                    redirect: '/system-management/app-management/list',
-                  },
-                  {
-                    path: '/system-management/app-management/list',
-                    code: 'systemManagement.appManagement.listView',
-                    name: 'list',
-                    component: './SystemManagement/AppManagement/AppManagementList',
-                  },
-                  {
-                    path: '/system-management/app-management/add',
-                    code: 'systemManagement.appManagement.add',
-                    name: 'add',
-                    component: './SystemManagement/AppManagement/AppManagementAdd',
-                  },
-                ],
-
+                redirect: '/system-management/app-management/list',
+              },
+              {
+                path: '/system-management/app-management/list',
+                code: 'systemManagement.appManagement.listView',
+                name: 'list',
+                component: './SystemManagement/AppManagement/AppManagementList',
               },
             ],
           },
