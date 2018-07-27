@@ -21,4 +21,11 @@ export default {
       import: 'fireControl.userTransmissionDevice.host.importPointPosition',
     },
   },
+  contract: {
+    list: 'fireControl.contract.listView',
+    detail: 'fireControl.contract.view',
+    add: 'fireControl.contract.add',
+    edit: 'fireControl.contract.edit',
+    delete: 'fireControl.contract.delete',
+  },
 };
