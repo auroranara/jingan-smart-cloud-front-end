@@ -116,15 +116,16 @@ export function authWrapper(WrappedComponent) {
   return connect(({ user }) => ({ user }))(function (props) {
     // console.log(props);
     // 将需要的属性分离出来
-    const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, hasAuth, errMsg, children = null, ...restProps } = props;
+    const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, hasAuthFn, errMsg, children = null, ...restProps } = props;
     // 将无权限时需要改变的属性：超链接，样式，onClick等剥离出来
     const { href, to, onClick, style = {}, ...disabledRestProps } = restProps;
 
     let authorized;
     // 如果自己传codes，那么就用自己传入的codes代替从currentUser中获取的permissionCodes，主要是为了方便测试
     const perCodes = codes || permissionCodes;
-    // 如果自定义hasAuth，即自己判断是否有权限，则不通过hasAuthority(code, codes)判断是否有权限
-    if (hasAuth !== undefined) authorized = hasAuth;
+    // 如果自定义hasAuthFn，即自己判断是否有权限，则不通过hasAuthority(code, codes)判断是否有权限
+    // hasAuthFn(code: string, codes: string[]): boolean
+    if (hasAuthFn !== undefined && typeof hasAuthFn === 'function' ) authorized = hasAuthFn(perCodes);
     else authorized = hasAuthority(code, perCodes);
 
     // console.log(authorized);
@@ -156,7 +157,8 @@ export function authWrapper(WrappedComponent) {
   });
 }
 
-// 组件中需要多传入code, codes, 如果要message提示，还需传入errMsg，需要自己判断权限，传入hasAuth
+// 组件中需要多传入code, 如果要message提示，还需传入errMsg，需要自己判断权限，传入hasAuthFn
+// codes可以不传，若传入则会使用传入的codes判断，主要为了方便测试，比如自己传入codes={[]}来disable按钮，或传入对应的code来使按钮显示
 export const AuthA = authWrapper('a');
 
 export const AuthSpan = authWrapper('span');
@@ -165,9 +167,12 @@ export const AuthDiv = authWrapper('div');
 
 export const AuthLink = authWrapper(Link);
 
-export function AuthButton({ code, codes, ...restProps }) {
-  return <Button {...restProps} disabled={getDisabled(code, codes)} />;
-}
+export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
+  const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, ...restProps } = props;
+  // 如果自己传codes，那么就用自己传入的codes代替从currentUser中获取的permissionCodes，主要是为了方便测试
+  const perCodes = codes || permissionCodes;
+  return <Button {...restProps} disabled={getDisabled(code, perCodes)} />;
+});
 
 /* 六种传参方式
  * f(code, codes)

@@ -9,10 +9,8 @@ import styles from './UserTransmissionDeviceDetail.less';
 
 import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
-import { getDisabled } from '../../../utils/customAuth';
+import { AuthButton } from '../../../utils/customAuth';
 import buttonCodes from '../../../utils/codes';
-
-// console.log(styles);
 
 const { Description } = DescriptionList;
 // const { confirm } = Modal;
@@ -137,9 +135,8 @@ function convertMsToString(ms) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
-@connect(({ transmission, user, loading }) => ({
+@connect(({ transmission, loading }) => ({
   transmission,
-  user,
   loading: loading.effects['transmission/fetchDetail'],
 }))
 export default class UserTransmissionDeviceDetail extends Component {
@@ -332,7 +329,7 @@ export default class UserTransmissionDeviceDetail extends Component {
   render() {
     const {
       transmission: { deviceList, companyDetail },
-      user: { currentUser: { permissionCodes: codes } },
+      // user: { currentUser: { permissionCodes: codes } },
       loading,
     } = this.props;
 
@@ -354,9 +351,9 @@ export default class UserTransmissionDeviceDetail extends Component {
             导出点位数据
           </Button>
         </ButtonGroup>
-        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(buttonCodes.deviceManagement.transmission.add, codes)}>
+        <AuthButton type="primary" code={buttonCodes.deviceManagement.transmission.add} onClick={this.handleDeviceAddClick}>
           新增传输装置
-        </Button>
+        </AuthButton>
       </Fragment>
     );
 
@@ -403,7 +400,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
-        <DeviceDetailCard key={device.id} index={index} codes={codes} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
+        <DeviceDetailCard key={device.id} index={index} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
       ));
 
     const deviceParentMethods = {
