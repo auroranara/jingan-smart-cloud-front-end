@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
 import Result from '../../../components/Result';
+import { getToken } from 'utils/authority';
 
 @connect(({ pointPosition, loading }) => ({
   pointPosition,
@@ -203,7 +204,11 @@ export default class ImportPointPosition extends PureComponent {
         {failed === 0 && uploadStatus === 200 && <span>本次导入数据共计{total}条。</span>}
         {success > 0 && <span>新建信息{success}条。</span>}
         {updated > 0 && <span>更新信息{updated}条。</span>}
-        {failed > 0 && <span>错误信息共计<span style={{ color: 'red' }}>{failed}</span>条，请核对后再试。</span>}
+        {failed > 0 && (
+          <span>
+            错误信息共计<span style={{ color: 'red' }}>{failed}</span>条，请核对后再试。
+          </span>
+        )}
         {!showErrorLogo && <span>错误信息0条。</span>}
       </div>
     );
@@ -316,6 +321,9 @@ export default class ImportPointPosition extends PureComponent {
       action: `/acloud_new/v2/pointData/pointData/${hostId}`,
       accept: '.xls,.xlsx',
       onChange: this.handleChange,
+      headers: {
+        'JA-Token': getToken(),
+      },
     };
 
     return (
@@ -333,9 +341,7 @@ export default class ImportPointPosition extends PureComponent {
         </Card>
         <Spin spinning={loading}>
           {showResultCard && (
-            <Card
-              className={styles.cardContainer}
-            >
+            <Card className={styles.cardContainer}>
               <Result
                 style={{ fontSize: '72px' }}
                 type={showErrorLogo ? 'error' : 'success'}
@@ -351,7 +357,8 @@ export default class ImportPointPosition extends PureComponent {
                     columns={columns}
                     scroll={{ x: 1500 }}
                   />
-                </div>)}
+                </div>
+              )}
               <Button
                 style={{ margin: '0 auto', display: 'block', marginTop: '20px' }}
                 type="primary"
@@ -359,7 +366,8 @@ export default class ImportPointPosition extends PureComponent {
               >
                 确定
               </Button>
-            </Card>)}
+            </Card>
+          )}
         </Spin>
       </PageHeaderLayout>
     );
