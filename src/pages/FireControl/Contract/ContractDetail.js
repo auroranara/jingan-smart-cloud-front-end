@@ -6,6 +6,9 @@ import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
 
 import styles from './Contract.less';
 
@@ -13,10 +16,10 @@ const { Description } = DescriptionList;
 
 // 标题
 const title = '查看维保合同';
-// 返回地址
-const backUrl = '/fire-control/contract/list';
-/* 编辑页面地址 */
-const editUrl = '/fire-control/contract/edit/';
+// 获取链接地址
+const { contract: { list: backUrl, edit: editUrl } } = urls;
+// 获取code
+const { contract: { list: listCode, edit: editCode } } = codes;
 // 面包屑
 const breadcrumbList = [
   {
@@ -44,8 +47,9 @@ const getEmptyData = () => {
 };
 
 @connect(
-  ({ contract, loading }) => ({
+  ({ contract, user, loading }) => ({
     contract,
+    user,
     loading: loading.models.contract,
   }),
   dispatch => ({
@@ -110,10 +114,16 @@ export default class ContractDetail extends PureComponent {
           companyName,
         },
       },
+      user: { currentUser: { permissionCodes } },
       match: {
         params: { id },
       },
     } = this.props;
+    // 是否有列表权限
+    const hasListAuthority = hasAuthority(listCode, permissionCodes);
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
+
 
     const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime &&
       moment(+endTime).format('YYYY-MM-DD')) ||
@@ -151,22 +161,8 @@ export default class ContractDetail extends PureComponent {
           </Description>
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
-          <Button
-            onClick={() => {
-              goBack();
-            }}
-            style={{ marginRight: '24px' }}
-          >
-            返回
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              goToEdit(id);
-            }}
-          >
-            编辑
-          </Button>
+          <Button disabled={!hasListAuthority} onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
+          <Button type="primary" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
         </div>
       </Card>
     );
