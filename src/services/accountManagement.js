@@ -49,3 +49,8 @@ export async function updatePassword(params) {
 export function checkAccountOrPhone(params) {
   return request(`/acloud_new/v2/rolePermission/user/check?${stringify(params)}`);
 }
+
+/* 获取角色列表 */
+export function queryRoles() {
+  return request(`/acloud_new/v2/rolePermission/user/role`);
+}

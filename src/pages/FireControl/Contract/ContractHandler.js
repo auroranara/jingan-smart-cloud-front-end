@@ -4,7 +4,7 @@ import { Form, Card, Button, Spin, message, Row, Col, Input, Select, DatePicker,
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
-
+import { getToken } from 'utils/authority';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './Contract.less';
@@ -108,13 +108,13 @@ export default class ContractHandler extends PureComponent {
           id,
         },
         success: ({ contractAppendix, maintenanceId, companyId, maintenanceName, companyName }) => {
-          const contractList = contractAppendix? JSON.parse(contractAppendix) : [];
+          const contractList = contractAppendix ? JSON.parse(contractAppendix) : [];
           if (contractList.length !== 0) {
             this.setState({
               fileList: contractList.map(({ dbUrl, webUrl }, index) => ({
                 uid: index,
                 status: 'done',
-                name: `合同附件${index+1}`,
+                name: `合同附件${index + 1}`,
                 url: webUrl,
                 dbUrl,
               })),
@@ -418,6 +418,7 @@ export default class ContractHandler extends PureComponent {
         fileList={fileList}
         multiple
         onChange={this.handleUpload}
+        headers={{ 'JA-Token': getToken() }}
       >
         <Button type="primary">
           <Icon type="upload" /> 上传附件
@@ -485,7 +486,7 @@ export default class ContractHandler extends PureComponent {
                     notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchMaintenanceList}
                     onBlur={this.handleClearMaintenance}
-                    onSelect={(value) => {this.setState({filterMaintenanceId: value.key});}}
+                    onSelect={(value) => { this.setState({ filterMaintenanceId: value.key }); }}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
@@ -516,7 +517,7 @@ export default class ContractHandler extends PureComponent {
                     notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchServiceList}
                     onBlur={this.handleClearService}
-                    onSelect={(value) => {this.setState({filterCompanyId: value.key});}}
+                    onSelect={(value) => { this.setState({ filterCompanyId: value.key }); }}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
@@ -582,7 +583,7 @@ export default class ContractHandler extends PureComponent {
           </Row>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button onClick={()=>{goBack()}} style={{ marginRight: '24px' }}>返回</Button>
+          <Button onClick={() => { goBack() }} style={{ marginRight: '24px' }}>返回</Button>
           <Button type="primary" onClick={this.handleSubmit} loading={uploading}>确定</Button>
         </div>
       </Card>

@@ -24,6 +24,7 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import { phoneReg, emailReg } from 'utils/validate';
 import urls from 'utils/urls';
 import titles from 'utils/titles';
+import { getToken } from 'utils/authority';
 
 import styles from './Company.less';
 
@@ -457,6 +458,7 @@ export default class CompanyDetail extends PureComponent {
         action={uploadAction}
         fileList={fileList}
         onChange={onChange}
+        headers={{ 'JA-Token': getToken() }}
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
           <Icon type="plus" style={{ fontSize: '32px' }} />
