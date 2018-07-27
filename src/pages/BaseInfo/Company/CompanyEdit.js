@@ -308,7 +308,7 @@ export default class CompanyDetail extends PureComponent {
           const {
             ichnographyList,
           } = this.state;
-          const [longitude, latitude] = coordinate || [];
+          const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
           const payload = {
             ...restFields,
             id,
