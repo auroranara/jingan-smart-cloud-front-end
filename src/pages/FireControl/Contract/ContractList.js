@@ -8,6 +8,9 @@ import moment from 'moment';
 
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { hasAuthority } from 'utils/customAuth';
+import urls from 'utils/urls';
+import codes from 'utils/codes';
 
 import styles from './Contract.less';
 
@@ -16,12 +19,10 @@ const { RangePicker } = DatePicker;
 
 /* 标题 */
 const title = '维保合同管理';
-/* 详情页面地址 */
-const detailUrl = '/fire-control/contract/detail/';
-/* 编辑页面地址 */
-const editUrl = '/fire-control/contract/edit/';
-/* 新增页面地址 */
-const addUrl = '/fire-control/contract/add';
+// 获取链接地址
+const { contract: { detail: detailUrl, edit: editUrl, add: addUrl } } = urls;
+// 获取code
+const { contract: { detail: detailCode, edit: editCode, add: addCode } } = codes;
 /* 去除两边空格 */
 const transform = value => value.trim();
 /* 设置相对定位 */
@@ -30,6 +31,8 @@ const getRootChild = () => document.querySelector('#root>div');
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+// 阻止默认行为
+const preventDefault = (e) => {e.preventDefault()};
 /* 标记 */
 const markList = {
   1: 'processing-mark',
@@ -44,8 +47,9 @@ const markLabelList = {
   4: '未开始',
 };
 
-@connect(({ contract, loading }) => ({
+@connect(({ contract, user, loading }) => ({
   contract,
+  user,
   loading: loading.models.contract,
 }), (dispatch) => ({
   /* 获取合同列表 */
@@ -181,7 +185,7 @@ export default class ContractList extends PureComponent {
 
   /* 渲染表单 */
   renderForm() {
-    const { contract: { statusList }, goToAdd } = this.props;
+    const { contract: { statusList }, goToAdd, user: { currentUser: { permissionCodes } } } = this.props;
     /* 表单字段 */
     const fields = [
       {
@@ -240,12 +244,16 @@ export default class ContractList extends PureComponent {
       },
     ];
 
+
+    // 是否有新增权限
+    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
+
     return (
       <Card>
         <InlineForm
           fields={fields}
           gutter={{ lg: 48, md: 24 }}
-          action={<Button type="primary" onClick={() => { goToAdd() }}>新增</Button>}
+          action={<Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>新增</Button>}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
@@ -257,8 +265,13 @@ export default class ContractList extends PureComponent {
   renderList() {
     const {
       contract: { data: { list } },
+      user: { currentUser: { permissionCodes } },
       goToDetail,
     } = this.props;
+    // 是否有查看权限
+    const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -288,8 +301,8 @@ export default class ContractList extends PureComponent {
                   title={<Ellipsis tooltip lines={1} className={styles['card-title-ellipsis']}>{contractCode}</Ellipsis>}
                   className={styles.card}
                   actions={[
-                    <Link to={detailUrl+id}>查看</Link>,
-                    <Link to={editUrl+id}>编辑</Link>,
+                    <Link to={detailUrl+id} onClick={hasDetailAuthority ? null : preventDefault} disabled={!hasDetailAuthority}>查看</Link>,
+                    <Link to={editUrl+id} onClick={hasEditAuthority ? null : preventDefault} disabled={!hasEditAuthority}>编辑</Link>,
                   ]}
                   // extra={
                   //   <Button
@@ -304,10 +317,10 @@ export default class ContractList extends PureComponent {
                   // }
                 >
                   <div
-                    onClick={() => {
+                    onClick={hasDetailAuthority ? () => {
                       goToDetail(id);
-                    }}
-                    style={{ cursor: 'pointer' }}
+                    } : null}
+                    style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                     服务单位：{name || getEmptyData()}

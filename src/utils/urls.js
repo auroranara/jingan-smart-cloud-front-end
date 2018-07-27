@@ -12,4 +12,10 @@ export default {
     add: '/base-info/company/add/',
     edit: '/base-info/company/edit/',
   },
+  contract: {
+    list: '/fire-control/contract/list/',
+    detail: '/fire-control/contract/detail/',
+    add: '/fire-control/contract/add/',
+    edit: '/fire-control/contract/edit/',
+  },
 };
