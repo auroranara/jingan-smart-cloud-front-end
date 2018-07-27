@@ -398,6 +398,7 @@ export default class ContractHandler extends PureComponent {
         fileList: fileList.filter(item => {
           return item.status !== 'removed';
         }),
+        uploading: false,
       });
     } else {
       // error
