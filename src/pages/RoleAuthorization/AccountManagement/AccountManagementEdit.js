@@ -151,12 +151,34 @@ export default class accountManagementEdit extends PureComponent {
       fetchRoles,
     } = this.props;
 
+    const success = id
+      ? undefined
+      : ({ unitType }) => {
+          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+          fetchUnitsFuzzy({
+            payload: {
+              unitType: unitType[0].id,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+        };
+
     // 如果id存在的话，就获取详情，即编辑状态
     if (id) {
       // 获取详情
       fetchAccountDetail({
         payload: {
           id,
+        },
+        success: ({ unitType }) => {
+          fetchUnitsFuzzy({
+            payload: {
+              unitType: unitType,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
         },
         error: () => {
           goToException();
@@ -168,16 +190,7 @@ export default class accountManagementEdit extends PureComponent {
 
     // 获取单位类型和账户状态
     fetchOptions({
-      success: ({ unitType }) => {
-        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        fetchUnitsFuzzy({
-          payload: {
-            unitType: unitType[0].id,
-            pageNum: 1,
-            pageSize: defaultPageSize,
-          },
-        });
-      },
+      success,
     });
 
     // 获取角色列表
