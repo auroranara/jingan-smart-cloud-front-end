@@ -18,4 +18,9 @@ export default {
     add: '/fire-control/contract/add/',
     edit: '/fire-control/contract/edit/',
   },
+  exception: {
+    500: '/exception/500/',
+    403: '/exception/403/',
+    404: '/exception/404/',
+  },
 };

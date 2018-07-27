@@ -19,6 +19,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
+import { Map, NavigationControl, Marker } from 'react-bmap'
 
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
@@ -29,10 +30,10 @@ import { getToken } from 'utils/authority';
 
 import styles from './Company.less';
 
-const { TextArea } = Input;
+const { TextArea, Search } = Input;
 const { Option } = Select;
 
-const { home: homeUrl, company: { list: href } } = urls;
+const { home: homeUrl, company: { list: listUrl }, exception: { 500: exceptionUrl } } = urls;
 const { home: homeTitle, company: { menu: menuTitle, list: listTitle, add: addTitle, edit: editTitle } } = titles;
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -75,10 +76,13 @@ const tabList = [
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '0';
+// 地图默认中心点
+const defaultCenter = '无锡';
 
 @connect(
-  ({ company, loading }) => ({
+  ({ company, user, loading }) => ({
     company,
+    user,
     loading: loading.models.company,
   }),
   dispatch => ({
@@ -112,7 +116,7 @@ const defaultCompanyNature = '0';
     },
     // 返回
     goBack() {
-      dispatch(routerRedux.push(href));
+      dispatch(routerRedux.push(listUrl));
     },
     // 获取行政区域
     fetchArea(action) {
@@ -123,7 +127,7 @@ const defaultCompanyNature = '0';
     },
     // 异常
     goToException() {
-      dispatch(routerRedux.push('/exception/500'));
+      dispatch(routerRedux.push(exceptionUrl));
     },
     // 清空详情
     clearDetail() {
@@ -142,6 +146,8 @@ export default class CompanyDetail extends PureComponent {
     uploading: false,
     tabActiveKey: tabList[0].key,
     visible: false,
+    center: undefined,
+    markerPosition: undefined,
   };
 
   /* 生命周期函数 */
@@ -450,8 +456,16 @@ export default class CompanyDetail extends PureComponent {
 
   /* 显示地图 */
   handleShowMap = () => {
+    const { form: { getFieldValue } } = this.props;
+    // 获取坐标，值可能为undefined或"135.12123,141.4142"这样的格式
+    const coordinate = getFieldValue('coordinate');
+    const temp = coordinate && coordinate.split(',');
+    const center = coordinate && { lng: temp[0], lat: temp[1] };
+
     this.setState({
       visible: true,
+      center,
+      markerPosition: center,
     });
   }
 
@@ -539,7 +553,12 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染地图 */
   renderMap() {
-    const { visible } = this.state;
+    const { visible, center, markerPosition } = this.state;
+    const updateMarkerPosition = (markerPosition) => {
+      this.setState({
+        markerPosition,
+      });
+    };
 
     return (
       <Modal
@@ -551,8 +570,37 @@ export default class CompanyDetail extends PureComponent {
         maskClosable={false}
         keyboard={false}
         className={styles.mapModal}
+        destroyOnClose
       >
-      <div>123</div>
+        <Map
+          center={center ? center : defaultCenter}
+          style={{ height: '600px' }}
+          ref={map => {this.map = map;}}
+          events={{
+            click(e) {
+              updateMarkerPosition(e.point);
+              console.log(this);
+            },
+          }}
+        >
+          <div style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent' }}>
+            <Search placeholder="请输入地址" enterButton onSearch={(value, e) => { console.log(e);console.log(this.map); }} />
+          </div>
+          <NavigationControl anchor={BMAP_ANCHOR_TOP_RIGHT  /*eslint-disable-line*/} />
+          {markerPosition && (
+            <Marker
+              icon="loc_red"
+              position={markerPosition}
+              events={{
+                click(e) {
+                  e.domEvent.stopPropagation();
+                  console.log(e);
+                  console.log(this);
+                },
+              }}
+            />
+          )}
+        </Map>
       </Modal>
     );
   }
@@ -1087,7 +1135,7 @@ export default class CompanyDetail extends PureComponent {
       {
         title: listTitle,
         name: listTitle,
-        href,
+        href: listUrl,
       },
       {
         title,

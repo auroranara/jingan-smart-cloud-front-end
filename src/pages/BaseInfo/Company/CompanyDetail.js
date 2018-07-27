@@ -7,30 +7,36 @@ import { routerRedux } from 'dva/router';
 import DescriptionList from 'components/DescriptionList';
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
+import titles from '../../../utils/titles';
 
 import styles from './Company.less';
 
 const { Description } = DescriptionList;
 
-// 标题
-const title = '单位详情';
-// 返回地址
-const href = '/base-info/company/list';
+// 获取title
+const { home: homeTitle, company: { list: listTitle, menu: menuTitle, detail: title } } = titles;
+// 获取链接地址
+const { home: homeUrl, company: { list: backUrl, edit: editUrl }, exception: { 500: exceptionUrl } } = urls;
+// 获取code
+const { company: { edit: editCode } } = codes;
 // 面包屑
 const breadcrumbList = [
   {
-    title: '首页',
-    name: '首页',
-    href: '/',
+    title: homeTitle,
+    name: homeTitle,
+    href: homeUrl,
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: menuTitle,
+    name: menuTitle,
   },
   {
-    title: '单位单位',
-    name: '单位单位',
-    href,
+    title: listTitle,
+    name: listTitle,
+    href: backUrl,
   },
   {
     title,
@@ -65,8 +71,9 @@ const getEmptyData = () => {
 };
 
 @connect(
-  ({ company, loading }) => ({
+  ({ company, user, loading }) => ({
     company,
+    user,
     loading: loading.models.company,
   }),
   dispatch => ({
@@ -79,11 +86,11 @@ const getEmptyData = () => {
     },
     // 跳转到编辑页面
     goToEdit(id) {
-      dispatch(routerRedux.push(`/base-info/company/edit/${id}`));
+      dispatch(routerRedux.push(editUrl+id));
     },
     // 异常
     goToException() {
-      dispatch(routerRedux.push('/exception/500'));
+      dispatch(routerRedux.push(exceptionUrl));
     },
   })
 )
@@ -295,18 +302,14 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      user: { currentUser: { permissionCodes } },
     } = this.props;
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
+
     return (
       <FooterToolbar>
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => {
-            goToEdit(id);
-          }}
-        >
-          编辑
-        </Button>
+        <Button type="primary" size="large" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
       </FooterToolbar>
     );
   }
