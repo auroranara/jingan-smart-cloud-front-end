@@ -21,7 +21,7 @@ module.exports = [
         path: '/base-info',
         code: 'baseInfo',
         name: 'baseInfo',
-        icon: 'datebase',
+        icon: 'database',
         routes: [
           {
             path: '/base-info/company',
@@ -102,38 +102,6 @@ module.exports = [
                 code: 'fireControl.contract.view',
                 name: 'detail',
                 component: './FireControl/Contract/ContractDetail',
-              },
-            ],
-          },
-          {
-            path: '/fire-control/user-transmission-device',
-            code: 'fireControl.userTransmissionDevice',
-            name: 'userTransmissionDevice',
-            hideChildren: true,
-            routes: [
-              {
-                path: '/fire-control/user-transmission-device',
-                name: 'userTransmissionDevice',
-                redirect: '/fire-control/user-transmission-device/list',
-              },
-              {
-                path: '/fire-control/user-transmission-device/list',
-                code: 'fireControl.userTransmissionDevice.listView',
-                name: 'list',
-                component: './FireControl/UserTransmissionDevice/UserTransmissionDevice',
-              },
-              {
-                path: '/fire-control/user-transmission-device/:companyId/detail',
-                code: 'fireControl.userTransmissionDevice.view',
-                name: 'deviceDetail',
-                component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail',
-              },
-              {
-                path:
-                  '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
-                code: 'fireControl.userTransmissionDevice.host.importPointPosition',
-                name: 'importPointPosition',
-                component: './FireControl/UserTransmissionDevice/ImportPointPosition',
               },
             ],
           },
@@ -319,7 +287,71 @@ module.exports = [
                 code: 'dynamicMonitoring.fireAlarm.historyRecordView',
                 component: './DynamicMonitoring/FireAlarm/HistoryRecord',
               },
-              // { path: '/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+              // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+            ],
+          },
+        ],
+      },
+      {
+        path: '/device-management',
+        code: 'deviceManagement',
+        icon: 'video-camera',
+        name: 'deviceManagement',
+        routes: [
+          {
+            path: '/device-management/user-transmission-device',
+            code: 'deviceManagement.userTransmissionDevice',
+            name: 'userTransmissionDevice',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/device-management/user-transmission-device',
+                name: 'userTransmissionDevice',
+                redirect: '/device-management/user-transmission-device/list',
+              },
+              {
+                path: '/device-management/user-transmission-device/list',
+                code: 'deviceManagement.userTransmissionDevice.listView',
+                name: 'list',
+                component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDevice',
+              },
+              {
+                path: '/device-management/user-transmission-device/:companyId/detail',
+                code: 'deviceManagement.userTransmissionDevice.view',
+                name: 'deviceDetail',
+                component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
+              },
+              {
+                path:'/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
+                name: 'importPointPosition',
+                component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
+              },
+            ],
+          },
+          {
+            path: '/device-management/hik-video-tree',
+            code: 'deviceManagement.hikVideoTree',
+            name: 'hikVideoTree',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/device-management/hik-video-tree',
+                name: 'hikVideoTree',
+                redirect: '/device-management/hik-video-tree/videoList',
+              },
+              {
+                path: '/device-management/hik-video-tree/videoList',
+                code: 'deviceManagement.hikVideoTree.listView',
+                name: 'videoList',
+                component: './DeviceManagement/HikVideoTree/VideoList',
+              },
+              {
+                path: '/device-management/hik-video-tree/video-detail/:id',
+                code: 'deviceManagement.hikVideoTree.listView',
+                name: 'videoDetail',
+                component: './DeviceManagement/HikVideoTree/VideoDetail',
+              },
             ],
           },
         ],

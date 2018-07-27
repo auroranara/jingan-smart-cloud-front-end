@@ -21,7 +21,7 @@ const ButtonGroup = Button.Group;
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '消防维保', name: '消防维保' },
-  { title: '用户传输装置', name: '用户传输装置', href: '/fire-control/user-transmission-device/list' },
+  { title: '用户传输装置', name: '用户传输装置', href: '/device-management/user-transmission-device/list' },
   { title: '详情页', name: '详情页' },
 ];
 
@@ -354,7 +354,7 @@ export default class UserTransmissionDeviceDetail extends Component {
             导出点位数据
           </Button>
         </ButtonGroup>
-        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(buttonCodes.transmission.add, codes)}>
+        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(buttonCodes.deviceManagement.transmission.add, codes)}>
           新增传输装置
         </Button>
       </Fragment>

@@ -19,6 +19,7 @@ export default {
       // target: 'http://192.168.10.56',
       // target: 'http://192.168.10.67:9080',
       target: 'http://192.168.10.68:18080',
+      // target: 'http://118.126.110.115:3001/mock/28',
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },

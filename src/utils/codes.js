@@ -9,16 +9,21 @@ export default {
   account: {
     edit: 'roleAuthorization.accountManagement.edit',
   },
-  transmission: {
-    detail: 'fireControl.userTransmissionDevice.view',
-    add: 'fireControl.userTransmissionDevice.add',
-    update: 'fireControl.userTransmissionDevice.edit',
-    delete: 'fireControl.userTransmissionDevice.delete',
-    host: {
-      add: 'fireControl.userTransmissionDevice.host.add',
-      update: 'fireControl.userTransmissionDevice.host.edit',
-      delete: 'fireControl.userTransmissionDevice.host.delete',
-      import: 'fireControl.userTransmissionDevice.host.importPointPosition',
+  deviceManagement: {
+    transmission: {
+      detail: 'deviceManagement.userTransmissionDevice.view',
+      add: 'deviceManagement.userTransmissionDevice.add',
+      update: 'deviceManagement.userTransmissionDevice.edit',
+      delete: 'deviceManagement.userTransmissionDevice.delete',
+      host: {
+        add: 'deviceManagement.userTransmissionDevice.host.add',
+        update: 'deviceManagement.userTransmissionDevice.host.edit',
+        delete: 'deviceManagement.userTransmissionDevice.host.delete',
+        import: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
+      },
+    },
+    hikVideoTree: {
+      detail: 'deviceManagement.hikVideoTree.detailView',
     },
   },
 };
