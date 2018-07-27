@@ -37,7 +37,7 @@ export default class DeviceDetailCard extends Component {
         <Button
           // type="primary"
           // style={deviceButtonStyle}
-          disabled={getDisabled(buttonCodes.transmission.update, codes)}
+          disabled={getDisabled(buttonCodes.deviceManagement.transmission.update, codes)}
           onClick={() =>{ handleDeviceUpdateClick(deviceData); } }
         >
           编辑
@@ -45,7 +45,7 @@ export default class DeviceDetailCard extends Component {
         <Button
           // type="primary"
           // style={deviceButtonStyle}
-          disabled={getDisabled(buttonCodes.transmission.delete, codes)}
+          disabled={getDisabled(buttonCodes.deviceManagement.transmission.delete, codes)}
           onClick={() => handleDeviceDeleteClick(deviceData.id)}
         >
           删除
@@ -67,7 +67,7 @@ export default class DeviceDetailCard extends Component {
       // </Button>
       <AuthButton
         type="primary"
-        code={buttonCodes.transmission.host.add}
+        code={buttonCodes.deviceManagement.transmission.host.add}
         codes={codes}
         onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
       >
@@ -160,7 +160,7 @@ export default class DeviceDetailCard extends Component {
                 >
                   删除
                 </a> */}
-                <AuthA code={buttonCodes.transmission.host.delete} codes={codes} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
+                <AuthA code={buttonCodes.deviceManagement.transmission.host.delete} codes={codes} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
               </MenuItem>
               <MenuItem>
                 {/* <Link
@@ -176,9 +176,9 @@ export default class DeviceDetailCard extends Component {
                   导入点位
                 </Link> */}
                 <AuthLink
-                  code={buttonCodes.transmission.host.import}
+                  code={buttonCodes.deviceManagement.transmission.host.import}
                   codes={codes}
-                  to={`/fire-control/user-transmission-device/${companyId}/import-point-position/${record.id}`}
+                  to={`/device-management/user-transmission-device/${companyId}/import-point-position/${record.id}`}
                 >
                   导入点位
                 </AuthLink>
@@ -202,7 +202,7 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a> */}
               <AuthA
-                code={buttonCodes.transmission.host.update}
+                code={buttonCodes.deviceManagement.transmission.host.update}
                 codes={codes}
                 style={hostTableAStyle}
                 onClick={() =>
@@ -223,7 +223,7 @@ export default class DeviceDetailCard extends Component {
                   更多<Icon type="down" />
                 </a> */}
                 <AuthA
-                  hasAuth={hasAuthority(buttonCodes.transmission.host.delete, codes) || hasAuthority(buttonCodes.transmission.host.import, codes)}
+                  hasAuth={hasAuthority(buttonCodes.deviceManagement.transmission.host.delete, codes) || hasAuthority(buttonCodes.transmission.host.import, codes)}
                   // className={styles.notAllowed}
                 >
                   更多<Icon type="down" />

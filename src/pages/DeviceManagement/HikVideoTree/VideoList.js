@@ -7,6 +7,7 @@ import FolderTree from './FolderTree';
 
 import styles from './VideoList.less';
 import { AuthLink } from '../../../utils/customAuth';
+import buttonsMap from '../../../utils/codes';
 
 const PAGE_SIZE = 20;
 
@@ -281,7 +282,7 @@ export default class VideoList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {/* <Link to={`/video/${record.id}/detail`}>查看</Link> */}
-            <AuthLink code="detail" codes={['detail']} to={`/device-management/hik-video-tree/video-detail/${record.id}`}>查看</AuthLink>
+            <AuthLink code={buttonsMap.deviceManagement.hikVideoTree.detail} to={`/device-management/hik-video-tree/video-detail/${record.id}`}>查看</AuthLink>
             <Divider type="vertical" />
             <button
               className={styles.playButton}

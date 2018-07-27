@@ -1,6 +1,8 @@
+import React from 'react';
 import pathToRegexp from 'path-to-regexp';
 import { Link } from 'react-router-dom';
 import { message, Button } from 'antd';
+import { connect } from 'dva';
 
 // import styles from './customAutho.less';
 
@@ -111,17 +113,19 @@ export function getPath(pathname, pathArray) {
 }
 
 export function authWrapper(WrappedComponent) {
-  return function(props) {
+  return connect(({ user }) => ({ user }))(function (props) {
     // console.log(props);
     // 将需要的属性分离出来
-    const { code, codes, hasAuth, errMsg, children = null, ...restProps } = props;
+    const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, hasAuth, errMsg, children = null, ...restProps } = props;
     // 将无权限时需要改变的属性：超链接，样式，onClick等剥离出来
     const { href, to, onClick, style = {}, ...disabledRestProps } = restProps;
 
     let authorized;
-    // 如果自定义disabled，则不通过hasAuthority(code, codes)判断是否有权限
+    // 如果自己传codes，那么就用自己传入的codes代替从currentUser中获取的permissionCodes，主要是为了方便测试
+    const perCodes = codes || permissionCodes;
+    // 如果自定义hasAuth，即自己判断是否有权限，则不通过hasAuthority(code, codes)判断是否有权限
     if (hasAuth !== undefined) authorized = hasAuth;
-    else authorized = hasAuthority(code, codes);
+    else authorized = hasAuthority(code, perCodes);
 
     // console.log(authorized);
 
@@ -149,7 +153,7 @@ export function authWrapper(WrappedComponent) {
         {children}
       </WrappedComponent>
     );
-  };
+  });
 }
 
 // 组件中需要多传入code, codes, 如果要message提示，还需传入errMsg，需要自己判断权限，传入hasAuth
