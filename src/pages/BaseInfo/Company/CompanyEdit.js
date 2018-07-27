@@ -15,6 +15,7 @@ import {
   message,
   Upload,
   Spin,
+  Modal,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -140,6 +141,7 @@ export default class CompanyDetail extends PureComponent {
     submitting: false,
     uploading: false,
     tabActiveKey: tabList[0].key,
+    visible: false,
   };
 
   /* 生命周期函数 */
@@ -446,6 +448,20 @@ export default class CompanyDetail extends PureComponent {
     });
   };
 
+  /* 显示地图 */
+  handleShowMap = () => {
+    this.setState({
+      visible: true,
+    });
+  }
+
+  /* 隐藏地图 */
+  handleHideMap = () => {
+    this.setState({
+      visible: false,
+    });
+  }
+
   /* 上传文件按钮 */
   renderUploadButton = ({ fileList, onChange }) => {
     return (
@@ -473,7 +489,7 @@ export default class CompanyDetail extends PureComponent {
     const { company: { industryCategories, detail: { data: { industryCategory } } }, form: { getFieldDecorator } } = this.props;
 
     return (
-      <Col lg={16} md={24} sm={24}>
+      <Col lg={8} md={12} sm={24}>
         <Form.Item label={fieldLabels.industryCategory}>
           {getFieldDecorator('industryCategory', {
             initialValue: industryCategory ? industryCategory.split(',') : [],
@@ -518,6 +534,26 @@ export default class CompanyDetail extends PureComponent {
           )}
         </Form.Item>
       </Col>
+    );
+  }
+
+  /* 渲染地图 */
+  renderMap() {
+    const { visible } = this.state;
+
+    return (
+      <Modal
+        title="企业定位"
+        width="80%"
+        visible={visible}
+        onCancel={this.handleHideMap}
+        footer={null}
+        maskClosable={false}
+        keyboard={false}
+        className={styles.mapModal}
+      >
+      <div>123</div>
+      </Modal>
     );
   }
 
@@ -594,7 +630,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('coordinate', {
                   initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请选择经纬度" />)}
+                })(<Input placeholder="请选择经纬度" onFocus={e => e.target.blur()} onClick={this.handleShowMap} />)}
               </Form.Item>
             </Col>
           </Row>
@@ -1013,6 +1049,7 @@ export default class CompanyDetail extends PureComponent {
             {isCompany && this.renderMoreInfo()}
             {this.renderPersonalInfo()}
             {this.renderFooterToolbar()}
+            {this.renderMap()}
           </Fragment>
         );
       case '1':

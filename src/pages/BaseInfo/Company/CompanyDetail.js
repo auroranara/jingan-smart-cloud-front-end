@@ -152,23 +152,19 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
-        <DescriptionList col={3}>
+        <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
           <Description term={fieldLabels.companyNature}>{companyNatureLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.coordinate}>{longitude && latitude ? `${longitude},${latitude}` : getEmptyData()}</Description>
-        </DescriptionList>
-        <DescriptionList col={1} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.registerAddress}>
             {registerAddressLabel || getEmptyData()}
           </Description>
-        </DescriptionList>
-        <DescriptionList col={1} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.practicalAddress}>
             {practicalAddressLabel || getEmptyData()}
           </Description>
         </DescriptionList>
-        <DescriptionList col={1} style={{ marginBottom: 32 }}>
+        <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.companyIchnography}>
             {companyIchnographyList.length !== 0 ? companyIchnographyList.map(({ name, webUrl }) => (
               <div>
