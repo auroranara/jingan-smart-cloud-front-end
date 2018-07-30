@@ -24,6 +24,7 @@ export default {
     },
     hikVideoTree: {
       detail: 'deviceManagement.hikVideoTree.detailView',
+      play: 'deviceManagement.hikVideoTree.play',
     },
   },
   company: {
