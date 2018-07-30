@@ -53,7 +53,8 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(({ account, loading }) => ({
+@connect(({ account, user, loading }) => ({
+  user,
   account,
   loading: loading.models.account,
 }))
@@ -126,7 +127,7 @@ export default class accountManagementDetail extends PureComponent {
             });
           },
           err: () => {
-            message.err('提交失败！', () => {});
+            message.err('提交失败！', () => { });
           },
         });
       }

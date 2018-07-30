@@ -10,6 +10,8 @@ import {
   queryRoles,
 } from '../services/accountManagement.js';
 
+import { checkOldPass, changePass } from '../services/account.js'
+
 export default {
   namespace: 'account',
 
@@ -162,6 +164,16 @@ export default {
       if (response.code && response.msg) {
         if (callback) callback(response);
       }
+    },
+    // 校验旧密码正确性
+    *checkOldPass({ payload, callback }, { call, put }) {
+      const response = yield call(checkOldPass, payload)
+      if (callback && response.code) callback(response.code)
+    },
+    // 个人中心修改密码
+    *changePass({ payload, callback }, { call }) {
+      const response = yield call(changePass, payload)
+      if (callback) callback(response)
     },
 
     // 查询角色列表

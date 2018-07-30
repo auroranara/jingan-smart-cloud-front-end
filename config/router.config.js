@@ -234,6 +234,20 @@ module.exports = [
         ],
       },
       {
+        path: '/account',
+        code: 'account',
+        name: 'account',
+        hideInMenu: true,
+        routes: [
+          {
+            path: '/account/change-password',
+            name: 'changePassword',
+            code: 'account.changePassword',
+            component: './Account/ChangePassword',
+          },
+        ],
+      },
+      {
         name: 'exception',
         icon: 'warning',
         path: '/exception',
