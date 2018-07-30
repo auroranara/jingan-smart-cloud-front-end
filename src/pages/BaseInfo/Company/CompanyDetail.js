@@ -223,7 +223,7 @@ export default class CompanyDetail extends PureComponent {
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.companyIchnography}>
             {companyIchnographyList.length !== 0 ? companyIchnographyList.map(({ name, webUrl }) => (
-              <div>
+              <div key={webUrl}>
                 <a href={webUrl} target="_blank" rel="noopener noreferrer">
                   {name || '预览'}
                 </a>
