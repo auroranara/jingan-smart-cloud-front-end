@@ -5,13 +5,15 @@ import { setAuthority, setToken } from '../utils/authority';
 import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
-import { accountLogin } from '../services/account';
+import { accountLogin, fetchFooterInfo } from '../services/account';
 
 export default {
   namespace: 'login',
 
   state: {
     status: undefined,
+    serviceSupport: null,
+    servicePhone: null,
   },
 
   effects: {
@@ -69,6 +71,15 @@ export default {
         })
       );
     },
+    *fetchFooterInfo({ payload }, { call, put }) {
+      const response = yield call(fetchFooterInfo)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveFooterInfo',
+          payload: response.data,
+        })
+      }
+    },
   },
 
   reducers: {
@@ -80,6 +91,13 @@ export default {
         status: payload.status,
         type: payload.type,
       };
+    },
+    saveFooterInfo(state, { payload }) {
+      return {
+        ...state,
+        serviceSupport: payload.serviceSupport || null,
+        servicePhone: payload.servicePhone || null,
+      }
     },
   },
 };
