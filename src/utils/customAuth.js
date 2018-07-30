@@ -1,6 +1,8 @@
+import React from 'react';
 import pathToRegexp from 'path-to-regexp';
 import { Link } from 'react-router-dom';
 import { message, Button } from 'antd';
+import { connect } from 'dva';
 
 // import styles from './customAutho.less';
 
@@ -49,11 +51,9 @@ export function filterMenus(MenuData, codes = [], codeMap) {
     const { path, children } = m;
     // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
     const menu = { ...m };
-    if (path !== '/' && !codes.includes(codeMap[path]))
-      continue;
+    if (path !== '/' && !codes.includes(codeMap[path])) continue;
 
-    if (children)
-      menu.children = filterMenus(children, codes, codeMap);
+    if (children) menu.children = filterMenus(children, codes, codeMap);
 
     menuData.push(menu);
   }
@@ -66,21 +66,19 @@ export function getCodeMap(menuData, result) {
   for (let m of menuData) {
     const { path, code, locale, children } = m;
 
-    if (path === '/' || result[path])
-      continue;
+    if (path === '/' || result[path]) continue;
 
     if (code) {
       result[path] = code;
       result[code] = path;
-    } else if(locale) {
+    } else if (locale) {
       // locle = 'menu.fuck.me',去掉 'menu.'
       const loc = locale.slice(5);
       result[path] = loc;
       result[loc] = path;
     }
 
-    if (children)
-      getCodeMap(children, result);
+    if (children) getCodeMap(children, result);
   }
 }
 
@@ -91,13 +89,11 @@ export function generateAuthFn(codes, codeMap, pathArray) {
   // console.log('pathArray', pathArray);
   return pathname => () => {
     // exception页面无需拦截
-    if (pathname.toLowerCase().includes('exception'))
-      return true;
+    if (pathname.toLowerCase().includes('exception')) return true;
 
     // 为了防止出现 codeMap[undefined]的情况，所以要判断下path是否存在，不存在则是pathname对应页面不存在，直接返回false
     const path = getPath(pathname, pathArray);
-    if (!path)
-      return false;
+    if (!path) return false;
 
     const hasPath = codes.includes(codeMap[path]);
     // console.log('codes', codes);
@@ -112,25 +108,25 @@ export function getPath(pathname, pathArray) {
     const pathRegexp = pathToRegexp(path);
     const isMatch = pathRegexp.test(pathname);
     // console.log('isMatch', isMatch);
-    if (isMatch)
-      return path;
+    if (isMatch) return path;
   }
 }
 
 export function authWrapper(WrappedComponent) {
-  return function (props) {
+  return connect(({ user }) => ({ user }))(function (props) {
     // console.log(props);
     // 将需要的属性分离出来
-    const { code, codes, hasAuth, errMsg, children = null, ...restProps } = props;
+    const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, hasAuthFn, errMsg, children = null, ...restProps } = props;
     // 将无权限时需要改变的属性：超链接，样式，onClick等剥离出来
     const { href, to, onClick, style = {}, ...disabledRestProps } = restProps;
 
     let authorized;
-    // 如果自定义disabled，则不通过hasAuthority(code, codes)判断是否有权限
-    if (hasAuth !== undefined)
-      authorized = hasAuth;
-    else
-      authorized = hasAuthority(code, codes);
+    // 如果自己传codes，那么就用自己传入的codes代替从currentUser中获取的permissionCodes，主要是为了方便测试
+    const perCodes = codes || permissionCodes;
+    // 如果自定义hasAuthFn，即自己判断是否有权限，则不通过hasAuthority(code, codes)判断是否有权限
+    // hasAuthFn(code: string, codes: string[]): boolean
+    if (hasAuthFn !== undefined && typeof hasAuthFn === 'function' ) authorized = hasAuthFn(perCodes);
+    else authorized = hasAuthority(code, perCodes);
 
     // console.log(authorized);
 
@@ -143,29 +139,40 @@ export function authWrapper(WrappedComponent) {
         {...disabledRestProps}
         to=""
         disabled
-        style={{ ...style, color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed', pointerEvents: 'auto' }}
-        onClick={(ev) => {
-          if (errMsg)
-            message.warn(errMsg);
+        style={{
+          ...style,
+          color: 'rgba(0,0,0,0.25)',
+          cursor: 'not-allowed',
+          pointerEvents: 'auto',
+          textDecoration: 'none',
+        }}
+        onClick={ev => {
+          if (errMsg) message.warn(errMsg);
           ev.preventDefault();
         }}
       >
         {children}
       </WrappedComponent>
     );
-  };
+  });
 }
 
-// 组件中需要多传入code, codes, 如果要message提示，还需传入errMsg，需要自己判断权限，传入hasAuth
+// 组件中需要多传入code, 如果要message提示，还需传入errMsg，需要自己判断权限，传入hasAuthFn
+// codes可以不传，若传入则会使用传入的codes判断，主要为了方便测试，比如自己传入codes={[]}来disable按钮，或传入对应的code来使按钮显示
 export const AuthA = authWrapper('a');
 
 export const AuthSpan = authWrapper('span');
 
+export const AuthDiv = authWrapper('div');
+
 export const AuthLink = authWrapper(Link);
 
-export function AuthButton({ code, codes, ...restProps }) {
-  return <Button {...restProps} disabled={getDisabled(code, codes)} />;
-}
+export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
+  const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, ...restProps } = props;
+  // 如果自己传codes，那么就用自己传入的codes代替从currentUser中获取的permissionCodes，主要是为了方便测试
+  const perCodes = codes || permissionCodes;
+  return <Button {...restProps} disabled={getDisabled(code, perCodes)} />;
+});
 
 /* 六种传参方式
  * f(code, codes)

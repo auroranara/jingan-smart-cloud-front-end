@@ -7,7 +7,10 @@ import {
   queryUnits,
   updatePassword,
   checkAccountOrPhone,
+  queryRoles,
 } from '../services/accountManagement.js';
+
+import { checkOldPass, changePass } from '../services/account.js'
 
 export default {
   namespace: 'account',
@@ -39,6 +42,7 @@ export default {
     unitTypes: [],
     accountStatuses: [],
     unitIdes: [],
+    roles: [],
   },
 
   effects: {
@@ -161,6 +165,32 @@ export default {
         if (callback) callback(response);
       }
     },
+    // 校验旧密码正确性
+    *checkOldPass({ payload, callback }, { call, put }) {
+      const response = yield call(checkOldPass, payload)
+      if (callback && response.code) callback(response.code)
+    },
+    // 个人中心修改密码
+    *changePass({ payload, callback }, { call }) {
+      const response = yield call(changePass, payload)
+      if (callback) callback(response)
+    },
+
+    // 查询角色列表
+    *fetchRoles({ payload, success, error }, { call, put }) {
+      const response = yield call(queryRoles, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryRoles',
+          payload: response.data.list,
+        });
+        if (success) {
+          success(response.data.list);
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -175,7 +205,7 @@ export default {
     ) {
       return {
         ...state,
-        list: [...state.list, ...list],
+        list: pageNum === 1 ? list : [...state.list, ...list],
         pageNum,
         isLast: pageNum * pageSize >= total,
       };
@@ -245,6 +275,23 @@ export default {
           ...state.detail,
           data: payload,
         },
+      };
+    },
+
+    clearDetail(state) {
+      return {
+        ...state,
+        detail: {
+          data: {},
+        },
+      };
+    },
+
+    /* 获取角色列表 */
+    queryRoles(state, { payload: roles }) {
+      return {
+        ...state,
+        roles,
       };
     },
   },

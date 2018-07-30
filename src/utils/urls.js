@@ -5,4 +5,10 @@ export default {
     add: '/role-authorization/role/add/',
     edit: '/role-authorization/role/edit/',
   },
+  contract: {
+    list: '/fire-control/contract/list/',
+    detail: '/fire-control/contract/detail/',
+    add: '/fire-control/contract/add/',
+    edit: '/fire-control/contract/edit/',
+  },
 };

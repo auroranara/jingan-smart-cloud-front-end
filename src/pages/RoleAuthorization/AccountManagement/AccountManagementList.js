@@ -9,6 +9,8 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementList.less';
+import { AuthLink } from '../../../utils/customAuth';
+import codesMap from '../../../utils/codes';
 
 // 标题
 const title = '账号管理';
@@ -55,8 +57,9 @@ const statusLabelList = {
 };
 
 @connect(
-  ({ account, loading }) => ({
+  ({ account, user, loading }) => ({
     account,
+    user,
     loading: loading.models.account,
   }),
   dispatch => ({
@@ -302,6 +305,9 @@ export default class accountManagementList extends PureComponent {
   renderList() {
     const {
       account: { list },
+      user: {
+        currentUser: { permissionCodes: codes },
+      },
       goToDetail,
     } = this.props;
 
@@ -322,7 +328,14 @@ export default class accountManagementList extends PureComponent {
                     <Link to={`/role-authorization/account-management/detail/${item.id}`}>
                       查看
                     </Link>,
-                    <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
+                    // <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
+                    <AuthLink
+                      code={codesMap.account.edit}
+                      codes={codes}
+                      to={`/role-authorization/account-management/edit/${item.id}`}
+                    >
+                      编辑
+                    </AuthLink>,
                   ]}
                   // extra={
                   //   <Button

@@ -44,15 +44,17 @@ const fieldLabels = {
   unitId: '所属单位',
   accountStatus: '账号状态',
   treeIds: '数据权限',
+  roleIds: '配置角色',
 };
-const UnitTypes = ['', '企事业主体', '政府机构', '运营企业', '维保企业'];
+const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '企事业主体'];
 
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(({ account, loading }) => ({
+@connect(({ account, user, loading }) => ({
+  user,
   account,
   loading: loading.models.account,
 }))
@@ -125,7 +127,7 @@ export default class accountManagementDetail extends PureComponent {
             });
           },
           err: () => {
-            message.err('提交失败！', () => {});
+            message.err('提交失败！', () => { });
           },
         });
       }
@@ -172,7 +174,7 @@ export default class accountManagementDetail extends PureComponent {
     const {
       account: {
         detail: {
-          data: { treeNames },
+          data: { treeNames, roleNames },
         },
       },
     } = this.props;
@@ -180,10 +182,16 @@ export default class accountManagementDetail extends PureComponent {
     return (
       <Card title="角色权限配置" className={styles.card} bordered={false}>
         <DescriptionList layout="vertical">
-          <Description term={fieldLabels.treeIds}>
-            <p style={{ paddingTop: 15 }}>{treeNames || getEmptyData()}</p>
-            <p style={{ fontSize: 12 }}>包括该组织下的所有数据</p>
+          <Description term={fieldLabels.roleIds}>
+            <div style={{ paddingTop: 8 }}>{roleNames ?
+              roleNames.split(',').map(roleName => (
+                <p key={roleName} style={{ margin: 0, padding: 0 }}>{roleName}</p>
+              )) : getEmptyData()}</div>
           </Description>
+          <Description term={fieldLabels.treeIds}>
+            <div style={{ paddingTop: 8 }}>{treeNames || getEmptyData()}</div>
+          </Description>
+          <p style={{ fontSize: 12 }}>包括该组织下的所有数据</p>
         </DescriptionList>
       </Card>
     );
@@ -213,11 +221,12 @@ export default class accountManagementDetail extends PureComponent {
     };
     return (
       <FooterToolbar>
-        <Button type="primary" onClick={this.showModalPassword}>
+        <Button type="primary" size="large" onClick={this.showModalPassword}>
           重置密码
         </Button>
         <Button
           type="primary"
+          size="large"
           onClick={() => {
             this.goToEdit(id);
           }}

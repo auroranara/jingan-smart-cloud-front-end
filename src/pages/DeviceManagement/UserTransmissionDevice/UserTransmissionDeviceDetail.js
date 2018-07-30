@@ -9,9 +9,8 @@ import styles from './UserTransmissionDeviceDetail.less';
 
 import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
-import { getDisabled } from '../../../utils/customAuth';
-
-// console.log(styles);
+import { AuthButton } from '../../../utils/customAuth';
+import buttonCodes from '../../../utils/codes';
 
 const { Description } = DescriptionList;
 // const { confirm } = Modal;
@@ -20,11 +19,11 @@ const ButtonGroup = Button.Group;
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '消防维保', name: '消防维保' },
-  { title: '用户传输装置', name: '用户传输装置', href: '/fire-control/user-transmission-device/list' },
+  { title: '用户传输装置', name: '用户传输装置', href: '/device-management/user-transmission-device/list' },
   { title: '详情页', name: '详情页' },
 ];
 
-const DEVICE_ADD_CODE = 'fireControl.userTransmissionDevice.add';
+// const DEVICE_ADD_CODE = 'fireControl.userTransmissionDevice.add';
 
 // 若顺序不是按照当前顺序的话，改成数组
 const DESCRIP_MAP = {
@@ -136,9 +135,8 @@ function convertMsToString(ms) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
-@connect(({ transmission, user, loading }) => ({
+@connect(({ transmission, loading }) => ({
   transmission,
-  user,
   loading: loading.effects['transmission/fetchDetail'],
 }))
 export default class UserTransmissionDeviceDetail extends Component {
@@ -331,7 +329,7 @@ export default class UserTransmissionDeviceDetail extends Component {
   render() {
     const {
       transmission: { deviceList, companyDetail },
-      user: { currentUser: { permissionCodes: codes } },
+      // user: { currentUser: { permissionCodes: codes } },
       loading,
     } = this.props;
 
@@ -353,9 +351,9 @@ export default class UserTransmissionDeviceDetail extends Component {
             导出点位数据
           </Button>
         </ButtonGroup>
-        <Button type="primary" onClick={this.handleDeviceAddClick} disabled={getDisabled(DEVICE_ADD_CODE, codes)}>
+        <AuthButton type="primary" code={buttonCodes.deviceManagement.transmission.add} onClick={this.handleDeviceAddClick}>
           新增传输装置
-        </Button>
+        </AuthButton>
       </Fragment>
     );
 
@@ -402,7 +400,7 @@ export default class UserTransmissionDeviceDetail extends Component {
 
     if (deviceList.length)
       cards = deviceList.map((device, index) => (
-        <DeviceDetailCard key={device.id} index={index} codes={codes} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
+        <DeviceDetailCard key={device.id} index={index} deviceData={device} companyId={this.props.match.params.companyId} {...cardParentMethods} />
       ));
 
     const deviceParentMethods = {

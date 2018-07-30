@@ -8,9 +8,10 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
 import { AuthLink, ERROR_MSG } from '../../../utils/customAuth';
+import buttonCodes from '../../../utils/codes';
 
 const PAGE_SIZE = 18;
-const CODE = 'fireControl.userTransmissionDevice.view';
+// const CODE = 'fireControl.userTransmissionDevice.view';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -189,7 +190,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <AuthLink code={CODE} codes={codes} to={`/fire-control/user-transmission-device/${item.id}/detail`}  errMsg={ERROR_MSG}>
+                <AuthLink code={buttonCodes.deviceManagement.transmission.detail} codes={codes} to={`/device-management/user-transmission-device/${item.id}/detail`}  errMsg={ERROR_MSG}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined

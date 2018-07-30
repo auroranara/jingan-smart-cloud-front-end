@@ -4,14 +4,15 @@ import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import styles from './DeviceDetailCard.less';
-import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton, ERROR_MSG } from '../../../utils/customAuth';
+import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton } from '../../../utils/customAuth';
+import buttonCodes from '../../../utils/codes';
 
-const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
-const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
-const HOST_ADD_CODE = 'fireControl.userTransmissionDevice.host.add';
-const HOST_UPDATE_CODE = 'fireControl.userTransmissionDevice.host.edit';
-const HOST_DELETE_CODE = 'fireControl.userTransmissionDevice.host.delete';
-const HOST_IMPORT_CODE = 'fireControl.userTransmissionDevice.host.importPointPosition';
+// const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
+// const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
+// const HOST_ADD_CODE = 'fireControl.userTransmissionDevice.host.add';
+// const HOST_UPDATE_CODE = 'fireControl.userTransmissionDevice.host.edit';
+// const HOST_DELETE_CODE = 'fireControl.userTransmissionDevice.host.delete';
+// const HOST_IMPORT_CODE = 'fireControl.userTransmissionDevice.host.importPointPosition';
 
 const { Description } = DescriptionList;
 const ButtonGroup = Button.Group;
@@ -29,32 +30,28 @@ const deviceCardStyle = { marginBottom: 20 };
 
 export default class DeviceDetailCard extends Component {
   renderDeviceExtra() {
-    const { codes, deviceData, handleDeviceUpdateClick, handleDeviceDeleteClick } = this.props;
+    const { deviceData, handleDeviceUpdateClick, handleDeviceDeleteClick } = this.props;
 
     return (
       <ButtonGroup>
-        <Button
-          // type="primary"
-          // style={deviceButtonStyle}
-          disabled={getDisabled(DEVICE_UPDATE_CODE, codes)}
+        <AuthButton
+          code={buttonCodes.deviceManagement.transmission.update}
           onClick={() =>{ handleDeviceUpdateClick(deviceData); } }
         >
           编辑
-        </Button>
-        <Button
-          // type="primary"
-          // style={deviceButtonStyle}
-          disabled={getDisabled(DEVICE_DELETE_CODE, codes)}
+        </AuthButton>
+        <AuthButton
+          code={buttonCodes.deviceManagement.transmission.delete}
           onClick={() => handleDeviceDeleteClick(deviceData.id)}
         >
           删除
-        </Button>
+        </AuthButton>
       </ButtonGroup>
     );
   }
 
   renderHostExtra() {
-    const { codes, deviceData, handleHostAddClick } = this.props;
+    const { deviceData, handleHostAddClick } = this.props;
 
     return (
       // <Button
@@ -66,8 +63,8 @@ export default class DeviceDetailCard extends Component {
       // </Button>
       <AuthButton
         type="primary"
-        code={HOST_ADD_CODE}
-        codes={codes}
+        // codes={[]}
+        code={buttonCodes.deviceManagement.transmission.host.add}
         onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
       >
         新增主机
@@ -103,7 +100,6 @@ export default class DeviceDetailCard extends Component {
 
   renderHostTable() {
     const {
-      codes,
       companyId,
       deviceData,
       handleHostUpdateClick,
@@ -159,7 +155,7 @@ export default class DeviceDetailCard extends Component {
                 >
                   删除
                 </a> */}
-                <AuthA code={HOST_DELETE_CODE} codes={codes} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
+                <AuthA code={buttonCodes.deviceManagement.transmission.host.delete} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
               </MenuItem>
               <MenuItem>
                 {/* <Link
@@ -175,9 +171,9 @@ export default class DeviceDetailCard extends Component {
                   导入点位
                 </Link> */}
                 <AuthLink
-                  code={HOST_IMPORT_CODE}
-                  codes={codes}
-                  to={`/fire-control/user-transmission-device/${companyId}/import-point-position/${record.id}`}
+                  // codes={[]}
+                  code={buttonCodes.deviceManagement.transmission.host.import}
+                  to={`/device-management/user-transmission-device/${companyId}/import-point-position/${record.id}`}
                 >
                   导入点位
                 </AuthLink>
@@ -201,8 +197,8 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a> */}
               <AuthA
-                code={HOST_UPDATE_CODE}
-                codes={codes}
+                code={buttonCodes.deviceManagement.transmission.host.update}
+                // codes={[]}
                 style={hostTableAStyle}
                 onClick={() =>
                   handleHostUpdateClick({
@@ -217,13 +213,12 @@ export default class DeviceDetailCard extends Component {
               <Dropdown overlay={menu}>
                 {/* <a
                   className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
-                  // className={styles.notAllowed}
                 >
                   更多<Icon type="down" />
                 </a> */}
                 <AuthA
-                  hasAuth={hasAuthority(HOST_DELETE_CODE, codes) || hasAuthority(HOST_IMPORT_CODE, codes)}
-                  // className={styles.notAllowed}
+                  // hasAuthFn = {() => false}
+                  hasAuthFn={codes => hasAuthority(buttonCodes.deviceManagement.transmission.host.delete, codes) || hasAuthority(buttonCodes.transmission.host.import, codes)}
                 >
                   更多<Icon type="down" />
                 </AuthA>

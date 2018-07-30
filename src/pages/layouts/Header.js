@@ -60,6 +60,10 @@ class HeaderView extends PureComponent {
         type: 'login/logout',
       });
     }
+    if (key === 'changePassword') {
+      dispatch(routerRedux.push('/account/change-password'));
+      return;
+    }
   };
 
   handleNoticeVisibleChange = visible => {
@@ -118,14 +122,14 @@ class HeaderView extends PureComponent {
             {...this.props}
           />
         ) : (
-          <GlobalHeader
-            onCollapse={handleMenuCollapse}
-            onNoticeClear={this.handleNoticeClear}
-            onMenuClick={this.handleMenuClick}
-            onNoticeVisibleChange={this.handleNoticeVisibleChange}
-            {...this.props}
-          />
-        )}
+            <GlobalHeader
+              onCollapse={handleMenuCollapse}
+              onNoticeClear={this.handleNoticeClear}
+              onMenuClick={this.handleMenuClick}
+              onNoticeVisibleChange={this.handleNoticeVisibleChange}
+              {...this.props}
+            />
+          )}
       </Header>
     ) : null;
     return (
