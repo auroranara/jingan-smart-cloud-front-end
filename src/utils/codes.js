@@ -26,4 +26,11 @@ export default {
       detail: 'deviceManagement.hikVideoTree.detailView',
     },
   },
+  contract: {
+    list: 'fireControl.contract.listView',
+    detail: 'fireControl.contract.view',
+    add: 'fireControl.contract.add',
+    edit: 'fireControl.contract.edit',
+    delete: 'fireControl.contract.delete',
+  },
 };

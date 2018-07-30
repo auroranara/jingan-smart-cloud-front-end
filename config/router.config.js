@@ -87,7 +87,7 @@ module.exports = [
               },
               {
                 path: '/fire-control/contract/add',
-                code: 'fireControl.contract.edit',
+                code: 'fireControl.contract.add',
                 name: 'add',
                 component: './FireControl/Contract/ContractHandler',
               },

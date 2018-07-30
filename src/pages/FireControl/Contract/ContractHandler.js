@@ -6,6 +6,9 @@ import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import { getToken } from 'utils/authority';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
 
 import styles from './Contract.less';
 
@@ -17,8 +20,10 @@ const { RangePicker } = DatePicker;
 // 标题
 const addTitle = '新增维保合同';
 const editTitle = '编辑维保合同';
-// 返回地址
-const backUrl = '/fire-control/contract/list';
+// 获取链接地址
+const { contract: { list: backUrl } } = urls;
+// 获取code
+const { contract: { list: listCode } } = codes;
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
 /* 模糊查询默认显示数量 */
@@ -29,8 +34,9 @@ const uploadUrl = '/acloud_new/v2/uploadFile';
 const folder = 'fireControl';
 
 @connect(
-  ({ contract, loading }) => ({
+  ({ contract, user, loading }) => ({
     contract,
+    user,
     loading: loading.models.contract,
   }),
   dispatch => ({
@@ -392,6 +398,7 @@ export default class ContractHandler extends PureComponent {
         fileList: fileList.filter(item => {
           return item.status !== 'removed';
         }),
+        uploading: false,
       });
     } else {
       // error
@@ -447,6 +454,7 @@ export default class ContractHandler extends PureComponent {
           serviceContent,
         },
       },
+      user: { currentUser: { permissionCodes } },
       form: {
         getFieldDecorator,
       },
@@ -455,6 +463,7 @@ export default class ContractHandler extends PureComponent {
     const { filterMaintenanceId, filterCompanyId, uploading } = this.state;
     const filterMaintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     const filterMaintenanceCompanyId = filterMaintenance && filterMaintenance.companyId;
+    const hasListAuthority = hasAuthority(listCode, permissionCodes);
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
@@ -583,7 +592,7 @@ export default class ContractHandler extends PureComponent {
           </Row>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button onClick={() => { goBack() }} style={{ marginRight: '24px' }}>返回</Button>
+          <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>返回</Button>
           <Button type="primary" onClick={this.handleSubmit} loading={uploading}>确定</Button>
         </div>
       </Card>
