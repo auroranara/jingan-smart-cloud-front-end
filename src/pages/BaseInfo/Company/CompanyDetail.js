@@ -65,6 +65,19 @@ const fieldLabels = {
   principalEmail: '邮箱',
   companyNature: '单位性质',
 };
+// tab列表
+const tabList = [
+  {
+    key: '0',
+    tab: '基本信息',
+  },
+  {
+    key: '1',
+    tab: '安监信息',
+  },
+];
+// 默认选中一般企业
+const defaultCompanyNature = '一般企业';
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
@@ -96,6 +109,11 @@ const getEmptyData = () => {
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
+  state = {
+    isCompany: true,
+    tabActiveKey: tabList[0].key,
+  }
+
   /* 生命周期函数 */
   componentDidMount() {
     const {
@@ -110,10 +128,38 @@ export default class CompanyDetail extends PureComponent {
       payload: {
         id,
       },
+      success: ({ companyNatureLabel }) => {
+        this.setState({
+          isCompany: companyNatureLabel === defaultCompanyNature,
+        });
+      },
       error: () => {
         goToException();
       },
     });
+  }
+
+  /* 渲染行业类别 */
+  renderIndustryCategory() {
+    const { company: { detail: { data: { industryCategoryLabel } } } } = this.props;
+
+    return (
+      <Description term={fieldLabels.industryCategory}>
+        {industryCategoryLabel || getEmptyData()}
+      </Description>
+
+    );
+  }
+
+  /* 渲染单位状态 */
+  renderCompanyStatus() {
+    const { company: { detail: { data: { companyStatusLabel } } } } = this.props;
+
+    return (
+      <Description term={fieldLabels.companyStatus}>
+        {companyStatusLabel || getEmptyData()}
+      </Description>
+    );
   }
 
   /* 渲染基础信息 */
@@ -142,6 +188,7 @@ export default class CompanyDetail extends PureComponent {
         },
       },
     } = this.props;
+    const { isCompany } = this.state;
 
     const registerAddressLabel =
       (registerProvinceLabel || '') +
@@ -170,6 +217,8 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.practicalAddress}>
             {practicalAddressLabel || getEmptyData()}
           </Description>
+          {!isCompany && this.renderIndustryCategory()}
+          {!isCompany && this.renderCompanyStatus()}
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.companyIchnography}>
@@ -194,9 +243,7 @@ export default class CompanyDetail extends PureComponent {
       company: {
         detail: {
           data: {
-            industryCategoryLabel,
             economicTypeLabel,
-            companyStatusLabel,
             scaleLabel,
             licenseTypeLabel,
             createTime,
@@ -210,15 +257,11 @@ export default class CompanyDetail extends PureComponent {
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
-          <Description term={fieldLabels.industryCategory}>
-            {industryCategoryLabel || getEmptyData()}
-          </Description>
+          {this.renderIndustryCategory()}
           <Description term={fieldLabels.economicType}>
             {economicTypeLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.companyStatus}>
-            {companyStatusLabel || getEmptyData()}
-          </Description>
+          {this.renderCompanyStatus()}
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
@@ -314,19 +357,41 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
+  renderTab() {
+    const { tabActiveKey, isCompany } = this.state;
+    switch(tabActiveKey){
+      case '0':
+        return (
+          <Fragment>
+            {this.renderBasicInfo()}
+            {isCompany && this.renderMoreInfo()}
+            {this.renderPersonalInfo()}
+            {this.renderFooterToolbar()}
+          </Fragment>
+        );
+      case '1':
+        return (
+          <Fragment>
+            <div>123</div>
+            {/* 在这里写安监 */}
+          </Fragment>
+        );
+      default:
+        return null;
+    }
+  }
+
   render() {
     const { loading } = this.props;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        tabList={tabList}
         wrapperClassName={styles.advancedForm}
       >
         <Spin spinning={loading}>
-          {this.renderBasicInfo()}
-          {this.renderMoreInfo()}
-          {this.renderPersonalInfo()}
-          {this.renderFooterToolbar()}
+          {this.renderTab()}
         </Spin>
       </PageHeaderLayout>
     );

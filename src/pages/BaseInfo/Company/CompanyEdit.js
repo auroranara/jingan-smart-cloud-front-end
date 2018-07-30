@@ -32,6 +32,7 @@ import styles from './Company.less';
 
 const { TextArea, Search } = Input;
 const { Option } = Select;
+const { confirm } = Modal;
 
 const { home: homeUrl, company: { list: listUrl }, exception: { 500: exceptionUrl } } = urls;
 const { home: homeTitle, company: { menu: menuTitle, list: listTitle, add: addTitle, edit: editTitle } } = titles;
@@ -75,7 +76,7 @@ const tabList = [
   },
 ];
 // 默认选中一般企业
-const defaultCompanyNature = '0';
+const defaultCompanyNature = '一般企业';
 // 地图默认中心点
 const defaultCenter = '无锡';
 
@@ -178,13 +179,13 @@ export default class CompanyDetail extends PureComponent {
           practicalCity,
           practicalDistrict,
           companyIchnography,
-          companyNature,
+          companyNatureLabel,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
           // 初始化上传文件
           this.setState({
             ichnographyList: companyIchnographyList,
-            isCompany: companyNature === defaultCompanyNature,
+            isCompany: companyNatureLabel === defaultCompanyNature,
           });
           // 获取注册地址列表
           fetchArea({
@@ -264,7 +265,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取单位性质
     fetchDict({
       payload: {
-        type: 'companyNature',
+        type: 'company_nature',
         key: 'companyNatures',
       },
       error,
@@ -460,7 +461,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取坐标，值可能为undefined或"135.12123,141.4142"这样的格式
     const coordinate = getFieldValue('coordinate');
     const temp = coordinate && coordinate.split(',');
-    const center = coordinate && { lng: temp[0], lat: temp[1] };
+    const center = coordinate && { lng: +temp[0], lat: +temp[1] };
 
     this.setState({
       visible: true,
@@ -474,6 +475,25 @@ export default class CompanyDetail extends PureComponent {
     this.setState({
       visible: false,
     });
+  }
+
+  /* 地图搜索 */
+  handleMapSearch = (value) => {
+    if (value) {
+      // 创建地址解析器实例
+      var myGeo = new BMap.Geocoder(); // eslint-disable-line
+      // 将地址解析结果显示在地图上,并调整地图视野
+      myGeo.getPoint(value, (point) => {
+        if (point) {
+          this.setState({
+            center: point,
+            markerPosition: point,
+          });
+        }else{
+          message.warning('您输入的地址没有解析到结果!');
+        }
+      });
+    }
   }
 
   /* 上传文件按钮 */
@@ -554,11 +574,6 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染地图 */
   renderMap() {
     const { visible, center, markerPosition } = this.state;
-    const updateMarkerPosition = (markerPosition) => {
-      this.setState({
-        markerPosition,
-      });
-    };
 
     return (
       <Modal
@@ -574,17 +589,23 @@ export default class CompanyDetail extends PureComponent {
       >
         <Map
           center={center ? center : defaultCenter}
+          zoom={12}
           style={{ height: '600px' }}
           ref={map => {this.map = map;}}
           events={{
-            click(e) {
-              updateMarkerPosition(e.point);
-              console.log(this);
+            click: (e) => {
+              if (e.domEvent.target.className !== 'BMap_mask') {
+                return;
+              }
+              this.setState({
+                markerPosition: e.point,
+              });
             },
           }}
+          enableScrollWheelZoom
         >
           <div style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent' }}>
-            <Search placeholder="请输入地址" enterButton onSearch={(value, e) => { console.log(e);console.log(this.map); }} />
+            <Search placeholder="请输入地址" enterButton onSearch={this.handleMapSearch} />
           </div>
           <NavigationControl anchor={BMAP_ANCHOR_TOP_RIGHT  /*eslint-disable-line*/} />
           {markerPosition && (
@@ -592,10 +613,33 @@ export default class CompanyDetail extends PureComponent {
               icon="loc_red"
               position={markerPosition}
               events={{
-                click(e) {
-                  e.domEvent.stopPropagation();
-                  console.log(e);
-                  console.log(this);
+                click: (e) => {
+                  const { lng, lat } = markerPosition;
+                  // 创建坐标点
+                  const point = new BMap.Point(lng, lat); // eslint-disable-line
+                  // 创建解析器实例
+                  var geoc = new BMap.Geocoder(); // eslint-disable-line
+                  // 解析当前坐标点的地址
+                  geoc.getLocation(point, (rs) => {
+                    if (rs) {
+                      confirm({
+                        title: '您确定要选择当前地址吗？',
+                        content: `当前地址：${rs.address}`,
+                        okText: '确定',
+                        cancelText: '取消',
+                        onOk: () => {
+                          const { form: { setFieldsValue } } = this.props;
+                          setFieldsValue({
+                            coordinate: `${lng},${lat}`,
+                          });
+                          this.handleHideMap();
+                        },
+                      });
+                    }
+                    else {
+                      message.warning('未匹配到您当前选中的地址！');
+                    }
+                  });
                 },
               }}
             />
@@ -652,10 +696,10 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyNature}>
                 {getFieldDecorator('companyNature', {
-                  initialValue: companyNature || defaultCompanyNature,
+                  initialValue: companyNature || (companyNatures.length > 0 ? companyNatures.filter(item => item.label === defaultCompanyNature)[0].id : undefined),
                   rules: [{ required: true, message: '请选择单位性质' }],
                 })(
-                  <Select placeholder="请选择单位性质" getPopupContainer={getRootChild} onChange={(value) => { this.setState({ isCompany: value === defaultCompanyNature }); }}>
+                  <Select placeholder="请选择单位性质" getPopupContainer={getRootChild} onChange={(value) => { this.setState({ isCompany: companyNatures.filter(item => item.id === value)[0].label === defaultCompanyNature }); }}>
                     {companyNatures.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -681,6 +725,8 @@ export default class CompanyDetail extends PureComponent {
                 })(<Input placeholder="请选择经纬度" onFocus={e => e.target.blur()} onClick={this.handleShowMap} />)}
               </Form.Item>
             </Col>
+            {!isCompany && this.renderIndustryCategory()}
+            {!isCompany && this.renderCompanyStatus()}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>
@@ -763,8 +809,6 @@ export default class CompanyDetail extends PureComponent {
                 </Col>
               </Row>
             </Col>
-            {!isCompany && this.renderIndustryCategory()}
-            {!isCompany && this.renderCompanyStatus()}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
