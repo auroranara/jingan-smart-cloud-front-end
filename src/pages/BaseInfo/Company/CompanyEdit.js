@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -15,26 +15,27 @@ import {
   message,
   Upload,
   Spin,
+  Modal,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
+import { Map, NavigationControl, Marker } from 'react-bmap'
 
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import CompanyModal from './CompanyModal';
 import { phoneReg, emailReg } from 'utils/validate';
+import urls from 'utils/urls';
+import titles from 'utils/titles';
 import { getToken } from 'utils/authority';
+
 import styles from './Company.less';
 
-const { TextArea } = Input;
+const { TextArea, Search } = Input;
 const { Option } = Select;
+const { confirm } = Modal;
 
-// 修改页面标题
-const editTitle = '编辑企业';
-// 添加页面标题
-const addTitle = '新增企业';
-// 返回地址
-const href = '/base-info/company/list';
+const { home: homeUrl, company: { list: listUrl }, exception: { 500: exceptionUrl } } = urls;
+const { home: homeTitle, company: { menu: menuTitle, list: listTitle, add: addTitle, edit: editTitle } } = titles;
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
@@ -43,37 +44,46 @@ const folder = 'fireControl';
 const fieldLabels = {
   administrativeDivision: '行政区域',
   businessScope: '经营范围',
-  code: '企业社会信用码',
-  companyIchnography: '企业平面图',
-  companyStatus: '企业状态',
+  code: '社会信用代码',
+  companyIchnography: '单位平面图',
+  companyStatus: '单位状态',
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
-  latitude: '纬度',
+  coordinate: '经纬度',
   licenseType: '营业执照类别',
-  longitude: '经度',
-  maintenanceContract: '维保合同',
-  maintenanceId: '选择消防维修单位',
-  name: '	企业名称',
+  name: '	单位名称',
   practicalAddress: '实际经营地址',
   registerAddress: '注册地址',
   scale: '规模情况',
   principalName: '姓名',
   principalPhone: '联系方式',
   principalEmail: '邮箱',
-};
-/* 默认分页参数 */
-const defaultPagination = {
-  pageNum: 1,
-  pageSize: 10,
+  companyNature: '单位性质',
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
+// tab列表
+const tabList = [
+  {
+    key: '0',
+    tab: '基本信息',
+  },
+  {
+    key: '1',
+    tab: '安监信息',
+  },
+];
+// 默认选中一般企业
+const defaultCompanyNature = '一般企业';
+// 地图默认中心点
+const defaultCenter = '无锡';
 
 @connect(
-  ({ company, loading }) => ({
+  ({ company, user, loading }) => ({
     company,
+    user,
     loading: loading.models.company,
   }),
   dispatch => ({
@@ -107,14 +117,7 @@ const getRootChild = () => document.querySelector('#root>div');
     },
     // 返回
     goBack() {
-      dispatch(routerRedux.push(href));
-    },
-    // 获取维保单位列表
-    fetchModalList(action) {
-      dispatch({
-        type: 'company/fetchModalList',
-        ...action,
-      });
+      dispatch(routerRedux.push(listUrl));
     },
     // 获取行政区域
     fetchArea(action) {
@@ -125,7 +128,7 @@ const getRootChild = () => document.querySelector('#root>div');
     },
     // 异常
     goToException() {
-      dispatch(routerRedux.push('/exception/500'));
+      dispatch(routerRedux.push(exceptionUrl));
     },
     // 清空详情
     clearDetail() {
@@ -139,13 +142,13 @@ const getRootChild = () => document.querySelector('#root>div');
 export default class CompanyDetail extends PureComponent {
   state = {
     ichnographyList: [],
-    contractList: [],
-    modal: {
-      visible: false,
-      loading: false,
-    },
-    maintenanceId: undefined,
+    isCompany: true,
     submitting: false,
+    uploading: false,
+    tabActiveKey: tabList[0].key,
+    visible: false,
+    center: undefined,
+    markerPosition: undefined,
   };
 
   /* 生命周期函数 */
@@ -158,7 +161,7 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
-      goToException,
+      goToException: error,
     } = this.props;
 
     // 如果id存在的话，则编辑，否则新增
@@ -169,7 +172,6 @@ export default class CompanyDetail extends PureComponent {
           id,
         },
         success: ({
-          maintenanceId,
           registerProvince,
           registerCity,
           registerDistrict,
@@ -177,24 +179,14 @@ export default class CompanyDetail extends PureComponent {
           practicalCity,
           practicalDistrict,
           companyIchnography,
-          ichnographyName,
+          companyNatureLabel,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-          if (companyIchnographyList.length !== 0) {
-            // 初始化上传文件
-            this.setState({
-              maintenanceId,
-              ichnographyList: [
-                {
-                  uid: -1,
-                  status: 'done',
-                  name: ichnographyName,
-                  url: companyIchnographyList[0].webUrl,
-                  dbUrl: companyIchnographyList[0].dbUrl,
-                },
-              ],
-            });
-          }
+          // 初始化上传文件
+          this.setState({
+            ichnographyList: companyIchnographyList,
+            isCompany: companyNatureLabel === defaultCompanyNature,
+          });
           // 获取注册地址列表
           fetchArea({
             payload: {
@@ -203,6 +195,7 @@ export default class CompanyDetail extends PureComponent {
                 .join(','),
               keys: ['registerAddress'],
             },
+            error,
           });
           // 获取两实际地址列表
           fetchArea({
@@ -212,11 +205,10 @@ export default class CompanyDetail extends PureComponent {
                 .join(','),
               keys: ['practicalAddress'],
             },
+            error,
           });
         },
-        error: () => {
-          goToException();
-        },
+        error,
       });
     } else {
       // 清空详情
@@ -226,6 +218,7 @@ export default class CompanyDetail extends PureComponent {
         payload: {
           keys: ['registerAddress', 'practicalAddress'],
         },
+        error,
       });
     }
 
@@ -235,6 +228,7 @@ export default class CompanyDetail extends PureComponent {
         type: 'company_industry_type',
         key: 'industryCategories',
       },
+      error,
     });
     // 获取经济类型
     fetchDict({
@@ -242,13 +236,15 @@ export default class CompanyDetail extends PureComponent {
         type: 'economicType',
         key: 'economicTypes',
       },
+      error,
     });
-    // 获取企业状态
+    // 获取单位状态
     fetchDict({
       payload: {
         type: 'companyState',
         key: 'companyStatuses',
       },
+      error,
     });
     // 获取规模情况
     fetchDict({
@@ -256,6 +252,7 @@ export default class CompanyDetail extends PureComponent {
         type: 'scale',
         key: 'scales',
       },
+      error,
     });
     // 获取营业执照类别
     fetchDict({
@@ -263,6 +260,22 @@ export default class CompanyDetail extends PureComponent {
         type: 'businessLicense',
         key: 'licenseTypes',
       },
+      error,
+    });
+    // 获取单位性质
+    fetchDict({
+      payload: {
+        type: 'company_nature',
+        key: 'companyNatures',
+      },
+      error,
+    });
+  }
+
+  /* tab列表点击变化 */
+  handleTabChange = (key) => {
+    this.setState({
+      tabActiveKey: key,
     });
   }
 
@@ -283,7 +296,7 @@ export default class CompanyDetail extends PureComponent {
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
       (
-        error,
+        err,
         {
           registerAddressArea: [registerProvince, registerCity, registerDistrict, registerTown],
           practicalAddressArea: [
@@ -294,20 +307,21 @@ export default class CompanyDetail extends PureComponent {
           ],
           createTime,
           industryCategory,
+          coordinate,
           ...restFields
         }
       ) => {
-        if (!error) {
+        if (!err) {
           this.setState({
             submitting: true,
           });
           const {
-            maintenanceId,
-            ichnographyList: [ichnography],
-            contractList: [contract],
+            ichnographyList,
           } = this.state;
+          const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
           const payload = {
             ...restFields,
+            id,
             registerProvince,
             registerCity,
             registerDistrict,
@@ -318,46 +332,33 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
-            maintenanceId,
-            companyIchnography: ichnography && ichnography.dbUrl,
-            ichnographyName: ichnography && ichnography.name,
-            maintenanceContract: contract && contract.dbUrl,
-            contractName: contract && contract.name,
+            companyIchnography: JSON.stringify(ichnographyList),
+            longitude,
+            latitude,
+          };
+          // 成功回调
+          const success = () => {
+            const msg = id ? '编辑成功！' : '新增成功！';
+            message.success(msg, 1, goBack);
+          };
+          // 失败回调
+          const error = (msg) => {
+            message.error(msg);
+            this.setState({
+              submitting: false,
+            });
           };
           if (id) {
             editCompany({
-              payload: {
-                id,
-                ...payload,
-              },
-              success: () => {
-                message.success('编辑成功！', () => {
-                  goBack();
-                });
-              },
-              error: err => {
-                message.error(err, () => {
-                  this.setState({
-                    submitting: false,
-                  });
-                });
-              },
+              payload,
+              success,
+              error,
             });
           } else {
             insert({
               payload,
-              success: () => {
-                message.success('新增成功！', () => {
-                  goBack();
-                });
-              },
-              error: err => {
-                message.error(err, () => {
-                  this.setState({
-                    submitting: false,
-                  });
-                });
-              },
+              success,
+              error,
             });
           }
         }
@@ -365,12 +366,12 @@ export default class CompanyDetail extends PureComponent {
     );
   };
 
-  /* 上传企业平面图 */
-  handleUploadIchnography = info => {
-    const { file } = info;
+  /* 上传单位平面图 */
+  handleUploadIchnography = ({ fileList, file }) => {
     if (file.status === 'uploading') {
       this.setState({
-        ichnographyList: [file],
+        ichnographyList: fileList,
+        uploading: true,
       });
     } else if (file.status === 'done') {
       if (file.response.code === 200) {
@@ -381,132 +382,55 @@ export default class CompanyDetail extends PureComponent {
         } = file.response;
         if (result) {
           this.setState({
-            ichnographyList: [
-              {
-                ...file,
-                url: result.webUrl,
-                dbUrl: result.dbUrl,
-              },
-            ],
+            ichnographyList: fileList.map(item => {
+              if (!item.url && item.response) {
+                return {
+                  ...item,
+                  url: result.webUrl,
+                  dbUrl: result.dbUrl,
+                };
+              }
+              return item;
+            }),
           });
         } else {
           // 没有返回值
           message.error('上传失败！');
           this.setState({
-            ichnographyList: [],
+            ichnographyList: fileList.filter(item => {
+              return !item.response || (item.response.data.list.length !== 0);
+            }),
           });
         }
       } else {
         // code为500
         message.error('上传失败！');
         this.setState({
-          ichnographyList: [],
+          ichnographyList: fileList.filter(item => {
+            return !item.response || (item.response.code !== 200);
+          }),
         });
       }
+      this.setState({
+        uploading: false,
+      });
     } else if (file.status === 'removed') {
       // 删除
       this.setState({
-        ichnographyList: [],
+        ichnographyList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
       });
     } else {
       // error
       message.error('上传失败！');
       this.setState({
-        ichnographyList: [],
+        ichnographyList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
       });
     }
-  };
-
-  /* 上传维保合同 */
-  handleUploadContract = info => {
-    const { file } = info;
-    if (file.status === 'uploading') {
-      this.setState({
-        contractList: [file],
-      });
-    } else if (file.status === 'done') {
-      if (file.response.code === 200) {
-        const {
-          data: {
-            list: [result],
-          },
-        } = file.response;
-        if (result) {
-          this.setState({
-            contractList: [
-              {
-                ...file,
-                url: result.webUrl,
-                dbUrl: result.dbUrl,
-              },
-            ],
-          });
-        } else {
-          // 没有返回值
-          message.error('上传失败！');
-          this.setState({
-            contractList: [],
-          });
-        }
-      } else {
-        // code为500
-        message.error('上传失败！');
-        this.setState({
-          contractList: [],
-        });
-      }
-    } else if (file.status === 'removed') {
-      // 删除
-      this.setState({
-        contractList: [],
-      });
-    } else {
-      // error
-      message.error('上传失败！');
-      this.setState({
-        contractList: [],
-      });
-    }
-  };
-
-  /* 显示模态框 */
-  handleShowModal = () => {
-    const { fetchModalList } = this.props;
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        visible: true,
-      },
-    });
-    fetchModalList({
-      payload: {
-        ...defaultPagination,
-      },
-    });
-  };
-
-  /* 隐藏模态框 */
-  handleHideModal = () => {
-    const { modal } = this.state;
-    this.setState({
-      modal: {
-        ...modal,
-        visible: false,
-      },
-    });
-  };
-
-  /* 选择按钮点击事件 */
-  handleSelect = value => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({ maintenanceId: value.name });
-    this.setState({
-      maintenanceId: value.id,
-    });
-    this.handleHideModal();
   };
 
   /* 区域动态加载 */
@@ -531,6 +455,47 @@ export default class CompanyDetail extends PureComponent {
     });
   };
 
+  /* 显示地图 */
+  handleShowMap = () => {
+    const { form: { getFieldValue } } = this.props;
+    // 获取坐标，值可能为undefined或"135.12123,141.4142"这样的格式
+    const coordinate = getFieldValue('coordinate');
+    const temp = coordinate && coordinate.split(',');
+    const center = coordinate && { lng: +temp[0], lat: +temp[1] };
+
+    this.setState({
+      visible: true,
+      center,
+      markerPosition: center,
+    });
+  }
+
+  /* 隐藏地图 */
+  handleHideMap = () => {
+    this.setState({
+      visible: false,
+    });
+  }
+
+  /* 地图搜索 */
+  handleMapSearch = (value) => {
+    if (value) {
+      // 创建地址解析器实例
+      var myGeo = new BMap.Geocoder(); // eslint-disable-line
+      // 将地址解析结果显示在地图上,并调整地图视野
+      myGeo.getPoint(value, (point) => {
+        if (point) {
+          this.setState({
+            center: point,
+            markerPosition: point,
+          });
+        }else{
+          message.warning('您输入的地址没有解析到结果!');
+        }
+      });
+    }
+  }
+
   /* 上传文件按钮 */
   renderUploadButton = ({ fileList, onChange }) => {
     return (
@@ -539,6 +504,7 @@ export default class CompanyDetail extends PureComponent {
         data={{
           folder,
         }}
+        multiple
         action={uploadAction}
         fileList={fileList}
         onChange={onChange}
@@ -551,6 +517,137 @@ export default class CompanyDetail extends PureComponent {
       </Upload>
     );
   };
+
+  /* 渲染行业类别 */
+  renderIndustryCategory() {
+    const { company: { industryCategories, detail: { data: { industryCategory } } }, form: { getFieldDecorator } } = this.props;
+
+    return (
+      <Col lg={8} md={12} sm={24}>
+        <Form.Item label={fieldLabels.industryCategory}>
+          {getFieldDecorator('industryCategory', {
+            initialValue: industryCategory ? industryCategory.split(',') : [],
+          })(
+            <Cascader
+              options={industryCategories}
+              fieldNames={{
+                value: 'id',
+                label: 'name',
+                children: 'children',
+                isLeaf: 'isLeaf',
+              }}
+              allowClear
+              changeOnSelect
+              placeholder="请选择行业类别"
+              getPopupContainer={getRootChild}
+            />
+          )}
+        </Form.Item>
+      </Col>
+    );
+  }
+
+  /* 渲染单位状态 */
+  renderCompanyStatus() {
+    const { company: { companyStatuses, detail: { data: { companyStatus } } }, form: { getFieldDecorator } } = this.props;
+
+    return (
+      <Col lg={8} md={12} sm={24}>
+        <Form.Item label={fieldLabels.companyStatus}>
+          {getFieldDecorator('companyStatus', {
+            initialValue: companyStatus,
+            rules: [{ required: true, message: '请选择单位状态' }],
+          })(
+            <Select placeholder="请选择单位状态" getPopupContainer={getRootChild}>
+              {companyStatuses.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </Form.Item>
+      </Col>
+    );
+  }
+
+  /* 渲染地图 */
+  renderMap() {
+    const { visible, center, markerPosition } = this.state;
+
+    return (
+      <Modal
+        title="企业定位"
+        width="80%"
+        visible={visible}
+        onCancel={this.handleHideMap}
+        footer={null}
+        maskClosable={false}
+        keyboard={false}
+        className={styles.mapModal}
+        destroyOnClose
+      >
+        <Map
+          center={center ? center : defaultCenter}
+          zoom={12}
+          style={{ height: '600px' }}
+          ref={map => {this.map = map;}}
+          events={{
+            click: (e) => {
+              if (e.domEvent.target.className !== 'BMap_mask') {
+                return;
+              }
+              this.setState({
+                markerPosition: e.point,
+              });
+            },
+          }}
+          enableScrollWheelZoom
+        >
+          <div style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent' }}>
+            <Search placeholder="请输入地址" enterButton onSearch={this.handleMapSearch} />
+          </div>
+          <NavigationControl anchor={BMAP_ANCHOR_TOP_RIGHT  /*eslint-disable-line*/} />
+          {markerPosition && (
+            <Marker
+              icon="loc_red"
+              position={markerPosition}
+              events={{
+                click: (e) => {
+                  const { lng, lat } = markerPosition;
+                  // 创建坐标点
+                  const point = new BMap.Point(lng, lat); // eslint-disable-line
+                  // 创建解析器实例
+                  var geoc = new BMap.Geocoder(); // eslint-disable-line
+                  // 解析当前坐标点的地址
+                  geoc.getLocation(point, (rs) => {
+                    if (rs) {
+                      confirm({
+                        title: '您确定要选择当前地址吗？',
+                        content: `当前地址：${rs.address}`,
+                        okText: '确定',
+                        cancelText: '取消',
+                        onOk: () => {
+                          const { form: { setFieldsValue } } = this.props;
+                          setFieldsValue({
+                            coordinate: `${lng},${lat}`,
+                          });
+                          this.handleHideMap();
+                        },
+                      });
+                    }
+                    else {
+                      message.warning('未匹配到您当前选中的地址！');
+                    }
+                  });
+                },
+              }}
+            />
+          )}
+        </Map>
+      </Modal>
+    );
+  }
 
   /* 渲染基础信息 */
   renderBasicInfo() {
@@ -572,17 +669,19 @@ export default class CompanyDetail extends PureComponent {
             practicalCity,
             practicalDistrict,
             practicalTown,
+            companyNature,
           },
         },
         registerAddress: registerAddressArea,
         practicalAddress: practicalAddressArea,
+        companyNatures,
       },
       form: { getFieldDecorator },
     } = this.props;
-    const { ichnographyList } = this.state;
+    const { ichnographyList, isCompany } = this.state;
 
     return (
-      <Card title="基础信息" className={styles.card} bordered={false}>
+      <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
@@ -590,8 +689,24 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('name', {
                   initialValue: name,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入企业名称' }],
-                })(<Input placeholder="请输入企业名称" />)}
+                  rules: [{ required: true, message: '请输入单位名称' }],
+                })(<Input placeholder="请输入单位名称" />)}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.companyNature}>
+                {getFieldDecorator('companyNature', {
+                  initialValue: companyNature || (companyNatures.length > 0 ? companyNatures.filter(item => item.label === defaultCompanyNature)[0].id : undefined),
+                  rules: [{ required: true, message: '请选择单位性质' }],
+                })(
+                  <Select placeholder="请选择单位性质" getPopupContainer={getRootChild} onChange={(value) => { this.setState({ isCompany: companyNatures.filter(item => item.id === value)[0].label === defaultCompanyNature }); }}>
+                    {companyNatures.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -599,28 +714,19 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('code', {
                   initialValue: code,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入社会信用代码' }],
                 })(<Input placeholder="请输入社会信用代码" />)}
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.longitude}>
-                {getFieldDecorator('longitude', {
-                  initialValue: longitude,
+              <Form.Item label={fieldLabels.coordinate}>
+                {getFieldDecorator('coordinate', {
+                  initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入经度" />)}
+                })(<Input placeholder="请选择经纬度" onFocus={e => e.target.blur()} onClick={this.handleShowMap} />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.latitude}>
-                {getFieldDecorator('latitude', {
-                  initialValue: latitude,
-                  getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入纬度" />)}
-              </Form.Item>
-            </Col>
+            {!isCompany && this.renderIndustryCategory()}
+            {!isCompany && this.renderCompanyStatus()}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>
@@ -723,16 +829,12 @@ export default class CompanyDetail extends PureComponent {
   renderMoreInfo() {
     const {
       company: {
-        industryCategories,
         economicTypes,
-        companyStatuses,
         scales,
         licenseTypes,
         detail: {
           data: {
-            industryCategory,
             economicType,
-            companyStatus,
             scale,
             licenseType,
             createTime,
@@ -745,7 +847,7 @@ export default class CompanyDetail extends PureComponent {
     } = this.props;
 
     return (
-      <Card title="更多信息" className={styles.card} bordered={false}>
+      <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
@@ -772,22 +874,7 @@ export default class CompanyDetail extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.companyStatus}>
-                {getFieldDecorator('companyStatus', {
-                  initialValue: companyStatus,
-                  rules: [{ required: true, message: '请选择企业状态' }],
-                })(
-                  <Select placeholder="请选择企业状态" getPopupContainer={getRootChild}>
-                    {companyStatuses.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </Form.Item>
-            </Col>
+            {this.renderCompanyStatus()}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {
@@ -832,27 +919,7 @@ export default class CompanyDetail extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={12} md={18} sm={24}>
-              <Form.Item label={fieldLabels.industryCategory}>
-                {getFieldDecorator('industryCategory', {
-                  initialValue: industryCategory ? industryCategory.split(',') : [],
-                })(
-                  <Cascader
-                    options={industryCategories}
-                    fieldNames={{
-                      value: 'id',
-                      label: 'name',
-                      children: 'children',
-                      isLeaf: 'isLeaf',
-                    }}
-                    allowClear
-                    changeOnSelect
-                    placeholder="请选择行业类别"
-                    getPopupContainer={getRootChild}
-                  />
-                )}
-              </Form.Item>
-            </Col>
+            {this.renderIndustryCategory()}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={16} md={24} sm={24}>
@@ -890,7 +957,7 @@ export default class CompanyDetail extends PureComponent {
     } = this.props;
 
     return (
-      <Card title="人员信息" bordered={false}>
+      <Card bordered={false}>
         <Form layout="vertical">
           <h3 className={styles.subTitle}>法定代表人</h3>
           <Row gutter={{ lg: 48, md: 24 }} className={styles.subBody}>
@@ -1063,41 +1130,30 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
-  /* 渲染选择维保单位模态框 */
-  renderModal() {
-    const {
-      modal: { loading, visible },
-    } = this.state;
-    const {
-      company: {
-        modal,
-        detail: {
-          data: { id },
-        },
-      },
-      fetchModalList,
-    } = this.props;
-    const modalProps = {
-      // 模态框是否显示
-      visible,
-      // 模态框点击关闭按钮回调
-      onClose: this.handleHideModal,
-      // 完全关闭后回调
-      afterClose: () => {
-        this.maintenanceIdInput.blur();
-      },
-      modal,
-      fetch: fetchModalList,
-      payload: {
-        companyId: id,
-      },
-      // 选择回调
-      onSelect: this.handleSelect,
-      // 表格是否正在加载
-      loading,
-    };
-
-    return <CompanyModal {...modalProps} />;
+  /* 渲染标签页 */
+  renderTab() {
+    const { tabActiveKey, isCompany } = this.state;
+    switch(tabActiveKey) {
+      case '0':
+        return (
+          <Fragment>
+            {this.renderBasicInfo()}
+            {isCompany && this.renderMoreInfo()}
+            {this.renderPersonalInfo()}
+            {this.renderFooterToolbar()}
+            {this.renderMap()}
+          </Fragment>
+        );
+      case '1':
+        return (
+          <Fragment>
+            <div>123</div>
+            {/* 在这里写安监 */}
+          </Fragment>
+        );
+      default:
+        return null;
+    }
   }
 
   render() {
@@ -1107,41 +1163,41 @@ export default class CompanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { submitting } = this.state;
+    const { submitting, tabActiveKey } = this.state;
     const title = id ? editTitle : addTitle;
     // 面包屑
     const breadcrumbList = [
       {
-        title: '首页',
-        name: '首页',
-        href: '/',
+        title: homeTitle,
+        name: homeTitle,
+        href: homeUrl,
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: menuTitle,
+        name: menuTitle,
       },
       {
-        title: '企业单位',
-        name: '企业单位',
-        href,
+        title: listTitle,
+        name: listTitle,
+        href: listUrl,
       },
       {
         title,
         name: title,
       },
     ];
+
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        tabList={tabList}
+        onTabChange={this.handleTabChange}
+        tabActiveKey={tabActiveKey}
         wrapperClassName={styles.advancedForm}
       >
         <Spin spinning={loading || submitting}>
-          {this.renderBasicInfo()}
-          {this.renderMoreInfo()}
-          {this.renderPersonalInfo()}
-          {this.renderFooterToolbar()}
-          {this.renderModal()}
+          {this.renderTab()}
         </Spin>
       </PageHeaderLayout>
     );

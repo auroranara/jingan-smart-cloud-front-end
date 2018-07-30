@@ -26,6 +26,13 @@ export default {
       detail: 'deviceManagement.hikVideoTree.detailView',
     },
   },
+  company: {
+    list: 'baseInfo.company.listView',
+    detail: 'baseInfo.company.view',
+    add: 'baseInfo.company.add',
+    edit: 'baseInfo.company.edit',
+    delete: 'baseInfo.company.delete',
+  },
   contract: {
     list: 'fireControl.contract.listView',
     detail: 'fireControl.contract.view',
