@@ -33,10 +33,10 @@ const links = [
 export default class UserLayout extends PureComponent {
 
   componentDidMount() {
-    // const { dispatch } = this.props
-    // dispatch({
-    //   type: 'login/fetchFooterInfo',
-    // })
+    const { dispatch } = this.props
+    dispatch({
+      type: 'login/fetchFooterInfo',
+    })
   }
 
   // @TODO title
