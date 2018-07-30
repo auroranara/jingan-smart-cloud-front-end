@@ -279,6 +279,7 @@ export default class CompanyList extends PureComponent {
                   actions={[
                     <Link to={`/base-info/company/detail/${id}`}>查看</Link>,
                     <Link to={`/base-info/company/edit/${id}`}>编辑</Link>,
+                    <Link to={`/base-info/company/department/list/${id}`}>部门</Link>,
                   ]}
                   extra={
                     <Button

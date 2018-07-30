@@ -58,6 +58,12 @@ module.exports = [
                 name: 'detail',
                 component: './BaseInfo/Company/CompanyDetail',
               },
+              {
+                path: '/base-info/company/department/list/:id',
+                code: 'baseInfo.company.department.listView',
+                name: 'department',
+                component: './BaseInfo/Company/DepartmentList',
+              },
             ],
           },
         ],
@@ -336,7 +342,7 @@ module.exports = [
                 component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
               },
               {
-                path:'/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                path: '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
                 code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
