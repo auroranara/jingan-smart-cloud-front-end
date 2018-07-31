@@ -367,10 +367,10 @@ export default class VideoList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {/* <Link to={`/video/${record.id}/detail`}>查看</Link> */}
-            <AuthLink code={buttonMap.deviceManagement.hikVideoTree.detail} to={`/device-management/hik-video-tree/video-detail/${record.id}`}>查看</AuthLink>
+            <AuthLink code={buttonMap.videoSurveillance.hikVideoTree.detail} to={`/video-surveillance/hik-video-tree/video-detail/${record.id}`}>查看</AuthLink>
             <Divider type="vertical" />
             {/* <button
-              code={buttonMap.deviceManagement.hikVideoTree.play}
+              code={buttonMap.videoSurveillance.hikVideoTree.play}
               className={styles.playButton}
               onClick={() => this.handlePlayButtonClick(record.id)}
               onBlur={this.handlePlayButtonBlur}
@@ -378,7 +378,7 @@ export default class VideoList extends PureComponent {
               播放
             </button> */}
             <AuthBtn
-              code={buttonMap.deviceManagement.hikVideoTree.play}
+              code={buttonMap.videoSurveillance.hikVideoTree.play}
               className={styles.playButton}
               onClick={() => this.handlePlayButtonClick(record.id)}
               onBlur={this.handlePlayButtonBlur}
