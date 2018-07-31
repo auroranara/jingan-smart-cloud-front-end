@@ -39,7 +39,7 @@ import AppMenu from '../../components/_utils/AppMenu';
  */
 // const MenuData = formatter(menuData[1].routes);
 // const routerData = routerConfig.routes;
-const getRedirectData = (MenuData) => {
+const getRedirectData = MenuData => {
   const redirectData = [];
   const getRedirect = item => {
     if (item && item.children) {
