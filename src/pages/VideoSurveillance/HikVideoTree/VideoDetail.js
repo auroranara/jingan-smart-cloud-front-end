@@ -12,7 +12,7 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '设备管理', name: '设备管理' },
   { title: '海康视频树', name: '海康视频树' },
-  { title: '视频列表', name: '视频列表', href: '/device-management/hik-video-tree/videoList' },
+  { title: '视频列表', name: '视频列表', href: '/video-surveillance/hik-video-tree/videoList' },
   { title: '视频详情', name: '视频详情'},
 ];
 

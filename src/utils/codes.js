@@ -22,9 +22,11 @@ export default {
         import: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
       },
     },
+  },
+  videoSurveillance: {
     hikVideoTree: {
-      detail: 'deviceManagement.hikVideoTree.detailView',
-      play: 'deviceManagement.hikVideoTree.play',
+      detail: 'videoSurveillance.hikVideoTree.detailView',
+      play: 'videoSurveillance.hikVideoTree.play',
     },
   },
   company: {
