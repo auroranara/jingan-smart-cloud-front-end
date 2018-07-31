@@ -29,6 +29,7 @@ import titles from 'utils/titles';
 import { getToken } from 'utils/authority';
 
 import styles from './Company.less';
+import Safety from './Safety';
 
 const { TextArea, Search } = Input;
 const { Option } = Select;
@@ -136,6 +137,7 @@ const defaultCenter = '无锡';
         type: 'company/clearDetail',
       });
     },
+    dispatch,
   })
 )
 @Form.create()
@@ -1145,12 +1147,7 @@ export default class CompanyDetail extends PureComponent {
           </Fragment>
         );
       case '1':
-        return (
-          <Fragment>
-            <div>123</div>
-            {/* 在这里写安监 */}
-          </Fragment>
-        );
+        return <Safety />;
       default:
         return null;
     }
