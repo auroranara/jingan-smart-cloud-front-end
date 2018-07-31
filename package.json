@@ -48,6 +48,7 @@
     "path-to-regexp": "^2.2.1",
     "prop-types": "^15.6.2",
     "qs": "^6.5.2",
+    "react-loadable": "^5.4.0",
     "react-bmap": "^1.0.78",
     "react-container-query": "^0.11.0",
     "react-copy-to-clipboard": "^5.0.1",
