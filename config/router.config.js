@@ -8,7 +8,8 @@ module.exports = [
       { path: '/user/login', component: '/User/Login' },
       { path: '/user/register', component: './User/Register' },
       { path: '/user/register-result', component: './User/RegisterResult' },
-      { path: '/user/risk-point', name: 'risk-point', component: './User/RiskPoint' },
+      { path: '/user/government', name: 'government', component: './User/Government' },
+      { path: '/user/company', name: 'company', component: './User/Company' },
     ],
   },
 
