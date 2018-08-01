@@ -1,7 +1,7 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
 
-const URL_PREFIX = '/acloud_new/v2/hikVideo';
+const URL_PREFIX = '/eye/api';
 
 // 获取单位树
 export async function queryFolderTree(params) {

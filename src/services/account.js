@@ -1,4 +1,4 @@
-// import { stringify } from 'qs';
+import { stringify } from 'qs';
 import request from '../utils/request';
 
 export async function accountLogin(params) {
@@ -6,4 +6,17 @@ export async function accountLogin(params) {
     method: 'POST',
     body: params,
   });
+}
+
+// 校验旧密码
+export async function checkOldPass(params) {
+  return request(`/acloud_new/v2/rolePermission/user/checkPwd?${stringify(params)}`)
+}
+
+// 个人中心修改密码
+export async function changePass(params) {
+  return request('/acloud_new/v2/rolePermission/user/resetPwd', {
+    method: 'POST',
+    body: params,
+  })
 }

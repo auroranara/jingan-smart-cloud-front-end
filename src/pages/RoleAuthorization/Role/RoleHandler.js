@@ -20,6 +20,73 @@ const editTitle = '编辑角色';
 const { role: { list: backUrl } } = urls;
 // 获取code
 const { role: { list: listCode } } = codes;
+/* 根据选中的子节点获取父节点 */
+const checkParent = (list, permissions) => {
+  let newList = [];
+  list.forEach(item => {
+    const { id, childMenus } = item;
+    if (childMenus) {
+      const newChildMenu =  checkParent(childMenus, permissions);
+      if (newChildMenu.length !== 0) {
+        newList = newList.concat(newChildMenu, id)
+      }
+    }
+    else {
+      permissions.includes(id) && newList.push(id);
+    }
+  });
+  return newList;
+};
+/* 移除子元素未全部选中的父元素 */
+const uncheckParent = (list, permissions) => {
+  let newList = [];
+  list.forEach(({ id, childMenus }) => {
+    if (childMenus) {
+      const newChildMenu =  uncheckParent(childMenus, permissions);
+      if (newChildMenu.length !== 0) {
+        newList = newList.concat(newChildMenu)
+        if (childMenus.every(({ id }) => newChildMenu.includes(id))) {
+          newList = newList.concat(id);
+        }
+      }
+    }
+    else {
+      permissions.includes(id) && newList.push(id);
+    }
+  });
+  return newList;
+};
+/* 对树排序 */
+const sortTree = (list) => {
+  const newList = [];
+  list.forEach((item) => {
+    const { childMenus, sort } = item;
+    if (!sort && sort !== 0) {
+      newList.push({
+        ...item,
+      });
+      return;
+    }
+    if (childMenus) {
+      newList[sort] = {
+        ...item,
+        childMenus: sortTree(childMenus),
+      };
+    }
+    else {
+      newList[sort] = {
+        ...item,
+      };
+    }
+  });
+  for(var i=newList.length-1;i>=0;i--){
+    if (!newList[i]) {
+      newList.splice(i, 1);
+    }
+  }
+  return newList;
+};
+
 
 @connect(({ role, user, loading }) => ({
   role,
@@ -103,12 +170,13 @@ export default class RoleHandler extends PureComponent {
         this.setState({
           submitting: true,
         });
+        const { role: { permissionTree } } = this.props;
         const { name, description, permissions } = values;
         const payload = {
           id,
           name: name.trim(),
           description,
-          permissions: permissions.join(','),
+          permissions: checkParent(permissionTree, permissions).join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -192,7 +260,7 @@ export default class RoleHandler extends PureComponent {
   /* 树节点 */
   renderTreeNodes(data) {
     return data.map((item) => {
-      const { id, zname: title, childMenus: children } = item;
+      const { id, showZname: title, childMenus: children } = item;
       if (children) {
         return (
           <TreeNode title={title} key={id} dataRef={item} selectable={false}>
@@ -207,6 +275,9 @@ export default class RoleHandler extends PureComponent {
   /* 权限配置 */
   renderAuthorizationConfiguration() {
     const { role: { permissionTree, detail: { permissions } }, form: { getFieldDecorator } } = this.props;
+    const value = permissions && uncheckParent(permissionTree, permissions);
+    const tree = sortTree(permissionTree);
+
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
         <Form>
@@ -222,7 +293,7 @@ export default class RoleHandler extends PureComponent {
             }}
           >
             {getFieldDecorator('permissions', {
-              initialValue: permissions ? permissions.split(',') : [],
+              initialValue: value,
               trigger: 'onCheck',
               validateTrigger: 'onCheck',
               valuePropName: 'checkedKeys',
@@ -231,7 +302,7 @@ export default class RoleHandler extends PureComponent {
               <Tree
                 checkable
               >
-                {this.renderTreeNodes(permissionTree)}
+                {this.renderTreeNodes(tree)}
               </Tree>
             )}
           </Form.Item>
