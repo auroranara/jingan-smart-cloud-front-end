@@ -14,19 +14,19 @@ export default {
     *fetch({ payload, callback }, { call, put }) {
       // console.log(payload);
       const response = yield call(queryApp, payload);
-      const { status, msg } = response;
-      if (status === 200 && msg === '成功') {
+      const { code, msg } = response;
+      if (code === 200) {
         yield put({
           type: 'save',
-          payload: response.result,
+          payload: response.data,
         });
       }
-      if (callback) callback(status, msg);
+      if (callback) callback(code, msg);
     },
     *add({ payload, pagination, callback }, { call }) {
-      const { currentPage, pageSize } = pagination;
+      const { pageNum, pageSize } = pagination;
       const paginationPayload = {
-        currentPage,
+        pageNum,
         pageSize,
         type: payload.type,
       };
@@ -34,32 +34,32 @@ export default {
       // console.log('paginationPayload', paginationPayload);
       const response = yield call(addApp, payload);
       // console.log('add', response);
-      const { status, msg } = response;
-      if (callback) callback(status, msg, paginationPayload);
+      const { code, msg } = response;
+      if (callback) callback(code, msg, paginationPayload);
     },
     *update({ payload, pagination, callback }, { call }) {
-      const { currentPage, pageSize } = pagination;
+      const { pageNum, pageSize } = pagination;
       const paginationPayload = {
-        currentPage,
+        pageNum,
         pageSize,
         type: payload.type,
       };
       // console.log('update payload', payload);
       const response = yield call(updateApp, payload);
       // console.log('update response', response);
-      const { status, msg } = response;
-      if (callback) callback(status, msg, paginationPayload);
+      const { code, msg } = response;
+      if (callback) callback(code, msg, paginationPayload);
     },
     *remove({ payload, pagination, callback }, { call }) {
       const response = yield call(removeApp, payload);
-      const { status, msg } = response;
-      const { currentPage, pageSize } = pagination;
+      const { code, msg } = response;
+      const { pageNum, pageSize } = pagination;
       const paginationPayload = {
-        currentPage,
+        pageNum,
         pageSize,
         type: payload.type,
       };
-      if (callback) callback(status, msg, paginationPayload);
+      if (callback) callback(code, msg, paginationPayload);
     },
   },
 
@@ -67,7 +67,7 @@ export default {
     save(state, action) {
       return {
         ...state,
-        data: action.payload,
+        data: { ...action.payload },
       };
     },
   },
