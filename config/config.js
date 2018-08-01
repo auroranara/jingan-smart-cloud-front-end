@@ -11,15 +11,21 @@ const hosts = {
   sqz: '192.168.10.56', //孙启政
   test: '192.168.10.67:9080', // 内网
   test2: '192.168.10.68:18080', // 内网2
-  mock: '118.126.110.115:3001/mock/28',
+  mock: '118.126.110.115:3001',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
+      // target: `http://${hosts.sqz}`,
       target: `http://${hosts.test2}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
+    },
+    '/mock': {
+      target: `http://${hosts.mock}`,
+      changeOrigin: true,
+      pathRewrite: { '^/mock': '/mock' },
     },
   },
   // add for transfer to umi
