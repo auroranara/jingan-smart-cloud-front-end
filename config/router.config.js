@@ -357,7 +357,7 @@ module.exports = [
                 path: '/video-surveillance/map/index',
                 code: 'videoSurveillance.map.view',
                 name: 'index',
-                component: './VideoSurveillance/Map/index',
+                component: './VideoSurveillance/Map/Map',
               },
             ],
           },

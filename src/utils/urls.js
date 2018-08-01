@@ -18,6 +18,9 @@ export default {
     add: '/fire-control/contract/add/',
     edit: '/fire-control/contract/edit/',
   },
+  map: {
+    index: '/video-surveillance/map/index/',
+  },
   exception: {
     500: '/exception/500/',
     403: '/exception/403/',

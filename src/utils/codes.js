@@ -43,4 +43,7 @@ export default {
     edit: 'fireControl.contract.edit',
     delete: 'fireControl.contract.delete',
   },
+  map: {
+    index: 'videoSurveillance.map.view',
+  },
 };

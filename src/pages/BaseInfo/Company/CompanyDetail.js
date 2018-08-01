@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Spin } from 'antd';
+import { Form, Card, Button, Spin, Modal } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
+import { Map, Marker } from 'react-amap'
 
 import DescriptionList from 'components/DescriptionList';
 import FooterToolbar from 'components/FooterToolbar';
@@ -112,6 +113,7 @@ export default class CompanyDetail extends PureComponent {
   state = {
     isCompany: true,
     tabActiveKey: tabList[0].key,
+    visible: false,
   }
 
   /* 生命周期函数 */
@@ -137,6 +139,58 @@ export default class CompanyDetail extends PureComponent {
         goToException();
       },
     });
+  }
+
+  /* 显示地图 */
+  handleShowMap = (e) => {
+    e.preventDefault();
+    this.setState({
+      visible: true,
+    });
+  }
+
+  /* 隐藏地图 */
+  handleHideMap = () => {
+    this.setState({
+      visible: false,
+    });
+  }
+
+  /* 渲染地图 */
+  renderMap() {
+    const { visible } = this.state;
+    const { company: { detail: { data: { longitude, latitude } } } } = this.props;
+    const center = (longitude && latitude) ? { longitude, latitude } : undefined;
+
+    return (
+      <Modal
+        title="企业定位"
+        width="80%"
+        visible={visible}
+        onCancel={this.handleHideMap}
+        footer={null}
+        maskClosable={false}
+        keyboard={false}
+        className={styles.mapModal}
+        destroyOnClose
+      >
+        <Map
+          amapkey="08390761c9e9bcedbdb2f18a2a815541"
+          plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
+          status={{
+            keyboardEnable: false,
+          }}
+          center={center}
+          useAMapUI
+        >
+          {center && (
+            <Marker
+              position={center}
+            />
+          )}
+        </Map>
+      </Modal>
+    );
   }
 
   /* 渲染行业类别 */
@@ -210,7 +264,7 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
           <Description term={fieldLabels.companyNature}>{companyNatureLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
-          <Description term={fieldLabels.coordinate}>{longitude && latitude ? `${longitude},${latitude}` : getEmptyData()}</Description>
+          <Description term={fieldLabels.coordinate}>{longitude && latitude ? <a href="#" className={styles.link} onClick={this.handleShowMap}>{`${longitude},${latitude}`}</a> : getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
             {registerAddressLabel || getEmptyData()}
           </Description>
@@ -222,9 +276,9 @@ export default class CompanyDetail extends PureComponent {
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.companyIchnography}>
-            {companyIchnographyList.length !== 0 ? companyIchnographyList.map(({ name, webUrl }) => (
-              <div key={webUrl}>
-                <a href={webUrl} target="_blank" rel="noopener noreferrer">
+            {companyIchnographyList.length !== 0 ? companyIchnographyList.map(({ name, url }) => (
+              <div key={url}>
+                <a href={url} target="_blank" rel="noopener noreferrer">
                   {name || '预览'}
                 </a>
               </div>
@@ -367,6 +421,7 @@ export default class CompanyDetail extends PureComponent {
             {isCompany && this.renderMoreInfo()}
             {this.renderPersonalInfo()}
             {this.renderFooterToolbar()}
+            {this.renderMap()}
           </Fragment>
         );
       case '1':
