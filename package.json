@@ -28,12 +28,13 @@
     }
   },
   "dependencies": {
-    "@antv/data-set": "^0.8.0",
+    "@antv/data-set": "^0.8.9",
+    "@antv/g2": "^3.2.6",
+    "@commitlint/cli": "^7.0.0",
+    "@commitlint/config-conventional": "^7.0.1",
     "antd": "^3.7.0",
     "bizcharts": "^3.1.10",
     "bizcharts-plugin-slider": "^2.0.3",
-    "@commitlint/cli": "^7.0.0",
-    "@commitlint/config-conventional": "^7.0.1",
     "classnames": "^2.2.6",
     "crypto-js": "^3.1.9-1",
     "dva": "^2.3.1",

@@ -1,7 +1,11 @@
 import React from 'react';
 import { Row, Col } from 'antd';
+import moment from 'moment';
 // import { Link } from 'dva/router';
 import styles from './Government.less';
+
+import G2 from '@antv/g2';
+import { View } from '@antv/data-set';
 
 class UserLayout extends React.PureComponent {
   state = {
@@ -12,28 +16,183 @@ class UserLayout extends React.PureComponent {
     setInterval(() => {
       this.getTime();
     }, 1000);
-
+    this.renderBarChart();
+    this.renderPieChart();
   }
 
   getTime = () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    const now = moment();
+    const myday = now.weekday();
+    const weekday = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
 
-    const myday = date.getDay();
-    const weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const second = date.getSeconds();
-
-    const dayText = year + '-' + (month < 10 ? ('0' + month) : month) + '-' + (day < 10 ? ('0' + day) : day);
-    const timeText = (hour < 10 ? ('0' + hour) : hour) + ':' + (minute < 10 ? ('0' + minute) : minute) + ':' + (second < 10 ? ('0' + second) : second);
+    const dayText = moment(now).format('YYYY-MM-DD');
+    const timeText = moment(now).format('HH:mm:ss');
 
     this.setState({
-      time: dayText + ' ' + weekday[myday] + ' ' + timeText,
+      time: `${dayText}  ${weekday[myday]}  ${timeText}`,
     });
+  }
+
+  renderBarChart = () => {
+    const Shape = G2.Shape;
+    Shape.registerShape('interval', 'triangle', {
+      getPoints(cfg) {
+        const x = cfg.x;
+        const y = cfg.y;
+        const y0 = cfg.y0;
+        const width = cfg.size;
+        return [
+          { x: x - width / 2, y: y0 },
+          { x: x, y: y },
+          { x: x + width / 2, y: y0 },
+        ]
+      },
+      draw(cfg, group) { // 自定义最终绘制
+        const points = this.parsePoints(cfg.points); // 将0-1空间的坐标转换为画布坐标
+        const value = cfg.origin._origin.num;
+        group.addShape('text', {
+          attrs: {
+            text: value,
+            textAlign: 'center',
+            x: points[1].x,
+            y: points[1].y,
+            // fontFamily: 'PingFang SC',
+            fontSize: 12,
+            fill: '#fff',
+          },
+        });
+        const polygon = group.addShape('polygon', {
+          attrs: {
+            points: [
+              [points[0].x, points[0].y],
+              [points[1].x, points[1].y],
+              [points[2].x, points[2].y],
+            ],
+            fill: cfg.color,
+            opacity: 0.75,
+          },
+        });
+        // 左半三角
+        group.addShape('polygon', {
+          attrs: {
+            points: [
+              [points[0].x, points[0].y],
+              [points[1].x, points[1].y],
+              [points[1].x, points[2].y],
+            ],
+            fill: cfg.color,
+            opacity: 1,
+          },
+        });
+        return polygon; // !必须返回 shape
+      },
+    });
+    const data = [
+      { lvl: '红', num: 10 },
+      { lvl: '橙', num: 3 },
+      { lvl: '黄', num: 3 },
+      { lvl: '蓝', num: 2 },
+    ]; // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
+    // Step 1: 创建 Chart 对象
+    const chart = new G2.Chart({
+      container: 'hdArea', // 指定图表容器 ID
+      forceFit: true,
+      height: document.getElementById('hdArea').clientHeight,
+      padding: [25, 30, 45, 40],
+    });
+    // Step 2: 载入数据源
+    chart.source(data);
+    // Step 3：创建图形语法，绘制柱状图，由 lvl 和 num 两个属性决定图形位置，lvl 映射至 x 轴，num 映射至 y 轴
+    chart.interval().position('lvl*num').color('lvl', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']).shape('triangle');
+    //  不显示legend
+    chart.legend('lvl', false);
+
+    chart.axis('lvl', {
+      label: {
+        textStyle: {
+          fontSize: 12, // 文本大小
+          textAlign: 'center', // 文本对齐方式
+          fill: '#fff', // 文本颜色
+        },
+      },
+    });
+    chart.axis('num', {
+      label: {
+        textStyle: {
+          fontSize: 12, // 文本大小
+          textAlign: 'center', // 文本对齐方式
+          fill: '#fff', // 文本颜色
+        },
+      },
+    });
+    // Step 4: 渲染图表
+    chart.render();
+  }
+
+  renderPieChart = () => {
+    const _DataSet = new View();
+    // var _DataSet = DataSet,
+    const DataView = _DataSet.DataView;
+    // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
+    const sliceNumber = 0.01;
+    const Shape = G2.Shape;
+    // 自定义 other 的图形，增加两条线
+    Shape.registerShape('interval', 'sliceShape', {
+      draw: function draw(cfg, container) {
+        var points = cfg.points;
+        var path = [];
+        path.push(['M', points[0].x, points[0].y]);
+        path.push(['L', points[1].x, points[1].y - sliceNumber]);
+        path.push(['L', points[2].x, points[2].y - sliceNumber]);
+        path.push(['L', points[3].x, points[3].y]);
+        path.push('Z');
+        path = this.parsePath(path);
+        return container.addShape('path', {
+          attrs: {
+            fill: cfg.color,
+            path: path,
+          },
+        });
+      },
+    });
+    const data = [
+      { name: '红', value: 10 },
+      { name: '橙', value: 3 },
+      { name: '黄', value: 3 },
+      { name: '蓝', value: 2 },
+    ];
+    // Step 1: 创建 Chart 对象
+    const chart = new G2.Chart({
+      container: 'hdPie', // 指定图表容器 ID
+      forceFit: true,
+      height: document.getElementById('hdPie').clientHeight,
+      padding: [0],
+      // padding: [25, 30, 45, 40],
+    });
+    // Step 2: 载入数据源
+    // chart.source(data);
+    const dv = new View();
+    dv.source(data).transform({
+      type: 'percent',
+      field: 'value',
+      dimension: 'name',
+      as: 'percent',
+    });
+    chart.source(dv, {
+      percent: {
+        formatter: function formatter(val) {
+          val = (val * 100).toFixed(1) + '%';
+          return val;
+        },
+      },
+    });
+    chart.coord('theta', {
+      innerRadius: 0.6,
+    });
+    // Step 3：创建图形语法，绘制柱状图，由 name 和 value 两个属性决定图形位置，name 映射至 x 轴，value 映射至 y 轴
+    chart.interval().position('value').color('name', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']);
+    // Step 4: 渲染图表
+    chart.render();
   }
 
   render() {
@@ -62,7 +221,7 @@ class UserLayout extends React.PureComponent {
                         <span className={styles.summaryNum} style={{ color: '#e86767' }}>0</span>
                     </span>
                   </div>
-                  <div className={styles.sectionChart}></div>
+                  <div className={styles.sectionChart} id='hdArea' style={{ height: 'calc(100% - 60px)' }}></div>
                 </div>
               </section>
 
@@ -75,6 +234,7 @@ class UserLayout extends React.PureComponent {
                         <span className={styles.summaryNum} style={{ color: '#00baff' }}>0</span>
                     </span>
                   </div>
+                  <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '70%' }}></div>
                 </div>
               </section>
             </Col>
