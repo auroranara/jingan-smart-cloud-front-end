@@ -325,7 +325,7 @@ module.exports = [
                 component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
               },
               {
-                path:'/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                path: '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
                 code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
@@ -407,7 +407,33 @@ module.exports = [
           },
         ],
       },
-
+      {
+        path: '/system-management',
+        code: 'systemManagement',
+        name: 'systemManagement',
+        icon: 'setting',
+        routes: [
+          {
+            path: '/system-management/app-management',
+            code: 'systemManagement.appManagement',
+            name: 'appManagement',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/system-management/app-management',
+                name: 'appManagement',
+                redirect: '/system-management/app-management/list',
+              },
+              {
+                path: '/system-management/app-management/list',
+                code: 'systemManagement.appManagement.listView',
+                name: 'list',
+                component: './SystemManagement/AppManagement/AppManagementList',
+              },
+            ],
+          },
+        ],
+      },
       {
         name: 'exception',
         icon: 'warning',
@@ -428,4 +454,5 @@ module.exports = [
       },
     ],
   },
-];
+]
+
