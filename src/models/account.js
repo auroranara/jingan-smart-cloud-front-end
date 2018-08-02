@@ -146,10 +146,6 @@ export default {
     *updateAccountPwd({ payload, success, error }, { call, put }) {
       const response = yield call(updatePassword, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'updatePassword',
-          payload: response.data,
-        });
         if (success) {
           success();
         }
@@ -267,17 +263,6 @@ export default {
         },
       };
     },
-
-    updatePassword(state, { payload }) {
-      return {
-        ...state,
-        detail: {
-          ...state.detail,
-          data: payload,
-        },
-      };
-    },
-
     clearDetail(state) {
       return {
         ...state,
