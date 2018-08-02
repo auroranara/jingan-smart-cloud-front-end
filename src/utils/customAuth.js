@@ -165,8 +165,12 @@ export const AuthSpan = authWrapper('span');
 
 export const AuthDiv = authWrapper('div');
 
+// 包装原生button
+export const AuthBtn = authWrapper('button');
+
 export const AuthLink = authWrapper(Link);
 
+// 包装antd组件Button
 export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
   const { dispatch, user: { currentUser: { permissionCodes } }, code, codes, ...restProps } = props;
   // 如果自己传codes，那么就用自己传入的codes代替从currentUser中获取的permissionCodes，主要是为了方便测试

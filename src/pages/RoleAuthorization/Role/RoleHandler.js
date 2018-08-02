@@ -56,6 +56,36 @@ const uncheckParent = (list, permissions) => {
   });
   return newList;
 };
+/* 对树排序 */
+const sortTree = (list) => {
+  const newList = [];
+  list.forEach((item) => {
+    const { childMenus, sort } = item;
+    if (!sort && sort !== 0) {
+      newList.push({
+        ...item,
+      });
+      return;
+    }
+    if (childMenus) {
+      newList[sort] = {
+        ...item,
+        childMenus: sortTree(childMenus),
+      };
+    }
+    else {
+      newList[sort] = {
+        ...item,
+      };
+    }
+  });
+  for(var i=newList.length-1;i>=0;i--){
+    if (!newList[i]) {
+      newList.splice(i, 1);
+    }
+  }
+  return newList;
+};
 
 
 @connect(({ role, user, loading }) => ({
@@ -230,7 +260,7 @@ export default class RoleHandler extends PureComponent {
   /* 树节点 */
   renderTreeNodes(data) {
     return data.map((item) => {
-      const { id, zname: title, childMenus: children } = item;
+      const { id, showZname: title, childMenus: children } = item;
       if (children) {
         return (
           <TreeNode title={title} key={id} dataRef={item} selectable={false}>
@@ -246,6 +276,7 @@ export default class RoleHandler extends PureComponent {
   renderAuthorizationConfiguration() {
     const { role: { permissionTree, detail: { permissions } }, form: { getFieldDecorator } } = this.props;
     const value = permissions && uncheckParent(permissionTree, permissions);
+    const tree = sortTree(permissionTree);
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
@@ -271,7 +302,7 @@ export default class RoleHandler extends PureComponent {
               <Tree
                 checkable
               >
-                {this.renderTreeNodes(permissionTree)}
+                {this.renderTreeNodes(tree)}
               </Tree>
             )}
           </Form.Item>

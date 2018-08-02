@@ -6,14 +6,22 @@ import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
+import titles from '../../../utils/titles';
 
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
 // const { Option } = Select;
 
-// 标题
-const title = '企业单位';
+// 获取title
+const { home: homeTitle, company: { list: title, menu: menuTitle } } = titles;
+// 获取链接地址
+const { home: homeUrl, company: { detail: detailUrl, edit: editUrl, add: addUrl } } = urls;
+// 获取code
+const { company: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode } } = codes;
 // 默认页面显示数量
 const pageSize = 18;
 // 默认表单值
@@ -26,16 +34,18 @@ const defaultFormData = {
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+// 阻止默认行为
+const preventDefault = (e) => { e.preventDefault() };
 // 面包屑
 const breadcrumbList = [
   {
-    title: '首页',
-    name: '首页',
-    href: '/',
+    title: homeTitle,
+    name: homeTitle,
+    href: homeUrl,
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: menuTitle,
+    name: menuTitle,
   },
   {
     title,
@@ -44,8 +54,9 @@ const breadcrumbList = [
 ];
 
 @connect(
-  ({ company, loading }) => ({
+  ({ company, user, loading }) => ({
     company,
+    user,
     loading: loading.models.company,
   }),
   dispatch => ({
@@ -77,9 +88,17 @@ const breadcrumbList = [
         ...action,
       });
     },
-    // 查看,
-    goToDetail(url) {
-      dispatch(routerRedux.push(url));
+    /* 跳转到详情页面 */
+    goToDetail(id) {
+      dispatch(routerRedux.push(detailUrl + id));
+    },
+    /* 跳转到新增页面 */
+    goToAdd() {
+      dispatch(routerRedux.push(addUrl));
+    },
+    /* 跳转到编辑页面 */
+    goToEdit() {
+      dispatch(routerRedux.push(editUrl));
     },
   })
 )
@@ -189,8 +208,12 @@ export default class CompanyList extends PureComponent {
   renderForm() {
     const {
       // company: { industryCategories },
+      user: { currentUser: { permissionCodes } },
       form: { getFieldDecorator },
+      goToAdd,
     } = this.props;
+    // 是否有新增权限
+    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
 
     return (
       <Card>
@@ -229,9 +252,7 @@ export default class CompanyList extends PureComponent {
             <Button onClick={this.handleClickToReset}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <Button type="primary" href="#/base-info/company/add">
-              新增
-            </Button>
+            <Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>新增</Button>
           </FormItem>
         </Form>
       </Card>
@@ -242,8 +263,15 @@ export default class CompanyList extends PureComponent {
   renderList() {
     const {
       company: { list },
+      user: { currentUser: { permissionCodes } },
       goToDetail,
     } = this.props;
+    // 是否有查看权限
+    const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
+    // 是否有删除权限
+    const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -277,11 +305,11 @@ export default class CompanyList extends PureComponent {
                   title={name}
                   className={styles.card}
                   actions={[
-                    <Link to={`/base-info/company/detail/${id}`}>查看</Link>,
-                    <Link to={`/base-info/company/edit/${id}`}>编辑</Link>,
+                    <Link to={detailUrl + id} onClick={hasDetailAuthority ? null : preventDefault} disabled={!hasDetailAuthority}>查看</Link>,
+                    <Link to={editUrl + id} onClick={hasEditAuthority ? null : preventDefault} disabled={!hasEditAuthority}>编辑</Link>,
                     <Link to={`/base-info/company/department/list/${id}`}>部门</Link>,
                   ]}
-                  extra={
+                  extra={hasDeleteAuthority ? (
                     <Button
                       onClick={() => {
                         this.handleShowDeleteConfirm(id);
@@ -291,13 +319,13 @@ export default class CompanyList extends PureComponent {
                     >
                       <Icon type="close" />
                     </Button>
-                  }
+                  ) : null}
                 >
                   <div
-                    onClick={() => {
-                      goToDetail(`/base-info/company/detail/${id}`);
-                    }}
-                    style={{ cursor: 'pointer' }}
+                    onClick={hasDetailAuthority ? () => {
+                      goToDetail(id);
+                    } : null}
+                    style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       地址：{practicalAddressLabel || getEmptyData()}

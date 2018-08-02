@@ -76,6 +76,8 @@ export default {
     registerAddress: [],
     // 实际地址
     practicalAddress: [],
+    // 单位性质
+    companyNatures: [],
     pageNum: 1,
     isLast: false,
     detail: {

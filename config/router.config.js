@@ -15,8 +15,25 @@ module.exports = [
     path: '/',
     component: './layouts/LoadingPage',
     routes: [
-      // baseInfo
       { path: '/', redirect: '/base-info/company/list' },
+
+      // account
+      {
+        path: '/account',
+        code: 'account',
+        name: 'account',
+        hideInMenu: true,
+        routes: [
+          {
+            path: '/account/change-password',
+            name: 'changePassword',
+            code: 'account.changePassword',
+            component: './Account/ChangePassword',
+          },
+        ],
+      },
+
+      // base info
       {
         path: '/base-info',
         code: 'baseInfo',
@@ -68,7 +85,8 @@ module.exports = [
           },
         ],
       },
-      // FireControl
+
+      // fire control
       {
         path: '/fire-control',
         code: 'fireControl',
@@ -157,7 +175,7 @@ module.exports = [
         ],
       },
 
-      // RoleAuthorization
+      // role authorization
       {
         path: '/role-authorization',
         code: 'roleAuthorization',
@@ -239,39 +257,8 @@ module.exports = [
           },
         ],
       },
-      {
-        path: '/account',
-        code: 'account',
-        name: 'account',
-        hideInMenu: true,
-        routes: [
-          {
-            path: '/account/change-password',
-            name: 'changePassword',
-            code: 'account.changePassword',
-            component: './Account/ChangePassword',
-          },
-        ],
-      },
-      {
-        name: 'exception',
-        icon: 'warning',
-        path: '/exception',
-        hideInMenu: true,
-        routes: [
-          // exception
-          { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
-          { path: '/exception/404', name: 'not-find', component: './Exception/404' },
-          { path: '/exception/500', name: 'server-error', component: './Exception/500' },
-          {
-            path: '/exception/trigger',
-            name: 'trigger',
-            hideInMenu: true,
-            component: './Exception/triggerException',
-          },
-        ],
-      },
-      // dynamicMonitoring
+
+      // dynamic monitoring
       {
         path: '/dynamic-monitoring',
         code: 'dynamicMonitoring',
@@ -312,10 +299,12 @@ module.exports = [
           },
         ],
       },
+
+      // device management
       {
         path: '/device-management',
         code: 'deviceManagement',
-        icon: 'video-camera',
+        icon: 'setting',
         name: 'deviceManagement',
         routes: [
           {
@@ -349,33 +338,127 @@ module.exports = [
               },
             ],
           },
+        ],
+      },
+
+      // video surveillance
+      {
+        path: '/video-surveillance',
+        code: 'videoSurveillance',
+        icon: 'video-camera',
+        name: 'videoSurveillance',
+        routes: [
           {
-            path: '/device-management/hik-video-tree',
-            code: 'deviceManagement.hikVideoTree',
+            path: '/video-surveillance/map',
+            code: 'videoSurveillance.map',
+            name: 'map',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/video-surveillance/map',
+                name: 'map',
+                redirect: '/video-surveillance/map/index',
+              },
+              {
+                path: '/video-surveillance/map/index',
+                code: 'videoSurveillance.map.view',
+                name: 'index',
+                component: './VideoSurveillance/Map/Map',
+              },
+            ],
+          },
+          {
+            path: '/video-surveillance/hik-video-tree',
+            code: 'videoSurveillance.hikVideoTree',
             name: 'hikVideoTree',
             hideChildren: true,
             routes: [
               {
-                path: '/device-management/hik-video-tree',
+                path: '/video-surveillance/hik-video-tree',
                 name: 'hikVideoTree',
-                redirect: '/device-management/hik-video-tree/videoList',
+                redirect: '/video-surveillance/hik-video-tree/videoList',
               },
               {
-                path: '/device-management/hik-video-tree/videoList',
-                code: 'deviceManagement.hikVideoTree.listView',
+                path: '/video-surveillance/hik-video-tree/videoList',
+                code: 'videoSurveillance.hikVideoTree.listView',
                 name: 'videoList',
-                component: './DeviceManagement/HikVideoTree/VideoList',
+                component: './VideoSurveillance/HikVideoTree/VideoList',
               },
               {
-                path: '/device-management/hik-video-tree/video-detail/:id',
-                code: 'deviceManagement.hikVideoTree.listView',
+                path: '/video-surveillance/hik-video-tree/video-detail/:id',
+                code: 'videoSurveillance.hikVideoTree.listView',
                 name: 'videoDetail',
-                component: './DeviceManagement/HikVideoTree/VideoDetail',
+                component: './VideoSurveillance/HikVideoTree/VideoDetail',
+              },
+            ],
+          },
+          {
+            path: '/video-surveillance/video-permission',
+            code: 'videoSurveillance.videoPermission',
+            name: 'videoPermission',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/video-surveillance/video-permission',
+                name: 'videoPermission',
+                redirect: '/video-surveillance/video-permission/list',
+              },
+              {
+                path: '/video-surveillance/video-permission/list',
+                code: 'videoSurveillance.videoPermission.listView',
+                name: 'list',
+                component: './VideoSurveillance/VideoPermission/List',
               },
             ],
           },
         ],
       },
+      {
+        path: '/system-management',
+        code: 'systemManagement',
+        name: 'systemManagement',
+        icon: 'setting',
+        routes: [
+          {
+            path: '/system-management/app-management',
+            code: 'systemManagement.appManagement',
+            name: 'appManagement',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/system-management/app-management',
+                name: 'appManagement',
+                redirect: '/system-management/app-management/list',
+              },
+              {
+                path: '/system-management/app-management/list',
+                code: 'systemManagement.appManagement.listView',
+                name: 'list',
+                component: './SystemManagement/AppManagement/AppManagementList',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: 'exception',
+        icon: 'warning',
+        path: '/exception',
+        hideInMenu: true,
+        routes: [
+          // exception
+          { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
+          { path: '/exception/404', name: 'not-find', component: './Exception/404' },
+          { path: '/exception/500', name: 'server-error', component: './Exception/500' },
+          {
+            path: '/exception/trigger',
+            name: 'trigger',
+            hideInMenu: true,
+            component: './Exception/triggerException',
+          },
+        ],
+      },
     ],
   },
-];
+]
+

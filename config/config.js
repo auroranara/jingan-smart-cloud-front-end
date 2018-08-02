@@ -17,10 +17,14 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      // target: `http://192.168.10.68:18080`,
-      target: 'http://192.168.10.8',
+      target: `http://${hosts.test2}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
+    },
+    '/eye': {
+      target: 'http://192.168.10.2',
+      changeOrigin: true,
+      pathRewrite: { '^/eye': '/eye' },
     },
   },
   // add for transfer to umi
