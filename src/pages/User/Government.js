@@ -4,8 +4,10 @@ import moment from 'moment';
 // import { Link } from 'dva/router';
 import styles from './Government.less';
 
-import G2 from '@antv/g2';
+// import G2 from '@antv/g2';
 import { View } from '@antv/data-set';
+import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
+import { Chart, Axis, Tooltip, Geom, Shape } from "bizcharts";
 
 class UserLayout extends React.PureComponent {
   state = {
@@ -13,11 +15,11 @@ class UserLayout extends React.PureComponent {
   };
 
   componentDidMount() {
-    setInterval(() => {
-      this.getTime();
-    }, 1000);
-    this.renderBarChart();
-    this.renderPieChart();
+    // setInterval(() => {
+    //   this.getTime();
+    // }, 1000);
+    // this.renderBarChart();
+    // this.renderPieChart();
   }
 
   getTime = () => {
@@ -34,7 +36,6 @@ class UserLayout extends React.PureComponent {
   }
 
   renderBarChart = () => {
-    const Shape = G2.Shape;
     Shape.registerShape('interval', 'triangle', {
       getPoints(cfg) {
         const x = cfg.x;
@@ -47,16 +48,15 @@ class UserLayout extends React.PureComponent {
           { x: x + width / 2, y: y0 },
         ]
       },
-      draw(cfg, group) { // 自定义最终绘制
+      drawShape(cfg, group) { // 自定义最终绘制
         const points = this.parsePoints(cfg.points); // 将0-1空间的坐标转换为画布坐标
-        const value = cfg.origin._origin.num;
+        const value = cfg.origin._origin.value;
         group.addShape('text', {
           attrs: {
             text: value,
             textAlign: 'center',
             x: points[1].x,
             y: points[1].y,
-            // fontFamily: 'PingFang SC',
             fontSize: 12,
             fill: '#fff',
           },
@@ -88,54 +88,45 @@ class UserLayout extends React.PureComponent {
       },
     });
     const data = [
-      { lvl: '红', num: 10 },
-      { lvl: '橙', num: 3 },
-      { lvl: '黄', num: 3 },
-      { lvl: '蓝', num: 2 },
+      { name: '红', value: 10 },
+      { name: '橙', value: 3 },
+      { name: '黄', value: 3 },
+      { name: '蓝', value: 2 },
     ]; // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
-    // Step 1: 创建 Chart 对象
-    const chart = new G2.Chart({
-      container: 'hdArea', // 指定图表容器 ID
-      forceFit: true,
-      height: document.getElementById('hdArea').clientHeight,
-      padding: [25, 30, 45, 40],
-    });
-    // Step 2: 载入数据源
-    chart.source(data);
-    // Step 3：创建图形语法，绘制柱状图，由 lvl 和 num 两个属性决定图形位置，lvl 映射至 x 轴，num 映射至 y 轴
-    chart.interval().position('lvl*num').color('lvl', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']).shape('triangle');
-    //  不显示legend
-    chart.legend('lvl', false);
 
-    chart.axis('lvl', {
-      label: {
-        textStyle: {
-          fontSize: 12, // 文本大小
-          textAlign: 'center', // 文本对齐方式
-          fill: '#fff', // 文本颜色
-        },
-      },
-    });
-    chart.axis('num', {
-      label: {
-        textStyle: {
-          fontSize: 12, // 文本大小
-          textAlign: 'center', // 文本对齐方式
-          fill: '#fff', // 文本颜色
-        },
-      },
-    });
-    // Step 4: 渲染图表
-    chart.render();
+    // document.getElementById('hdArea').clientHeight
+    return (
+      <Chart height={200} data={data} forceFit padding={[25, 30, 45, 40]}>
+        <Axis name="name" title={null} label={
+          {
+            textStyle: {
+              fontSize: 12, // 文本大小
+              textAlign: 'center', // 文本对齐方式
+              fill: '#fff', // 文本颜色
+            },
+          }
+        } />
+        <Axis name="value" label={
+          {
+            textStyle: {
+              fontSize: 12, // 文本大小
+              textAlign: 'center', // 文本对齐方式
+              fill: '#fff', // 文本颜色
+            },
+          }
+        } />
+        <Tooltip />
+        <Geom type="interval" position="name*value" color={['name', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']]} shape='triangle' />
+      </Chart>
+    );
   }
 
   renderPieChart = () => {
-    const _DataSet = new View();
+    // const _DataSet = new View();
     // var _DataSet = DataSet,
-    const DataView = _DataSet.DataView;
+    // const DataView = _DataSet.DataView;
     // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
     const sliceNumber = 0.01;
-    const Shape = G2.Shape;
     // 自定义 other 的图形，增加两条线
     Shape.registerShape('interval', 'sliceShape', {
       draw: function draw(cfg, container) {
@@ -161,38 +152,41 @@ class UserLayout extends React.PureComponent {
       { name: '黄', value: 3 },
       { name: '蓝', value: 2 },
     ];
+    console.log(data);
+
     // Step 1: 创建 Chart 对象
-    const chart = new G2.Chart({
-      container: 'hdPie', // 指定图表容器 ID
-      forceFit: true,
-      height: document.getElementById('hdPie').clientHeight,
-      padding: [0],
-      // padding: [25, 30, 45, 40],
-    });
-    // Step 2: 载入数据源
-    // chart.source(data);
-    const dv = new View();
-    dv.source(data).transform({
-      type: 'percent',
-      field: 'value',
-      dimension: 'name',
-      as: 'percent',
-    });
-    chart.source(dv, {
-      percent: {
-        formatter: function formatter(val) {
-          val = (val * 100).toFixed(1) + '%';
-          return val;
-        },
-      },
-    });
-    chart.coord('theta', {
-      innerRadius: 0.6,
-    });
-    // Step 3：创建图形语法，绘制柱状图，由 name 和 value 两个属性决定图形位置，name 映射至 x 轴，value 映射至 y 轴
-    chart.interval().position('value').color('name', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']);
-    // Step 4: 渲染图表
-    chart.render();
+    // const chart = new G2.Chart({
+    //   container: 'hdPie', // 指定图表容器 ID
+    //   forceFit: true,
+    //   height: document.getElementById('hdPie').clientHeight,
+    //   padding: [0],
+    //   // padding: [25, 30, 45, 40],
+    // });
+    // // Step 2: 载入数据源
+    // // chart.source(data);
+    // const dv = new View();
+    // dv.source(data).transform({
+    //   type: 'percent',
+    //   field: 'value',
+    //   dimension: 'name',
+    //   as: 'percent',
+    // });
+    // chart.source(dv, {
+    //   percent: {
+    //     formatter: function formatter(val) {
+    //       val = (val * 100).toFixed(1) + '%';
+    //       return val;
+    //     },
+    //   },
+    // });
+    // chart.coord('theta', {
+    //   radius: 0.75,
+    //   innerRadius: 0.6,
+    // });
+    // // Step 3：创建图形语法，绘制柱状图，由 name 和 value 两个属性决定图形位置，name 映射至 x 轴，value 映射至 y 轴
+    // chart.interval().position('value').color('name', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']);
+    // // Step 4: 渲染图表
+    // chart.render();
   }
 
   render() {
@@ -221,7 +215,9 @@ class UserLayout extends React.PureComponent {
                         <span className={styles.summaryNum} style={{ color: '#e86767' }}>0</span>
                     </span>
                   </div>
-                  <div className={styles.sectionChart} id='hdArea' style={{ height: 'calc(100% - 60px)' }}></div>
+                  <div className={styles.sectionChart} id='hdArea' style={{ height: 'calc(100% - 60px)' }}>
+                    {this.renderBarChart()}
+                  </div>
                 </div>
               </section>
 
@@ -270,7 +266,16 @@ class UserLayout extends React.PureComponent {
                   </div>
 
                   <div className={styles.mapContainer}>
-
+                    <GDMap
+                      amapkey="71fbf192d766c9709e279589d6a8bede"
+                      plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
+                      status={{
+                        keyboardEnable: false,
+                      }}
+                      useAMapUI
+                      mapStyle="amap://styles/79a9a32fda8686e79bb79c6e5fe48c2c"
+                    >
+                    </GDMap>
                   </div>
                 </div>
               </section>
@@ -280,10 +285,10 @@ class UserLayout extends React.PureComponent {
                 <div className={styles.sectionTitle}>社区接入企业数</div>
                 <div className={styles.sectionMain} style={{ padding: '0 15px' }}>
                   <table className={styles.safeTable}>
-                    <thead>
+                    {/* <thead>
                       <th style={{ width: '50%' }}>社区</th>
                       <th style={{ width: '50%' }}>接入企业数</th>
-                    </thead>
+                    </thead> */}
                     <tbody>
                       <tr>
                         <td>淼泉居委</td>
