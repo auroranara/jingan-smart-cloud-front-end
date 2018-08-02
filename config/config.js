@@ -17,7 +17,8 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://192.168.10.68:18080`,
+      // target: `http://192.168.10.68:18080`,
+      target: 'http://192.168.10.8',
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
