@@ -1,10 +1,12 @@
-import { queryDetail, putDetail } from '../services/company/safety';
+import { queryMenus, queryDetail, putDetail } from '../services/company/safety';
 
 export default {
   namespace: 'safety',
 
   state: {
-    menus: {},
+    menus: {
+      standardLevel: [{ id: '@@none' }], // 为了防止为获取该数组时，渲染页面报错
+    },
     detail: {},
   },
 
@@ -12,17 +14,27 @@ export default {
     *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryDetail, payload);
       // console.log('response', response);
-      const { code, menus, detail } = response;
+      const { code, data } = response;
       // console.log(code, typeof code, code !== 200);
       if (code !== 200)
         return;
 
-      if (menus && typeof menus === 'object')
-        yield put({ type: 'saveMenu', payload: menus });
-      if (detail && typeof detail === 'object')
-        yield put({ type: 'saveDetail', payload: detail });
+      if (data && typeof data === 'object')
+        yield put({ type: 'saveDetail', payload: data });
 
-      callback && callback(menus, detail);
+      callback && callback(data);
+    },
+    *fetchMenus({ payload, callback }, { call, put }) {
+      const response = yield call(queryMenus, payload);
+      const { code, data } = response;
+
+      if (code !== 200)
+        return;
+
+      if (data && typeof data === 'object')
+        yield put({ type: 'saveMenu', payload: data });
+
+      callback && callback(data);
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(putDetail, payload);

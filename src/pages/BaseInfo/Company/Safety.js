@@ -1,19 +1,24 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { message, Button, Card, Col, DatePicker, Form, Icon, Modal, Upload, Select } from 'antd';
+import { message, Button, Card, Col, DatePicker, Form, Icon, Input, Modal, Upload, Select } from 'antd';
 // import FooterToolbar from 'components/FooterToolbar';
 
 import { getToken } from 'utils/authority';
-import { uploadAction, folder } from './CompanyEdit';
 
 const { RangePicker } = DatePicker;
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
+// 上传文件地址
+const uploadAction = '/acloud_new/v2/uploadFile';
+// 上传文件夹
+const folder = 'fireControl';
+
 const UploadIcon = <Icon type="upload" />;
 
 const defaultUploadProps = { data: { folder }, multiple: true, action: uploadAction, headers: { 'JA-Token': getToken() } };
+// console.log(uploadAction);
 
 const itemLayout = {
   labelCol: {
@@ -37,8 +42,8 @@ const itemLayout1 = {
   },
 };
 
-const ITEMS = ['grid', 'category', 'safetyLevel', 'standardLevel', 'relationship', 'organization', 'validity', 'logo'];
-const MORE_ITEMS = ['grid', 'category', 'safetyLevel', 'standardLevel', 'relationship', 'organization', 'validity', 'standardAppendix', 'fourColorImage', 'logo'];
+const ITEMS = ['gridId', 'industryCategory', 'standardLevel', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'companyLogo'];
+const MORE_ITEMS = ['gridId', 'industryCategory', 'standardLevel', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
 
 function generateRules(cName, msg="输入") {
   return [{ required: true, message: `请${msg}${cName}` }];
@@ -46,22 +51,38 @@ function generateRules(cName, msg="输入") {
 
 function getOptions(options = []) {
   // console.log(options);
-  return options.map(({ id, label }) => <Option key={id} value={id}>{label}</Option>);
+  return options.map(({ value, label }) => <Option key={value} value={value}>{label}</Option>);
 }
 
-function handleDetail(detail, items) {
-  const result = {};
-  items.forEach(key => {
-    const val = detail[key];
-    if (val === undefined || val === null)
-      return;
+// function handleDetail(detail, items) {
+//   const result = {};
+//   items.forEach(key => {
+//     const val = detail[key];
+//     if (val === undefined || val === null)
+//       return;
 
-    if (key === 'validity')
-      result[key] = val.split(',').map(timestamp => moment(Number.parseInt(timestamp, 10)));
+//     if (key === 'undoTime')
+//       // validity对应undoTime
+//       result.validity = val.split(',').map(timestamp => moment(Number.parseInt(timestamp, 10)));
+//     else
+//       result[key] = val;
+//   });
+//   return result;
+// }
+
+function handleDetail(detail, items) {
+  return items.reduce((prev, next) => {
+    const val = detail[next];
+    if (val === undefined || val === null || val === 'endTime')
+      return prev;
+
+    if (next === 'startTime')
+      prev.validity = [detail.startTime, detail.endTime].map(timestamp => moment(Number.parseInt(timestamp, 10)));
     else
-      result[key] = val;
-  });
-  return result;
+      prev[next] = val;
+
+    return prev;
+  }, {});
 }
 
 @connect(({ safety, loading }) => ({ safety, loading: loading.models.safety }))
@@ -70,29 +91,54 @@ export default class Safety extends PureComponent {
   state = {
     showMore: false,
     submitting: false,
-    standardList: [],
-    safeList: [],
+    logoLoading: false,
     logoList: [],
+    standardLoading: false,
+    standardList: [],
+    safeLoading: false,
+    safeList: [],
   };
 
   componentDidMount() {
     const that = this;
     const { dispatch, companyId, operation, form: { setFieldsValue } } = this.props;
+    dispatch({
+      type: 'safety/fetchMenus',
+      // callback(menus) {
+      //   if (operation === 'add')
+      //     return;
+
+      //   // 编辑页面就请求detail，由于渲染时需要先知道menus.standardLevel[0].id，所以有个先后顺序，不然不好判断
+      //   dispatch({
+      //     type: 'safety/fetch',
+      //     payload: companyId,
+      //     callback(detail = {}) {
+      //       // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
+      //       if (detail.reachLevel !== undefined && detail.reachLevel !== menus.reachLevel[4].value)
+      //         that.setState({ showMore: true }, () => {
+      //           setFieldsValue(handleDetail(detail, MORE_ITEMS));
+      //         });
+      //       else {
+      //         setFieldsValue(handleDetail(detail, ITEMS));
+      //       }
+      //     },
+      //   });
+      // },
+    });
+
     if (operation === 'add')
       return;
 
-    this.setState({ submitting: true });
     dispatch({
       type: 'safety/fetch',
       payload: companyId,
-      callback(menus = {standardLevel: [{id: '@@none'}]}, detail = {}) {
+      callback(detail = {}) {
         // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
-        if (menus.standardLevel[0].id !== detail.standardLevel)
-          that.setState({ showMore: true, submitting: false }, () => {
+        if (detail.reachLevel !== undefined && detail.reachLevel !== '5')
+          that.setState({ showMore: true }, () => {
             setFieldsValue(handleDetail(detail, MORE_ITEMS));
           });
         else {
-          that.setState({ submitting: false });
           setFieldsValue(handleDetail(detail, ITEMS));
         }
       },
@@ -120,8 +166,11 @@ export default class Safety extends PureComponent {
       if (err)
         return;
 
-      // RangePicker中对应的validity [moment1, moment2] => 'timestamp1,timestamp2'
-      const formValues = { ...fieldsValue, validity: fieldsValue.validity.map(m => +m).join(',') };
+      // RangePicker中对应的validity [moment1, moment2] => [timestamp1,timestamp2]
+      const timestampArray = fieldsValue.validity.map(m => +m);
+      const formValues = { ...fieldsValue };
+      delete formValues.validity;
+      [formValues.startTime, formValues.endTime] = timestampArray;
 
       this.setState({ submitting: true });
       dispatch({
@@ -140,26 +189,88 @@ export default class Safety extends PureComponent {
   };
 
   handleStandardSelect = (value) => {
-    const { safety: { menus } } = this.props;
+    // const { safety: { menus } } = this.props;
     // console.log(value, typeof value);
 
     // 若选中未评级选项
-    if (value === menus.standardLevel[0].id)
+    // if (value === menus.standardLevel[4].value)
+    if (value === '5')
       this.setState({ showMore: false });
     else
       this.setState({ showMore: true });
   };
 
-  handleLogoUp = (o) => {
-    console.log(o);
+  // 只能有一个文件
+  handleLogoChange = ({ file, fileList, event }) => {
+    // console.log(file.status, file, fileList, event);
+    const { logoLoading } = this.state;
+    const { status, response } = file;
+
+    // 文件在上传时，且logoLoading为false，避免重复设值
+    if (status === 'uploading' && !logoLoading)
+      this.setState({ logoLoading: true });
+    else // 其余情况，done,error,removed时均表示loading已结束
+      this.setState({ logoLoading: false });
+
+    // 让列表只显示一个文件，当删除文件时,removed，file为删除的文件，fileList中已不包含当前file，此处为空数组
+    this.setState({ logoList: fileList.slice(-1) });
+
+    // 上传成功且code为200时提示成功，上传失败或上传成功而code不为200时提示失败，还剩一种情况就是removed，这时不需要提示
+    if (status === 'done' && response.code === 200)
+      message.success('上传成功');
+    else if (status === 'error' || status === 'done' && response.code !== 200)
+      message.error('上传失败');
   };
 
-  handleStandardUp = (o) => {
-    console.log(o);
+  // 同上
+  handleStandardChange = ({ file, fileList, event }) => {
+    // console.log(file.status, file, fileList, event);
+    const { standardLoading } = this.state;
+    const { status, response } = file;
+
+    if (status === 'uploading' && !standardLoading)
+      this.setState({ standardLoading: true });
+    else
+      this.setState({ standardLoading: false });
+
+    this.setState({ standard: fileList.slice(-1) });
+
+    if (status === 'done' && response.code === 200)
+      message.success('上传成功');
+    else if (status === 'error' || status === 'done' && response.code !== 200)
+      message.error('上传失败');
   };
 
-  handleSafeUp = (o) => {
-    console.log(o);
+  // 可以上传多个文件
+  handleSafeChange = ({ file, fileList, event }) => {
+    const { safeLoading } = this.state;
+
+    console.log(file.status, file, fileList, event);
+    const { status } = file;
+
+    if (status === 'uploading' && !safeLoading)
+      this.setState({ safeLoading: true });
+
+    // 所有文件都已上传
+    if (status !== 'removed' && fileList.every(({ status }) => status === 'done' || status === 'error')) {
+      // console.log('done');
+      this.setState({ safeLoading: false });
+      const successFileList = fileList.filter(f => f.status === 'done' && f.response.code === 200);
+      const failFileList = fileList.filter(f => f.status !== 'done' || f.response.code !== 200);
+      if (successFileList.length === fileList.length)
+        message.success('所有文件都已上传成功');
+      else
+        message.error(`${failFileList.map(f => f.name).join(',')}文件上传失败，请重新上传`);
+    }
+
+    const newList = fileList.filter(f => {
+      if (f.response)
+        return f.response.code === 200;
+
+      return true;
+    });
+
+    this.setState({ safeList: newList });
   };
 
   renderFormItems(items) {
@@ -175,39 +286,39 @@ export default class Safety extends PureComponent {
 
   render() {
     const { safety: { menus }, loading } = this.props;
-    const { showMore, submitting, standardList, safeList, logoList } = this.state;
+    const { showMore, submitting, standardLoading, standardList, safeLoading, safeList, logoLoading, logoList } = this.state;
 
     const defaultItems = [
       {
-        name: 'grid',
+        name: 'gridId',
         cName: '所属网格',
         rules: generateRules('所属网格'),
-        component: <Select placeholder="请输入所属网格">{getOptions(menus.grid)}</Select>,
+        component: <Select placeholder="请输入所属网格">{getOptions(menus.gridId)}</Select>,
       }, {
-        name: 'category',
+        name: 'industryCategory',
         cName: '监管分类',
         rules: generateRules('监管分类'),
-        component: <Select placeholder="请输入监管分类">{getOptions(menus.category)}</Select>,
-      }, {
-        name: 'safetyLevel',
-        cName: '安全监管等级',
-        rules: generateRules('安全监管等级'),
-        component: <Select placeholder="请输入安全监管等级">{getOptions(menus.safetyLevel)}</Select>,
+        component: <Select placeholder="请输入监管分类">{getOptions(menus.industryCategory)}</Select>,
       }, {
         name: 'standardLevel',
+        cName: '安全监管等级',
+        rules: generateRules('安全监管等级'),
+        component: <Select placeholder="请输入安全监管等级">{getOptions(menus.standardLevel)}</Select>,
+      }, {
+        name: 'reachLevel',
         cName: '标准化达标等级',
         rules: generateRules('标准化达标等级'),
-        component: <Select placeholder="请输入标准化达标等级" onSelect={this.handleStandardSelect}>{getOptions(menus.standardLevel)}</Select>,
+        component: <Select placeholder="请输入标准化达标等级" onSelect={this.handleStandardSelect}>{getOptions(menus.reachLevel)}</Select>,
       }, {
-        name: 'relationship',
+        name: 'administratiRelation',
         cName: '企业行政隶属关系',
         rules: generateRules('企业行政隶属关系'),
-        component: <Select placeholder="请输入企业行政隶属关系">{getOptions(menus.relationship)}</Select>,
+        component: <Select placeholder="请输入企业行政隶属关系">{getOptions(menus.administratiRelation)}</Select>,
       }, {
-        name: 'organization',
+        name: 'regulatoryOrganization',
         cName: '属地安监机构',
         rules: generateRules('属地安监机构'),
-        component: <Select placeholder="请输入属地安监机构">{getOptions(menus.organization)}</Select>,
+        component: <Input placeholder="请输入属地安监机构" />,
       }, {
         name: 'validity',
         cName: '服务有效期',
@@ -216,29 +327,29 @@ export default class Safety extends PureComponent {
         formItemLayout: itemLayout1,
         component: <RangePicker />,
       }, {
-        name: 'logo',
+        name: 'companyLogo',
         cName: '单位LOGO',
         span: 24,
         formItemLayout: itemLayout1,
-        component: <Upload {...defaultUploadProps} fileList={logoList} onChange={this.handleLogoUp}><Button type="primary">{UploadIcon}上传图片</Button></Upload>,
+        component: <Upload {...defaultUploadProps} fileList={logoList} onChange={this.handleLogoChange}><Button loading={logoLoading} type="primary">{UploadIcon}上传图片</Button></Upload>,
       },
     ];
 
     const moreItems = [
       {
-        name: 'standardAppendix',
+        name: 'reachGradeAccessory',
         cName: '标准化达标等级附件',
         rules: generateRules('标准化达标等级附件', '上传'),
         span: 24,
         formItemLayout: itemLayout1,
-        component: <Upload {...defaultUploadProps} fileList={standardList} onChange={this.handleStandardUp}><Button type="primary">{UploadIcon}上传附件</Button></Upload>,
+        component: <Upload {...defaultUploadProps} fileList={standardList} onChange={this.handleStandardChange}><Button loading={standardLoading} type="primary">{UploadIcon}上传附件</Button></Upload>,
       }, {
-        name: 'fourColorImage',
+        name: 'safetyFourPicture',
         cName: '安全四色图',
         rules: generateRules('安全四色图', '上传'),
         span: 24,
         formItemLayout: itemLayout1,
-        component: <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeUp}><Button type="primary">{UploadIcon}上传图片</Button></Upload>,
+        component: <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}><Button loading={safeLoading} type="primary">{UploadIcon}上传图片</Button></Upload>,
       },
     ];
 

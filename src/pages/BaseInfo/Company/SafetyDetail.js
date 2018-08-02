@@ -9,22 +9,22 @@ const { Description } = DescriptionList;
 
 const dspItems = [
   {
-    name: 'grid',
+    name: 'gridId',
     cName: '所属网格',
   }, {
-    name: 'category',
+    name: 'industryCategory',
     cName: '监管分类',
   }, {
-    name: 'safetyLevel',
+    name: 'standardLevel',
     cName: '安全监管等级',
   }, {
-    name: 'standardLevel',
+    name: 'reachLevel',
     cName: '标准化达标等级',
   }, {
-    name: 'relationship',
+    name: 'administratiRelation',
     cName: '企业行政隶属关系',
   }, {
-    name: 'organization',
+    name: 'regulatoryOrganization',
     cName: '属地安监机构',
   }, {
     name: 'validity',
@@ -33,16 +33,16 @@ const dspItems = [
 ];
 
 const dspItems1 = [{
-  name: 'logo',
+  name: 'companyLogo',
   cName: '单位LOGO',
 }];
 
 const moreItems = [
   {
-    name: 'appendix',
+    name: 'reachGradeAccessory',
     cName: '标准化达标等级附件',
   }, {
-    name: 'fourColorImage',
+    name: 'safetyFourPicture',
     cName: '安全四色图',
   },
 ];
@@ -50,11 +50,12 @@ const moreItems = [
 function renderDsp(items, detail) {
   return items.map(({ name, cName }) => {
     let val = null;
-    if (name === 'validity' && detail[name]) {
+    // validity对应undoTime
+    if (name === 'startTime' && detail.startTime) {
       // console.log(detail[name].split(','));
-      val = detail[name].split(',').map(timestamp => moment(Number.parseInt(timestamp, 10)).format('YYYY/MM/DD')).join('~');
+      val = [detail.startTime, detail.endTime].map(timestamp => moment(Number.parseInt(timestamp, 10)).format('YYYY/MM/DD')).join('~');
     }
-    else
+    else if (name !== 'endTime')
       val = detail[`${name}Label`];
     return <Description key={name} term={cName}>{val === null || val === undefined ? '暂无信息' : val.toString()}</Description>
   });
@@ -62,25 +63,18 @@ function renderDsp(items, detail) {
 
 @connect(({ safety }) => ({ safety }))
 export default class SafetyDetail extends PureComponent {
-  state = { showMore: false };
 
   componentDidMount() {
-    const that = this;
     const { dispatch, companyId } = this.props;
-    dispatch({
-      type: 'safety/fetch',
-      payload: companyId,
-      callback(menus = {standardLevel: [{id: '@@none'}]}, detail = {}) {
-        // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
-        if (menus.standardLevel[0].id !== detail.standardLevel)
-          that.setState({ showMore: true });
-      },
-    });
+    dispatch({ type: 'safety/fetch', payload: companyId });
+    dispatch({ type: 'safety/fetchMenus' });
   }
 
   render() {
-    const { safety: { detail } } = this.props;
-    const items = this.state.showMore ? [...moreItems, ...dspItems1] : dspItems1;
+    const { safety: { menus, detail } } = this.props;
+    // 若detail中包含standardLevel且standardLevel不为未评级，则先把那两个item渲染出来
+    // const items = detail.reachLevel !== undefined && detail.reachLevel !== menus.reachLevel[4].value ? [...moreItems, ...dspItems1] : dspItems1;
+    const items = detail.reachLevel !== undefined && detail.reachLevel !== '5' ? [...moreItems, ...dspItems1] : dspItems1;
 
     return (
       <Card title="安监信息">

@@ -38,9 +38,9 @@ const { confirm } = Modal;
 const { home: homeUrl, company: { list: listUrl, edit: editUrl }, exception: { 500: exceptionUrl } } = urls;
 const { home: homeTitle, company: { menu: menuTitle, list: listTitle, add: addTitle, edit: editTitle } } = titles;
 // 上传文件地址
-export const uploadAction = '/acloud_new/v2/uploadFile';
+const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-export const folder = 'fireControl';
+const folder = 'fireControl';
 /* 表单标签 */
 const fieldLabels = {
   administrativeDivision: '行政区域',
