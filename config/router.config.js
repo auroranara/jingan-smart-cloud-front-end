@@ -8,16 +8,13 @@ module.exports = [
       { path: '/user/login', component: '/User/Login' },
       { path: '/user/register', component: './User/Register' },
       { path: '/user/register-result', component: './User/RegisterResult' },
-      { path: '/user/government', name: 'government', component: './User/Government' },
-      { path: '/user/company', name: 'company', component: './User/Company' },
     ],
   },
   {
     path: '/big-platform',
-    // component: './layouts/UserLayout',
     routes: [
-      { path: '/big-platform', redirect: '/big-platform/risk-point' },
-      { path: '/big-platform/risk-point', component: './User/Government' },
+      { path: '/big-platform', redirect: '/big-platform/government' },
+      { path: '/big-platform/government', component: './BigPlatform/Government' },
     ],
   },
   // app
