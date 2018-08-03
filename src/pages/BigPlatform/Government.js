@@ -5,11 +5,11 @@ import moment from 'moment';
 import styles from './Government.less';
 
 // import G2 from '@antv/g2';
-import { View } from '@antv/data-set';
+import { DataView } from '@antv/data-set';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import { Chart, Axis, Tooltip, Geom, Shape } from "bizcharts";
+import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from "bizcharts";
 
-class UserLayout extends React.PureComponent {
+class GovernmentBigPlatform extends React.PureComponent {
   state = {
     time: '0000-00-00 星期一 00:00:00',
   };
@@ -96,7 +96,7 @@ class UserLayout extends React.PureComponent {
 
     // document.getElementById('hdArea').clientHeight
     return (
-      <Chart height={200} data={data} forceFit padding={[25, 30, 45, 40]}>
+      <Chart height={300} data={data} forceFit padding={[25, 30, 45, 40]}>
         <Axis name="name" title={null} label={
           {
             textStyle: {
@@ -122,11 +122,11 @@ class UserLayout extends React.PureComponent {
   }
 
   renderPieChart = () => {
-    // const _DataSet = new View();
+    // const { DataView } = new View();
     // var _DataSet = DataSet,
     // const DataView = _DataSet.DataView;
     // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
-    const sliceNumber = 0.01;
+    const sliceNumber = 0.015;
     // 自定义 other 的图形，增加两条线
     Shape.registerShape('interval', 'sliceShape', {
       draw: function draw(cfg, container) {
@@ -146,47 +146,65 @@ class UserLayout extends React.PureComponent {
         });
       },
     });
-    const data = [
+    const dataOut = [
       { name: '红', value: 10 },
       { name: '橙', value: 3 },
       { name: '黄', value: 3 },
       { name: '蓝', value: 2 },
     ];
-    console.log(data);
 
-    // Step 1: 创建 Chart 对象
-    // const chart = new G2.Chart({
-    //   container: 'hdPie', // 指定图表容器 ID
-    //   forceFit: true,
-    //   height: document.getElementById('hdPie').clientHeight,
-    //   padding: [0],
-    //   // padding: [25, 30, 45, 40],
-    // });
-    // // Step 2: 载入数据源
-    // // chart.source(data);
-    // const dv = new View();
-    // dv.source(data).transform({
-    //   type: 'percent',
-    //   field: 'value',
-    //   dimension: 'name',
-    //   as: 'percent',
-    // });
-    // chart.source(dv, {
-    //   percent: {
-    //     formatter: function formatter(val) {
-    //       val = (val * 100).toFixed(1) + '%';
-    //       return val;
-    //     },
-    //   },
-    // });
-    // chart.coord('theta', {
-    //   radius: 0.75,
-    //   innerRadius: 0.6,
-    // });
-    // // Step 3：创建图形语法，绘制柱状图，由 name 和 value 两个属性决定图形位置，name 映射至 x 轴，value 映射至 y 轴
-    // chart.interval().position('value').color('name', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']);
-    // // Step 4: 渲染图表
-    // chart.render();
+    const dataIn = [
+      { name: 'aa', value: 7 },
+      { name: 'bb', value: 3 },
+      { name: 'cc', value: 13 },
+    ];
+
+    const dvIn = new DataView();
+    dvIn.source(dataIn).transform({
+      type: 'percent',
+      field: 'value',
+      dimension: 'name',
+      as: 'percent',
+    });
+    const cols = {
+      percent: {
+        formatter: val => {
+          val = (val * 100).toFixed(2) + '%';
+          return val;
+        },
+      },
+    }
+    const dvOut = new DataView();
+    dvOut.source(dataOut).transform({
+      type: 'percent',
+      field: 'value',
+      dimension: 'name',
+      as: 'percent',
+    });
+
+    return (
+      <Chart height={300} data={dataOut} forceFit >
+        <Coord type="theta" radius={0.9} innerRadius={0.8} />
+        <Tooltip showTitle={false} />
+        <Geom
+          type="intervalStack"
+          position="value"
+          color={["name", ['#e86767', '#2a8bd5', '#f6b54e', '#bbbbbc']]}
+          shape="sliceShape"
+        >
+        </Geom>
+
+        <View data={dataIn} >
+          <Coord type='theta' radius={0.6} />
+          <Geom
+            type="intervalStack"
+            position="value"
+            color={["name", ['#f7f457', '#35c9c9', '#3e0ec6']]}
+          >
+          </Geom>
+        </View>
+      </Chart>
+    );
   }
 
   render() {
@@ -230,7 +248,9 @@ class UserLayout extends React.PureComponent {
                         <span className={styles.summaryNum} style={{ color: '#00baff' }}>0</span>
                     </span>
                   </div>
-                  <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '70%' }}></div>
+                  <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '70%' }}>
+                    {this.renderPieChart()}
+                  </div>
                 </div>
               </section>
             </Col>
@@ -310,4 +330,4 @@ class UserLayout extends React.PureComponent {
   }
 }
 
-export default UserLayout;
+export default GovernmentBigPlatform;
