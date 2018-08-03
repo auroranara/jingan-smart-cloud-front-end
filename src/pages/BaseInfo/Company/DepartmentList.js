@@ -58,10 +58,11 @@ const RenderModal = Form.create()((props) => {
   const renderTreeNodes = data => {
     return data.map((item) => {
       const { id, name, children } = item;
+      const disabled = detail.id && (detail.id === id || item.parentIds.indexOf(detail.id) > -1)
       if (children) {
         return (
           <TreeNode
-            disabled={(detail.id && detail.id === id) || (detail.id && item.parentIds.split('@').includes(detail.id))}
+            disabled={disabled}
             title={name}
             key={id}
             value={id}>
@@ -69,7 +70,7 @@ const RenderModal = Form.create()((props) => {
           </TreeNode>
         );
       }
-      return <TreeNode title={name} key={id} value={id} />;
+      return <TreeNode disabled={disabled} title={name} key={id} value={id} />;
     });
   }
 
@@ -124,11 +125,7 @@ export default class DepartmentList extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, match: { params: { id } } } = this.props
-    dispatch({
-      type: 'department/fetchDepartmentList',
-      payload: id,
-    })
+    this.getDepartments()
   }
 
   // 获取部门列表
@@ -136,7 +133,7 @@ export default class DepartmentList extends PureComponent {
     const { dispatch, match: { params: { id } } } = this.props
     dispatch({
       type: 'department/fetchDepartmentList',
-      payload: id,
+      payload: { companyId: id },
     })
   }
 
@@ -145,25 +142,25 @@ export default class DepartmentList extends PureComponent {
     // let temp = []
     const { form: { getFieldValue }, department: { data: { list } } } = this.props
     const name = getFieldValue('name')
-    if (name) {
-      // this.generateExpended(name, [...list], temp)
-      // temp = [...new Set(temp)]
-      this.setState({ searchName: name })
-    }
+    this.setState({ searchName: name })
+    // if (name) {
+    //   // this.generateExpended(name, [...list], temp)
+    //   // temp = [...new Set(temp)]
+    // }
   }
 
-  generateExpended = (name, list, temp) => {
-    for (const item of list) {
-      if (item.name.indexOf(name) > -1) {
-        item.parentIds.split('@').filter(Boolean).forEach(row => {
-          temp.push(row)
-        })
-      }
-      if (item.children) {
-        this.generateExpended(name, item.children, temp)
-      }
-    }
-  }
+  // generateExpended = (name, list, temp) => {
+  //   for (const item of list) {
+  //     if (item.name.indexOf(name) > -1) {
+  //       item.parentIds.split('@').filter(Boolean).forEach(row => {
+  //         temp.push(row)
+  //       })
+  //     }
+  //     if (item.children) {
+  //       this.generateExpended(name, item.children, temp)
+  //     }
+  //   }
+  // }
 
   // handleExpand = (column, index) => {
   //   const { expandedRowKeys } = this.state
@@ -182,16 +179,17 @@ export default class DepartmentList extends PureComponent {
   resetQuery = () => {
     const { form: { resetFields } } = this.props
     resetFields()
+    this.setState({ searchName: '' })
     this.getDepartments()
   }
 
-  // 打开新建弹窗
-  handleShowModal = (status, detail = {}) => {
-    this.setState({
+  // 打开新建弹窗,status有三个参数：add\addUnder\edit
+  handleShowModal = async (status, rows = {}) => {
+    await this.setState({
       modalVisible: true,
       modalStatus: status,
       modalTitle: (status === 'add' && '新建部门') || (status === 'addUnder' && '添加下属部门') || (status === 'edit' && '编辑部门'),
-      detail: { ...detail },
+      detail: { ...rows },
     })
   }
 
@@ -283,7 +281,7 @@ export default class DepartmentList extends PureComponent {
         dataIndex: 'name',
         key: 'name',
         width: '50%',
-        render: (val, rows) => {
+        render: (val) => {
           const index = val.indexOf(searchName)
           const beforeStr = val.substr(0, index);
           const afterStr = val.substr(index + searchName.length);
@@ -322,17 +320,17 @@ export default class DepartmentList extends PureComponent {
     ]
     return (
       <Card style={{ marginTop: '20px' }}>
-        <Table
-          loading={tableLoading}
-          rowKey='id'
-          columns={columns}
-          dataSource={list}
-          pagination={false}
-          defaultExpandAllRows
-        // onExpand={this.handleExpand}
-        // onExpandedRowsChange={this.onExpandedRowsChange}
-        // expandedRowKeys={expandedRowKeys}
-        ></Table>
+        {list && list.length ? (
+          <Table
+            loading={tableLoading}
+            rowKey='id'
+            columns={columns}
+            dataSource={list}
+            pagination={false}
+            defaultExpandAllRows={true}
+          ></Table>) : (
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
       </Card>
     )
   }
