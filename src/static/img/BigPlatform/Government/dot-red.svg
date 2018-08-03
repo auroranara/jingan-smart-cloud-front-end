@@ -1,0 +1,13 @@
+<svg width="80px"  height="80px"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-book">
+  <circle cx="50" cy="50" r="15" stroke="#fc1f02" stroke-width="0" fill="red"/>
+
+  <circle cx="50" cy="50" r="15" stroke="#fc1f02" stroke-width="5" fill="none">
+    <animate attributeName="r" calcMode="linear" from="20" to="50" dur="2s" repeatCount="indefinite"></animate>
+    <animate attributeName="opacity" calcMode="linear" from="1" to="0" dur="2s" begin="0" repeatCount="indefinite"></animate>
+  </circle>
+ 
+  <circle cx="50" cy="50" r="15" stroke="#fc1f02" stroke-width="5" fill="none">
+    <animate attributeName="r" calcMode="linear" from="20" to="50" dur="2s" begin="1s" repeatCount="indefinite"></animate>
+    <animate attributeName="opacity" calcMode="linear" from="1" to="0" dur="2s" begin="1s" repeatCount="indefinite"></animate>
+  </circle>
+</svg>

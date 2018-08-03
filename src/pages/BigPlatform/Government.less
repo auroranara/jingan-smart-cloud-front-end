@@ -127,6 +127,43 @@
   }
 }
 
+.pieLegend {
+  width: 33%;
+  height: 210px;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -100px;
+  .hdTitle {
+    font-size: 12px;
+    text-align: center;
+    line-height: 25px;
+    float: left;
+    width: 100%;
+  }
+  .hdLegend {
+    float: left;
+    padding-right: 8px;
+    width: 100%;
+    line-height: 24px;
+    height: 22px;
+    overflow: hidden;
+    font-size: 12px;
+    .legendCircle {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      position: relative;
+      top: 3px;
+      margin-right: 3px;
+    }
+    .legendNum {
+      float: right;
+    }
+  }
+}
+
 .mapContainer {
   width: 100%;
   height: calc(~'100% - 110px');
@@ -135,4 +172,66 @@
   border: 2px solid transparent;
   border-image: url('@{imgUrl}/Government/border-bottom.png') 2 2 stretch;
   border-top-width: 1px;
+  :global {
+    .amap-toolbar.amap-touch-toolbar {
+      left: 10px !important;
+      top: 20px !important;
+      bottom: auto !important;
+    }
+    .amap-scalecontrol {
+      top: 10px !important;
+      left: 80px !important;
+    }
+    .amap-info-content.amap-info-outer {
+      background-color: rgba(4, 50, 98, 0.8) !important;
+      border: none;
+    }
+    .amap-info-sharp {
+      display: none;
+    }
+  }
+
+  .mapLegend {
+    width: calc(~'100% - 20px');
+    height: 60px;
+    line-height: 60px;
+    background-color: rgba(2, 32, 62, 0.7);
+    position: absolute;
+    bottom: 12px;
+    left: 10px;
+    padding-left: 15px;
+    padding-right: 25px;
+    white-space: nowrap;
+    .legendIcon {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      position: relative;
+      top: 4px;
+      margin-right: 3px;
+    }
+    .dotRed {
+      .legendIcon;
+      background: url('@{imgUrl}/Government/dot-red.svg') no-repeat center center;
+      background-size: 100% 100%;
+      width: 24px;
+      height: 24px;
+      top: 7px;
+    }
+    .dotOrange {
+      .legendIcon;
+      background: url('@{imgUrl}/Government/dot-orange.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+    .dotYel {
+      .legendIcon;
+      background: url('@{imgUrl}/Government/dot-yel.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+    .dotBlue {
+      .legendIcon;
+      background: url('@{imgUrl}/Government/dot-blue.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+  }
 }

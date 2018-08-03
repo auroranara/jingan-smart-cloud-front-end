@@ -8,11 +8,16 @@ import Bar from './Bar';
 // import G2 from '@antv/g2';
 import { DataView } from '@antv/data-set';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from "bizcharts";
+import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View, Legend } from "bizcharts";
 
 class GovernmentBigPlatform extends React.PureComponent {
   state = {
     time: '0000-00-00 星期一 00:00:00',
+    label: {
+      longitude: 120.366011,
+      latitude: 31.544389,
+    },
+    infoWindowShow: false,
   };
 
   componentDidMount() {
@@ -158,16 +163,15 @@ class GovernmentBigPlatform extends React.PureComponent {
       },
     });
     const dataOut = [
-      { name: '红', value: 10 },
-      { name: '橙', value: 3 },
-      { name: '黄', value: 3 },
-      { name: '蓝', value: 2 },
+      { name: '已超期', value: 10 },
+      { name: '待复查', value: 3 },
+      { name: '未超期', value: 3 },
     ];
 
     const dataIn = [
-      { name: 'aa', value: 7 },
-      { name: 'bb', value: 3 },
-      { name: 'cc', value: 13 },
+      { name: '网格点', value: 7 },
+      { name: '风险点', value: 3 },
+      { name: '随手拍', value: 13 },
     ];
 
     const dvIn = new DataView();
@@ -184,10 +188,20 @@ class GovernmentBigPlatform extends React.PureComponent {
       dimension: 'name',
       as: 'percent',
     });
+    const scale = {
+      percent: {
+        formatter: val => {
+          console.log(val);
 
+          val = (val * 100).toFixed(2) + '%';
+          return val;
+        },
+      },
+      nice: false,
+    }
     return (
-      <Chart height={300} data={dataOut} forceFit >
-        <Coord type="theta" radius={0.9} innerRadius={0.8} />
+      <Chart height={300} data={dataOut} scale={scale} forceFit padding={[0]}>
+        <Coord type="theta" radius={0.6} innerRadius={0.76} />
         <Tooltip showTitle={false} />
         <Geom
           type="intervalStack"
@@ -195,19 +209,112 @@ class GovernmentBigPlatform extends React.PureComponent {
           color={["name", ['#e86767', '#2a8bd5', '#f6b54e', '#bbbbbc']]}
           shape="sliceShape"
         >
+          <Label
+            content='value'
+            offset={25}
+            textStyle={{
+              textAlign: 'center', // 文本对齐方向，可取值为： start middle end
+              fill: '#fff', // 文本的颜色
+              fontSize: '12', // 文本大小
+              fontWeight: 'bold', // 文本粗细
+            }}
+            formatter={(val, item) => {
+              return item.point.name + '\n' + val;
+            }} />
         </Geom>
 
         <View data={dataIn} >
-          <Coord type='theta' radius={0.6} />
+          <Coord type='theta' radius={0.35} />
           <Geom
             type="intervalStack"
             position="value"
             color={["name", ['#f7f457', '#35c9c9', '#3e0ec6']]}
+            select={false}
           >
           </Geom>
         </View>
       </Chart>
     );
+  }
+
+  renderCompanyMarker() {
+    // const { userList } = this.props.map;
+    const companyList = [{ "level": "A", "location": "POINT (120.363731 31.585241)" }, { "level": "A", "location": "POINT (120.380086 31.573547)" }, { "level": "C", "location": "POINT (120.35291 31.573752)" }, { "level": "D", "location": "POINT (120.335564 31.577691)" }, { "level": "B", "location": "POINT (120.373663 31.56754)" }, { "level": "B", "location": "POINT (120.765802 31.701894)" }, { "level": "C", "location": "POINT (120.313246 31.593969)" }, { "level": "B", "location": "POINT (120.372652 31.569028)" }];
+    return companyList.map((company) => {
+      const position = this.analysisPointData(company.location);
+      const level = company.level;
+      return (
+        <Marker
+          position={{ longitude: position.longitude, latitude: position.latitude }}
+          key={company.location}
+          offset={[-10, -10]}
+          events={{
+            click: this.handleCompanyLabel.bind(this, { longitude: position.longitude, latitude: position.latitude }),
+          }}
+        >
+          {level === 'A' && (<img src="http://p92lxg7ga.bkt.clouddn.com/icon-video.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+          {/* {level === 'A' && (<img src="../../static/img/BigPlatform/Government/dot-red.svg" alt="" style={{ display: 'block', width: '26px', height: '26px' }} />)} */}
+          {level === 'B' && (<img src="../../static/img/BigPlatform/Government/dot-orange2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+          {level === 'C' && (<img src="../../static/img/BigPlatform/Government/dot-yel2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+          {level === 'D' && (<img src="../../static/img/BigPlatform/Government/dot-blue2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+        </Marker>
+      );
+    });
+  }
+
+  analysisPointData = (data) => {
+    // POINT ()
+    const str = data.substring(7, data.length - 1);
+    const point = str.split(' ');
+    return {
+      longitude: point[0],
+      latitude: point[1],
+    };
+  }
+
+  /* 标注渲染 */
+  renderInfoWindow() {
+    const { label, infoWindowShow } = this.state;
+    let position = null;
+    position = {
+      longitude: label.longitude,
+      latitude: label.latitude,
+    };
+    return (
+      <InfoWindow
+        position={position}
+        offset={[-5, -15]}
+        isCustom={false}
+        autoMove={false}
+        visible={infoWindowShow}
+        events={{ close: this.handleHideLabel }}
+      >
+        {this.renderLabel(label)}
+      </InfoWindow>
+    );
+  }
+
+  renderLabel = (label) => {
+    return (
+      <div className={styles.companyLabel}>
+        <div>company_name</div>
+        <div>等级：level</div>
+        <div>地址：address</div>
+      </div>
+    );
+  }
+
+  handleCompanyLabel = (company) => {
+    this.setState({
+      label: company,
+      infoWindowShow: true,
+    });
+  }
+
+  handleHideLabel = () => {
+    this.setState({
+      infoWindowShow: false,
+    });
   }
 
   render() {
@@ -270,8 +377,43 @@ class GovernmentBigPlatform extends React.PureComponent {
                       </span>
                     </span>
                   </div>
-                  <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '70%' }}>
+                  <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '67%' }}>
                     {this.renderPieChart()}
+                  </div>
+                  <div className={styles.pieLegend}>
+                    <div className={styles.hdTitle}>隐患状态</div>
+                    <div className={styles.hdLegend}>
+                      <span className={styles.legendCircle} style={{ backgroundColor: '#e86767' }}></span>
+                      已超期
+                        <span className={styles.legendNum}>{0}</span>
+                    </div>
+                    <div className={styles.hdLegend}>
+                      <span className={styles.legendCircle} style={{ backgroundColor: '#2a8bd5' }}></span>
+                      待复查
+                        <span className={styles.legendNum}>{0}</span>
+                    </div>
+                    <div className={styles.hdLegend}>
+                      <span className={styles.legendCircle} style={{ backgroundColor: '#f6b54e' }}></span>
+                      未超期
+                        <span className={styles.legendNum}>{0}</span>
+                    </div>
+
+                    <div className={styles.hdTitle}>隐患状态</div>
+                    <div className={styles.hdLegend}>
+                      <span className={styles.legendCircle} style={{ backgroundColor: '#f7f457' }}></span>
+                      网格点
+                        <span className={styles.legendNum}>{0}</span>
+                    </div>
+                    <div className={styles.hdLegend}>
+                      <span className={styles.legendCircle} style={{ backgroundColor: '#35c9c9' }}></span>
+                      风险点
+                        <span className={styles.legendNum}>{0}</span>
+                    </div>
+                    <div className={styles.hdLegend}>
+                      <span className={styles.legendCircle} style={{ backgroundColor: '#3e0ec6' }}></span>
+                      随手拍
+                        <span className={styles.legendNum}>{0}</span>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -320,13 +462,35 @@ class GovernmentBigPlatform extends React.PureComponent {
                   <div className={styles.mapContainer}>
                     <GDMap
                       amapkey="71fbf192d766c9709e279589d6a8bede"
-                      plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
+                      plugins={[{ name: 'Scale', options: { locate: false } }, { name: 'ToolBar', options: { locate: false } }]}
                       status={{
                         keyboardEnable: false,
                       }}
                       useAMapUI
                       mapStyle="amap://styles/79a9a32fda8686e79bb79c6e5fe48c2c"
-                    />
+                    >
+                      {this.renderCompanyMarker()}
+                      {this.renderInfoWindow()}
+                    </GDMap>
+
+                    <Row className={styles.mapLegend}>
+                      <Col span={6}>
+                        <span className={styles.dotRed}></span>
+                        A类企业 （{0}）
+                      </Col>
+                      <Col span={6}>
+                        <span className={styles.dotOrange}></span>
+                        B类企业 （{0}）
+                      </Col>
+                      <Col span={6}>
+                        <span className={styles.dotYel}></span>
+                        C类企业 （{0}）
+                      </Col>
+                      <Col span={6}>
+                        <span className={styles.dotBlue}></span>
+                        D类企业 （{0}）
+                      </Col>
+                    </Row>
                   </div>
                 </div>
               </section>
@@ -336,10 +500,10 @@ class GovernmentBigPlatform extends React.PureComponent {
                 <div className={styles.sectionTitle}>社区接入企业数</div>
                 <div className={styles.sectionMain} style={{ padding: '0 15px' }}>
                   <table className={styles.safeTable}>
-                    {/* <thead>
+                    <thead>
                       <th style={{ width: '50%' }}>社区</th>
                       <th style={{ width: '50%' }}>接入企业数</th>
-                    </thead> */}
+                    </thead>
                     <tbody>
                       <tr>
                         <td>淼泉居委</td>
