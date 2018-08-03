@@ -75,6 +75,12 @@ module.exports = [
                 name: 'detail',
                 component: './BaseInfo/Company/CompanyDetail',
               },
+              {
+                path: '/base-info/company/department/list/:id',
+                code: 'baseInfo.company.department.listView',
+                name: 'department',
+                component: './BaseInfo/Company/DepartmentList',
+              },
             ],
           },
         ],

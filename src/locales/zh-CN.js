@@ -9,6 +9,7 @@ export default {
   'menu.baseInfo.company.add': '新增企业',
   'menu.baseInfo.company.edit': '编辑企业',
   'menu.baseInfo.company.detail': '企业详情',
+  'menu.baseInfo.company.department': '部门管理',
   'menu.roleAuthorization': '角色权限',
   'menu.roleAuthorization.account': '账号管理',
   'menu.roleAuthorization.account.list': '账号列表',
