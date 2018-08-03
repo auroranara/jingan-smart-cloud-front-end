@@ -3,6 +3,7 @@ import { Row, Col } from 'antd';
 import moment from 'moment';
 // import { Link } from 'dva/router';
 import styles from './Government.less';
+import Bar from './Bar';
 
 // import G2 from '@antv/g2';
 import { DataView } from '@antv/data-set';
@@ -15,17 +16,24 @@ class GovernmentBigPlatform extends React.PureComponent {
   };
 
   componentDidMount() {
-    // setInterval(() => {
-    //   this.getTime();
-    // }, 1000);
-    // this.renderBarChart();
-    // this.renderPieChart();
+    // const { dispatch } = this.props;
+    this.reqRef = requestAnimationFrame(() => {
+      setTimeout(() => {
+        this.setState({
+          loading: false,
+        });
+      }, 1000);
+    });
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.reqRef);
   }
 
   getTime = () => {
     const now = moment();
     const myday = now.weekday();
-    const weekday = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
+    const weekday = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
 
     const dayText = moment(now).format('YYYY-MM-DD');
     const timeText = moment(now).format('HH:mm:ss');
@@ -33,7 +41,7 @@ class GovernmentBigPlatform extends React.PureComponent {
     this.setState({
       time: `${dayText}  ${weekday[myday]}  ${timeText}`,
     });
-  }
+  };
 
   renderBarChart = () => {
     Shape.registerShape('interval', 'triangle', {
@@ -42,13 +50,10 @@ class GovernmentBigPlatform extends React.PureComponent {
         const y = cfg.y;
         const y0 = cfg.y0;
         const width = cfg.size;
-        return [
-          { x: x - width / 2, y: y0 },
-          { x: x, y: y },
-          { x: x + width / 2, y: y0 },
-        ]
+        return [{ x: x - width / 2, y: y0 }, { x: x, y: y }, { x: x + width / 2, y: y0 }];
       },
-      drawShape(cfg, group) { // 自定义最终绘制
+      drawShape(cfg, group) {
+        // 自定义最终绘制
         const points = this.parsePoints(cfg.points); // 将0-1空间的坐标转换为画布坐标
         const value = cfg.origin._origin.value;
         group.addShape('text', {
@@ -104,22 +109,28 @@ class GovernmentBigPlatform extends React.PureComponent {
               textAlign: 'center', // 文本对齐方式
               fill: '#fff', // 文本颜色
             },
-          }
-        } />
-        <Axis name="value" label={
-          {
+          }}
+        />
+        <Axis
+          name="value"
+          label={{
             textStyle: {
               fontSize: 12, // 文本大小
               textAlign: 'center', // 文本对齐方式
               fill: '#fff', // 文本颜色
             },
-          }
-        } />
+          }}
+        />
         <Tooltip />
-        <Geom type="interval" position="name*value" color={['name', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']]} shape='triangle' />
+        <Geom
+          type="interval"
+          position="name*value"
+          color={['name', ['#e86767', '#ff6028', '#f6b54e', '#2a8bd5']]}
+          shape="triangle"
+        />
       </Chart>
     );
-  }
+  };
 
   renderPieChart = () => {
     // const { DataView } = new View();
@@ -166,14 +177,6 @@ class GovernmentBigPlatform extends React.PureComponent {
       dimension: 'name',
       as: 'percent',
     });
-    const cols = {
-      percent: {
-        formatter: val => {
-          val = (val * 100).toFixed(2) + '%';
-          return val;
-        },
-      },
-    }
     const dvOut = new DataView();
     dvOut.source(dataOut).transform({
       type: 'percent',
@@ -209,6 +212,12 @@ class GovernmentBigPlatform extends React.PureComponent {
 
   render() {
     const { time } = this.state;
+    const salesData = [
+      { name: '红', value: 10 },
+      { name: '橙', value: 3 },
+      { name: '黄', value: 3 },
+      { name: '蓝', value: 2 },
+    ]; // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
 
     return (
       <div className={styles.main}>
@@ -226,26 +235,39 @@ class GovernmentBigPlatform extends React.PureComponent {
                   <div className={styles.summaryBar}>
                     <span className={styles.spanHalf}>
                       风险点
-                        <span className={styles.summaryNum} style={{ color: '#00baff' }}>0</span>
+                      <span className={styles.summaryNum} style={{ color: '#00baff' }}>
+                        0
+                      </span>
                     </span>
                     <span className={styles.spanHalf}>
                       未评级风险点
-                        <span className={styles.summaryNum} style={{ color: '#e86767' }}>0</span>
+                      <span className={styles.summaryNum} style={{ color: '#e86767' }}>
+                        0
+                      </span>
                     </span>
                   </div>
-                  <div className={styles.sectionChart} id='hdArea' style={{ height: 'calc(100% - 60px)' }}>
-                    {this.renderBarChart()}
+                  <div
+                    className={styles.sectionChart}
+                    id="hdArea"
+                    style={{ height: 'calc(100% - 60px)' }}
+                  >
+                    <Bar data={salesData} />
                   </div>
                 </div>
               </section>
 
-              <section className={styles.sectionWrapper} style={{ height: 'calc(50% - 10px)', marginTop: '20px' }}>
+              <section
+                className={styles.sectionWrapper}
+                style={{ height: 'calc(50% - 10px)', marginTop: '20px' }}
+              >
                 <div className={styles.sectionTitle}>隐患统计</div>
                 <div className={styles.sectionMain}>
                   <div className={styles.summaryBar}>
                     <span className={styles.spanHalf}>
                       隐患总数
-                        <span className={styles.summaryNum} style={{ color: '#00baff' }}>0</span>
+                      <span className={styles.summaryNum} style={{ color: '#00baff' }}>
+                        0
+                      </span>
                     </span>
                   </div>
                   <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '70%' }}>
@@ -256,7 +278,9 @@ class GovernmentBigPlatform extends React.PureComponent {
             </Col>
             <Col span={12} className={styles.heightFull}>
               <section className={styles.sectionWrapper}>
-                <div className={styles.sectionTitle} style={{ opacity: 0 }}>地图</div>
+                <div className={styles.sectionTitle} style={{ opacity: 0 }}>
+                  地图
+                </div>
                 <div className={styles.sectionMain} style={{ border: 'none' }}>
                   <div className={styles.topData}>
                     <div className={styles.topItem}>
@@ -266,22 +290,30 @@ class GovernmentBigPlatform extends React.PureComponent {
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>网格点</div>
-                      <div className={styles.topNum} style={{ color: '#00baff' }}>0</div>
+                      <div className={styles.topNum} style={{ color: '#00baff' }}>
+                        0
+                      </div>
                     </div>
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>风险点</div>
-                      <div className={styles.topNum} style={{ color: '#00baff' }}>0</div>
+                      <div className={styles.topNum} style={{ color: '#00baff' }}>
+                        0
+                      </div>
                     </div>
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>未超期隐患</div>
-                      <div className={styles.topNum} style={{ color: '#f6b54e' }}>0</div>
+                      <div className={styles.topNum} style={{ color: '#f6b54e' }}>
+                        0
+                      </div>
                     </div>
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>已超期隐患</div>
-                      <div className={styles.topNum} style={{ color: '#e86767' }}>0</div>
+                      <div className={styles.topNum} style={{ color: '#e86767' }}>
+                        0
+                      </div>
                     </div>
                   </div>
 
@@ -294,8 +326,7 @@ class GovernmentBigPlatform extends React.PureComponent {
                       }}
                       useAMapUI
                       mapStyle="amap://styles/79a9a32fda8686e79bb79c6e5fe48c2c"
-                    >
-                    </GDMap>
+                    />
                   </div>
                 </div>
               </section>
