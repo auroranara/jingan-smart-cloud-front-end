@@ -119,6 +119,8 @@ export default class DepartmentList extends PureComponent {
     modalStatus: '', // 增删改状态
     modalTitle: '', // 弹窗标题
     detail: {},
+    expandedRowKeys: [], // 展开的树节点
+    searchName: '',
   }
 
   componentDidMount() {
@@ -129,6 +131,7 @@ export default class DepartmentList extends PureComponent {
     })
   }
 
+  // 获取部门列表
   getDepartments = () => {
     const { dispatch, match: { params: { id } } } = this.props
     dispatch({
@@ -137,11 +140,43 @@ export default class DepartmentList extends PureComponent {
     })
   }
 
-  handleQuery = () => {
-    const { form: { getFieldsValue }, department: { data: { list } } } = this.props
-    const query = getFieldsValue()
-    console.log('query', query);
+  // 部门搜索
+  handleQuery = async () => {
+    // let temp = []
+    const { form: { getFieldValue }, department: { data: { list } } } = this.props
+    const name = getFieldValue('name')
+    if (name) {
+      // this.generateExpended(name, [...list], temp)
+      // temp = [...new Set(temp)]
+      this.setState({ searchName: name })
+    }
   }
+
+  generateExpended = (name, list, temp) => {
+    for (const item of list) {
+      if (item.name.indexOf(name) > -1) {
+        item.parentIds.split('@').filter(Boolean).forEach(row => {
+          temp.push(row)
+        })
+      }
+      if (item.children) {
+        this.generateExpended(name, item.children, temp)
+      }
+    }
+  }
+
+  // handleExpand = (column, index) => {
+  //   const { expandedRowKeys } = this.state
+  //   console.log('column', column);
+  //   console.log('index', index);
+  //   // expandedRowKeys.includes(index.name)
+  //   // this.setState({expandedRowKeys:[...expandedRowKeys,index.name]})
+
+  // }
+  // onExpandedRowsChange = expandedRows => {
+  //   console.log('expandedRows', expandedRows);
+
+  // }
 
   // 重置搜索
   resetQuery = () => {
@@ -241,12 +276,25 @@ export default class DepartmentList extends PureComponent {
   // 渲染部门树
   renderTable() {
     const { tableLoading, department: { data: { list } } } = this.props
+    const { searchName } = this.state
     const columns = [
       {
         title: '部门名称',
         dataIndex: 'name',
         key: 'name',
         width: '50%',
+        render: (val, rows) => {
+          const index = val.indexOf(searchName)
+          const beforeStr = val.substr(0, index);
+          const afterStr = val.substr(index + searchName.length);
+          return index > -1 ? (
+            <span>
+              {beforeStr}
+              <span style={{ color: '#f50' }}>{searchName}</span>
+              {afterStr}
+            </span>
+          ) : <span>{val}</span>
+        },
       },
       {
         title: '账号数量',
@@ -274,7 +322,17 @@ export default class DepartmentList extends PureComponent {
     ]
     return (
       <Card style={{ marginTop: '20px' }}>
-        <Table loading={tableLoading} rowKey='id' columns={columns} dataSource={list} pagination={false}></Table>
+        <Table
+          loading={tableLoading}
+          rowKey='id'
+          columns={columns}
+          dataSource={list}
+          pagination={false}
+          defaultExpandAllRows
+        // onExpand={this.handleExpand}
+        // onExpandedRowsChange={this.onExpandedRowsChange}
+        // expandedRowKeys={expandedRowKeys}
+        ></Table>
       </Card>
     )
   }
