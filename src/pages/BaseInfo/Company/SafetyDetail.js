@@ -9,13 +9,13 @@ const { Description } = DescriptionList;
 
 const dspItems = [
   {
-    name: 'gridId',
+    name: 'gridList',
     cName: '所属网格',
   }, {
     name: 'industryCategory',
     cName: '监管分类',
   }, {
-    name: 'standardLevel',
+    name: 'standardLevelId',
     cName: '安全监管等级',
   }, {
     name: 'reachLevel',

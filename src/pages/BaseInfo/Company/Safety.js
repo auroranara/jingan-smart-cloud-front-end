@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { message, Button, Card, Col, DatePicker, Form, Icon, Input, Modal, Upload, Select } from 'antd';
+import { message, Button, Card, Cascader, Col, DatePicker, Form, Icon, Input, Modal, Upload, Select } from 'antd';
 // import FooterToolbar from 'components/FooterToolbar';
 
 import { getToken } from 'utils/authority';
@@ -13,12 +13,15 @@ const { Option } = Select;
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-const folder = 'fireControl';
+const folder = 'safetyInfo';
 
 const UploadIcon = <Icon type="upload" />;
 
-const defaultUploadProps = { data: { folder }, multiple: true, action: uploadAction, headers: { 'JA-Token': getToken() } };
+const defaultUploadProps = { name: "files", data: { folder }, multiple: true, action: uploadAction, headers: { 'JA-Token': getToken() } };
 // console.log(uploadAction);
+
+// 级联中id => parentIds的映射
+const idMap = {};
 
 const itemLayout = {
   labelCol: {
@@ -28,6 +31,17 @@ const itemLayout = {
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 12 },
+  },
+};
+
+const gridLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 10 },
   },
 };
 
@@ -42,8 +56,8 @@ const itemLayout1 = {
   },
 };
 
-const ITEMS = ['gridId', 'industryCategory', 'standardLevel', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'companyLogo'];
-const MORE_ITEMS = ['gridId', 'industryCategory', 'standardLevel', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
+const ITEMS = ['gridId', 'industryCategory', 'standardLevelId', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'companyLogo'];
+const MORE_ITEMS = ['gridId', 'industryCategory', 'standardLevelId', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
 
 function generateRules(cName, msg="输入") {
   return [{ required: true, message: `请${msg}${cName}` }];
@@ -70,19 +84,86 @@ function getOptions(options = []) {
 //   return result;
 // }
 
-function handleDetail(detail, items) {
-  return items.reduce((prev, next) => {
-    const val = detail[next];
-    if (val === undefined || val === null || val === 'endTime')
-      return prev;
+// 对fileList进行筛选，剔除同名文件，优先保留最新上传成功的文件，其次保留最新上传的失败文件
+function filterUpList(fileList) {
+  const names = [];
+  const listArray = {};
+  fileList.forEach(f => {
+    const { name } = f;
+    if (names.includes(name))
+      listArray[name].push(f);
+    else {
+      names.push(name);
+      listArray[name] = [f];
+    }
+  });
 
-    if (next === 'startTime')
-      prev.validity = [detail.startTime, detail.endTime].map(timestamp => moment(Number.parseInt(timestamp, 10)));
+  return names.map(name => {
+    const arr = listArray[name];
+    const success = arr.filter(f => f.status === 'done' && f.response.code === 200);
+    const fail = arr.filter(f => f.status === 'error' || f.response.code !== 200);
+    const successLength = success.length;
+    const failLength = fail.length;
+    if (successLength)
+      return success[successLength - 1];
     else
-      prev[next] = val;
+      return fail[failLength - 1];
+  });
+}
 
-    return prev;
-  }, {});
+function addUrl(fileList) {
+  fileList.forEach(f => {
+    // url不存在且后面这些属性都存在
+    if (!f.url && f.response && f.response.data && f.response.data.list)
+      f.url = f.response.data.list[0].webUrl;
+  });
+
+  return fileList;
+}
+
+function handleFormValues(fieldsValue) {
+  const uploaders = ['reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
+
+  const formValues = { ...fieldsValue };
+
+  // RangePicker中对应的validity [moment1, moment2] => [timestamp1,timestamp2]
+  const timestampArray = fieldsValue.validity.map(m => +m);
+
+  delete formValues.validity;
+  [formValues.startTime, formValues.endTime] = timestampArray;
+
+  const ids = formValues.gridId;
+  formValues.gridId = ids[ids.length - 1];
+
+  // 处理提交按钮
+  uploaders.forEach(key => {
+    if (!formValues[key])
+      return;
+
+    const { fileList } = formValues[key];
+    console.log(fileList);
+    const newFileList = fileList
+      .filter(({ status, response: { code } }) => status === 'done' && code === 200)
+      .map(({ uid, name, status, url, response: { code } }) => ({ uid, name, status, url, response: { code } }));
+    formValues[key] = { fileList: newFileList };
+  });
+
+  return formValues;
+}
+
+function handleGridTree(gridList = [], idMap) {
+  let gl = gridList;
+  if (typeof gridList === 'string')
+    gl = JSON.parse(gl);
+
+  return traverse(gl, idMap);
+}
+
+function traverse(gl, idMap) {
+  return gl.map(({ id, text, children, nodes, parentIds }) => {
+    idMap[id] = parentIds.split(',');
+    return ({ value: id, label: text, children: children ? traverse(children, idMap) : nodes ? traverse(nodes, idMap) : undefined })
+  });
 }
 
 @connect(({ safety, loading }) => ({ safety, loading: loading.models.safety }))
@@ -102,48 +183,47 @@ export default class Safety extends PureComponent {
   componentDidMount() {
     const that = this;
     const { dispatch, companyId, operation, form: { setFieldsValue } } = this.props;
-    dispatch({
-      type: 'safety/fetchMenus',
-      // callback(menus) {
-      //   if (operation === 'add')
-      //     return;
+    dispatch({ type: 'safety/fetchMenus', callback({ gridList }) {
+      that.gridTree = handleGridTree(gridList, idMap);
 
-      //   // 编辑页面就请求detail，由于渲染时需要先知道menus.standardLevel[0].id，所以有个先后顺序，不然不好判断
-      //   dispatch({
-      //     type: 'safety/fetch',
-      //     payload: companyId,
-      //     callback(detail = {}) {
-      //       // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
-      //       if (detail.reachLevel !== undefined && detail.reachLevel !== menus.reachLevel[4].value)
-      //         that.setState({ showMore: true }, () => {
-      //           setFieldsValue(handleDetail(detail, MORE_ITEMS));
-      //         });
-      //       else {
-      //         setFieldsValue(handleDetail(detail, ITEMS));
-      //       }
-      //     },
-      //   });
-      // },
-    });
+      if (operation === 'add')
+        return;
 
-    if (operation === 'add')
-      return;
-
-    dispatch({
-      type: 'safety/fetch',
-      payload: companyId,
-      callback(detail = {}) {
-        // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
-        if (detail.reachLevel !== undefined && detail.reachLevel !== '5')
-          that.setState({ showMore: true }, () => {
-            setFieldsValue(handleDetail(detail, MORE_ITEMS));
-          });
-        else {
-          setFieldsValue(handleDetail(detail, ITEMS));
-        }
-      },
-    });
+      dispatch({
+        type: 'safety/fetch',
+        payload: companyId,
+        callback(detail = {}) {
+          // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
+          if (detail.reachLevel !== undefined && detail.reachLevel !== '5')
+            that.setState({ showMore: true }, () => {
+              setFieldsValue(that.handleDetail(detail, MORE_ITEMS));
+            });
+          else {
+            setFieldsValue(that.handleDetail(detail, ITEMS));
+          }
+        },
+      });
+    }});
   }
+
+  gridTree = [];
+
+  handleDetail = (detail, items) => {
+    return items.reduce((prev, next) => {
+      const val = detail[next];
+      if (val === undefined || val === null || val === 'endTime')
+        return prev;
+
+      if (next === 'startTime')
+        prev.validity = [detail.startTime, detail.endTime].map(timestamp => moment(Number.parseInt(timestamp, 10)));
+      else if (next === 'gridId')
+        prev[next] = [...idMap[val], val];
+      else
+        prev[next] = val;
+
+      return prev;
+    }, {});
+  };
 
   handleSubmit = (e) => {
     const that = this;
@@ -157,20 +237,23 @@ export default class Safety extends PureComponent {
       const { operation } = this.props;
       // 在添加页面安监信息都提示要新建企业基本信息后才能添加，当新建企业基本信息成功后，会询问是否添加安监信息，选择添加，则会跳转到编辑页面
       // 也就是说安监信息的添加修改都在编辑页面完成，添加页面的安监信息只是为了让人看下需要添加那些东西
-      if (operation === 'add')
+      if (operation === 'add') {
         Modal.warning({
           title: '友情提示',
           content: '请在新建企业基本信息成功后，再添加安监信息',
         });
 
+        return;
+      }
+
+      // const formValues = handleFormValues(fieldsValue);
+      // console.log(formValues);
+
       if (err)
         return;
 
-      // RangePicker中对应的validity [moment1, moment2] => [timestamp1,timestamp2]
-      const timestampArray = fieldsValue.validity.map(m => +m);
-      const formValues = { ...fieldsValue };
-      delete formValues.validity;
-      [formValues.startTime, formValues.endTime] = timestampArray;
+      const formValues = handleFormValues(fieldsValue);
+      console.log(formValues);
 
       this.setState({ submitting: true });
       dispatch({
@@ -213,7 +296,7 @@ export default class Safety extends PureComponent {
       this.setState({ logoLoading: false });
 
     // 让列表只显示一个文件，当删除文件时,removed，file为删除的文件，fileList中已不包含当前file，此处为空数组
-    this.setState({ logoList: fileList.slice(-1) });
+    this.setState({ logoList: addUrl(fileList.slice(-1)) });
 
     // 上传成功且code为200时提示成功，上传失败或上传成功而code不为200时提示失败，还剩一种情况就是removed，这时不需要提示
     if (status === 'done' && response.code === 200)
@@ -233,7 +316,7 @@ export default class Safety extends PureComponent {
     else
       this.setState({ standardLoading: false });
 
-    this.setState({ standard: fileList.slice(-1) });
+    this.setState({ standardList: addUrl(fileList.slice(-1)) });
 
     if (status === 'done' && response.code === 200)
       message.success('上传成功');
@@ -251,26 +334,30 @@ export default class Safety extends PureComponent {
     if (status === 'uploading' && !safeLoading)
       this.setState({ safeLoading: true });
 
+    if (status === 'uploading' || status === 'removed')
+      this.setState({ safeList: fileList });
+
     // 所有文件都已上传
     if (status !== 'removed' && fileList.every(({ status }) => status === 'done' || status === 'error')) {
       // console.log('done');
       this.setState({ safeLoading: false });
-      const successFileList = fileList.filter(f => f.status === 'done' && f.response.code === 200);
-      const failFileList = fileList.filter(f => f.status !== 'done' || f.response.code !== 200);
-      if (successFileList.length === fileList.length)
-        message.success('所有文件都已上传成功');
-      else
-        message.error(`${failFileList.map(f => f.name).join(',')}文件上传失败，请重新上传`);
+      const filteredList = filterUpList(fileList);
+      this.setState({ safeList: addUrl(filteredList) });
+
+      // const successFileList = fileList.filter(f => f.status === 'done' && f.response.code === 200);
+      // const failFileList = fileList.filter(f => f.status !== 'done' || f.response.code !== 200);
+      // if (successFileList.length === fileList.length)
+      //   message.success('所有文件都已上传成功');
+      // else
+      //   message.error(`${failFileList.map(f => f.name).join(',')}文件上传失败，请重新上传`);
     }
 
-    const newList = fileList.filter(f => {
-      if (f.response)
-        return f.response.code === 200;
+    // const newList = fileList.filter(f => {
+    //   if (f.response)
+    //     return f.response.code === 200;
 
-      return true;
-    });
-
-    this.setState({ safeList: newList });
+    //   return true;
+    // });
   };
 
   renderFormItems(items) {
@@ -292,18 +379,20 @@ export default class Safety extends PureComponent {
       {
         name: 'gridId',
         cName: '所属网格',
+        span: 24,
         rules: generateRules('所属网格'),
-        component: <Select placeholder="请输入所属网格">{getOptions(menus.gridId)}</Select>,
+        formItemLayout: gridLayout,
+        component: <Cascader options={this.gridTree} placeholder="请输入所属网格" />,
       }, {
         name: 'industryCategory',
         cName: '监管分类',
         rules: generateRules('监管分类'),
         component: <Select placeholder="请输入监管分类">{getOptions(menus.industryCategory)}</Select>,
       }, {
-        name: 'standardLevel',
+        name: 'standardLevelId',
         cName: '安全监管等级',
         rules: generateRules('安全监管等级'),
-        component: <Select placeholder="请输入安全监管等级">{getOptions(menus.standardLevel)}</Select>,
+        component: <Select placeholder="请输入安全监管等级">{getOptions(menus.standardLevelId)}</Select>,
       }, {
         name: 'reachLevel',
         cName: '标准化达标等级',
@@ -323,8 +412,6 @@ export default class Safety extends PureComponent {
         name: 'validity',
         cName: '服务有效期',
         rules: generateRules('服务有效期'),
-        span: 24,
-        formItemLayout: itemLayout1,
         component: <RangePicker />,
       }, {
         name: 'companyLogo',
@@ -339,15 +426,15 @@ export default class Safety extends PureComponent {
       {
         name: 'reachGradeAccessory',
         cName: '标准化达标等级附件',
-        rules: generateRules('标准化达标等级附件', '上传'),
         span: 24,
+        rules: generateRules('标准化达标等级附件', '上传'),
         formItemLayout: itemLayout1,
         component: <Upload {...defaultUploadProps} fileList={standardList} onChange={this.handleStandardChange}><Button loading={standardLoading} type="primary">{UploadIcon}上传附件</Button></Upload>,
       }, {
         name: 'safetyFourPicture',
         cName: '安全四色图',
-        rules: generateRules('安全四色图', '上传'),
         span: 24,
+        rules: generateRules('安全四色图', '上传'),
         formItemLayout: itemLayout1,
         component: <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}><Button loading={safeLoading} type="primary">{UploadIcon}上传图片</Button></Upload>,
       },
