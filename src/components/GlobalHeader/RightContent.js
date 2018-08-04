@@ -91,7 +91,7 @@ export default class GlobalHeaderRight extends PureComponent {
       </Menu>
     );
     // const noticeData = this.getNoticeData();
-    const url = `/gsafe/console/desktop2.jsp?0.16847255247219528`;
+    const url = `/gsafe/console`;
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
