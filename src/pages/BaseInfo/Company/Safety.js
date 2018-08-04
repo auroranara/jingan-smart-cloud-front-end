@@ -10,6 +10,9 @@ const { RangePicker } = DatePicker;
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
+const UPLOADERS = ['companyLogo', 'reachGradeAccessory', 'safetyFourPicture'];
+const UPLOADERS_MAP = { companyLogo: 'logoList', reachGradeAccessory: 'standardList', safetyFourPicture: 'safeList' }
+
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
@@ -56,8 +59,8 @@ const itemLayout1 = {
   },
 };
 
-const ITEMS = ['gridId', 'industryCategory', 'standardLevelId', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'companyLogo'];
-const MORE_ITEMS = ['gridId', 'industryCategory', 'standardLevelId', 'reachLevel', 'administratiRelation', 'regulatoryOrganization', 'validity', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
+const GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime', 'companyLogo'];
+const MORE_GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
 
 function generateRules(cName, msg="输入") {
   return [{ required: true, message: `请${msg}${cName}` }];
@@ -122,8 +125,6 @@ function addUrl(fileList) {
 }
 
 function handleFormValues(fieldsValue) {
-  const uploaders = ['reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
-
   const formValues = { ...fieldsValue };
 
   // RangePicker中对应的validity [moment1, moment2] => [timestamp1,timestamp2]
@@ -136,7 +137,7 @@ function handleFormValues(fieldsValue) {
   formValues.gridId = ids[ids.length - 1];
 
   // 处理提交按钮
-  uploaders.forEach(key => {
+  UPLOADERS.forEach(key => {
     if (!formValues[key])
       return;
 
@@ -144,8 +145,10 @@ function handleFormValues(fieldsValue) {
     console.log(fileList);
     const newFileList = fileList
       .filter(({ status, response: { code } }) => status === 'done' && code === 200)
-      .map(({ uid, name, status, url, response: { code } }) => ({ uid, name, status, url, response: { code } }));
-    formValues[key] = { fileList: newFileList };
+      // .map(({ uid, name, status, url, response: { code } }) => ({ uid, name, status, url, response: { code } }));
+      .map(({ uid, name, status, url, response: { code } }) => ({ name, url }));
+    // formValues[key] = JSON.stringify({ fileList: newFileList });
+    formValues[key] = JSON.stringify(newFileList);
   });
 
   return formValues;
@@ -194,12 +197,12 @@ export default class Safety extends PureComponent {
         payload: companyId,
         callback(detail = {}) {
           // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
-          if (detail.reachLevel !== undefined && detail.reachLevel !== '5')
+          if (detail.reachGrade && detail.reachGrade !== '5')
             that.setState({ showMore: true }, () => {
-              setFieldsValue(that.handleDetail(detail, MORE_ITEMS));
+              setFieldsValue(that.handleDetail(detail, MORE_GET_ITEMS));
             });
           else {
-            setFieldsValue(that.handleDetail(detail, ITEMS));
+            setFieldsValue(that.handleDetail(detail, GET_ITEMS));
           }
         },
       });
@@ -210,14 +213,22 @@ export default class Safety extends PureComponent {
 
   handleDetail = (detail, items) => {
     return items.reduce((prev, next) => {
+      // console.log(prev, next);
       const val = detail[next];
-      if (val === undefined || val === null || val === 'endTime')
+      if (val === undefined || val === null || val === '')
         return prev;
 
       if (next === 'startTime')
         prev.validity = [detail.startTime, detail.endTime].map(timestamp => moment(Number.parseInt(timestamp, 10)));
       else if (next === 'gridId')
         prev[next] = [...idMap[val], val];
+      else if (UPLOADERS.includes(next)) {
+        let list = JSON.parse(val);
+        list = Array.isArray(list) ? list : list.fileList;
+        list = list.map(({ name, url }) => ({ name, url, status: 'done', response: { code: 200 } }));
+        this.setState({ [UPLOADERS_MAP[next]]: list });
+        // console.log(next, JSON.parse(val));s
+      }
       else
         prev[next] = val;
 
@@ -227,7 +238,7 @@ export default class Safety extends PureComponent {
 
   handleSubmit = (e) => {
     const that = this;
-    const { form: { validateFields }, dispatch } = this.props;
+    const { form: { validateFields }, dispatch, companyId } = this.props;
 
     e.preventDefault();
     validateFields((err, fieldsValue) => {
@@ -258,7 +269,7 @@ export default class Safety extends PureComponent {
       this.setState({ submitting: true });
       dispatch({
         type: 'safety/update',
-        payload: { companyId: 1, formValues },
+        payload: { companyId, formValues },
         callback(code, msg) {
           that.setState({ submitting: false });
 
@@ -360,6 +371,7 @@ export default class Safety extends PureComponent {
     // });
   };
 
+  // FormItem中的值对应的是组件的onChange函数传入的值，所以对于Upload组件，上传时候的值为 { file: ..., fileList: ... }
   renderFormItems(items) {
     const { getFieldDecorator } = this.props.form;
     return items.map(({ name, cName, span=12, formItemLayout=itemLayout, rules, component }) => (
@@ -384,25 +396,25 @@ export default class Safety extends PureComponent {
         formItemLayout: gridLayout,
         component: <Cascader options={this.gridTree} placeholder="请输入所属网格" />,
       }, {
-        name: 'industryCategory',
+        name: 'regulatoryClassification',
         cName: '监管分类',
         rules: generateRules('监管分类'),
-        component: <Select placeholder="请输入监管分类">{getOptions(menus.industryCategory)}</Select>,
+        component: <Select placeholder="请输入监管分类">{getOptions(menus.regulatoryClassification)}</Select>,
       }, {
-        name: 'standardLevelId',
+        name: 'regulatoryGrade',
         cName: '安全监管等级',
         rules: generateRules('安全监管等级'),
-        component: <Select placeholder="请输入安全监管等级">{getOptions(menus.standardLevelId)}</Select>,
+        component: <Select placeholder="请输入安全监管等级">{getOptions(menus.regulatoryGrade)}</Select>,
       }, {
-        name: 'reachLevel',
+        name: 'reachGrade',
         cName: '标准化达标等级',
         rules: generateRules('标准化达标等级'),
-        component: <Select placeholder="请输入标准化达标等级" onSelect={this.handleStandardSelect}>{getOptions(menus.reachLevel)}</Select>,
+        component: <Select placeholder="请输入标准化达标等级" onSelect={this.handleStandardSelect}>{getOptions(menus.reachGrade)}</Select>,
       }, {
-        name: 'administratiRelation',
+        name: 'subjection',
         cName: '企业行政隶属关系',
         rules: generateRules('企业行政隶属关系'),
-        component: <Select placeholder="请输入企业行政隶属关系">{getOptions(menus.administratiRelation)}</Select>,
+        component: <Select placeholder="请输入企业行政隶属关系">{getOptions(menus.subjection)}</Select>,
       }, {
         name: 'regulatoryOrganization',
         cName: '属地安监机构',
