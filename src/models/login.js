@@ -2,10 +2,10 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { getFakeCaptcha } from '../services/api';
 import { setAuthority, setToken } from '../utils/authority';
-import { getPageQuery } from '../utils/utils';
+// import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
-import { accountLogin } from '../services/account';
+import { accountLogin, accountLoginGsafe, testGssafe } from '../services/account';
 
 export default {
   namespace: 'login',
@@ -17,14 +17,19 @@ export default {
   effects: {
     *login({ payload, callback }, { call, put }) {
       const response = yield call(accountLogin, payload);
-      if (callback) callback(response)
+      if (callback) callback(response);
       // Login successfully
       if (response.code && response.code === 200) {
         yield put({
           type: 'changeLoginStatus',
           payload: { type: payload.type, status: true, ...response.data },
         });
+        const gsafeRes = yield call(accountLoginGsafe, payload);
+        console.log('gsafeRes', gsafeRes);
+        console.log('cookie', document.cookie);
         reloadAuthorized();
+        const testRes = yield call(testGssafe, payload);
+        console.log('testRes', testRes);
         // const urlParams = new URL(window.location.href);
         // const params = getPageQuery();
         // let { redirect } = params;
@@ -57,8 +62,8 @@ export default {
           currentAuthority: 'guest',
         },
       });
-      yield put({ type: 'user/saveCurrentUser' })
-      setToken()
+      yield put({ type: 'user/saveCurrentUser' });
+      setToken();
       reloadAuthorized();
       yield put(
         routerRedux.push({
@@ -74,7 +79,7 @@ export default {
   reducers: {
     changeLoginStatus(state, { payload }) {
       setAuthority(payload.currentAuthority);
-      setToken(payload.token)
+      setToken(payload.token);
       return {
         ...state,
         status: payload.status,
