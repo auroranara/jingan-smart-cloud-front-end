@@ -24,12 +24,9 @@ export default {
           type: 'changeLoginStatus',
           payload: { type: payload.type, status: true, ...response.data },
         });
-        const gsafeRes = yield call(accountLoginGsafe, payload);
-        console.log('gsafeRes', gsafeRes);
-        console.log('cookie', document.cookie);
+        // 登录1.0
+        yield call(accountLoginGsafe, payload);
         reloadAuthorized();
-        const testRes = yield call(testGssafe, payload);
-        console.log('testRes', testRes);
         // const urlParams = new URL(window.location.href);
         // const params = getPageQuery();
         // let { redirect } = params;

@@ -27,7 +27,3 @@ export async function changePass(params) {
     body: params,
   });
 }
-
-export async function testGssafe(params) {
-  return request(`/gsafe/console/`);
-}
