@@ -53,20 +53,50 @@
       height: calc(~'100% - 40px');
       position: relative;
       overflow: hidden;
-      .safeTable {
+      .thFix {
         width: 100%;
         vertical-align: middle;
         text-align: center;
+        height: 45px;
         th {
-          padding: 12px 5px;
+          padding: 0 5px;
           font-size: 16px;
           color: #00baff;
           border-bottom: 1px solid #00baff;
+          height: 45px;
         }
-        td {
-          padding: 15px 5px;
-          border-bottom: 1px solid #00baff;
-          font-size: 16px;
+      }
+      .scrollWrapper {
+        width: 100%;
+        height: calc(~'100% - 45px');
+        overflow: hidden;
+        position: relative;
+        .tableWrapper {
+          width: 100%;
+          // position: absolute;
+          // top: 0;
+          // left: 0;
+          .safeTable {
+            width: 100%;
+            vertical-align: middle;
+            text-align: center;
+            margin-bottom: 150px;
+            th {
+              padding: 0 5px;
+              font-size: 16px;
+              color: #00baff;
+              border-bottom: 1px solid #00baff;
+              height: 45px;
+              width: 50%;
+            }
+            td {
+              padding: 0 5px;
+              border-bottom: 1px solid #00baff;
+              font-size: 15px;
+              height: 50px;
+              width: 50%;
+            }
+          }
         }
       }
       .sectionChart {

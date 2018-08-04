@@ -1,18 +1,22 @@
 import React from 'react';
 import { Row, Col } from 'antd';
+import { connect } from 'dva';
 import moment from 'moment';
 // import { Link } from 'dva/router';
 import styles from './Government.less';
 import Bar from './Bar';
 
-// import G2 from '@antv/g2';
 import { DataView } from '@antv/data-set';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
 import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View, Legend } from "bizcharts";
 
+@connect(({ bigPlatform }) => ({
+  bigPlatform,
+}))
 class GovernmentBigPlatform extends React.PureComponent {
   state = {
     time: '0000-00-00 星期一 00:00:00',
+    scrollNodeTop: 0,
     label: {
       longitude: 120.366011,
       latitude: 31.544389,
@@ -20,8 +24,12 @@ class GovernmentBigPlatform extends React.PureComponent {
     infoWindowShow: false,
   };
 
+  UNSAFE_componentWillUpdate() {
+    // requestAnimationFrame(this.resolveAnimationFrame);
+  }
+
   componentDidMount() {
-    // const { dispatch } = this.props;
+    const { dispatch } = this.props;
     this.reqRef = requestAnimationFrame(() => {
       setTimeout(() => {
         this.setState({
@@ -29,11 +37,71 @@ class GovernmentBigPlatform extends React.PureComponent {
         });
       }, 1000);
     });
+
+    this.timer = setInterval(() => {
+      this.getTime();
+    }, 1000);
+
+    dispatch({
+      type: 'bigPlatform/fetchItemList',
+    });
+
+    // requestAnimationFrame(this.resolveAnimationFrame);
+
+    this.handleScroll();
   }
 
   componentWillUnmount() {
     cancelAnimationFrame(this.reqRef);
+    clearInterval(this.timer);
   }
+
+  resolveAnimationFrame = () => {
+    const { scrollNodeTop } = this.state;
+    setTimeout(() => {
+      if (scrollNodeTop >= this.tableNode.offsetHeight + 150) {
+        this.setState({
+          scrollNodeTop: 0,
+        });
+        return;
+      }
+      this.setState({
+        scrollNodeTop: scrollNodeTop + 1,
+      });
+    }, 50);
+  }
+
+  handleScroll = () => {
+    const speed = 50;
+    if (this.scrollNode.clientHeight >= this.tableNode.scrollHeight) return;
+
+    let timer = window.setInterval(() => {
+      this.scrollup(this.scrollNode);
+    }, speed);
+
+    this.scrollNode.onmouseover = () => {
+      //清除定时器
+      clearInterval(timer);
+    }
+
+    this.scrollNode.onmouseout = () => {
+      //添加定时器
+      timer = window.setInterval(() => {
+        this.scrollup(this.scrollNode);
+      }, speed);
+    }
+  }
+
+  scrollup = (scroll) => {
+    //如果scroll滚上去的高度大于scroll1的高度，scrollTop = 0
+    if (!scroll) return;
+    if (scroll.scrollTop >= scroll.scrollHeight / 2) {
+      scroll.scrollTop = 0;
+    } else {
+      scroll.scrollTop++;
+    }
+  }
+
 
   getTime = () => {
     const now = moment();
@@ -138,9 +206,6 @@ class GovernmentBigPlatform extends React.PureComponent {
   };
 
   renderPieChart = () => {
-    // const { DataView } = new View();
-    // var _DataSet = DataSet,
-    // const DataView = _DataSet.DataView;
     // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
     const sliceNumber = 0.015;
     // 自定义 other 的图形，增加两条线
@@ -318,7 +383,8 @@ class GovernmentBigPlatform extends React.PureComponent {
   }
 
   render() {
-    const { time } = this.state;
+    const { time, scrollNodeTop } = this.state;
+    const { itemTotal } = this.props;
     const salesData = [
       { name: '红', value: 10 },
       { name: '橙', value: 3 },
@@ -343,7 +409,7 @@ class GovernmentBigPlatform extends React.PureComponent {
                     <span className={styles.spanHalf}>
                       风险点
                       <span className={styles.summaryNum} style={{ color: '#00baff' }}>
-                        0
+                        {itemTotal}
                       </span>
                     </span>
                     <span className={styles.spanHalf}>
@@ -499,22 +565,195 @@ class GovernmentBigPlatform extends React.PureComponent {
               <section className={styles.sectionWrapper}>
                 <div className={styles.sectionTitle}>社区接入企业数</div>
                 <div className={styles.sectionMain} style={{ padding: '0 15px' }}>
-                  <table className={styles.safeTable}>
+                  <table className={styles.thFix}>
                     <thead>
                       <th style={{ width: '50%' }}>社区</th>
                       <th style={{ width: '50%' }}>接入企业数</th>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>淼泉居委</td>
-                        <td>308</td>
-                      </tr>
-                      <tr>
-                        <td>高长村</td>
-                        <td>55</td>
-                      </tr>
-                    </tbody>
                   </table>
+
+                  <div className={styles.scrollWrapper} ref={node => this.scrollNode = node}>
+                    <div className={styles.tableWrapper} style={{ marginTop: -scrollNodeTop }}>
+                      <table className={styles.safeTable}>
+                        <tbody>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      <table className={styles.safeTable} ref={node => this.tableNode = node} >
+                        <tbody>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                          <tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr><tr>
+                            <td>淼泉居委</td>
+                            <td>308</td>
+                          </tr>
+                          <tr>
+                            <td>高长村</td>
+                            <td>55</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
                 </div>
               </section>
             </Col>
