@@ -30,6 +30,12 @@ module.exports = [
             code: 'account.changePassword',
             component: './Account/ChangePassword',
           },
+          {
+            path: '/account/personal-info/:id',
+            name: 'personalInfo',
+            code: 'account.personalInfo.view',
+            component: './Account/PersonalInfo',
+          },
         ],
       },
 
@@ -260,6 +266,25 @@ module.exports = [
 
       // dynamic monitoring
       {
+        name: 'exception',
+        icon: 'warning',
+        path: '/exception',
+        hideInMenu: true,
+        routes: [
+          // exception
+          { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
+          { path: '/exception/404', name: 'not-find', component: './Exception/404' },
+          { path: '/exception/500', name: 'server-error', component: './Exception/500' },
+          {
+            path: '/exception/trigger',
+            name: 'trigger',
+            hideInMenu: true,
+            component: './Exception/triggerException',
+          },
+        ],
+      },
+      // dynamicMonitoring
+      {
         path: '/dynamic-monitoring',
         code: 'dynamicMonitoring',
         icon: 'dashboard',
@@ -331,7 +356,8 @@ module.exports = [
                 component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
               },
               {
-                path: '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                path:
+                  '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
                 code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',

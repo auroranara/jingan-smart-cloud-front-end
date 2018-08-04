@@ -11,6 +11,7 @@ import {
   message,
   Icon,
   Popover,
+  TreeSelect,
   Spin,
   Transfer,
 } from 'antd';
@@ -29,6 +30,8 @@ const addTitle = '新增账号';
 // 返回地址
 const href = '/role-authorization/account-management/list';
 
+const TreeNode = TreeSelect.TreeNode;
+
 /* 表单标签 */
 const fieldLabels = {
   loginName: '用户名',
@@ -40,10 +43,27 @@ const fieldLabels = {
   accountStatus: '账号状态',
   treeIds: '数据权限',
   roleIds: '配置角色',
+  departmentId: '所属部门',
+  userType: '用户类型',
+  documentTypeId: '执法证种类',
+  execCertificateCode: '执法证编号',
 };
 
 // 默认的所属单位长度
 const defaultPageSize = 20;
+
+const treeData = data => {
+  return data.map(item => {
+    if (item.children) {
+      return (
+        <TreeNode title={item.name} key={item.id} value={item.id}>
+          {treeData(item.children)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.name} key={item.id} value={item.id} />;
+  });
+};
 
 @connect(
   ({ account, loading }) => ({
@@ -123,6 +143,28 @@ const defaultPageSize = 20;
       dispatch(routerRedux.push('/exception/500'));
     },
 
+    // 获取执法证件种类
+    fetchExecCertificateType() {
+      dispatch({
+        type: 'account/fetchExecCertificateType',
+      });
+    },
+
+    // 获取用户类型
+    fetchUserType() {
+      dispatch({
+        type: 'account/fetchUserType',
+      });
+    },
+
+    // 获取部门列表树
+    fetchDepartmentList(action) {
+      dispatch({
+        type: 'account/fetchDepartmentList',
+        ...action,
+      });
+    },
+
     dispatch,
   })
 )
@@ -134,6 +176,7 @@ export default class accountManagementEdit extends PureComponent {
   }
 
   state = {
+    unitTypeChecked: false,
     submitting: false,
   };
 
@@ -149,15 +192,21 @@ export default class accountManagementEdit extends PureComponent {
       fetchUnitsFuzzy,
       clearDetail,
       fetchRoles,
+      fetchExecCertificateType,
+      fetchUserType,
+      fetchDepartmentList,
     } = this.props;
 
     const success = id
       ? undefined
       : ({ unitType }) => {
+          this.setState({
+            unitTypeChecked: unitType[3].id,
+          });
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           fetchUnitsFuzzy({
             payload: {
-              unitType: unitType[0].id,
+              unitType: unitType[3].id,
               pageNum: 1,
               pageSize: defaultPageSize,
             },
@@ -171,7 +220,11 @@ export default class accountManagementEdit extends PureComponent {
         payload: {
           id,
         },
-        success: ({ unitType }) => {
+        success: ({ unitType, unitId }) => {
+          this.setState({
+            unitTypeChecked: unitType,
+          });
+          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           fetchUnitsFuzzy({
             payload: {
               unitType: unitType,
@@ -179,6 +232,14 @@ export default class accountManagementEdit extends PureComponent {
               pageSize: defaultPageSize,
             },
           });
+          if (unitId) {
+            fetchDepartmentList({
+              payload: {
+                companyId: unitId,
+              },
+              error: goToException,
+            });
+          }
         },
         error: () => {
           goToException();
@@ -195,6 +256,16 @@ export default class accountManagementEdit extends PureComponent {
 
     // 获取角色列表
     fetchRoles({
+      error: goToException,
+    });
+
+    // 获取执法证件种类
+    fetchExecCertificateType({
+      error: goToException,
+    });
+
+    // 获取用户类型
+    fetchUserType({
       error: goToException,
     });
   }
@@ -227,6 +298,10 @@ export default class accountManagementEdit extends PureComponent {
           treeIds,
           password,
           roleIds,
+          departmentId,
+          userType,
+          documentTypeId,
+          execCertificateCode,
         }
       ) => {
         if (!error) {
@@ -244,8 +319,28 @@ export default class accountManagementEdit extends PureComponent {
             unitId: unitId.key,
             treeIds: treeIds.key,
             roleIds: roleIds.join(','),
+            departmentId,
+            userType,
+            documentTypeId,
+            execCertificateCode,
           };
-          console.log(payload);
+          switch (payload.unitType) {
+            // 维保企业
+            case 1:
+              payload.userType = 'company_safer';
+              break;
+            // 政府机构
+            case 2:
+              payload.userType = 'gov_grid_worker';
+              break;
+            // 运营企业
+            case 3:
+              payload.userType = 'admin';
+              break;
+            default:
+              break;
+          }
+
           const success = () => {
             const msg = id ? '编辑成功！' : '新增成功！';
             message.success(msg, 1, goBack);
@@ -275,14 +370,22 @@ export default class accountManagementEdit extends PureComponent {
     );
   };
 
+  // 选中单位类型调用
+  handleUnitTypesChange = id => {
+    this.setState({
+      unitTypeChecked: id,
+    });
+  };
+
   // 单位类型下拉框选择
   handleUnitTypeSelect = value => {
     const {
       fetchUnitsFuzzy,
       form: { setFieldsValue },
     } = this.props;
-    // 清除所属单位
+    // 清除所属单位、所属部门
     setFieldsValue({ unitId: undefined });
+    setFieldsValue({ departmentId: undefined });
     // 根据当前选中的单位类型获取对应的所属单位列表
     fetchUnitsFuzzy({
       payload: {
@@ -311,6 +414,7 @@ export default class accountManagementEdit extends PureComponent {
     // 清除数据权限输入框的值
     setFieldsValue({
       treeIds: undefined,
+      departmentId: undefined,
     });
   };
 
@@ -362,6 +466,15 @@ export default class accountManagementEdit extends PureComponent {
     }
   };
 
+  handleFetchDepartments = item => {
+    const { fetchDepartmentList } = this.props;
+    fetchDepartmentList({
+      payload: {
+        companyId: item.key,
+      },
+    });
+  };
+
   /* 异步验证用户名 */
   validateUserName = (rule, value, callback) => {
     if (value) {
@@ -405,11 +518,26 @@ export default class accountManagementEdit extends PureComponent {
     const {
       account: {
         detail: {
-          data: { loginName, userName, phoneNumber, unitType, unitName, accountStatus, unitId },
+          data: {
+            loginName,
+            userName,
+            phoneNumber,
+            unitType,
+            accountStatus,
+            userType,
+            unitId,
+            unitName,
+            documentTypeId,
+            execCertificateCode,
+            departmentId,
+          },
         },
         unitTypes,
         accountStatuses,
         unitIdes,
+        userTypes,
+        documentTypeIds,
+        departments,
       },
       form: { getFieldDecorator },
       match: {
@@ -418,7 +546,11 @@ export default class accountManagementEdit extends PureComponent {
       loading,
     } = this.props;
 
+    const { unitTypeChecked } = this.state;
+
     const isValidateLoginName = id ? [] : [{ validator: this.validateUserName }];
+
+    const treeList = treeData(departments);
 
     return (
       <Card title="账号基本信息" className={styles.card} bordered={false}>
@@ -531,7 +663,7 @@ export default class accountManagementEdit extends PureComponent {
                     ? unitType
                     : unitTypes.length === 0
                       ? undefined
-                      : unitTypes[0].id,
+                      : unitTypes[3].id,
                   rules: [
                     {
                       required: true,
@@ -539,7 +671,11 @@ export default class accountManagementEdit extends PureComponent {
                     },
                   ],
                 })(
-                  <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeSelect}>
+                  <Select
+                    placeholder="请选择单位类型"
+                    onSelect={this.handleUnitTypeSelect}
+                    onChange={this.handleUnitTypesChange}
+                  >
                     {unitTypes.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
@@ -552,10 +688,10 @@ export default class accountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitId}>
                 {getFieldDecorator('unitId', {
-                  initialValue: { key: unitId, label: unitName },
+                  initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       transform: value => value && value.label,
                       message: '请选择所属单位',
                     },
@@ -569,6 +705,7 @@ export default class accountManagementEdit extends PureComponent {
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
                     onSelect={this.handleDataPermissions}
+                    onChange={this.handleFetchDepartments}
                     onBlur={this.handleUnitIdBlur}
                     filterOption={false}
                   >
@@ -581,6 +718,91 @@ export default class accountManagementEdit extends PureComponent {
                 )}
               </Form.Item>
             </Col>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.departmentId}>
+                {getFieldDecorator('departmentId', {
+                  initialValue: [departmentId],
+                })(
+                  <TreeSelect
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    allowClear
+                    placeholder="请选择所属部门"
+                  >
+                    {treeList}
+                  </TreeSelect>
+                )}
+              </Form.Item>
+            </Col>
+            {/* 当单位类型为企事业主体 */}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === unitTypes[3].id && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.userType}>
+                    {getFieldDecorator('userType', {
+                      initialValue: id
+                        ? userType
+                        : userTypes.length === 0
+                          ? undefined
+                          : userTypes[0].value,
+                      rules: [
+                        {
+                          required: true,
+                          message: '请选择用户类型',
+                        },
+                      ],
+                    })(
+                      <Select placeholder="请选择用户类型">
+                        {userTypes.map(item => (
+                          <Option value={item.value} key={item.value}>
+                            {item.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
+            {/* 当单位类型为政府机构 */}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === unitTypes[1].id && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.documentTypeId}>
+                    {getFieldDecorator('documentTypeId', {
+                      initialValue: documentTypeId,
+                      rules: [
+                        {
+                          required: true,
+                          message: '请选择执法证种类',
+                        },
+                      ],
+                    })(
+                      <Select placeholder="请选择执法证种类">
+                        {documentTypeIds.map(item => (
+                          <Option value={item.value} key={item.value}>
+                            {item.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === unitTypes[1].id && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.execCertificateCode}>
+                    {getFieldDecorator('execCertificateCode', {
+                      initialValue: execCertificateCode,
+                      rules: [
+                        {
+                          required: true,
+                          message: '请输入执法证编号',
+                        },
+                      ],
+                    })(<Input placeholder="请输入执法证编号" />)}
+                  </Form.Item>
+                </Col>
+              )}
           </Row>
         </Form>
       </Card>
@@ -632,12 +854,8 @@ export default class accountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.treeIds}>
                 {getFieldDecorator('treeIds', {
-                  initialValue: { key: treeIds, label: treeNames },
-                  rules: [
-                    {
-                      transform: value => value && value.label,
-                    },
-                  ],
+                  initialValue:
+                    treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
                 })(
                   <Select
                     mode="combobox"
