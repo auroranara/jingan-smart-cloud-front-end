@@ -274,7 +274,9 @@ export default class MaintenanceCompanyList extends PureComponent {
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {`地址：${item.practicalAddress}`}
                     </Ellipsis>
-                    <p>{`主要负责人：${item.principalName}`}</p>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>{`主要负责人：${
+                      item.principalName
+                    }`}</Ellipsis>
                     <p>{`联系电话：${item.principalPhone}`}</p>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {`总公司：${item.parentUnitName}`}
@@ -315,7 +317,12 @@ export default class MaintenanceCompanyList extends PureComponent {
       <PageHeaderLayout
         title="维保单位管理"
         breadcrumbList={breadcrumbList}
-        content={<div>维保单位总数：{total} </div>}
+        content={
+          <div>
+            维保单位总数：
+            {total}{' '}
+          </div>
+        }
       >
         <BackTop />
         {this.renderForm()}
