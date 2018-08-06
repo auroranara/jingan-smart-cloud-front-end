@@ -13,6 +13,7 @@ const hosts = {
   dev: '192.168.10.68:18080', // 内网2
   test: '192.168.10.68:58080', // 内网2
   mock: '118.126.110.115:3001/mock/28',
+  jb: '192.168.10.3', // 杰宝
 };
 
 export default {
@@ -21,6 +22,11 @@ export default {
       target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
+    },
+    '/mock': {
+      target: `http://${hosts.mock}`,
+      changeOrigin: true,
+      pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
       target: `http://${hosts.test}`,

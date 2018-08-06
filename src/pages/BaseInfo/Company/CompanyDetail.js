@@ -14,6 +14,7 @@ import codes from '../../../utils/codes';
 import titles from '../../../utils/titles';
 
 import styles from './Company.less';
+import SafetyDetail from './SafetyDetail';
 
 const { Description } = DescriptionList;
 
@@ -88,7 +89,7 @@ const getEmptyData = () => {
   ({ company, user, loading }) => ({
     company,
     user,
-    loading: loading.models.company,
+    loading: loading.models.company || loading.models.safety,
   }),
   dispatch => ({
     // 获取详情
@@ -140,6 +141,12 @@ export default class CompanyDetail extends PureComponent {
       },
     });
   }
+
+  handleTabChange = (key) => {
+    this.setState({
+      tabActiveKey: key,
+    });
+  };
 
   /* 显示地图 */
   handleShowMap = (e) => {
@@ -411,42 +418,28 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
-  renderTab() {
-    const { tabActiveKey, isCompany } = this.state;
-    switch(tabActiveKey){
-      case '0':
-        return (
-          <Fragment>
-            {this.renderBasicInfo()}
-            {isCompany && this.renderMoreInfo()}
-            {this.renderPersonalInfo()}
-            {this.renderFooterToolbar()}
-            {this.renderMap()}
-          </Fragment>
-        );
-      case '1':
-        return (
-          <Fragment>
-            <div>123</div>
-            {/* 在这里写安监 */}
-          </Fragment>
-        );
-      default:
-        return null;
-    }
-  }
-
   render() {
-    const { loading } = this.props;
+    const { loading, match: { params: { id } } } = this.props;
+    const { tabActiveKey, isCompany } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         tabList={tabList}
+        onTabChange={this.handleTabChange}
+        tabActiveKey={tabActiveKey}
         wrapperClassName={styles.advancedForm}
       >
         <Spin spinning={loading}>
-          {this.renderTab()}
+          <div style={{ display: tabActiveKey === tabList[0].key ? 'block' : 'none' }}>
+            {this.renderBasicInfo()}
+            {isCompany && this.renderMoreInfo()}
+            {this.renderPersonalInfo()}
+            {this.renderFooterToolbar()}
+          </div>
+          <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
+            <SafetyDetail companyId={id} />
+          </div>
         </Spin>
       </PageHeaderLayout>
     );
