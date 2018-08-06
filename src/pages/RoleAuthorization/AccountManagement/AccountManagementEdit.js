@@ -201,12 +201,12 @@ export default class accountManagementEdit extends PureComponent {
       ? undefined
       : ({ unitType }) => {
           this.setState({
-            unitTypeChecked: unitType[3].id,
+            unitTypeChecked: unitType[0].id,
           });
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           fetchUnitsFuzzy({
             payload: {
-              unitType: unitType[3].id,
+              unitType: unitType[0].id,
               pageNum: 1,
               pageSize: defaultPageSize,
             },
@@ -663,7 +663,7 @@ export default class accountManagementEdit extends PureComponent {
                     ? unitType
                     : unitTypes.length === 0
                       ? undefined
-                      : unitTypes[3].id,
+                      : unitTypes[0].id,
                   rules: [
                     {
                       required: true,
@@ -691,7 +691,7 @@ export default class accountManagementEdit extends PureComponent {
                   initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
                   rules: [
                     {
-                      required: false,
+                      required: true,
                       transform: value => value && value.label,
                       message: '请选择所属单位',
                     },
@@ -735,7 +735,7 @@ export default class accountManagementEdit extends PureComponent {
             </Col>
             {/* 当单位类型为企事业主体 */}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === unitTypes[3].id && (
+              unitTypeChecked === unitTypes[0].id && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.userType}>
                     {getFieldDecorator('userType', {
