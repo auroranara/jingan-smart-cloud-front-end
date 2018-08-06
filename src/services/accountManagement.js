@@ -54,3 +54,18 @@ export function checkAccountOrPhone(params) {
 export function queryRoles() {
   return request(`/acloud_new/v2/rolePermission/user/role`);
 }
+
+/* 查询执法证件种类 */
+export function queryExecCertificateType() {
+  return request(`/acloud_new/v2/rolePermission/execCertificateType`);
+}
+
+/* 查询用户类型 */
+export function queryUserType() {
+  return request(`/acloud_new/v2/rolePermission/userType`);
+}
+
+// 获取部门列表
+export async function queryDepartmentList(params) {
+  return request(`/acloud_new/v2/sys/sysDepartment?${stringify(params)}`);
+}

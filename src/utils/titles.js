@@ -7,4 +7,8 @@ export default {
     edit: '编辑单位',
     detail: '单位详情',
   },
+  map: {
+    menu: '视频监控',
+    index: '地图首页',
+  },
 };

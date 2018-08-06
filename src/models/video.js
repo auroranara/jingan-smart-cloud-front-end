@@ -1,5 +1,5 @@
-// import { queryVideoList, queryVideoTree, bindVideo, queryFolderTree, queryVideoUrl } from '../services/video';
 import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
+// import { getIdMap } from '../pages/DeviceManagement/HikVideoTree/FolderTree';
 
 export default {
   namespace: 'video',
@@ -12,6 +12,7 @@ export default {
     },
     detail: {},
     folderList: [],
+    // idMap: {},
     videoUrl: null,
   },
   effects: {
@@ -38,12 +39,14 @@ export default {
     },
     *fetchFolderTree({ callback }, { call, put }) {
       const response = yield call(queryFolderTree);
+      const { result } = response;
+      const { list } = result;
       if (response.status === 200) {
         yield put({
           type: 'saveFolderTree',
-          payload: response.result,
+          payload: result,
         });
-        if (callback) callback();
+        if (callback) callback(list);
       }
     },
     *fetchDetail({ payload, callback }, { call, put }) {
@@ -93,9 +96,14 @@ export default {
       };
     },
     saveFolderTree(state, action) {
+      const { list: folderList } = action.payload;
+      // const idMap = {};
+      // getIdMap(folderList, idMap);
+
       return {
         ...state,
-        folderList: action.payload.list,
+        folderList,
+        // idMap,
       };
     },
     saveDetail(state, { payload }) {

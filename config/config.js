@@ -8,6 +8,7 @@ const pageRoutes = require('./router.config');
 const hosts = {
   lm: '192.168.10.2', // 吕旻
   gjm: '192.168.10.55', // 顾家铭
+  ct: '192.168.10.8', //孙启政
   sqz: '192.168.10.56', //孙启政
   jb: '192.168.10.3', // 杰宝
   test: '192.168.10.67:9080', // 内网
@@ -28,6 +29,16 @@ export default {
       target: `http://${hosts.mock}`,
       changeOrigin: true,
       pathRewrite: { '^/mock': '/mock' },
+    },
+    '/gsafe': {
+      target: `http://${hosts.test2}`,
+      changeOrigin: true,
+      pathRewrite: { '^/gsafe': '/gsafe' },
+    },
+    '/eye': {
+      target: 'http://192.168.10.2',
+      changeOrigin: true,
+      pathRewrite: { '^/eye': '/eye' },
     },
   },
   // add for transfer to umi

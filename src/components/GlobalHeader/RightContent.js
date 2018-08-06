@@ -75,11 +75,18 @@ export default class GlobalHeaderRight extends PureComponent {
         </Menu.Item>
         <Menu.Item key="changePassword">
           <Icon type="lock" />
-          <FormattedMessage id="menu.account.changePassword" defaultMessage="account changePassword" />
+          <FormattedMessage
+            id="menu.account.changePassword"
+            defaultMessage="account changePassword"
+          />
         </Menu.Item>
         <Menu.Item key="userinfo">
           <Icon type="setting" />
           <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
+        </Menu.Item>
+        <Menu.Item key="personalInfo">
+          <Icon type="user" />
+          <FormattedMessage id="menu.account.personalInfo" defaultMessage="account personalInfo" />
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
@@ -88,7 +95,7 @@ export default class GlobalHeaderRight extends PureComponent {
       </Menu>
     );
     // const noticeData = this.getNoticeData();
-    const url = `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}`;
+    const url = `http://192.168.10.68:18081/gsafe/console`;
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
@@ -122,8 +129,8 @@ export default class GlobalHeaderRight extends PureComponent {
             </span>
           </Dropdown>
         ) : (
-            <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-          )}
+          <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+        )}
         {/*
         <Button
           size="small"

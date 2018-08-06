@@ -2,28 +2,32 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { getFakeCaptcha } from '../services/api';
 import { setAuthority, setToken } from '../utils/authority';
-import { getPageQuery } from '../utils/utils';
+// import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
-import { accountLogin } from '../services/account';
+import { accountLogin, accountLoginGsafe, fetchFooterInfo } from '../services/account';
 
 export default {
   namespace: 'login',
 
   state: {
     status: undefined,
+    serviceSupport: null,
+    servicePhone: null,
   },
 
   effects: {
     *login({ payload, callback }, { call, put }) {
       const response = yield call(accountLogin, payload);
-      if (callback) callback(response)
+      if (callback) callback(response);
       // Login successfully
       if (response.code && response.code === 200) {
         yield put({
           type: 'changeLoginStatus',
           payload: { type: payload.type, status: true, ...response.data },
         });
+        // 登录1.0
+        yield call(accountLoginGsafe, payload);
         reloadAuthorized();
         // const urlParams = new URL(window.location.href);
         // const params = getPageQuery();
@@ -57,8 +61,8 @@ export default {
           currentAuthority: 'guest',
         },
       });
-      yield put({ type: 'user/saveCurrentUser' })
-      setToken()
+      yield put({ type: 'user/saveCurrentUser' });
+      setToken();
       reloadAuthorized();
       yield put(
         routerRedux.push({
@@ -69,16 +73,32 @@ export default {
         })
       );
     },
+    *fetchFooterInfo({ payload }, { call, put }) {
+      const response = yield call(fetchFooterInfo);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveFooterInfo',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
       setAuthority(payload.currentAuthority);
-      setToken(payload.token)
+      setToken(payload.token);
       return {
         ...state,
         status: payload.status,
         type: payload.type,
+      };
+    },
+    saveFooterInfo(state, { payload }) {
+      return {
+        ...state,
+        serviceSupport: payload.serviceSupport || null,
+        servicePhone: payload.servicePhone || null,
       };
     },
   },

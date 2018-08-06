@@ -6,8 +6,8 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import FolderTree from './FolderTree';
 
 import styles from './VideoList.less';
-import { AuthLink } from '../../../utils/customAuth';
-import buttonsMap from '../../../utils/codes';
+import { AuthLink, AuthBtn } from '../../../utils/customAuth';
+import buttonMap from '../../../utils/codes';
 
 const PAGE_SIZE = 20;
 
@@ -28,24 +28,68 @@ const breadcrumbList = [
   { title: '视频列表', name: '视频列表' },
 ];
 
+// 遍历函数,list形如[{a:0, children: [...]}, { a: 1, children: [...] }],handle为处理各节点的函数
+function traverse(list, handle) {
+  // console.log(list);
+  list.forEach(item => {
+    handle(item);
+    const { children } = item;
+    if (children)
+      traverse(children, handle);
+  });
+}
+
+
+// 节流函数,不然每次计算,网页太卡
+function throttle(fn, ms) {
+  let timer = null;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
+// 判断是否能被JSON.parse转成对象 '{ o: 1 }'
+function isObjectStr(o) {
+  return o[0] === '{' && o[o.length - 1] === '}';
+}
+
+// 判断能否被JSON.parse转成数组 '[0, 1]'
+function isArrayStr(a) {
+  return a[0] === '[' && a[a.length - 1] === ']';
+}
+
 @connect(({ video, loading }) => ({
   video,
   loading: loading.effects['video/fetch'],
 }))
 @Form.create()
 export default class VideoList extends PureComponent {
-  state = {
-    folderId: '',
-    formValues: {
-      isShowAll: true,
-    },
-    // timer: null,
-    filteredInfo: {},
-  };
+  constructor(props) {
+    super(props);
+    const ssFolderId = sessionStorage.getItem('folderId');
+    const ssFormValues = sessionStorage.getItem('formValues');
+    const ssFilteredInfo = sessionStorage.getItem('filteredInfo');
+    const ssSValue = sessionStorage.getItem('sValue');
+    const ssExpandedKeys = sessionStorage.getItem('expandedKeys');
+    const ssSelectedKeys = sessionStorage.getItem('selectedKeys');
+
+    this.state = {
+      folderId: ssFolderId || '',
+      formValues: ssFormValues && isObjectStr(ssFormValues) ? JSON.parse(ssFormValues) : { isShowAll: true },
+      filteredInfo: ssFilteredInfo && isObjectStr(ssFilteredInfo) ? JSON.parse(ssFilteredInfo) : {},
+      sValue: ssSValue || '',
+      searchValue: ssSValue || '',
+      expandedKeys: ssExpandedKeys && isArrayStr(ssExpandedKeys) ? JSON.parse(ssExpandedKeys) : [],
+      autoExpandParent: true,
+      selectedKeys: ssSelectedKeys && isArrayStr(ssSelectedKeys) ? JSON.parse(ssSelectedKeys) : [],
+    };
+  }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    const { folderId, formValues } = this.state;
+    const { dispatch, form } = this.props;
+    const { setFieldsValue } = form;
+    const { folderId, formValues, filteredInfo } = this.state;
     dispatch({
       type: 'video/fetch',
       payload: {
@@ -53,6 +97,7 @@ export default class VideoList extends PureComponent {
         pageSize: PAGE_SIZE,
         folderId,
         ...formValues,
+        ...filteredInfo,
       },
     });
     // 清空videoUrl
@@ -60,17 +105,38 @@ export default class VideoList extends PureComponent {
       type: 'video/saveVideoUrl',
       payload: null,
     });
+
+    setFieldsValue({ ...formValues });
+  }
+
+  componentWillUnmount() {
+    const state = this.state;
+    Object.entries(state).forEach(([key, val]) => {
+      // console.log(key);
+      if (key === 'autoExpandParent' || key === 'searchValue')
+        return;
+
+      sessionStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
+    });
   }
 
   timer = null;
+  // 生成节流函数,以防止网页太卡
+  throttleFn = throttle((folderList, value, expandedKeys) => {
+    traverse(folderList, ({ name, parentId }) => {
+      // 不是空字符串 && name包含当前字符串 && expandedKeys数组中还没有其对应的parentId
+      if (value && name.includes(value) && !expandedKeys.includes(parentId))
+          expandedKeys.push(parentId);
+    });
+    this.setState({ expandedKeys, searchValue: value, autoExpandParent: true });
+  }, 800);
 
   handleFormReset = (folderId) => {
     const { dispatch, form } = this.props;
     form.resetFields();
     this.clearFilters();
-    this.setState({
-      folderId,
-    });
+    this.setState({ folderId });
+
     dispatch({
       type: 'video/fetch',
       payload: {
@@ -78,6 +144,26 @@ export default class VideoList extends PureComponent {
         isShowAll: true,
       },
     });
+  };
+
+  handleTreeSearch = (e) => {
+    const { target: { value } } = e;
+    const { video: { folderList } } = this.props;
+    const expandedKeys = [];
+    this.setState({ sValue: value });
+    // console.log('folderList', folderList);
+    this.throttleFn(folderList, value, expandedKeys);
+  };
+
+  handleExpand = (expandedKeys, autoExpandParent) => {
+    // console.log('handleExpand', expandedKeys);
+    this.setState({ expandedKeys, autoExpandParent });
+  };
+
+  handleSelect = (selectedKeys) => {
+    // console.log('handleSelect', selectedKeys);
+    this.setState({ selectedKeys });
+    this.handleFormReset(selectedKeys[0]);
   };
 
   handleTableChange = (pagination, filtersArg) => {
@@ -137,10 +223,6 @@ export default class VideoList extends PureComponent {
     });
   };
 
-  handleTreeSearch = (e) => {
-    console.log(e);
-  };
-
   handlePlayButtonClick = (id) => {
     if (this.timer !== null) {
       return;
@@ -161,32 +243,34 @@ export default class VideoList extends PureComponent {
         }, 1000);
       },
     });
-  }
+  };
 
   /* 播放按钮失焦事件 */
   handlePlayButtonBlur = () => {
-    // const { timer } = this.state;
+    console.log('blur');
     clearTimeout(this.timer);
     this.timer = null;
     this.props.dispatch({
-      type: 'video/deleteVideoUrl',
+      type: 'video/saveVideoUrl',
+      payload: null,
     });
-  }
+  };
 
   renderSimpleForm() {
     const { getFieldDecorator } = this.props.form;
     const { folderId } = this.state;
 
-    const { Option } = Select;
+    // const { Option } = Select;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col span={7}>
+          {/* <Col span={7}> */}
+          <Col span={12}>
             <FormItem label="视频名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          <Col span={5}>
+          {/* <Col span={5}>
             <FormItem label="状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择">
@@ -197,7 +281,7 @@ export default class VideoList extends PureComponent {
                 </Select>
               )}
             </FormItem>
-          </Col>
+          </Col> */}
           <Col span={6}>
             <FormItem>
               {getFieldDecorator('isShowAll',
@@ -206,7 +290,8 @@ export default class VideoList extends PureComponent {
                 )}
             </FormItem>
           </Col>
-          <Col span={5}>
+          {/* <Col span={5}> */}
+          <Col span={6}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
@@ -282,15 +367,24 @@ export default class VideoList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {/* <Link to={`/video/${record.id}/detail`}>查看</Link> */}
-            <AuthLink code={buttonsMap.deviceManagement.hikVideoTree.detail} to={`/device-management/hik-video-tree/video-detail/${record.id}`}>查看</AuthLink>
+            <AuthLink code={buttonMap.videoSurveillance.hikVideoTree.detail} to={`/video-surveillance/hik-video-tree/video-detail/${record.id}`}>查看</AuthLink>
             <Divider type="vertical" />
-            <button
+            {/* <button
+              code={buttonMap.videoSurveillance.hikVideoTree.play}
               className={styles.playButton}
               onClick={() => this.handlePlayButtonClick(record.id)}
               onBlur={this.handlePlayButtonBlur}
             >
               播放
-            </button>
+            </button> */}
+            <AuthBtn
+              code={buttonMap.videoSurveillance.hikVideoTree.play}
+              className={styles.playButton}
+              onClick={() => this.handlePlayButtonClick(record.id)}
+              onBlur={this.handlePlayButtonBlur}
+            >
+              播放
+            </AuthBtn>
           </Fragment>
         ),
       },
@@ -314,13 +408,22 @@ export default class VideoList extends PureComponent {
 
   render() {
     const { video: { videoUrl } } = this.props;
+    const { sValue, searchValue, expandedKeys, autoExpandParent, selectedKeys } = this.state;
     return (
       <PageHeaderLayout title="视频管理" breadcrumbList={breadcrumbList}>
         <Row gutter={16}>
           <Col span={6}>
             <Card title="视频组目录" id="folder-list">
-              <Search style={{ marginBottom: 8 }} placeholder="请输入视频组或视频名称" onChange={this.handleTreeSearch} />
-              <FolderTree handleFormReset={folderId => this.handleFormReset(folderId)} />
+              <Search style={{ marginBottom: 8 }} placeholder="请输入视频组或视频名称" value={sValue} onChange={this.handleTreeSearch} />
+              <FolderTree
+                searchValue={searchValue}
+                expandedKeys={expandedKeys}
+                autoExpandParent={autoExpandParent}
+                selectedKeys={selectedKeys}
+                handleExpand={this.handleExpand}
+                handleSelect={this.handleSelect}
+                // handleFormReset={folderId => this.handleFormReset(folderId)}
+              />
             </Card>
           </Col>
           <Col span={18}>{this.renderRightTable()}</Col>

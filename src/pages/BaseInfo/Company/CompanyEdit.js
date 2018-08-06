@@ -19,7 +19,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
-import { Map, NavigationControl, Marker } from 'react-bmap'
+import { Map, Marker } from 'react-amap'
 
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
@@ -497,7 +497,7 @@ export default class CompanyDetail extends PureComponent {
     // 获取坐标，值可能为undefined或"135.12123,141.4142"这样的格式
     const coordinate = getFieldValue('coordinate');
     const temp = coordinate && coordinate.split(',');
-    const center = coordinate && { lng: +temp[0], lat: +temp[1] };
+    const center = coordinate && { longitude: +temp[0], latitude: +temp[1] };
 
     this.setState({
       visible: true,
@@ -516,19 +516,27 @@ export default class CompanyDetail extends PureComponent {
   /* 地图搜索 */
   handleMapSearch = (value) => {
     if (value) {
-      // 创建地址解析器实例
-      var myGeo = new BMap.Geocoder(); // eslint-disable-line
-      // 将地址解析结果显示在地图上,并调整地图视野
-      myGeo.getPoint(value, (point) => {
-        if (point) {
-          this.setState({
-            center: point,
-            markerPosition: point,
-          });
-        }else{
-          message.warning('您输入的地址没有解析到结果!');
-        }
-      });
+      /* eslint-disable */
+      AMap.plugin('AMap.Geocoder', () => {
+        const geocoder = new AMap.Geocoder()
+        geocoder.getLocation(value, (status, result) => {
+          if (status === 'complete' && result.info === 'OK') {
+            const {lng, lat} = result.geocodes[0].location;
+            const point = {
+              longitude: lng,
+              latitude: lat,
+            };
+            this.setState({
+              center: point,
+              markerPosition: point,
+            });
+          }
+          else {
+            message.warning('您输入的地址没有解析到结果!');
+          }
+        })
+      })
+      /* eslint-enable */
     }
   }
 
@@ -624,58 +632,59 @@ export default class CompanyDetail extends PureComponent {
         destroyOnClose
       >
         <Map
-          center={center ? center : defaultCenter}
-          zoom={12}
-          style={{ height: '600px' }}
-          ref={map => {this.map = map;}}
+          amapkey="08390761c9e9bcedbdb2f18a2a815541"
+          plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
+          status={{
+            keyboardEnable: false,
+          }}
+          center={center}
+          useAMapUI
           events={{
             click: (e) => {
-              if (e.domEvent.target.className !== 'BMap_mask') {
-                return;
-              }
+              const { lng: longitude, lat: latitude } = e.lnglat;
               this.setState({
-                markerPosition: e.point,
+                markerPosition: {
+                  longitude,
+                  latitude,
+                },
               });
             },
           }}
-          enableScrollWheelZoom
         >
           <div style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent' }}>
             <Search placeholder="请输入地址" enterButton onSearch={this.handleMapSearch} />
           </div>
-          <NavigationControl anchor={BMAP_ANCHOR_TOP_RIGHT  /*eslint-disable-line*/} />
           {markerPosition && (
             <Marker
-              icon="loc_red"
               position={markerPosition}
               events={{
-                click: (e) => {
-                  const { lng, lat } = markerPosition;
-                  // 创建坐标点
-                  const point = new BMap.Point(lng, lat); // eslint-disable-line
-                  // 创建解析器实例
-                  var geoc = new BMap.Geocoder(); // eslint-disable-line
-                  // 解析当前坐标点的地址
-                  geoc.getLocation(point, (rs) => {
-                    if (rs) {
-                      confirm({
-                        title: '您确定要选择当前地址吗？',
-                        content: `当前地址：${rs.address}`,
-                        okText: '确定',
-                        cancelText: '取消',
-                        onOk: () => {
-                          const { form: { setFieldsValue } } = this.props;
-                          setFieldsValue({
-                            coordinate: `${lng},${lat}`,
-                          });
-                          this.handleHideMap();
-                        },
-                      });
-                    }
-                    else {
-                      message.warning('未匹配到您当前选中的地址！');
-                    }
-                  });
+                click: () => {
+                  /* eslint-disable */
+                  AMap.plugin('AMap.Geocoder', () => {
+                    const { longitude, latitude } = markerPosition;
+                    const geocoder = new AMap.Geocoder()
+                    geocoder.getAddress([longitude, latitude], (status, result) => {
+                      if (status === 'complete' && result.info === 'OK') {
+                        confirm({
+                          title: '您确定要选择当前地址吗？',
+                          content: `当前地址：${result.regeocode.formattedAddress}`,
+                          okText: '确定',
+                          cancelText: '取消',
+                          onOk: () => {
+                            const { form: { setFieldsValue } } = this.props;
+                            setFieldsValue({
+                              coordinate: `${longitude},${latitude}`,
+                            });
+                            this.handleHideMap();
+                          },
+                        });
+                      }
+                      else {
+                        message.warning('未匹配到您当前选中的地址！');
+                      }
+                    })
+                  })
+                  /* eslint-enable */
                 },
               }}
             />

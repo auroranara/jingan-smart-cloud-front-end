@@ -35,7 +35,7 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 // 阻止默认行为
-const preventDefault = (e) => {e.preventDefault()};
+const preventDefault = (e) => { e.preventDefault() };
 // 面包屑
 const breadcrumbList = [
   {
@@ -90,7 +90,7 @@ const breadcrumbList = [
     },
     /* 跳转到详情页面 */
     goToDetail(id) {
-      dispatch(routerRedux.push(detailUrl+id));
+      dispatch(routerRedux.push(detailUrl + id));
     },
     /* 跳转到新增页面 */
     goToAdd() {
@@ -305,8 +305,9 @@ export default class CompanyList extends PureComponent {
                   title={name}
                   className={styles.card}
                   actions={[
-                    <Link to={detailUrl+id} onClick={hasDetailAuthority ? null : preventDefault} disabled={!hasDetailAuthority}>查看</Link>,
-                    <Link to={editUrl+id} onClick={hasEditAuthority ? null : preventDefault} disabled={!hasEditAuthority}>编辑</Link>,
+                    <Link to={detailUrl + id} onClick={hasDetailAuthority ? null : preventDefault} disabled={!hasDetailAuthority}>查看</Link>,
+                    <Link to={editUrl + id} onClick={hasEditAuthority ? null : preventDefault} disabled={!hasEditAuthority}>编辑</Link>,
+                    <Link to={`/base-info/company/department/list/${id}`}>部门</Link>,
                   ]}
                   extra={hasDeleteAuthority ? (
                     <Button

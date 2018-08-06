@@ -22,8 +22,11 @@ export default {
         import: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
       },
     },
+  },
+  videoSurveillance: {
     hikVideoTree: {
-      detail: 'deviceManagement.hikVideoTree.detailView',
+      detail: 'videoSurveillance.hikVideoTree.detailView',
+      play: 'videoSurveillance.hikVideoTree.play',
     },
   },
   company: {
@@ -39,5 +42,8 @@ export default {
     add: 'fireControl.contract.add',
     edit: 'fireControl.contract.edit',
     delete: 'fireControl.contract.delete',
+  },
+  map: {
+    index: 'videoSurveillance.map.view',
   },
 };
