@@ -15,8 +15,31 @@ module.exports = [
     path: '/',
     component: './layouts/LoadingPage',
     routes: [
-      // baseInfo
       { path: '/', redirect: '/base-info/company/list' },
+
+      // account
+      {
+        path: '/account',
+        code: 'account',
+        name: 'account',
+        hideInMenu: true,
+        routes: [
+          {
+            path: '/account/change-password',
+            name: 'changePassword',
+            code: 'account.changePassword',
+            component: './Account/ChangePassword',
+          },
+          {
+            path: '/account/personal-info/:id',
+            name: 'personalInfo',
+            code: 'account.personalInfo.view',
+            component: './Account/PersonalInfo',
+          },
+        ],
+      },
+
+      // base info
       {
         path: '/base-info',
         code: 'baseInfo',
@@ -58,11 +81,18 @@ module.exports = [
                 name: 'detail',
                 component: './BaseInfo/Company/CompanyDetail',
               },
+              {
+                path: '/base-info/company/department/list/:id',
+                code: 'baseInfo.company.department.listView',
+                name: 'department',
+                component: './BaseInfo/Company/DepartmentList',
+              },
             ],
           },
         ],
       },
-      // FireControl
+
+      // fire control
       {
         path: '/fire-control',
         code: 'fireControl',
@@ -102,38 +132,6 @@ module.exports = [
                 code: 'fireControl.contract.view',
                 name: 'detail',
                 component: './FireControl/Contract/ContractDetail',
-              },
-            ],
-          },
-          {
-            path: '/fire-control/user-transmission-device',
-            code: 'fireControl.userTransmissionDevice',
-            name: 'userTransmissionDevice',
-            hideChildren: true,
-            routes: [
-              {
-                path: '/fire-control/user-transmission-device',
-                name: 'userTransmissionDevice',
-                redirect: '/fire-control/user-transmission-device/list',
-              },
-              {
-                path: '/fire-control/user-transmission-device/list',
-                code: 'fireControl.userTransmissionDevice.listView',
-                name: 'list',
-                component: './FireControl/UserTransmissionDevice/UserTransmissionDevice',
-              },
-              {
-                path: '/fire-control/user-transmission-device/:companyId/detail',
-                code: 'fireControl.userTransmissionDevice.view',
-                name: 'deviceDetail',
-                component: './FireControl/UserTransmissionDevice/UserTransmissionDeviceDetail',
-              },
-              {
-                path:
-                  '/fire-control/user-transmission-device/:companyId/import-point-position/:hostId',
-                code: 'fireControl.userTransmissionDevice.host.importPointPosition',
-                name: 'importPointPosition',
-                component: './FireControl/UserTransmissionDevice/ImportPointPosition',
               },
             ],
           },
@@ -183,7 +181,7 @@ module.exports = [
         ],
       },
 
-      // RoleAuthorization
+      // role authorization
       {
         path: '/role-authorization',
         code: 'roleAuthorization',
@@ -265,6 +263,8 @@ module.exports = [
           },
         ],
       },
+
+      // dynamic monitoring
       {
         name: 'exception',
         icon: 'warning',
@@ -319,11 +319,172 @@ module.exports = [
                 code: 'dynamicMonitoring.fireAlarm.historyRecordView',
                 component: './DynamicMonitoring/FireAlarm/HistoryRecord',
               },
-              // { path: '/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+              // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
             ],
+          },
+        ],
+      },
+
+      // device management
+      {
+        path: '/device-management',
+        code: 'deviceManagement',
+        icon: 'setting',
+        name: 'deviceManagement',
+        routes: [
+          {
+            path: '/device-management/user-transmission-device',
+            code: 'deviceManagement.userTransmissionDevice',
+            name: 'userTransmissionDevice',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/device-management/user-transmission-device',
+                name: 'userTransmissionDevice',
+                redirect: '/device-management/user-transmission-device/list',
+              },
+              {
+                path: '/device-management/user-transmission-device/list',
+                code: 'deviceManagement.userTransmissionDevice.listView',
+                name: 'list',
+                component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDevice',
+              },
+              {
+                path: '/device-management/user-transmission-device/:companyId/detail',
+                code: 'deviceManagement.userTransmissionDevice.view',
+                name: 'deviceDetail',
+                component: './DeviceManagement/UserTransmissionDevice/UserTransmissionDeviceDetail',
+              },
+              {
+                path:
+                  '/device-management/user-transmission-device/:companyId/import-point-position/:hostId',
+                code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
+                name: 'importPointPosition',
+                component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
+              },
+            ],
+          },
+        ],
+      },
+
+      // video surveillance
+      {
+        path: '/video-surveillance',
+        code: 'videoSurveillance',
+        icon: 'video-camera',
+        name: 'videoSurveillance',
+        routes: [
+          {
+            path: '/video-surveillance/map',
+            code: 'videoSurveillance.map',
+            name: 'map',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/video-surveillance/map',
+                name: 'map',
+                redirect: '/video-surveillance/map/index',
+              },
+              {
+                path: '/video-surveillance/map/index',
+                code: 'videoSurveillance.map.view',
+                name: 'index',
+                component: './VideoSurveillance/Map/Map',
+              },
+            ],
+          },
+          {
+            path: '/video-surveillance/hik-video-tree',
+            code: 'videoSurveillance.hikVideoTree',
+            name: 'hikVideoTree',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/video-surveillance/hik-video-tree',
+                name: 'hikVideoTree',
+                redirect: '/video-surveillance/hik-video-tree/videoList',
+              },
+              {
+                path: '/video-surveillance/hik-video-tree/videoList',
+                code: 'videoSurveillance.hikVideoTree.listView',
+                name: 'videoList',
+                component: './VideoSurveillance/HikVideoTree/VideoList',
+              },
+              {
+                path: '/video-surveillance/hik-video-tree/video-detail/:id',
+                code: 'videoSurveillance.hikVideoTree.listView',
+                name: 'videoDetail',
+                component: './VideoSurveillance/HikVideoTree/VideoDetail',
+              },
+            ],
+          },
+          {
+            path: '/video-surveillance/video-permission',
+            code: 'videoSurveillance.videoPermission',
+            name: 'videoPermission',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/video-surveillance/video-permission',
+                name: 'videoPermission',
+                redirect: '/video-surveillance/video-permission/list',
+              },
+              {
+                path: '/video-surveillance/video-permission/list',
+                code: 'videoSurveillance.videoPermission.listView',
+                name: 'list',
+                component: './VideoSurveillance/VideoPermission/List',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: '/system-management',
+        code: 'systemManagement',
+        name: 'systemManagement',
+        icon: 'setting',
+        routes: [
+          {
+            path: '/system-management/app-management',
+            code: 'systemManagement.appManagement',
+            name: 'appManagement',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/system-management/app-management',
+                name: 'appManagement',
+                redirect: '/system-management/app-management/list',
+              },
+              {
+                path: '/system-management/app-management/list',
+                code: 'systemManagement.appManagement.listView',
+                name: 'list',
+                component: './SystemManagement/AppManagement/AppManagementList',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: 'exception',
+        icon: 'warning',
+        path: '/exception',
+        hideInMenu: true,
+        routes: [
+          // exception
+          { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
+          { path: '/exception/404', name: 'not-find', component: './Exception/404' },
+          { path: '/exception/500', name: 'server-error', component: './Exception/500' },
+          {
+            path: '/exception/trigger',
+            name: 'trigger',
+            hideInMenu: true,
+            component: './Exception/triggerException',
           },
         ],
       },
     ],
   },
-];
+]
+

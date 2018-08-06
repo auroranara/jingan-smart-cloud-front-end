@@ -42,6 +42,36 @@ const breadcrumbList = [
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+/* 对树排序 */
+const sortTree = (list) => {
+  const newList = [];
+  list.forEach((item) => {
+    const { childMenus, sort } = item;
+    if (!sort && sort !== 0) {
+      newList.push({
+        ...item,
+      });
+      return;
+    }
+    if (childMenus) {
+      newList[sort] = {
+        ...item,
+        childMenus: sortTree(childMenus),
+      };
+    }
+    else {
+      newList[sort] = {
+        ...item,
+      };
+    }
+  });
+  for(var i=newList.length-1;i>=0;i--){
+    if (!newList[i]) {
+      newList.splice(i, 1);
+    }
+  }
+  return newList;
+};
 
 @connect(({ role, user, loading }) => ({
   role,
@@ -128,6 +158,7 @@ export default class RoleDetail extends PureComponent {
   renderAuthorizationConfiguration() {
     const { role: { detail: { treeMap } } } = this.props;
     const menu = treeMap ? (treeMap.menu || []) : [];
+    const tree = sortTree(menu);
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
@@ -135,7 +166,7 @@ export default class RoleDetail extends PureComponent {
           <Description term="权限树">
             {treeMap ? (
               <Tree>
-                {this.renderTreeNodes(menu)}
+                {this.renderTreeNodes(tree)}
               </Tree>
             ) : getEmptyData()}
           </Description>

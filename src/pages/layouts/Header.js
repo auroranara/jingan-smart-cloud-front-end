@@ -10,6 +10,9 @@ import Authorized from '../../utils/Authorized';
 
 const { Header } = Layout;
 
+@connect(({ user }) => ({
+  user,
+}))
 class HeaderView extends PureComponent {
   state = {
     visible: true,
@@ -42,7 +45,12 @@ class HeaderView extends PureComponent {
   };
 
   handleMenuClick = ({ key }) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     if (key === 'userCenter') {
       dispatch(routerRedux.push('/account/center'));
       return;
@@ -55,10 +63,18 @@ class HeaderView extends PureComponent {
       dispatch(routerRedux.push('/account/settings/base'));
       return;
     }
+    if (key === 'personalInfo') {
+      dispatch(routerRedux.push(`/account/personal-info/${id}`));
+      return;
+    }
     if (key === 'logout') {
       dispatch({
         type: 'login/logout',
       });
+    }
+    if (key === 'changePassword') {
+      dispatch(routerRedux.push('/account/change-password'));
+      return;
     }
   };
 

@@ -111,6 +111,11 @@ const menuData = [
         name: 'settings',
         path: 'settings',
       },
+      {
+        name: 'personalInfo',
+        icon: 'user',
+        path: 'personalInfo',
+      },
     ],
   },
 ];

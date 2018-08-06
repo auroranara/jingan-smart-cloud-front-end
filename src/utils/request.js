@@ -47,6 +47,7 @@ export default function request(url, options) {
   const defaultOptions = {
     headers: {
       'JA-Token': token,
+      'Eye-Token': 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJleHAiOjE1MzU1OTgzOTAsImlhdCI6MTUzMjkxOTk5MH0.hJ-49DJeLGjB5Id2HtwO16ycrLZW5cX5LS6EUajFSIE',
     },
     credentials: 'include',
   };

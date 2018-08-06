@@ -190,7 +190,7 @@ export default class UserTransmissionDevice extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <AuthLink code={buttonCodes.transmission.detail} codes={codes} to={`/fire-control/user-transmission-device/${item.id}/detail`}  errMsg={ERROR_MSG}>
+                <AuthLink code={buttonCodes.deviceManagement.transmission.detail} codes={codes} to={`/device-management/user-transmission-device/${item.id}/detail`}  errMsg={ERROR_MSG}>
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
                       地址：{item.practicalAddress !== undefined

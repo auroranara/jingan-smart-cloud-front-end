@@ -124,12 +124,12 @@ export default class ImportPointPosition extends PureComponent {
       {
         title: '用户传输装置',
         name: '用户传输装置',
-        href: '/fire-control/user-transmission-device/list',
+        href: '/device-management/user-transmission-device/list',
       },
       {
         title: '详情页',
         name: '详情页',
-        href: `/fire-control/user-transmission-device/${companyId}/detail`,
+        href: `/device-management/user-transmission-device/${companyId}/detail`,
       },
       {
         title: '导入点位数据',

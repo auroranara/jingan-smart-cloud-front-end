@@ -30,32 +30,28 @@ const deviceCardStyle = { marginBottom: 20 };
 
 export default class DeviceDetailCard extends Component {
   renderDeviceExtra() {
-    const { codes, deviceData, handleDeviceUpdateClick, handleDeviceDeleteClick } = this.props;
+    const { deviceData, handleDeviceUpdateClick, handleDeviceDeleteClick } = this.props;
 
     return (
       <ButtonGroup>
-        <Button
-          // type="primary"
-          // style={deviceButtonStyle}
-          disabled={getDisabled(buttonCodes.transmission.update, codes)}
+        <AuthButton
+          code={buttonCodes.deviceManagement.transmission.update}
           onClick={() =>{ handleDeviceUpdateClick(deviceData); } }
         >
           编辑
-        </Button>
-        <Button
-          // type="primary"
-          // style={deviceButtonStyle}
-          disabled={getDisabled(buttonCodes.transmission.delete, codes)}
+        </AuthButton>
+        <AuthButton
+          code={buttonCodes.deviceManagement.transmission.delete}
           onClick={() => handleDeviceDeleteClick(deviceData.id)}
         >
           删除
-        </Button>
+        </AuthButton>
       </ButtonGroup>
     );
   }
 
   renderHostExtra() {
-    const { codes, deviceData, handleHostAddClick } = this.props;
+    const { deviceData, handleHostAddClick } = this.props;
 
     return (
       // <Button
@@ -67,8 +63,8 @@ export default class DeviceDetailCard extends Component {
       // </Button>
       <AuthButton
         type="primary"
-        code={buttonCodes.transmission.host.add}
-        codes={codes}
+        // codes={[]}
+        code={buttonCodes.deviceManagement.transmission.host.add}
         onClick={() => handleHostAddClick(deviceData.id, deviceData.deviceCode)}
       >
         新增主机
@@ -104,7 +100,6 @@ export default class DeviceDetailCard extends Component {
 
   renderHostTable() {
     const {
-      codes,
       companyId,
       deviceData,
       handleHostUpdateClick,
@@ -160,7 +155,7 @@ export default class DeviceDetailCard extends Component {
                 >
                   删除
                 </a> */}
-                <AuthA code={buttonCodes.transmission.host.delete} codes={codes} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
+                <AuthA code={buttonCodes.deviceManagement.transmission.host.delete} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
               </MenuItem>
               <MenuItem>
                 {/* <Link
@@ -176,9 +171,9 @@ export default class DeviceDetailCard extends Component {
                   导入点位
                 </Link> */}
                 <AuthLink
-                  code={buttonCodes.transmission.host.import}
-                  codes={codes}
-                  to={`/fire-control/user-transmission-device/${companyId}/import-point-position/${record.id}`}
+                  // codes={[]}
+                  code={buttonCodes.deviceManagement.transmission.host.import}
+                  to={`/device-management/user-transmission-device/${companyId}/import-point-position/${record.id}`}
                 >
                   导入点位
                 </AuthLink>
@@ -202,8 +197,8 @@ export default class DeviceDetailCard extends Component {
                 编辑
               </a> */}
               <AuthA
-                code={buttonCodes.transmission.host.update}
-                codes={codes}
+                code={buttonCodes.deviceManagement.transmission.host.update}
+                // codes={[]}
                 style={hostTableAStyle}
                 onClick={() =>
                   handleHostUpdateClick({
@@ -218,13 +213,12 @@ export default class DeviceDetailCard extends Component {
               <Dropdown overlay={menu}>
                 {/* <a
                   className={getDisabled(HOST_DELETE_CODE, codes) && getDisabled(HOST_IMPORT_CODE, codes) ? styles.notAllowed : null}
-                  // className={styles.notAllowed}
                 >
                   更多<Icon type="down" />
                 </a> */}
                 <AuthA
-                  hasAuth={hasAuthority(buttonCodes.transmission.host.delete, codes) || hasAuthority(buttonCodes.transmission.host.import, codes)}
-                  // className={styles.notAllowed}
+                  // hasAuthFn = {() => false}
+                  hasAuthFn={codes => hasAuthority(buttonCodes.deviceManagement.transmission.host.delete, codes) || hasAuthority(buttonCodes.transmission.host.import, codes)}
                 >
                   更多<Icon type="down" />
                 </AuthA>

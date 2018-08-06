@@ -1,36 +1,43 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Spin } from 'antd';
+import { Form, Card, Button, Spin, Modal } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
+import { Map, Marker } from 'react-amap'
 
 import DescriptionList from 'components/DescriptionList';
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import { hasAuthority } from '../../../utils/customAuth';
+import urls from '../../../utils/urls';
+import codes from '../../../utils/codes';
+import titles from '../../../utils/titles';
 
 import styles from './Company.less';
 
 const { Description } = DescriptionList;
 
-// 标题
-const title = '企业详情';
-// 返回地址
-const href = '/base-info/company/list';
+// 获取title
+const { home: homeTitle, company: { list: listTitle, menu: menuTitle, detail: title } } = titles;
+// 获取链接地址
+const { home: homeUrl, company: { list: backUrl, edit: editUrl }, exception: { 500: exceptionUrl } } = urls;
+// 获取code
+const { company: { edit: editCode } } = codes;
 // 面包屑
 const breadcrumbList = [
   {
-    title: '首页',
-    name: '首页',
-    href: '/',
+    title: homeTitle,
+    name: homeTitle,
+    href: homeUrl,
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: menuTitle,
+    name: menuTitle,
   },
   {
-    title: '企业单位',
-    name: '企业单位',
-    href,
+    title: listTitle,
+    name: listTitle,
+    href: backUrl,
   },
   {
     title,
@@ -41,34 +48,46 @@ const breadcrumbList = [
 const fieldLabels = {
   administrativeDivision: '行政区域',
   businessScope: '经营范围',
-  code: '企业社会信用码',
-  companyIchnography: '企业平面图',
-  companyStatus: '企业状态',
+  code: '社会信用代码',
+  companyIchnography: '单位平面图',
+  companyStatus: '单位状态',
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
-  latitude: '纬度',
+  coordinate: '经纬度',
   licenseType: '营业执照类别',
-  longitude: '经度',
-  maintenanceContract: '维保合同',
-  maintenanceId: '选择消防维修单位',
-  name: '	企业名称',
+  name: '	单位名称',
   practicalAddress: '实际经营地址',
   registerAddress: '注册地址',
   scale: '规模情况',
   principalName: '姓名',
   principalPhone: '联系方式',
   principalEmail: '邮箱',
+  companyNature: '单位性质',
 };
+// tab列表
+const tabList = [
+  {
+    key: '0',
+    tab: '基本信息',
+  },
+  {
+    key: '1',
+    tab: '安监信息',
+  },
+];
+// 默认选中一般企业
+const defaultCompanyNature = '一般企业';
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
 @connect(
-  ({ company, loading }) => ({
+  ({ company, user, loading }) => ({
     company,
+    user,
     loading: loading.models.company,
   }),
   dispatch => ({
@@ -81,16 +100,22 @@ const getEmptyData = () => {
     },
     // 跳转到编辑页面
     goToEdit(id) {
-      dispatch(routerRedux.push(`/base-info/company/edit/${id}`));
+      dispatch(routerRedux.push(editUrl+id));
     },
     // 异常
     goToException() {
-      dispatch(routerRedux.push('/exception/500'));
+      dispatch(routerRedux.push(exceptionUrl));
     },
   })
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
+  state = {
+    isCompany: true,
+    tabActiveKey: tabList[0].key,
+    visible: false,
+  }
+
   /* 生命周期函数 */
   componentDidMount() {
     const {
@@ -105,10 +130,90 @@ export default class CompanyDetail extends PureComponent {
       payload: {
         id,
       },
+      success: ({ companyNatureLabel }) => {
+        this.setState({
+          isCompany: companyNatureLabel === defaultCompanyNature,
+        });
+      },
       error: () => {
         goToException();
       },
     });
+  }
+
+  /* 显示地图 */
+  handleShowMap = (e) => {
+    e.preventDefault();
+    this.setState({
+      visible: true,
+    });
+  }
+
+  /* 隐藏地图 */
+  handleHideMap = () => {
+    this.setState({
+      visible: false,
+    });
+  }
+
+  /* 渲染地图 */
+  renderMap() {
+    const { visible } = this.state;
+    const { company: { detail: { data: { longitude, latitude } } } } = this.props;
+    const center = (longitude && latitude) ? { longitude, latitude } : undefined;
+
+    return (
+      <Modal
+        title="企业定位"
+        width="80%"
+        visible={visible}
+        onCancel={this.handleHideMap}
+        footer={null}
+        maskClosable={false}
+        keyboard={false}
+        className={styles.mapModal}
+        destroyOnClose
+      >
+        <Map
+          amapkey="08390761c9e9bcedbdb2f18a2a815541"
+          plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
+          status={{
+            keyboardEnable: false,
+          }}
+          center={center}
+          useAMapUI
+        >
+          {center && (
+            <Marker
+              position={center}
+            />
+          )}
+        </Map>
+      </Modal>
+    );
+  }
+
+  /* 渲染行业类别 */
+  renderIndustryCategory() {
+    const { company: { detail: { data: { industryCategoryLabel } } } } = this.props;
+
+    return (
+      <Description term={fieldLabels.industryCategory}>
+        {industryCategoryLabel || getEmptyData()}
+      </Description>
+
+    );
+  }
+
+  /* 渲染单位状态 */
+  renderCompanyStatus() {
+    const { company: { detail: { data: { companyStatusLabel } } } } = this.props;
+
+    return (
+      <Description term={fieldLabels.companyStatus}>
+        {companyStatusLabel || getEmptyData()}
+      </Description>
+    );
   }
 
   /* 渲染基础信息 */
@@ -121,8 +226,8 @@ export default class CompanyDetail extends PureComponent {
             code,
             longitude,
             latitude,
+            companyNatureLabel,
             companyIchnography,
-            ichnographyName,
             registerAddress,
             registerProvinceLabel,
             registerCityLabel,
@@ -137,6 +242,7 @@ export default class CompanyDetail extends PureComponent {
         },
       },
     } = this.props;
+    const { isCompany } = this.state;
 
     const registerAddressLabel =
       (registerProvinceLabel || '') +
@@ -154,23 +260,29 @@ export default class CompanyDetail extends PureComponent {
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
-        <DescriptionList col={3}>
+        <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
+          <Description term={fieldLabels.companyNature}>{companyNatureLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
+          <Description term={fieldLabels.coordinate}>{longitude && latitude ? <a href="#" className={styles.link} onClick={this.handleShowMap}>{`${longitude},${latitude}`}</a> : getEmptyData()}</Description>
           <Description term={fieldLabels.registerAddress}>
             {registerAddressLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.practicalAddress}>
             {practicalAddressLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.longitude}>{longitude || getEmptyData()}</Description>
-          <Description term={fieldLabels.latitude}>{latitude || getEmptyData()}</Description>
+          {!isCompany && this.renderIndustryCategory()}
+          {!isCompany && this.renderCompanyStatus()}
+        </DescriptionList>
+        <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.companyIchnography}>
-            {companyIchnographyList.length !== 0 ? (
-              <a href={companyIchnographyList[0].webUrl} target="_blank" rel="noopener noreferrer">
-                {ichnographyName || '预览'}
-              </a>
-            ) : (
+            {companyIchnographyList.length !== 0 ? companyIchnographyList.map(({ name, url }) => (
+              <div key={url}>
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  {name || '预览'}
+                </a>
+              </div>
+            )) : (
               getEmptyData()
             )}
           </Description>
@@ -185,9 +297,7 @@ export default class CompanyDetail extends PureComponent {
       company: {
         detail: {
           data: {
-            industryCategoryLabel,
             economicTypeLabel,
-            companyStatusLabel,
             scaleLabel,
             licenseTypeLabel,
             createTime,
@@ -201,15 +311,11 @@ export default class CompanyDetail extends PureComponent {
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
-          <Description term={fieldLabels.industryCategory}>
-            {industryCategoryLabel || getEmptyData()}
-          </Description>
+          {this.renderIndustryCategory()}
           <Description term={fieldLabels.economicType}>
             {economicTypeLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.companyStatus}>
-            {companyStatusLabel || getEmptyData()}
-          </Description>
+          {this.renderCompanyStatus()}
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
@@ -293,20 +399,41 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      user: { currentUser: { permissionCodes } },
     } = this.props;
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
+
     return (
       <FooterToolbar>
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => {
-            goToEdit(id);
-          }}
-        >
-          编辑
-        </Button>
+        <Button type="primary" size="large" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
       </FooterToolbar>
     );
+  }
+
+  renderTab() {
+    const { tabActiveKey, isCompany } = this.state;
+    switch(tabActiveKey){
+      case '0':
+        return (
+          <Fragment>
+            {this.renderBasicInfo()}
+            {isCompany && this.renderMoreInfo()}
+            {this.renderPersonalInfo()}
+            {this.renderFooterToolbar()}
+            {this.renderMap()}
+          </Fragment>
+        );
+      case '1':
+        return (
+          <Fragment>
+            <div>123</div>
+            {/* 在这里写安监 */}
+          </Fragment>
+        );
+      default:
+        return null;
+    }
   }
 
   render() {
@@ -315,13 +442,11 @@ export default class CompanyDetail extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        tabList={tabList}
         wrapperClassName={styles.advancedForm}
       >
         <Spin spinning={loading}>
-          {this.renderBasicInfo()}
-          {this.renderMoreInfo()}
-          {this.renderPersonalInfo()}
-          {this.renderFooterToolbar()}
+          {this.renderTab()}
         </Spin>
       </PageHeaderLayout>
     );
