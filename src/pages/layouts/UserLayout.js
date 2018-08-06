@@ -1,5 +1,4 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Link } from 'dva/router';
 import { connect } from 'dva';
 import { Icon } from 'antd';
 import GlobalFooter from '../../components/GlobalFooter';
@@ -25,18 +24,15 @@ const links = [
   }, */
 ];
 
-@connect(
-  ({ login }) => ({
-    login,
-  })
-)
+@connect(({ login }) => ({
+  login,
+}))
 export default class UserLayout extends PureComponent {
-
   componentDidMount() {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'login/fetchFooterInfo',
-    })
+    });
   }
 
   // @TODO title
@@ -51,13 +47,28 @@ export default class UserLayout extends PureComponent {
   // }
 
   render() {
-    const { children, login: { serviceSupport, servicePhone } } = this.props;
+    const {
+      children,
+      login: { serviceSupport, servicePhone },
+    } = this.props;
 
     const copyright = (
       <Fragment>
-        <p>Copyright <Icon type="copyright" /> 2018 &nbsp;技术支持：晶安智慧科技有限公司</p>
-        {serviceSupport && <p style={{ marginTop: '5px' }}>服务支持：{serviceSupport}</p>}
-        {servicePhone && <p style={{ marginTop: '5px' }}>服务电话：{servicePhone}</p>}
+        <p>
+          Copyright <Icon type="copyright" /> 2018 &nbsp;技术支持：无锡晶安智慧科技有限公司
+        </p>
+        {serviceSupport && (
+          <p style={{ marginTop: '5px' }}>
+            服务支持：
+            {serviceSupport}
+          </p>
+        )}
+        {servicePhone && (
+          <p style={{ marginTop: '5px' }}>
+            服务电话：
+            {servicePhone}
+          </p>
+        )}
       </Fragment>
     );
 
@@ -82,4 +93,3 @@ export default class UserLayout extends PureComponent {
     );
   }
 }
-

@@ -212,12 +212,13 @@ export default {
     },
     *insertCompany({ payload, success, error }, { call }) {
       const response = yield call(addCompany, payload);
-      if (response.code === 200) {
+      const { data: { id }, code, msg } = response;
+      if (code === 200) {
         if (success) {
-          success();
+          success(id);
         }
       } else if (error) {
-        error(response.msg);
+        error(msg);
       }
     },
     *editCompany({ payload, success, error }, { call, put }) {
@@ -385,6 +386,12 @@ export default {
           data: {},
         },
       };
+    },
+    updateScreenPermission(state, { payload }) {
+      return {
+        ...state,
+        list: payload.list,
+      }
     },
   },
 };

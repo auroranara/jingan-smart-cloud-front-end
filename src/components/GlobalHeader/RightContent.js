@@ -4,10 +4,7 @@ import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip /*Button*/ } from 'ant
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import toUpper from 'lodash/toUpper';
-import NoticeIcon from '../NoticeIcon';
-// import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
-import { getToken } from 'utils/authority';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -61,18 +58,13 @@ export default class GlobalHeaderRight extends PureComponent {
   render() {
     const {
       currentUser,
-      fetchingNotices,
-      onNoticeVisibleChange,
+
       onMenuClick,
-      onNoticeClear,
+
       theme,
     } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-        <Menu.Item key="userCenter">
-          <Icon type="user" />
-          <FormattedMessage id="menu.account.center" defaultMessage="account center" />
-        </Menu.Item>
         <Menu.Item key="changePassword">
           <Icon type="lock" />
           <FormattedMessage
@@ -80,17 +72,14 @@ export default class GlobalHeaderRight extends PureComponent {
             defaultMessage="account changePassword"
           />
         </Menu.Item>
-        <Menu.Item key="userinfo">
-          <Icon type="setting" />
-          <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
-        </Menu.Item>
         <Menu.Item key="personalInfo">
           <Icon type="user" />
           <FormattedMessage id="menu.account.personalInfo" defaultMessage="account personalInfo" />
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
-          <Icon type="logout" />退出登录
+          <Icon type="logout" />
+          退出登录
         </Menu.Item>
       </Menu>
     );

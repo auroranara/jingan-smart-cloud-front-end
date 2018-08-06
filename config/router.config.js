@@ -15,8 +15,27 @@ module.exports = [
     path: '/',
     component: './layouts/LoadingPage',
     routes: [
-      { path: '/', redirect: '/base-info/company/list' },
+      { path: '/', redirect: '/dashboard/view' },
+      {
+        path: '/dashboard',
+        icon: 'dashboard',
+        code: 'dashboard',
+        name: 'dashboard',
+        hideChildren: true,
+        routes: [
+          {
+            path: '/dashboard',
+            redirect: '/dashboard/view',
 
+          },
+          {
+            path: '/dashboard/view',
+            code: 'dashboard.view',
+            name: 'view',
+            component: './Dashboard/Dashboard',
+          },
+        ],
+      },
       // account
       {
         path: '/account',
