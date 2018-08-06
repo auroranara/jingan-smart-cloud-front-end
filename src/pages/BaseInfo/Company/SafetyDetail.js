@@ -50,7 +50,10 @@ const textMap = {};
 
 function traverse(tree) {
   tree.forEach(({ id, parentIds, text, children  }) => {
-    idMap[id] = [...parentIds.split(','), id].filter(item => item);
+    if (parentIds)
+      idMap[id] = [...parentIds.split(','), id].filter(item => item);
+    else
+      idMap[id] = [];
     textMap[id] = text;
     children && traverse(children);
   });
