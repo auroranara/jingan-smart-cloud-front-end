@@ -387,5 +387,11 @@ export default {
         },
       };
     },
+    updateScreenPermission(state, { payload }) {
+      return {
+        ...state,
+        list: payload.list,
+      }
+    },
   },
 };

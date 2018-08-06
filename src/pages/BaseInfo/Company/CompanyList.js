@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, Modal, message, Spin } from 'antd';
+import { Form, List, Card, Button, Icon, Input, Modal, message, Spin, Popconfirm } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -10,6 +10,10 @@ import { hasAuthority } from '../../../utils/customAuth';
 import urls from '../../../utils/urls';
 import codes from '../../../utils/codes';
 import titles from '../../../utils/titles';
+import safe from '../../../assets/safe.png'
+import safeGray from '../../../assets/safe-gray.png'
+import fire from '../../../assets/fire.png'
+import fireGray from '../../../assets/fire-gray.png'
 
 import styles from './CompanyList.less';
 
@@ -99,6 +103,18 @@ const breadcrumbList = [
     /* 跳转到编辑页面 */
     goToEdit() {
       dispatch(routerRedux.push(editUrl));
+    },
+    editScreenPermission(action) {
+      dispatch({
+        type: 'company/editCompany',
+        ...action,
+      })
+    },
+    saveNewList(action) {
+      dispatch({
+        type: 'company/updateScreenPermission',
+        ...action,
+      })
     },
   })
 )
@@ -204,6 +220,32 @@ export default class CompanyList extends PureComponent {
     });
   };
 
+  /* 更改大屏权限 */
+  handleScreenPermission = (id, safetyProduction, fireService, list) => {
+    const { editScreenPermission, saveNewList } = this.props
+    const success = () => {
+      list.map(item =>
+        item.id === id ? Object.assign(item, { safetyProduction, fireService }) : item
+      )
+      saveNewList({
+        payload: {
+          list,
+        },
+      })
+      message.success('更新成功！')
+    }
+    const error = msg => { message.error(msg) }
+    editScreenPermission({
+      payload: {
+        id,
+        safetyProduction,
+        fireService,
+      },
+      success,
+      error,
+    })
+  }
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -292,6 +334,9 @@ export default class CompanyList extends PureComponent {
               practicalCityLabel,
               practicalDistrictLabel,
               practicalTownLabel,
+              safetyProduction,
+              fireService,
+
             } = item;
             const practicalAddressLabel =
               (practicalProvinceLabel || '') +
@@ -322,10 +367,10 @@ export default class CompanyList extends PureComponent {
                   ) : null}
                 >
                   <div
-                    onClick={hasDetailAuthority ? () => {
-                      goToDetail(id);
-                    } : null}
-                    style={hasDetailAuthority ? { cursor: 'pointer' } : null}
+                  // onClick={hasDetailAuthority ? () => {
+                  //   goToDetail(id);
+                  // } : null}
+                  // style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       地址：{practicalAddressLabel || getEmptyData()}
@@ -339,6 +384,17 @@ export default class CompanyList extends PureComponent {
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       联系电话：{safetyPhone || getEmptyData()}
                     </Ellipsis>
+                    <Popconfirm
+                      title={`确定要${safetyProduction === 0 ? '关闭' : '开启'}安全大屏权限吗？`}
+                      onConfirm={() => this.handleScreenPermission(id, Number(!safetyProduction), fireService, list)}>
+                      <img className={styles.screenConreol} src={safetyProduction === 0 ? safe : safeGray} alt="safe" />
+                    </Popconfirm>
+                    <Popconfirm
+                      className={styles.ml30}
+                      title={`确定要${fireService === 0 ? '关闭' : '开启'}消防大屏权限吗？`}
+                      onConfirm={() => this.handleScreenPermission(id, safetyProduction, Number(!fireService), list)}>
+                      <img className={styles.screenConreol} src={fireService === 0 ? fire : fireGray} alt="fire" />
+                    </Popconfirm>
                   </div>
                 </Card>
               </List.Item>
