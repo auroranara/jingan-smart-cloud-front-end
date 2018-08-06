@@ -106,12 +106,12 @@ export default class SafetyDetail extends PureComponent {
     const items = detail.reachGrade !== undefined && detail.reachGrade !== '5' ? [...moreItems, ...dspItems1] : dspItems1;
 
     const grid = detail.gridId;
-    console.log(grid, menus.gridList, idMap);
+    // console.log(grid, menus.gridList, idMap);
 
     return (
       <Card title="安监信息">
         <DescriptionList col={1} style={{ marginBottom: 13 }}>
-          <Description term="所属网格">{ grid && menus.gridList && idMap[grid].map(id => textMap[id]).join('-') }</Description>
+          <Description term="所属网格">{ grid && menus.gridList ? idMap[grid].map(id => textMap[id]).join('-') : '暂无信息' }</Description>
         </DescriptionList>
         <DescriptionList col={3} style={{ marginBottom: 13 }}>
           {renderDsp(dspItems, detail, menus)}
