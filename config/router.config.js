@@ -373,6 +373,7 @@ module.exports = [
         code: 'videoSurveillance',
         icon: 'video-camera',
         name: 'videoSurveillance',
+        hideInMenu: true,
         routes: [
           {
             path: '/video-surveillance/map',
@@ -486,5 +487,4 @@ module.exports = [
       },
     ],
   },
-]
-
+];
