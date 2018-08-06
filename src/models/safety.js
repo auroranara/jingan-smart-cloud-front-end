@@ -4,9 +4,7 @@ export default {
   namespace: 'safety',
 
   state: {
-    menus: {
-      standardLevel: [{ id: '@@none' }], // 为了防止为获取该数组时，渲染页面报错
-    },
+    menus: {},
     detail: {},
   },
 
@@ -19,10 +17,9 @@ export default {
       if (code !== 200)
         return;
 
+      callback && callback(data);
       if (data && typeof data === 'object')
         yield put({ type: 'saveDetail', payload: data });
-
-      callback && callback(data);
     },
     *fetchMenus({ payload, callback }, { call, put }) {
       const response = yield call(queryMenus, payload);
@@ -31,10 +28,9 @@ export default {
       if (code !== 200)
         return;
 
+      callback && callback(data);
       if (data && typeof data === 'object')
         yield put({ type: 'saveMenu', payload: data });
-
-      callback && callback(data);
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(putDetail, payload);

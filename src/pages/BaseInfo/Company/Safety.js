@@ -71,54 +71,40 @@ function getOptions(options = []) {
   return options.map(({ value, label }) => <Option key={value} value={value}>{label}</Option>);
 }
 
-// function handleDetail(detail, items) {
-//   const result = {};
-//   items.forEach(key => {
-//     const val = detail[key];
-//     if (val === undefined || val === null)
-//       return;
-
-//     if (key === 'undoTime')
-//       // validity对应undoTime
-//       result.validity = val.split(',').map(timestamp => moment(Number.parseInt(timestamp, 10)));
-//     else
-//       result[key] = val;
-//   });
-//   return result;
-// }
-
 // 对fileList进行筛选，剔除同名文件，优先保留最新上传成功的文件，其次保留最新上传的失败文件
-function filterUpList(fileList) {
-  const names = [];
-  const listArray = {};
-  fileList.forEach(f => {
-    const { name } = f;
-    if (names.includes(name))
-      listArray[name].push(f);
-    else {
-      names.push(name);
-      listArray[name] = [f];
-    }
-  });
+// function filterUpList(fileList) {
+//   const names = [];
+//   const listArray = {};
+//   fileList.forEach(f => {
+//     const { name } = f;
+//     if (names.includes(name))
+//       listArray[name].push(f);
+//     else {
+//       names.push(name);
+//       listArray[name] = [f];
+//     }
+//   });
 
-  return names.map(name => {
-    const arr = listArray[name];
-    const success = arr.filter(f => f.status === 'done' && f.response.code === 200);
-    const fail = arr.filter(f => f.status === 'error' || f.response.code !== 200);
-    const successLength = success.length;
-    const failLength = fail.length;
-    if (successLength)
-      return success[successLength - 1];
-    else
-      return fail[failLength - 1];
-  });
-}
+//   return names.map(name => {
+//     const arr = listArray[name];
+//     const success = arr.filter(f => f.status === 'done' && f.response.code === 200);
+//     const fail = arr.filter(f => f.status === 'error' || f.response.code !== 200);
+//     const successLength = success.length;
+//     const failLength = fail.length;
+//     if (successLength)
+//       return success[successLength - 1];
+//     else
+//       return fail[failLength - 1];
+//   });
+// }
 
 function addUrl(fileList) {
   fileList.forEach(f => {
     // url不存在且后面这些属性都存在
-    if (!f.url && f.response && f.response.data && f.response.data.list)
+    if (!f.url && f.response && f.response.data && f.response.data.list) {
       f.url = f.response.data.list[0].webUrl;
+      f.dbUrl = f.response.data.list[0].dbUrl;
+    }
   });
 
   return fileList;
@@ -142,13 +128,14 @@ function handleFormValues(fieldsValue) {
       return;
 
     const { fileList } = formValues[key];
-    console.log(fileList);
+    // console.log(fileList);
     const newFileList = fileList
       .filter(({ status, response: { code } }) => status === 'done' && code === 200)
       // .map(({ uid, name, status, url, response: { code } }) => ({ uid, name, status, url, response: { code } }));
-      .map(({ uid, name, status, url, response: { code } }) => ({ name, url }));
+      // .map(({ uid, name, status, url, response: { code } }) => ({ name, url }));
     // formValues[key] = JSON.stringify({ fileList: newFileList });
-    formValues[key] = JSON.stringify(newFileList);
+    // formValues[key] = JSON.stringify(newFileList);
+    formValues[key] = fileList.length ? fileList[0].dbUrl : '';
   });
 
   return formValues;
@@ -167,6 +154,12 @@ function traverse(gl, idMap) {
     idMap[id] = parentIds.split(',');
     return ({ value: id, label: text, children: children ? traverse(children, idMap) : nodes ? traverse(nodes, idMap) : undefined })
   });
+}
+
+function isJSONStr(str) {
+  const first = str[0];
+  const last = str[str.length - 1];
+  return first === '[' && last === ']' || first === '{' && last === '}';
 }
 
 @connect(({ safety, loading }) => ({ safety, loading: loading.models.safety }))
@@ -196,6 +189,7 @@ export default class Safety extends PureComponent {
         type: 'safety/fetch',
         payload: companyId,
         callback(detail = {}) {
+          // console.log('detail in Safety', detail);
           // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
           if (detail.reachGrade && detail.reachGrade !== '5')
             that.setState({ showMore: true }, () => {
@@ -223,10 +217,18 @@ export default class Safety extends PureComponent {
       else if (next === 'gridId')
         prev[next] = [...idMap[val], val];
       else if (UPLOADERS.includes(next)) {
-        let list = JSON.parse(val);
-        list = Array.isArray(list) ? list : list.fileList;
-        list = list.map(({ name, url }) => ({ name, url, status: 'done', response: { code: 200 } }));
+        let list = null;
+        // 数据库存的是个JSON格式的数组或对象
+        if (isJSONStr(val)) {
+          list = JSON.parse(val);
+          list = Array.isArray(list) ? list : list.fileList;
+          // 不加uid属性会报错
+          list = list.map(({ name, url }) => ({ name, uid: name, url, status: 'done', response: { code: 200 } }));
+        // 数据库存的只是个链接
+        } else
+          list = [{name: '已上传文件', url: `http://pak93s58x.bkt.clouddn.com/development${val.slice(val.indexOf('/gsafe'))}`, dbUrl: val, uid: Date.now(), status: 'done', response: { code: 200 }}];
         this.setState({ [UPLOADERS_MAP[next]]: list });
+        prev[next] = { fileList: list };
         // console.log(next, JSON.parse(val));s
       }
       else
@@ -264,7 +266,7 @@ export default class Safety extends PureComponent {
         return;
 
       const formValues = handleFormValues(fieldsValue);
-      console.log(formValues);
+      // console.log(formValues);
 
       this.setState({ submitting: true });
       dispatch({
@@ -336,39 +338,57 @@ export default class Safety extends PureComponent {
   };
 
   // 可以上传多个文件
+  // handleSafeChange = ({ file, fileList, event }) => {
+  //   const { safeLoading } = this.state;
+
+  //   console.log(file.status, file, fileList, event);
+  //   const { status } = file;
+
+  //   if (status === 'uploading' && !safeLoading)
+  //     this.setState({ safeLoading: true });
+
+  //   if (status === 'uploading' || status === 'removed')
+  //     this.setState({ safeList: fileList });
+
+  //   // 所有文件都已上传
+  //   if (status !== 'removed' && fileList.every(({ status }) => status === 'done' || status === 'error')) {
+  //     // console.log('done');
+  //     this.setState({ safeLoading: false });
+  //     const filteredList = filterUpList(fileList);
+  //     this.setState({ safeList: addUrl(filteredList) });
+
+  //     // const successFileList = fileList.filter(f => f.status === 'done' && f.response.code === 200);
+  //     // const failFileList = fileList.filter(f => f.status !== 'done' || f.response.code !== 200);
+  //     // if (successFileList.length === fileList.length)
+  //     //   message.success('所有文件都已上传成功');
+  //     // else
+  //     //   message.error(`${failFileList.map(f => f.name).join(',')}文件上传失败，请重新上传`);
+  //   }
+
+  //   // const newList = fileList.filter(f => {
+  //   //   if (f.response)
+  //   //     return f.response.code === 200;
+
+  //   //   return true;
+  //   // });
+  // };
+
+  // 上传一个文件
   handleSafeChange = ({ file, fileList, event }) => {
     const { safeLoading } = this.state;
-
-    console.log(file.status, file, fileList, event);
-    const { status } = file;
+    const { status, response } = file;
 
     if (status === 'uploading' && !safeLoading)
       this.setState({ safeLoading: true });
-
-    if (status === 'uploading' || status === 'removed')
-      this.setState({ safeList: fileList });
-
-    // 所有文件都已上传
-    if (status !== 'removed' && fileList.every(({ status }) => status === 'done' || status === 'error')) {
-      // console.log('done');
+    else
       this.setState({ safeLoading: false });
-      const filteredList = filterUpList(fileList);
-      this.setState({ safeList: addUrl(filteredList) });
 
-      // const successFileList = fileList.filter(f => f.status === 'done' && f.response.code === 200);
-      // const failFileList = fileList.filter(f => f.status !== 'done' || f.response.code !== 200);
-      // if (successFileList.length === fileList.length)
-      //   message.success('所有文件都已上传成功');
-      // else
-      //   message.error(`${failFileList.map(f => f.name).join(',')}文件上传失败，请重新上传`);
-    }
+    this.setState({ safeList: addUrl(fileList.slice(-1)) });
 
-    // const newList = fileList.filter(f => {
-    //   if (f.response)
-    //     return f.response.code === 200;
-
-    //   return true;
-    // });
+    if (status === 'done' && response.code === 200)
+      message.success('上传成功');
+    else if (status === 'error' || status === 'done' && response.code !== 200)
+      message.error('上传失败');
   };
 
   // FormItem中的值对应的是组件的onChange函数传入的值，所以对于Upload组件，上传时候的值为 { file: ..., fileList: ... }

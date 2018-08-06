@@ -367,6 +367,8 @@ export default class CompanyDetail extends PureComponent {
           const success = (companyId) => {
             const msg = id ? '编辑成功！' : '新增成功！';
             message.success(msg, 1, () => {
+              this.setState({ submitting: false });
+
               // 编辑页面，修改成功后什么都不做
               if (this.operation === 'edit')
                 return;
@@ -1173,6 +1175,8 @@ export default class CompanyDetail extends PureComponent {
       },
     } = this.props;
     const { submitting, tabActiveKey, isCompany } = this.state;
+
+    // console.log(loading, safetyLoading, submitting);
     // console.log(tabActiveKey, typeof tabActiveKey);
     const title = id ? editTitle : addTitle;
     // 面包屑
