@@ -129,8 +129,8 @@ function handleFormValues(fieldsValue) {
 
     const { fileList } = formValues[key];
     // console.log(fileList);
-    const newFileList = fileList
-      .filter(({ status, response: { code } }) => status === 'done' && code === 200)
+    // const newFileList = fileList
+    //   .filter(({ status, response: { code } }) => status === 'done' && code === 200)
       // .map(({ uid, name, status, url, response: { code } }) => ({ uid, name, status, url, response: { code } }));
       // .map(({ uid, name, status, url, response: { code } }) => ({ name, url }));
     // formValues[key] = JSON.stringify({ fileList: newFileList });
@@ -151,8 +151,8 @@ function handleGridTree(gridList = [], idMap) {
 
 function traverse(gl, idMap) {
   return gl.map(({ id, text, children, nodes, parentIds }) => {
-    idMap[id] = parentIds.split(',');
-    return ({ value: id, label: text, children: children ? traverse(children, idMap) : nodes ? traverse(nodes, idMap) : undefined })
+    idMap[id] = parentIds ? parentIds.split(',') : [];
+    return ({ value: id, label: text, children: children ? traverse(children, idMap) : undefined })
   });
 }
 
