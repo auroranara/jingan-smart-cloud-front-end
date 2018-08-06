@@ -55,7 +55,7 @@ export default class UserLayout extends PureComponent {
 
     const copyright = (
       <Fragment>
-        <p>Copyright <Icon type="copyright" /> 2018 &nbsp;技术支持：晶安智慧科技有限公司</p>
+        <p>Copyright <Icon type="copyright" /> 2018 &nbsp;技术支持：无锡晶安智慧科技有限公司</p>
         {serviceSupport && <p style={{ marginTop: '5px' }}>服务支持：{serviceSupport}</p>}
         {servicePhone && <p style={{ marginTop: '5px' }}>服务电话：{servicePhone}</p>}
       </Fragment>
