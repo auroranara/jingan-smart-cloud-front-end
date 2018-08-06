@@ -26,10 +26,15 @@ export default class Dashboard extends PureComponent {
     const { current } = this.state;
     const {
       user: {
-        currentUser: { companyBasicInfo: { safetyProduction, fireService } = {} },
+        currentUser: { companyBasicInfo },
       },
     } = this.props;
 
+    let safetyProduction, fireService;
+    if (companyBasicInfo) {
+      safetyProduction = companyBasicInfo.safetyProduction;
+      fireService = companyBasicInfo.fireService;
+    }
     const safeItem = { src: safe, url: 'http://www.baidu.com' };
     const fireItem = { src: fire, url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}` };
 
