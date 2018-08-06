@@ -3,6 +3,8 @@
 export default {
   'navbar.lang': '中文',
   'menu.home': '首页',
+  'menu.dashboard': '首页',
+  'menu.dashboard.view': '首页',
   'menu.baseInfo': '一企一档',
   'menu.baseInfo.company': '企业单位',
   'menu.baseInfo.company.list': '企业列表',
@@ -54,7 +56,6 @@ export default {
   'menu.videoSurveillance.hikVideoTree.videoDetail': '视频详情',
   'menu.videoSurveillance.videoPermission': '视频权限',
   'menu.videoSurveillance.videoPermission.list': '视频权限列表',
-  'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
   'menu.dashboard.workplace': '工作台',
