@@ -8,6 +8,7 @@ import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementEdit.less';
+import { aesEncrypt } from '../../../utils/utils';
 
 const { Description } = DescriptionList;
 
@@ -163,7 +164,7 @@ export default class accountManagementDetail extends PureComponent {
           type: 'account/updateAccountPwd',
           payload: {
             id,
-            password,
+            password: aesEncrypt(password),
           },
           success: () => {
             message.success('提交成功！', () => {

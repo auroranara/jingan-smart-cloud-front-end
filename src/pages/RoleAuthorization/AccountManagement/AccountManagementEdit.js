@@ -319,7 +319,7 @@ export default class accountManagementEdit extends PureComponent {
             unitId: unitId ? unitId.key : null,
             treeIds: treeIds ? treeIds.key : null,
             roleIds: roleIds.join(','),
-            departmentId,
+            departmentId: departmentId && departmentId.length ? departmentId[0] : undefined,
             userType,
             documentTypeId,
             execCertificateCode,
@@ -767,7 +767,6 @@ export default class accountManagementEdit extends PureComponent {
                       initialValue: documentTypeId,
                       rules: [
                         {
-                          required: true,
                           message: '请选择执法证种类',
                         },
                       ],
@@ -791,7 +790,6 @@ export default class accountManagementEdit extends PureComponent {
                       initialValue: execCertificateCode,
                       rules: [
                         {
-                          required: true,
                           message: '请输入执法证编号',
                         },
                       ],
