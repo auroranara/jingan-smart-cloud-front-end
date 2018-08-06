@@ -10,28 +10,28 @@ const hosts = {
   gjm: '192.168.10.55', // 顾家铭
   ct: '192.168.10.8', //孙启政
   sqz: '192.168.10.56', //孙启政
-  test: '192.168.10.67:9080', // 内网
-  test2: '192.168.10.68:18080', // 内网2
+  dev: '192.168.10.68:18080', // 内网2
+  test: '192.168.10.68:58080', // 内网2
   mock: '118.126.110.115:3001/mock/28',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://192.168.10.68:18080`,
+      target: `http://${hosts.lm}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/gsafe': {
-      target: `http://${hosts.test2}`,
+      target: `http://${hosts.lm}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
-    '/eye': {
-      target: 'http://192.168.10.2',
-      changeOrigin: true,
-      pathRewrite: { '^/eye': '/eye' },
-    },
+    // '/eye': {
+    //   target: 'http://192.168.10.2',
+    //   changeOrigin: true,
+    //   pathRewrite: { '^/eye': '/eye' },
+    // },
   },
   // add for transfer to umi
   plugins: [
