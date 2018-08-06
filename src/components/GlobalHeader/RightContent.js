@@ -4,10 +4,7 @@ import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip /*Button*/ } from 'ant
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import toUpper from 'lodash/toUpper';
-import NoticeIcon from '../NoticeIcon';
-// import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
-import { getToken } from 'utils/authority';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -61,10 +58,9 @@ export default class GlobalHeaderRight extends PureComponent {
   render() {
     const {
       currentUser,
-      fetchingNotices,
-      onNoticeVisibleChange,
+
       onMenuClick,
-      onNoticeClear,
+
       theme,
     } = this.props;
     const menu = (
