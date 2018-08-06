@@ -25,7 +25,14 @@ export default class Dashboard extends PureComponent {
 
   render() {
     const { current } = this.state
-    const { user: { currentUser: { companyBasicInfo: { safetyProduction, fireService } } } } = this.props
+    const { user: { currentUser: { companyBasicInfo } } } = this.props
+    let safetyProduction = null
+    let fireService = null
+    if (companyBasicInfo) {
+      safetyProduction = safetyProduction.safetyProduction || null
+      fireService = safetyProduction.fireService || null
+    }
+    // const { safetyProduction, fireService }=companyBasicInfo&&{safetyProduction:companyBasicInfo.safetyProduction||null,}
     const safeItem = { src: safe, url: 'http://www.baidu.com' }
     const fireItem = { src: fire, url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}` }
 
