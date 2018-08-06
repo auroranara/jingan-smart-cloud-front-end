@@ -80,17 +80,14 @@ export default class GlobalHeaderRight extends PureComponent {
             defaultMessage="account changePassword"
           />
         </Menu.Item>
-        <Menu.Item key="userinfo">
-          <Icon type="setting" />
-          <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
-        </Menu.Item>
         <Menu.Item key="personalInfo">
           <Icon type="user" />
           <FormattedMessage id="menu.account.personalInfo" defaultMessage="account personalInfo" />
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
-          <Icon type="logout" />退出登录
+          <Icon type="logout" />
+          退出登录
         </Menu.Item>
       </Menu>
     );
