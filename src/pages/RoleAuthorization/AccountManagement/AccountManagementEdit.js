@@ -201,12 +201,12 @@ export default class accountManagementEdit extends PureComponent {
       ? undefined
       : ({ unitType }) => {
           this.setState({
-            unitTypeChecked: unitType[0].id,
+            unitTypeChecked: 4,
           });
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           fetchUnitsFuzzy({
             payload: {
-              unitType: unitType[0].id,
+              unitType: 4,
               pageNum: 1,
               pageSize: defaultPageSize,
             },
@@ -659,11 +659,7 @@ export default class accountManagementEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
-                  initialValue: id
-                    ? unitType
-                    : unitTypes.length === 0
-                      ? undefined
-                      : unitTypes[0].id,
+                  initialValue: id ? unitType : unitTypes.length === 0 ? undefined : 4,
                   rules: [
                     {
                       required: true,
@@ -735,7 +731,7 @@ export default class accountManagementEdit extends PureComponent {
             </Col>
             {/* 当单位类型为企事业主体 */}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === unitTypes[0].id && (
+              unitTypeChecked === 4 && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.userType}>
                     {getFieldDecorator('userType', {
@@ -764,7 +760,7 @@ export default class accountManagementEdit extends PureComponent {
               )}
             {/* 当单位类型为政府机构 */}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === unitTypes[1].id && (
+              unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.documentTypeId}>
                     {getFieldDecorator('documentTypeId', {
@@ -788,7 +784,7 @@ export default class accountManagementEdit extends PureComponent {
                 </Col>
               )}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === unitTypes[1].id && (
+              unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.execCertificateCode}>
                     {getFieldDecorator('execCertificateCode', {
