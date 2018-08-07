@@ -106,6 +106,7 @@ export default class PersonalInfo extends PureComponent {
     const { companyType } = this.state;
 
     const userTypeObj = UserTypes.find(t => t.value === userType);
+    const formatPhone = phoneNumber.substr(0, 3) + "****" + phoneNumber.substr(7)
 
     return (
       <Card bordered={false}>
@@ -119,7 +120,7 @@ export default class PersonalInfo extends PureComponent {
         >
           <Description term="用户名">{loginName || getEmptyData()}</Description>
           <Description term="姓名">{userName || getEmptyData()}</Description>
-          <Description term="手机号">{phoneNumber || getEmptyData()}</Description>
+          <Description term="手机号">{formatPhone || getEmptyData()}</Description>
           <Description term="单位类型">{UnitTypes[unitType] || getEmptyData()}</Description>
           <Description term="所属单位">{unitName || getEmptyData()}</Description>
           <Description term="所属部门">{departmentName || getEmptyData()}</Description>
@@ -131,10 +132,10 @@ export default class PersonalInfo extends PureComponent {
           <Description term="角色">
             {roleNames
               ? roleNames.split(',').map(roleName => (
-                  <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                    {roleName}
-                  </p>
-                ))
+                <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                  {roleName}
+                </p>
+              ))
               : getEmptyData()}
           </Description>
         </DescriptionList>
