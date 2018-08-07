@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, Component } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -14,7 +14,7 @@ import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from 'bizcharts
 @connect(({ bigPlatform }) => ({
   bigPlatform,
 }))
-class GovernmentBigPlatform extends React.PureComponent {
+class GovernmentBigPlatform extends Component {
   state = {
     scrollNodeTop: 0,
     label: {

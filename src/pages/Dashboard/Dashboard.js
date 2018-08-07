@@ -35,7 +35,7 @@ export default class Dashboard extends PureComponent {
 
     //如果单位为政府或者admin 运营 则显示企业大屏
     if (unitType === 3 || unitType === 2) {
-      safeItem.url = '/#/big-platform/safety/government';
+      safeItem.url = '/acloud_new/#/big-platform/safety/government';
 
       //TODO 政府大屏开启
       safetyProduction = 1;
