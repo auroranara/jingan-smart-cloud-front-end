@@ -30,8 +30,8 @@ const breadcrumbList = [
     name: '一起一档',
   },
   {
-    title: '企业单位',
-    name: '企业单位',
+    title: '单位管理',
+    name: '单位管理',
     href: '/base-info/company/list',
   },
   {
@@ -101,7 +101,10 @@ const RenderModal = Form.create()(props => {
             getValueFromEvent: e => e.target.value.trim(),
             initialValue: modalStatus === 'edit' ? detail.name : null,
             validateTrigger: 'onBlur',
-            rules: [{ required: true, message: '请输入部门名称' }, { max: 30, message: '部门名称过长' }],
+            rules: [
+              { required: true, message: '请输入部门名称' },
+              { max: 30, message: '部门名称过长' },
+            ],
           })(<Input />)}
         </FormItem>
         <FormItem {...formItemCol} label="上级部门：">
@@ -157,16 +160,16 @@ export default class DepartmentList extends PureComponent {
       type: 'department/fetchDepartmentList',
       payload: { companyId: id },
       callback: list => {
-        if (list.length === 0) return
-        let total = 0
+        if (list.length === 0) return;
+        let total = 0;
         const generateTotal = arr => {
           for (const item of arr) {
-            total++
-            if (Array.isArray(item.children)) generateTotal(item.children)
+            total++;
+            if (Array.isArray(item.children)) generateTotal(item.children);
           }
-        }
-        generateTotal(list)
-        this.setState({ total })
+        };
+        generateTotal(list);
+        this.setState({ total });
       },
     });
   };
@@ -299,8 +302,11 @@ export default class DepartmentList extends PureComponent {
   };
 
   flattenList = list => {
-    return list.reduce((arr, a) => arr.concat(Array.isArray(a.children) ? (a, this.flattenList(a.children)) : a), [])
-  }
+    return list.reduce(
+      (arr, a) => arr.concat(Array.isArray(a.children) ? (a, this.flattenList(a.children)) : a),
+      []
+    );
+  };
 
   // 渲染搜索栏
   renderQuery() {
@@ -358,8 +364,8 @@ export default class DepartmentList extends PureComponent {
               {val.substr(index + searchName.length)}
             </span>
           ) : (
-              <span>{val}</span>
-            );
+            <span>{val}</span>
+          );
         },
       },
       {
@@ -398,8 +404,8 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
       </Card>
     );
   }
@@ -410,7 +416,7 @@ export default class DepartmentList extends PureComponent {
         data: { list },
       },
     } = this.props;
-    const { total } = this.state
+    const { total } = this.state;
     const parentData = {
       ...this.state,
       handleCloseModal: this.handleCloseModal,
@@ -419,13 +425,15 @@ export default class DepartmentList extends PureComponent {
       list,
     };
 
-    const content = (
+    const content =
       list && list.length ? (
-        <span>部门总数：{total}</span>
+        <span>
+          部门总数：
+          {total}
+        </span>
       ) : (
-          <span>部门总数：0</span>
-        )
-    )
+        <span>部门总数：0</span>
+      );
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
