@@ -99,7 +99,7 @@ export default class GlobalHeaderRight extends PureComponent {
             className={styles.action}
             title="数据大屏"
           >
-            <Icon type="line-chart" />
+            <Icon type="hdd" />
           </a>
         </Tooltip>
         {currentUser.userName ? (

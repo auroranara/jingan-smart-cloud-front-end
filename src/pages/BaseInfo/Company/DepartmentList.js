@@ -13,6 +13,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { arrayify } from 'tslint/lib/utils';
 
 const { TreeNode } = TreeSelect;
 const FormItem = Form.Item;
@@ -29,8 +30,8 @@ const breadcrumbList = [
     name: '一起一档',
   },
   {
-    title: '企业单位',
-    name: '企业单位',
+    title: '单位管理',
+    name: '单位管理',
     href: '/base-info/company/list',
   },
   {
@@ -100,7 +101,10 @@ const RenderModal = Form.create()(props => {
             getValueFromEvent: e => e.target.value.trim(),
             initialValue: modalStatus === 'edit' ? detail.name : null,
             validateTrigger: 'onBlur',
-            rules: [{ required: true, message: '请输入部门名称' }],
+            rules: [
+              { required: true, message: '请输入部门名称' },
+              { max: 30, message: '部门名称过长' },
+            ],
           })(<Input />)}
         </FormItem>
         <FormItem {...formItemCol} label="上级部门：">
@@ -137,6 +141,7 @@ export default class DepartmentList extends PureComponent {
     detail: {},
     expandedRowKeys: [], // 展开的树节点
     searchName: '',
+    total: 0,
   };
 
   componentDidMount() {
@@ -154,6 +159,18 @@ export default class DepartmentList extends PureComponent {
     dispatch({
       type: 'department/fetchDepartmentList',
       payload: { companyId: id },
+      callback: list => {
+        if (list.length === 0) return;
+        let total = 0;
+        const generateTotal = arr => {
+          for (const item of arr) {
+            total++;
+            if (Array.isArray(item.children)) generateTotal(item.children);
+          }
+        };
+        generateTotal(list);
+        this.setState({ total });
+      },
     });
   };
 
@@ -168,11 +185,24 @@ export default class DepartmentList extends PureComponent {
     } = this.props;
     const name = getFieldValue('name');
     this.setState({ searchName: name });
+    if (name && !this.hasName(name, list)) {
+      message.error('未查询到所需数据！')
+    }
     // if (name) {
     //   // this.generateExpended(name, [...list], temp)
     //   // temp = [...new Set(temp)]
     // }
   };
+
+  // 判断数组中的名称是否包含搜索内容
+  hasName = (name, list) => {
+    for (const item of list) {
+      const index = item.name.indexOf(name)
+      if (index > -1) return true
+      if (item.children) this.hasName(name, item.children)
+    }
+    return false
+  }
 
   // generateExpended = (name, list, temp) => {
   //   for (const item of list) {
@@ -284,6 +314,13 @@ export default class DepartmentList extends PureComponent {
     });
   };
 
+  flattenList = list => {
+    return list.reduce(
+      (arr, a) => arr.concat(Array.isArray(a.children) ? (a, this.flattenList(a.children)) : a),
+      []
+    );
+  };
+
   // 渲染搜索栏
   renderQuery() {
     const {
@@ -333,17 +370,15 @@ export default class DepartmentList extends PureComponent {
         width: '50%',
         render: val => {
           const index = val.indexOf(searchName);
-          const beforeStr = val.substr(0, index);
-          const afterStr = val.substr(index + searchName.length);
-          return index > -1 ? (
+          return searchName && index > -1 ? (
             <span>
-              {beforeStr}
+              {val.substr(0, index)}
               <span style={{ color: '#f50' }}>{searchName}</span>
-              {afterStr}
+              {val.substr(index + searchName.length)}
             </span>
           ) : (
-            <span>{val}</span>
-          );
+              <span>{val}</span>
+            );
         },
       },
       {
@@ -382,8 +417,8 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-          <div style={{ textAlign: 'center' }}>暂无数据</div>
-        )}
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
       </Card>
     );
   }
@@ -394,6 +429,7 @@ export default class DepartmentList extends PureComponent {
         data: { list },
       },
     } = this.props;
+    const { total } = this.state;
     const parentData = {
       ...this.state,
       handleCloseModal: this.handleCloseModal,
@@ -401,8 +437,18 @@ export default class DepartmentList extends PureComponent {
       doEdit: this.doEdit,
       list,
     };
+
+    const content =
+      list && list.length ? (
+        <span>
+          部门总数：
+          {total}
+        </span>
+      ) : (
+          <span>部门总数：0</span>
+        );
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
         {this.renderTable()}
         <RenderModal {...parentData} />

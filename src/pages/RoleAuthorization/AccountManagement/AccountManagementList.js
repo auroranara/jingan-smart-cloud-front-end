@@ -356,7 +356,9 @@ export default class accountManagementList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Col span={12}>
-                      <p>{`姓名：${item.userName}`}</p>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>{`姓名：${
+                        item.userName
+                      }`}</Ellipsis>
                     </Col>
                     <Col span={12}>
                       <p>{`电话: ${item.phoneNumber}`}</p>

@@ -319,7 +319,7 @@ export default class accountManagementEdit extends PureComponent {
             unitId: unitId ? unitId.key : null,
             treeIds: treeIds ? treeIds.key : null,
             roleIds: roleIds.join(','),
-            departmentId: departmentId && departmentId.length ? departmentId[0] : undefined,
+            departmentId: Array.isArray(departmentId) ? undefined : departmentId,
             userType,
             documentTypeId,
             execCertificateCode,
@@ -687,7 +687,7 @@ export default class accountManagementEdit extends PureComponent {
                   initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
                   rules: [
                     {
-                      required: true,
+                      required: unitTypeChecked !== 3, // 如果是运营企业 不需要必填,
                       transform: value => value && value.label,
                       message: '请选择所属单位',
                     },
