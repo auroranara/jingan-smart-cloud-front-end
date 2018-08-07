@@ -6,7 +6,7 @@ export default {
   'menu.dashboard': '首页',
   'menu.dashboard.view': '首页',
   'menu.baseInfo': '一企一档',
-  'menu.baseInfo.company': '企业单位',
+  'menu.baseInfo.company': '单位管理',
   'menu.baseInfo.company.list': '企业列表',
   'menu.baseInfo.company.add': '新增企业',
   'menu.baseInfo.company.edit': '编辑企业',
