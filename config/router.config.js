@@ -26,7 +26,6 @@ module.exports = [
           {
             path: '/dashboard',
             redirect: '/dashboard/view',
-
           },
           {
             path: '/dashboard/view',
@@ -348,7 +347,7 @@ module.exports = [
       {
         path: '/device-management',
         code: 'deviceManagement',
-        icon: 'setting',
+        icon: 'laptop',
         name: 'deviceManagement',
         routes: [
           {
