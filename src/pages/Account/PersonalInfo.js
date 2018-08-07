@@ -106,7 +106,8 @@ export default class PersonalInfo extends PureComponent {
     const { companyType } = this.state;
 
     const userTypeObj = UserTypes.find(t => t.value === userType);
-    const formatPhone = phoneNumber.substr(0, 3) + "****" + phoneNumber.substr(7)
+    const phone = phoneNumber + ''
+    const formatPhone = phone.substr(0, 3) + "****" + phone.substr(7)
 
     return (
       <Card bordered={false}>
