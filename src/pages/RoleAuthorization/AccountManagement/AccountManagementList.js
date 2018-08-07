@@ -140,13 +140,13 @@ export default class accountManagementList extends PureComponent {
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
-    // appendfetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //     ...data,
-    //   },
-    // });
+    appendfetch({
+      payload: {
+        pageSize,
+        pageNum: 1,
+        ...data,
+      },
+    });
   };
 
   /* 重置按钮点击事件 */
@@ -356,7 +356,9 @@ export default class accountManagementList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Col span={12}>
-                      <p>{`姓名：${item.userName}`}</p>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>{`姓名：${
+                        item.userName
+                      }`}</Ellipsis>
                     </Col>
                     <Col span={12}>
                       <p>{`电话: ${item.phoneNumber}`}</p>
