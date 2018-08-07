@@ -13,8 +13,9 @@ module.exports = [
   {
     path: '/big-platform',
     routes: [
-      { path: '/big-platform', redirect: '/big-platform/government' },
-      { path: '/big-platform/government', component: './BigPlatform/Government' },
+      { path: '/big-platform', redirect: '/big-platform/safety/government' },
+      { path: '/big-platform/safety/government', component: './BigPlatform/Safety/Government' },
+      { path: '/big-platform/safety/company', component: './BigPlatform/Safety/Company' },
     ],
   },
   // app

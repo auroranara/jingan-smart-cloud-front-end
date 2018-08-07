@@ -1,4 +1,4 @@
-import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation } from '../services/bigPlatform/bigPlatform.js';
+import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation } from '../services/bigPlatform/bigPlatform.js';
 
 export default {
   namespace: 'bigPlatform',
@@ -12,44 +12,154 @@ export default {
       yellow: 0,
       blue: 0,
     },
-    currentCount: 0,
-    todayCount: 0,
-    faultVideoCount: 0,
-    userList: [],
-    videoList: [],
-    videoUrl: null,
+    listForMap: {
+      gridCheck: 0,
+      overRectifyNum: 0,
+      photo: 0,
+      rectifyNum: 0,
+      reviewNum: 0,
+      selfCheck: 0,
+      total: 0,
+    },
+    newHomePage: {
+      companyDto: {
+        company_num_with_item: 0,
+      },
+      companyLevelDto: [],
+      countGridCompany: [],
+    },
+    location: [],
+    infoByLocation: {
+      company_name: '',
+      level: '',
+      address: '',
+    },
+    locationCenter: {
+      level: 13,
+      location: '120.40116,31.560116',
+    },
   },
 
   effects: {
     *fetchItemList({ payload, success, error }, { call, put }) {
       const response = yield call(getItemList, payload);
-      if (response.status === 200) {
-        yield put({
-          type: 'itemList',
-          payload: response.total,
-        });
-        if (success) {
-          success();
-        }
+      // if (response.code === 200) {
+      yield put({
+        type: 'itemList',
+        payload: response.total,
+      });
+      if (success) {
+        success();
       }
-      else if (error) {
-        error();
-      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
     },
     *fetchCountDangerLocation({ payload, success, error }, { call, put }) {
       const response = yield call(getCountDangerLocation, payload);
-      if (response.status === 200) {
-        yield put({
-          type: 'countDangerLocation',
-          payload: response.countDangerLocation,
-        });
-        if (success) {
-          success();
-        }
+      // if (response.code === 200) {
+      yield put({
+        type: 'countDangerLocation',
+        payload: response,
+      });
+      if (success) {
+        success();
       }
-      else if (error) {
-        error();
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchListForMap({ payload, success, error }, { call, put }) {
+      const response = yield call(getListForMap, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'listForMap',
+        payload: response,
+      });
+      if (success) {
+        success();
       }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchNewHomePage({ payload, success, error }, { call, put }) {
+      const response = yield call(getNewHomePage, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'newHomePage',
+        payload: response,
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchProjectName({ payload, success, error }, { call, put }) {
+      const response = yield call(getProjectName, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'projectName',
+        payload: response,
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchLocation({ payload, success, error }, { call, put }) {
+      const response = yield call(getLocation, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'location',
+        payload: response.rows,
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchLocationCenter({ payload, success, error }, { call, put }) {
+      const response = yield call(getLocationCenter, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'locationCenter',
+        payload: response,
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchInfoByLocation({ payload, success, error }, { call, put }) {
+      const response = yield call(getInfoByLocation, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'infoByLocation',
+        payload: response.data,
+      });
+      if (success) {
+        success(response.data);
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
     },
   },
 
@@ -66,22 +176,40 @@ export default {
         countDangerLocation: payload,
       };
     },
-    saveVideos(state, { payload }) {
+    listForMap(state, { payload }) {
       return {
         ...state,
-        videoList: payload,
+        listForMap: payload,
       };
     },
-    saveVideoUrl(state, { payload }) {
+    newHomePage(state, { payload }) {
       return {
         ...state,
-        videoUrl: payload,
+        newHomePage: payload,
       };
     },
-    deleteVideoUrl(state) {
+    projectName(state, { payload }) {
       return {
         ...state,
-        videoUrl: null,
+        ...payload,
+      };
+    },
+    location(state, { payload }) {
+      return {
+        ...state,
+        location: payload,
+      };
+    },
+    locationCenter(state, { payload }) {
+      return {
+        ...state,
+        locationCenter: payload,
+      };
+    },
+    infoByLocation(state, { payload }) {
+      return {
+        ...state,
+        infoByLocation: payload,
       };
     },
   },

@@ -1,32 +1,39 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 // import { Link } from 'dva/router';
 import styles from './Government.less';
 import Bar from './Bar';
+import Timer from './Timer';
 
 import { DataView } from '@antv/data-set';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View, Legend } from "bizcharts";
+import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from "bizcharts";
 
 @connect(({ bigPlatform }) => ({
   bigPlatform,
 }))
 class GovernmentBigPlatform extends React.PureComponent {
   state = {
-    time: '0000-00-00 星期一 00:00:00',
     scrollNodeTop: 0,
     label: {
       longitude: 120.366011,
       latitude: 31.544389,
     },
     infoWindowShow: false,
+    infoWindow: {
+      company_name: '',
+      level: '',
+      address: '',
+    },
+    areaHeight: 0,
+    pieHeight: 1,
   };
 
-  UNSAFE_componentWillUpdate() {
-    // requestAnimationFrame(this.resolveAnimationFrame);
-  }
+  // UNSAFE_componentWillUpdate() {
+  //   requestAnimationFrame(this.resolveAnimationFrame);
+  // }
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -38,23 +45,70 @@ class GovernmentBigPlatform extends React.PureComponent {
       }, 1000);
     });
 
-    this.timer = setInterval(() => {
-      this.getTime();
-    }, 1000);
-
     dispatch({
       type: 'bigPlatform/fetchItemList',
+      payload: {
+        start: 0,
+        end: 24,
+        pageSize: 25,
+        item_type: 1,
+      },
+    });
+
+    dispatch({
+      type: 'bigPlatform/fetchProjectName',
+    });
+
+    dispatch({
+      type: 'bigPlatform/fetchListForMap',
+    });
+
+    dispatch({
+      type: 'bigPlatform/fetchCountDangerLocation',
+    });
+
+    dispatch({
+      type: 'bigPlatform/fetchLocationCenter',
+    });
+
+    dispatch({
+      type: 'bigPlatform/fetchLocation',
+    });
+
+    dispatch({
+      type: 'bigPlatform/fetchNewHomePage',
+      payload: {
+        month: moment().format('YYYY-MM'),
+      },
     });
 
     // requestAnimationFrame(this.resolveAnimationFrame);
 
     this.handleScroll();
+
+    window.addEventListener('resize', ()=>{
+      this.debounce(this.reDoChart(), 300)
+    });
+
+    window.onload = () => {
+      this.reDoChart();
+    };
+
+    this.setViewport();
   }
 
   componentWillUnmount() {
     cancelAnimationFrame(this.reqRef);
-    clearInterval(this.timer);
   }
+
+  setViewport() {
+    const vp = document.querySelector('meta[name=viewport]');
+    const sw = window.screen.width;
+    const stand = 1440;
+    const sca = sw / stand;
+    vp.content = "width=device-width, initial-scale=" + sca
+      + ", maximum-scale=" + sca + ", minimum-scale=" + sca + ", user-scalable=no";
+  };
 
   resolveAnimationFrame = () => {
     const { scrollNodeTop } = this.state;
@@ -71,9 +125,31 @@ class GovernmentBigPlatform extends React.PureComponent {
     }, 50);
   }
 
+  debounce = (action, delay)=> {
+    var timer = null;
+    return function() {
+        const self = this;
+        const args = arguments;
+
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            action.apply(self, args)
+        }, delay);
+    }
+  }
+
+  reDoChart = () => {
+    const areaHeight = document.getElementById('hdArea')?document.getElementById('hdArea').offsetHeight: 0;
+    const pieHeight = document.getElementById('hdPie')?document.getElementById('hdPie').offsetHeight: 0;
+    this.setState({
+      areaHeight,
+      pieHeight,
+    });
+  }
+
   handleScroll = () => {
     const speed = 50;
-    if (this.scrollNode.clientHeight >= this.tableNode.scrollHeight) return;
+    // if (this.scrollNode.clientHeight >= this.tableNode.scrollHeight) return;
 
     let timer = window.setInterval(() => {
       this.scrollup(this.scrollNode);
@@ -101,20 +177,6 @@ class GovernmentBigPlatform extends React.PureComponent {
       scroll.scrollTop++;
     }
   }
-
-
-  getTime = () => {
-    const now = moment();
-    const myday = now.weekday();
-    const weekday = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
-
-    const dayText = moment(now).format('YYYY-MM-DD');
-    const timeText = moment(now).format('HH:mm:ss');
-
-    this.setState({
-      time: `${dayText}  ${weekday[myday]}  ${timeText}`,
-    });
-  };
 
   renderBarChart = () => {
     Shape.registerShape('interval', 'triangle', {
@@ -172,7 +234,6 @@ class GovernmentBigPlatform extends React.PureComponent {
       { name: '蓝', value: 2 },
     ]; // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
 
-    // document.getElementById('hdArea').clientHeight
     return (
       <Chart height={300} data={data} forceFit padding={[25, 30, 45, 40]}>
         <Axis name="name" title={null} label={
@@ -208,6 +269,15 @@ class GovernmentBigPlatform extends React.PureComponent {
   renderPieChart = () => {
     // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
     const sliceNumber = 0.015;
+
+    let { bigPlatform: { listForMap: {
+      gridCheck,
+      overRectifyNum,
+      photo,
+      rectifyNum,
+      reviewNum,
+      selfCheck,
+    } } } = this.props;
     // 自定义 other 的图形，增加两条线
     Shape.registerShape('interval', 'sliceShape', {
       draw: function draw(cfg, container) {
@@ -227,16 +297,31 @@ class GovernmentBigPlatform extends React.PureComponent {
         });
       },
     });
+
+    let outFake = false;
+    let inFake = false;
+    if (overRectifyNum === 0 && reviewNum === 0 && rectifyNum === 0) {
+      outFake = true;
+      overRectifyNum = 1;
+      reviewNum = 1;
+      rectifyNum = 1;
+    }
+    if (gridCheck === 0 && selfCheck === 0 && photo === 0) {
+      inFake = true;
+      gridCheck = 1;
+      selfCheck = 1;
+      photo = 1;
+    }
     const dataOut = [
-      { name: '已超期', value: 10 },
-      { name: '待复查', value: 3 },
-      { name: '未超期', value: 3 },
+      { name: '已超期', value: overRectifyNum },
+      { name: '待复查', value: reviewNum },
+      { name: '未超期', value: rectifyNum },
     ];
 
     const dataIn = [
-      { name: '网格点', value: 7 },
-      { name: '风险点', value: 3 },
-      { name: '随手拍', value: 13 },
+      { name: '网格点', value: gridCheck },
+      { name: '风险点', value: selfCheck },
+      { name: '随手拍', value: photo },
     ];
 
     const dvIn = new DataView();
@@ -256,18 +341,23 @@ class GovernmentBigPlatform extends React.PureComponent {
     const scale = {
       percent: {
         formatter: val => {
-          console.log(val);
-
           val = (val * 100).toFixed(2) + '%';
           return val;
         },
       },
       nice: false,
     }
+    const {pieHeight} = this.state;
     return (
-      <Chart height={300} data={dataOut} scale={scale} forceFit padding={[0]}>
+      <Chart height={pieHeight} data={dataOut} scale={scale} forceFit padding={[0]}>
         <Coord type="theta" radius={0.6} innerRadius={0.76} />
-        <Tooltip showTitle={false} />
+        <Tooltip showTitle={false}
+        itemTpl='
+          <li data-index={index}>
+            <span style="background-color:{color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
+            {name}: {outFake ? 0: val}
+          </li>'
+        />
         <Geom
           type="intervalStack"
           position="value"
@@ -284,12 +374,19 @@ class GovernmentBigPlatform extends React.PureComponent {
               fontWeight: 'bold', // 文本粗细
             }}
             formatter={(val, item) => {
-              return item.point.name + '\n' + val;
+              return `${item.point.name}\n${outFake ? 0: val}`;
             }} />
         </Geom>
 
         <View data={dataIn} >
           <Coord type='theta' radius={0.35} />
+          <Tooltip showTitle={false}
+          itemTpl='
+            <li data-index={index}>
+              <span style="background-color:{color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
+              {name}: {inFake ? 0: val}
+            </li>'
+          />
           <Geom
             type="intervalStack"
             position="value"
@@ -303,25 +400,27 @@ class GovernmentBigPlatform extends React.PureComponent {
   }
 
   renderCompanyMarker() {
-    // const { userList } = this.props.map;
-    const companyList = [{ "level": "A", "location": "POINT (120.363731 31.585241)" }, { "level": "A", "location": "POINT (120.380086 31.573547)" }, { "level": "C", "location": "POINT (120.35291 31.573752)" }, { "level": "D", "location": "POINT (120.335564 31.577691)" }, { "level": "B", "location": "POINT (120.373663 31.56754)" }, { "level": "B", "location": "POINT (120.765802 31.701894)" }, { "level": "C", "location": "POINT (120.313246 31.593969)" }, { "level": "B", "location": "POINT (120.372652 31.569028)" }];
-    return companyList.map((company) => {
+    const { location } = this.props.bigPlatform;
+    return location.map((company) => {
       const position = this.analysisPointData(company.location);
       const level = company.level;
+      let offset = [-10, -10];
+      if (level === 'A') {
+        offset = [-13, -13];
+      }
       return (
         <Marker
           position={{ longitude: position.longitude, latitude: position.latitude }}
           key={company.location}
-          offset={[-10, -10]}
+          offset={offset}
           events={{
             click: this.handleCompanyLabel.bind(this, { longitude: position.longitude, latitude: position.latitude }),
           }}
         >
-          {level === 'A' && (<img src="http://p92lxg7ga.bkt.clouddn.com/icon-video.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
-          {/* {level === 'A' && (<img src="../../static/img/BigPlatform/Government/dot-red.svg" alt="" style={{ display: 'block', width: '26px', height: '26px' }} />)} */}
-          {level === 'B' && (<img src="../../static/img/BigPlatform/Government/dot-orange2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
-          {level === 'C' && (<img src="../../static/img/BigPlatform/Government/dot-yel2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
-          {level === 'D' && (<img src="../../static/img/BigPlatform/Government/dot-blue2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+          {level === 'A' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg" alt="" style={{ display: 'block', width: '26px', height: '26px' }} />)}
+          {level === 'B' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+          {level === 'C' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+          {level === 'D' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
         </Marker>
       );
     });
@@ -354,25 +453,36 @@ class GovernmentBigPlatform extends React.PureComponent {
         visible={infoWindowShow}
         events={{ close: this.handleHideLabel }}
       >
-        {this.renderLabel(label)}
+        {this.renderLabel()}
       </InfoWindow>
     );
   }
 
-  renderLabel = (label) => {
+  renderLabel = () => {
+    const { infoWindow } = this.state;
     return (
       <div className={styles.companyLabel}>
-        <div>company_name</div>
-        <div>等级：level</div>
-        <div>地址：address</div>
+        <div>{infoWindow.company_name}</div>
+        <div>等级：{infoWindow.level}</div>
+        <div>地址：{infoWindow.address}</div>
       </div>
     );
   }
 
   handleCompanyLabel = (company) => {
-    this.setState({
-      label: company,
-      infoWindowShow: true,
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigPlatform/fetchInfoByLocation',
+      payload: {
+        location: `(${company.longitude} ${company.latitude})`,
+      },
+      success: (response) => {
+        this.setState({
+          label: company,
+          infoWindow: response,
+          infoWindowShow: true,
+        });
+      },
     });
   }
 
@@ -382,21 +492,51 @@ class GovernmentBigPlatform extends React.PureComponent {
     });
   }
 
+  renderTable = () => {
+    const { bigPlatform: { newHomePage: { countGridCompany } } } = this.props;
+    return countGridCompany.map((item) => {
+      return (
+        <Fragment key={item.grid_name}>
+          <tr>
+            <td>{item.grid_name}</td>
+            <td>{item.total_num}</td>
+          </tr>
+        </Fragment>
+      );
+    })
+  }
+
   render() {
-    const { time, scrollNodeTop } = this.state;
-    const { itemTotal } = this.props;
+    const { scrollNodeTop,areaHeight } = this.state;
+    const { bigPlatform: { itemTotal,
+      countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
+      newHomePage: { companyDto: { company_num_with_item }, companyLevelDto },
+      listForMap: { gridCheck, overRectifyNum, photo, rectifyNum, reviewNum, selfCheck, total: hdTotal },
+      locationCenter,
+    } } = this.props;
     const salesData = [
-      { name: '红', value: 10 },
-      { name: '橙', value: 3 },
-      { name: '黄', value: 3 },
-      { name: '蓝', value: 2 },
+      { name: '红', value: red },
+      { name: '橙', value: orange },
+      { name: '黄', value: yellow },
+      { name: '蓝', value: blue },
     ]; // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
+    let Anum = 0, Bnum = 0, Cnum = 0, Dnum = 0;
+    companyLevelDto.map(item => {
+      if (item.level === 'A') Anum = item.num;
+      if (item.level === 'B') Bnum = item.num;
+      if (item.level === 'C') Cnum = item.num;
+      if (item.level === 'D') Dnum = item.num;
+    });
+
+    const zoom = parseFloat(locationCenter.level);
+    const center = [parseFloat(locationCenter.location.split(',')[0]), parseFloat(locationCenter.location.split(',')[1])];
+
 
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
           <span>晶安智慧安全云平台</span>
-          <div className={styles.subHeader}>{time}</div>
+          <div className={styles.subHeader}><Timer /></div>
         </header>
 
         <article className={styles.mainBody}>
@@ -409,13 +549,13 @@ class GovernmentBigPlatform extends React.PureComponent {
                     <span className={styles.spanHalf}>
                       风险点
                       <span className={styles.summaryNum} style={{ color: '#00baff' }}>
-                        {itemTotal}
+                        {hdPionts}
                       </span>
                     </span>
                     <span className={styles.spanHalf}>
                       未评级风险点
                       <span className={styles.summaryNum} style={{ color: '#e86767' }}>
-                        0
+                        {hdPionts - red - orange - yellow - blue}
                       </span>
                     </span>
                   </div>
@@ -424,7 +564,7 @@ class GovernmentBigPlatform extends React.PureComponent {
                     id="hdArea"
                     style={{ height: 'calc(100% - 60px)' }}
                   >
-                    <Bar data={salesData} />
+                    <Bar data={salesData} height={areaHeight} />
                   </div>
                 </div>
               </section>
@@ -439,7 +579,7 @@ class GovernmentBigPlatform extends React.PureComponent {
                     <span className={styles.spanHalf}>
                       隐患总数
                       <span className={styles.summaryNum} style={{ color: '#00baff' }}>
-                        0
+                        {hdTotal}
                       </span>
                     </span>
                   </div>
@@ -451,34 +591,46 @@ class GovernmentBigPlatform extends React.PureComponent {
                     <div className={styles.hdLegend}>
                       <span className={styles.legendCircle} style={{ backgroundColor: '#e86767' }}></span>
                       已超期
-                        <span className={styles.legendNum}>{0}</span>
+                        <span className={styles.legendNum}>
+                        {overRectifyNum}
+                      </span>
                     </div>
                     <div className={styles.hdLegend}>
                       <span className={styles.legendCircle} style={{ backgroundColor: '#2a8bd5' }}></span>
                       待复查
-                        <span className={styles.legendNum}>{0}</span>
+                        <span className={styles.legendNum}>
+                        {reviewNum}
+                      </span>
                     </div>
                     <div className={styles.hdLegend}>
                       <span className={styles.legendCircle} style={{ backgroundColor: '#f6b54e' }}></span>
                       未超期
-                        <span className={styles.legendNum}>{0}</span>
+                        <span className={styles.legendNum}>
+                        {rectifyNum}
+                      </span>
                     </div>
 
                     <div className={styles.hdTitle}>隐患状态</div>
                     <div className={styles.hdLegend}>
                       <span className={styles.legendCircle} style={{ backgroundColor: '#f7f457' }}></span>
                       网格点
-                        <span className={styles.legendNum}>{0}</span>
+                        <span className={styles.legendNum}>
+                        {gridCheck}
+                      </span>
                     </div>
                     <div className={styles.hdLegend}>
                       <span className={styles.legendCircle} style={{ backgroundColor: '#35c9c9' }}></span>
                       风险点
-                        <span className={styles.legendNum}>{0}</span>
+                        <span className={styles.legendNum}>
+                        {selfCheck}
+                      </span>
                     </div>
                     <div className={styles.hdLegend}>
                       <span className={styles.legendCircle} style={{ backgroundColor: '#3e0ec6' }}></span>
                       随手拍
-                        <span className={styles.legendNum}>{0}</span>
+                        <span className={styles.legendNum}>
+                        {photo}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -493,34 +645,36 @@ class GovernmentBigPlatform extends React.PureComponent {
                   <div className={styles.topData}>
                     <div className={styles.topItem}>
                       <div className={styles.topName}>接入企业</div>
-                      <div className={styles.topNum}>0</div>
+                      <div className={styles.topNum}>
+                        {company_num_with_item}
+                      </div>
                     </div>
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>网格点</div>
                       <div className={styles.topNum} style={{ color: '#00baff' }}>
-                        0
+                        {itemTotal}
                       </div>
                     </div>
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>风险点</div>
                       <div className={styles.topNum} style={{ color: '#00baff' }}>
-                        0
+                        {hdPionts}
                       </div>
                     </div>
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>未超期隐患</div>
                       <div className={styles.topNum} style={{ color: '#f6b54e' }}>
-                        0
+                        {rectifyNum}
                       </div>
                     </div>
 
                     <div className={styles.topItem}>
                       <div className={styles.topName}>已超期隐患</div>
                       <div className={styles.topNum} style={{ color: '#e86767' }}>
-                        0
+                        {overRectifyNum}
                       </div>
                     </div>
                   </div>
@@ -534,6 +688,8 @@ class GovernmentBigPlatform extends React.PureComponent {
                       }}
                       useAMapUI
                       mapStyle="amap://styles/79a9a32fda8686e79bb79c6e5fe48c2c"
+                      center= {center}
+                      zoom = {zoom}
                     >
                       {this.renderCompanyMarker()}
                       {this.renderInfoWindow()}
@@ -542,19 +698,19 @@ class GovernmentBigPlatform extends React.PureComponent {
                     <Row className={styles.mapLegend}>
                       <Col span={6}>
                         <span className={styles.dotRed}></span>
-                        A类企业 （{0}）
+                        A类企业 （{Anum}）
                       </Col>
                       <Col span={6}>
                         <span className={styles.dotOrange}></span>
-                        B类企业 （{0}）
+                        B类企业 （{Bnum}）
                       </Col>
                       <Col span={6}>
                         <span className={styles.dotYel}></span>
-                        C类企业 （{0}）
+                        C类企业 （{Cnum}）
                       </Col>
                       <Col span={6}>
                         <span className={styles.dotBlue}></span>
-                        D类企业 （{0}）
+                        D类企业 （{Dnum}）
                       </Col>
                     </Row>
                   </div>
@@ -576,179 +732,13 @@ class GovernmentBigPlatform extends React.PureComponent {
                     <div className={styles.tableWrapper} style={{ marginTop: -scrollNodeTop }}>
                       <table className={styles.safeTable}>
                         <tbody>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
+                          {this.renderTable()}
                         </tbody>
                       </table>
 
                       <table className={styles.safeTable} ref={node => this.tableNode = node} >
                         <tbody>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
-                          <tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr><tr>
-                            <td>淼泉居委</td>
-                            <td>308</td>
-                          </tr>
-                          <tr>
-                            <td>高长村</td>
-                            <td>55</td>
-                          </tr>
+                          {this.renderTable()}
                         </tbody>
                       </table>
                     </div>
