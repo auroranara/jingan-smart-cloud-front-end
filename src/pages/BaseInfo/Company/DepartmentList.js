@@ -185,11 +185,24 @@ export default class DepartmentList extends PureComponent {
     } = this.props;
     const name = getFieldValue('name');
     this.setState({ searchName: name });
+    if (name && !this.hasName(name, list)) {
+      message.error('未查询到所需数据！')
+    }
     // if (name) {
     //   // this.generateExpended(name, [...list], temp)
     //   // temp = [...new Set(temp)]
     // }
   };
+
+  // 判断数组中的名称是否包含搜索内容
+  hasName = (name, list) => {
+    for (const item of list) {
+      const index = item.name.indexOf(name)
+      if (index > -1) return true
+      if (item.children) this.hasName(name, item.children)
+    }
+    return false
+  }
 
   // generateExpended = (name, list, temp) => {
   //   for (const item of list) {
@@ -357,15 +370,15 @@ export default class DepartmentList extends PureComponent {
         width: '50%',
         render: val => {
           const index = val.indexOf(searchName);
-          return index > -1 ? (
+          return searchName && index > -1 ? (
             <span>
               {val.substr(0, index)}
               <span style={{ color: '#f50' }}>{searchName}</span>
               {val.substr(index + searchName.length)}
             </span>
           ) : (
-            <span>{val}</span>
-          );
+              <span>{val}</span>
+            );
         },
       },
       {
@@ -404,8 +417,8 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-          <div style={{ textAlign: 'center' }}>暂无数据</div>
-        )}
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
       </Card>
     );
   }
@@ -432,8 +445,8 @@ export default class DepartmentList extends PureComponent {
           {total}
         </span>
       ) : (
-        <span>部门总数：0</span>
-      );
+          <span>部门总数：0</span>
+        );
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
