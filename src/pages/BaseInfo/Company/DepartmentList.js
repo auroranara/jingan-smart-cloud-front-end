@@ -26,8 +26,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一起一档',
-    name: '一起一档',
+    title: '一企一档',
+    name: '一企一档',
   },
   {
     title: '单位管理',
@@ -186,7 +186,7 @@ export default class DepartmentList extends PureComponent {
     const name = getFieldValue('name');
     this.setState({ searchName: name });
     if (name && !this.hasName(name, list)) {
-      message.error('未查询到所需数据！')
+      message.error('未查询到所需数据！');
     }
     // if (name) {
     //   // this.generateExpended(name, [...list], temp)
@@ -197,12 +197,12 @@ export default class DepartmentList extends PureComponent {
   // 判断数组中的名称是否包含搜索内容
   hasName = (name, list) => {
     for (const item of list) {
-      const index = item.name.indexOf(name)
-      if (index > -1) return true
-      if (item.children) this.hasName(name, item.children)
+      const index = item.name.indexOf(name);
+      if (index > -1) return true;
+      if (item.children) this.hasName(name, item.children);
     }
-    return false
-  }
+    return false;
+  };
 
   // generateExpended = (name, list, temp) => {
   //   for (const item of list) {
@@ -377,8 +377,8 @@ export default class DepartmentList extends PureComponent {
               {val.substr(index + searchName.length)}
             </span>
           ) : (
-              <span>{val}</span>
-            );
+            <span>{val}</span>
+          );
         },
       },
       {
@@ -417,8 +417,8 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
       </Card>
     );
   }
@@ -445,8 +445,8 @@ export default class DepartmentList extends PureComponent {
           {total}
         </span>
       ) : (
-          <span>部门总数：0</span>
-        );
+        <span>部门总数：0</span>
+      );
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
