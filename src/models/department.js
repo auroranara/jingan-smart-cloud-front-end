@@ -13,6 +13,7 @@ export default {
     *fetchDepartmentList({ payload, callback }, { call, put }) {
       const response = yield call(fetchDepartmentList, payload)
       if (response && response.code === 200) {
+        if (callback) callback([...response.data.list])
         yield put({
           type: 'saveDepartment',
           payload: response.data.list,
