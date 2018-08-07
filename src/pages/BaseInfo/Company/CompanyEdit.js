@@ -202,7 +202,7 @@ export default class CompanyDetail extends PureComponent {
           // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
-            ichnographyList: Array.isArray(companyIchnographyList) ? companyIchnographyList : companyIchnographyList.dbUrl,
+            ichnographyList: Array.isArray(companyIchnographyList) ? companyIchnographyList : JSON.parse(companyIchnographyList.dbUrl),
             isCompany: companyNatureLabel === defaultCompanyNature,
           });
           // 获取注册地址列表
