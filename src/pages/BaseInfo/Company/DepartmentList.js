@@ -100,7 +100,7 @@ const RenderModal = Form.create()(props => {
             getValueFromEvent: e => e.target.value.trim(),
             initialValue: modalStatus === 'edit' ? detail.name : null,
             validateTrigger: 'onBlur',
-            rules: [{ required: true, message: '请输入部门名称' }],
+            rules: [{ required: true, message: '请输入部门名称' }, { max: 30, message: '部门名称过长' }],
           })(<Input />)}
         </FormItem>
         <FormItem {...formItemCol} label="上级部门：">
@@ -333,17 +333,15 @@ export default class DepartmentList extends PureComponent {
         width: '50%',
         render: val => {
           const index = val.indexOf(searchName);
-          const beforeStr = val.substr(0, index);
-          const afterStr = val.substr(index + searchName.length);
           return index > -1 ? (
             <span>
-              {beforeStr}
+              {val.substr(0, index)}
               <span style={{ color: '#f50' }}>{searchName}</span>
-              {afterStr}
+              {val.substr(index + searchName.length)}
             </span>
           ) : (
-            <span>{val}</span>
-          );
+              <span>{val}</span>
+            );
         },
       },
       {
@@ -382,8 +380,8 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-          <div style={{ textAlign: 'center' }}>暂无数据</div>
-        )}
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
       </Card>
     );
   }
