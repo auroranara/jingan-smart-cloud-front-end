@@ -9,7 +9,7 @@ import Timer from './Components/Timer';
 
 import { DataView } from '@antv/data-set';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from "bizcharts";
+import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from 'bizcharts';
 
 @connect(({ bigPlatform }) => ({
   bigPlatform,
@@ -86,8 +86,8 @@ class GovernmentBigPlatform extends React.PureComponent {
 
     this.handleScroll();
 
-    window.addEventListener('resize', ()=>{
-      this.debounce(this.reDoChart(), 300)
+    window.addEventListener('resize', () => {
+      this.debounce(this.reDoChart(), 300);
     });
 
     window.onload = () => {
@@ -106,9 +106,15 @@ class GovernmentBigPlatform extends React.PureComponent {
     const sw = window.screen.width;
     const stand = 1440;
     const sca = sw / stand;
-    vp.content = "width=device-width, initial-scale=" + sca
-      + ", maximum-scale=" + sca + ", minimum-scale=" + sca + ", user-scalable=no";
-  };
+    vp.content =
+      'width=device-width, initial-scale=' +
+      sca +
+      ', maximum-scale=' +
+      sca +
+      ', minimum-scale=' +
+      sca +
+      ', user-scalable=no';
+  }
 
   resolveAnimationFrame = () => {
     const { scrollNodeTop } = this.state;
@@ -123,29 +129,33 @@ class GovernmentBigPlatform extends React.PureComponent {
         scrollNodeTop: scrollNodeTop + 1,
       });
     }, 50);
-  }
+  };
 
-  debounce = (action, delay)=> {
+  debounce = (action, delay) => {
     var timer = null;
     return function() {
-        const self = this;
-        const args = arguments;
+      const self = this;
+      const args = arguments;
 
-        clearTimeout(timer);
-        timer = setTimeout(function() {
-            action.apply(self, args)
-        }, delay);
-    }
-  }
+      clearTimeout(timer);
+      timer = setTimeout(function() {
+        action.apply(self, args);
+      }, delay);
+    };
+  };
 
   reDoChart = () => {
-    const areaHeight = document.getElementById('hdArea')?document.getElementById('hdArea').offsetHeight: 0;
-    const pieHeight = document.getElementById('hdPie')?document.getElementById('hdPie').offsetHeight: 0;
+    const areaHeight = document.getElementById('hdArea')
+      ? document.getElementById('hdArea').offsetHeight
+      : 0;
+    const pieHeight = document.getElementById('hdPie')
+      ? document.getElementById('hdPie').offsetHeight
+      : 0;
     this.setState({
       areaHeight,
       pieHeight,
     });
-  }
+  };
 
   handleScroll = () => {
     const speed = 50;
@@ -158,17 +168,17 @@ class GovernmentBigPlatform extends React.PureComponent {
     this.scrollNode.onmouseover = () => {
       //清除定时器
       clearInterval(timer);
-    }
+    };
 
     this.scrollNode.onmouseout = () => {
       //添加定时器
       timer = window.setInterval(() => {
         this.scrollup(this.scrollNode);
       }, speed);
-    }
-  }
+    };
+  };
 
-  scrollup = (scroll) => {
+  scrollup = scroll => {
     //如果scroll滚上去的高度大于scroll1的高度，scrollTop = 0
     if (!scroll) return;
     if (scroll.scrollTop >= scroll.scrollHeight / 2) {
@@ -176,7 +186,7 @@ class GovernmentBigPlatform extends React.PureComponent {
     } else {
       scroll.scrollTop++;
     }
-  }
+  };
 
   renderBarChart = () => {
     Shape.registerShape('interval', 'triangle', {
@@ -236,8 +246,10 @@ class GovernmentBigPlatform extends React.PureComponent {
 
     return (
       <Chart height={300} data={data} forceFit padding={[25, 30, 45, 40]}>
-        <Axis name="name" title={null} label={
-          {
+        <Axis
+          name="name"
+          title={null}
+          label={{
             textStyle: {
               fontSize: 12, // 文本大小
               textAlign: 'center', // 文本对齐方式
@@ -270,14 +282,11 @@ class GovernmentBigPlatform extends React.PureComponent {
     // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
     const sliceNumber = 0.015;
 
-    let { bigPlatform: { listForMap: {
-      gridCheck,
-      overRectifyNum,
-      photo,
-      rectifyNum,
-      reviewNum,
-      selfCheck,
-    } } } = this.props;
+    let {
+      bigPlatform: {
+        listForMap: { gridCheck, overRectifyNum, photo, rectifyNum, reviewNum, selfCheck },
+      },
+    } = this.props;
     // 自定义 other 的图形，增加两条线
     Shape.registerShape('interval', 'sliceShape', {
       draw: function draw(cfg, container) {
@@ -346,26 +355,27 @@ class GovernmentBigPlatform extends React.PureComponent {
         },
       },
       nice: false,
-    }
-    const {pieHeight} = this.state;
+    };
+    const { pieHeight } = this.state;
     return (
       <Chart height={pieHeight} data={dataOut} scale={scale} forceFit padding={[0]}>
         <Coord type="theta" radius={0.6} innerRadius={0.76} />
-        <Tooltip showTitle={false}
-        itemTpl='
+        <Tooltip
+          showTitle={false}
+          itemTpl="
           <li data-index={index}>
-            <span style="background-color:{color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
+            <span style=&quot;background-color:{color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;&quot;></span>
             {name}: {outFake ? 0: val}
-          </li>'
+          </li>"
         />
         <Geom
           type="intervalStack"
           position="value"
-          color={["name", ['#e86767', '#2a8bd5', '#f6b54e', '#bbbbbc']]}
+          color={['name', ['#e86767', '#2a8bd5', '#f6b54e', '#bbbbbc']]}
           shape="sliceShape"
         >
           <Label
-            content='value'
+            content="value"
             offset={25}
             textStyle={{
               textAlign: 'center', // 文本对齐方向，可取值为： start middle end
@@ -374,34 +384,35 @@ class GovernmentBigPlatform extends React.PureComponent {
               fontWeight: 'bold', // 文本粗细
             }}
             formatter={(val, item) => {
-              return `${item.point.name}\n${outFake ? 0: val}`;
-            }} />
+              return `${item.point.name}\n${outFake ? 0 : val}`;
+            }}
+          />
         </Geom>
 
-        <View data={dataIn} >
-          <Coord type='theta' radius={0.35} />
-          <Tooltip showTitle={false}
-          itemTpl='
+        <View data={dataIn}>
+          <Coord type="theta" radius={0.35} />
+          <Tooltip
+            showTitle={false}
+            itemTpl="
             <li data-index={index}>
-              <span style="background-color:{color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
+              <span style=&quot;background-color:{color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;&quot;></span>
               {name}: {inFake ? 0: val}
-            </li>'
+            </li>"
           />
           <Geom
             type="intervalStack"
             position="value"
-            color={["name", ['#f7f457', '#35c9c9', '#3e0ec6']]}
+            color={['name', ['#f7f457', '#35c9c9', '#3e0ec6']]}
             select={false}
-          >
-          </Geom>
+          />
         </View>
       </Chart>
     );
-  }
+  };
 
   renderCompanyMarker() {
     const { location } = this.props.bigPlatform;
-    return location.map((company) => {
+    return location.map(company => {
       const position = this.analysisPointData(company.location);
       const level = company.level;
       let offset = [-10, -10];
@@ -414,19 +425,46 @@ class GovernmentBigPlatform extends React.PureComponent {
           key={company.location}
           offset={offset}
           events={{
-            click: this.handleCompanyLabel.bind(this, { longitude: position.longitude, latitude: position.latitude }),
+            click: this.handleCompanyLabel.bind(this, {
+              longitude: position.longitude,
+              latitude: position.latitude,
+            }),
           }}
         >
-          {level === 'A' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg" alt="" style={{ display: 'block', width: '26px', height: '26px' }} />)}
-          {level === 'B' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
-          {level === 'C' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
-          {level === 'D' && (<img src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png" alt="" style={{ display: 'block', width: '20px', height: '20px' }} />)}
+          {level === 'A' && (
+            <img
+              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
+              alt=""
+              style={{ display: 'block', width: '26px', height: '26px' }}
+            />
+          )}
+          {level === 'B' && (
+            <img
+              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
+              alt=""
+              style={{ display: 'block', width: '20px', height: '20px' }}
+            />
+          )}
+          {level === 'C' && (
+            <img
+              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
+              alt=""
+              style={{ display: 'block', width: '20px', height: '20px' }}
+            />
+          )}
+          {level === 'D' && (
+            <img
+              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
+              alt=""
+              style={{ display: 'block', width: '20px', height: '20px' }}
+            />
+          )}
         </Marker>
       );
     });
   }
 
-  analysisPointData = (data) => {
+  analysisPointData = data => {
     // POINT ()
     const str = data.substring(7, data.length - 1);
     const point = str.split(' ');
@@ -434,7 +472,7 @@ class GovernmentBigPlatform extends React.PureComponent {
       longitude: point[0],
       latitude: point[1],
     };
-  }
+  };
 
   /* 标注渲染 */
   renderInfoWindow() {
@@ -463,20 +501,26 @@ class GovernmentBigPlatform extends React.PureComponent {
     return (
       <div className={styles.companyLabel}>
         <div>{infoWindow.company_name}</div>
-        <div>等级：{infoWindow.level}</div>
-        <div>地址：{infoWindow.address}</div>
+        <div>
+          等级：
+          {infoWindow.level}
+        </div>
+        <div>
+          地址：
+          {infoWindow.address}
+        </div>
       </div>
     );
-  }
+  };
 
-  handleCompanyLabel = (company) => {
+  handleCompanyLabel = company => {
     const { dispatch } = this.props;
     dispatch({
       type: 'bigPlatform/fetchInfoByLocation',
       payload: {
         location: `(${company.longitude} ${company.latitude})`,
       },
-      success: (response) => {
+      success: response => {
         this.setState({
           label: company,
           infoWindow: response,
@@ -484,17 +528,21 @@ class GovernmentBigPlatform extends React.PureComponent {
         });
       },
     });
-  }
+  };
 
   handleHideLabel = () => {
     this.setState({
       infoWindowShow: false,
     });
-  }
+  };
 
   renderTable = () => {
-    const { bigPlatform: { newHomePage: { countGridCompany } } } = this.props;
-    return countGridCompany.map((item) => {
+    const {
+      bigPlatform: {
+        newHomePage: { countGridCompany },
+      },
+    } = this.props;
+    return countGridCompany.map(item => {
       return (
         <Fragment key={item.grid_name}>
           <tr>
@@ -503,24 +551,41 @@ class GovernmentBigPlatform extends React.PureComponent {
           </tr>
         </Fragment>
       );
-    })
-  }
+    });
+  };
 
   render() {
-    const { scrollNodeTop,areaHeight } = this.state;
-    const { bigPlatform: { itemTotal,
-      countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
-      newHomePage: { companyDto: { company_num_with_item }, companyLevelDto },
-      listForMap: { gridCheck, overRectifyNum, photo, rectifyNum, reviewNum, selfCheck, total: hdTotal },
-      locationCenter,
-    } } = this.props;
+    const { scrollNodeTop, areaHeight } = this.state;
+    const {
+      bigPlatform: {
+        itemTotal,
+        countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
+        newHomePage: {
+          companyDto: { company_num_with_item },
+          companyLevelDto,
+        },
+        listForMap: {
+          gridCheck,
+          overRectifyNum,
+          photo,
+          rectifyNum,
+          reviewNum,
+          selfCheck,
+          total: hdTotal,
+        },
+        locationCenter,
+      },
+    } = this.props;
     const salesData = [
       { name: '红', value: red },
       { name: '橙', value: orange },
       { name: '黄', value: yellow },
       { name: '蓝', value: blue },
     ]; // G2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
-    let Anum = 0, Bnum = 0, Cnum = 0, Dnum = 0;
+    let Anum = 0,
+      Bnum = 0,
+      Cnum = 0,
+      Dnum = 0;
     companyLevelDto.map(item => {
       if (item.level === 'A') Anum = item.num;
       if (item.level === 'B') Bnum = item.num;
@@ -529,14 +594,18 @@ class GovernmentBigPlatform extends React.PureComponent {
     });
 
     const zoom = parseFloat(locationCenter.level);
-    const center = [parseFloat(locationCenter.location.split(',')[0]), parseFloat(locationCenter.location.split(',')[1])];
-
+    const center = [
+      parseFloat(locationCenter.location.split(',')[0]),
+      parseFloat(locationCenter.location.split(',')[1]),
+    ];
 
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
           <span>晶安智慧安全云平台</span>
-          <div className={styles.subHeader}><Timer /></div>
+          <div className={styles.subHeader}>
+            <Timer />
+          </div>
         </header>
 
         <article className={styles.mainBody}>
@@ -583,54 +652,64 @@ class GovernmentBigPlatform extends React.PureComponent {
                       </span>
                     </span>
                   </div>
-                  <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '67%' }}>
+                  <div
+                    className={styles.sectionChart}
+                    id="hdPie"
+                    style={{ height: 'calc(100% - 60px)', width: '67%' }}
+                  >
                     {this.renderPieChart()}
                   </div>
                   <div className={styles.pieLegend}>
                     <div className={styles.hdTitle}>隐患状态</div>
                     <div className={styles.hdLegend}>
-                      <span className={styles.legendCircle} style={{ backgroundColor: '#e86767' }}></span>
+                      <span
+                        className={styles.legendCircle}
+                        style={{ backgroundColor: '#e86767' }}
+                      />
                       已超期
-                        <span className={styles.legendNum}>
-                        {overRectifyNum}
-                      </span>
+                      <span className={styles.legendNum}>{overRectifyNum}</span>
                     </div>
                     <div className={styles.hdLegend}>
-                      <span className={styles.legendCircle} style={{ backgroundColor: '#2a8bd5' }}></span>
+                      <span
+                        className={styles.legendCircle}
+                        style={{ backgroundColor: '#2a8bd5' }}
+                      />
                       待复查
-                        <span className={styles.legendNum}>
-                        {reviewNum}
-                      </span>
+                      <span className={styles.legendNum}>{reviewNum}</span>
                     </div>
                     <div className={styles.hdLegend}>
-                      <span className={styles.legendCircle} style={{ backgroundColor: '#f6b54e' }}></span>
+                      <span
+                        className={styles.legendCircle}
+                        style={{ backgroundColor: '#f6b54e' }}
+                      />
                       未超期
-                        <span className={styles.legendNum}>
-                        {rectifyNum}
-                      </span>
+                      <span className={styles.legendNum}>{rectifyNum}</span>
                     </div>
 
                     <div className={styles.hdTitle}>隐患状态</div>
                     <div className={styles.hdLegend}>
-                      <span className={styles.legendCircle} style={{ backgroundColor: '#f7f457' }}></span>
+                      <span
+                        className={styles.legendCircle}
+                        style={{ backgroundColor: '#f7f457' }}
+                      />
                       网格点
-                        <span className={styles.legendNum}>
-                        {gridCheck}
-                      </span>
+                      <span className={styles.legendNum}>{gridCheck}</span>
                     </div>
                     <div className={styles.hdLegend}>
-                      <span className={styles.legendCircle} style={{ backgroundColor: '#35c9c9' }}></span>
+                      <span
+                        className={styles.legendCircle}
+                        style={{ backgroundColor: '#35c9c9' }}
+                      />
                       风险点
-                        <span className={styles.legendNum}>
-                        {selfCheck}
-                      </span>
+                      <span className={styles.legendNum}>{selfCheck}</span>
                     </div>
                     <div className={styles.hdLegend}>
-                      <span className={styles.legendCircle} style={{ backgroundColor: '#3e0ec6' }}></span>
+                      <span
+                        className={styles.legendCircle}
+                        style={{ backgroundColor: '#3e0ec6' }}
+                      />
                       随手拍
-                        <span className={styles.legendNum}>
-                        {photo}
-                      </span>
+                      <span className={styles.legendNum}>{photo}</span>
                     </div>
                   </div>
                 </div>
@@ -645,9 +724,7 @@ class GovernmentBigPlatform extends React.PureComponent {
                   <div className={styles.topData}>
                     <div className={styles.topItem}>
                       <div className={styles.topName}>接入企业</div>
-                      <div className={styles.topNum}>
-                        {company_num_with_item}
-                      </div>
+                      <div className={styles.topNum}>{company_num_with_item}</div>
                     </div>
 
                     <div className={styles.topItem}>
@@ -682,14 +759,17 @@ class GovernmentBigPlatform extends React.PureComponent {
                   <div className={styles.mapContainer}>
                     <GDMap
                       amapkey="71fbf192d766c9709e279589d6a8bede"
-                      plugins={[{ name: 'Scale', options: { locate: false } }, { name: 'ToolBar', options: { locate: false } }]}
+                      plugins={[
+                        { name: 'Scale', options: { locate: false } },
+                        { name: 'ToolBar', options: { locate: false } },
+                      ]}
                       status={{
                         keyboardEnable: false,
                       }}
                       useAMapUI
                       mapStyle="amap://styles/79a9a32fda8686e79bb79c6e5fe48c2c"
-                      center= {center}
-                      zoom = {zoom}
+                      center={center}
+                      zoom={zoom}
                     >
                       {this.renderCompanyMarker()}
                       {this.renderInfoWindow()}
@@ -697,19 +777,19 @@ class GovernmentBigPlatform extends React.PureComponent {
 
                     <Row className={styles.mapLegend}>
                       <Col span={6}>
-                        <span className={styles.dotRed}></span>
+                        <span className={styles.dotRed} />
                         A类企业 （{Anum}）
                       </Col>
                       <Col span={6}>
-                        <span className={styles.dotOrange}></span>
+                        <span className={styles.dotOrange} />
                         B类企业 （{Bnum}）
                       </Col>
                       <Col span={6}>
-                        <span className={styles.dotYel}></span>
+                        <span className={styles.dotYel} />
                         C类企业 （{Cnum}）
                       </Col>
                       <Col span={6}>
-                        <span className={styles.dotBlue}></span>
+                        <span className={styles.dotBlue} />
                         D类企业 （{Dnum}）
                       </Col>
                     </Row>
@@ -728,22 +808,17 @@ class GovernmentBigPlatform extends React.PureComponent {
                     </thead>
                   </table>
 
-                  <div className={styles.scrollWrapper} ref={node => this.scrollNode = node}>
+                  <div className={styles.scrollWrapper} ref={node => (this.scrollNode = node)}>
                     <div className={styles.tableWrapper} style={{ marginTop: -scrollNodeTop }}>
                       <table className={styles.safeTable}>
-                        <tbody>
-                          {this.renderTable()}
-                        </tbody>
+                        <tbody>{this.renderTable()}</tbody>
                       </table>
 
-                      <table className={styles.safeTable} ref={node => this.tableNode = node} >
-                        <tbody>
-                          {this.renderTable()}
-                        </tbody>
+                      <table className={styles.safeTable} ref={node => (this.tableNode = node)}>
+                        <tbody>{this.renderTable()}</tbody>
                       </table>
                     </div>
                   </div>
-
                 </div>
               </section>
             </Col>
