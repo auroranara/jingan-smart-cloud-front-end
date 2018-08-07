@@ -26,7 +26,7 @@ module.exports = [
       { path: '/', redirect: '/dashboard/view' },
       {
         path: '/dashboard',
-        icon: 'dashboard',
+        icon: 'home',
         code: 'dashboard',
         name: 'dashboard',
         hideChildren: true,
