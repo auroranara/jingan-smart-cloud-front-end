@@ -6,6 +6,7 @@ import Ellipsis from 'components/Ellipsis';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
+import VisibilitySensor from 'react-visibility-sensor';
 import styles from './UserTransmissionDevice.less';
 import { AuthLink, ERROR_MSG } from '../../../utils/customAuth';
 import buttonCodes from '../../../utils/codes';
@@ -20,7 +21,7 @@ const breadcrumbList = [
 ];
 
 // div[id="root"]下的唯一子元素相对于定高的root滚动
-const rootElement = document.getElementById('root');
+// const rootElement = document.getElementById('root');
 
 @connect(({ transmission, user, loading }) => ({
   transmission,
@@ -37,7 +38,7 @@ export default class UserTransmissionDevice extends PureComponent {
 
   componentDidMount() {
     const that = this;
-    rootElement.addEventListener('scroll', this.handleScroll, false);
+    // rootElement.addEventListener('scroll', this.handleScroll, false);
 
     this.props.dispatch({
       type: 'transmission/fetch',
@@ -54,26 +55,26 @@ export default class UserTransmissionDevice extends PureComponent {
   }
 
   componentWillUnmount() {
-    rootElement.removeEventListener('scroll', this.handleScroll);
+    // rootElement.removeEventListener('scroll', this.handleScroll);
   }
 
   currentpageNum = 2;
 
-  handleScroll = e => {
-    // console.log('scroll');
-    const rootDOM = e.target;
-    // console.log('rootDOM', rootDOM.scrollTop);
-    const childDOM = rootDOM.firstElementChild;
-    // console.log('child', childDOM);
-    // console.log(rootDOM.scrollTop, rootDOM.offsetHeight, childDOM.offsetHeight);
+  // handleScroll = e => {
+  //   // console.log('scroll');
+  //   const rootDOM = e.target;
+  //   // console.log('rootDOM', rootDOM.scrollTop);
+  //   const childDOM = rootDOM.firstElementChild;
+  //   // console.log('child', childDOM);
+  //   // console.log(rootDOM.scrollTop, rootDOM.offsetHeight, childDOM.offsetHeight);
 
-    const { scrollLoading, hasMore } = this.state;
-    // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
-    // 判断页面是否滚到底部
-    const scrollToBottom = rootDOM.scrollTop + rootDOM.offsetHeight >= childDOM.offsetHeight;
-    // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
-    if (scrollToBottom && !scrollLoading && hasMore) this.handleLazyload();
-  };
+  //   const { scrollLoading, hasMore } = this.state;
+  //   // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
+  //   // 判断页面是否滚到底部
+  //   const scrollToBottom = rootDOM.scrollTop + rootDOM.offsetHeight >= childDOM.offsetHeight;
+  //   // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
+  //   if (scrollToBottom && !scrollLoading && hasMore) this.handleLazyload();
+  // };
 
   handleCheck = () => {
     const that = this;
@@ -144,6 +145,14 @@ export default class UserTransmissionDevice extends PureComponent {
     });
   };
 
+  handleLoadMore = flag => {
+    // flag=true 能看到组件 flag=false 不能看到组件
+    const { scrollLoading, hasMore } = this.state;
+    // flag=true表示能看到组件，即已经到底，且请求还未返回且数据库还有数据
+    if (flag && !scrollLoading && hasMore)
+      this.handleLazyload();
+  };
+
   render() {
     const {
       transmission: { list },
@@ -210,6 +219,7 @@ export default class UserTransmissionDevice extends PureComponent {
             )}
           />
         </div>
+        {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} />}
         <div className={scrollLoading && hasMore ? styles.spinContainer : styles.none}>
           <Spin />
         </div>
