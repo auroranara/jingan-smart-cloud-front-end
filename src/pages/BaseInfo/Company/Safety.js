@@ -219,7 +219,7 @@ export default class Safety extends PureComponent {
       else if (next === 'gridId')
         prev[next] = [...idMap[val], val];
       else if (UPLOADERS.includes(next)) {
-        let list = [];
+        let list = null;
         // 数据库存的是个JSON格式的数组或对象
         if (isJSONStr(val)) {
           list = JSON.parse(val);
@@ -230,7 +230,7 @@ export default class Safety extends PureComponent {
         } else
           list = [{name: '已上传文件', url: detail[`${next}Web`], dbUrl: val, uid: Date.now(), status: 'done', response: { code: 200 }}];
 
-        this.setState({ [UPLOADERS_MAP[next]]: [] });
+        this.setState({ [UPLOADERS_MAP[next]]: list });
         prev[next] = { fileList: list };
         console.log(list);
       }
