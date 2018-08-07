@@ -49,6 +49,12 @@ const fieldLabels = {
   execCertificateCode: '执法证编号',
 };
 
+// 单位类型对应的id
+// 企事业主体：4
+// 运营企业：3
+// 政府机构：2
+// 维保企业：1
+
 // 默认的所属单位长度
 const defaultPageSize = 20;
 
@@ -199,7 +205,7 @@ export default class accountManagementEdit extends PureComponent {
 
     const success = id
       ? undefined
-      : ({ unitType }) => {
+      : () => {
           this.setState({
             unitTypeChecked: 4,
           });
@@ -340,7 +346,6 @@ export default class accountManagementEdit extends PureComponent {
             default:
               break;
           }
-
           const success = () => {
             const msg = id ? '编辑成功！' : '新增成功！';
             message.success(msg, 1, goBack);
@@ -372,9 +377,17 @@ export default class accountManagementEdit extends PureComponent {
 
   // 选中单位类型调用
   handleUnitTypesChange = id => {
-    this.setState({
-      unitTypeChecked: id,
-    });
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState(
+      {
+        unitTypeChecked: id,
+      },
+      () => {
+        setFieldsValue({ userType: 'company_legal_person' });
+      }
+    );
   };
 
   // 单位类型下拉框选择
@@ -545,6 +558,8 @@ export default class accountManagementEdit extends PureComponent {
       },
       loading,
     } = this.props;
+
+    // console.log('userType', userType);
 
     const { unitTypeChecked } = this.state;
 
@@ -729,7 +744,7 @@ export default class accountManagementEdit extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            {/* 当单位类型为企事业主体 */}
+            {/* 当单位类型为企事业主体（企事业主体对应id为4） */}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 4 && (
                 <Col lg={8} md={12} sm={24}>
@@ -758,7 +773,7 @@ export default class accountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-            {/* 当单位类型为政府机构 */}
+            {/* 当单位类型为政府机构（政府机构对应id为2） */}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>
