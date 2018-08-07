@@ -140,13 +140,13 @@ export default class accountManagementList extends PureComponent {
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
-    appendfetch({
-      payload: {
-        pageSize,
-        pageNum: 1,
-        ...data,
-      },
-    });
+    // appendfetch({
+    //   payload: {
+    //     pageSize,
+    //     pageNum: 1,
+    //     ...data,
+    //   },
+    // });
   };
 
   /* 重置按钮点击事件 */
