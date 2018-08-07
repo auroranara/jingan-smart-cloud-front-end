@@ -13,6 +13,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import { arrayify } from 'tslint/lib/utils';
 
 const { TreeNode } = TreeSelect;
 const FormItem = Form.Item;
@@ -137,6 +138,7 @@ export default class DepartmentList extends PureComponent {
     detail: {},
     expandedRowKeys: [], // 展开的树节点
     searchName: '',
+    total: 0,
   };
 
   componentDidMount() {
@@ -154,6 +156,18 @@ export default class DepartmentList extends PureComponent {
     dispatch({
       type: 'department/fetchDepartmentList',
       payload: { companyId: id },
+      callback: list => {
+        if (list.length === 0) return
+        let total = 0
+        const generateTotal = arr => {
+          for (const item of arr) {
+            total++
+            if (Array.isArray(item.children)) generateTotal(item.children)
+          }
+        }
+        generateTotal(list)
+        this.setState({ total })
+      },
     });
   };
 
@@ -284,6 +298,10 @@ export default class DepartmentList extends PureComponent {
     });
   };
 
+  flattenList = list => {
+    return list.reduce((arr, a) => arr.concat(Array.isArray(a.children) ? (a, this.flattenList(a.children)) : a), [])
+  }
+
   // 渲染搜索栏
   renderQuery() {
     const {
@@ -392,6 +410,7 @@ export default class DepartmentList extends PureComponent {
         data: { list },
       },
     } = this.props;
+    const { total } = this.state
     const parentData = {
       ...this.state,
       handleCloseModal: this.handleCloseModal,
@@ -399,8 +418,16 @@ export default class DepartmentList extends PureComponent {
       doEdit: this.doEdit,
       list,
     };
+
+    const content = (
+      list && list.length ? (
+        <span>部门总数：{total}</span>
+      ) : (
+          <span>部门总数：0</span>
+        )
+    )
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
         {this.renderTable()}
         <RenderModal {...parentData} />
