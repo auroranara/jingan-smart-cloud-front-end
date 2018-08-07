@@ -1,13 +1,14 @@
 import {
   queryCompanies,
   deleteCompany,
-  queryDict,
+  // queryDict,
   queryCompany,
   addCompany,
   updateCompany,
   queryMaintenanceCompanies,
   fetchArea,
   upload,
+  gsafeQueryDict,
 } from '../services/company/company.js';
 
 // const mergeArea = (area, ids, list) => {
@@ -165,7 +166,7 @@ export default {
       },
       { call, put }
     ) {
-      const response = yield call(queryDict, { type });
+      const response = yield call(gsafeQueryDict, { type });
       if (response.code === 200) {
         yield put({
           type: 'queryDict',

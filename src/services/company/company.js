@@ -61,3 +61,9 @@ export async function upload(params) {
 export async function fetchArea(params) {
   return request(`/acloud_new/v2/baseInfo/city/new?${stringify(params)}`);
 }
+
+
+/* gsafe版获取字典 */
+export async function gsafeQueryDict(params) {
+  return request(`/gsafe/dict/listForSelect.do?${stringify(params)}`);
+}

@@ -85,8 +85,6 @@ const tabList = [
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
-// 地图默认中心点
-const defaultCenter = '无锡';
 
 @connect(
   ({ company, user, loading }) => ({
@@ -202,7 +200,7 @@ export default class CompanyDetail extends PureComponent {
           // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
-            ichnographyList: Array.isArray(companyIchnographyList) ? companyIchnographyList : JSON.parse(companyIchnographyList.dbUrl),
+            ichnographyList: Array.isArray(companyIchnographyList) ? companyIchnographyList.map((item, index) => ({ ...item, uid: index, status: 'done' })) : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({ ...item, uid: index, status: 'done' })),
             isCompany: companyNatureLabel === defaultCompanyNature,
           });
           // 获取注册地址列表
@@ -365,7 +363,7 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
-            companyIchnography: JSON.stringify(ichnographyList),
+            companyIchnography: JSON.stringify(ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))),
             longitude,
             latitude,
           };
@@ -626,8 +624,8 @@ export default class CompanyDetail extends PureComponent {
           })(
             <Select placeholder="请选择单位状态" getPopupContainer={getRootChild}>
               {companyStatuses.map(item => (
-                <Option value={item.id} key={item.id}>
-                  {item.label}
+                <Option value={item.key} key={item.key}>
+                  {item.value}
                 </Option>
               ))}
             </Select>
@@ -947,8 +945,8 @@ export default class CompanyDetail extends PureComponent {
                 })(
                   <Select placeholder="请选择经济类型" getPopupContainer={getRootChild}>
                     {economicTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
                       </Option>
                     ))}
                   </Select>
@@ -963,8 +961,8 @@ export default class CompanyDetail extends PureComponent {
                 })(
                   <Select allowClear placeholder="请选择规模情况" getPopupContainer={getRootChild}>
                     {scales.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
                       </Option>
                     ))}
                   </Select>
@@ -979,8 +977,8 @@ export default class CompanyDetail extends PureComponent {
                 })(
                   <Select placeholder="请选择营业执照类别" getPopupContainer={getRootChild}>
                     {licenseTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
                       </Option>
                     ))}
                   </Select>
