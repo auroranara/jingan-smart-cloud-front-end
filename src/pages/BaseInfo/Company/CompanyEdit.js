@@ -122,6 +122,20 @@ const defaultCompanyNature = '一般企业';
         ...action,
       });
     },
+    // gsafe版获取字典
+    gsafeFetchDict(action) {
+      dispatch({
+        type: 'company/gsafeFetchDict',
+        ...action,
+      });
+    },
+    // 获取行业类别
+    fetchIndustryType(action) {
+      dispatch({
+        type: 'company/fetchIndustryType',
+        ...action,
+      });
+    },
     // 返回
     goBack() {
       dispatch(routerRedux.push(listUrl));
@@ -166,6 +180,8 @@ export default class CompanyDetail extends PureComponent {
     const {
       fetchCompany,
       fetchDict,
+      gsafeFetchDict,
+      fetchIndustryType,
       fetchArea,
       clearDetail,
       match: {
@@ -239,15 +255,11 @@ export default class CompanyDetail extends PureComponent {
     }
 
     // 获取行业类别
-    fetchDict({
-      payload: {
-        type: 'company_industry_type',
-        key: 'industryCategories',
-      },
+    fetchIndustryType({
       error,
     });
     // 获取经济类型
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'economicType',
         key: 'economicTypes',
@@ -255,7 +267,7 @@ export default class CompanyDetail extends PureComponent {
       error,
     });
     // 获取单位状态
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'companyState',
         key: 'companyStatuses',
@@ -263,7 +275,7 @@ export default class CompanyDetail extends PureComponent {
       error,
     });
     // 获取规模情况
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'scale',
         key: 'scales',
@@ -271,7 +283,7 @@ export default class CompanyDetail extends PureComponent {
       error,
     });
     // 获取营业执照类别
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'businessLicense',
         key: 'licenseTypes',
@@ -587,10 +599,9 @@ export default class CompanyDetail extends PureComponent {
             <Cascader
               options={industryCategories}
               fieldNames={{
-                value: 'id',
-                label: 'name',
+                value: 'type_id',
+                label: 'gs_type_name',
                 children: 'children',
-                isLeaf: 'isLeaf',
               }}
               allowClear
               changeOnSelect

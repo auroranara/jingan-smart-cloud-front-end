@@ -1,7 +1,7 @@
 import {
   queryCompanies,
   deleteCompany,
-  // queryDict,
+  queryDict,
   queryCompany,
   addCompany,
   updateCompany,
@@ -9,6 +9,7 @@ import {
   fetchArea,
   upload,
   gsafeQueryDict,
+  gsafeQueryIndustryType,
 } from '../services/company/company.js';
 
 // const mergeArea = (area, ids, list) => {
@@ -166,12 +167,60 @@ export default {
       },
       { call, put }
     ) {
+      const response = yield call(queryDict, { type });
+      if (response.code === 200) {
+        yield put({
+          type: 'queryDict',
+          payload: {
+            key,
+            list: response.data.list,
+          },
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    *gsafeFetchDict(
+      {
+        payload: { type, key },
+        success,
+        error,
+      },
+      { call, put }
+    ) {
       const response = yield call(gsafeQueryDict, { type });
       if (response.code === 200) {
         yield put({
           type: 'queryDict',
           payload: {
             key,
+            list: response.data.list,
+          },
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    /* 获取行业类别 */
+    *fetchIndustryType(
+      {
+        success,
+        error,
+      },
+      { call, put }
+    ) {
+      const response = yield call(gsafeQueryIndustryType, { parent_id: -1 });
+      if (response.code === 200) {
+        yield put({
+          type: 'queryDict',
+          payload: {
+            key: 'industryCategories',
             list: response.data.list,
           },
         });

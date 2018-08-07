@@ -67,3 +67,10 @@ export async function fetchArea(params) {
 export async function gsafeQueryDict(params) {
   return request(`/gsafe/dict/listForSelect.do?${stringify(params)}`);
 }
+
+/* gsafe版获取行业类别 */
+export async function gsafeQueryIndustryType(params) {
+  return request(`/gsafe/company/getCompanyIndustryTypeNew.do?${stringify(params)}`, {
+    method: 'POST',
+  });
+}
