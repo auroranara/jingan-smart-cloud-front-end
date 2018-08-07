@@ -37,6 +37,10 @@ const dspItems = [
 
 const dspItems1 = [
   {
+    name: 'safetyFourPicture',
+    cName: '安全四色图',
+  },
+  {
     name: 'companyLogo',
     cName: '单位LOGO',
   },
@@ -46,10 +50,6 @@ const moreItems = [
   {
     name: 'reachGradeAccessory',
     cName: '标准化达标等级附件',
-  },
-  {
-    name: 'safetyFourPicture',
-    cName: '安全四色图',
   },
 ];
 
@@ -72,9 +72,10 @@ function renderDsp(items, detail, menus) {
     // console.log(name, cName, menus[name], detail[name]);
     // 如果菜单或detail还没获取
     if (!Object.keys(menus).length || !Object.keys(detail).length) val = '暂无信息';
-    else if (v === null || v === undefined || (v === '' && name !== 'validity')) val = '暂无信息';
+    else if ((v === null || v === undefined || v === '') && name !== 'validity') val = '暂无信息';
     else if (name === 'validity') {
-      if (!detail.startTime || detail.endTime) val = '暂无信息';
+      // console.log(detail.startTime, detail.endTime);
+      if (!detail.startTime || !detail.endTime) val = '暂无信息';
       else
         val = [detail.startTime, detail.endTime]
           .map(timestamp => moment(Number.parseInt(timestamp, 10)).format('YYYY/MM/DD'))
@@ -88,8 +89,8 @@ function renderDsp(items, detail, menus) {
         case 'reachGradeAccessory':
         case 'safetyFourPicture':
           val = (
-            <a href={`http://pak93s58x.bkt.clouddn.com/development${v.slice(v.indexOf('/gsafe'))}`}>
-              链接
+            <a target="_blank" rel="noopener noreferrer" href={detail[`${name}Web`]}>
+              已上传文件链接
             </a>
           );
           break;
