@@ -199,9 +199,10 @@ export default class CompanyDetail extends PureComponent {
           companyNatureLabel,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+          // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
-            ichnographyList: companyIchnographyList,
+            ichnographyList: Array.isArray(companyIchnographyList) ? companyIchnographyList : companyIchnographyList.dbUrl,
             isCompany: companyNatureLabel === defaultCompanyNature,
           });
           // 获取注册地址列表
