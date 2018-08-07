@@ -1,19 +1,21 @@
-import React from 'react';
-import { Layout } from 'antd';
-const { Header, Content } = Layout;
-// import { Link } from 'dva/router';
-// import styles from './RiskPoint.less';
+import React, { Fragment } from 'react';
+import { Row, Col } from 'antd';
+import { connect } from 'dva';
+import styles from './Company.less';
+import Timer from './Components/Timer';
 
-class UserLayout extends React.PureComponent {
+class CompanyLayout extends React.PureComponent {
 
   render() {
     return (
-      <Layout>
-        <Header>Header</Header>
-        <Content>Content</Content>
-      </Layout>
+      <div className={styles.main}>
+        <header className={styles.mainHeader}>
+          <span>晶安智慧安全云平台</span>
+          <div className={styles.subHeader}><Timer /></div>
+        </header>
+      </div>
     );
   }
 }
 
-export default UserLayout;
+export default CompanyLayout;

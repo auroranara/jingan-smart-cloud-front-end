@@ -4,8 +4,8 @@ import { connect } from 'dva';
 import moment from 'moment';
 // import { Link } from 'dva/router';
 import styles from './Government.less';
-import Bar from './Bar';
-import Timer from './Timer';
+import Bar from './Components/Bar';
+import Timer from './Components/Timer';
 
 import { DataView } from '@antv/data-set';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
