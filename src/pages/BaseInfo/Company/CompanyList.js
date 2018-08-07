@@ -385,15 +385,15 @@ export default class CompanyList extends PureComponent {
                       联系电话：{safetyPhone || getEmptyData()}
                     </Ellipsis>
                     <Popconfirm
-                      title={`确定要${safetyProduction === 0 ? '关闭' : '开启'}安全大屏权限吗？`}
+                      title={`确定要${safetyProduction === 1 ? '关闭' : '开启'}安全大屏权限吗？`}
                       onConfirm={() => this.handleScreenPermission(id, Number(!safetyProduction), fireService, list)}>
-                      <img className={styles.screenConreol} src={safetyProduction === 0 ? safe : safeGray} alt="safe" />
+                      <img className={styles.screenConreol} src={safetyProduction === 1 ? safe : safeGray} alt="safe" />
                     </Popconfirm>
                     <Popconfirm
                       className={styles.ml30}
-                      title={`确定要${fireService === 0 ? '关闭' : '开启'}消防大屏权限吗？`}
+                      title={`确定要${fireService === 1 ? '关闭' : '开启'}消防大屏权限吗？`}
                       onConfirm={() => this.handleScreenPermission(id, safetyProduction, Number(!fireService), list)}>
-                      <img className={styles.screenConreol} src={fireService === 0 ? fire : fireGray} alt="fire" />
+                      <img className={styles.screenConreol} src={fireService === 1 ? fire : fireGray} alt="fire" />
                     </Popconfirm>
                   </div>
                 </Card>
