@@ -95,6 +95,7 @@ export default class BasicForms extends PureComponent {
 
   // 提交表单验证信息
   handleSubmit = () => {
+    const that = this;
     const { dispatch, form, goBack } = this.props;
 
     form.validateFields((err, values) => {
@@ -120,7 +121,10 @@ export default class BasicForms extends PureComponent {
             message.success('保存成功', () => {
               goBack();
             });
-          else message.error('保存失败');
+          else
+            message.error('保存失败', () => {
+              that.setState({ btnDisabled: false });
+            });
         },
       });
     });
