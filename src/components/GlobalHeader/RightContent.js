@@ -84,14 +84,14 @@ export default class GlobalHeaderRight extends PureComponent {
       </Menu>
     );
     // const noticeData = this.getNoticeData();
-    const url = `http://192.168.10.68:18081/gsafe/console`;
+    const url = `/gsafe/console`;
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
     }
     return (
       <div className={className}>
-        <Tooltip title="数据大屏">
+        <Tooltip title="数据维护">
           <a
             target="_blank"
             href={url}
