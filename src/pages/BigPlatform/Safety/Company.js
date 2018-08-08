@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import styles from './Company.less';
@@ -18,7 +18,7 @@ class CompanyLayout extends React.PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, location: { query: { company_id } } } = this.props;
     window.onload = () => {
       this.reDoChart();
     };
@@ -30,55 +30,55 @@ class CompanyLayout extends React.PureComponent {
     dispatch({
       type: 'bigPlatform/fetchCompanyMessage',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
         month: moment().format('YYYY-MM'),
       },
     });
     dispatch({
       type: 'bigPlatform/fetchSpecialEquipment',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
         month: moment().format('YYYY-MM'),
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
         status: '1',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
         status: '2',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
         status: '3',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
         status: '4',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCountDangerLocationForCompany',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id,
       },
     });
 
@@ -117,10 +117,6 @@ class CompanyLayout extends React.PureComponent {
   }
 
   renderBarChart = (dataBar) => {
-    // const dataBar = [
-    //   { name: '隐患数量', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
-    //   { name: '巡查次数', 'Jan.': 12.4, 'Feb.': 23.2, 'Mar.': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 },
-    // ];
     const dv = new DataView();
     dv.source(dataBar).transform({
       type: 'fold',
@@ -212,12 +208,10 @@ class CompanyLayout extends React.PureComponent {
         >
           <Label
             content='name'
-            // offset={25}
             textStyle={{
               textAlign: 'center', // 文本对齐方向，可取值为： start middle end
               fill: '#fff', // 文本的颜色
               fontSize: '12', // 文本大小
-              // fontWeight: 'bold', // 文本粗细
             }}
           />
         </Geom>
@@ -226,7 +220,6 @@ class CompanyLayout extends React.PureComponent {
   }
 
   render() {
-    console.log(this.props);
     const {
       companyMessage: {
         companyMessage: {

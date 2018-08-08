@@ -29,6 +29,8 @@ class GovernmentBigPlatform extends React.PureComponent {
     },
     areaHeight: 0,
     pieHeight: 0,
+    center: [120.366011,31.544389],
+    zoom: 13,
   };
 
   // UNSAFE_componentWillUpdate() {
@@ -69,6 +71,14 @@ class GovernmentBigPlatform extends React.PureComponent {
 
     dispatch({
       type: 'bigPlatform/fetchLocationCenter',
+      success: (response)=> {
+        const zoom = parseFloat(response.level);
+        const center = [parseFloat(response.location.split(',')[0]), parseFloat(response.location.split(',')[1])];
+        this.setState({
+          center,
+          zoom,
+        });
+      },
     });
 
     dispatch({
@@ -507,13 +517,11 @@ class GovernmentBigPlatform extends React.PureComponent {
   }
 
   render() {
-    console.log(this.props);
     const { scrollNodeTop,areaHeight } = this.state;
     const { bigPlatform: { itemTotal,
       countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
       newHomePage: { companyDto: { company_num_with_item }, companyLevelDto },
       listForMap: { gridCheck, overRectifyNum, photo, rectifyNum, reviewNum, selfCheck, total: hdTotal },
-      locationCenter,
     } } = this.props;
     const salesData = [
       { name: '红', value: red },
@@ -529,9 +537,7 @@ class GovernmentBigPlatform extends React.PureComponent {
       if (item.level === 'D') Dnum = item.num;
     });
 
-    const zoom = parseFloat(locationCenter.level);
-    const center = [parseFloat(locationCenter.location.split(',')[0]), parseFloat(locationCenter.location.split(',')[1])];
-
+    const { center, zoom } = this.state;
 
     return (
       <div className={styles.main}>
