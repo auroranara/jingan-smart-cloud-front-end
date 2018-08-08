@@ -9,8 +9,8 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementList.less';
-import { AuthLink, AuthButton, AuthDiv } from '../../../utils/customAuth';
-import codesMap from '../../../utils/codes';
+import { AuthLink, AuthButton, AuthDiv } from 'utils/customAuth';
+import codesMap from 'utils/codes';
 
 // 标题
 const title = '账号管理';
