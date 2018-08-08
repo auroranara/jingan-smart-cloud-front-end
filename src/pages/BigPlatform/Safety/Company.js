@@ -537,9 +537,10 @@ class CompanyLayout extends PureComponent {
 
   /* 隐患详情 */
   renderRiskDetail() {
-    const { bigPlatform: { riskDetailList } } = this.props;
+    const { bigPlatform: { riskDetailList, companyMessage: { fourColorImg } } } = this.props;
     const { selectedId } = this.state;
-    const data = riskDetailList.filter(({ item_id }) => item_id === selectedId).map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }]=[{}] }) => ({
+    let data = fourColorImg ? riskDetailList : riskDetailList.filter(({ item_id }) => item_id === selectedId);
+    data = data.map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }]=[{}] }) => ({
       id,
       description,
       sbr,
