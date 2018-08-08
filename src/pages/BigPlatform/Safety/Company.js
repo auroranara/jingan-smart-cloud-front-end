@@ -150,22 +150,22 @@ const switchCheckStatus = (value = 0) => {
     case 1:
       return {
         color: '#E8292D',
-        content: '正常',
+        content: '异常',
       };
     case 2:
       return {
         color: '#794277',
-        content: '异常',
+        content: '待检查',
       };
     case 3:
       return {
         color: '#EF5150',
-        content: '待检查',
+        content: '已超时',
       };
     default:
       return {
         color: '#20DE3A',
-        content: '已超时',
+        content: '正常',
       };
   }
 }
@@ -205,13 +205,6 @@ class CompanyLayout extends PureComponent {
     });
     dispatch({
       type: 'bigPlatform/fetchSpecialEquipment',
-      payload: {
-        company_id: companyId,
-        month: moment().format('YYYY-MM'),
-      },
-    });
-    dispatch({
-      type: 'bigPlatform/fetchCoItemList',
       payload: {
         company_id: companyId,
       },
@@ -264,6 +257,14 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
       },
     });
+    // 获取隐患数量
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDanger',
+      payload: {
+        company_id: companyId,
+      },
+    });
+
     this.setViewport();
   }
 
@@ -299,6 +300,15 @@ class CompanyLayout extends PureComponent {
       selectedId: id,
       selectedIndex: index,
     });
+  }
+
+  handleMouseEnter = () => {
+    clearTimeout(this.timer);
+  }
+
+  handleMouseLeave = () => {
+    const { selectedId, selectedIndex } = this.state;
+    selectedId && this.points[selectedIndex] && this.points[selectedIndex].handleClick();
   }
 
   setViewport() {
@@ -546,7 +556,7 @@ class CompanyLayout extends PureComponent {
   renderRiskDetail() {
     const { bigPlatform: { riskDetailList, companyMessage: { fourColorImg } } } = this.props;
     const { selectedId } = this.state;
-    let data = !/^http/.test(fourColorImg) ? riskDetailList : riskDetailList.filter(({ item_id }) => item_id === selectedId);
+    let data = !/^http/.test(fourColorImg) ? riskDetailList.filter(({ status }) => +status !== 4) : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
     data = data.map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}] }) => ({
       id,
       description,
@@ -567,6 +577,8 @@ class CompanyLayout extends PureComponent {
             paddingTop: '36px',
           }}
           data={data}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
         />
       </Col>
     );
@@ -603,6 +615,7 @@ class CompanyLayout extends PureComponent {
         blue,
         yellow,
       },
+      hiddenDanger,
     } = this.props.bigPlatform;
 
     const dataPie = [
@@ -620,6 +633,9 @@ class CompanyLayout extends PureComponent {
     const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
     const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
 
+    let pieShow = true;
+    if (red === 0 && orange === 0 && yellow === 0 && blue === 0) pieShow = false;
+    const { match: { params: { companyId } } } = this.props;
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
@@ -632,7 +648,7 @@ class CompanyLayout extends PureComponent {
             <Col span={6} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
               <section className={infoClassNames}>
                 <div className={styles.sectionTitle}>单位信息</div>
-                <div className={styles.sectionMain}>
+                <div className={styles.sectionMain} onClick={() => { window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`); }}>
                   <div className={styles.shadowIn}>
                     <div className={styles.companyMain}>
                       <div className={styles.companyIcon}></div>
@@ -666,7 +682,7 @@ class CompanyLayout extends PureComponent {
                         <Col span={12} className={styles.summaryHalf}>
                           <div className={styles.summaryhd}></div>
                           <div className={styles.summaryText}>隐患数量</div>
-                          <div className={styles.summaryNum}>{statusAll}</div>
+                          <div className={styles.summaryNum}>{hiddenDanger}</div>
                         </Col>
                       </Row>
                     </div>
@@ -678,9 +694,11 @@ class CompanyLayout extends PureComponent {
                 <div className={styles.sectionTitle}>风险点</div>
                 <div className={styles.sectionMain}>
                   <div className={styles.shadowIn}>
-                    <div className={styles.hdPie} id='hdPie'>
-                      {this.renderPieChart(dataPie)}
-                    </div>
+
+                    {pieShow && (
+                      <div className={styles.hdPie} id='hdPie'>
+                        {this.renderPieChart(dataPie)}
+                      </div>)}
 
                     <div className={styles.summaryBottom}>
                       <Row gutter={6}>
