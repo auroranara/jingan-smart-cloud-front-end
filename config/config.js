@@ -23,7 +23,7 @@ export default {
       // target: `http://${hosts.jb}`,
       target: `http://${hosts.gj}`,
       // target: `http://${hosts.dev}`,
-      // target: `http://${hosts.test}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
