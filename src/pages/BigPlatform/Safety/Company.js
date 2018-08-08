@@ -187,7 +187,7 @@ class CompanyLayout extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, match: { params: { companyId = 'rf0e7Xd3TqS4ElNcdDmrSg' } } } = this.props;
+    const { dispatch, match: { params: { companyId } } } = this.props;
     window.onload = () => {
       this.reDoChart();
     };
@@ -613,7 +613,6 @@ class CompanyLayout extends PureComponent {
 
     const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
     const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
-    const checkClassNames = classNames(styles.sectionWrapper, styles.checkWrapper);
 
     return (
       <div className={styles.main}>
