@@ -35,6 +35,11 @@ export default {
     add: 'baseInfo.company.add',
     edit: 'baseInfo.company.edit',
     delete: 'baseInfo.company.delete',
+    department: {
+      add: 'baseInfo.company.department.add',
+      delete: 'baseInfo.company.department.delete',
+      edit: 'baseInfo.company.department.edit',
+    },
   },
   contract: {
     list: 'fireControl.contract.listView',
