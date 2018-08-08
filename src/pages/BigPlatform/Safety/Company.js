@@ -192,6 +192,10 @@ class CompanyLayout extends PureComponent {
       this.reDoChart();
     };
 
+    setTimeout(() => {
+      this.reDoChart();
+    }, 2000);
+
     window.addEventListener('resize', () => {
       this.debounce(this.reDoChart(), 300)
     });
@@ -307,8 +311,8 @@ class CompanyLayout extends PureComponent {
   }
 
   handleMouseLeave = () => {
-    const { selectedId, selectedIndex } = this.state;
-    selectedId && this.points[selectedIndex] && this.points[selectedIndex].handleClick();
+    const { selectedIndex } = this.state;
+    this.points[selectedIndex] && this.points[selectedIndex].handleClick();
   }
 
   setViewport() {
