@@ -10,6 +10,7 @@ export default {
     edit: 'roleAuthorization.accountManagement.edit',
     detail: 'roleAuthorization.accountManagement.view',
     add: 'roleAuthorization.accountManagement.add',
+    reset: 'roleAuthorization.accountManagement.reset',
   },
   deviceManagement: {
     transmission: {
@@ -55,6 +56,10 @@ export default {
     detail: 'fireControl.maintenanceCompany.view',
     edit: 'fireControl.maintenanceCompany.edit',
     serviceDetail: 'fireControl.maintenanceCompany.serviceListView',
+  },
+  dynamicMonitoring: {
+    comanyDetailView: 'dynamicMonitoring.fireAlarm.comanyDetailView',
+    historyRecordView: 'dynamicMonitoring.fireAlarm.historyRecordView',
   },
   map: {
     index: 'videoSurveillance.map.view',
