@@ -172,7 +172,7 @@ export default {
         payload: response,
       });
       if (success) {
-        success();
+        success(response);
       }
       // }
       // else if (error) {
