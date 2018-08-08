@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { message } from 'antd'
 import { connect } from 'dva';
 import Carousel3d from './Carousel3d';
 import styles from './Dashboard.less';
@@ -7,6 +8,9 @@ import fire from '../../assets/fire-big-screen.png';
 import safe from '../../assets/safe-bing-screen.png';
 
 const maxLength = 6; // 最多容纳个数
+const safeItem = { src: safe, url: 'http://www.baidu.com', key: 'safe' };
+const fireItem = { src: fire, url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}`, key: 'fire' };
+
 
 @connect(({ user }) => ({
   user,
@@ -14,7 +18,29 @@ const maxLength = 6; // 最多容纳个数
 export default class Dashboard extends PureComponent {
   state = {
     current: 0,
+    hasSafeAuthority: true,
+    safetyProduction: 0,
+    fireService: 0,
   };
+
+  componentDidMount() {
+    let {
+      user: {
+        currentUser: { companyBasicInfo: { fireService } = {}, unitType },
+      },
+    } = this.props;
+    //如果单位为政府或者admin 运营 则显示企业大屏
+    if (unitType === 3 || unitType === 2) {
+      safeItem.url = '/acloud_new/#/big-platform/safety/government';
+
+      //TODO 政府大屏开启
+      this.setState({ hasSafeAuthority: true, safetyProduction: 1, fireService: 0 })
+    } else {
+      // 单位为企业 安全大屏显示但没有权限
+      this.setState({ hasSafeAuthority: false, safetyProduction: 1, fireService })
+    }
+
+  }
 
   handleChange = data => {
     if (data.eventType === 'end') {
@@ -23,25 +49,8 @@ export default class Dashboard extends PureComponent {
   };
 
   render() {
-    const { current } = this.state;
-    let {
-      user: {
-        currentUser: { companyBasicInfo: { safetyProduction, fireService } = {}, unitType },
-      },
-    } = this.props;
+    const { current, safetyProduction, fireService } = this.state;
 
-    const safeItem = { src: safe, url: 'http://www.baidu.com' };
-    const fireItem = { src: fire, url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}` };
-
-    //如果单位为政府或者admin 运营 则显示企业大屏
-    if (unitType === 3 || unitType === 2) {
-      safeItem.url = '/acloud_new/#/big-platform/safety/government';
-
-      //TODO 政府大屏开启
-      safetyProduction = 1;
-    }
-    console.log(safetyProduction);
-    console.log(safeItem);
     // safetyProduction,fireService 1开启/0关闭
     const imgWrapper =
       (safetyProduction &&
@@ -51,9 +60,14 @@ export default class Dashboard extends PureComponent {
       [];
 
     const goToBigScreen = () => {
-      const url = imgWrapper[current].url;
-      const win = window.open(url, '_blank');
-      win.focus();
+      const { hasSafeAuthority } = this.state
+      if (!hasSafeAuthority && imgWrapper[current].key === 'safe') {
+        message.error('该功能暂时未开放！')
+      } else {
+        const url = imgWrapper[current].url;
+        const win = window.open(url, '_blank');
+        win.focus();
+      }
     };
 
     const children = imgWrapper.map((item, i) => (
