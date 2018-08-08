@@ -509,9 +509,8 @@ class GovernmentBigPlatform extends Component {
 
   renderLabel = () => {
     const { infoWindow } = this.state;
-    const {dispatch} = this.props;
     return (
-      <div style={{cursor: 'pointer'}} className={styles.companyLabel} onClick={() => {dispatch(routerRedux.push(`/big-platform/safety/company/${infoWindow.company_id}`)); }}>
+      <div style={{cursor: 'pointer'}} className={styles.companyLabel} onClick={() => { window.open(`/acloud_new/#/big-platform/safety/company/${infoWindow.company_id}`, '_blank'); }}>
         <div>{infoWindow.company_name}</div>
         <div>
           等级：
@@ -595,7 +594,7 @@ class GovernmentBigPlatform extends Component {
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
-          <span>晶安智慧安全云平台</span>
+          <span>江溪街道智慧安全云平台</span>
           <div className={styles.subHeader}>
             <Timer />
           </div>

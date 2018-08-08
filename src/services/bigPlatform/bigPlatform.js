@@ -73,3 +73,8 @@ export async function getRiskPointInfo(params) {
 export async function getRiskDetail(params) {
   return request(`/acloud_new/v2/sfc/hiddenDangerList.json?${stringify(params)}`);
 }
+
+// 隐患总数
+export async function getHiddenDanger(params) {
+  return request(`/acloud_new/v2/sfc/hiddenDanger.json?${stringify(params)}`);
+}

@@ -1,4 +1,4 @@
-import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany, getRiskDetail, getRiskPointInfo } from '../services/bigPlatform/bigPlatform.js';
+import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany, getRiskDetail, getRiskPointInfo, getHiddenDanger } from '../services/bigPlatform/bigPlatform.js';
 
 export default {
   namespace: 'bigPlatform',
@@ -71,6 +71,7 @@ export default {
     riskPointInfoList: [],
     // 隐患详情
     riskDetailList: [],
+    hiddenDanger: 0,
   },
 
   effects: {
@@ -280,6 +281,16 @@ export default {
         success();
       }
     },
+    *fetchHiddenDanger({ payload, success }, { call, put }) {
+      const response = yield call(getHiddenDanger, payload);
+      yield put({
+        type: 'hiddenDanger',
+        payload: response.total,
+      });
+      if (success) {
+        success();
+      }
+    },
   },
 
   reducers: {
@@ -343,7 +354,6 @@ export default {
       if (status === '2') obj = { status2: payload };
       if (status === '3') obj = { status3: payload };
       if (status === '4') obj = { status4: payload };
-      if (status === '') obj = { statusAll: payload };
       return {
         ...state,
         coItemList: {
@@ -374,6 +384,12 @@ export default {
       return {
         ...state,
         riskDetailList,
+      }
+    },
+    hiddenDanger(state, { payload }) {
+      return {
+        ...state,
+        hiddenDanger: payload,
       }
     },
   },

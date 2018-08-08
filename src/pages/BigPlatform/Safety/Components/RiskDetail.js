@@ -59,19 +59,23 @@ export default class App extends PureComponent {
 
   timer = null
 
+  addInterVal() {
+    this.timer = setInterval(() => {
+      if (-Number.parseFloat(this.list.style.top, 10) >= this.list.children[0].offsetHeight) {
+        this.setState(({ currentIndex }) => ({
+          currentIndex: currentIndex === this.list.children.length - 1 ? 0 : currentIndex + 1,
+        }));
+        this.list.style.top = '0px';
+      }
+      else {
+        this.list.style.top = `${Number.parseFloat(this.list.style.top, 10) - 1}px`;
+      }
+    }, 25);
+  }
+
   componentDidMount() {
     if (this.list.offsetHeight > this.container.offsetHeight) {
-      this.timer = setInterval(() => {
-        if (-Number.parseFloat(this.list.style.top, 10) >= this.list.children[0].offsetHeight) {
-          this.setState(({ currentIndex }) => ({
-            currentIndex: currentIndex === this.list.children.length - 1 ? 0 : currentIndex + 1,
-          }));
-          this.list.style.top = '0px';
-        }
-        else {
-          this.list.style.top = `${Number.parseFloat(this.list.style.top, 10) - 1}px`;
-        }
-      }, 25);
+      this.addInterVal();
     }
   }
 
@@ -79,23 +83,30 @@ export default class App extends PureComponent {
     clearInterval(this.timer);
     this.list.style.top = '0px';
     if (this.list.offsetHeight > this.container.offsetHeight) {
-      this.timer = setInterval(() => {
-        if (-Number.parseFloat(this.list.style.top, 10) >= this.list.children[0].offsetHeight) {
-          this.setState(({ currentIndex }) => ({
-            currentIndex: currentIndex === this.list.children.length - 1 ? 0 : currentIndex + 1,
-          }));
-          this.list.style.top = '0px';
-        }
-        else {
-          this.list.style.top = `${Number.parseFloat(this.list.style.top, 10) - 1}px`;
-        }
-      }, 25);
+      this.addInterVal();
     }
   }
 
-
   componentWillUnmount() {
     clearInterval(this.timer);
+  }
+
+  handleMouseEnter = () => {
+    const { onMouseEnter } = this.props;
+    clearInterval(this.timer);
+    if (onMouseEnter) {
+      onMouseEnter();
+    }
+  }
+
+  handleMouseLeave = () => {
+    const { onMouseLeave } = this.props;
+    if (this.list.offsetHeight > this.container.offsetHeight) {
+      this.addInterVal();
+    }
+    if (onMouseLeave) {
+      onMouseLeave();
+    }
   }
 
   render() {
@@ -132,7 +143,7 @@ export default class App extends PureComponent {
           <div style={{ display: 'inline-block', padding: '0 20px', color: '#fff', borderLeft: '8px solid #00A8FF', borderRight: '8px solid #00A8FF', fontSize: '16px', verticalAlign: 'middle' }}>隐患详情 ({data.length})</div>
           <div style={{ display: 'inline-block', flex: 1, height: '2px', backgroundColor: '#00A8FF', verticalAlign: 'middle' }} />
         </div>
-        <div style={{ display: 'flex', flex: 1, padding: '24px 16px', boxShadow: '0 0 1.1em rgba(9, 103, 211, 0.9) inset', backgroundColor: 'rgba(9, 103, 211, 0.06)' }}>
+        <div onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} style={{ display: 'flex', flex: 1, padding: '24px 16px', boxShadow: '0 0 1.1em rgba(9, 103, 211, 0.9) inset', backgroundColor: 'rgba(9, 103, 211, 0.06)' }}>
           <div style={{ flex: 1, overflow: 'hidden' }} ref={(container) => { this.container = container; }}>
             <div style={{ position: 'relative', top: 0 }} ref={(list) => { this.list = list; }}>
               {data.length !== 0 ? [...data.slice(currentIndex), ...data.slice(0, currentIndex)].map(item => {
