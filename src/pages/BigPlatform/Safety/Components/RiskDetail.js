@@ -77,6 +77,7 @@ export default class App extends PureComponent {
 
   componentDidUpdate() {
     clearInterval(this.timer);
+    this.list.style.top = '0px';
     if (this.list.offsetHeight > this.container.offsetHeight) {
       this.timer = setInterval(() => {
         if (-Number.parseFloat(this.list.style.top, 10) >= this.list.children[0].offsetHeight) {
@@ -135,11 +136,11 @@ export default class App extends PureComponent {
           <div style={{ flex: 1, overflow: 'hidden' }} ref={(container) => { this.container = container; }}>
             <div style={{ position: 'relative', top: 0 }} ref={(list) => { this.list = list; }}>
               {data.length !== 0 ? [...data.slice(currentIndex), ...data.slice(0, currentIndex)].map(item => {
-                console.log(item[description]);
                 return (
                   <div key={item[id]} style={{ paddingBottom: '20px' }}>
-                    <div style={{ display: 'flex', backgroundColor: 'rgba(6, 38, 78, 0.8)' }}>
-                      <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', backgroundColor: 'rgba(6, 38, 78, 0.8)', maxHeight: '240px', overflow: 'hidden' }}>
+                      <div style={{ position: 'relative', display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(6, 38, 78, 0.55)' }} />
                         <img src={item[background]} alt="隐患图" style={{ display: 'inline-block', width: '100%', height: 'auto' }} />
                       </div>
                       <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>

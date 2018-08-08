@@ -2,7 +2,7 @@ import React, { Fragment, Component } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-// import { Link } from 'dva/router';
+import { routerRedux } from 'dva/router';
 import styles from './Government.less';
 import Bar from './Components/Bar';
 import Timer from './Components/Timer';
@@ -429,6 +429,7 @@ class GovernmentBigPlatform extends Component {
       if (level === 'A') {
         offset = [-13, -13];
       }
+
       return (
         <Marker
           position={{ longitude: position.longitude, latitude: position.latitude }}
@@ -508,8 +509,9 @@ class GovernmentBigPlatform extends Component {
 
   renderLabel = () => {
     const { infoWindow } = this.state;
+    const {dispatch} = this.props;
     return (
-      <div className={styles.companyLabel}>
+      <div style={{cursor: 'pointer'}} className={styles.companyLabel} onClick={() => {dispatch(routerRedux.push(`/big-platform/safety/company/${infoWindow.company_id}`)); }}>
         <div>{infoWindow.company_name}</div>
         <div>
           等级：

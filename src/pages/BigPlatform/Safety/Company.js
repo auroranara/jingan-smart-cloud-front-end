@@ -32,7 +32,7 @@ const accidentTypeIcon = `${iconPrefix}accidentType.png`;
 const riskLevelIcon = `${iconPrefix}riskLevel.png`;
 const statusIcon = `${iconPrefix}status.png`;
 // 选中高度
-const selectedHeight = 269;
+const selectedHeight = 135;
 const selectedWidth = 63;
 // 信息offset
 const defaultInfoOffset = {
@@ -265,8 +265,14 @@ class CompanyLayout extends PureComponent {
       },
     });
     this.setViewport();
-    // 默认选中第一个风险点
-    this.points[0] && this.points.handleClick();
+  }
+
+  componentDidUpdate() {
+    const { selectedId } = this.state;
+    if (selectedId === null) {
+      // 默认选中第一个风险点
+      this.points[0] && this.points[0].handleClick();
+    }
   }
 
   componentWillUnmount() {
@@ -285,7 +291,7 @@ class CompanyLayout extends PureComponent {
       else {
         this.points[selectedIndex + 1].handleClick();
       }
-    }, 5000);
+    }, 10000);
     if (selectedId === id) {
       return;
     }
@@ -443,7 +449,7 @@ class CompanyLayout extends PureComponent {
           src={fourColorImg || ''}
           wrapperStyle={{
             flex: 1,
-            height: 'auto',
+            height: `calc(100% - 72px)`,
           }}
         // perspective='30em'
         // rotate='45deg'

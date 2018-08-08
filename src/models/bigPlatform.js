@@ -245,7 +245,12 @@ export default {
       // if (response.code === 200) {
       yield put({
         type: 'countDangerLocationForCompany',
-        payload: response.countDangerLocation[0],
+        payload: response.countDangerLocation[0] || {
+          red: 0,
+          orange: 0,
+          blue: 0,
+          yellow: 0,
+        },
       });
       if (success) {
         success();
