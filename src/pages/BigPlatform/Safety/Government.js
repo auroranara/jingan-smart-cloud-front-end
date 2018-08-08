@@ -567,9 +567,8 @@ class GovernmentBigPlatform extends React.PureComponent {
                     </span>
                   </div>
                   <div
-                    className={styles.sectionChart}
+                    className={styles.hdArea}
                     id="hdArea"
-                    style={{ height: 'calc(100% - 60px)' }}
                   >
                     <Bar data={salesData} height={areaHeight} />
                   </div>
@@ -590,7 +589,7 @@ class GovernmentBigPlatform extends React.PureComponent {
                       </span>
                     </span>
                   </div>
-                  <div className={styles.sectionChart} id='hdPie' style={{ height: 'calc(100% - 60px)', width: '67%' }}>
+                  <div className={styles.hdPie} id='hdPie'>
                     {this.renderPieChart()}
                   </div>
                   <div className={styles.pieLegend}>
@@ -730,8 +729,10 @@ class GovernmentBigPlatform extends React.PureComponent {
                 <div className={styles.sectionMain} style={{ padding: '0 15px' }}>
                   <table className={styles.thFix}>
                     <thead>
-                      <th style={{ width: '50%' }}>社区</th>
-                      <th style={{ width: '50%' }}>接入企业数</th>
+                      <tr>
+                        <th style={{ width: '50%' }}>社区</th>
+                        <th style={{ width: '50%' }}>接入企业数</th>
+                      </tr>
                     </thead>
                   </table>
 
