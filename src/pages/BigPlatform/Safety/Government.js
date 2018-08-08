@@ -28,7 +28,9 @@ class GovernmentBigPlatform extends Component {
       address: '',
     },
     areaHeight: 0,
-    pieHeight: 1,
+    pieHeight: 0,
+    center: [120.366011,31.544389],
+    zoom: 13,
   };
 
   // UNSAFE_componentWillUpdate() {
@@ -69,6 +71,14 @@ class GovernmentBigPlatform extends Component {
 
     dispatch({
       type: 'bigPlatform/fetchLocationCenter',
+      success: (response)=> {
+        const zoom = parseFloat(response.level);
+        const center = [parseFloat(response.location.split(',')[0]), parseFloat(response.location.split(',')[1])];
+        this.setState({
+          center,
+          zoom,
+        });
+      },
     });
 
     dispatch({
@@ -555,27 +565,12 @@ class GovernmentBigPlatform extends Component {
   };
 
   render() {
-    const { scrollNodeTop, areaHeight } = this.state;
-    const {
-      bigPlatform: {
-        itemTotal,
-        countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
-        newHomePage: {
-          companyDto: { company_num_with_item },
-          companyLevelDto,
-        },
-        listForMap: {
-          gridCheck,
-          overRectifyNum,
-          photo,
-          rectifyNum,
-          reviewNum,
-          selfCheck,
-          total: hdTotal,
-        },
-        locationCenter,
-      },
-    } = this.props;
+    const { scrollNodeTop,areaHeight } = this.state;
+    const { bigPlatform: { itemTotal,
+      countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
+      newHomePage: { companyDto: { company_num_with_item }, companyLevelDto },
+      listForMap: { gridCheck, overRectifyNum, photo, rectifyNum, reviewNum, selfCheck, total: hdTotal },
+    } } = this.props;
     const salesData = [
       { name: '红', value: red },
       { name: '橙', value: orange },
@@ -593,11 +588,7 @@ class GovernmentBigPlatform extends Component {
       if (item.level === 'D') Dnum = item.num;
     });
 
-    const zoom = parseFloat(locationCenter.level);
-    const center = [
-      parseFloat(locationCenter.location.split(',')[0]),
-      parseFloat(locationCenter.location.split(',')[1]),
-    ];
+    const { center, zoom } = this.state;
 
     return (
       <div className={styles.main}>
@@ -629,9 +620,8 @@ class GovernmentBigPlatform extends Component {
                     </span>
                   </div>
                   <div
-                    className={styles.sectionChart}
+                    className={styles.hdArea}
                     id="hdArea"
-                    style={{ height: 'calc(100% - 60px)' }}
                   >
                     <Bar data={salesData} height={areaHeight} />
                   </div>
@@ -652,11 +642,7 @@ class GovernmentBigPlatform extends Component {
                       </span>
                     </span>
                   </div>
-                  <div
-                    className={styles.sectionChart}
-                    id="hdPie"
-                    style={{ height: 'calc(100% - 60px)', width: '67%' }}
-                  >
+                  <div className={styles.hdPie} id='hdPie'>
                     {this.renderPieChart()}
                   </div>
                   <div className={styles.pieLegend}>
@@ -803,8 +789,10 @@ class GovernmentBigPlatform extends Component {
                 <div className={styles.sectionMain} style={{ padding: '0 15px' }}>
                   <table className={styles.thFix}>
                     <thead>
-                      <th style={{ width: '50%' }}>社区</th>
-                      <th style={{ width: '50%' }}>接入企业数</th>
+                      <tr>
+                        <th style={{ width: '50%' }}>社区</th>
+                        <th style={{ width: '50%' }}>接入企业数</th>
+                      </tr>
                     </thead>
                   </table>
 
