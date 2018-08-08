@@ -4,10 +4,9 @@ import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip /*Button*/ } from 'ant
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import toUpper from 'lodash/toUpper';
-import NoticeIcon from '../NoticeIcon';
-// import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
-import { getToken } from 'utils/authority';
+
+const url = `/gsafe/console`;
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -51,6 +50,17 @@ export default class GlobalHeaderRight extends PureComponent {
     location.reload();
   };
 
+  //  跳转到gsafe之前登录一下 获取cookie
+  handleGoGsafe = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'login/loginGsafe',
+      callback: () => {
+        window.open(url, '_blank');
+      },
+    });
+  };
+
   generateStyle = () => {
     const { currentUser } = this.props;
     const colors = ['#6666FF', '#66CCFF', '#9966FF', '#CC6666', '#FFCC66'];
@@ -59,53 +69,48 @@ export default class GlobalHeaderRight extends PureComponent {
   };
 
   render() {
-    const {
-      currentUser,
-      fetchingNotices,
-      onNoticeVisibleChange,
-      onMenuClick,
-      onNoticeClear,
-      theme,
-    } = this.props;
+    const { currentUser, onMenuClick, theme } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-        <Menu.Item key="userCenter">
-          <Icon type="user" />
-          <FormattedMessage id="menu.account.center" defaultMessage="account center" />
-        </Menu.Item>
         <Menu.Item key="changePassword">
           <Icon type="lock" />
-          <FormattedMessage id="menu.account.changePassword" defaultMessage="account changePassword" />
+          <FormattedMessage
+            id="menu.account.changePassword"
+            defaultMessage="account changePassword"
+          />
         </Menu.Item>
-        <Menu.Item key="userinfo">
-          <Icon type="setting" />
-          <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
+        <Menu.Item key="personalInfo">
+          <Icon type="user" />
+          <FormattedMessage id="menu.account.personalInfo" defaultMessage="account personalInfo" />
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
-          <Icon type="logout" />退出登录
+          <Icon type="logout" />
+          退出登录
         </Menu.Item>
       </Menu>
     );
     // const noticeData = this.getNoticeData();
-    const url = `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}`;
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
     }
     return (
       <div className={className}>
-        <Tooltip title="数据大屏">
-          <a
-            target="_blank"
-            href={url}
-            rel="noopener noreferrer"
-            className={styles.action}
-            title="数据大屏"
-          >
-            <Icon type="line-chart" />
-          </a>
-        </Tooltip>
+        {currentUser &&
+          currentUser.unitType === 3 && (
+            <Tooltip title="数据维护">
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.action}
+                title="数据维护"
+                onClick={this.handleGoGsafe}
+              >
+                <Icon type="hdd" />
+              </a>
+            </Tooltip>
+          )}
         {currentUser.userName ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
@@ -122,8 +127,8 @@ export default class GlobalHeaderRight extends PureComponent {
             </span>
           </Dropdown>
         ) : (
-            <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-          )}
+          <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+        )}
         {/*
         <Button
           size="small"

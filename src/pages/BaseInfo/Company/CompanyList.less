@@ -1,9 +1,7 @@
 @import '~antd/lib/style/themes/default.less';
 @import '../../../utils/utils.less';
-
 .cardList {
   margin-bottom: -24px;
-
   .card {
     :global {
       .ant-card-extra {
@@ -25,19 +23,28 @@
       margin-bottom: 12px;
       height: 1.5em;
     }
+    .screenControlIcon {
+      cursor: pointer;
+      height: 1.5em;
+      margin-bottom: 12px;
+    }
+    .defaultIcon {
+      height: 1.5em;
+      margin-bottom: 12px;
+    }
+    .ml30 {
+      margin-left: 30px;
+    }
   }
-
   :global {
     .ant-list .ant-list-item-content-single {
       max-width: 100%;
-
       &:hover {
         .ant-card {
           -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
           box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
           border-color: rgba(0, 0, 0, 0.09);
         }
-
         .ant-card-extra {
           display: block;
         }

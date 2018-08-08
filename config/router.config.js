@@ -23,8 +23,26 @@ module.exports = [
     path: '/',
     component: './layouts/LoadingPage',
     routes: [
-      { path: '/', redirect: '/base-info/company/list' },
-
+      { path: '/', redirect: '/dashboard/view' },
+      {
+        path: '/dashboard',
+        icon: 'home',
+        code: 'dashboard',
+        name: 'dashboard',
+        hideChildren: true,
+        routes: [
+          {
+            path: '/dashboard',
+            redirect: '/dashboard/view',
+          },
+          {
+            path: '/dashboard/view',
+            code: 'dashboard.view',
+            name: 'view',
+            component: './Dashboard/Dashboard',
+          },
+        ],
+      },
       // account
       {
         path: '/account',
@@ -37,6 +55,12 @@ module.exports = [
             name: 'changePassword',
             code: 'account.changePassword',
             component: './Account/ChangePassword',
+          },
+          {
+            path: '/account/personal-info/:id',
+            name: 'personalInfo',
+            code: 'account.personalInfo.view',
+            component: './Account/PersonalInfo',
           },
         ],
       },
@@ -82,6 +106,12 @@ module.exports = [
                 code: 'baseInfo.company.view',
                 name: 'detail',
                 component: './BaseInfo/Company/CompanyDetail',
+              },
+              {
+                path: '/base-info/company/department/list/:id',
+                code: 'baseInfo.company.department.listView',
+                name: 'department',
+                component: './BaseInfo/Company/DepartmentList',
               },
             ],
           },
@@ -262,6 +292,25 @@ module.exports = [
 
       // dynamic monitoring
       {
+        name: 'exception',
+        icon: 'warning',
+        path: '/exception',
+        hideInMenu: true,
+        routes: [
+          // exception
+          { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
+          { path: '/exception/404', name: 'not-find', component: './Exception/404' },
+          { path: '/exception/500', name: 'server-error', component: './Exception/500' },
+          {
+            path: '/exception/trigger',
+            name: 'trigger',
+            hideInMenu: true,
+            component: './Exception/triggerException',
+          },
+        ],
+      },
+      // dynamicMonitoring
+      {
         path: '/dynamic-monitoring',
         code: 'dynamicMonitoring',
         icon: 'dashboard',
@@ -306,7 +355,7 @@ module.exports = [
       {
         path: '/device-management',
         code: 'deviceManagement',
-        icon: 'setting',
+        icon: 'laptop',
         name: 'deviceManagement',
         routes: [
           {
@@ -350,6 +399,7 @@ module.exports = [
         code: 'videoSurveillance',
         icon: 'video-camera',
         name: 'videoSurveillance',
+        hideInMenu: true,
         routes: [
           {
             path: '/video-surveillance/map',
@@ -416,7 +466,33 @@ module.exports = [
           },
         ],
       },
-
+      {
+        path: '/system-management',
+        code: 'systemManagement',
+        name: 'systemManagement',
+        icon: 'setting',
+        routes: [
+          {
+            path: '/system-management/app-management',
+            code: 'systemManagement.appManagement',
+            name: 'appManagement',
+            hideChildren: true,
+            routes: [
+              {
+                path: '/system-management/app-management',
+                name: 'appManagement',
+                redirect: '/system-management/app-management/list',
+              },
+              {
+                path: '/system-management/app-management/list',
+                code: 'systemManagement.appManagement.listView',
+                name: 'list',
+                component: './SystemManagement/AppManagement/AppManagementList',
+              },
+            ],
+          },
+        ],
+      },
       {
         name: 'exception',
         icon: 'warning',

@@ -8,6 +8,7 @@ import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementEdit.less';
+import { aesEncrypt } from '../../../utils/utils';
 
 const { Description } = DescriptionList;
 
@@ -45,6 +46,10 @@ const fieldLabels = {
   accountStatus: '账号状态',
   treeIds: '数据权限',
   roleIds: '配置角色',
+  departmentId: '所属部门',
+  userType: '用户类型',
+  documentTypeId: '执法证种类',
+  execCertificateCode: '执法证编号',
 };
 const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '企事业主体'];
 
@@ -53,14 +58,46 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(({ account, user, loading }) => ({
-  user,
+const UserTypes = [
+  {
+    label: '企业法人',
+    value: 'company_legal_person',
+  },
+  {
+    label: '企业安全负责人',
+    value: 'company_charger',
+  },
+  {
+    label: '企业安全管理员',
+    value: 'company_safe_manager',
+  },
+  {
+    label: '企业安全员',
+    value: 'company_safer',
+  },
+];
+
+const documentTypeIds = [
+  {
+    label: '行政执法证',
+    value: '1',
+  },
+  {
+    label: '行政执法监督证',
+    value: '2',
+  },
+];
+@connect(({ account, loading }) => ({
   account,
   loading: loading.models.account,
 }))
 @Form.create()
 export default class accountManagementDetail extends PureComponent {
-  state = { visible: false };
+  state = {
+    companyType: false,
+    gavType: false,
+    visible: false,
+  };
 
   /* 生命周期函数 */
   componentDidMount() {
@@ -74,7 +111,15 @@ export default class accountManagementDetail extends PureComponent {
     // 获取详情
     dispatch({
       type: 'account/fetchAccountDetail',
-      payload: { id },
+      payload: {
+        id,
+      },
+      success: ({ unitType }) => {
+        this.setState({
+          companyType: unitType === 4,
+          gavType: unitType === 2,
+        });
+      },
       error() {
         dispatch(routerRedux.push('/exception/500'));
       },
@@ -119,7 +164,7 @@ export default class accountManagementDetail extends PureComponent {
           type: 'account/updateAccountPwd',
           payload: {
             id,
-            password,
+            password: aesEncrypt(password),
           },
           success: () => {
             message.success('提交成功！', () => {
@@ -127,7 +172,7 @@ export default class accountManagementDetail extends PureComponent {
             });
           },
           err: () => {
-            message.err('提交失败！', () => { });
+            message.err('提交失败！', () => {});
           },
         });
       }
@@ -146,10 +191,27 @@ export default class accountManagementDetail extends PureComponent {
     const {
       account: {
         detail: {
-          data: { loginName, userName, phoneNumber, unitType, unitName, accountStatus },
+          data: {
+            loginName,
+            userName,
+            phoneNumber,
+            unitType,
+            unitName,
+            accountStatus,
+            departmentName,
+            userType,
+            documentTypeId,
+            execCertificateCode,
+          },
         },
       },
     } = this.props;
+
+    const { companyType, gavType } = this.state;
+
+    const userTypeObj = UserTypes.find(t => t.value === userType);
+
+    const documentTypeIdObj = documentTypeIds.find(t => t.value === documentTypeId);
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
@@ -164,6 +226,24 @@ export default class accountManagementDetail extends PureComponent {
           <Description term={fieldLabels.accountStatus}>
             {accountStatus === 1 ? '启用' : '禁用' || getEmptyData()}
           </Description>
+          <Description term={fieldLabels.departmentId}>
+            {departmentName || getEmptyData()}
+          </Description>
+          {companyType && (
+            <Description term={fieldLabels.userType}>
+              {userTypeObj ? userTypeObj.label : getEmptyData()}
+            </Description>
+          )}
+          {gavType && (
+            <Description term={fieldLabels.documentTypeId}>
+              {documentTypeIdObj ? documentTypeIdObj.label : getEmptyData()}
+            </Description>
+          )}
+          {gavType && (
+            <Description term={fieldLabels.execCertificateCode}>
+              {execCertificateCode || getEmptyData()}
+            </Description>
+          )}
         </DescriptionList>
       </Card>
     );
@@ -183,10 +263,15 @@ export default class accountManagementDetail extends PureComponent {
       <Card title="角色权限配置" className={styles.card} bordered={false}>
         <DescriptionList layout="vertical">
           <Description term={fieldLabels.roleIds}>
-            <div style={{ paddingTop: 8 }}>{roleNames ?
-              roleNames.split(',').map(roleName => (
-                <p key={roleName} style={{ margin: 0, padding: 0 }}>{roleName}</p>
-              )) : getEmptyData()}</div>
+            <div style={{ paddingTop: 8 }}>
+              {roleNames
+                ? roleNames.split(',').map(roleName => (
+                    <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                      {roleName}
+                    </p>
+                  ))
+                : getEmptyData()}
+            </div>
           </Description>
           <Description term={fieldLabels.treeIds}>
             <div style={{ paddingTop: 8 }}>{treeNames || getEmptyData()}</div>

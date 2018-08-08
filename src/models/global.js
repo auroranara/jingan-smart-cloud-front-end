@@ -1,5 +1,4 @@
 import { queryNotices } from '../services/api';
-import { queryMenus } from '../services/menu';
 
 export default {
   namespace: 'global',

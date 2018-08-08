@@ -8,25 +8,37 @@ const pageRoutes = require('./router.config');
 const hosts = {
   lm: '192.168.10.2', // 吕旻
   gjm: '192.168.10.55', // 顾家铭
+  ct: '192.168.10.8', //孙启政
   sqz: '192.168.10.56', //孙启政
-  ct: '192.168.10.8',
-  test: '192.168.10.67:9080', // 内网
-  test2: '192.168.10.68:18080', // 内网2
+  dev: '192.168.10.68:18080', // 开发
+  test: '192.168.10.68:18082', // 测试
   mock: '118.126.110.115:3001/mock/28',
+  jb: '192.168.10.3', // 杰宝
+  gj: '192.168.10.9', //高进
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test2}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
-    '/eye': {
-      target: 'http://192.168.10.2',
+    '/mock': {
+      target: `http://${hosts.mock}`,
       changeOrigin: true,
-      pathRewrite: { '^/eye': '/eye' },
+      pathRewrite: { '^/mock': '/mock' },
     },
+    '/gsafe': {
+      target: `http://${hosts.test}`,
+      changeOrigin: true,
+      pathRewrite: { '^/gsafe': '/gsafe' },
+    },
+    // '/eye': {
+    //   target: 'http://192.168.10.2',
+    //   changeOrigin: true,
+    //   pathRewrite: { '^/eye': '/eye' },
+    // },
   },
   // add for transfer to umi
   plugins: [

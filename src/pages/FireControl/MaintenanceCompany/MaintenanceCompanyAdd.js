@@ -81,6 +81,8 @@ export default class BasicForms extends PureComponent {
     },
     companyId: undefined,
     parentId: undefined,
+    submitting: false,
+    btnDisabled: false,
   };
 
   switchOnchange = checked => {
@@ -93,6 +95,7 @@ export default class BasicForms extends PureComponent {
 
   // 提交表单验证信息
   handleSubmit = () => {
+    const that = this;
     const { dispatch, form, goBack } = this.props;
 
     form.validateFields((err, values) => {
@@ -102,6 +105,7 @@ export default class BasicForms extends PureComponent {
 
       const { isBranch, principalName, principalPhone } = values;
       const { companyId, parentId } = this.state;
+      this.setState({ btnDisabled: true });
 
       dispatch({
         type: 'maintenanceCompany/addMaintenanceCompanyAsync',
@@ -117,7 +121,10 @@ export default class BasicForms extends PureComponent {
             message.success('保存成功', () => {
               goBack();
             });
-          else message.error('保存失败');
+          else
+            message.error('保存失败', () => {
+              that.setState({ btnDisabled: false });
+            });
         },
       });
     });
@@ -277,10 +284,10 @@ export default class BasicForms extends PureComponent {
   // 渲染维保单位表单信息
   render() {
     const {
-      submitting,
+      loading,
       form: { getFieldDecorator },
     } = this.props;
-    const { current } = this.state;
+    const { current, submitting, btnDisabled } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -379,7 +386,12 @@ export default class BasicForms extends PureComponent {
             )}
 
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary" onClick={this.handleSubmit} loading={submitting}>
+              <Button
+                type="primary"
+                onClick={this.handleSubmit}
+                disabled={btnDisabled}
+                loading={loading || submitting}
+              >
                 保存
               </Button>
             </FormItem>

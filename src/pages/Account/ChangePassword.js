@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Button, Form, Card, Input, message } from 'antd';
 import PageHeaderLayout from '../layouts/PageHeaderLayout';
 import { connect } from 'dva';
+import { aesEncrypt } from '../../utils/utils'
 
 const FormItem = Form.Item;
 
@@ -25,6 +26,9 @@ export default class ChangePassword extends PureComponent {
     checkPassStatus: '',
   }
 
+  componentDidMount() {
+    this.handleResetForm()
+  }
 
   // 提交表单
   handleSubmit = () => {
@@ -33,7 +37,7 @@ export default class ChangePassword extends PureComponent {
       if (!err) {
         dispatch({
           type: 'account/changePass',
-          payload: { id, oldPassword: values.oldPassword, newPassword: values.newPassword },
+          payload: { id, newPassword: aesEncrypt(values.newPassword), oldPassword: aesEncrypt(values.oldPassword) },
           callback: response => {
             if (response.code && response.code === 200) {
               this.handleResetForm()
@@ -55,12 +59,12 @@ export default class ChangePassword extends PureComponent {
       this.setState({ checkPassStatus: 'validating' })
       dispatch({
         type: 'account/checkOldPass',
-        payload: { oldPassword: value, id },
+        payload: { oldPassword: aesEncrypt(value), id },
         callback: code => {
           this.setState({ checkPassStatus: code === 200 ? 'success' : 'error' })
+          code === 200 ? callback() : callback('旧密码不正确')
         },
       })
-      callback()
     } else {
       callback()
       this.setState({ checkPassStatus: 'error' })

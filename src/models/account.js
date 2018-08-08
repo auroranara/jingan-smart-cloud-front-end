@@ -8,9 +8,12 @@ import {
   updatePassword,
   checkAccountOrPhone,
   queryRoles,
+  queryExecCertificateType,
+  queryUserType,
+  queryDepartmentList,
 } from '../services/accountManagement.js';
 
-import { checkOldPass, changePass } from '../services/account.js'
+import { checkOldPass, changePass } from '../services/account.js';
 
 export default {
   namespace: 'account',
@@ -37,12 +40,22 @@ export default {
         accountStatus: undefined,
         unitName: undefined,
         treeIds: undefined,
+        parentId: undefined,
+        departmentId: undefined,
+        departmentName: undefined,
+        userType: undefined,
+        documentTypeId: undefined,
+        execCertificateCode: undefined,
       },
     },
     unitTypes: [],
     accountStatuses: [],
     unitIdes: [],
     roles: [],
+    userTypes: [],
+    subDepartments: [],
+    documentTypeIds: [],
+    departments: [],
   },
 
   effects: {
@@ -87,14 +100,18 @@ export default {
     },
 
     // 新增账号-根据单位类型和名称模糊搜索
-    *fetchUnitListFuzzy({ payload, callback }, { call, put }) {
+    *fetchUnitListFuzzy({ payload, success, error }, { call, put }) {
       const response = yield call(queryUnits, payload);
-      if (callback) callback(response);
       if (response.code === 200) {
         yield put({
           type: 'queryUnits',
           payload: response.data.list,
         });
+        if (success) {
+          success(response.data.list);
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 
@@ -146,10 +163,6 @@ export default {
     *updateAccountPwd({ payload, success, error }, { call, put }) {
       const response = yield call(updatePassword, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'updatePassword',
-          payload: response.data,
-        });
         if (success) {
           success();
         }
@@ -167,13 +180,13 @@ export default {
     },
     // 校验旧密码正确性
     *checkOldPass({ payload, callback }, { call, put }) {
-      const response = yield call(checkOldPass, payload)
-      if (callback && response.code) callback(response.code)
+      const response = yield call(checkOldPass, payload);
+      if (callback && response.code) callback(response.code);
     },
     // 个人中心修改密码
     *changePass({ payload, callback }, { call }) {
-      const response = yield call(changePass, payload)
-      if (callback) callback(response)
+      const response = yield call(changePass, payload);
+      if (callback) callback(response);
     },
 
     // 查询角色列表
@@ -189,6 +202,41 @@ export default {
         }
       } else if (error) {
         error();
+      }
+    },
+
+    // 查询执法证件种类
+    *fetchExecCertificateType({ payload, callback }, { call, put }) {
+      const response = yield call(queryExecCertificateType, payload);
+      if (callback) callback(response);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryExecCertificateType',
+          payload: response.data.list,
+        });
+      }
+    },
+
+    // 查询用户类型
+    *fetchUserType({ payload, callback }, { call, put }) {
+      const response = yield call(queryUserType, payload);
+      if (callback) callback(response);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryUserType',
+          payload: response.data.list,
+        });
+      }
+    },
+
+    // 查询部门列表
+    *fetchDepartmentList({ payload }, { call, put }) {
+      const response = yield call(queryDepartmentList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryDepartment',
+          payload: response.data.list,
+        });
       }
     },
   },
@@ -267,17 +315,6 @@ export default {
         },
       };
     },
-
-    updatePassword(state, { payload }) {
-      return {
-        ...state,
-        detail: {
-          ...state.detail,
-          data: payload,
-        },
-      };
-    },
-
     clearDetail(state) {
       return {
         ...state,
@@ -292,6 +329,30 @@ export default {
       return {
         ...state,
         roles,
+      };
+    },
+
+    /* 查询执法证件种类 */
+    queryExecCertificateType(state, { payload }) {
+      return {
+        ...state,
+        documentTypeIds: payload,
+      };
+    },
+
+    /* 查询用户类型 */
+    queryUserType(state, { payload }) {
+      return {
+        ...state,
+        userTypes: payload,
+      };
+    },
+
+    // 查询部门列表
+    queryDepartment(state, { payload: departments }) {
+      return {
+        ...state,
+        departments,
       };
     },
   },

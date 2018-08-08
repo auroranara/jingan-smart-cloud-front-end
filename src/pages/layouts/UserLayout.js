@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { Link } from 'dva/router';
+import React, { Fragment, PureComponent } from 'react';
+import { connect } from 'dva';
 import { Icon } from 'antd';
 import GlobalFooter from '../../components/GlobalFooter';
 import styles from './UserLayout.less';
@@ -24,14 +24,17 @@ const links = [
   }, */
 ];
 
-const copyright = (
-  <Fragment>
-    <p>Copyright <Icon type="copyright" /> 2018 &nbsp;技术支持：晶安智慧科技有限公司</p>
-    <p style={{ marginTop: '5px' }}>服务电话：400-928-5656</p>
-  </Fragment>
-);
+@connect(({ login }) => ({
+  login,
+}))
+export default class UserLayout extends PureComponent {
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'login/fetchFooterInfo',
+    });
+  }
 
-class UserLayout extends React.PureComponent {
   // @TODO title
   // getPageTitle() {
   //   const { routerData, location } = this.props;
@@ -44,7 +47,31 @@ class UserLayout extends React.PureComponent {
   // }
 
   render() {
-    const { children } = this.props;
+    const {
+      children,
+      login: { data: { serviceSupport, servicePhone, projectName } },
+    } = this.props;
+
+    const copyright = (
+      <Fragment>
+        <p>
+          Copyright <Icon type="copyright" /> 2018 &nbsp;技术支持：无锡晶安智慧科技有限公司
+        </p>
+        {serviceSupport && (
+          <p style={{ marginTop: '5px' }}>
+            服务支持：
+            {serviceSupport}
+          </p>
+        )}
+        {servicePhone && (
+          <p style={{ marginTop: '5px' }}>
+            服务电话：
+            {servicePhone}
+          </p>
+        )}
+      </Fragment>
+    );
+
     return (
       <DocumentTitle title="登录">
         <div className={styles.container}>
@@ -53,7 +80,7 @@ class UserLayout extends React.PureComponent {
               <div className={styles.header}>
                 {/* <Link to="/"> */}
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>晶安智慧云平台</span>
+                <span className={styles.title}>{projectName}</span>
                 {/* </Link> */}
               </div>
               <div className={styles.desc} />
@@ -66,5 +93,3 @@ class UserLayout extends React.PureComponent {
     );
   }
 }
-
-export default UserLayout;

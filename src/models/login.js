@@ -2,47 +2,43 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { getFakeCaptcha } from '../services/api';
 import { setAuthority, setToken } from '../utils/authority';
-import { getPageQuery } from '../utils/utils';
+// import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
-import { accountLogin } from '../services/account';
+import { accountLogin, accountLoginGsafe, fetchFooterInfo } from '../services/account';
 
 export default {
   namespace: 'login',
 
   state: {
     status: undefined,
+    data: {
+      serviceSupport: null,
+      servicePhone: null,
+      projectName: '晶安智慧安全平台',
+    },
   },
 
   effects: {
     *login({ payload, callback }, { call, put }) {
       const response = yield call(accountLogin, payload);
-      if (callback) callback(response)
+      if (callback) callback(response);
       // Login successfully
       if (response.code && response.code === 200) {
         yield put({
           type: 'changeLoginStatus',
           payload: { type: payload.type, status: true, ...response.data },
         });
+        // 登录1.0
+        yield call(accountLoginGsafe, payload);
         reloadAuthorized();
-        // const urlParams = new URL(window.location.href);
-        // const params = getPageQuery();
-        // let { redirect } = params;
-        // if (redirect) {
-        //   const redirectUrlParams = new URL(redirect);
-        //   if (redirectUrlParams.origin === urlParams.origin) {
-        //     redirect = redirect.substr(urlParams.origin.length);
-        //     if (redirect.startsWith('/#')) {
-        //       redirect = redirect.substr(2);
-        //     }
-        //   } else {
-        //     window.location.href = redirect;
-        //     return;
-        //   }
-        // }
-        // yield put(routerRedux.replace({ pathname: redirect || '/' }));
         yield put(routerRedux.replace({ pathname: '/' }));
       }
+    },
+
+    *loginGsafe({ payload, callback }, { call, put }) {
+      const res = yield call(accountLoginGsafe, payload);
+      if (res.code === 200 && callback) callback();
     },
 
     *getCaptcha({ payload }, { call }) {
@@ -57,9 +53,10 @@ export default {
           currentAuthority: 'guest',
         },
       });
-      yield put({ type: 'user/saveCurrentUser' })
-      setToken()
+      yield put({ type: 'user/saveCurrentUser' });
+      setToken();
       reloadAuthorized();
+      document.cookie = '';
       yield put(
         routerRedux.push({
           pathname: '/user/login',
@@ -69,16 +66,31 @@ export default {
         })
       );
     },
+    *fetchFooterInfo({ payload }, { call, put }) {
+      const response = yield call(fetchFooterInfo);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveFooterInfo',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
       setAuthority(payload.currentAuthority);
-      setToken(payload.token)
+      setToken(payload.token);
       return {
         ...state,
         status: payload.status,
         type: payload.type,
+      };
+    },
+    saveFooterInfo(state, { payload }) {
+      return {
+        ...state,
+        data: payload,
       };
     },
   },

@@ -136,7 +136,7 @@ export default class HistoryRecord extends PureComponent {
                 dropdownMatchSelectWidth={false}
               >
                 {dictDataList.map(item => (
-                  <Option value={item.id} key={item.id}>
+                  <Option value={item.value} key={item.id}>
                     {item.label}
                   </Option>
                 ))}

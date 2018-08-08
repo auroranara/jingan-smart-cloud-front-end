@@ -1,5 +1,5 @@
 import fetch from 'dva/fetch';
-import { notification } from 'antd';
+// import { notification } from 'antd';
 import router from 'umi/router';
 import { getToken } from './authority';
 
@@ -25,10 +25,10 @@ function checkStatus(response) {
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
-  notification.error({
-    message: `请求错误 ${response.status}: ${response.url}`,
-    description: errortext,
-  });
+  // notification.error({
+  //   message: `请求错误 ${response.status}: ${response.url}`,
+  //   description: errortext,
+  // });
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
@@ -47,7 +47,8 @@ export default function request(url, options) {
   const defaultOptions = {
     headers: {
       'JA-Token': token,
-      'Eye-Token': 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJleHAiOjE1MzU1OTgzOTAsImlhdCI6MTUzMjkxOTk5MH0.hJ-49DJeLGjB5Id2HtwO16ycrLZW5cX5LS6EUajFSIE',
+      'Eye-Token':
+        'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJleHAiOjE1MzU1OTgzOTAsImlhdCI6MTUzMjkxOTk5MH0.hJ-49DJeLGjB5Id2HtwO16ycrLZW5cX5LS6EUajFSIE',
     },
     credentials: 'include',
   };

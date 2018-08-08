@@ -56,6 +56,11 @@ const statusLabelList = {
   0: '已禁用',
 };
 
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 @connect(
   ({ account, user, loading }) => ({
     account,
@@ -235,7 +240,7 @@ export default class accountManagementList extends PureComponent {
             <FormItem label="用户">
               {getFieldDecorator('input', {
                 getValueFromEvent: this.handleTrim,
-              })(<Input placeholder="用户名/姓名/手机号" />)}
+              })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
             </FormItem>
             <FormItem label="单位类型">
               {getFieldDecorator('unitType')(
@@ -268,7 +273,7 @@ export default class accountManagementList extends PureComponent {
                   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                   onSearch={this.handleUnitIdChange}
                   filterOption={false}
-                  style={{ width: 180 }}
+                  style={{ width: 230 }}
                 >
                   {unitIdes.map(item => (
                     <Option value={item.id} key={item.id}>
@@ -356,13 +361,17 @@ export default class accountManagementList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Col span={12}>
-                      <p>{`姓名：${item.userName}`}</p>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        姓名：
+                        {item.userName || getEmptyData()}
+                      </Ellipsis>
                     </Col>
                     <Col span={12}>
-                      <p>{`电话: ${item.phoneNumber}`}</p>
+                      <p>电话: {item.phoneNumber || getEmptyData()}</p>
                     </Col>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      {`公司名称：${item.unitName}`}
+                      单位名称：
+                      {item.unitName || getEmptyData()}
                     </Ellipsis>
                   </div>
                   {

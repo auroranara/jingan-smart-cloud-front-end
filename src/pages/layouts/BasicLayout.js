@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, BackTop } from 'antd';
+import { Layout } from 'antd';
 import DocumentTitle from 'react-document-title';
 import memoizeOne from 'memoize-one';
 import { connect } from 'dva';
@@ -192,11 +192,13 @@ class BasicLayout extends React.PureComponent {
           <Header handleMenuCollapse={this.handleMenuCollapse} logo={logo} {...this.props} />
           {/* <Content style={this.getContentStyle()}>{children}</Content> */}
           <Content style={this.getContentStyle()}>
-            {
-              currentUserLoaded
-                ? <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>{children}</Authorized>
-                : <Spin size="large" className={styles.globalSpin} />
-            }
+            {currentUserLoaded ? (
+              <Authorized authority={authorityFn(pathname)} noMatch={noMatch}>
+                {children}
+              </Authorized>
+            ) : (
+              <Spin size="large" className={styles.globalSpin} />
+            )}
           </Content>
           <Footer />
         </Layout>

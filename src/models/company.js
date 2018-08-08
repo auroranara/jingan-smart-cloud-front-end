@@ -8,6 +8,8 @@ import {
   queryMaintenanceCompanies,
   fetchArea,
   upload,
+  gsafeQueryDict,
+  gsafeQueryIndustryType,
 } from '../services/company/company.js';
 
 // const mergeArea = (area, ids, list) => {
@@ -181,6 +183,54 @@ export default {
         error(response.msg);
       }
     },
+    *gsafeFetchDict(
+      {
+        payload: { type, key },
+        success,
+        error,
+      },
+      { call, put }
+    ) {
+      const response = yield call(gsafeQueryDict, { type });
+      if (response.code === 200) {
+        yield put({
+          type: 'queryDict',
+          payload: {
+            key,
+            list: response.data.list,
+          },
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    /* 获取行业类别 */
+    *fetchIndustryType(
+      {
+        success,
+        error,
+      },
+      { call, put }
+    ) {
+      const response = yield call(gsafeQueryIndustryType, { parent_id: -1 });
+      if (response.code === 200) {
+        yield put({
+          type: 'queryDict',
+          payload: {
+            key: 'industryCategories',
+            list: response.data.list,
+          },
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
     *remove({ payload, success, error }, { call, put }) {
       const response = yield call(deleteCompany, payload);
       if (response.code === 200) {
@@ -212,12 +262,13 @@ export default {
     },
     *insertCompany({ payload, success, error }, { call }) {
       const response = yield call(addCompany, payload);
-      if (response.code === 200) {
+      const { data: { id }, code, msg } = response;
+      if (code === 200) {
         if (success) {
-          success();
+          success(id);
         }
       } else if (error) {
-        error(response.msg);
+        error(msg);
       }
     },
     *editCompany({ payload, success, error }, { call, put }) {
@@ -385,6 +436,12 @@ export default {
           data: {},
         },
       };
+    },
+    updateScreenPermission(state, { payload }) {
+      return {
+        ...state,
+        list: payload.list,
+      }
     },
   },
 };

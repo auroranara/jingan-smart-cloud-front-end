@@ -8,7 +8,7 @@ const menuData = [
     path: 'baseInfo',
     children: [
       {
-        name: '企业单位',
+        name: '单位管理',
         path: 'company/list',
       },
     ],
@@ -110,6 +110,11 @@ const menuData = [
       {
         name: 'settings',
         path: 'settings',
+      },
+      {
+        name: 'personalInfo',
+        icon: 'user',
+        path: 'personalInfo',
       },
     ],
   },

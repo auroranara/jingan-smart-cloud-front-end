@@ -30,7 +30,7 @@ const FooterView = () => (
       }
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2018 晶安智慧科技有限公司
+          Copyright <Icon type="copyright" /> 2018 无锡晶安智慧科技有限公司
         </Fragment>
       }
     />
