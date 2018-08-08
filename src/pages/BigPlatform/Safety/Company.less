@@ -1,0 +1,169 @@
+@imgUrl: 'http://data.jingan-china.cn/v2/big-platform/safety/com';
+.main {
+  width: 100%;
+  height: 100vh;
+  font-size: 14px;
+  overflow: hidden;
+  padding: 0 20px 30px;
+  color: #fff;
+  background: url('@{imgUrl}company-bg.png') no-repeat center center;
+  background-size: 100% 100%;
+  .mainHeader {
+    line-height: 100px;
+    height: 100px;
+    font-size: 48px;
+    position: relative;
+    text-align: center;
+    letter-spacing: 14px;
+    background: url('@{imgUrl}title-bg.png') no-repeat center center;
+    background-size: 100% 100%;
+    .subHeader {
+      line-height: 1;
+      letter-spacing: 0px;
+      word-spacing: 10px;
+      font-size: 22px;
+      position: absolute;
+      bottom: 15px;
+      right: 30px;
+    }
+  }
+  .mainBody {
+    height: calc(~'100% - 85px');
+    width: 100%;
+    position: relative;
+    margin-top: -15px;
+    .sectionWrapper {
+      .sectionTitle {
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        font-size: 16px;
+        padding-left: 15px;
+      }
+      .sectionMain {
+        width: 100%;
+        height: calc(~'100% - 40px');
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 0 1.8em #000;
+        .shadowIn {
+          width: 100%;
+          height: 100%;
+          padding: 15px;
+          overflow: hidden;
+          position: relative;
+          box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
+          background: rgba(9, 103, 211, 0.06);
+        }
+        .companyMain {
+          .companyIcon {
+            float: left;
+            width: 50px;
+            height: 100px;
+            margin: 0 10px;
+            background: url('@{imgUrl}company-icon.png') no-repeat center center;
+            background-size: 100% auto;
+          }
+          .companyInfo {
+            width: calc(~'100% - 71px');
+            float: left;
+            word-wrap: none;
+            overflow: hidden;
+            white-space: nowrap;
+            .companyName {
+              height: 40px;
+              line-height: 40px;
+              font-size: 18px;
+            }
+            .companyCharger {
+              height: 30px;
+              line-height: 30px;
+            }
+            .companyPhone {
+              .companyCharger;
+            }
+          }
+        }
+        .summaryBottom {
+          width: calc(~'100% - 30px');
+          position: absolute;
+          bottom: 0;
+          .summaryHalf {
+            height: 50%;
+            margin-bottom: 15px;
+            .summaryIcon {
+              float: left;
+              width: 50px;
+              height: 50px;
+              margin: 5px 10px;
+            }
+            .summaryText {
+              float: left;
+              width: calc(~'100% - 71px');
+              height: 30px;
+              line-height: 30px;
+            }
+            .summaryNum {
+              .summaryText;
+              font-size: 16px;
+            }
+            .summaryCheck {
+              .summaryIcon;
+              background: url('@{imgUrl}check-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+            .summarySpecial {
+              .summaryIcon;
+              background: url('@{imgUrl}special-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+            .summaryPeople {
+              .summaryIcon;
+              background: url('@{imgUrl}people-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+            .summaryhd {
+              .summaryIcon;
+              background: url('@{imgUrl}hd-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+            .summaryNormal {
+              .summaryIcon;
+              background: url('@{imgUrl}normal-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+            .summaryChecking {
+              .summaryIcon;
+              background: url('@{imgUrl}checking-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+            .summaryAbnormal {
+              .summaryIcon;
+              background: url('@{imgUrl}abnormal-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+            .summaryOver {
+              .summaryIcon;
+              background: url('@{imgUrl}over-icon.png') no-repeat center center;
+              background-size: 100% 100%;
+            }
+          }
+        }
+        .hdPie {
+          width: calc(~'100% + 30px');
+          height: calc(~'100% - 120px');
+          margin-left: -15px;
+          margin-top: -15px;
+        }
+        .checkBar {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
+.heightFull {
+  height: 100%;
+}

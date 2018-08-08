@@ -28,7 +28,7 @@ class GovernmentBigPlatform extends React.PureComponent {
       address: '',
     },
     areaHeight: 0,
-    pieHeight: 1,
+    pieHeight: 0,
   };
 
   // UNSAFE_componentWillUpdate() {
@@ -507,6 +507,7 @@ class GovernmentBigPlatform extends React.PureComponent {
   }
 
   render() {
+    console.log(this.props);
     const { scrollNodeTop,areaHeight } = this.state;
     const { bigPlatform: { itemTotal,
       countDangerLocation: { total: hdPionts, red, orange, yellow, blue },

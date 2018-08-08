@@ -1,4 +1,4 @@
-import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation } from '../services/bigPlatform/bigPlatform.js';
+import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany } from '../services/bigPlatform/bigPlatform.js';
 
 export default {
   namespace: 'bigPlatform',
@@ -37,6 +37,35 @@ export default {
     locationCenter: {
       level: 13,
       location: '120.40116,31.560116',
+    },
+    companyMessage: {
+      companyMessage: {
+        companyName: '',
+        headOfSecurity: '',
+        headOfSecurityPhone: '',
+        countCheckItem: 0,
+        countCompanyUser: 0,
+      },
+      check_map: {
+        self_check_point: {},
+      },
+      hidden_danger_map: {
+        created_danger: {},
+      },
+    },
+    coItemList: {
+      status1: 0,
+      status2: 0,
+      status3: 0,
+      status4: 0,
+      statusAll: 0,
+    },
+    specialEquipment: 0,
+    countDangerLocationForCompany: {
+      red: 0,
+      orange: 0,
+      blue: 0,
+      yellow: 0,
     },
   },
 
@@ -161,6 +190,67 @@ export default {
       //   error();
       // }
     },
+    *fetchCompanyMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getCompanyMessage, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'companyMessage',
+        payload: response,
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchCoItemList({ payload, success, error }, { call, put }) {
+      const response = yield call(getCoItemList, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'coItemList',
+        payload: response.total,
+        status: payload.status || '',
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchSpecialEquipment({ payload, success, error }, { call, put }) {
+      const response = yield call(getSpecialEquipment, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'specialEquipment',
+        payload: response.total,
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchCountDangerLocationForCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getCountDangerLocationForCompany, payload);
+      // if (response.code === 200) {
+      yield put({
+        type: 'countDangerLocationForCompany',
+        payload: response.countDangerLocation[0],
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
   },
 
   reducers: {
@@ -210,6 +300,39 @@ export default {
       return {
         ...state,
         infoByLocation: payload,
+      };
+    },
+    companyMessage(state, { payload }) {
+      return {
+        ...state,
+        companyMessage: payload,
+      };
+    },
+    coItemList(state, { payload, status }) {
+      let obj = {};
+      if (status === '1') obj = { status1: payload };
+      if (status === '2') obj = { status2: payload };
+      if (status === '3') obj = { status3: payload };
+      if (status === '4') obj = { status4: payload };
+      if (status === '') obj = { statusAll: payload };
+      return {
+        ...state,
+        coItemList: {
+          ...state.coItemList,
+          ...obj,
+        },
+      };
+    },
+    specialEquipment(state, { payload }) {
+      return {
+        ...state,
+        specialEquipment: payload,
+      };
+    },
+    countDangerLocationForCompany(state, { payload }) {
+      return {
+        ...state,
+        countDangerLocationForCompany: payload,
       };
     },
   },
