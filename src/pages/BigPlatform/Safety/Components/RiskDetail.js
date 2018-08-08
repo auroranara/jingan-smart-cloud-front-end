@@ -33,13 +33,13 @@ const defaultFieldNames = {
 };
 // 获取图章
 const getSeal = (status) => {
-  switch(status) {
+  switch (status) {
     case 1:
-    return dfcIcon;
+      return dfcIcon;
     case 2:
-    return ycqIcon;
+      return ycqIcon;
     default:
-    return wcqIcon;
+      return wcqIcon;
   }
 };
 
@@ -64,12 +64,12 @@ export default class App extends PureComponent {
       this.timer = setInterval(() => {
         if (-Number.parseFloat(this.list.style.top, 10) >= this.list.children[0].offsetHeight) {
           this.setState(({ currentIndex }) => ({
-            currentIndex: currentIndex === this.list.children.length-1 ? 0 : currentIndex+1,
+            currentIndex: currentIndex === this.list.children.length - 1 ? 0 : currentIndex + 1,
           }));
           this.list.style.top = '0px';
         }
         else {
-          this.list.style.top = `${Number.parseFloat(this.list.style.top, 10)-1}px`;
+          this.list.style.top = `${Number.parseFloat(this.list.style.top, 10) - 1}px`;
         }
       }, 25);
     }
@@ -81,12 +81,12 @@ export default class App extends PureComponent {
       this.timer = setInterval(() => {
         if (-Number.parseFloat(this.list.style.top, 10) >= this.list.children[0].offsetHeight) {
           this.setState(({ currentIndex }) => ({
-            currentIndex: currentIndex === this.list.children.length-1 ? 0 : currentIndex+1,
+            currentIndex: currentIndex === this.list.children.length - 1 ? 0 : currentIndex + 1,
           }));
           this.list.style.top = '0px';
         }
         else {
-          this.list.style.top = `${Number.parseFloat(this.list.style.top, 10)-1}px`;
+          this.list.style.top = `${Number.parseFloat(this.list.style.top, 10) - 1}px`;
         }
       }, 25);
     }
@@ -107,6 +107,7 @@ export default class App extends PureComponent {
     const { currentIndex } = this.state;
 
     const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = { ...defaultFieldNames, ...fieldNames };
+
 
     return (
       <div
@@ -131,9 +132,10 @@ export default class App extends PureComponent {
           <div style={{ display: 'inline-block', flex: 1, height: '2px', backgroundColor: '#00A8FF', verticalAlign: 'middle' }} />
         </div>
         <div style={{ display: 'flex', flex: 1, padding: '24px 16px', boxShadow: '0 0 1.1em rgba(9, 103, 211, 0.9) inset', backgroundColor: 'rgba(9, 103, 211, 0.06)' }}>
-          <div style={{ flex: 1, overflow: 'hidden' }} ref={(container) => {this.container = container;}}>
-            <div style={{ position: 'relative', top: 0 }} ref={(list) => {this.list = list;}}>
+          <div style={{ flex: 1, overflow: 'hidden' }} ref={(container) => { this.container = container; }}>
+            <div style={{ position: 'relative', top: 0 }} ref={(list) => { this.list = list; }}>
               {data.length !== 0 ? [...data.slice(currentIndex), ...data.slice(0, currentIndex)].map(item => {
+                console.log(item[description]);
                 return (
                   <div key={item[id]} style={{ paddingBottom: '20px' }}>
                     <div style={{ display: 'flex', backgroundColor: 'rgba(6, 38, 78, 0.8)' }}>
@@ -144,12 +146,12 @@ export default class App extends PureComponent {
                         <img src={getSeal(item[status])} alt="未过期" style={{ display: 'inline-block', width: '80px', height: '80px' }} />
                       </div>
                     </div>
-                    <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={item[status] === 2? descriptionRedIcon : descriptionBlueIcon} size="small" /><Ellipsis length={20} style={{ flex: 1, color: item[status] === 2 ? '#ff4848' : '#00A8FF' }} >{item[description]}</Ellipsis></div>
+                    <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon} size="small" /><Ellipsis lines={1} style={{ flex: 1, color: item[status] === 2 ? '#ff4848' : '#00A8FF', lineHeight: '24px' }} >{item[description] || '暂无信息'}</Ellipsis></div>
                     <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={sbrIcon} size="small" /><span style={{ display: 'flex', color: '#00A8FF', alignItems: 'center', justifyContent: 'flex-start' }}>上报人</span><span style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end', color: '#fff' }}>{item[sbr]}</span></div>
                     <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={sbsjIcon} size="small" /><span style={{ display: 'flex', color: '#00A8FF', alignItems: 'center', justifyContent: 'flex-start' }}>上报时间</span><span style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end', color: '#fff' }}>{item[sbsj]}</span></div>
                     <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={zgrIcon} size="small" /><span style={{ display: 'flex', color: '#00A8FF', alignItems: 'center', justifyContent: 'flex-start' }}>整改人</span><span style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end', color: '#fff' }}>{item[zgr]}</span></div>
                     <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={zgsjIcon} size="small" /><span style={{ display: 'flex', color: '#00A8FF', alignItems: 'center', justifyContent: 'flex-start' }}>整改时间</span><span style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end', color: item[status] === 2 ? '#ff4848' : '#fff' }}>{item[zgsj]}</span></div>
-                    {item[status] === 1  && <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={fcrIcon} size="small" /><span style={{ display: 'flex', color: '#00A8FF', alignItems: 'center', justifyContent: 'flex-start' }}>复查人</span><span style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end', color: '#fff' }}>{item[fcr]}</span></div>}
+                    {item[status] === 1 && <div style={{ display: 'flex', padding: '4px 8px' }}><Avatar style={{ marginRight: '8px' }} src={fcrIcon} size="small" /><span style={{ display: 'flex', color: '#00A8FF', alignItems: 'center', justifyContent: 'flex-start' }}>复查人</span><span style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end', color: '#fff' }}>{item[fcr]}</span></div>}
                   </div>
                 );
               }) : <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>}

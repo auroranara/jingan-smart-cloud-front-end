@@ -161,9 +161,131 @@
         }
       }
     }
+    .infoWrapper {
+      height: 330px;
+    }
+    .hdWrapper {
+      height: calc(~'100% - 360px');
+      margin-top: 30px;
+    }
   }
 }
 
 .heightFull {
   height: 100%;
+}
+
+@media screen and (min-width: 1361px) and (max-width: 1441px) {
+  .main {
+    padding: 0 15px 25px;
+    font-size: 12px;
+    .mainHeader {
+      line-height: 70px;
+      height: 70px;
+      font-size: 35px;
+      .subHeader {
+        font-size: 18px;
+      }
+    }
+    .mainBody {
+      height: calc(~'100% - 50px');
+      .sectionWrapper {
+        .sectionTitle {
+          height: 36px;
+          line-height: 36px;
+          font-size: 15px;
+        }
+        .sectionMain {
+          height: calc(~'100% - 36px');
+          .shadowIn {
+            padding: 8px;
+          }
+          .companyMain {
+            .companyIcon {
+              width: 38px;
+              height: 80px;
+              margin: 0 10px;
+            }
+            .companyInfo {
+              width: calc(~'100% - 59px');
+              float: left;
+              word-wrap: none;
+              overflow: hidden;
+              white-space: nowrap;
+              .companyName {
+                height: 30px;
+                line-height: 30px;
+                font-size: 15px;
+              }
+              .companyCharger {
+                height: 25px;
+                line-height: 25px;
+              }
+              .companyPhone {
+                .companyCharger;
+              }
+            }
+          }
+          .summaryBottom {
+            width: calc(~'100% - 16px');
+            bottom: 0;
+            .summaryHalf {
+              height: 50%;
+              margin-bottom: 10px;
+              .summaryIcon {
+                width: 38px;
+                height: 38px;
+                margin: 5px 10px;
+              }
+              .summaryText {
+                height: 24px;
+                line-height: 24px;
+              }
+              .summaryNum {
+                .summaryText;
+                font-size: 15px;
+              }
+              .summaryCheck {
+                .summaryIcon;
+              }
+              .summarySpecial {
+                .summaryIcon;
+              }
+              .summaryPeople {
+                .summaryIcon;
+              }
+              .summaryhd {
+                .summaryIcon;
+              }
+              .summaryNormal {
+                .summaryIcon;
+              }
+              .summaryChecking {
+                .summaryIcon;
+              }
+              .summaryAbnormal {
+                .summaryIcon;
+              }
+              .summaryOver {
+                .summaryIcon;
+              }
+            }
+          }
+          .hdPie {
+            width: calc('~100% + 16px');
+            height: calc(~'100% - 100px');
+            margin-left: -8px;
+            margin-top: -8px;
+          }
+        }
+      }
+      .infoWrapper {
+        height: 250px;
+      }
+      .hdWrapper {
+        height: calc(~'100% - 280px');
+        margin-top: 10px;
+      }
+    }
+  }
 }

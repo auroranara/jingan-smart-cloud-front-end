@@ -9,6 +9,7 @@ import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
 
+import classNames from 'classnames';
 import { DataView } from '@antv/data-set';
 import { Chart, Axis, Tooltip, Geom, Coord, Label, Legend } from "bizcharts";
 
@@ -36,7 +37,7 @@ const selectedWidth = 63;
 // 信息offset
 const defaultInfoOffset = {
   x: 50,
-  y: -selectedHeight-50,
+  y: -selectedHeight - 50,
 }
 // 正常点的样式
 const normalStyle = {
@@ -116,7 +117,7 @@ const pointImages = [
 ];
 // 根据颜色筛选图片
 const switchImageColor = (list, color) => {
-  switch(color) {
+  switch (color) {
     case '红':
       return list[0];
     case '橙':
@@ -136,7 +137,7 @@ const switchStatus = (status) => {
   else if (value === 3) {
     return 1;
   }
-  else if (value === 7){
+  else if (value === 7) {
     return 2;
   }
   else {
@@ -144,28 +145,28 @@ const switchStatus = (status) => {
   }
 };
 // 获取颜色和status
-const switchCheckStatus = (value=0) => {
-  switch(value) {
+const switchCheckStatus = (value = 0) => {
+  switch (value) {
     case 1:
-    return {
-      color: '#E8292D',
-      content: '正常',
-    };
+      return {
+        color: '#E8292D',
+        content: '正常',
+      };
     case 2:
-    return {
-      color: '#794277',
-      content: '异常',
-    };
+      return {
+        color: '#794277',
+        content: '异常',
+      };
     case 3:
-    return {
-      color: '#EF5150',
-      content: '待检查',
-    };
+      return {
+        color: '#EF5150',
+        content: '待检查',
+      };
     default:
-    return {
-      color: '#20DE3A',
-      content: '已超时',
-    };
+      return {
+        color: '#20DE3A',
+        content: '已超时',
+      };
   }
 }
 
@@ -186,7 +187,7 @@ class CompanyLayout extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, match: { params: { companyId='rf0e7Xd3TqS4ElNcdDmrSg' } } } = this.props;
+    const { dispatch, match: { params: { companyId = 'rf0e7Xd3TqS4ElNcdDmrSg' } } } = this.props;
     window.onload = () => {
       this.reDoChart();
     };
@@ -278,11 +279,11 @@ class CompanyLayout extends PureComponent {
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       const { selectedIndex } = this.state;
-      if (selectedIndex === this.points.length-1) {
+      if (selectedIndex === this.points.length - 1) {
         this.points[0].handleClick();
       }
       else {
-        this.points[selectedIndex+1].handleClick();
+        this.points[selectedIndex + 1].handleClick();
       }
     }, 5000);
     if (selectedId === id) {
@@ -433,7 +434,7 @@ class CompanyLayout extends PureComponent {
     const { bigPlatform: { companyMessage: { point: points, fourColorImg }, riskPointInfoList } } = this.props;
     const { selectedId } = this.state;
 
-    return(
+    return (
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '36px 0 10px' }}>
         <div style={{ height: '40px', lineHeight: '40px', paddingLeft: '15px', color: '#00A8FF', fontSize: '20px' }}>
           <div>安全风险四色图</div>
@@ -444,8 +445,8 @@ class CompanyLayout extends PureComponent {
             flex: 1,
             height: 'auto',
           }}
-          // perspective='30em'
-          // rotate='45deg'
+        // perspective='30em'
+        // rotate='45deg'
         >
           {points && points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
             const info = riskPointInfoList.filter(({ hdLetterInfo: { itemId } }) => itemId === id)[0];
@@ -469,7 +470,7 @@ class CompanyLayout extends PureComponent {
                 {
                   icon: statusIcon,
                   title: info.hdLetterInfo.status,
-                  render: (title) => {const { color, content } = switchCheckStatus(title-1); return (<span style={{ color }}>{content}</span>)},
+                  render: (title) => { const { color, content } = switchCheckStatus(title - 1); return (<span style={{ color }}>{content}</span>) },
                 },
                 {
                   icon: riskLevelIcon,
@@ -484,8 +485,8 @@ class CompanyLayout extends PureComponent {
                     src={src}
                     style={style}
                     offset={offset}
-                    onClick={(point) => {this.handleClick(id, index, point);}}
-                    ref={(point)=>{this.points[index] = point;}}
+                    onClick={(point) => { this.handleClick(id, index, point); }}
+                    ref={(point) => { this.points[index] = point; }}
                   />
                   <RiskPoint
                     position={position}
@@ -537,9 +538,10 @@ class CompanyLayout extends PureComponent {
 
   /* 隐患详情 */
   renderRiskDetail() {
-    const { bigPlatform: { riskDetailList } } = this.props;
+    const { bigPlatform: { riskDetailList, companyMessage: { fourColorImg } } } = this.props;
     const { selectedId } = this.state;
-    const data = riskDetailList.filter(({ item_id }) => item_id === selectedId).map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }]=[{}] }) => ({
+    let data = !/^http/.test(fourColorImg) ? riskDetailList : riskDetailList.filter(({ item_id }) => item_id === selectedId);
+    data = data.map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}] }) => ({
       id,
       description,
       sbr,
@@ -609,6 +611,10 @@ class CompanyLayout extends PureComponent {
       { name: '巡查次数', ...self_check_point },
     ];
 
+    const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
+    const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
+    const checkClassNames = classNames(styles.sectionWrapper, styles.checkWrapper);
+
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
@@ -618,8 +624,8 @@ class CompanyLayout extends PureComponent {
 
         <article className={styles.mainBody}>
           <Row gutter={24} className={styles.heightFull}>
-            <Col span={6} className={styles.heightFull}>
-              <section className={styles.sectionWrapper} style={{ height: '330px' }}>
+            <Col span={6} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
+              <section className={infoClassNames}>
                 <div className={styles.sectionTitle}>单位信息</div>
                 <div className={styles.sectionMain}>
                   <div className={styles.shadowIn}>
@@ -663,7 +669,7 @@ class CompanyLayout extends PureComponent {
                 </div>
               </section>
 
-              <section className={styles.sectionWrapper} style={{ height: 'calc(100% - 360px)', marginTop: '30px' }}>
+              <section className={hdClassNames} style={{ flex: 1 }}>
                 <div className={styles.sectionTitle}>风险点</div>
                 <div className={styles.sectionMain}>
                   <div className={styles.shadowIn}>
@@ -705,7 +711,7 @@ class CompanyLayout extends PureComponent {
 
             <Col span={12} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
               {this.renderRiskFourColor()}
-              <section className={styles.sectionWrapper} style={{ height: '300px' }}>
+              <section className={styles.sectionWrapper} style={{ height: '37%' }}>
                 <div className={styles.sectionTitle}>单位巡查</div>
                 <div className={styles.sectionMain} style={{ padding: '0' }}>
                   <div className={styles.shadowIn}>
