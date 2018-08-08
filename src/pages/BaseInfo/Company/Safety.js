@@ -153,7 +153,8 @@ function handleGridTree(gridList = [], idMap) {
 
 function traverse(gl, idMap) {
   return gl.map(({ id, text, children, nodes, parentIds }) => {
-    idMap[id] = parentIds ? parentIds.split(',') : [];
+    // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
+    idMap[id] = parentIds ? [...parentIds.split(',').filter(item => item), id] : [];
     return ({ value: id, label: text, children: children ? traverse(children, idMap) : undefined })
   });
 }
@@ -217,7 +218,7 @@ export default class Safety extends PureComponent {
       if (next === 'startTime')
         prev.validity = [detail.startTime, detail.endTime].map(timestamp => moment(Number.parseInt(timestamp, 10)));
       else if (next === 'gridId')
-        prev[next] = [...idMap[val], val];
+        prev[next] = idMap[val];
       else if (UPLOADERS.includes(next)) {
         let list = null;
         // 数据库存的是个JSON格式的数组或对象
