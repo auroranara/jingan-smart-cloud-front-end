@@ -3,9 +3,10 @@ import { connect } from 'dva';
 import { Form, Card, Button, Spin, Modal } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
-import { Map, Marker } from 'react-amap'
+import { Map, Marker } from 'react-amap';
 
 import DescriptionList from 'components/DescriptionList';
+import Ellipsis from 'components/Ellipsis';
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import { hasAuthority } from '../../../utils/customAuth';
@@ -19,11 +20,20 @@ import SafetyDetail from './SafetyDetail';
 const { Description } = DescriptionList;
 
 // 获取title
-const { home: homeTitle, company: { list: listTitle, menu: menuTitle, detail: title } } = titles;
+const {
+  home: homeTitle,
+  company: { list: listTitle, menu: menuTitle, detail: title },
+} = titles;
 // 获取链接地址
-const { home: homeUrl, company: { list: backUrl, edit: editUrl }, exception: { 500: exceptionUrl } } = urls;
+const {
+  home: homeUrl,
+  company: { list: backUrl, edit: editUrl },
+  exception: { 500: exceptionUrl },
+} = urls;
 // 获取code
-const { company: { edit: editCode } } = codes;
+const {
+  company: { edit: editCode },
+} = codes;
 // 面包屑
 const breadcrumbList = [
   {
@@ -101,7 +111,7 @@ const getEmptyData = () => {
     },
     // 跳转到编辑页面
     goToEdit(id) {
-      dispatch(routerRedux.push(editUrl+id));
+      dispatch(routerRedux.push(editUrl + id));
     },
     // 异常
     goToException() {
@@ -115,7 +125,7 @@ export default class CompanyDetail extends PureComponent {
     isCompany: true,
     tabActiveKey: tabList[0].key,
     visible: false,
-  }
+  };
 
   /* 生命周期函数 */
   componentDidMount() {
@@ -142,32 +152,38 @@ export default class CompanyDetail extends PureComponent {
     });
   }
 
-  handleTabChange = (key) => {
+  handleTabChange = key => {
     this.setState({
       tabActiveKey: key,
     });
   };
 
   /* 显示地图 */
-  handleShowMap = (e) => {
+  handleShowMap = e => {
     e.preventDefault();
     this.setState({
       visible: true,
     });
-  }
+  };
 
   /* 隐藏地图 */
   handleHideMap = () => {
     this.setState({
       visible: false,
     });
-  }
+  };
 
   /* 渲染地图 */
   renderMap() {
     const { visible } = this.state;
-    const { company: { detail: { data: { longitude, latitude } } } } = this.props;
-    const center = (longitude && latitude) ? { longitude, latitude } : undefined;
+    const {
+      company: {
+        detail: {
+          data: { longitude, latitude },
+        },
+      },
+    } = this.props;
+    const center = longitude && latitude ? { longitude, latitude } : undefined;
 
     return (
       <Modal
@@ -190,11 +206,7 @@ export default class CompanyDetail extends PureComponent {
           center={center}
           useAMapUI
         >
-          {center && (
-            <Marker
-              position={center}
-            />
-          )}
+          {center && <Marker position={center} />}
         </Map>
       </Modal>
     );
@@ -202,19 +214,30 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染行业类别 */
   renderIndustryCategory() {
-    const { company: { detail: { data: { industryCategoryLabel } } } } = this.props;
+    const {
+      company: {
+        detail: {
+          data: { industryCategoryLabel },
+        },
+      },
+    } = this.props;
 
     return (
       <Description term={fieldLabels.industryCategory}>
         {industryCategoryLabel || getEmptyData()}
       </Description>
-
     );
   }
 
   /* 渲染单位状态 */
   renderCompanyStatus() {
-    const { company: { detail: { data: { companyStatusLabel } } } } = this.props;
+    const {
+      company: {
+        detail: {
+          data: { companyStatusLabel },
+        },
+      },
+    } = this.props;
 
     return (
       <Description term={fieldLabels.companyStatus}>
@@ -265,36 +288,54 @@ export default class CompanyDetail extends PureComponent {
       (practicalAddress || '');
 
     let companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-    companyIchnographyList = Array.isArray(companyIchnographyList) ? companyIchnographyList : JSON.parse(companyIchnographyList.dbUrl);
+    companyIchnographyList = Array.isArray(companyIchnographyList)
+      ? companyIchnographyList
+      : JSON.parse(companyIchnographyList.dbUrl);
     // console.log(typeof companyIchnographyList);
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
-          <Description term={fieldLabels.companyNature}>{companyNatureLabel || getEmptyData()}</Description>
+          <Description term={fieldLabels.companyNature}>
+            {companyNatureLabel || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
-          <Description term={fieldLabels.coordinate}>{longitude && latitude ? <a href="#" className={styles.link} onClick={this.handleShowMap}>{`${longitude},${latitude}`}</a> : getEmptyData()}</Description>
+          <Description term={fieldLabels.coordinate}>
+            {longitude && latitude ? (
+              <a
+                href="#"
+                className={styles.link}
+                onClick={this.handleShowMap}
+              >{`${longitude},${latitude}`}</a>
+            ) : (
+              getEmptyData()
+            )}
+          </Description>
           <Description term={fieldLabels.registerAddress}>
-            {registerAddressLabel || getEmptyData()}
+            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+              {registerAddressLabel || getEmptyData()}
+            </Ellipsis>
           </Description>
           <Description term={fieldLabels.practicalAddress}>
-            {practicalAddressLabel || getEmptyData()}
+            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+              {practicalAddressLabel || getEmptyData()}
+            </Ellipsis>
           </Description>
           {!isCompany && this.renderIndustryCategory()}
           {!isCompany && this.renderCompanyStatus()}
         </DescriptionList>
-        <DescriptionList col={1} style={{ marginBottom: 16 }}>
+        <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>
-            {companyIchnographyList.length !== 0 ? companyIchnographyList.map(({ name, url }) => (
-              <div key={url}>
-                <a href={url} target="_blank" rel="noopener noreferrer">
-                  {name || '预览'}
-                </a>
-              </div>
-            )) : (
-              getEmptyData()
-            )}
+            {companyIchnographyList.length !== 0
+              ? companyIchnographyList.map(({ name, url }) => (
+                  <div key={url}>
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      {name || '预览'}
+                    </a>
+                  </div>
+                ))
+              : getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>
@@ -409,20 +450,36 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
-      user: { currentUser: { permissionCodes } },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     // 是否有编辑权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <FooterToolbar>
-        <Button type="primary" size="large" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
+        <Button
+          type="primary"
+          size="large"
+          disabled={!hasEditAuthority}
+          onClick={() => {
+            goToEdit(id);
+          }}
+        >
+          编辑
+        </Button>
       </FooterToolbar>
     );
   }
 
   render() {
-    const { loading, match: { params: { id } } } = this.props;
+    const {
+      loading,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const { tabActiveKey, isCompany } = this.state;
     return (
       <PageHeaderLayout
