@@ -12,8 +12,11 @@ export default {
 
   state: {
     status: undefined,
-    serviceSupport: null,
-    servicePhone: null,
+    data: {
+      serviceSupport: null,
+      servicePhone: null,
+      projectName: '晶安智慧安全平台',
+    },
   },
 
   effects: {
@@ -87,8 +90,7 @@ export default {
     saveFooterInfo(state, { payload }) {
       return {
         ...state,
-        serviceSupport: payload.serviceSupport || null,
-        servicePhone: payload.servicePhone || null,
+        data: payload,
       };
     },
   },

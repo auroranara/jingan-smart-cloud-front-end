@@ -49,7 +49,7 @@ export default class UserLayout extends PureComponent {
   render() {
     const {
       children,
-      login: { serviceSupport, servicePhone },
+      login: { data: { serviceSupport, servicePhone, projectName } },
     } = this.props;
 
     const copyright = (
@@ -80,7 +80,7 @@ export default class UserLayout extends PureComponent {
               <div className={styles.header}>
                 {/* <Link to="/"> */}
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>晶安智慧云平台</span>
+                <span className={styles.title}>{projectName}</span>
                 {/* </Link> */}
               </div>
               <div className={styles.desc} />
