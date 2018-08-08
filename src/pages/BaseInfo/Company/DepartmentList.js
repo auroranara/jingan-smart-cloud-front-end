@@ -26,8 +26,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一起一档',
-    name: '一起一档',
+    title: '一企一档',
+    name: '一企一档',
   },
   {
     title: '单位管理',
@@ -185,10 +185,23 @@ export default class DepartmentList extends PureComponent {
     } = this.props;
     const name = getFieldValue('name');
     this.setState({ searchName: name });
+    if (name && !this.hasName(name, list)) {
+      message.error('未查询到所需数据！');
+    }
     // if (name) {
     //   // this.generateExpended(name, [...list], temp)
     //   // temp = [...new Set(temp)]
     // }
+  };
+
+  // 判断数组中的名称是否包含搜索内容
+  hasName = (name, list) => {
+    for (const item of list) {
+      const index = item.name.indexOf(name);
+      if (index > -1) return true;
+      if (item.children) this.hasName(name, item.children);
+    }
+    return false;
   };
 
   // generateExpended = (name, list, temp) => {
@@ -357,7 +370,7 @@ export default class DepartmentList extends PureComponent {
         width: '50%',
         render: val => {
           const index = val.indexOf(searchName);
-          return index > -1 ? (
+          return searchName && index > -1 ? (
             <span>
               {val.substr(0, index)}
               <span style={{ color: '#f50' }}>{searchName}</span>

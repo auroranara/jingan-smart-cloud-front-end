@@ -85,8 +85,6 @@ const tabList = [
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
-// 地图默认中心点
-const defaultCenter = '无锡';
 
 @connect(
   ({ company, user, loading }) => ({
@@ -121,6 +119,20 @@ const defaultCenter = '无锡';
     fetchDict(action) {
       dispatch({
         type: 'company/fetchDict',
+        ...action,
+      });
+    },
+    // gsafe版获取字典
+    gsafeFetchDict(action) {
+      dispatch({
+        type: 'company/gsafeFetchDict',
+        ...action,
+      });
+    },
+    // 获取行业类别
+    fetchIndustryType(action) {
+      dispatch({
+        type: 'company/fetchIndustryType',
         ...action,
       });
     },
@@ -168,6 +180,8 @@ export default class CompanyDetail extends PureComponent {
     const {
       fetchCompany,
       fetchDict,
+      gsafeFetchDict,
+      fetchIndustryType,
       fetchArea,
       clearDetail,
       match: {
@@ -199,9 +213,10 @@ export default class CompanyDetail extends PureComponent {
           companyNatureLabel,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+          // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
-            ichnographyList: companyIchnographyList,
+            ichnographyList: Array.isArray(companyIchnographyList) ? companyIchnographyList.map((item, index) => ({ ...item, uid: index, status: 'done' })) : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({ ...item, uid: index, status: 'done' })),
             isCompany: companyNatureLabel === defaultCompanyNature,
           });
           // 获取注册地址列表
@@ -240,15 +255,11 @@ export default class CompanyDetail extends PureComponent {
     }
 
     // 获取行业类别
-    fetchDict({
-      payload: {
-        type: 'company_industry_type',
-        key: 'industryCategories',
-      },
+    fetchIndustryType({
       error,
     });
     // 获取经济类型
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'economicType',
         key: 'economicTypes',
@@ -256,7 +267,7 @@ export default class CompanyDetail extends PureComponent {
       error,
     });
     // 获取单位状态
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'companyState',
         key: 'companyStatuses',
@@ -264,7 +275,7 @@ export default class CompanyDetail extends PureComponent {
       error,
     });
     // 获取规模情况
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'scale',
         key: 'scales',
@@ -272,7 +283,7 @@ export default class CompanyDetail extends PureComponent {
       error,
     });
     // 获取营业执照类别
-    fetchDict({
+    gsafeFetchDict({
       payload: {
         type: 'businessLicense',
         key: 'licenseTypes',
@@ -364,7 +375,7 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
-            companyIchnography: JSON.stringify(ichnographyList),
+            companyIchnography: JSON.stringify(ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))),
             longitude,
             latitude,
           };
@@ -588,10 +599,9 @@ export default class CompanyDetail extends PureComponent {
             <Cascader
               options={industryCategories}
               fieldNames={{
-                value: 'id',
-                label: 'name',
+                value: 'type_id',
+                label: 'gs_type_name',
                 children: 'children',
-                isLeaf: 'isLeaf',
               }}
               allowClear
               changeOnSelect
@@ -625,8 +635,8 @@ export default class CompanyDetail extends PureComponent {
           })(
             <Select placeholder="请选择单位状态" getPopupContainer={getRootChild}>
               {companyStatuses.map(item => (
-                <Option value={item.id} key={item.id}>
-                  {item.label}
+                <Option value={item.key} key={item.key}>
+                  {item.value}
                 </Option>
               ))}
             </Select>
@@ -946,8 +956,8 @@ export default class CompanyDetail extends PureComponent {
                 })(
                   <Select placeholder="请选择经济类型" getPopupContainer={getRootChild}>
                     {economicTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
                       </Option>
                     ))}
                   </Select>
@@ -962,8 +972,8 @@ export default class CompanyDetail extends PureComponent {
                 })(
                   <Select allowClear placeholder="请选择规模情况" getPopupContainer={getRootChild}>
                     {scales.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
                       </Option>
                     ))}
                   </Select>
@@ -978,8 +988,8 @@ export default class CompanyDetail extends PureComponent {
                 })(
                   <Select placeholder="请选择营业执照类别" getPopupContainer={getRootChild}>
                     {licenseTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
                       </Option>
                     ))}
                   </Select>

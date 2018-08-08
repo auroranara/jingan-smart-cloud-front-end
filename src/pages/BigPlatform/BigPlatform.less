@@ -1,0 +1,83 @@
+@import '~antd/lib/style/themes/default.less';
+@import '../../utils/utils.less';
+
+@imgUrl: '../../static/img/BigPlatform';
+
+.main {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  padding: 0 20px 30px;
+  color: #fff;
+  background: url('@{imgUrl}/safe-bg.png') no-repeat center center;
+  background-size: 100% 100%;
+  .mainHeader {
+    line-height: 95px;
+    font-size: 48px;
+    position: relative;
+    text-align: center;
+    letter-spacing: 14px;
+    .subHeader {
+      letter-spacing: 0px;
+      word-spacing: 10px;
+      font-size: 22px;
+      position: absolute;
+      top: 0;
+      right: 30px;
+    }
+  }
+
+  .mainBody {
+    height: calc(~'100% - 80px');
+    width: 100%;
+    position: relative;
+    margin-top: -15px;
+    .sectionWrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .sectionTitle {
+      background: url('@{imgUrl}/sub-title.png') no-repeat center center;
+      background-size: 100% 100%;
+      padding: 0 20px;
+      font-size: 18px;
+      margin-bottom: 8px;
+      line-height: 32px;
+      height: 32px;
+      display: inline-block;
+    }
+    .sectionMain {
+      border: 2px solid transparent;
+      border-image: url('@{imgUrl}/safe-border.png') 2 2 stretch;
+      width: 100%;
+      height: calc(~'100% - 40px');
+      position: relative;
+      overflow: hidden;
+      .safeTable {
+        width: 100%;
+        vertical-align: middle;
+        text-align: center;
+        th {
+          padding: 12px 5px;
+          font-size: 16px;
+          color: #00baff;
+          border-bottom: 1px solid #00baff;
+        }
+        td {
+          padding: 15px 5px;
+          border-bottom: 1px solid #00baff;
+          font-size: 16px;
+        }
+      }
+    }
+    .sectionMainFull {
+      .sectionMain;
+      height: 100%;
+    }
+  }
+}
+
+.heightFull {
+  height: 100%;
+}

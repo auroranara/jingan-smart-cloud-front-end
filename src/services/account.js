@@ -28,7 +28,7 @@ export async function changePass(params) {
   });
 }
 
-// 登陆页面获取footer信息
+// 登录页面获取footer信息
 export async function fetchFooterInfo() {
   return request('/acloud_new/v2/pi/getIndexBottom')
 }

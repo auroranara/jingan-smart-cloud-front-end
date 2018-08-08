@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import moment from 'moment';
 import { message, Button, Card, Cascader, Col, DatePicker, Form, Icon, Input, Modal, Upload, Select } from 'antd';
 // import FooterToolbar from 'components/FooterToolbar';
 
+import urls from 'utils/urls';
 import { getToken } from 'utils/authority';
 
 const { RangePicker } = DatePicker;
@@ -59,7 +61,7 @@ const itemLayout1 = {
   },
 };
 
-const GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime', 'companyLogo'];
+const GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime',  'safetyFourPicture', 'companyLogo'];
 const MORE_GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
 
 function generateRules(cName, msg="输入") {
@@ -226,10 +228,11 @@ export default class Safety extends PureComponent {
           list = list.map(({ name, url }) => ({ name, uid: name, url, status: 'done', response: { code: 200 } }));
         // 数据库存的只是个链接
         } else
-          list = [{name: '已上传文件', url: `http://pak93s58x.bkt.clouddn.com/development${val.slice(val.indexOf('/gsafe'))}`, dbUrl: val, uid: Date.now(), status: 'done', response: { code: 200 }}];
+          list = [{name: '已上传文件', url: detail[`${next}Web`], dbUrl: val, uid: Date.now(), status: 'done', response: { code: 200 }}];
+
         this.setState({ [UPLOADERS_MAP[next]]: list });
         prev[next] = { fileList: list };
-        // console.log(next, JSON.parse(val));s
+        console.log(list);
       }
       else
         prev[next] = val;
@@ -275,8 +278,10 @@ export default class Safety extends PureComponent {
         callback(code, msg) {
           that.setState({ submitting: false });
 
-          if (code === 200)
+          if (code === 200) {
             message.success(msg);
+            dispatch(routerRedux.push(urls.company.list));
+          }
           else
             message.error(msg);
         },
@@ -446,6 +451,13 @@ export default class Safety extends PureComponent {
         rules: generateRules('服务有效期'),
         component: <RangePicker />,
       }, {
+        name: 'safetyFourPicture',
+        cName: '安全四色图',
+        span: 24,
+        rules: generateRules('安全四色图', '上传'),
+        formItemLayout: itemLayout1,
+        component: <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}><Button loading={safeLoading} type="primary">{UploadIcon}上传图片</Button></Upload>,
+      }, {
         name: 'companyLogo',
         cName: '单位LOGO',
         span: 24,
@@ -462,13 +474,6 @@ export default class Safety extends PureComponent {
         rules: generateRules('标准化达标等级附件', '上传'),
         formItemLayout: itemLayout1,
         component: <Upload {...defaultUploadProps} fileList={standardList} onChange={this.handleStandardChange}><Button loading={standardLoading} type="primary">{UploadIcon}上传附件</Button></Upload>,
-      }, {
-        name: 'safetyFourPicture',
-        cName: '安全四色图',
-        span: 24,
-        rules: generateRules('安全四色图', '上传'),
-        formItemLayout: itemLayout1,
-        component: <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}><Button loading={safeLoading} type="primary">{UploadIcon}上传图片</Button></Upload>,
       },
     ];
 

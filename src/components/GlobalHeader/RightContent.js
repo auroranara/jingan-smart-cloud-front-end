@@ -56,13 +56,7 @@ export default class GlobalHeaderRight extends PureComponent {
   };
 
   render() {
-    const {
-      currentUser,
-
-      onMenuClick,
-
-      theme,
-    } = this.props;
+    const { currentUser, onMenuClick, theme } = this.props;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         <Menu.Item key="changePassword">
@@ -91,17 +85,20 @@ export default class GlobalHeaderRight extends PureComponent {
     }
     return (
       <div className={className}>
-        <Tooltip title="数据维护">
-          <a
-            target="_blank"
-            href={url}
-            rel="noopener noreferrer"
-            className={styles.action}
-            title="数据大屏"
-          >
-            <Icon type="line-chart" />
-          </a>
-        </Tooltip>
+        {currentUser &&
+          currentUser.unitType === 3 && (
+            <Tooltip title="数据维护">
+              <a
+                target="_blank"
+                href={url}
+                rel="noopener noreferrer"
+                className={styles.action}
+                title="数据维护"
+              >
+                <Icon type="hdd" />
+              </a>
+            </Tooltip>
+          )}
         {currentUser.userName ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>

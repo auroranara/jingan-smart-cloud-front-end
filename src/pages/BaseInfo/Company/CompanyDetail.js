@@ -263,7 +263,10 @@ export default class CompanyDetail extends PureComponent {
       (practicalDistrictLabel || '') +
       (practicalTownLabel || '') +
       (practicalAddress || '');
-    const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+
+    let companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+    companyIchnographyList = Array.isArray(companyIchnographyList) ? companyIchnographyList : JSON.parse(companyIchnographyList.dbUrl);
+    // console.log(typeof companyIchnographyList);
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>

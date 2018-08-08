@@ -305,7 +305,7 @@ export default class CompanyList extends PureComponent {
   renderList() {
     const {
       company: { list },
-      user: { currentUser: { permissionCodes } },
+      user: { currentUser: { permissionCodes, unitType } },
       goToDetail,
     } = this.props;
     // 是否有查看权限
@@ -384,17 +384,25 @@ export default class CompanyList extends PureComponent {
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       联系电话：{safetyPhone || getEmptyData()}
                     </Ellipsis>
-                    <Popconfirm
-                      title={`确定要${safetyProduction === 0 ? '关闭' : '开启'}安全大屏权限吗？`}
-                      onConfirm={() => this.handleScreenPermission(id, Number(!safetyProduction), fireService, list)}>
-                      <img className={styles.screenConreol} src={safetyProduction === 0 ? safe : safeGray} alt="safe" />
-                    </Popconfirm>
-                    <Popconfirm
-                      className={styles.ml30}
-                      title={`确定要${fireService === 0 ? '关闭' : '开启'}消防大屏权限吗？`}
-                      onConfirm={() => this.handleScreenPermission(id, safetyProduction, Number(!fireService), list)}>
-                      <img className={styles.screenConreol} src={fireService === 0 ? fire : fireGray} alt="fire" />
-                    </Popconfirm>
+                    {unitType === 3 ? (
+                      <Popconfirm
+                        title={`确定要${safetyProduction ? '关闭' : '开启'}安全大屏权限吗？`}
+                        onConfirm={() => this.handleScreenPermission(id, Number(!safetyProduction), fireService, list)}>
+                        <img className={styles.screenControlIcon} src={safetyProduction ? safe : safeGray} alt="safe" />
+                      </Popconfirm>) : (
+                        <img className={styles.defaultIcon} src={safetyProduction ? safe : safeGray} alt="safe" />
+                      )
+                    }
+                    {unitType === 3 ? (
+                      <Popconfirm
+                        className={styles.ml30}
+                        title={`确定要${fireService ? '关闭' : '开启'}消防大屏权限吗？`}
+                        onConfirm={() => this.handleScreenPermission(id, safetyProduction, Number(!fireService), list)}>
+                        <img className={styles.screenControlIcon} src={fireService ? fire : fireGray} alt="fire" />
+                      </Popconfirm>) : (
+                        <img className={`${styles.defaultIcon} ${styles.ml30}`} src={fireService ? fire : fireGray} alt="fire" />
+                      )
+                    }
                   </div>
                 </Card>
               </List.Item>
