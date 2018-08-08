@@ -14,6 +14,8 @@ import {
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import { arrayify } from 'tslint/lib/utils';
+import { AuthButton, AuthA } from 'utils/customAuth'
+import codes from '../../../utils/codes';
 
 const { TreeNode } = TreeSelect;
 const FormItem = Form.Item;
@@ -344,9 +346,9 @@ export default class DepartmentList extends PureComponent {
             <Button onClick={this.resetQuery}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <Button onClick={() => this.handleShowModal('add')} type="primary">
+            <AuthButton onClick={() => this.handleShowModal('add')} type="primary" code={codes.company.department.add}>
               新增
-            </Button>
+            </AuthButton>
           </FormItem>
         </Form>
       </Card>
@@ -377,8 +379,8 @@ export default class DepartmentList extends PureComponent {
               {val.substr(index + searchName.length)}
             </span>
           ) : (
-            <span>{val}</span>
-          );
+              <span>{val}</span>
+            );
         },
       },
       {
@@ -394,12 +396,12 @@ export default class DepartmentList extends PureComponent {
         align: 'center',
         render: (val, rows) => (
           <Fragment>
-            <a onClick={() => this.handleShowModal('addUnder', rows)}>添加</a>
+            <AuthA code={codes.company.department.add} onClick={() => this.handleShowModal('addUnder', rows)}>添加</AuthA>
             <Divider type="vertical" />
-            <a onClick={() => this.handleShowModal('edit', rows)}>编辑</a>
+            <AuthA code={codes.company.department.edit} onClick={() => this.handleShowModal('edit', rows)}>编辑</AuthA>
             <Divider type="vertical" />
             <Popconfirm title="确认要删除该部门吗？" onConfirm={() => this.handleDelete(rows)}>
-              <a>删除</a>
+              <AuthA code={codes.company.department.delete}>删除</AuthA>
             </Popconfirm>
           </Fragment>
         ),
@@ -417,8 +419,8 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-          <div style={{ textAlign: 'center' }}>暂无数据</div>
-        )}
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
       </Card>
     );
   }
@@ -445,8 +447,8 @@ export default class DepartmentList extends PureComponent {
           {total}
         </span>
       ) : (
-        <span>部门总数：0</span>
-      );
+          <span>部门总数：0</span>
+        );
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
