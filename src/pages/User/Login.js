@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'dva/router';
-import { Checkbox, Alert } from 'antd';
+import { Checkbox, Alert, Icon } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
@@ -77,6 +77,10 @@ export default class LoginPage extends Component {
     });
   };
 
+  handleToDownload = () => {
+    window.open('/gsafe/download.html', '_self')
+  }
+
   renderMessage = content => {
     return <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />;
   };
@@ -94,10 +98,9 @@ export default class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          <div className={styles.tab}>
+          {/* <div className={styles.tab}>
             <span className={styles.pane}>账户密码登录</span>
-            {/* <span className={styles.line}>.</span> */}
-          </div>
+          </div> */}
           <div style={{ marginTop: '28px', display: 'block' }}>
             {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
             <UserName name="username" placeholder="用户名/手机号" />
@@ -131,9 +134,9 @@ export default class LoginPage extends Component {
               注册账户
             </Link>
           </div> */}
-          {/* <div className={styles.other}>
-            <span className={styles.download}><Icon type="download" />APP下载</span>
-          </div> */}
+          <div className={styles.other}>
+            <span onClick={this.handleToDownload} className={styles.download}><Icon type="download" />APP下载</span>
+          </div>
         </Login>
       </div>
     );
