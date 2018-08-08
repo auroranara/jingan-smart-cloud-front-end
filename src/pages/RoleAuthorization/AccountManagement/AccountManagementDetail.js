@@ -75,6 +75,10 @@ const UserTypes = [
     label: '企业安全员',
     value: 'company_safer',
   },
+  {
+    label: '运营',
+    value: 'admin',
+  },
 ];
 
 const documentTypeIds = [
@@ -172,7 +176,7 @@ export default class accountManagementDetail extends PureComponent {
             });
           },
           err: () => {
-            message.err('提交失败！', () => {});
+            message.err('提交失败！', () => { });
           },
         });
       }
@@ -218,7 +222,7 @@ export default class accountManagementDetail extends PureComponent {
         <DescriptionList col={3}>
           <Description term={fieldLabels.loginName}>{loginName || getEmptyData()}</Description>
           <Description term={fieldLabels.userName}>{userName || getEmptyData()}</Description>
-          <Description term={fieldLabels.phoneNumber}>{phoneNumber || getEmptyData()}</Description>
+          <Description term={fieldLabels.phoneNumber}>{(phoneNumber + '').trim() || getEmptyData()}</Description>
           <Description term={fieldLabels.unitType}>
             {UnitTypes[unitType] || getEmptyData()}
           </Description>
@@ -266,10 +270,10 @@ export default class accountManagementDetail extends PureComponent {
             <div style={{ paddingTop: 8 }}>
               {roleNames
                 ? roleNames.split(',').map(roleName => (
-                    <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                      {roleName}
-                    </p>
-                  ))
+                  <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                    {roleName}
+                  </p>
+                ))
                 : getEmptyData()}
             </div>
           </Description>
