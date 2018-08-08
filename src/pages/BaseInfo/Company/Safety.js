@@ -124,7 +124,7 @@ function handleFormValues(fieldsValue) {
   const ids = formValues.gridId;
   formValues.gridId = ids[ids.length - 1];
 
-  // 处理提交按钮
+  // 处理提交按钮，提交dbUrl即可
   UPLOADERS.forEach(key => {
     if (!formValues[key])
       return;
@@ -137,7 +137,12 @@ function handleFormValues(fieldsValue) {
       // .map(({ uid, name, status, url, response: { code } }) => ({ name, url }));
     // formValues[key] = JSON.stringify({ fileList: newFileList });
     // formValues[key] = JSON.stringify(newFileList);
-    formValues[key] = fileList.length ? fileList[0].dbUrl : '';
+    const file = fileList[0];
+    // 筛选成功上传的文件上传
+    if (fileList.length && file.status === 'done' && file.response.code === 200)
+      formValues[key] = file.dbUrl;
+    else
+      formValues[key] = '';
   });
 
   return formValues;
@@ -226,14 +231,14 @@ export default class Safety extends PureComponent {
           list = JSON.parse(val);
           list = Array.isArray(list) ? list : list.fileList;
           // 不加uid属性会报错
-          list = list.map(({ name, url }) => ({ name, uid: name, url, status: 'done', response: { code: 200 } }));
+          list = list.map(({ name, url }) => ({ name, uid: Date.now(), url, status: 'done', response: { code: 200 } }));
         // 数据库存的只是个链接
         } else
           list = [{name: '已上传文件', url: detail[`${next}Web`], dbUrl: val, uid: Date.now(), status: 'done', response: { code: 200 }}];
 
         this.setState({ [UPLOADERS_MAP[next]]: list });
         prev[next] = { fileList: list };
-        console.log(list);
+        // console.log(list);
       }
       else
         prev[next] = val;
@@ -321,7 +326,7 @@ export default class Safety extends PureComponent {
     if (status === 'done' && response.code === 200)
       message.success('上传成功');
     else if (status === 'error' || status === 'done' && response.code !== 200)
-      message.error('上传失败');
+      message.error('上传失败，请重新上传');
   };
 
   // 同上
@@ -340,7 +345,7 @@ export default class Safety extends PureComponent {
     if (status === 'done' && response.code === 200)
       message.success('上传成功');
     else if (status === 'error' || status === 'done' && response.code !== 200)
-      message.error('上传失败');
+      message.error('上传失败，请重新上传');
   };
 
   // 可以上传多个文件
@@ -394,7 +399,7 @@ export default class Safety extends PureComponent {
     if (status === 'done' && response.code === 200)
       message.success('上传成功');
     else if (status === 'error' || status === 'done' && response.code !== 200)
-      message.error('上传失败');
+      message.error('上传失败，请重新上传');
   };
 
   // FormItem中的值对应的是组件的onChange函数传入的值，所以对于Upload组件，上传时候的值为 { file: ..., fileList: ... }
