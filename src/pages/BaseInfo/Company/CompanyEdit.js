@@ -216,7 +216,17 @@ export default class CompanyDetail extends PureComponent {
           // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
-            ichnographyList: Array.isArray(companyIchnographyList) ? companyIchnographyList.map((item, index) => ({ ...item, uid: index, status: 'done' })) : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({ ...item, uid: index, status: 'done' })),
+            ichnographyList: Array.isArray(companyIchnographyList)
+              ? companyIchnographyList.map((item, index) => ({
+                  ...item,
+                  uid: index,
+                  status: 'done',
+                }))
+              : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
+                  ...item,
+                  uid: index,
+                  status: 'done',
+                })),
             isCompany: companyNatureLabel === defaultCompanyNature,
           });
           // 获取注册地址列表
@@ -375,7 +385,9 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
-            companyIchnography: JSON.stringify(ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))),
+            companyIchnography: JSON.stringify(
+              ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
+            ),
             longitude,
             latitude,
           };
@@ -605,6 +617,7 @@ export default class CompanyDetail extends PureComponent {
               }}
               allowClear
               changeOnSelect
+              notFoundContent
               placeholder="请选择行业类别"
               getPopupContainer={getRootChild}
             />
