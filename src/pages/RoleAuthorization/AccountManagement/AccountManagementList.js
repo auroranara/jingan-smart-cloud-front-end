@@ -240,7 +240,7 @@ export default class accountManagementList extends PureComponent {
             <FormItem label="用户">
               {getFieldDecorator('input', {
                 getValueFromEvent: this.handleTrim,
-              })(<Input placeholder="用户名/姓名/手机号" />)}
+              })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
             </FormItem>
             <FormItem label="单位类型">
               {getFieldDecorator('unitType')(
@@ -273,7 +273,7 @@ export default class accountManagementList extends PureComponent {
                   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                   onSearch={this.handleUnitIdChange}
                   filterOption={false}
-                  style={{ width: 180 }}
+                  style={{ width: 230 }}
                 >
                   {unitIdes.map(item => (
                     <Option value={item.id} key={item.id}>
