@@ -29,24 +29,13 @@ export default {
         // 登录1.0
         yield call(accountLoginGsafe, payload);
         reloadAuthorized();
-        // const urlParams = new URL(window.location.href);
-        // const params = getPageQuery();
-        // let { redirect } = params;
-        // if (redirect) {
-        //   const redirectUrlParams = new URL(redirect);
-        //   if (redirectUrlParams.origin === urlParams.origin) {
-        //     redirect = redirect.substr(urlParams.origin.length);
-        //     if (redirect.startsWith('/#')) {
-        //       redirect = redirect.substr(2);
-        //     }
-        //   } else {
-        //     window.location.href = redirect;
-        //     return;
-        //   }
-        // }
-        // yield put(routerRedux.replace({ pathname: redirect || '/' }));
         yield put(routerRedux.replace({ pathname: '/' }));
       }
+    },
+
+    *loginGsafe({ payload, callback }, { call, put }) {
+      const res = yield call(accountLoginGsafe, payload);
+      if (res.code === 200 && callback) callback();
     },
 
     *getCaptcha({ payload }, { call }) {
@@ -64,6 +53,7 @@ export default {
       yield put({ type: 'user/saveCurrentUser' });
       setToken();
       reloadAuthorized();
+      document.cookie = '';
       yield put(
         routerRedux.push({
           pathname: '/user/login',

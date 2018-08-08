@@ -6,6 +6,8 @@ import groupBy from 'lodash/groupBy';
 import toUpper from 'lodash/toUpper';
 import styles from './index.less';
 
+const url = `/gsafe/console`;
+
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
     const { notices = [] } = this.props;
@@ -48,6 +50,17 @@ export default class GlobalHeaderRight extends PureComponent {
     location.reload();
   };
 
+  //  跳转到gsafe之前登录一下 获取cookie
+  handleGoGsafe = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'login/loginGsafe',
+      callback: () => {
+        window.open(url, '_blank');
+      },
+    });
+  };
+
   generateStyle = () => {
     const { currentUser } = this.props;
     const colors = ['#6666FF', '#66CCFF', '#9966FF', '#CC6666', '#FFCC66'];
@@ -78,7 +91,6 @@ export default class GlobalHeaderRight extends PureComponent {
       </Menu>
     );
     // const noticeData = this.getNoticeData();
-    const url = `/gsafe/console`;
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
@@ -90,10 +102,10 @@ export default class GlobalHeaderRight extends PureComponent {
             <Tooltip title="数据维护">
               <a
                 target="_blank"
-                href={url}
                 rel="noopener noreferrer"
                 className={styles.action}
                 title="数据维护"
+                onClick={this.handleGoGsafe}
               >
                 <Icon type="hdd" />
               </a>
