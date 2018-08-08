@@ -47,7 +47,7 @@ export default class Dashboard extends PureComponent {
       //TODO 政府大屏开启
       this.setState({ hasSafeAuthority: true, safetyProduction: 1, fireService: 0 });
     } else {
-      safeItem.url = `/acloud_new/#//big-platform/safety/company/${companyId}`;
+      safeItem.url = `/acloud_new/#/big-platform/safety/company/${companyId}`;
       this.setState({
         hasSafeAuthority: !!companyId,
         safetyProduction,
