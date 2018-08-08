@@ -8,6 +8,8 @@ export default {
   },
   account: {
     edit: 'roleAuthorization.accountManagement.edit',
+    detail: 'roleAuthorization.accountManagement.view',
+    add: 'roleAuthorization.accountManagement.add',
   },
   deviceManagement: {
     transmission: {
@@ -42,6 +44,12 @@ export default {
     add: 'fireControl.contract.add',
     edit: 'fireControl.contract.edit',
     delete: 'fireControl.contract.delete',
+  },
+  maintenanceCompany: {
+    add: 'fireControl.maintenanceCompany.add',
+    detail: 'fireControl.maintenanceCompany.view',
+    edit: 'fireControl.maintenanceCompany.edit',
+    serviceDetail: 'fireControl.maintenanceCompany.serviceListView',
   },
   map: {
     index: 'videoSurveillance.map.view',
