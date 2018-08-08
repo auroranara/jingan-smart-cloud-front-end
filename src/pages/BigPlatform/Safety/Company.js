@@ -4,21 +4,189 @@ import { connect } from 'dva';
 import styles from './Company.less';
 import moment from 'moment';
 import Timer from './Components/Timer';
+import RiskImage from './Components/RiskImage.js';
+import RiskPoint from './Components/RiskPoint.js';
+import RiskInfo from './Components/RiskInfo.js';
+import RiskDetail from './Components/RiskDetail.js';
 
 import { DataView } from '@antv/data-set';
 import { Chart, Axis, Tooltip, Geom, Coord, Label, Legend } from "bizcharts";
+
+/* 图片地址前缀 */
+const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
+/* 图片 */
+const red = `${iconPrefix}red.png`
+const orange = `${iconPrefix}orange.png`;
+const yellow = `${iconPrefix}yellow.png`;
+const blue = `${iconPrefix}blue.png`;
+const sRed = `${iconPrefix}s_red.png`;
+const sOrange = `${iconPrefix}s_orange.png`;
+const sYellow = `${iconPrefix}s_yellow.png`;
+const sBlue = `${iconPrefix}s_blue.png`;
+const exception = `${iconPrefix}exception.png`;
+const selected = `${iconPrefix}selected.png`;
+const pointIcon = `${iconPrefix}point.png`;
+const areaIcon = `${iconPrefix}area.png`;
+const accidentTypeIcon = `${iconPrefix}accidentType.png`;
+const riskLevelIcon = `${iconPrefix}riskLevel.png`;
+const statusIcon = `${iconPrefix}status.png`;
+// 选中高度
+const selectedHeight = 269;
+const selectedWidth = 63;
+// 信息offset
+const defaultInfoOffset = {
+  x: 50,
+  y: -selectedHeight-50,
+}
+// 正常点的样式
+const normalStyle = {
+  width: 39,
+  height: 40,
+  zIndex: 9,
+};
+// 正常点的偏移
+const normalOffset = {
+  x: -2,
+  y: 0,
+};
+// 选中点的样式
+const selectedStyle = {
+  width: 33,
+  height: 40,
+  zIndex: 8,
+};
+// 选中点的偏移
+const selectedOffset = {
+  x: 0,
+  y: -selectedHeight,
+};
+// 点图标，0为正常，1为选中，2为异常
+const pointImages = [
+  [
+    {
+      src: red,
+      style: normalStyle,
+      offset: normalOffset,
+    },
+    {
+      src: orange,
+      style: normalStyle,
+      offset: normalOffset,
+    },
+    {
+      src: yellow,
+      style: normalStyle,
+      offset: normalOffset,
+    },
+    {
+      src: blue,
+      style: normalStyle,
+      offset: normalOffset,
+    },
+  ],
+  [
+    {
+      src: sRed,
+      style: selectedStyle,
+      offset: selectedOffset,
+    },
+    {
+      src: sOrange,
+      style: selectedStyle,
+      offset: selectedOffset,
+    },
+    {
+      src: sYellow,
+      style: selectedStyle,
+      offset: selectedOffset,
+    },
+    {
+      src: sBlue,
+      style: selectedStyle,
+      offset: selectedOffset,
+    },
+  ],
+  [
+    {
+      src: exception,
+      style: normalStyle,
+      offset: normalOffset,
+    },
+  ],
+];
+// 根据颜色筛选图片
+const switchImageColor = (list, color) => {
+  switch(color) {
+    case '红':
+      return list[0];
+    case '橙':
+      return list[1];
+    case '黄':
+      return list[2];
+    default:
+      return list[3];
+  }
+}
+// 获取status
+const switchStatus = (status) => {
+  const value = +status;
+  if (value === 1 || value === 2) {
+    return 0;
+  }
+  else if (value === 3) {
+    return 1;
+  }
+  else if (value === 7){
+    return 2;
+  }
+  else {
+    return 0;
+  }
+};
+// 获取颜色和status
+const switchCheckStatus = (value=0) => {
+  switch(value) {
+    case 1:
+    return {
+      color: '#E8292D',
+      content: '正常',
+    };
+    case 2:
+    return {
+      color: '#794277',
+      content: '异常',
+    };
+    case 3:
+    return {
+      color: '#EF5150',
+      content: '待检查',
+    };
+    default:
+    return {
+      color: '#20DE3A',
+      content: '已超时',
+    };
+  }
+}
 
 @connect(({ bigPlatform }) => ({
   bigPlatform,
 }))
 class CompanyLayout extends React.PureComponent {
-  state = {
-    pieHeight: 0,
-    barHeight: 0,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedId: null,
+      selectedIndex: 0,
+      pieHeight: 0,
+      barHeight: 0,
+    };
+    this.timer = null;
+    this.points = [];
+  }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, match: { params: { companyId='rf0e7Xd3TqS4ElNcdDmrSg' } } } = this.props;
     window.onload = () => {
       this.reDoChart();
     };
@@ -30,59 +198,100 @@ class CompanyLayout extends React.PureComponent {
     dispatch({
       type: 'bigPlatform/fetchCompanyMessage',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
         month: moment().format('YYYY-MM'),
       },
     });
     dispatch({
       type: 'bigPlatform/fetchSpecialEquipment',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
         month: moment().format('YYYY-MM'),
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
         status: '1',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
         status: '2',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
         status: '3',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
         status: '4',
       },
     });
     dispatch({
       type: 'bigPlatform/fetchCountDangerLocationForCompany',
       payload: {
-        company_id: 'rf0e7Xd3TqS4ElNcdDmrSg',
+        company_id: companyId,
       },
     });
-
+    // 获取风险点信息
+    dispatch({
+      type: 'bigPlatform/fetchRiskPointInfo',
+      payload: {
+        company_id: companyId,
+      },
+    });
+    // 获取隐患详情
+    dispatch({
+      type: 'bigPlatform/fetchRiskDetail',
+      payload: {
+        company_id: companyId,
+      },
+    });
     this.setViewport();
+    // 默认选中第一个风险点
+    this.points[0] && this.points.handleClick();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
+  /* 风险点点击事件 */
+  handleClick = (id, index) => {
+    const { selectedId } = this.state;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      const { selectedIndex } = this.state;
+      if (selectedIndex === this.points.length-1) {
+        this.points[0].handleClick();
+      }
+      else {
+        this.points[selectedIndex+1].handleClick();
+      }
+    }, 5000);
+    if (selectedId === id) {
+      return;
+    }
+    this.setState({
+      selectedId: id,
+      selectedIndex: index,
+    });
   }
 
   setViewport() {
@@ -222,6 +431,142 @@ class CompanyLayout extends React.PureComponent {
           />
         </Geom>
       </Chart>
+    );
+  }
+
+  /* 风险四色图 */
+  renderRiskFourColor() {
+    const { bigPlatform: { companyMessage: { point: points, fourColorImg }, riskPointInfoList } } = this.props;
+    const { selectedId } = this.state;
+
+    return(
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '36px 0 10px' }}>
+        <div style={{ height: '40px', lineHeight: '40px', paddingLeft: '15px', color: '#00A8FF', fontSize: '20px' }}>
+          <div>安全风险四色图</div>
+        </div>
+        <RiskImage
+          src={fourColorImg || ''}
+          wrapperStyle={{
+            flex: 1,
+            height: 'auto',
+          }}
+          // perspective='30em'
+          // rotate='45deg'
+        >
+          {points && points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
+            const info = riskPointInfoList.filter(({ hdLetterInfo: { itemId } }) => itemId === id)[0];
+            if (info) {
+              const position = { x, y };
+              const { src, style, offset } = selectedId === id ? switchImageColor(pointImages[1], info.hdLetterInfo.riskLevelName.desc) : (+info.status !== 2 ? switchImageColor(pointImages[0], info.hdLetterInfo.riskLevelName.desc) : pointImages[2][1]);
+              const infoData = [
+                {
+                  icon: pointIcon,
+                  title: info.hdLetterInfo.pointName,
+                  render: (title) => (<span style={{ fontSize: '16px' }}>{title}</span>),
+                },
+                {
+                  icon: areaIcon,
+                  title: info.hdLetterInfo.areaName,
+                },
+                {
+                  icon: accidentTypeIcon,
+                  title: info.hdLetterInfo.accidentTypeName,
+                },
+                {
+                  icon: statusIcon,
+                  title: info.hdLetterInfo.status,
+                  render: (title) => {const { color, content } = switchCheckStatus(title-1); return (<span style={{ color }}>{content}</span>)},
+                },
+                {
+                  icon: riskLevelIcon,
+                  title: info.hdLetterInfo.riskLevelName.desc,
+                  render: (title) => (<span style={{ color: info.hdLetterInfo.riskLevelName.color }}>{title}</span>),
+                },
+              ];
+              return (
+                <Fragment key={id}>
+                  <RiskPoint
+                    position={position}
+                    src={src}
+                    style={style}
+                    offset={offset}
+                    onClick={(point) => {this.handleClick(id, index, point);}}
+                    ref={(point)=>{this.points[index] = point;}}
+                  />
+                  <RiskPoint
+                    position={position}
+                    src={selected}
+                    style={{
+                      width: selectedWidth,
+                      height: selectedId === id ? selectedHeight : 0,
+                      zIndex: 1,
+                    }}
+                  />
+                  <RiskInfo
+                    position={position}
+                    offset={defaultInfoOffset}
+                    data={infoData}
+                    background={info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl}
+                    style={{
+                      opacity: selectedId === id ? '1' : 0,
+                    }}
+                  />
+                </Fragment>
+              );
+            }
+            else {
+              return null;
+            }
+          })}
+        </RiskImage>
+        <div style={{ display: 'flex', height: '24px', padding: '16px 0' }}>
+          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#BF6C6E' }} />
+            <span>重大风险</span>
+          </div>
+          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#CC964B' }} />
+            <span>较大风险</span>
+          </div>
+          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#C6BC7A' }} />
+            <span>一般风险</span>
+          </div>
+          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#4C9ED6' }} />
+            <span>低风险</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* 隐患详情 */
+  renderRiskDetail() {
+    const { bigPlatform: { riskDetailList } } = this.props;
+    const { selectedId } = this.state;
+    const data = riskDetailList.filter(({ item_id }) => item_id === selectedId).map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }]=[{}] }) => ({
+      id,
+      description,
+      sbr,
+      sbsj: moment(+sbsj).format('YYYY-MM-DD'),
+      zgr,
+      zgsj: moment(+zgsj).format('YYYY-MM-DD'),
+      fcr,
+      status: switchStatus(status),
+      background,
+    }));
+
+    return (
+      <Col span={6} className={styles.heightFull}>
+        <RiskDetail
+          style={{
+            height: '100%',
+            paddingTop: '36px',
+          }}
+          data={data}
+        />
+      </Col>
     );
   }
 
@@ -365,8 +710,9 @@ class CompanyLayout extends React.PureComponent {
               </section>
             </Col>
 
-            <Col span={12} className={styles.heightFull}>
-              <section className={styles.sectionWrapper} style={{ height: '300px', position: 'absolute', bottom: '0', width: '100%' }}>
+            <Col span={12} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
+              {this.renderRiskFourColor()}
+              <section className={styles.sectionWrapper} style={{ height: '300px' }}>
                 <div className={styles.sectionTitle}>单位巡查</div>
                 <div className={styles.sectionMain} style={{ padding: '0' }}>
                   <div className={styles.shadowIn}>
@@ -377,6 +723,8 @@ class CompanyLayout extends React.PureComponent {
                 </div>
               </section>
             </Col>
+
+            {this.renderRiskDetail()}
           </Row>
         </article>
       </div>

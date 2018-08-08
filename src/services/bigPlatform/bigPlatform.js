@@ -63,3 +63,13 @@ export async function getCompanyMessage(params) {
 export async function getCountDangerLocationForCompany(params) {
   return request(`/acloud_new/v2/sfc/countDangerLocationForCompany.json?${stringify(params)}`);
 }
+
+// 获取风险点信息
+export async function getRiskPointInfo(params) {
+  return request(`/acloud_new/v2/sfc/selectCompanyLetter.json?${stringify(params)}`);
+}
+
+// 获取隐患详情
+export async function getRiskDetail(params) {
+  return request(`/acloud_new/v2/sfc/hiddenDangerList.json?${stringify(params)}`);
+}

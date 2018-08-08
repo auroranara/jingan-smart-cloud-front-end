@@ -1,4 +1,4 @@
-import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany } from '../services/bigPlatform/bigPlatform.js';
+import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany, getRiskDetail, getRiskPointInfo } from '../services/bigPlatform/bigPlatform.js';
 
 export default {
   namespace: 'bigPlatform',
@@ -67,6 +67,10 @@ export default {
       blue: 0,
       yellow: 0,
     },
+    // 风险点信息
+    riskPointInfoList: [],
+    // 隐患详情
+    riskDetailList: [],
   },
 
   effects: {
@@ -251,6 +255,26 @@ export default {
       //   error();
       // }
     },
+    *fetchRiskPointInfo({ payload, success }, { call, put }) {
+      const response = yield call(getRiskPointInfo, payload);
+      yield put({
+        type: 'saveRiskPointInfo',
+        payload: response.companyLetter,
+      });
+      if (success) {
+        success();
+      }
+    },
+    *fetchRiskDetail({ payload, success }, { call, put }) {
+      const response = yield call(getRiskDetail, payload);
+      yield put({
+        type: 'saveRiskDetail',
+        payload: response.hiddenDangers,
+      });
+      if (success) {
+        success();
+      }
+    },
   },
 
   reducers: {
@@ -334,6 +358,18 @@ export default {
         ...state,
         countDangerLocationForCompany: payload,
       };
+    },
+    saveRiskPointInfo(state, { payload: riskPointInfoList }) {
+      return {
+        ...state,
+        riskPointInfoList,
+      }
+    },
+    saveRiskDetail(state, { payload: riskDetailList }) {
+      return {
+        ...state,
+        riskDetailList,
+      }
     },
   },
 };
