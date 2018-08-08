@@ -56,6 +56,11 @@ const statusLabelList = {
   0: '已禁用',
 };
 
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 @connect(
   ({ account, user, loading }) => ({
     account,
@@ -356,15 +361,17 @@ export default class accountManagementList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Col span={12}>
-                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>{`姓名：${
-                        item.userName
-                      }`}</Ellipsis>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        姓名：
+                        {item.userName || getEmptyData()}
+                      </Ellipsis>
                     </Col>
                     <Col span={12}>
-                      <p>{`电话: ${item.phoneNumber}`}</p>
+                      <p>电话: {item.phoneNumber || getEmptyData()}</p>
                     </Col>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      {`公司名称：${item.unitName}`}
+                      单位名称：
+                      {item.unitName || getEmptyData()}
                     </Ellipsis>
                   </div>
                   {

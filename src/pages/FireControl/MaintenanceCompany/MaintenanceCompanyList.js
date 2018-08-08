@@ -49,6 +49,11 @@ const defaultFormData = {
   practicalAddress: undefined,
 };
 
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 @connect(
   ({ maintenanceCompany, loading }) => ({
     maintenanceCompany,
@@ -272,14 +277,20 @@ export default class MaintenanceCompanyList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      {`地址：${item.practicalAddress}`}
+                      地址：
+                      {item.practicalAddress || getEmptyData()}
                     </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>{`主要负责人：${
-                      item.principalName
-                    }`}</Ellipsis>
-                    <p>{`联系电话：${item.principalPhone}`}</p>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      {`总公司：${item.parentUnitName}`}
+                      主要负责人：
+                      {item.principalName || getEmptyData()}
+                    </Ellipsis>
+                    <p>
+                      联系电话：
+                      {item.principalPhone || getEmptyData()}
+                    </p>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      总公司：
+                      {item.parentUnitName || getEmptyData()}
                     </Ellipsis>
                   </Col>
                   <Col
