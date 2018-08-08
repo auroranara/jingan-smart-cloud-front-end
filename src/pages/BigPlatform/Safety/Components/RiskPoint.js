@@ -38,49 +38,39 @@ export default class App extends PureComponent {
       src, // 风险点图片地址
       position, // 风险点位置
       offset, // 偏移
-      image,
     } = this.props;
 
-    if (image) {
-      const { width: skewX, height: skewY } = image;
-      let { x: positionX, y: positionY } = position;
-      positionX = Number.parseInt(positionX, 10);
-      positionY = Number.parseInt(positionY, 10);
-      let { x: offsetX, y: offsetY } = offset;
-      offsetX = Number.parseInt(offsetX, 10);
-      offsetY = Number.parseInt(offsetY, 10);
-      const width = (style && style.width) || defaultWidth;
-
-      return (
-        <div
-          className={className}
+    let { x: positionX, y: positionY } = position;
+    let { x: offsetX, y: offsetY } = offset;
+    offsetX = Number.parseInt(offsetX, 10);
+    offsetY = Number.parseInt(offsetY, 10);
+    const width = (style && style.width) || defaultWidth;
+    return positionX && positionY ? (
+      <div
+        className={className}
+        style={{
+          position: 'absolute',
+          left: `calc(${positionX * 100}% - ${Math.floor(Number.parseInt(width, 10) / 2) - offsetX}px)`,
+          bottom: `calc(${(1 - positionY) * 100}% - ${offsetY}px)`,
+          display: 'inline-block',
+          transition: 'bottom 0.5s, height 0.5s',
+          width: defaultWidth,
+          height: defaultHeight,
+          ...style,
+        }}
+        onClick={this.handleClick}
+        ref={ele => { this.point = ele; }}
+      >
+        <img
           style={{
-            position: 'absolute',
-            left: `calc(${positionX/skewX*100}% - ${Math.floor(Number.parseInt(width, 10) / 2) - offsetX}px)`,
-            bottom: `calc(${(skewY - positionY)/skewY*100}% - ${offsetY}px)`,
-            display: 'inline-block',
-            transition: 'bottom 0.5s, height 0.5s',
-            width: defaultWidth,
-            height: defaultHeight,
-            ...style,
+            display: 'block',
+            width: '100%',
+            height: '100%',
           }}
-          onClick={this.handleClick}
-          ref={ele => {this.point = ele;}}
-        >
-          <img
-            style={{
-              display: 'block',
-              width: '100%',
-              height: '100%',
-            }}
-            src={src}
-            alt="风险点"
-          />
-        </div>
-      );
-    }
-    else {
-      return null;
-    }
+          src={src}
+          alt="风险点"
+        />
+      </div>
+    ) : null;
   }
 }
