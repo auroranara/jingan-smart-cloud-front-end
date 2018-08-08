@@ -58,6 +58,7 @@ const textMap = {};
 
 function traverse(tree) {
   tree.forEach(({ id, parentIds, text, children }) => {
+    // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
     if (parentIds) idMap[id] = [...parentIds.split(','), id].filter(item => item);
     else idMap[id] = [];
     textMap[id] = text;
