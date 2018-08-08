@@ -386,21 +386,21 @@ export default class CompanyList extends PureComponent {
                     </Ellipsis>
                     {unitType === 3 ? (
                       <Popconfirm
-                        title={`确定要${safetyProduction === 1 ? '关闭' : '开启'}安全大屏权限吗？`}
+                        title={`确定要${safetyProduction ? '关闭' : '开启'}安全大屏权限吗？`}
                         onConfirm={() => this.handleScreenPermission(id, Number(!safetyProduction), fireService, list)}>
-                        <img className={styles.screenControlIcon} src={safetyProduction === 1 ? safe : safeGray} alt="safe" />
+                        <img className={styles.screenControlIcon} src={safetyProduction ? safe : safeGray} alt="safe" />
                       </Popconfirm>) : (
-                        <img className={styles.defaultIcon} src={safetyProduction === 1 ? safe : safeGray} alt="safe" />
+                        <img className={styles.defaultIcon} src={safetyProduction ? safe : safeGray} alt="safe" />
                       )
                     }
                     {unitType === 3 ? (
                       <Popconfirm
                         className={styles.ml30}
-                        title={`确定要${fireService === 1 ? '关闭' : '开启'}消防大屏权限吗？`}
+                        title={`确定要${fireService ? '关闭' : '开启'}消防大屏权限吗？`}
                         onConfirm={() => this.handleScreenPermission(id, safetyProduction, Number(!fireService), list)}>
-                        <img className={styles.screenControlIcon} src={fireService === 1 ? fire : fireGray} alt="fire" />
+                        <img className={styles.screenControlIcon} src={fireService ? fire : fireGray} alt="fire" />
                       </Popconfirm>) : (
-                        <img className={`${styles.defaultIcon} ${styles.ml30}`} src={fireService === 1 ? fire : fireGray} alt="fire" />
+                        <img className={`${styles.defaultIcon} ${styles.ml30}`} src={fireService ? fire : fireGray} alt="fire" />
                       )
                     }
                   </div>
