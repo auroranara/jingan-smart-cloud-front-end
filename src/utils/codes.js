@@ -39,6 +39,7 @@ export default {
     edit: 'baseInfo.company.edit',
     delete: 'baseInfo.company.delete',
     department: {
+      list: 'baseInfo.company.department.listView',
       add: 'baseInfo.company.department.add',
       delete: 'baseInfo.company.department.delete',
       edit: 'baseInfo.company.department.edit',

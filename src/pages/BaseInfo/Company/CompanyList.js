@@ -28,11 +28,11 @@ const {
 // 获取链接地址
 const {
   home: homeUrl,
-  company: { detail: detailUrl, edit: editUrl, add: addUrl },
+  company: { detail: detailUrl, edit: editUrl, add: addUrl, department: { list: departmentUrl } },
 } = urls;
 // 获取code
 const {
-  company: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
+  company: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode, department: { list: viewDepCode } },
 } = codes;
 // 默认页面显示数量
 const pageSize = 18;
@@ -330,6 +330,8 @@ export default class CompanyList extends PureComponent {
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
     // 是否有编辑权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
+    // 是否有查看部门权限
+    const hasViewDepAuthority = hasAuthority(viewDepCode, permissionCodes)
     // 是否有删除权限
     const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes);
 
@@ -381,19 +383,23 @@ export default class CompanyList extends PureComponent {
                     >
                       编辑
                     </Link>,
-                    <Link to={`/base-info/company/department/list/${id}`}>部门</Link>,
+                    <Link
+                      to={departmentUrl + id}
+                      onClick={hasViewDepAuthority ? null : preventDefault}
+                      disabled={!hasViewDepAuthority}
+                    >部门</Link>,
                   ]}
-                  // extra={hasDeleteAuthority ? (
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // ) : null}
+                // extra={hasDeleteAuthority ? (
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // ) : null}
                 >
                   <div
                   // onClick={hasDetailAuthority ? () => {
@@ -436,12 +442,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                      <img
-                        className={styles.defaultIcon}
-                        src={safetyProduction ? safe : safeGray}
-                        alt="safe"
-                      />
-                    )}
+                        <img
+                          className={styles.defaultIcon}
+                          src={safetyProduction ? safe : safeGray}
+                          alt="safe"
+                        />
+                      )}
                     {unitType === 3 ? (
                       <Popconfirm
                         className={styles.ml30}
@@ -462,12 +468,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                      <img
-                        className={`${styles.defaultIcon} ${styles.ml30}`}
-                        src={fireService ? fire : fireGray}
-                        alt="fire"
-                      />
-                    )}
+                        <img
+                          className={`${styles.defaultIcon} ${styles.ml30}`}
+                          src={fireService ? fire : fireGray}
+                          alt="fire"
+                        />
+                      )}
                   </div>
                 </Card>
               </List.Item>
