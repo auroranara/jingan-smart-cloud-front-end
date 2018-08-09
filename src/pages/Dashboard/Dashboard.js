@@ -7,10 +7,10 @@ import { getToken } from 'utils/authority';
 import fire from '../../assets/fire-big-screen.png';
 import safe from '../../assets/safe-bing-screen.png';
 
-const safeItem = { src: safe, url: 'http://www.baidu.com', key: 'safe' };
-const fireItem = {
+const safeItem = { src: safe, url: '', key: 'safe' };
+let fireItem = {
   src: fire,
-  url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}`,
+  url: '',
   key: 'fire',
 };
 
@@ -25,7 +25,6 @@ export default class Dashboard extends PureComponent {
   };
 
   componentDidMount() {
-    console.log(this.props);
     let {
       user: {
         currentUser: {
@@ -36,7 +35,11 @@ export default class Dashboard extends PureComponent {
       },
     } = this.props;
 
-    console.log(this.props);
+    fireItem = {
+      src: fire,
+      url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`,
+      key: 'fire',
+    };
 
     //如果单位为政府或者admin 运营 则显示企业大屏
     if (unitType === 3 || unitType === 2) {
@@ -59,8 +62,7 @@ export default class Dashboard extends PureComponent {
 
     // safetyProduction,fireService 1开启/0关闭
     const imgWrapper =
-      (safetyProduction &&
-        fireService && [safeItem, fireItem]) ||
+      (safetyProduction && fireService && [safeItem, fireItem]) ||
       (safetyProduction && !fireService && [safeItem]) ||
       (!safetyProduction && fireService && [fireItem]) ||
       [];
@@ -76,11 +78,14 @@ export default class Dashboard extends PureComponent {
       }
     };
 
-    const hasFourItems = { width: '300px', height: '400px', padding: '20px' }
-    const hasLittleItems = { width: '340px', height: '440px', padding: '40px' }
+    const hasFourItems = { width: '300px', height: '400px', padding: '20px' };
+    const hasLittleItems = { width: '340px', height: '440px', padding: '40px' };
 
     const children = imgWrapper.map((item, i) => (
-      <div key={i.toString()} style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}>
+      <div
+        key={i.toString()}
+        style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}
+      >
         <div
           className={styles.imgItem}
           onClick={() => goToBigScreen(i)}
@@ -90,10 +95,6 @@ export default class Dashboard extends PureComponent {
         />
       </div>
     ));
-    return (
-      <div className={styles.dashboardContainer}>
-        {children}
-      </div>
-    );
+    return <div className={styles.dashboardContainer}>{children}</div>;
   }
 }
