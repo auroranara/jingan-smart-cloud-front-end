@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'dva/router';
-import { Checkbox, Alert } from 'antd';
+import { Alert, Icon } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
@@ -52,7 +52,7 @@ export default class LoginPage extends Component {
           password: aesEncrypt(values.password),
           type,
         },
-        callback: (response) => {
+        callback: response => {
           if (response.code === 200) {
             if (response.data.currentAuthority === 'admin') {
               dispatch({
@@ -65,7 +65,7 @@ export default class LoginPage extends Component {
                 payload: { grid: 'Wide', layout: 'topmenu' },
               });
             }
-          } else this.setState({ notice: response.msg })
+          } else this.setState({ notice: response.msg });
         },
       });
     }
@@ -77,13 +77,17 @@ export default class LoginPage extends Component {
     });
   };
 
+  handleToDownload = () => {
+    window.open('/gsafe/download.html', '_self');
+  };
+
   renderMessage = content => {
     return <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />;
   };
 
   render() {
     const { submitting } = this.props;
-    const { type, autoLogin, notice } = this.state;
+    const { type, notice } = this.state;
     return (
       <div className={styles.main}>
         <Login
@@ -94,14 +98,18 @@ export default class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          <div className={styles.tab}>
+          {/* <div className={styles.tab}>
             <span className={styles.pane}>账户密码登录</span>
-            {/* <span className={styles.line}>.</span> */}
-          </div>
+          </div> */}
           <div style={{ marginTop: '28px', display: 'block' }}>
-            {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
+            {notice && (
+              <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />
+            )}
             <UserName name="username" placeholder="用户名/手机号" />
-            <Password name="password" onPressEnter={() => this.loginForm.validateFields(this.handleSubmit)} />
+            <Password
+              name="password"
+              onPressEnter={() => this.loginForm.validateFields(this.handleSubmit)}
+            />
           </div>
           {/* <Tab key="account" tab="账户密码登录">
             {notice && <Alert style={{ marginBottom: 24 }} message={notice} type="error" showIcon closable />}
@@ -113,14 +121,6 @@ export default class LoginPage extends Component {
             <Mobile name="mobile" />
             <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
           </Tab> */}
-          <div>
-            <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
-              保存为本地常用账号
-            </Checkbox>
-            {/* <a style={{ float: 'right' }} href="">
-              忘记密码
-            </a> */}
-          </div>
           <Submit loading={submitting}>登录</Submit>
           {/* <div className={styles.other}>
             其他登录方式
@@ -131,9 +131,12 @@ export default class LoginPage extends Component {
               注册账户
             </Link>
           </div> */}
-          {/* <div className={styles.other}>
-            <span className={styles.download}><Icon type="download" />APP下载</span>
-          </div> */}
+          <div className={styles.other}>
+            <span onClick={this.handleToDownload} className={styles.download}>
+              <Icon type="download" />
+              APP下载
+            </span>
+          </div>
         </Login>
       </div>
     );

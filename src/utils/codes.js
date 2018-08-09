@@ -10,6 +10,7 @@ export default {
     edit: 'roleAuthorization.accountManagement.edit',
     detail: 'roleAuthorization.accountManagement.view',
     add: 'roleAuthorization.accountManagement.add',
+    reset: 'roleAuthorization.accountManagement.reset',
   },
   deviceManagement: {
     transmission: {
@@ -37,6 +38,12 @@ export default {
     add: 'baseInfo.company.add',
     edit: 'baseInfo.company.edit',
     delete: 'baseInfo.company.delete',
+    department: {
+      list: 'baseInfo.company.department.listView',
+      add: 'baseInfo.company.department.add',
+      delete: 'baseInfo.company.department.delete',
+      edit: 'baseInfo.company.department.edit',
+    },
   },
   contract: {
     list: 'fireControl.contract.listView',
@@ -50,6 +57,10 @@ export default {
     detail: 'fireControl.maintenanceCompany.view',
     edit: 'fireControl.maintenanceCompany.edit',
     serviceDetail: 'fireControl.maintenanceCompany.serviceListView',
+  },
+  dynamicMonitoring: {
+    comanyDetailView: 'dynamicMonitoring.fireAlarm.comanyDetailView',
+    historyRecordView: 'dynamicMonitoring.fireAlarm.historyRecordView',
   },
   map: {
     index: 'videoSurveillance.map.view',

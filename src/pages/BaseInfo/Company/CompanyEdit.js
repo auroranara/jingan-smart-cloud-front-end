@@ -323,19 +323,27 @@ export default class CompanyDetail extends PureComponent {
   handleTrim = e => e.target.value.trim();
 
   handleConfirm = companyId => {
-    // 编辑页面不做处理
-    if (this.operation === 'edit') return;
-
-    // 新增页面，点击确定跳到编辑页面添加(实际为编辑)安监信息，点击取消返回企业列表
     const { dispatch, goBack } = this.props;
-    confirm({
-      title: '提示信息',
-      content: '是否需要添加安监信息',
-      onOk() {
-        dispatch(routerRedux.push(`${editUrl}${companyId}?isFromAdd=1`));
-      },
-      onCancel: goBack,
-    });
+    // 编辑页面，点击确定，显示安监信息,点击取消返回企业列表
+    if (this.operation === 'edit')
+      confirm({
+        title: '提示信息',
+        content: '是否继续编辑安监信息',
+        okText: '是',
+        cancelText: '否',
+        onOk: () => { this.setState({ tabActiveKey: tabList[1].key }); },
+        onCancel: goBack,
+      });
+    // 新增页面，点击确定跳到编辑页面添加(实际为编辑)安监信息，点击取消返回企业列表
+    else
+      confirm({
+        title: '提示信息',
+        content: '是否需要添加安监信息',
+        okText: '是',
+        cancelText: '否',
+        onOk() { dispatch(routerRedux.push(`${editUrl}${companyId}?isFromAdd=1`)); },
+        onCancel: goBack,
+      });
   };
 
   /* 点击提交按钮验证表单信息 */
@@ -396,11 +404,6 @@ export default class CompanyDetail extends PureComponent {
             const msg = id ? '编辑成功！' : '新增成功！';
             message.success(msg, 1, () => {
               this.setState({ submitting: false });
-
-              // 编辑页面，修改成功后什么都不做
-              if (this.operation === 'edit') return;
-
-              // 新增页面，添加成功后，confirm决定跳转到列表页面或者跳转到编辑页面来添加安监信息
               this.handleConfirm(companyId);
             });
           };

@@ -1,13 +1,15 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Link } from 'react-router-dom';
 import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
 import Ellipsis from 'components/Ellipsis';
-
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-
 import styles from './index.less';
 import VisibilitySensor from 'react-visibility-sensor';
+import {
+  AuthLink,
+  //hasAuthority
+} from 'utils/customAuth';
+import codesMap from 'utils/codes';
 
 const PAGE_SIZE = 18;
 
@@ -22,8 +24,9 @@ const breadcrumbList = [
 // const rootElement = document.body;
 // console.log(rootElement);
 
-@connect(({ fireAlarm, loading }) => ({
+@connect(({ fireAlarm, user, loading }) => ({
   fireAlarm,
+  user,
   loading: loading.models.fireAlarm,
 }))
 export default class FireAlarm extends PureComponent {
@@ -47,8 +50,7 @@ export default class FireAlarm extends PureComponent {
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
-        if (total <= PAGE_SIZE)
-          that.setState({ hasMore: false });
+        if (total <= PAGE_SIZE) that.setState({ hasMore: false });
       },
     });
   }
@@ -93,8 +95,7 @@ export default class FireAlarm extends PureComponent {
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
-        if (total <= PAGE_SIZE)
-          that.setState({ hasMore: false });
+        if (total <= PAGE_SIZE) that.setState({ hasMore: false });
       },
     });
   };
@@ -111,8 +112,7 @@ export default class FireAlarm extends PureComponent {
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
-        if (total <= PAGE_SIZE)
-          that.setState({ hasMore: false });
+        if (total <= PAGE_SIZE) that.setState({ hasMore: false });
       },
     });
   };
@@ -151,14 +151,16 @@ export default class FireAlarm extends PureComponent {
     // flag=true 能看到组件 flag=false 不能看到组件
     const { scrollLoading, hasMore } = this.state;
     // flag=true表示能看到组件，即已经到底，且请求还未返回且数据库还有数据
-    if (flag && !scrollLoading && hasMore)
-      this.handleLazyload();
+    if (flag && !scrollLoading && hasMore) this.handleLazyload();
   };
 
   render() {
     const {
       fireAlarm: { list },
       loading,
+      // user: {
+      //   currentUser: { permissionCodes: codes },
+      // },
     } = this.props;
     const { company, address, scrollLoading, hasMore } = this.state;
 
@@ -200,20 +202,37 @@ export default class FireAlarm extends PureComponent {
             dataSource={list}
             renderItem={item => (
               <List.Item key={item.id}>
-                <Link to={`/dynamic-monitoring/fire-alarm/company/${item.id}`}>
+                <AuthLink
+                  // onClick={() => {
+                  //   if (hasAuthority(codesMap.dynamicMonitoring.comanyDetailView, codes))
+                  //     message.warn('您没有权限访问对应页面');
+                  // }}
+                  code={codesMap.dynamicMonitoring.comanyDetailView}
+                  to={`/dynamic-monitoring/fire-alarm/company/${item.id}`}
+                >
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>
-                      地址：{item.searchArea ? item.searchArea : '暂无信息'}
+                      地址：
+                      {item.searchArea ? item.searchArea : '暂无信息'}
                     </Ellipsis>
-                    <p>安全负责人：{item.safetyName ? item.safetyName : '暂无信息'}</p>
-                    <p>联系电话：{item.safetyPhone ? item.safetyPhone : '暂无信息'}</p>
-                    <p>火警主机数量：{item.hostCount}</p>
+                    <p>
+                      安全负责人：
+                      {item.safetyName ? item.safetyName : '暂无信息'}
+                    </p>
+                    <p>
+                      联系电话：
+                      {item.safetyPhone ? item.safetyPhone : '暂无信息'}
+                    </p>
+                    <p>
+                      火警主机数量：
+                      {item.hostCount}
+                    </p>
                     <div className={styles.quantityContainer}>
                       <div className={styles.quantity}>{item.alertCount}</div>
                       <p className={styles.quantityDescrip}>警情数量</p>
                     </div>
                   </Card>
-                </Link>
+                </AuthLink>
               </List.Item>
             )}
           />

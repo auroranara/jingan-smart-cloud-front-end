@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import { Link } from 'react-router-dom';
-import { Form, Card, Button } from 'antd';
+import { Form, Card } from 'antd';
 import FooterToolbar from 'components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import codesMap from 'utils/codes';
+import { AuthButton } from 'utils/customAuth';
 
 const { Description } = DescriptionList;
 
@@ -107,7 +108,8 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
     } = this.props;
     return (
       <FooterToolbar>
-        <Button
+        <AuthButton
+          code={codesMap.maintenanceCompany.edit}
           type="primary"
           onClick={() => {
             this.goToEdit(id);
@@ -115,7 +117,7 @@ export default class MaintenanceCmpanyDetail extends PureComponent {
           style={{ fontSize: 16 }}
         >
           编辑
-        </Button>
+        </AuthButton>
       </FooterToolbar>
     );
   }

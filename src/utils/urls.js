@@ -11,6 +11,9 @@ export default {
     detail: '/base-info/company/detail/',
     add: '/base-info/company/add/',
     edit: '/base-info/company/edit/',
+    department: {
+      list: '/base-info/company/department/list/',
+    },
   },
   contract: {
     list: '/fire-control/contract/list/',

@@ -298,7 +298,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                   <Col
                     span={16}
                     onClick={() => {
-                      if (hasAuthority(codesMap.maintenanceCompany.detail, []))
+                      if (hasAuthority(codesMap.maintenanceCompany.detail, codes))
                         goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
                       else message.warn('您没有权限访问对应页面');
                     }}

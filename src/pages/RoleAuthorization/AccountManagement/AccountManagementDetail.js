@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Modal, Input, message } from 'antd';
+import { Form, Card, Modal, Input, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -9,6 +9,8 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementEdit.less';
 import { aesEncrypt } from '../../../utils/utils';
+import { AuthButton } from 'utils/customAuth';
+import codesMap from 'utils/codes';
 
 const { Description } = DescriptionList;
 
@@ -74,6 +76,10 @@ const UserTypes = [
   {
     label: '企业安全员',
     value: 'company_safer',
+  },
+  {
+    label: '运营',
+    value: 'admin',
   },
 ];
 
@@ -218,7 +224,9 @@ export default class accountManagementDetail extends PureComponent {
         <DescriptionList col={3}>
           <Description term={fieldLabels.loginName}>{loginName || getEmptyData()}</Description>
           <Description term={fieldLabels.userName}>{userName || getEmptyData()}</Description>
-          <Description term={fieldLabels.phoneNumber}>{phoneNumber || getEmptyData()}</Description>
+          <Description term={fieldLabels.phoneNumber}>
+            {(phoneNumber + '').trim() || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.unitType}>
             {UnitTypes[unitType] || getEmptyData()}
           </Description>
@@ -306,10 +314,16 @@ export default class accountManagementDetail extends PureComponent {
     };
     return (
       <FooterToolbar>
-        <Button type="primary" size="large" onClick={this.showModalPassword}>
+        <AuthButton
+          code={codesMap.account.reset}
+          type="primary"
+          size="large"
+          onClick={this.showModalPassword}
+        >
           重置密码
-        </Button>
-        <Button
+        </AuthButton>
+        <AuthButton
+          code={codesMap.account.edit}
           type="primary"
           size="large"
           onClick={() => {
@@ -317,7 +331,7 @@ export default class accountManagementDetail extends PureComponent {
           }}
         >
           编辑
-        </Button>
+        </AuthButton>
         <Modal
           title="重置密码"
           visible={visible}

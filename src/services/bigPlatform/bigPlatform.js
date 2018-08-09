@@ -1,6 +1,7 @@
 import request from '../../utils/request';
 import { stringify } from 'qs';
 
+// 政府大屏
 // 获取平台名字
 export async function getProjectName() {
   return request(`/acloud_new/v2/sfg/getProjectName.json`);
@@ -39,4 +40,41 @@ export async function getListForMap() {
 // 大屏隐患点位等数据(1.0接口移入)
 export async function getInfoByLocation(params) {
   return request(`/acloud_new/v2/sfg/infoByLocation.json?${stringify(params)}`);
+}
+
+
+// 企业大屏
+// 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
+export async function getCoItemList(params) {
+  return request(`/acloud_new/v2/sfc/itemList.json?${stringify(params)}`);
+}
+
+// 特种设备
+export async function getSpecialEquipment(params) {
+  return request(`/gsafe/special_equipment/special_equipment_for_v2.do?${stringify(params)}`);
+}
+
+// 企业信息(包含人员数量四色图等)
+export async function getCompanyMessage(params) {
+  return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
+}
+
+// 企业信息(包含人员数量四色图等)
+export async function getCountDangerLocationForCompany(params) {
+  return request(`/acloud_new/v2/sfc/countDangerLocationForCompany.json?${stringify(params)}`);
+}
+
+// 获取风险点信息
+export async function getRiskPointInfo(params) {
+  return request(`/acloud_new/v2/sfc/selectCompanyLetter.json?${stringify(params)}`);
+}
+
+// 获取隐患详情
+export async function getRiskDetail(params) {
+  return request(`/acloud_new/v2/sfc/hiddenDangerList.json?${stringify(params)}`);
+}
+
+// 隐患总数
+export async function getHiddenDanger(params) {
+  return request(`/acloud_new/v2/sfc/hiddenDanger.json?${stringify(params)}`);
 }
