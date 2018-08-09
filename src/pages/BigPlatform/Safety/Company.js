@@ -369,17 +369,27 @@ class CompanyLayout extends PureComponent {
   }
 
   renderBarChart = (dataBar) => {
+    const now = moment();
+    const dayList = [];
+    for (let i = 0; i < 30; i++) {
+      const day = moment(now).subtract(i, 'days');
+      dayList.push(day.format('M.D'));
+    }
+    dayList.reverse();
+
     const dv = new DataView();
     dv.source(dataBar).transform({
       type: 'fold',
-      fields: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], // 展开字段集
+      fields: dayList, // 展开字段集
       key: 'day', // key字段
       value: 'times', // value字段
     });
-    console.log(dv);
     const { barHeight } = this.state;
+    const windowWidth = window.screen.width;
+    let padding = [35, 20, 35, 35];
+    if (windowWidth < 1650) padding = [35, 20, 46, 35];
     return (
-      <Chart height={barHeight} data={dv} forceFit padding={[35, 20, 35, 35]}>
+      <Chart height={barHeight} data={dv} forceFit padding={padding}>
         <Axis name="day" label={{
           textStyle: {
             fontSize: 12, // 文本大小
@@ -603,12 +613,8 @@ class CompanyLayout extends PureComponent {
           countCheckItem,
           countCompanyUser,
         },
-        check_map: {
-          self_check_point,
-        },
-        hidden_danger_map: {
-          created_danger,
-        },
+        check_map,
+        hidden_danger_map,
       },
       coItemList: {
         status1,
@@ -632,6 +638,15 @@ class CompanyLayout extends PureComponent {
       { name: '黄色风险点', value: yellow },
       { name: '蓝色风险点', value: blue },
     ];
+
+    const self_check_point = {};
+    check_map.forEach(item => {
+      self_check_point[item.month + '.' + item.day] = item.self_check_point;
+    });
+    const created_danger = {};
+    hidden_danger_map.forEach(item => {
+      created_danger[item.month + '.' + item.day] = item.created_danger;
+    });
 
     const dataBar = [
       { name: '隐患数量', ...created_danger },

@@ -46,12 +46,8 @@ export default {
         countCheckItem: 0,
         countCompanyUser: 0,
       },
-      check_map: {
-        self_check_point: {},
-      },
-      hidden_danger_map: {
-        created_danger: {},
-      },
+      check_map: [],
+      hidden_danger_map: [],
     },
     coItemList: {
       status1: 0,
