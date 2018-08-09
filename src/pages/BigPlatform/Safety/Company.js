@@ -351,20 +351,21 @@ class CompanyLayout extends PureComponent {
     dv.source(dataBar).transform({
       type: 'fold',
       fields: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], // 展开字段集
-      key: '日', // key字段
-      value: '次数', // value字段
+      key: 'day', // key字段
+      value: 'times', // value字段
     });
+    console.log(dv);
     const { barHeight } = this.state;
     return (
       <Chart height={barHeight} data={dv} forceFit padding={[35, 20, 35, 35]}>
-        <Axis name="日" label={{
+        <Axis name="day" label={{
           textStyle: {
             fontSize: 12, // 文本大小
             textAlign: 'center', // 文本对齐方式
             fill: '#fff', // 文本颜色
           },
         }} />
-        <Axis name="次数" label={{
+        <Axis name="times" label={{
           textStyle: {
             fontSize: 12, // 文本大小
             textAlign: 'center', // 文本对齐方式
@@ -376,33 +377,12 @@ class CompanyLayout extends PureComponent {
           fill: '#fff', // 文本颜色
         }} />
         <Tooltip />
-        <Geom type='interval' opacity={1} position="日*次数" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]} />
+        <Geom type='interval' opacity={1} position="day*times" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]}/>
       </Chart>
     );
   }
 
   renderPieChart = (dataPie) => {
-    // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
-
-    // let { bigPlatform: { listForMap: {
-    //   gridCheck,
-    //   overRectifyNum,
-    //   photo,
-    //   rectifyNum,
-    //   reviewNum,
-    //   selfCheck,
-    // } } } = this.props;
-
-    let outFake = false;
-    // if (overRectifyNum === 0 && reviewNum === 0 && rectifyNum === 0) {
-    //   outFake = true;
-    //   overRectifyNum = 1;
-    //   reviewNum = 1;
-    //   rectifyNum = 1;
-    // }
-
-
-
     const dv = new DataView();
     dv.source(dataPie).transform({
       type: 'percent',
@@ -423,13 +403,6 @@ class CompanyLayout extends PureComponent {
     return (
       <Chart height={pieHeight} data={dataPie} scale={scale} forceFit padding={[40]}>
         <Coord type="polar" />
-        {/* <Tooltip showTitle={false}
-        itemTpl='
-          <li data-index={index}>
-            <span style="background-color:{color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
-            {name}: {outFake ? 0: value}
-          </li>'
-        /> */}
         <Tooltip showTitle={false} />
         <Geom
           type="interval"
@@ -442,6 +415,9 @@ class CompanyLayout extends PureComponent {
               textAlign: 'center', // 文本对齐方向，可取值为： start middle end
               fill: '#fff', // 文本的颜色
               fontSize: '12', // 文本大小
+            }}
+            formatter={(val, item) => {
+              return item.point.value ? val : ''; // =0时不显示label
             }}
           />
         </Geom>
@@ -610,7 +586,6 @@ class CompanyLayout extends PureComponent {
         status2,
         status3,
         status4,
-        statusAll,
       },
       specialEquipment,
       countDangerLocationForCompany: {
@@ -652,7 +627,7 @@ class CompanyLayout extends PureComponent {
             <Col span={6} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
               <section className={infoClassNames}>
                 <div className={styles.sectionTitle}>单位信息</div>
-                <div className={styles.sectionMain} onClick={() => { window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`); }}>
+                <div className={styles.sectionMain} style={{cursor: 'pointer'}} onClick={() => { window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`); }}>
                   <div className={styles.shadowIn}>
                     <div className={styles.companyMain}>
                       <div className={styles.companyIcon}></div>
