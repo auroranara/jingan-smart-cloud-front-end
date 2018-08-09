@@ -1,4 +1,4 @@
-@imgUrl1: 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
+@comImgUrl: 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 .main {
   width: 100%;
   height: 100vh;
@@ -6,7 +6,7 @@
   overflow: hidden;
   padding: 0 20px 30px;
   color: #fff;
-  background: url('@{imgUrl1}company-bg.png') no-repeat center center;
+  background: url('@{comImgUrl}company-bg.png') no-repeat center center;
   background-size: 100% 100%;
   .mainHeader {
     line-height: 100px;
@@ -15,7 +15,7 @@
     position: relative;
     text-align: center;
     letter-spacing: 14px;
-    background: url('@{imgUrl1}title-bg.png') no-repeat center center;
+    background: url('@{comImgUrl}title-bg.png') no-repeat center center;
     background-size: 100% 100%;
     .subHeader {
       line-height: 1;
@@ -61,7 +61,7 @@
             width: 50px;
             height: 100px;
             margin: 0 10px;
-            background: url('@{imgUrl1}company-icon.png') no-repeat center center;
+            background: url('@{comImgUrl}company-icon.png') no-repeat center center;
             background-size: 100% auto;
           }
           .companyInfo {
@@ -109,42 +109,42 @@
             }
             .summaryCheck {
               .summaryIcon;
-              background: url('@{imgUrl1}check-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}check-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
             .summarySpecial {
               .summaryIcon;
-              background: url('@{imgUrl1}special-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}special-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
             .summaryPeople {
               .summaryIcon;
-              background: url('@{imgUrl1}people-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}people-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
             .summaryhd {
               .summaryIcon;
-              background: url('@{imgUrl1}hd-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}hd-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
             .summaryNormal {
               .summaryIcon;
-              background: url('@{imgUrl1}normal-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}normal-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
             .summaryChecking {
               .summaryIcon;
-              background: url('@{imgUrl1}checking-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}checking-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
             .summaryAbnormal {
               .summaryIcon;
-              background: url('@{imgUrl1}abnormal-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}abnormal-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
             .summaryOver {
               .summaryIcon;
-              background: url('@{imgUrl1}over-icon.png') no-repeat center center;
+              background: url('@{comImgUrl}over-icon.png') no-repeat center center;
               background-size: 100% 100%;
             }
           }
@@ -240,6 +240,7 @@
               .summaryText {
                 height: 24px;
                 line-height: 24px;
+                width: calc(~'100% - 59px');
               }
               .summaryNum {
                 .summaryText;
@@ -286,6 +287,126 @@
         height: calc(~'100% - 280px');
         margin-top: 10px;
       }
+    }
+  }
+}
+
+@media screen and (max-width: 1360px) {
+  .main {
+    padding: 0 15px 25px;
+    font-size: 12px;
+    .mainHeader {
+      line-height: 55px;
+      height: 55px;
+      font-size: 26px;
+      .subHeader {
+        font-size: 14px;
+      }
+    }
+    .mainBody {
+      height: calc(~'100% - 35px');
+      .sectionWrapper {
+        .sectionTitle {
+          height: 36px;
+          line-height: 36px;
+          font-size: 13px;
+        }
+        .sectionMain {
+          height: calc(~'100% - 36px');
+          .shadowIn {
+            padding: 8px;
+          }
+          .companyMain {
+            .companyIcon {
+              width: 32px;
+              height: 80px;
+              margin: 0 5px;
+            }
+            .companyInfo {
+              width: calc(~'100% - 43px');
+              .companyName {
+                height: 30px;
+                line-height: 30px;
+                font-size: 12px;
+              }
+              .companyCharger {
+                height: 25px;
+                line-height: 25px;
+              }
+              .companyPhone {
+                .companyCharger;
+              }
+            }
+          }
+          .summaryBottom {
+            width: calc(~'100% - 16px');
+            bottom: 0;
+            .summaryHalf {
+              height: 50%;
+              margin-bottom: 10px;
+              .summaryIcon {
+                width: 32px;
+                height: 32px;
+                margin: 5px;
+              }
+              .summaryText {
+                height: 21px;
+                line-height: 21px;
+                width: calc(~'100% - 43px');
+              }
+              .summaryNum {
+                .summaryText;
+                font-size: 14px;
+              }
+              .summaryCheck {
+                .summaryIcon;
+              }
+              .summarySpecial {
+                .summaryIcon;
+              }
+              .summaryPeople {
+                .summaryIcon;
+              }
+              .summaryhd {
+                .summaryIcon;
+              }
+              .summaryNormal {
+                .summaryIcon;
+              }
+              .summaryChecking {
+                .summaryIcon;
+              }
+              .summaryAbnormal {
+                .summaryIcon;
+              }
+              .summaryOver {
+                .summaryIcon;
+              }
+            }
+          }
+          .hdPie {
+            width: calc('~100% + 16px');
+            height: calc(~'100% - 100px');
+            margin-left: -8px;
+            margin-top: -8px;
+          }
+          .checkBar {
+            width: calc(~'100% + 30px');
+            margin-left: -15px;
+            height: 100%;
+          }
+        }
+      }
+      .infoWrapper {
+        height: 250px;
+      }
+      .hdWrapper {
+        height: calc(~'100% - 280px');
+        margin-top: 10px;
+      }
+    }
+    .riskTitle {
+      font-size: 14px;
     }
   }
 }
