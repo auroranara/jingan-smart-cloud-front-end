@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { message } from 'antd';
 import { connect } from 'dva';
-import Carousel3d from './Carousel3d';
+// import Carousel3d from './Carousel3d';
 import styles from './Dashboard.less';
 import { getToken } from 'utils/authority';
 import fire from '../../assets/fire-big-screen.png';
 import safe from '../../assets/safe-bing-screen.png';
 
-const maxLength = 6; // 最多容纳个数
 const safeItem = { src: safe, url: 'http://www.baidu.com', key: 'safe' };
 const fireItem = {
   src: fire,
@@ -20,7 +19,6 @@ const fireItem = {
 }))
 export default class Dashboard extends PureComponent {
   state = {
-    current: 0,
     hasSafeAuthority: true,
     safetyProduction: 0,
     fireService: 0,
@@ -56,53 +54,45 @@ export default class Dashboard extends PureComponent {
     }
   }
 
-  handleChange = data => {
-    if (data.eventType === 'end') {
-      this.setState({ current: data.current });
-    }
-  };
-
   render() {
-    const { current, safetyProduction, fireService } = this.state;
+    const { safetyProduction, fireService } = this.state;
 
     // safetyProduction,fireService 1开启/0关闭
     const imgWrapper =
       (safetyProduction &&
-        fireService && [safeItem, fireItem, safeItem, fireItem, safeItem, fireItem]) ||
-      (safetyProduction && !fireService && [safeItem, safeItem, safeItem, safeItem]) ||
-      (!safetyProduction && fireService && [fireItem, fireItem, fireItem, fireItem]) ||
+        fireService && [safeItem, fireItem]) ||
+      (safetyProduction && !fireService && [safeItem]) ||
+      (!safetyProduction && fireService && [fireItem]) ||
       [];
 
-    const goToBigScreen = () => {
+    const goToBigScreen = i => {
       const { hasSafeAuthority } = this.state;
-      if (!hasSafeAuthority && imgWrapper[current].key === 'safe') {
+      if (!hasSafeAuthority && imgWrapper[i].key === 'safe') {
         message.error('该功能暂时未开放！');
       } else {
-        const url = imgWrapper[current].url;
+        const url = imgWrapper[i].url;
         const win = window.open(url, '_blank');
         win.focus();
       }
     };
 
+    const hasFourItems = { width: '300px', height: '400px', padding: '20px' }
+    const hasLittleItems = { width: '340px', height: '440px', padding: '40px' }
+
     const children = imgWrapper.map((item, i) => (
-      <div
-        key={i.toString()}
-        className={styles.imgWrapper}
-        onClick={current === i ? goToBigScreen : null}
-        style={{
-          backgroundImage: `url(${item.src})`,
-        }}
-      />
+      <div key={i.toString()} style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}>
+        <div
+          className={styles.imgItem}
+          onClick={() => goToBigScreen(i)}
+          style={{
+            backgroundImage: `url(${item.src})`,
+          }}
+        />
+      </div>
     ));
     return (
-      <div className={styles.carouselDemoWrapper}>
-        <Carousel3d
-          className={styles.carouselDemo}
-          onChange={this.handleChange}
-          childMaxLength={maxLength}
-        >
-          {children}
-        </Carousel3d>
+      <div className={styles.dashboardContainer}>
+        {children}
       </div>
     );
   }
