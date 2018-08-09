@@ -409,7 +409,7 @@ class CompanyLayout extends PureComponent {
           fill: '#fff', // 文本颜色
         }} />
         <Tooltip />
-        <Geom type='interval' opacity={1} position="day*times" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]} />
+        <Geom type='interval' opacity={this.showBar ? 1 : 0} position="day*times" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]} />
       </Chart>
     );
   }
@@ -647,6 +647,9 @@ class CompanyLayout extends PureComponent {
     hidden_danger_map.forEach(item => {
       created_danger[item.month + '.' + item.day] = item.created_danger;
     });
+
+    this.showBar = true;
+    if (check_map.length === 0 && hidden_danger_map.length === 0) this.showBar = false;
 
     const dataBar = [
       { name: '隐患数量', ...created_danger },
