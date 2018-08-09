@@ -152,9 +152,9 @@ export default class UserTransmissionDevice extends PureComponent {
   render() {
     const {
       transmission: { list },
-      user: {
-        currentUser: { permissionCodes: codes },
-      },
+      // user: {
+      //   currentUser: { permissionCodes: codes },
+      // },
       loading,
     } = this.props;
     const { company, address, scrollLoading, hasMore } = this.state;
@@ -199,7 +199,6 @@ export default class UserTransmissionDevice extends PureComponent {
               <List.Item key={item.id}>
                 <AuthLink
                   code={buttonCodes.deviceManagement.transmission.detail}
-                  codes={[]}
                   to={`/device-management/user-transmission-device/${item.id}/detail`}
                   errMsg={ERROR_MSG}
                 >
