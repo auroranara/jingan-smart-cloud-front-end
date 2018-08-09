@@ -104,6 +104,10 @@ class GovernmentBigPlatform extends Component {
       this.reDoChart();
     };
 
+    setTimeout(() => {
+      this.reDoChart();
+    }, 2000);
+
     this.setViewport();
   }
 

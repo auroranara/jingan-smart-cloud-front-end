@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Input, BackTop, Spin, Col, Select } from 'antd';
-import { Link, routerRedux } from 'dva/router';
+import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -9,8 +9,8 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementList.less';
-import { AuthLink } from '../../../utils/customAuth';
-import codesMap from '../../../utils/codes';
+import { AuthLink, AuthButton, AuthDiv } from 'utils/customAuth';
+import codesMap from 'utils/codes';
 
 // 标题
 const title = '账号管理';
@@ -288,9 +288,13 @@ export default class accountManagementList extends PureComponent {
           {/* 按钮 */}
           <Col span={6}>
             <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/role-authorization/account-management/Add">
+              <AuthButton
+                code={codesMap.account.add}
+                type="primary"
+                href="#/role-authorization/account-management/Add"
+              >
                 新增
-              </Button>
+              </AuthButton>
             </FormItem>
             <FormItem style={{ float: 'right' }}>
               <Button onClick={this.handleClickToReset}>重置</Button>
@@ -310,9 +314,6 @@ export default class accountManagementList extends PureComponent {
   renderList() {
     const {
       account: { list },
-      user: {
-        currentUser: { permissionCodes: codes },
-      },
       goToDetail,
     } = this.props;
 
@@ -330,13 +331,14 @@ export default class accountManagementList extends PureComponent {
                   title={loginName}
                   className={styles.card}
                   actions={[
-                    <Link to={`/role-authorization/account-management/detail/${item.id}`}>
+                    <AuthLink
+                      code={codesMap.account.detail}
+                      to={`/role-authorization/account-management/detail/${item.id}`}
+                    >
                       查看
-                    </Link>,
-                    // <Link to={`/role-authorization/account-management/edit/${item.id}`}>编辑</Link>,
+                    </AuthLink>,
                     <AuthLink
                       code={codesMap.account.edit}
-                      codes={codes}
                       to={`/role-authorization/account-management/edit/${item.id}`}
                     >
                       编辑
@@ -354,7 +356,9 @@ export default class accountManagementList extends PureComponent {
                   //   </Button>
                   // }
                 >
-                  <div
+                  <AuthDiv
+                    code={codesMap.account.detail}
+                    // codes={[]}
                     onClick={() => {
                       goToDetail(`/role-authorization/account-management/detail/${item.id}`);
                     }}
@@ -373,7 +377,7 @@ export default class accountManagementList extends PureComponent {
                       单位名称：
                       {item.unitName || getEmptyData()}
                     </Ellipsis>
-                  </div>
+                  </AuthDiv>
                   {
                     <div className={styles[statusList[accountStatus]]}>
                       {statusLabelList[accountStatus]}

@@ -8,19 +8,21 @@ import {
   // Icon,
   Input,
   // Modal,
-  // message,
+  message,
   BackTop,
   Spin,
   Col,
   Row,
 } from 'antd';
-import { Link, routerRedux } from 'dva/router';
+import { routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './MaintenanceCompanyList.less';
+import codesMap from 'utils/codes';
+import { AuthLink, AuthButton, hasAuthority } from 'utils/customAuth';
 
 const FormItem = Form.Item;
 
@@ -55,8 +57,9 @@ const getEmptyData = () => {
 };
 
 @connect(
-  ({ maintenanceCompany, loading }) => ({
+  ({ maintenanceCompany, user, loading }) => ({
     maintenanceCompany,
+    user,
     loading: loading.models.maintenanceCompany,
   }),
   dispatch => ({
@@ -198,6 +201,9 @@ export default class MaintenanceCompanyList extends PureComponent {
   renderForm() {
     const {
       form: { getFieldDecorator },
+      user: {
+        currentUser: { permissionCodes: codes },
+      },
     } = this.props;
 
     return (
@@ -224,9 +230,14 @@ export default class MaintenanceCompanyList extends PureComponent {
             <Button onClick={this.handleClickToReset}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <Button type="primary" href="#/fire-control/maintenance-company/add">
+            <AuthButton
+              code={codesMap.maintenanceCompany.add}
+              codes={codes}
+              type="primary"
+              href="#/fire-control/maintenance-company/add"
+            >
               新增
-            </Button>
+            </AuthButton>
           </FormItem>
         </Form>
       </Card>
@@ -239,6 +250,9 @@ export default class MaintenanceCompanyList extends PureComponent {
       maintenanceCompany: { list },
       goToDetail,
       goToService,
+      user: {
+        currentUser: { permissionCodes: codes },
+      },
     } = this.props;
 
     return (
@@ -253,8 +267,20 @@ export default class MaintenanceCompanyList extends PureComponent {
                 title={item.name}
                 className={styles.card}
                 actions={[
-                  <Link to={`/fire-control/maintenance-company/detail/${item.id}`}>查看</Link>,
-                  <Link to={`/fire-control/maintenance-company/edit/${item.id}`}>编辑</Link>,
+                  <AuthLink
+                    code={codesMap.maintenanceCompany.detail}
+                    codes={codes}
+                    to={`/fire-control/maintenance-company/detail/${item.id}`}
+                  >
+                    查看
+                  </AuthLink>,
+                  <AuthLink
+                    code={codesMap.maintenanceCompany.edit}
+                    codes={codes}
+                    to={`/fire-control/maintenance-company/edit/${item.id}`}
+                  >
+                    编辑
+                  </AuthLink>,
                 ]}
                 // extra={
                 //   <Button
@@ -272,7 +298,9 @@ export default class MaintenanceCompanyList extends PureComponent {
                   <Col
                     span={16}
                     onClick={() => {
-                      goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
+                      if (hasAuthority(codesMap.maintenanceCompany.detail, codes))
+                        goToDetail(`/fire-control/maintenance-company/detail/${item.id}`);
+                      else message.warn('您没有权限访问对应页面');
                     }}
                     style={{ cursor: 'pointer' }}
                   >
@@ -296,7 +324,9 @@ export default class MaintenanceCompanyList extends PureComponent {
                   <Col
                     span={8}
                     onClick={() => {
-                      goToService(`/fire-control/maintenance-company/serviceList/${item.id}`);
+                      if (hasAuthority(codesMap.maintenanceCompany.serviceDetail, codes))
+                        goToService(`/fire-control/maintenance-company/serviceList/${item.id}`);
+                      else message.warn('您没有权限访问对应页面');
                     }}
                     style={{ cursor: 'pointer' }}
                   >

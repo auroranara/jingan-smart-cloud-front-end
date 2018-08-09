@@ -6,8 +6,9 @@ import { Button, Card, Modal, Tabs, Table, Icon } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-
 import styles from './CompanyDetail.less';
+import { AuthButton } from 'utils/customAuth';
+import codesMap from 'utils/codes';
 
 const { TabPane } = Tabs;
 const { Description } = DescriptionList;
@@ -47,7 +48,11 @@ const DETAIL_ITEMS_CHINESE = [
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '火灾自动报警系统', name: '火灾自动报警系统', href: '/dynamic-monitoring/fire-alarm/index' },
+  {
+    title: '火灾自动报警系统',
+    name: '火灾自动报警系统',
+    href: '/dynamic-monitoring/fire-alarm/index',
+  },
   { title: '单位页面', name: '单位页面' },
 ];
 
@@ -147,9 +152,7 @@ export default class CompanyDetail extends PureComponent {
     // const { fireAlarm: { tableLists }, match: { params: { companyId } } } = this.props;
     const {
       match: {
-        params: {
-          companyId,
-        },
+        params: { companyId },
       },
       fireAlarm: { tableLists, alarmDetail },
     } = this.props;
@@ -181,8 +184,24 @@ export default class CompanyDetail extends PureComponent {
       },
     ];
 
-    const okButton = <Button type="primary" onClick={() => { this.handleModalChange(false) }}>确认</Button>;
-    const action = <Link to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}><Button>历史纪录<Icon type="double-right" /></Button></Link>
+    const okButton = (
+      <Button
+        type="primary"
+        onClick={() => {
+          this.handleModalChange(false);
+        }}
+      >
+        确认
+      </Button>
+    );
+    const action = (
+      <Link to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}>
+        <AuthButton code={codesMap.dynamicMonitoring.historyRecordView}>
+          历史纪录
+          <Icon type="double-right" />
+        </AuthButton>
+      </Link>
+    );
 
     return (
       <PageHeaderLayout title={tableLists.name} breadcrumbList={breadcrumbList} action={action}>
