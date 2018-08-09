@@ -31,6 +31,8 @@ const areaIcon = `${iconPrefix}area.png`;
 const accidentTypeIcon = `${iconPrefix}accidentType.png`;
 const riskLevelIcon = `${iconPrefix}riskLevel.png`;
 const statusIcon = `${iconPrefix}status.png`;
+const defaultIcon = `${iconPrefix}default.png`;
+const sDefaultIcon = `${iconPrefix}s_default.png`;
 // 选中高度
 const selectedHeight = 135;
 const selectedWidth = 63;
@@ -65,6 +67,11 @@ const selectedOffset = {
 const pointImages = [
   [
     {
+      src: defaultIcon,
+      style: normalStyle,
+      offset: normalOffset,
+    },
+    {
       src: red,
       style: normalStyle,
       offset: normalOffset,
@@ -86,6 +93,11 @@ const pointImages = [
     },
   ],
   [
+    {
+      src: sDefaultIcon,
+      style: selectedStyle,
+      offset: selectedOffset,
+    },
     {
       src: sRed,
       style: selectedStyle,
@@ -119,13 +131,15 @@ const pointImages = [
 const switchImageColor = (list, color) => {
   switch (color) {
     case '红':
-      return list[0];
-    case '橙':
       return list[1];
-    case '黄':
+    case '橙':
       return list[2];
-    default:
+    case '黄':
       return list[3];
+    case '蓝':
+      return list[4];
+    default:
+      return list[0];
   }
 }
 // 获取status
@@ -145,8 +159,13 @@ const switchStatus = (status) => {
   }
 };
 // 获取颜色和status
-const switchCheckStatus = (value = 0) => {
+const switchCheckStatus = (value = -1) => {
   switch (value) {
+    case 0:
+      return {
+        color: '#20DE3A',
+        content: '正常',
+      };
     case 1:
       return {
         color: '#E8292D',
@@ -165,7 +184,7 @@ const switchCheckStatus = (value = 0) => {
     default:
       return {
         color: '#20DE3A',
-        content: '正常',
+        content: '',
       };
   }
 }
@@ -182,7 +201,7 @@ class CompanyLayout extends PureComponent {
       pieHeight: 0,
       barHeight: 0,
     };
-    this.timer = null;
+    this.myTimer = null;
     this.points = [];
   }
 
@@ -205,6 +224,12 @@ class CompanyLayout extends PureComponent {
       payload: {
         company_id: companyId,
         month: moment().format('YYYY-MM'),
+      },
+      success: ({ point: points, fourColorImg }) => {
+        // 只有图存在时才默认选中，如果第一个元素存在，则默认选中第一个，否则不选中
+        if (/^http/.test(fourColorImg) && points && points[0]) {
+          this.handleClick(points[0].itemId, 0);
+        }
       },
     });
     dispatch({
@@ -272,31 +297,15 @@ class CompanyLayout extends PureComponent {
     this.setViewport();
   }
 
-  componentDidUpdate() {
-    const { selectedId } = this.state;
-    if (selectedId === null) {
-      // 默认选中第一个风险点
-      this.points[0] && this.points[0].handleClick();
-    }
-  }
-
   componentWillUnmount() {
-    clearTimeout(this.timer);
+    clearTimeout(this.myTimer);
   }
 
   /* 风险点点击事件 */
   handleClick = (id, index) => {
     const { selectedId } = this.state;
-    clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      const { selectedIndex } = this.state;
-      if (selectedIndex === this.points.length - 1) {
-        this.points[0].handleClick();
-      }
-      else {
-        this.points[selectedIndex + 1].handleClick();
-      }
-    }, 10000);
+    clearTimeout(this.myTimer);
+    this.addTimeout();
     if (selectedId === id) {
       return;
     }
@@ -307,12 +316,25 @@ class CompanyLayout extends PureComponent {
   }
 
   handleMouseEnter = () => {
-    clearTimeout(this.timer);
+    clearTimeout(this.myTimer);
   }
 
   handleMouseLeave = () => {
-    const { selectedIndex } = this.state;
-    this.points[selectedIndex] && this.points[selectedIndex].handleClick();
+    const { selectedId } = this.state;
+    selectedId !== null && this.addTimeout();
+  }
+
+  addTimeout = () => {
+    this.myTimer = setTimeout(() => {
+      const { selectedIndex } = this.state;
+      const { bigPlatform: { companyMessage: { point: points } } } = this.props;
+      if (selectedIndex === points.length - 1) {
+        this.handleClick(points[0].itemId, 0);
+      }
+      else {
+        this.handleClick(points[selectedIndex + 1].itemId, selectedIndex + 1);
+      }
+    }, 10000);
   }
 
   setViewport() {
@@ -445,69 +467,76 @@ class CompanyLayout extends PureComponent {
         // rotate='45deg'
         >
           {points && points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
-            const info = riskPointInfoList.filter(({ hdLetterInfo: { itemId } }) => itemId === id)[0];
-            if (info) {
-              const position = { x, y };
-              const { src, style, offset } = selectedId === id ? switchImageColor(pointImages[1], info.hdLetterInfo.riskLevelName.desc) : (+info.status !== 2 ? switchImageColor(pointImages[0], info.hdLetterInfo.riskLevelName.desc) : pointImages[2][1]);
-              const infoData = [
-                {
-                  icon: pointIcon,
-                  title: info.hdLetterInfo.pointName,
-                  render: (title) => (<span style={{ fontSize: '16px' }}>{title}</span>),
+            const info = riskPointInfoList.filter(({ hdLetterInfo: { itemId } }) => itemId === id)[0] || {
+              hdLetterInfo: {
+                pointName: '',
+                areaName: '',
+                accidentTypeName: '',
+                status: '',
+                riskLevelName: {
+                  desc: '',
                 },
-                {
-                  icon: areaIcon,
-                  title: info.hdLetterInfo.areaName,
-                },
-                {
-                  icon: accidentTypeIcon,
-                  title: info.hdLetterInfo.accidentTypeName,
-                },
-                {
-                  icon: statusIcon,
-                  title: info.hdLetterInfo.status,
-                  render: (title) => { const { color, content } = switchCheckStatus(title - 1); return (<span style={{ color }}>{content}</span>) },
-                },
-                {
-                  icon: riskLevelIcon,
-                  title: info.hdLetterInfo.riskLevelName.desc,
-                  render: (title) => (<span style={{ color: info.hdLetterInfo.riskLevelName.color }}>{title}</span>),
-                },
-              ];
-              return (
-                <Fragment key={id}>
-                  <RiskPoint
-                    position={position}
-                    src={src}
-                    style={style}
-                    offset={offset}
-                    onClick={(point) => { this.handleClick(id, index, point); }}
-                    ref={(point) => { this.points[index] = point; }}
-                  />
-                  <RiskPoint
-                    position={position}
-                    src={selected}
-                    style={{
-                      width: selectedWidth,
-                      height: selectedId === id ? selectedHeight : 0,
-                      zIndex: 1,
-                    }}
-                  />
-                  <RiskInfo
-                    position={position}
-                    offset={defaultInfoOffset}
-                    data={infoData}
-                    background={info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl}
-                    style={{
-                      opacity: selectedId === id ? '1' : 0,
-                    }}
-                  />
-                </Fragment>
-              );
-            }
-            else {
-              return null;
-            }
+              },
+              localPictureUrlList: [],
+            };
+            const position = { x, y };
+            const { src, style, offset } = selectedId === id ? switchImageColor(pointImages[1], info.hdLetterInfo.riskLevelName.desc) : (+info.hdLetterInfo.status !== 2 ? switchImageColor(pointImages[0], info.hdLetterInfo.riskLevelName.desc) : pointImages[2][1]);
+            const infoData = [
+              {
+                icon: pointIcon,
+                title: info.hdLetterInfo.pointName,
+                render: (title) => (<span style={{ fontSize: '16px' }}>{title}</span>),
+              },
+              {
+                icon: areaIcon,
+                title: info.hdLetterInfo.areaName,
+              },
+              {
+                icon: accidentTypeIcon,
+                title: info.hdLetterInfo.accidentTypeName,
+              },
+              {
+                icon: statusIcon,
+                title: info.hdLetterInfo.status,
+                render: (title) => { const { color, content } = switchCheckStatus(title - 1); return (<span style={{ color }}>{content}</span>) },
+              },
+              {
+                icon: riskLevelIcon,
+                title: info.hdLetterInfo.riskLevelName.desc,
+                render: (title) => (<span style={{ color: info.hdLetterInfo.riskLevelName.color }}>{title}</span>),
+              },
+            ];
+            return (
+              <Fragment key={id}>
+                <RiskPoint
+                  position={position}
+                  src={src}
+                  style={style}
+                  offset={offset}
+                  onClick={(point) => { this.handleClick(id, index, point); }}
+                  ref={(point) => { this.points[index] = point; }}
+                />
+                <RiskPoint
+                  position={position}
+                  src={selected}
+                  style={{
+                    width: selectedWidth,
+                    height: selectedId === id ? selectedHeight : 0,
+                    zIndex: 1,
+                  }}
+                />
+                <RiskInfo
+                  position={position}
+                  offset={defaultInfoOffset}
+                  data={infoData}
+                  background={info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl}
+                  style={{
+                    opacity: selectedId === id ? '1' : 0,
+                    zIndex: selectedId === id ? 10 : 0,
+                  }}
+                />
+              </Fragment>
+            );
           })}
         </RiskImage>
         <div style={{ display: 'flex', height: '24px', padding: '16px 0' }}>
@@ -534,9 +563,9 @@ class CompanyLayout extends PureComponent {
 
   /* 隐患详情 */
   renderRiskDetail() {
-    const { bigPlatform: { riskDetailList, companyMessage: { fourColorImg } } } = this.props;
+    const { bigPlatform: { riskDetailList } } = this.props;
     const { selectedId } = this.state;
-    let data = !/^http/.test(fourColorImg) ? riskDetailList.filter(({ status }) => +status !== 4) : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
+    let data = selectedId === null ? riskDetailList.filter(({ status }) => +status !== 4) : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
     data = data.map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}] }) => ({
       id,
       description,

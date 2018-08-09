@@ -29,19 +29,19 @@ export default class App extends PureComponent {
     image: null,
   }
 
-  componentDidMount() {
-    const { src } = this.props;
-    const img = new Image();
-    img.src = src;
-    img.onload = () => {
-      this.setState({
-        image: {
-          width: img.width,
-          height: img.height,
-        },
-      });
-    };
-  }
+  // componentDidMount() {
+  //   const { src } = this.props;
+  //   const img = new Image();
+  //   img.src = src;
+  //   img.onload = () => {
+  //     this.setState({
+  //       image: {
+  //         width: img.width,
+  //         height: img.height,
+  //       },
+  //     });
+  //   };
+  // }
 
   renderChildren(children, image) {
     if (children) {
@@ -69,7 +69,8 @@ export default class App extends PureComponent {
       src, // 四色图地址
       children,
     } = this.props;
-    const { image } = this.state;
+
+    const isSrcValid = /^http/.test(src);
 
     return (
       <div
@@ -87,7 +88,7 @@ export default class App extends PureComponent {
             ...style,
           }}
         >
-          {/^http/.test(src) ? (
+          {isSrcValid ? (
             <img
               style={{
                 display: 'block',
@@ -99,7 +100,7 @@ export default class App extends PureComponent {
             />
           ) : (<div style={{ textAlign: 'center' }}>暂无四色图</div>)}
         </div>
-        {this.renderChildren(children, image)}
+        {isSrcValid ? children : null}
       </div>
     );
   }
