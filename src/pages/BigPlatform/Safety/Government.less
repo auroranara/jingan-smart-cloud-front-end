@@ -359,3 +359,97 @@
     }
   }
 }
+
+@media screen and (max-width: 1460px) {
+  .main {
+    font-size: 12px;
+    .mainHeader {
+      line-height: 55px;
+      height: 55px;
+      font-size: 28px;
+      .subHeader {
+        font-size: 14px;
+      }
+    }
+    .mainBody {
+      height: calc(~'100% - 30px');
+      .sectionTitle {
+        font-size: 16px;
+        height: 26px;
+        line-height: 26px;
+      }
+      .hdArea {
+        width: 100% !important;
+        height: calc(~'100% - 35px') !important;
+      }
+      .hdPie {
+        width: 100% !important;
+        height: calc(~'100% - 35px') !important;
+      }
+      .sectionMain {
+        height: calc(~'100% - 34px');
+        .thFix {
+          height: 40px;
+          th {
+            font-size: 14px;
+            height: 40px;
+          }
+        }
+        .scrollWrapper {
+          height: calc(~'100% - 40px');
+          .tableWrapper {
+            .safeTable {
+              th {
+                padding: 0 5px;
+                font-size: 14px;
+                height: 40px;
+              }
+              td {
+                padding: 0 5px;
+                font-size: 13px;
+                height: 40px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .summaryBar {
+      height: 35px;
+      line-height: 35px;
+      .summaryNum {
+        font-size: 20px;
+      }
+    }
+    .pieLegend {
+      display: none;
+      width: 31%;
+      .legendCircle {
+        width: 12px;
+        height: 12px;
+      }
+    }
+    .topData {
+      font-size: 14px;
+      height: 75px;
+      .topItem {
+        .topName {
+          padding-top: 5px;
+        }
+        .topNum {
+          line-height: 40px;
+          font-size: 26px;
+        }
+      }
+    }
+    .mapContainer {
+      height: calc(~'100% - 75px');
+      .mapLegend {
+        height: 40px;
+        line-height: 40px;
+        padding-left: 5px;
+        padding-right: 15px;
+      }
+    }
+  }
+}
