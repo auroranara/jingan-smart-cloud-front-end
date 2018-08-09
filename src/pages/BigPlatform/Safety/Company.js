@@ -542,7 +542,7 @@ class CompanyLayout extends PureComponent {
                   ? switchImageColor(pointImages[1], info.hdLetterInfo.riskLevelName.desc)
                   : +info.hdLetterInfo.status !== 2
                     ? switchImageColor(pointImages[0], info.hdLetterInfo.riskLevelName.desc)
-                    : pointImages[2][1];
+                    : pointImages[2][0];
               const infoData = [
                 {
                   icon: pointIcon,
@@ -739,8 +739,6 @@ class CompanyLayout extends PureComponent {
       { name: '蓝色风险点', value: blue },
     ];
 
-    console.log(check_map);
-    console.log(hidden_danger_map);
     const self_check_point = {};
     const created_danger = {};
 

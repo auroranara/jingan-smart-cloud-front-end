@@ -18,16 +18,16 @@ export default class App extends PureComponent {
     src: PropTypes.string.isRequired,
     wrapperStyle: PropTypes.object,
     style: PropTypes.object,
-  }
+  };
 
   static defaultProps = {
     wrapperStyle: {},
     style: {},
-  }
+  };
 
   state = {
     image: null,
-  }
+  };
 
   // componentDidMount() {
   //   const { src } = this.props;
@@ -46,16 +46,19 @@ export default class App extends PureComponent {
   renderChildren(children, image) {
     if (children) {
       return React.Children.map(children, child => {
-          if (child) {
-              if (child.type) {
-                  return React.cloneElement(child, {
-                    image,
-                  }, this.renderChildren(child.props.children, image));
-              }
-              else {
-                  return child;
-              }
+        if (child) {
+          if (child.type) {
+            return React.cloneElement(
+              child,
+              {
+                image,
+              },
+              this.renderChildren(child.props.children, image)
+            );
+          } else {
+            return child;
           }
+        }
       });
     }
   }
@@ -98,7 +101,9 @@ export default class App extends PureComponent {
               src={src}
               alt="安全风险四色图"
             />
-          ) : (<div style={{ textAlign: 'center' }}>暂无四色图</div>)}
+          ) : (
+            <div style={{ textAlign: 'center' }}>暂无四色图</div>
+          )}
         </div>
         {isSrcValid ? children : null}
       </div>
