@@ -15,12 +15,14 @@ const hosts = {
   mock: '118.126.110.115:3001/mock/28',
   jb: '192.168.10.3', // 杰宝
   gj: '192.168.10.9', //高进
+  ts: '192.168.10.5', //田少
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      // target: `http://${hosts.test}`,
+      target: `http://${hosts.ts}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
