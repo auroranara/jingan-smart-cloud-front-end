@@ -54,16 +54,16 @@ export default class App extends PureComponent {
   }
 
   state = {
-    currentIndex: 0,
+    dataSource: [],
   }
 
-  timer = null
+  myTimer = null
 
   addInterVal() {
-    this.timer = setInterval(() => {
-      if (-Number.parseFloat(this.list.style.top, 10) >= this.list.children[0].offsetHeight) {
-        this.setState(({ currentIndex }) => ({
-          currentIndex: currentIndex === this.list.children.length - 1 ? 0 : currentIndex + 1,
+    this.myTimer = setInterval(() => {
+      if (-Number.parseFloat(this.list.style.top) >= this.list.children[0].offsetHeight) {
+        this.setState(({ dataSource }) => ({
+          dataSource: [...dataSource.slice(1), ...dataSource.slice(0, 1)],
         }));
         this.list.style.top = '0px';
       }
@@ -73,27 +73,47 @@ export default class App extends PureComponent {
     }, 25);
   }
 
-  componentDidMount() {
-    if (this.list.offsetHeight > this.container.offsetHeight) {
-      this.addInterVal();
+  componentDidUpdate({ data: prevData }, { dataSource: prevDataSource }) {
+    const { data } = this.props;
+    const { dataSource } = this.state;
+    if (data !== prevData) {
+      this.setState({
+        dataSource: [
+          ...data,
+        ],
+      });
+      clearInterval(this.myTimer);
+      this.list.style.top = '0px';
+      return;
     }
-  }
-
-  componentDidUpdate() {
-    clearInterval(this.timer);
-    this.list.style.top = '0px';
-    if (this.list.offsetHeight > this.container.offsetHeight) {
-      this.addInterVal();
+    if (dataSource !== prevDataSource) {
+      if (dataSource.includes(prevDataSource[0])) {
+        if (dataSource.length !==0 && dataSource.length === 2*prevDataSource.length) {
+          this.addInterVal();
+        }
+      }
+      else {
+        setTimeout(() => {
+          if (this.list.offsetHeight > this.container.offsetHeight) {
+            this.setState({
+              dataSource: [
+                ...dataSource,
+                ...dataSource.map(item => ({ ...item, id: `${item.id}_cpy` })),
+              ],
+            });
+          }
+        }, 10);
+      }
     }
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer);
+    clearInterval(this.myTimer);
   }
 
   handleMouseEnter = () => {
     const { onMouseEnter } = this.props;
-    clearInterval(this.timer);
+    clearInterval(this.myTimer);
     if (onMouseEnter) {
       onMouseEnter();
     }
@@ -116,8 +136,7 @@ export default class App extends PureComponent {
       data,
       fieldNames,
     } = this.props;
-    const { currentIndex } = this.state;
-
+    const { dataSource } = this.state;
     const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = { ...defaultFieldNames, ...fieldNames };
 
 
@@ -146,7 +165,7 @@ export default class App extends PureComponent {
         <div onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} style={{ display: 'flex', flex: 1, padding: '24px 16px', boxShadow: '0 0 1.1em rgba(9, 103, 211, 0.9) inset', backgroundColor: 'rgba(9, 103, 211, 0.06)' }}>
           <div style={{ flex: 1, overflow: 'hidden' }} ref={(container) => { this.container = container; }}>
             <div style={{ position: 'relative', top: 0 }} ref={(list) => { this.list = list; }}>
-              {data.length !== 0 ? [...data.slice(currentIndex), ...data.slice(0, currentIndex)].map(item => {
+              {dataSource.length !== 0 ? dataSource.map(item => {
                 return (
                   <div key={item[id]} style={{ paddingBottom: '20px' }}>
                     <div style={{ display: 'flex', backgroundColor: 'rgba(6, 38, 78, 0.8)', maxHeight: '240px', overflow: 'hidden' }}>

@@ -56,7 +56,7 @@ export default class App extends PureComponent {
         className={className}
         style={{
           position: 'absolute',
-          left: `calc(${positionX * 100}% + ${offsetX}px)`,
+          left: positionX < 0.5 ? `calc(${positionX * 100}% + ${offsetX}px)` : `calc(${positionX * 100}% - ${240 + offsetX}px)`,
           top: `calc(${positionY * 100}% + ${offsetY}px)`,
           width: '240px',
           padding: '20px',

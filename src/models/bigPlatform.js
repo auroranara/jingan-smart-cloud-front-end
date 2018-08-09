@@ -197,13 +197,17 @@ export default {
     },
     *fetchCompanyMessage({ payload, success, error }, { call, put }) {
       const response = yield call(getCompanyMessage, payload);
+      const res = {
+        ...response,
+        point: response.point && response.point.filter(({itemId, xNum, yNum}) => itemId && (xNum || Number.parseFloat(xNum) === 0) && (yNum || Number.parseFloat(yNum) === 0) ),
+      };
       // if (response.code === 200) {
       yield put({
         type: 'companyMessage',
-        payload: response,
+        payload: res,
       });
       if (success) {
-        success();
+        success(res);
       }
       // }
       // else if (error) {
@@ -342,10 +346,10 @@ export default {
         infoByLocation: payload,
       };
     },
-    companyMessage(state, { payload }) {
+    companyMessage(state, { payload: companyMessage }) {
       return {
         ...state,
-        companyMessage: payload,
+        companyMessage,
       };
     },
     coItemList(state, { payload, status }) {
