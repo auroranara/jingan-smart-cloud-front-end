@@ -5,10 +5,7 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './index.less';
 import VisibilitySensor from 'react-visibility-sensor';
-import {
-  AuthLink,
-  //hasAuthority
-} from 'utils/customAuth';
+import { AuthLink, ERROR_MSG } from 'utils/customAuth';
 import codesMap from 'utils/codes';
 
 const PAGE_SIZE = 18;
@@ -203,12 +200,9 @@ export default class FireAlarm extends PureComponent {
             renderItem={item => (
               <List.Item key={item.id}>
                 <AuthLink
-                  // onClick={() => {
-                  //   if (hasAuthority(codesMap.dynamicMonitoring.comanyDetailView, codes))
-                  //     message.warn('您没有权限访问对应页面');
-                  // }}
                   code={codesMap.dynamicMonitoring.comanyDetailView}
                   to={`/dynamic-monitoring/fire-alarm/company/${item.id}`}
+                  errMsg={ERROR_MSG}
                 >
                   <Card hoverable className={styles.card} title={item.name}>
                     <Ellipsis className={styles.ellipsis} lines={1}>

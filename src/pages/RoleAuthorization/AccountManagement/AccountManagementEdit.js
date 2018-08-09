@@ -559,8 +559,6 @@ export default class accountManagementEdit extends PureComponent {
       loading,
     } = this.props;
 
-    // console.log('userType', userType);
-
     const { unitTypeChecked } = this.state;
 
     const isValidateLoginName = id ? [] : [{ validator: this.validateUserName }];
