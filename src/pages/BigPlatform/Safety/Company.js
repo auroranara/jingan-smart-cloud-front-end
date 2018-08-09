@@ -377,7 +377,7 @@ class CompanyLayout extends PureComponent {
           fill: '#fff', // 文本颜色
         }} />
         <Tooltip />
-        <Geom type='interval' opacity={1} position="day*times" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]}/>
+        <Geom type='interval' opacity={1} position="day*times" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]} />
       </Chart>
     );
   }
@@ -433,7 +433,7 @@ class CompanyLayout extends PureComponent {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '36px 0 10px' }}>
         <div style={{ height: '40px', lineHeight: '40px', paddingLeft: '15px', color: '#00A8FF', fontSize: '20px' }}>
-          <div>安全风险四色图</div>
+          <div className={styles.riskTitle}>安全风险四色图</div>
         </div>
         <RiskImage
           src={fourColorImg || ''}
@@ -618,7 +618,7 @@ class CompanyLayout extends PureComponent {
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
-          <span>晶安智慧安全云平台</span>
+          <span style={{ display: 'inline-block', marginRight: '-28px' }}>晶安智慧安全云平台</span>
           <div className={styles.subHeader}><Timer /></div>
         </header>
 
@@ -627,7 +627,7 @@ class CompanyLayout extends PureComponent {
             <Col span={6} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
               <section className={infoClassNames}>
                 <div className={styles.sectionTitle}>单位信息</div>
-                <div className={styles.sectionMain} style={{cursor: 'pointer'}} onClick={() => { window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`); }}>
+                <div className={styles.sectionMain} style={{ cursor: 'pointer' }} onClick={() => { window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`); }}>
                   <div className={styles.shadowIn}>
                     <div className={styles.companyMain}>
                       <div className={styles.companyIcon}></div>
