@@ -11,12 +11,12 @@ import RiskDetail from './Components/RiskDetail.js';
 
 import classNames from 'classnames';
 import { DataView } from '@antv/data-set';
-import { Chart, Axis, Tooltip, Geom, Coord, Label, Legend } from "bizcharts";
+import { Chart, Axis, Tooltip, Geom, Coord, Label, Legend } from 'bizcharts';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 /* 图片 */
-const red = `${iconPrefix}red.png`
+const red = `${iconPrefix}red.png`;
 const orange = `${iconPrefix}orange.png`;
 const yellow = `${iconPrefix}yellow.png`;
 const blue = `${iconPrefix}blue.png`;
@@ -40,7 +40,7 @@ const selectedWidth = 63;
 const defaultInfoOffset = {
   x: 50,
   y: -selectedHeight - 50,
-}
+};
 // 正常点的样式
 const normalStyle = {
   width: 39,
@@ -141,20 +141,17 @@ const switchImageColor = (list, color) => {
     default:
       return list[0];
   }
-}
+};
 // 获取status
-const switchStatus = (status) => {
+const switchStatus = status => {
   const value = +status;
   if (value === 1 || value === 2) {
     return 0;
-  }
-  else if (value === 3) {
+  } else if (value === 3) {
     return 1;
-  }
-  else if (value === 7) {
+  } else if (value === 7) {
     return 2;
-  }
-  else {
+  } else {
     return 0;
   }
 };
@@ -187,7 +184,7 @@ const switchCheckStatus = (value = -1) => {
         content: '',
       };
   }
-}
+};
 
 @connect(({ bigPlatform }) => ({
   bigPlatform,
@@ -206,7 +203,12 @@ class CompanyLayout extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, match: { params: { companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     window.onload = () => {
       this.reDoChart();
     };
@@ -216,7 +218,7 @@ class CompanyLayout extends PureComponent {
     }, 2000);
 
     window.addEventListener('resize', () => {
-      this.debounce(this.reDoChart(), 300)
+      this.debounce(this.reDoChart(), 300);
     });
 
     dispatch({
@@ -313,38 +315,47 @@ class CompanyLayout extends PureComponent {
       selectedId: id,
       selectedIndex: index,
     });
-  }
+  };
 
   handleMouseEnter = () => {
     clearTimeout(this.myTimer);
-  }
+  };
 
   handleMouseLeave = () => {
     const { selectedId } = this.state;
     selectedId !== null && this.addTimeout();
-  }
+  };
 
   addTimeout = () => {
     this.myTimer = setTimeout(() => {
       const { selectedIndex } = this.state;
-      const { bigPlatform: { companyMessage: { point: points } } } = this.props;
+      const {
+        bigPlatform: {
+          companyMessage: { point: points },
+        },
+      } = this.props;
       if (selectedIndex === points.length - 1) {
         this.handleClick(points[0].itemId, 0);
-      }
-      else {
+      } else {
         this.handleClick(points[selectedIndex + 1].itemId, selectedIndex + 1);
       }
     }, 10000);
-  }
+  };
 
   setViewport() {
     const vp = document.querySelector('meta[name=viewport]');
     const sw = window.screen.width;
     const stand = 1920;
     const sca = sw / stand;
-    vp.content = "width=device-width, initial-scale=" + sca
-      + ", maximum-scale=" + sca + ", minimum-scale=" + sca + ", user-scalable=no";
-  };
+    vp.content =
+      'width=device-width, initial-scale=' +
+      sca +
+      ', maximum-scale=' +
+      sca +
+      ', minimum-scale=' +
+      sca +
+      ', user-scalable=no';
+  }
 
   debounce = (action, delay) => {
     let timer = null;
@@ -354,21 +365,25 @@ class CompanyLayout extends PureComponent {
 
       clearTimeout(timer);
       timer = setTimeout(function () {
-        action.apply(self, args)
+        action.apply(self, args);
       }, delay);
-    }
-  }
+    };
+  };
 
   reDoChart = () => {
-    const pieHeight = document.getElementById('hdPie') ? document.getElementById('hdPie').offsetHeight : 0;
-    const barHeight = document.getElementById('checkBar') ? document.getElementById('checkBar').offsetHeight : 0;
+    const pieHeight = document.getElementById('hdPie')
+      ? document.getElementById('hdPie').offsetHeight
+      : 0;
+    const barHeight = document.getElementById('checkBar')
+      ? document.getElementById('checkBar').offsetHeight
+      : 0;
     this.setState({
       pieHeight,
       barHeight,
     });
-  }
+  };
 
-  renderBarChart = (dataBar) => {
+  renderBarChart = dataBar => {
     const now = moment();
     const dayList = [];
     for (let i = 0; i < 30; i++) {
@@ -390,31 +405,41 @@ class CompanyLayout extends PureComponent {
     if (windowWidth < 1650) padding = [35, 20, 46, 35];
     return (
       <Chart height={barHeight} data={dv} forceFit padding={padding}>
-        <Axis name="day" label={{
-          textStyle: {
+        <Axis
+          name="day"
+          label={{
+            textStyle: {
+              fontSize: 12, // 文本大小
+              textAlign: 'center', // 文本对齐方式
+              fill: '#fff', // 文本颜色
+            },
+          }}
+        />
+        <Axis
+          name="times"
+          label={{
+            textStyle: {
+              fontSize: 12, // 文本大小
+              textAlign: 'center', // 文本对齐方式
+              fill: '#fff', // 文本颜色
+            },
+          }}
+        />
+        <Legend
+          position="top"
+          marker="circle"
+          textStyle={{
             fontSize: 12, // 文本大小
-            textAlign: 'center', // 文本对齐方式
             fill: '#fff', // 文本颜色
-          },
-        }} />
-        <Axis name="times" label={{
-          textStyle: {
-            fontSize: 12, // 文本大小
-            textAlign: 'center', // 文本对齐方式
-            fill: '#fff', // 文本颜色
-          },
-        }} />
-        <Legend position='top' marker='circle' textStyle={{
-          fontSize: 12, // 文本大小
-          fill: '#fff', // 文本颜色
-        }} />
+          }}
+        />
         <Tooltip />
         <Geom type='interval' opacity={this.showBar ? 1 : 0} position="day*times" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]} />
       </Chart>
     );
-  }
+  };
 
-  renderPieChart = (dataPie) => {
+  renderPieChart = dataPie => {
     const dv = new DataView();
     dv.source(dataPie).transform({
       type: 'percent',
@@ -430,7 +455,7 @@ class CompanyLayout extends PureComponent {
         },
       },
       nice: false,
-    }
+    };
     const { pieHeight } = this.state;
     return (
       <Chart height={pieHeight} data={dataPie} scale={scale} forceFit padding={[40]}>
@@ -439,10 +464,10 @@ class CompanyLayout extends PureComponent {
         <Geom
           type="interval"
           position="name*value"
-          color={["name", ['#c46d6b', '#d39945', '#cfc378', '#4d9ed8']]}
+          color={['name', ['#c46d6b', '#d39945', '#cfc378', '#4d9ed8']]}
         >
           <Label
-            content='name'
+            content="name"
             textStyle={{
               textAlign: 'center', // 文本对齐方向，可取值为： start middle end
               fill: '#fff', // 文本的颜色
@@ -455,16 +480,29 @@ class CompanyLayout extends PureComponent {
         </Geom>
       </Chart>
     );
-  }
+  };
 
   /* 风险四色图 */
   renderRiskFourColor() {
-    const { bigPlatform: { companyMessage: { point: points, fourColorImg }, riskPointInfoList } } = this.props;
+    const {
+      bigPlatform: {
+        companyMessage: { point: points, fourColorImg },
+        riskPointInfoList,
+      },
+    } = this.props;
     const { selectedId } = this.state;
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '36px 0 10px' }}>
-        <div style={{ height: '40px', lineHeight: '40px', paddingLeft: '15px', color: '#00A8FF', fontSize: '20px' }}>
+        <div
+          style={{
+            height: '40px',
+            lineHeight: '40px',
+            paddingLeft: '15px',
+            color: '#00A8FF',
+            fontSize: '20px',
+          }}
+        >
           <div className={styles.riskTitle}>安全风险四色图</div>
         </div>
         <RiskImage
@@ -476,94 +514,143 @@ class CompanyLayout extends PureComponent {
         // perspective='30em'
         // rotate='45deg'
         >
-          {points && points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
-            const info = riskPointInfoList.filter(({ hdLetterInfo: { itemId } }) => itemId === id)[0] || {
-              hdLetterInfo: {
-                pointName: '',
-                areaName: '',
-                accidentTypeName: '',
-                status: '',
-                riskLevelName: {
-                  desc: '',
+          {points &&
+            points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
+              const info = riskPointInfoList.filter(
+                ({ hdLetterInfo: { itemId } }) => itemId === id
+              )[0] || {
+                  hdLetterInfo: {
+                    pointName: '',
+                    areaName: '',
+                    accidentTypeName: '',
+                    status: '',
+                    riskLevelName: {
+                      desc: '',
+                    },
+                  },
+                  localPictureUrlList: [],
+                };
+              const position = { x, y };
+              const { src, style, offset } =
+                selectedId === id
+                  ? switchImageColor(pointImages[1], info.hdLetterInfo.riskLevelName.desc)
+                  : +info.hdLetterInfo.status !== 2
+                    ? switchImageColor(pointImages[0], info.hdLetterInfo.riskLevelName.desc)
+                    : pointImages[2][0];
+              const infoData = [
+                {
+                  icon: pointIcon,
+                  title: info.hdLetterInfo.pointName,
+                  render: title => <span style={{ fontSize: '16px' }}>{title}</span>,
                 },
-              },
-              localPictureUrlList: [],
-            };
-            const position = { x, y };
-            const { src, style, offset } = selectedId === id ? switchImageColor(pointImages[1], info.hdLetterInfo.riskLevelName.desc) : (+info.hdLetterInfo.status !== 2 ? switchImageColor(pointImages[0], info.hdLetterInfo.riskLevelName.desc) : pointImages[2][1]);
-            const infoData = [
-              {
-                icon: pointIcon,
-                title: info.hdLetterInfo.pointName,
-                render: (title) => (<span style={{ fontSize: '16px' }}>{title}</span>),
-              },
-              {
-                icon: areaIcon,
-                title: info.hdLetterInfo.areaName,
-              },
-              {
-                icon: accidentTypeIcon,
-                title: info.hdLetterInfo.accidentTypeName,
-              },
-              {
-                icon: statusIcon,
-                title: info.hdLetterInfo.status,
-                render: (title) => { const { color, content } = switchCheckStatus(title - 1); return (<span style={{ color }}>{content}</span>) },
-              },
-              {
-                icon: riskLevelIcon,
-                title: info.hdLetterInfo.riskLevelName.desc,
-                render: (title) => (<span style={{ color: info.hdLetterInfo.riskLevelName.color }}>{title}</span>),
-              },
-            ];
-            return (
-              <Fragment key={id}>
-                <RiskPoint
-                  position={position}
-                  src={src}
-                  style={style}
-                  offset={offset}
-                  onClick={(point) => { this.handleClick(id, index, point); }}
-                  ref={(point) => { this.points[index] = point; }}
-                />
-                <RiskPoint
-                  position={position}
-                  src={selected}
-                  style={{
-                    width: selectedWidth,
-                    height: selectedId === id ? selectedHeight : 0,
-                    zIndex: 1,
-                  }}
-                />
-                <RiskInfo
-                  position={position}
-                  offset={defaultInfoOffset}
-                  data={infoData}
-                  background={info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl}
-                  style={{
-                    opacity: selectedId === id ? '1' : 0,
-                    zIndex: selectedId === id ? 10 : 0,
-                  }}
-                />
-              </Fragment>
-            );
-          })}
+                {
+                  icon: areaIcon,
+                  title: info.hdLetterInfo.areaName,
+                },
+                {
+                  icon: accidentTypeIcon,
+                  title: info.hdLetterInfo.accidentTypeName,
+                },
+                {
+                  icon: statusIcon,
+                  title: info.hdLetterInfo.status,
+                  render: title => {
+                    const { color, content } = switchCheckStatus(title - 1);
+                    return <span style={{ color }}>{content}</span>;
+                  },
+                },
+                {
+                  icon: riskLevelIcon,
+                  title: info.hdLetterInfo.riskLevelName.desc,
+                  render: title => (
+                    <span style={{ color: info.hdLetterInfo.riskLevelName.color }}>{title}</span>
+                  ),
+                },
+              ];
+              return (
+                <Fragment key={id}>
+                  <RiskPoint
+                    position={position}
+                    src={src}
+                    style={style}
+                    offset={offset}
+                    onClick={point => {
+                      this.handleClick(id, index, point);
+                    }}
+                    ref={point => {
+                      this.points[index] = point;
+                    }}
+                  />
+                  <RiskPoint
+                    position={position}
+                    src={selected}
+                    style={{
+                      width: selectedWidth,
+                      height: selectedId === id ? selectedHeight : 0,
+                      zIndex: 1,
+                    }}
+                  />
+                  <RiskInfo
+                    position={position}
+                    offset={defaultInfoOffset}
+                    data={infoData}
+                    background={info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl}
+                    style={{
+                      opacity: selectedId === id ? '1' : 0,
+                      zIndex: selectedId === id ? 10 : 0,
+                    }}
+                  />
+                </Fragment>
+              );
+            })}
         </RiskImage>
         <div style={{ display: 'flex', height: '24px', padding: '16px 0' }}>
           <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#BF6C6E' }} />
+            <span
+              style={{
+                display: 'inline-block',
+                marginRight: '4px',
+                width: '16px',
+                height: '16px',
+                backgroundColor: '#BF6C6E',
+              }}
+            />
             <span>重大风险</span>
           </div>
           <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#CC964B' }} />
+            <span
+              style={{
+                display: 'inline-block',
+                marginRight: '4px',
+                width: '16px',
+                height: '16px',
+                backgroundColor: '#CC964B',
+              }}
+            />
             <span>较大风险</span>
           </div>
           <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#C6BC7A' }} />
+            <span
+              style={{
+                display: 'inline-block',
+                marginRight: '4px',
+                width: '16px',
+                height: '16px',
+                backgroundColor: '#C6BC7A',
+              }}
+            />
             <span>一般风险</span>
           </div>
           <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ display: 'inline-block', marginRight: '4px', width: '16px', height: '16px', backgroundColor: '#4C9ED6' }} />
+            <span
+              style={{
+                display: 'inline-block',
+                marginRight: '4px',
+                width: '16px',
+                height: '16px',
+                backgroundColor: '#4C9ED6',
+              }}
+            />
             <span>低风险</span>
           </div>
         </div>
@@ -573,20 +660,37 @@ class CompanyLayout extends PureComponent {
 
   /* 隐患详情 */
   renderRiskDetail() {
-    const { bigPlatform: { riskDetailList } } = this.props;
+    const {
+      bigPlatform: { riskDetailList },
+    } = this.props;
     const { selectedId } = this.state;
-    let data = selectedId === null ? riskDetailList.filter(({ status }) => +status !== 4) : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
-    data = data.map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}] }) => ({
-      id,
-      description,
-      sbr,
-      sbsj: moment(+sbsj).format('YYYY-MM-DD'),
-      zgr,
-      zgsj: moment(+zgsj).format('YYYY-MM-DD'),
-      fcr,
-      status: switchStatus(status),
-      background,
-    }));
+    let data =
+      selectedId === null
+        ? riskDetailList.filter(({ status }) => +status !== 4)
+        : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
+    data = data.map(
+      ({
+        id,
+        flow_name: description,
+        report_user_name: sbr,
+        report_time: sbsj,
+        rectify_user_name: zgr,
+        plan_rectify_time: zgsj,
+        review_user_name: fcr,
+        status,
+        hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
+      }) => ({
+        id,
+        description,
+        sbr,
+        sbsj: moment(+sbsj).format('YYYY-MM-DD'),
+        zgr,
+        zgsj: moment(+zgsj).format('YYYY-MM-DD'),
+        fcr,
+        status: switchStatus(status),
+        background,
+      })
+    );
 
     return (
       <Col span={6} className={styles.heightFull}>
@@ -616,19 +720,9 @@ class CompanyLayout extends PureComponent {
         check_map,
         hidden_danger_map,
       },
-      coItemList: {
-        status1,
-        status2,
-        status3,
-        status4,
-      },
+      coItemList: { status1, status2, status3, status4 },
       specialEquipment,
-      countDangerLocationForCompany: {
-        red,
-        orange,
-        blue,
-        yellow,
-      },
+      countDangerLocationForCompany: { red, orange, blue, yellow },
       hiddenDanger,
     } = this.props.bigPlatform;
 
@@ -640,13 +734,19 @@ class CompanyLayout extends PureComponent {
     ];
 
     const self_check_point = {};
-    check_map.forEach(item => {
-      self_check_point[item.month + '.' + item.day] = item.self_check_point;
-    });
     const created_danger = {};
-    hidden_danger_map.forEach(item => {
-      created_danger[item.month + '.' + item.day] = item.created_danger;
-    });
+
+    if (check_map && check_map.length) {
+      check_map.forEach(item => {
+        self_check_point[item.month + '.' + item.day] = item.self_check_point;
+      });
+    }
+
+    if (hidden_danger_map && hidden_danger_map.length) {
+      hidden_danger_map.forEach(item => {
+        created_danger[item.month + '.' + item.day] = item.created_danger;
+      });
+    }
 
     this.showBar = true;
     if (check_map.length === 0 && hidden_danger_map.length === 0) this.showBar = false;
@@ -661,52 +761,74 @@ class CompanyLayout extends PureComponent {
 
     let pieShow = true;
     if (red === 0 && orange === 0 && yellow === 0 && blue === 0) pieShow = false;
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
           <span style={{ display: 'inline-block', marginRight: '-28px' }}>晶安智慧安全云平台</span>
-          <div className={styles.subHeader}><Timer /></div>
+          <div className={styles.subHeader}>
+            <Timer />
+          </div>
         </header>
 
         <article className={styles.mainBody}>
           <Row gutter={24} className={styles.heightFull}>
-            <Col span={6} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
+            <Col
+              span={6}
+              className={styles.heightFull}
+              style={{ display: 'flex', flexDirection: 'column' }}
+            >
               <section className={infoClassNames}>
                 <div className={styles.sectionTitle}>单位信息</div>
-                <div className={styles.sectionMain} style={{ cursor: 'pointer' }} onClick={() => { window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`); }}>
+                <div
+                  className={styles.sectionMain}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
+                  }}
+                >
                   <div className={styles.shadowIn}>
                     <div className={styles.companyMain}>
-                      <div className={styles.companyIcon}></div>
+                      <div className={styles.companyIcon} />
                       <div className={styles.companyInfo}>
                         <div className={styles.companyName}>{companyName}</div>
-                        <div className={styles.companyCharger}>安全负责人：{headOfSecurity}</div>
-                        <div className={styles.companyPhone}>联系方式：{headOfSecurityPhone}</div>
+                        <div className={styles.companyCharger}>
+                          安全负责人：
+                          {headOfSecurity}
+                        </div>
+                        <div className={styles.companyPhone}>
+                          联系方式：
+                          {headOfSecurityPhone}
+                        </div>
                       </div>
                     </div>
 
                     <div className={styles.summaryBottom}>
                       <Row gutter={6}>
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryPeople}></div>
+                          <div className={styles.summaryPeople} />
                           <div className={styles.summaryText}>安全人员</div>
                           <div className={styles.summaryNum}>{countCompanyUser}</div>
                         </Col>
 
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryCheck}></div>
+                          <div className={styles.summaryCheck} />
                           <div className={styles.summaryText}>检查点</div>
                           <div className={styles.summaryNum}>{countCheckItem}</div>
                         </Col>
 
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summarySpecial}></div>
+                          <div className={styles.summarySpecial} />
                           <div className={styles.summaryText}>特种设备</div>
                           <div className={styles.summaryNum}>{specialEquipment}</div>
                         </Col>
 
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryhd}></div>
+                          <div className={styles.summaryhd} />
                           <div className={styles.summaryText}>隐患数量</div>
                           <div className={styles.summaryNum}>{hiddenDanger}</div>
                         </Col>
@@ -720,34 +842,34 @@ class CompanyLayout extends PureComponent {
                 <div className={styles.sectionTitle}>风险点</div>
                 <div className={styles.sectionMain}>
                   <div className={styles.shadowIn}>
-
                     {pieShow && (
-                      <div className={styles.hdPie} id='hdPie'>
+                      <div className={styles.hdPie} id="hdPie">
                         {this.renderPieChart(dataPie)}
-                      </div>)}
+                      </div>
+                    )}
 
                     <div className={styles.summaryBottom}>
                       <Row gutter={6}>
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryNormal}></div>
+                          <div className={styles.summaryNormal} />
                           <div className={styles.summaryText}>正常</div>
                           <div className={styles.summaryNum}>{status1}</div>
                         </Col>
 
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryChecking}></div>
+                          <div className={styles.summaryChecking} />
                           <div className={styles.summaryText}>待检查</div>
                           <div className={styles.summaryNum}>{status3}</div>
                         </Col>
 
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryAbnormal}></div>
+                          <div className={styles.summaryAbnormal} />
                           <div className={styles.summaryText}>异常</div>
                           <div className={styles.summaryNum}>{status2}</div>
                         </Col>
 
                         <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryOver}></div>
+                          <div className={styles.summaryOver} />
                           <div className={styles.summaryText}>已超时</div>
                           <div className={styles.summaryNum}>{status4}</div>
                         </Col>
@@ -758,13 +880,17 @@ class CompanyLayout extends PureComponent {
               </section>
             </Col>
 
-            <Col span={12} className={styles.heightFull} style={{ display: 'flex', flexDirection: 'column' }}>
+            <Col
+              span={12}
+              className={styles.heightFull}
+              style={{ display: 'flex', flexDirection: 'column' }}
+            >
               {this.renderRiskFourColor()}
               <section className={styles.sectionWrapper} style={{ height: '37%' }}>
                 <div className={styles.sectionTitle}>单位巡查</div>
                 <div className={styles.sectionMain} style={{ padding: '0' }}>
                   <div className={styles.shadowIn}>
-                    <div className={styles.checkBar} id='checkBar'>
+                    <div className={styles.checkBar} id="checkBar">
                       {this.renderBarChart(dataBar)}
                     </div>
                   </div>
