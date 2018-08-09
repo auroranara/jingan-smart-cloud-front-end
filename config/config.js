@@ -111,7 +111,7 @@ export default {
   manifest: {
     name: 'jing-an-smart-cloud',
     background_color: '#FFF',
-    description: 'An out-of-box UI solution for enterprise applications as a React boilerplate.',
+    description: '',
     display: 'standalone',
     start_url: '/index.html',
     icons: [
