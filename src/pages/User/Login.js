@@ -54,17 +54,17 @@ export default class LoginPage extends Component {
         },
         callback: response => {
           if (response.code === 200) {
-            if (response.data.currentAuthority === 'admin') {
-              dispatch({
-                type: 'setting/changeSetting',
-                payload: { grid: 'Fluid', layout: 'sidemenu' },
-              });
-            } else if (response.data.currentAuthority === 'user') {
-              dispatch({
-                type: 'setting/changeSetting',
-                payload: { grid: 'Wide', layout: 'topmenu' },
-              });
-            }
+            // if (response.data.currentAuthority === 'admin') {
+            //   dispatch({
+            //     type: 'setting/changeSetting',
+            //     payload: { grid: 'Fluid', layout: 'sidemenu' },
+            //   });
+            // } else if (response.data.currentAuthority === 'user') {
+            //   dispatch({
+            //     type: 'setting/changeSetting',
+            //     payload: { grid: 'Wide', layout: 'topmenu' },
+            //   });
+            // }
           } else this.setState({ notice: response.msg });
         },
       });
