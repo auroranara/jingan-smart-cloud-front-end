@@ -100,7 +100,7 @@ export default class GlobalHeaderRight extends PureComponent {
         {currentUser &&
           currentUser.unitType === 3 && (
             <Tooltip title="数据维护">
-              <a
+              <span
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.action}
@@ -108,7 +108,8 @@ export default class GlobalHeaderRight extends PureComponent {
                 onClick={this.handleGoGsafe}
               >
                 <Icon type="hdd" />
-              </a>
+                <span style={{ marginLeft: 8, marginRight: 8 }}>数据维护</span>
+              </span>
             </Tooltip>
           )}
         {currentUser.userName ? (
