@@ -1,6 +1,20 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Spin, message, Row, Col, Input, Select, DatePicker, Upload, Icon } from 'antd';
+import {
+  Form,
+  Card,
+  Button,
+  Spin,
+  message,
+  Row,
+  Col,
+  Input,
+  Select,
+  DatePicker,
+  Upload,
+  Icon,
+  AutoComplete,
+} from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
@@ -16,14 +30,17 @@ const { TextArea } = Input;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-
 // 标题
 const addTitle = '新增维保合同';
 const editTitle = '编辑维保合同';
 // 获取链接地址
-const { contract: { list: backUrl } } = urls;
+const {
+  contract: { list: backUrl },
+} = urls;
 // 获取code
-const { contract: { list: listCode } } = codes;
+const {
+  contract: { list: listCode },
+} = codes;
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
 /* 模糊查询默认显示数量 */
@@ -102,11 +119,19 @@ export default class ContractHandler extends PureComponent {
     fileList: [],
     filterMaintenanceId: undefined,
     filterCompanyId: undefined,
-  }
+  };
 
   /* 挂载后 */
   componentDidMount() {
-    const { fetchContract, fetchMaintenanceList, fetchServiceList, clearDetail, match: { params: { id } } } = this.props;
+    const {
+      fetchContract,
+      fetchMaintenanceList,
+      fetchServiceList,
+      clearDetail,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     // 如果id存在，则为编辑，否则为新增
     if (id) {
       fetchContract({
@@ -146,8 +171,7 @@ export default class ContractHandler extends PureComponent {
           });
         },
       });
-    }
-    else {
+    } else {
       clearDetail();
       fetchMaintenanceList({
         payload: {
@@ -166,7 +190,15 @@ export default class ContractHandler extends PureComponent {
 
   /* 提交 */
   handleSubmit = () => {
-    const { insertContract, updateContract, goBack, form: { validateFieldsAndScroll }, match: { params: { id } } } = this.props;
+    const {
+      insertContract,
+      updateContract,
+      goBack,
+      form: { validateFieldsAndScroll },
+      match: {
+        params: { id },
+      },
+    } = this.props;
 
     // 验证字段是否正确
     validateFieldsAndScroll((error, values) => {
@@ -206,26 +238,25 @@ export default class ContractHandler extends PureComponent {
             success: () => {
               message.success('编辑成功！', 1, () => {
                 goBack();
-              })
+              });
             },
             error: () => {
-              message.success('编辑失败！', 1)
+              message.success('编辑失败！', 1);
               this.setState({
                 submitting: false,
               });
             },
           });
-        }
-        else {
+        } else {
           insertContract({
             payload,
             success: () => {
               message.success('新增成功！', 1, () => {
                 goBack();
-              })
+              });
             },
             error: () => {
-              message.success('新增失败！', 1)
+              message.success('新增失败！', 1);
               this.setState({
                 submitting: false,
               });
@@ -234,10 +265,10 @@ export default class ContractHandler extends PureComponent {
         }
       }
     });
-  }
+  };
 
   /* 模糊查询维保单位列表 */
-  handleSearchMaintenanceList = (value) => {
+  handleSearchMaintenanceList = value => {
     const { fetchMaintenanceList } = this.props;
     const { filterCompanyId } = this.state;
     fetchMaintenanceList({
@@ -248,11 +279,14 @@ export default class ContractHandler extends PureComponent {
         companyId: filterCompanyId,
       },
     });
-  }
+  };
 
   /* 模糊查询服务单位列表 */
-  handleSearchServiceList = (value) => {
-    const { fetchServiceList, contract: { maintenanceList } } = this.props;
+  handleSearchServiceList = value => {
+    const {
+      fetchServiceList,
+      contract: { maintenanceList },
+    } = this.props;
     const { filterMaintenanceId } = this.state;
     const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     fetchServiceList({
@@ -263,13 +297,17 @@ export default class ContractHandler extends PureComponent {
         companyId: maintenance && maintenance.companyId,
       },
     });
-  }
+  };
 
   /* 判断清除维保单位 */
-  handleClearMaintenance = (value) => {
+  handleClearMaintenance = value => {
     if (value && value.key === value.label) {
       this.handleSearchMaintenanceList.cancel();
-      const { fetchMaintenanceList, contract: { maintenanceList }, form: { setFieldsValue, validateFields } } = this.props;
+      const {
+        fetchMaintenanceList,
+        contract: { maintenanceList },
+        form: { setFieldsValue, validateFields },
+      } = this.props;
       // 从数组中筛选出与value.label相等的数据
       const maintenance = maintenanceList.filter(item => item.name === value.label)[0];
       if (maintenance) {
@@ -280,8 +318,7 @@ export default class ContractHandler extends PureComponent {
             label: maintenance.name,
           },
         });
-      }
-      else {
+      } else {
         const { filterCompanyId } = this.state;
         // 否则清空维保单位输入框
         setFieldsValue({
@@ -302,13 +339,17 @@ export default class ContractHandler extends PureComponent {
         });
       }
     }
-  }
+  };
 
   /* 判断清除服务单位 */
-  handleClearService = (value) => {
+  handleClearService = value => {
     if (value && value.key === value.label) {
       this.handleSearchServiceList.cancel();
-      const { fetchServiceList, contract: { serviceList, maintenanceList }, form: { setFieldsValue, validateFields } } = this.props;
+      const {
+        fetchServiceList,
+        contract: { serviceList, maintenanceList },
+        form: { setFieldsValue, validateFields },
+      } = this.props;
       // 从数组中筛选出与value.label相等的数据
       const service = serviceList.filter(item => item.name === value.label)[0];
       if (service) {
@@ -319,8 +360,7 @@ export default class ContractHandler extends PureComponent {
             label: service.name,
           },
         });
-      }
-      else {
+      } else {
         const { filterMaintenanceId } = this.state;
         const maintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
         // 否则清空服务单位输入框
@@ -342,7 +382,7 @@ export default class ContractHandler extends PureComponent {
         });
       }
     }
-  }
+  };
 
   /* 上传文件 */
   handleUpload = ({ fileList, file }) => {
@@ -376,7 +416,7 @@ export default class ContractHandler extends PureComponent {
           message.error('上传失败！');
           this.setState({
             fileList: fileList.filter(item => {
-              return !item.response || (item.response.data.list.length !== 0);
+              return !item.response || item.response.data.list.length !== 0;
             }),
           });
         }
@@ -385,7 +425,7 @@ export default class ContractHandler extends PureComponent {
         message.error('上传失败！');
         this.setState({
           fileList: fileList.filter(item => {
-            return !item.response || (item.response.code !== 200);
+            return !item.response || item.response.code !== 200;
           }),
         });
       }
@@ -410,7 +450,7 @@ export default class ContractHandler extends PureComponent {
         uploading: false,
       });
     }
-  }
+  };
 
   /* 上传文件按钮 */
   renderUploadButton = () => {
@@ -454,10 +494,10 @@ export default class ContractHandler extends PureComponent {
           serviceContent,
         },
       },
-      user: { currentUser: { permissionCodes } },
-      form: {
-        getFieldDecorator,
+      user: {
+        currentUser: { permissionCodes },
       },
+      form: { getFieldDecorator },
       loading,
     } = this.props;
     const { filterMaintenanceId, filterCompanyId, uploading } = this.state;
@@ -480,13 +520,22 @@ export default class ContractHandler extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="维保单位">
                 {getFieldDecorator('maintenanceId', {
-                  initialValue: (maintenanceId && maintenanceName) ? {
-                    key: maintenanceId,
-                    label: maintenanceName,
-                  } : undefined,
-                  rules: [{ required: true, message: '请选择维保单位', transform: value => value && value.label }],
+                  initialValue:
+                    maintenanceId && maintenanceName
+                      ? {
+                          key: maintenanceId,
+                          label: maintenanceName,
+                        }
+                      : undefined,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择维保单位',
+                      transform: value => value && value.label,
+                    },
+                  ],
                 })(
-                  <Select
+                  <AutoComplete
                     mode="combobox"
                     placeholder="请选择维保单位"
                     labelInValue
@@ -495,7 +544,9 @@ export default class ContractHandler extends PureComponent {
                     notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchMaintenanceList}
                     onBlur={this.handleClearMaintenance}
-                    onSelect={(value) => { this.setState({ filterMaintenanceId: value.key }); }}
+                    onSelect={value => {
+                      this.setState({ filterMaintenanceId: value.key });
+                    }}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
@@ -504,20 +555,30 @@ export default class ContractHandler extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="服务单位">
                 {getFieldDecorator('companyId', {
-                  initialValue: (companyId && companyName) ? {
-                    key: companyId,
-                    label: companyName,
-                  } : undefined,
-                  rules: [{ required: true, message: '请选择服务单位', whitespace: true, transform: value => value && value.label }],
+                  initialValue:
+                    companyId && companyName
+                      ? {
+                          key: companyId,
+                          label: companyName,
+                        }
+                      : undefined,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择服务单位',
+                      whitespace: true,
+                      transform: value => value && value.label,
+                    },
+                  ],
                 })(
-                  <Select
+                  <AutoComplete
                     mode="combobox"
                     placeholder="请选择服务单位"
                     labelInValue
@@ -526,7 +587,9 @@ export default class ContractHandler extends PureComponent {
                     notFoundContent={loading ? <Spin size="small" /> : '无法查找到对应数据'}
                     onSearch={this.handleSearchServiceList}
                     onBlur={this.handleClearService}
-                    onSelect={(value) => { this.setState({ filterCompanyId: value.key }); }}
+                    onSelect={value => {
+                      this.setState({ filterCompanyId: value.key });
+                    }}
                     getPopupContainer={getRootChild}
                     optionLabelProp="children"
                   >
@@ -535,7 +598,7 @@ export default class ContractHandler extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
               </Form.Item>
             </Col>
@@ -564,14 +627,9 @@ export default class ContractHandler extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="服务期限">
                 {getFieldDecorator('period', {
-                  initialValue: (startTime && endTime) ? [moment(+startTime), moment(+endTime)] : [],
+                  initialValue: startTime && endTime ? [moment(+startTime), moment(+endTime)] : [],
                   rules: [{ required: true, message: '请选择服务期限' }],
-                })(
-                  <RangePicker
-                    style={{ width: '100%' }}
-                    getCalendarContainer={getRootChild}
-                  />
-                )}
+                })(<RangePicker style={{ width: '100%' }} getCalendarContainer={getRootChild} />)}
               </Form.Item>
             </Col>
             <Col span={24}>
@@ -579,28 +637,33 @@ export default class ContractHandler extends PureComponent {
                 {getFieldDecorator('serviceContent', {
                   initialValue: serviceContent,
                   rules: [{ required: true, message: '请输入服务内容', whitespace: true }],
-                })(
-                  <TextArea rows={4} placeholder="请输入服务内容" maxLength="2000" />
-                )}
+                })(<TextArea rows={4} placeholder="请输入服务内容" maxLength="2000" />)}
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="合同附件">
-                {this.renderUploadButton()}
-              </Form.Item>
+              <Form.Item label="合同附件">{this.renderUploadButton()}</Form.Item>
             </Col>
           </Row>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>返回</Button>
-          <Button type="primary" onClick={this.handleSubmit} loading={uploading}>确定</Button>
+          <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>
+            返回
+          </Button>
+          <Button type="primary" onClick={this.handleSubmit} loading={uploading}>
+            确定
+          </Button>
         </div>
       </Card>
     );
   }
 
   render() {
-    const { loading, match: { params: { id } } } = this.props;
+    const {
+      loading,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const { submitting } = this.state;
     const title = id ? editTitle : addTitle;
     // 面包屑
@@ -625,13 +688,8 @@ export default class ContractHandler extends PureComponent {
       },
     ];
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
-        <Spin spinning={loading || submitting}>
-          {this.renderDetail()}
-        </Spin>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+        <Spin spinning={loading || submitting}>{this.renderDetail()}</Spin>
       </PageHeaderLayout>
     );
   }
