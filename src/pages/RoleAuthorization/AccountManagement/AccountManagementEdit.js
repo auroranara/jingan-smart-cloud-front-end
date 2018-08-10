@@ -7,7 +7,7 @@ import {
   Row,
   Col,
   Input,
-  // Select,
+  Select,
   message,
   Icon,
   Popover,
@@ -22,9 +22,7 @@ import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import styles from './AccountManagementEdit.less';
 
-const Option = AutoComplete.Option;
-
-const TreeNode = TreeSelect.TreeNode;
+const { Option } = Select;
 
 // 编辑页面标题
 const editTitle = '编辑账号';
@@ -32,6 +30,8 @@ const editTitle = '编辑账号';
 const addTitle = '新增账号';
 // 返回地址
 const href = '/role-authorization/account-management/list';
+
+const TreeNode = TreeSelect.TreeNode;
 
 /* 表单标签 */
 const fieldLabels = {
@@ -560,8 +560,6 @@ export default class accountManagementEdit extends PureComponent {
       loading,
     } = this.props;
 
-    // console.log('userType', userType);
-
     const { unitTypeChecked } = this.state;
 
     const isValidateLoginName = id ? [] : [{ validator: this.validateUserName }];
@@ -623,17 +621,18 @@ export default class accountManagementEdit extends PureComponent {
                     {
                       required: true,
                       whitespace: true,
+                      type: 'integer',
                       message: '请选择账号状态',
                     },
                   ],
                 })(
-                  <AutoComplete placeholder="请选择账号状态">
+                  <Select placeholder="请选择账号状态">
                     {accountStatuses.map(item => (
-                      <Option key={item.id} value={item.id}>
+                      <Option value={item.id} key={item.id}>
                         {item.label}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
               </Form.Item>
             </Col>
@@ -682,7 +681,7 @@ export default class accountManagementEdit extends PureComponent {
                     },
                   ],
                 })(
-                  <AutoComplete
+                  <Select
                     placeholder="请选择单位类型"
                     onSelect={this.handleUnitTypeSelect}
                     onChange={this.handleUnitTypesChange}
@@ -692,12 +691,12 @@ export default class accountManagementEdit extends PureComponent {
                         {item.label}
                       </Option>
                     ))}
-                  </AutoComplete>
+                  </Select>
                 )}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitId}>
+              <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
                 {getFieldDecorator('unitId', {
                   initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
                   rules: [
@@ -762,13 +761,13 @@ export default class accountManagementEdit extends PureComponent {
                         },
                       ],
                     })(
-                      <AutoComplete placeholder="请选择用户类型">
+                      <Select placeholder="请选择用户类型">
                         {userTypes.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
                           </Option>
                         ))}
-                      </AutoComplete>
+                      </Select>
                     )}
                   </Form.Item>
                 </Col>
@@ -786,13 +785,13 @@ export default class accountManagementEdit extends PureComponent {
                         },
                       ],
                     })(
-                      <AutoComplete placeholder="请选择执法证种类">
+                      <Select placeholder="请选择执法证种类">
                         {documentTypeIds.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
                           </Option>
                         ))}
-                      </AutoComplete>
+                      </Select>
                     )}
                   </Form.Item>
                 </Col>
