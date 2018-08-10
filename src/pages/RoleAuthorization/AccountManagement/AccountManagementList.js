@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Col, Select } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Col, Select, AutoComplete } from 'antd';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -266,7 +266,7 @@ export default class accountManagementList extends PureComponent {
                   },
                 ],
               })(
-                <Select
+                <AutoComplete
                   mode="combobox"
                   optionLabelProp="children"
                   placeholder="请选择所属单位"
@@ -280,7 +280,7 @@ export default class accountManagementList extends PureComponent {
                       {item.name}
                     </Option>
                   ))}
-                </Select>
+                </AutoComplete>
               )}
             </FormItem>
           </Col>

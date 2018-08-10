@@ -14,6 +14,7 @@ import {
   TreeSelect,
   Spin,
   Transfer,
+  AutoComplete,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
@@ -695,7 +696,7 @@ export default class accountManagementEdit extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitId}>
+              <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
                 {getFieldDecorator('unitId', {
                   initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
                   rules: [
@@ -706,7 +707,7 @@ export default class accountManagementEdit extends PureComponent {
                     },
                   ],
                 })(
-                  <Select
+                  <AutoComplete
                     mode="combobox"
                     labelInValue
                     optionLabelProp="children"
@@ -723,7 +724,7 @@ export default class accountManagementEdit extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
               </Form.Item>
             </Col>
@@ -864,7 +865,7 @@ export default class accountManagementEdit extends PureComponent {
                   initialValue:
                     treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
                 })(
-                  <Select
+                  <AutoComplete
                     mode="combobox"
                     labelInValue
                     optionLabelProp="children"
@@ -878,7 +879,7 @@ export default class accountManagementEdit extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
               </Form.Item>
