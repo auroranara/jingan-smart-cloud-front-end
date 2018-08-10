@@ -73,7 +73,8 @@ export default class Dashboard extends PureComponent {
         message.error('该功能暂时未开放！');
       } else {
         const url = imgWrapper[i].url;
-        const win = window.open(url, '_blank');
+        const win = window.open('', '_blank');
+        win.location.href = url;
         win.focus();
       }
     };
