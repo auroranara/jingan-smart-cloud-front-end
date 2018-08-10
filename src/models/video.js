@@ -1,4 +1,5 @@
-import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
+// import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
+import { queryVideoList, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
 // import { getIdMap } from '../pages/DeviceManagement/HikVideoTree/FolderTree';
 
 export default {
@@ -18,10 +19,10 @@ export default {
   effects: {
     *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryVideoList, payload);
-      if (response.status === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'save',
-          payload: response.result,
+          payload: response.data,
         });
         if (callback) callback();
       }
@@ -31,30 +32,30 @@ export default {
         type: 'clear',
       });
     },
-    *bind({ payload, callback }, { call }) {
-      const response = yield call(bindVideo, payload);
-      if (response.status === 200) {
-        if (callback) callback();
-      }
-    },
+    // *bind({ payload, callback }, { call }) {
+    //   const response = yield call(bindVideo, payload);
+    //   if (response.code === 200) {
+    //     if (callback) callback();
+    //   }
+    // },
     *fetchFolderTree({ callback }, { call, put }) {
       const response = yield call(queryFolderTree);
-      const { result } = response;
-      const { list } = result;
-      if (response.status === 200) {
+      const { data } = response;
+      const { list } = data;
+      if (response.code === 200) {
         yield put({
           type: 'saveFolderTree',
-          payload: result,
+          payload: data,
         });
         if (callback) callback(list);
       }
     },
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryVideoDetail, payload);
-      if (response.status === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveDetail',
-          payload: response.result,
+          payload: response.data,
         });
       }
       if (callback) {
@@ -63,10 +64,10 @@ export default {
     },
     *fetchVideoUrl({ payload, callback }, { call, put }) {
       const response = yield call(queryVideoUrl, payload);
-      if (response.status === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveVideoUrl',
-          payload: response.result,
+          payload: response.data,
         });
       }
       if (callback) {
