@@ -74,3 +74,11 @@ export async function gsafeQueryIndustryType(params) {
     method: 'POST',
   });
 }
+
+/* 企业列表修改大屏权限（点亮） */
+export async function editScreenPermission({ id, ...params }) {
+  return request(`/acloud_new/v2/baseInfo/company/${id}/safety`, {
+    method: 'PUT',
+    body: params,
+  })
+}

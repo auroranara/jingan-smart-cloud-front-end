@@ -10,6 +10,7 @@ import {
   upload,
   gsafeQueryDict,
   gsafeQueryIndustryType,
+  editScreenPermission,
 } from '../services/company/company.js';
 
 // const mergeArea = (area, ids, list) => {
@@ -325,6 +326,16 @@ export default {
       if (response.code === 200) {
         if (success) {
           success(response);
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    *editScreenPermission({ payload, success, error }, { call }) {
+      const response = yield call(editScreenPermission, payload)
+      if (response.code === 200) {
+        if (success) {
+          success();
         }
       } else if (error) {
         error(response.msg);
