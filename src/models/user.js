@@ -20,11 +20,10 @@ export default {
     *fetchCurrent(_, { call, put }) {
       const setting = { grid: 'Wide', layout: 'topmenu' };
       const response = yield call(queryCurrent);
-      const {
-        data: { unitType },
-      } = response;
-
       if (response && response.data) {
+        const {
+          data: { unitType },
+        } = response;
         // 是否是运营来判断
         yield put({
           type: 'setting/changeSetting',
