@@ -496,6 +496,7 @@ export default class CompanyDetail extends PureComponent {
             {isCompany && this.renderMoreInfo()}
             {this.renderPersonalInfo()}
             {this.renderFooterToolbar()}
+            {this.renderMap()}
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
             <SafetyDetail companyId={id} />
