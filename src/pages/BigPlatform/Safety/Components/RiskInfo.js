@@ -20,6 +20,8 @@ export default class App extends PureComponent {
     fieldNames: PropTypes.object,
     position: PropTypes.object,
     offset: PropTypes.object,
+    style: PropTypes.object,
+    image: PropTypes.object,
   }
 
   static defaultProps = {
@@ -32,6 +34,11 @@ export default class App extends PureComponent {
       x: 0,
       y: 0,
     },
+    style: {},
+    image: {
+      skew: 0,
+      rotate: 0,
+    },
   }
 
   render() {
@@ -43,25 +50,32 @@ export default class App extends PureComponent {
       offset,
       fieldNames,
       background,
+      image,
     } = this.props;
 
     const { icon, title, render } = { ...defaultFieldNames, ...fieldNames };
-    let { x: positionX, y: positionY } = position;
+    const { x: positionX, y: positionY } = position;
     let { x: offsetX, y: offsetY } = offset;
     offsetX = Number.parseInt(offsetX, 10);
     offsetY = Number.parseInt(offsetY, 10);
+    const scale = 2 - positionY;
+    const { skew, rotate } = image;
+    const deg = Math.PI * rotate / 180;
+    const bottom = Math.cos(deg) * (skew * (1 - positionY)) - scale * offsetY;
 
     return positionX && positionY ? (
       <div
         className={className}
         style={{
           position: 'absolute',
-          left: positionX < 0.5 ? `calc(${positionX * 100}% + ${offsetX}px)` : `calc(${positionX * 100}% - ${240 + offsetX}px)`,
-          top: `calc(${positionY * 100}% + ${offsetY}px)`,
+          left: positionX < 0.5 ? `calc(${positionX * 100}% + ${scale * offsetX}px)` : `calc(${positionX * 100}% - ${scale * (240 + offsetX)}px)`,
+          bottom: `${bottom}px`,
           width: '240px',
           padding: '20px',
           background: `url(${borderImage}) no-repeat center / 100% 100%`,
           transition: 'opacity 0.5s',
+          transformOrigin: 'left bottom',
+          transform: `scale(${scale})`,
           whiteSpace: 'no-wrap',
           zIndex: 9,
           ...style,

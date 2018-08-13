@@ -8,6 +8,7 @@ import RiskImage from './Components/RiskImage.js';
 import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
+import RiskAspect from './Components/RiskAspect.js';
 
 import classNames from 'classnames';
 import { DataView } from '@antv/data-set';
@@ -39,13 +40,13 @@ const selectedWidth = 63;
 // 信息offset
 const defaultInfoOffset = {
   x: 50,
-  y: -selectedHeight - 50,
+  y: -selectedHeight/2,
 }
 // 正常点的样式
 const normalStyle = {
   width: 39,
   height: 40,
-  zIndex: 9,
+  zIndex: 8,
 };
 // 正常点的偏移
 const normalOffset = {
@@ -56,7 +57,7 @@ const normalOffset = {
 const selectedStyle = {
   width: 33,
   height: 40,
-  zIndex: 8,
+  zIndex: 9,
 };
 // 选中点的偏移
 const selectedOffset = {
@@ -376,7 +377,6 @@ class CompanyLayout extends PureComponent {
       key: 'day', // key字段
       value: 'times', // value字段
     });
-    console.log(dv);
     const { barHeight } = this.state;
     return (
       <Chart height={barHeight} data={dv} forceFit padding={[35, 20, 35, 35]}>
@@ -507,7 +507,10 @@ class CompanyLayout extends PureComponent {
               },
             ];
             return (
-              <Fragment key={id}>
+              <RiskAspect
+                position={position}
+                key={id}
+              >
                 <RiskPoint
                   position={position}
                   src={src}
@@ -535,7 +538,7 @@ class CompanyLayout extends PureComponent {
                     zIndex: selectedId === id ? 10 : 0,
                   }}
                 />
-              </Fragment>
+              </RiskAspect>
             );
           })}
         </RiskImage>
