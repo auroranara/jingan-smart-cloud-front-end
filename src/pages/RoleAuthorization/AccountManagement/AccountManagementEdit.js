@@ -539,6 +539,7 @@ export default class accountManagementEdit extends PureComponent {
             unitType,
             accountStatus,
             userType,
+            gavUserType,
             unitId,
             unitName,
             documentTypeId,
@@ -550,6 +551,7 @@ export default class accountManagementEdit extends PureComponent {
         accountStatuses,
         unitIdes,
         userTypes,
+        gavUserTypes,
         documentTypeIds,
         departments,
       },
@@ -773,6 +775,34 @@ export default class accountManagementEdit extends PureComponent {
                 </Col>
               )}
             {/* 当单位类型为政府机构（政府机构对应id为2） */}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === 2 && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.userType}>
+                    {getFieldDecorator('gavUserType', {
+                      initialValue: id
+                        ? gavUserType
+                        : gavUserTypes.length === 0
+                          ? undefined
+                          : gavUserTypes[0].value,
+                      rules: [
+                        {
+                          required: true,
+                          message: '请选择用户类型',
+                        },
+                      ],
+                    })(
+                      <Select placeholder="请选择用户类型">
+                        {gavUserTypes.map(item => (
+                          <Option value={item.value} key={item.value}>
+                            {item.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>

@@ -55,6 +55,7 @@ const fieldLabels = {
   code: '社会信用代码',
   companyIchnography: '单位平面图',
   companyStatus: '单位状态',
+  unitType: '单位类型',
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
@@ -287,6 +288,14 @@ export default class CompanyDetail extends PureComponent {
     // 获取规模情况
     gsafeFetchDict({
       payload: {
+        type: 'unitType',
+        key: 'unitTypes',
+      },
+      error,
+    });
+    // 获取规模情况
+    gsafeFetchDict({
+      payload: {
         type: 'scale',
         key: 'scales',
       },
@@ -331,7 +340,9 @@ export default class CompanyDetail extends PureComponent {
         content: '是否继续编辑安监信息',
         okText: '是',
         cancelText: '否',
-        onOk: () => { this.setState({ tabActiveKey: tabList[1].key }); },
+        onOk: () => {
+          this.setState({ tabActiveKey: tabList[1].key });
+        },
         onCancel: goBack,
       });
     // 新增页面，点击确定跳到编辑页面添加(实际为编辑)安监信息，点击取消返回企业列表
@@ -341,7 +352,9 @@ export default class CompanyDetail extends PureComponent {
         content: '是否需要添加安监信息',
         okText: '是',
         cancelText: '否',
-        onOk() { dispatch(routerRedux.push(`${editUrl}${companyId}?isFromAdd=1`)); },
+        onOk() {
+          dispatch(routerRedux.push(`${editUrl}${companyId}?isFromAdd=1`));
+        },
         onCancel: goBack,
       });
   };
@@ -945,8 +958,17 @@ export default class CompanyDetail extends PureComponent {
         economicTypes,
         scales,
         licenseTypes,
+        unitTypes,
         detail: {
-          data: { economicType, scale, licenseType, createTime, groupName, businessScope },
+          data: {
+            economicType,
+            scale,
+            licenseType,
+            createTime,
+            groupName,
+            businessScope,
+            unitType,
+          },
         },
       },
       form: { getFieldDecorator },
@@ -981,6 +1003,22 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             {this.renderCompanyStatus()}
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.unitType}>
+                {getFieldDecorator('unitType', {
+                  initialValue: unitType || undefined,
+                  rules: [{ required: true, message: '请选择经济类型' }],
+                })(
+                  <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>
+                    {unitTypes.map(item => (
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {

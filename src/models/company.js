@@ -81,6 +81,8 @@ export default {
     practicalAddress: [],
     // 单位性质
     companyNatures: [],
+    // 单位类型
+    unitTypes: [],
     pageNum: 1,
     isLast: false,
     detail: {
@@ -119,6 +121,7 @@ export default {
         safetyName: undefined,
         safetyPhone: undefined,
         safetyEmail: undefined,
+        unitType: undefined,
       },
     },
     modal: {
@@ -209,13 +212,7 @@ export default {
       }
     },
     /* 获取行业类别 */
-    *fetchIndustryType(
-      {
-        success,
-        error,
-      },
-      { call, put }
-    ) {
+    *fetchIndustryType({ success, error }, { call, put }) {
       const response = yield call(gsafeQueryIndustryType, { parent_id: -1 });
       if (response.code === 200) {
         yield put({
@@ -263,7 +260,11 @@ export default {
     },
     *insertCompany({ payload, success, error }, { call }) {
       const response = yield call(addCompany, payload);
-      const { data: { id }, code, msg } = response;
+      const {
+        data: { id },
+        code,
+        msg,
+      } = response;
       if (code === 200) {
         if (success) {
           success(id);
@@ -332,7 +333,7 @@ export default {
       }
     },
     *editScreenPermission({ payload, success, error }, { call }) {
-      const response = yield call(editScreenPermission, payload)
+      const response = yield call(editScreenPermission, payload);
       if (response.code === 200) {
         if (success) {
           success();
@@ -433,7 +434,9 @@ export default {
       }
     ) {
       const fields = {};
-      keys.forEach(key => { fields[key] = list; });
+      keys.forEach(key => {
+        fields[key] = list;
+      });
       return {
         ...state,
         ...fields,
@@ -452,7 +455,7 @@ export default {
       return {
         ...state,
         list: payload.list,
-      }
+      };
     },
   },
 };
