@@ -474,7 +474,7 @@ module.exports = [
         code: 'systemManagement',
         name: 'systemManagement',
         icon: 'setting',
-        hideInMenu: true,
+        hideInMenu: false,
         routes: [
           {
             path: '/system-management/app-management',
