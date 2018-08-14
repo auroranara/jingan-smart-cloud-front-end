@@ -7,6 +7,7 @@ import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
 
 const { /* Tab, */ UserName, Password, /* Mobile, Captcha, */ Submit } = Login;
+const PROJECT_CONFIG = document.PROJECT_CONFIG;
 
 @connect(({ login, loading }) => ({
   login,
@@ -54,17 +55,6 @@ export default class LoginPage extends Component {
         },
         callback: response => {
           if (response.code === 200) {
-            // if (response.data.currentAuthority === 'admin') {
-            //   dispatch({
-            //     type: 'setting/changeSetting',
-            //     payload: { grid: 'Fluid', layout: 'sidemenu' },
-            //   });
-            // } else if (response.data.currentAuthority === 'user') {
-            //   dispatch({
-            //     type: 'setting/changeSetting',
-            //     payload: { grid: 'Wide', layout: 'topmenu' },
-            //   });
-            // }
           } else this.setState({ notice: response.msg });
         },
       });
