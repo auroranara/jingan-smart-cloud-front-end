@@ -16,6 +16,7 @@ import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from 'bizcharts
 }))
 class GovernmentBigPlatform extends Component {
   state = {
+    safetyGovernmentTitle: global.PROJECT_CONFIG.safetyGovernmentTitle,
     scrollNodeTop: 0,
     label: {
       longitude: 120.366011,
@@ -29,7 +30,7 @@ class GovernmentBigPlatform extends Component {
     },
     areaHeight: 0,
     pieHeight: 0,
-    center: [120.366011,31.544389],
+    center: [120.366011, 31.544389],
     zoom: 13,
   };
 
@@ -71,9 +72,12 @@ class GovernmentBigPlatform extends Component {
 
     dispatch({
       type: 'bigPlatform/fetchLocationCenter',
-      success: (response)=> {
+      success: response => {
         const zoom = parseFloat(response.level);
-        const center = [parseFloat(response.location.split(',')[0]), parseFloat(response.location.split(',')[1])];
+        const center = [
+          parseFloat(response.location.split(',')[0]),
+          parseFloat(response.location.split(',')[1]),
+        ];
         this.setState({
           center,
           zoom,
@@ -514,7 +518,16 @@ class GovernmentBigPlatform extends Component {
   renderLabel = () => {
     const { infoWindow } = this.state;
     return (
-      <div style={{cursor: 'pointer'}} className={styles.companyLabel} onClick={() => { window.open(`/acloud_new/#/big-platform/safety/company/${infoWindow.company_id}`, '_blank'); }}>
+      <div
+        style={{ cursor: 'pointer' }}
+        className={styles.companyLabel}
+        onClick={() => {
+          window.open(
+            `/acloud_new/#/big-platform/safety/company/${infoWindow.company_id}`,
+            '_blank'
+          );
+        }}
+      >
         <div>{infoWindow.company_name}</div>
         <div>
           等级：
@@ -570,12 +583,26 @@ class GovernmentBigPlatform extends Component {
   };
 
   render() {
-    const { scrollNodeTop,areaHeight } = this.state;
-    const { bigPlatform: { itemTotal,
-      countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
-      newHomePage: { companyDto: { company_num_with_item }, companyLevelDto },
-      listForMap: { gridCheck, overRectifyNum, photo, rectifyNum, reviewNum, selfCheck, total: hdTotal },
-    } } = this.props;
+    const { scrollNodeTop, areaHeight, safetyGovernmentTitle } = this.state;
+    const {
+      bigPlatform: {
+        itemTotal,
+        countDangerLocation: { total: hdPionts, red, orange, yellow, blue },
+        newHomePage: {
+          companyDto: { company_num_with_item },
+          companyLevelDto,
+        },
+        listForMap: {
+          gridCheck,
+          overRectifyNum,
+          photo,
+          rectifyNum,
+          reviewNum,
+          selfCheck,
+          total: hdTotal,
+        },
+      },
+    } = this.props;
     const salesData = [
       { name: '红', value: red },
       { name: '橙', value: orange },
@@ -598,7 +625,7 @@ class GovernmentBigPlatform extends Component {
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
-          <span>江溪街道智慧安全云平台</span>
+          <span>{safetyGovernmentTitle}</span>
           <div className={styles.subHeader}>
             <Timer />
           </div>
@@ -624,10 +651,7 @@ class GovernmentBigPlatform extends Component {
                       </span>
                     </span>
                   </div>
-                  <div
-                    className={styles.hdArea}
-                    id="hdArea"
-                  >
+                  <div className={styles.hdArea} id="hdArea">
                     <Bar data={salesData} height={areaHeight} />
                   </div>
                 </div>
@@ -647,7 +671,7 @@ class GovernmentBigPlatform extends Component {
                       </span>
                     </span>
                   </div>
-                  <div className={styles.hdPie} id='hdPie'>
+                  <div className={styles.hdPie} id="hdPie">
                     {this.renderPieChart()}
                   </div>
                   <div className={styles.pieLegend}>
