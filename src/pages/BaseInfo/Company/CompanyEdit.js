@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -34,7 +34,7 @@ import Safety from './Safety';
 const { TextArea, Search } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
-
+const CompanyTypes = ['', '重点单位', '一般单位', '九小场所'];
 const {
   home: homeUrl,
   company: { list: listUrl, edit: editUrl },
@@ -55,7 +55,7 @@ const fieldLabels = {
   code: '社会信用代码',
   companyIchnography: '单位平面图',
   companyStatus: '单位状态',
-  unitType: '单位类型',
+  companyType: '单位类型',
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
@@ -148,6 +148,12 @@ const defaultCompanyNature = '一般企业';
         ...action,
       });
     },
+    fetchOptions(action) {
+      dispatch({
+        type: 'company/fetchOptions',
+        ...action,
+      });
+    },
     // 异常
     goToException() {
       dispatch(routerRedux.push(exceptionUrl));
@@ -185,6 +191,7 @@ export default class CompanyDetail extends PureComponent {
       fetchIndustryType,
       fetchArea,
       clearDetail,
+      fetchOptions,
       match: {
         params: { id },
       },
@@ -285,11 +292,11 @@ export default class CompanyDetail extends PureComponent {
       },
       error,
     });
-    // 获取规模情况
-    gsafeFetchDict({
+    // 获取单位类型
+    fetchOptions({
       payload: {
-        type: 'unitType',
-        key: 'unitTypes',
+        type: 'companyType',
+        key: 'companyTypes',
       },
       error,
     });
@@ -958,7 +965,7 @@ export default class CompanyDetail extends PureComponent {
         economicTypes,
         scales,
         licenseTypes,
-        unitTypes,
+        companyTypes,
         detail: {
           data: {
             economicType,
@@ -967,11 +974,12 @@ export default class CompanyDetail extends PureComponent {
             createTime,
             groupName,
             businessScope,
-            unitType,
+            companyType,
           },
         },
       },
       form: { getFieldDecorator },
+      match: { params: id },
     } = this.props;
 
     return (
@@ -1004,15 +1012,15 @@ export default class CompanyDetail extends PureComponent {
             </Col>
             {this.renderCompanyStatus()}
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitType}>
-                {getFieldDecorator('unitType', {
-                  initialValue: unitType || undefined,
-                  rules: [{ required: true, message: '请选择经济类型' }],
+              <Form.Item label={fieldLabels.companyType}>
+                {getFieldDecorator('companyType', {
+                  initialValue: id ? CompanyTypes[companyType] : companyType,
+                  rules: [{ required: true, message: '请选择单位类型' }],
                 })(
                   <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>
-                    {unitTypes.map(item => (
-                      <Option value={item.key} key={item.key}>
-                        {item.value}
+                    {companyTypes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
                       </Option>
                     ))}
                   </Select>
