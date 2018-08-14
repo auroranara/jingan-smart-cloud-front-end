@@ -44,7 +44,7 @@ export default {
         departmentId: undefined,
         departmentName: undefined,
         userType: undefined,
-        gavUserType: undefined,
+        userGovType: undefined,
         documentTypeId: undefined,
         execCertificateCode: undefined,
       },
@@ -280,7 +280,7 @@ export default {
       state,
       {
         payload: {
-          data: { unitType, accountStatus },
+          data: { unitType, accountStatus, userGovType },
         },
       }
     ) {
@@ -288,6 +288,7 @@ export default {
         ...state,
         unitTypes: unitType,
         accountStatuses: accountStatus,
+        gavUserTypes: userGovType,
       };
     },
 

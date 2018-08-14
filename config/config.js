@@ -22,7 +22,7 @@ console.log('PROJECT_ENV', process.env.PROJECT_ENV);
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://192.168.10.6`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },

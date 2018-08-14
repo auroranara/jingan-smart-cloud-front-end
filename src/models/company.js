@@ -11,6 +11,7 @@ import {
   gsafeQueryDict,
   gsafeQueryIndustryType,
   editScreenPermission,
+  queryAddCompanyOptions,
 } from '../services/company/company.js';
 
 // const mergeArea = (area, ids, list) => {
@@ -82,7 +83,7 @@ export default {
     // 单位性质
     companyNatures: [],
     // 单位类型
-    unitTypes: [],
+    companyTypes: [],
     pageNum: 1,
     isLast: false,
     detail: {
@@ -121,7 +122,7 @@ export default {
         safetyName: undefined,
         safetyPhone: undefined,
         safetyEmail: undefined,
-        unitType: undefined,
+        companyType: undefined,
       },
     },
     modal: {
@@ -342,6 +343,23 @@ export default {
         error(response.msg);
       }
     },
+    // 新增企业-初始化页面选项
+    *fetchOptions({ success, error }, { call, put }) {
+      const response = yield call(queryAddCompanyOptions);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryOptions',
+          payload: {
+            data: response.data,
+          },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
@@ -455,6 +473,19 @@ export default {
       return {
         ...state,
         list: payload.list,
+      };
+    },
+    queryOptions(
+      state,
+      {
+        payload: {
+          data: { companyType },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        companyTypes: companyType,
       };
     },
   },

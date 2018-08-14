@@ -336,10 +336,6 @@ export default class accountManagementEdit extends PureComponent {
             case 1:
               payload.userType = 'company_safer';
               break;
-            // 政府机构
-            case 2:
-              payload.userType = 'gov_grid_worker';
-              break;
             // 运营企业
             case 3:
               payload.userType = 'admin';
@@ -386,7 +382,11 @@ export default class accountManagementEdit extends PureComponent {
         unitTypeChecked: id,
       },
       () => {
-        setFieldsValue({ userType: 'company_legal_person' });
+        if (id === 4) {
+          setFieldsValue({ userType: 'company_legal_person' });
+        } else {
+          setFieldsValue({ userType: undefined });
+        }
       }
     );
   };
@@ -539,7 +539,6 @@ export default class accountManagementEdit extends PureComponent {
             unitType,
             accountStatus,
             userType,
-            gavUserType,
             unitId,
             unitName,
             documentTypeId,
@@ -779,12 +778,8 @@ export default class accountManagementEdit extends PureComponent {
               unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.userType}>
-                    {getFieldDecorator('gavUserType', {
-                      initialValue: id
-                        ? gavUserType
-                        : gavUserTypes.length === 0
-                          ? undefined
-                          : gavUserTypes[0].value,
+                    {getFieldDecorator('userType', {
+                      initialValue: userType,
                       rules: [
                         {
                           required: true,
@@ -794,7 +789,7 @@ export default class accountManagementEdit extends PureComponent {
                     })(
                       <Select placeholder="请选择用户类型">
                         {gavUserTypes.map(item => (
-                          <Option value={item.value} key={item.value}>
+                          <Option value={item.id} key={item.id}>
                             {item.label}
                           </Option>
                         ))}
