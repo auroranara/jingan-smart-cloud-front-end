@@ -12,11 +12,6 @@ export default {
 
   state: {
     status: undefined,
-    data: {
-      serviceSupport: null,
-      servicePhone: null,
-      projectName: global.PROJECT_CONFIG.projectName,
-    },
   },
 
   effects: {
