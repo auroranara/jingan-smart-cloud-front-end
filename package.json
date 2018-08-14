@@ -8,7 +8,7 @@
     "presite": "npm run generate-mock && cd functions && npm install",
     "start": "cross-env ESLINT=none umi dev",
     "start:no-mock": "cross-env MOCK=none ESLINT=none umi dev",
-    "build": "PUBLIC_PATH=/acloud_new/static cross-env ESLINT=none umi build",
+    "build": "cross-env PUBLIC_PATH=/acloud_new/static ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",
     "analyze": "cross-env ESLINT=none ANALYZE=1 umi build",
     "lint:style": "stylelint \"src/**/*.less\" --syntax less",

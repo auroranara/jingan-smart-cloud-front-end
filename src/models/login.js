@@ -15,7 +15,7 @@ export default {
     data: {
       serviceSupport: null,
       servicePhone: null,
-      projectName: '晶安智慧安全平台',
+      projectName: global.PROJECT_CONFIG.projectName,
     },
   },
 

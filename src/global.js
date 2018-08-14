@@ -4,4 +4,4 @@ import configs from '../config/project.config';
 
 const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
 
-document.PROJECT_CONFIG = configs[PROJECT_ENV] || {};
+global.PROJECT_CONFIG = configs[PROJECT_ENV] || {};

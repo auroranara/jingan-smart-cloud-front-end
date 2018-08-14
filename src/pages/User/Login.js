@@ -7,7 +7,7 @@ import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
 
 const { /* Tab, */ UserName, Password, /* Mobile, Captcha, */ Submit } = Login;
-const PROJECT_CONFIG = document.PROJECT_CONFIG;
+const PROJECT_CONFIG = global.PROJECT_CONFIG;
 
 @connect(({ login, loading }) => ({
   login,
