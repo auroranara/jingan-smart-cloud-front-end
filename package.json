@@ -7,6 +7,7 @@
     "precommit": "npm run lint-staged",
     "presite": "npm run generate-mock && cd functions && npm install",
     "start": "cross-env ESLINT=none umi dev",
+    "start:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi dev",
     "start:no-mock": "cross-env MOCK=none ESLINT=none umi dev",
     "build": "cross-env PUBLIC_PATH=/acloud_new/static ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",

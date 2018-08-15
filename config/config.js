@@ -17,8 +17,6 @@ const hosts = {
   gj: '192.168.10.9', //高进
 };
 
-console.log('PROJECT_ENV', process.env.PROJECT_ENV);
-
 export default {
   proxy: {
     '/acloud_new': {

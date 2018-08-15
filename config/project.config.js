@@ -1,5 +1,5 @@
 export default {
-  v2: {
+  default: {
     logo: '',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
@@ -56,6 +56,21 @@ export default {
     location: {
       x: 120.848825,
       y: 31.639258,
+      zoom: 13,
+    },
+  },
+  eye: {
+    logo: '',
+    mail: 'jazh@jingan-china.cn',
+    mainWeb: 'https://www.jingan-china.cn',
+    projectKey: 'v2_test',
+    projectName: '天翼云眼',
+    servicePhone: '400-928-5656',
+    serviceSupport: '无锡晶安智慧科技有限公司',
+    safetyGovernmentTitle: '无锡智慧安全平台',
+    location: {
+      x: 120.401163,
+      y: 31.560116,
       zoom: 13,
     },
   },
