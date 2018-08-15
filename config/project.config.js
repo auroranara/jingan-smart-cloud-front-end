@@ -49,10 +49,10 @@ export default {
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
-    projectName: '晶安智慧安全平台',
+    projectName: '常熟智慧安全平台',
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
-    safetyGovernmentTitle: '',
+    safetyGovernmentTitle: '常熟智慧安全平台',
     location: {
       x: 120.848825,
       y: 31.639258,
