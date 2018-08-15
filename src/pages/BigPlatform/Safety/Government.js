@@ -2,7 +2,6 @@ import React, { Fragment, Component } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-import { routerRedux } from 'dva/router';
 import styles from './Government.less';
 import Bar from './Components/Bar';
 import Timer from './Components/Timer';
@@ -10,6 +9,8 @@ import Timer from './Components/Timer';
 import { DataView } from '@antv/data-set';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
 import { Chart, Axis, Tooltip, Geom, Shape, Coord, Label, View } from 'bizcharts';
+
+const { location } = global.PROJECT_CONFIG;
 
 @connect(({ bigPlatform }) => ({
   bigPlatform,
@@ -30,8 +31,8 @@ class GovernmentBigPlatform extends Component {
     },
     areaHeight: 0,
     pieHeight: 0,
-    center: [120.366011, 31.544389],
-    zoom: 13,
+    center: [location.x, location.y],
+    zoom: location.zoom,
   };
 
   // UNSAFE_componentWillUpdate() {
@@ -70,20 +71,20 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchCountDangerLocation',
     });
 
-    dispatch({
-      type: 'bigPlatform/fetchLocationCenter',
-      success: response => {
-        const zoom = parseFloat(response.level);
-        const center = [
-          parseFloat(response.location.split(',')[0]),
-          parseFloat(response.location.split(',')[1]),
-        ];
-        this.setState({
-          center,
-          zoom,
-        });
-      },
-    });
+    // dispatch({
+    //   type: 'bigPlatform/fetchLocationCenter',
+    //   success: response => {
+    //     const zoom = parseFloat(response.level);
+    //     const center = [
+    //       parseFloat(response.location.split(',')[0]),
+    //       parseFloat(response.location.split(',')[1]),
+    //     ];
+    //     this.setState({
+    //       center,
+    //       zoom,
+    //     });
+    //   },
+    // });
 
     dispatch({
       type: 'bigPlatform/fetchLocation',
