@@ -39,3 +39,16 @@ export async function queryVideoUrl(params) {
     method: 'GET',
   });
 }
+
+// 视频树逐层获取数据
+export async function fetchVideoTree(params) {
+  return request(`/acloud_new/v2/video/api/getTree?${stringify(params) || ''}`)
+}
+
+// 保存视频权限
+export async function bindVodeoPermission(params) {
+  return request('/acloud_new/v2/video/api/bindVideo', {
+    method: 'POST',
+    body: params,
+  })
+}

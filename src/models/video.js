@@ -1,4 +1,4 @@
-import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
+import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl, fetchVideoTree, bindVodeoPermission } from '../services/video';
 // import { getIdMap } from '../pages/DeviceManagement/HikVideoTree/FolderTree';
 
 export default {
@@ -14,6 +14,23 @@ export default {
     folderList: [],
     // idMap: {},
     videoUrl: null,
+    permission: {
+      list: [
+        {
+          id: '123',
+          name: 'test',
+          practicalAddress: '123',
+          industryCategoryLabel: '123',
+          safetyName: '123',
+          safetyPhone: '123',
+          practicalProvinceLabel: 'aaaa',
+          practicalCityLabel: 'bbbb',
+          practicalDistrictLabel: 'cccccc',
+          practicalTownLabel: 'ddddddd',
+        },
+      ],
+      isLast: false,
+    },
   },
   effects: {
     *fetch({ payload, callback }, { call, put }) {
@@ -72,6 +89,14 @@ export default {
       if (callback) {
         callback();
       }
+    },
+    *fetchVideoTree({ payload, callback }, { call, put }) {
+      const response = yield call(fetchVideoTree, payload)
+      if (callback) callback(response.data.list)
+    },
+    *bindVodeoPermission({ payload, callback }, { call }) {
+      const response = yield call(bindVodeoPermission, payload)
+      if (callback) callback(response)
     },
   },
 

@@ -402,7 +402,7 @@ module.exports = [
         code: 'videoSurveillance',
         icon: 'video-camera',
         name: 'videoSurveillance',
-        hideInMenu: true,
+        // hideInMenu: true,
         routes: [
           {
             path: '/video-surveillance/map',
@@ -463,7 +463,19 @@ module.exports = [
                 path: '/video-surveillance/video-permission/list',
                 code: 'videoSurveillance.videoPermission.listView',
                 name: 'list',
-                component: './VideoSurveillance/VideoPermission/List',
+                component: './VideoSurveillance/VideoPermission/VideoPermissionList',
+              },
+              {
+                path: '/video-surveillance/video-permission/edit/:companyId',
+                code: 'videoSurveillance.videoPermission.edit',
+                name: 'edit',
+                component: './VideoSurveillance/VideoPermission/VideoPermissionEdit',
+              },
+              {
+                path: '/video-surveillance/video-permission/add',
+                code: 'videoSurveillance.videoPermission.add',
+                name: 'add',
+                component: './VideoSurveillance/VideoPermission/VideoPermissionEdit',
               },
             ],
           },

@@ -102,7 +102,7 @@ const checkChildren = ({ list, checkedKeys, isChecked, fieldNames }) => {
 };
 
 /* 获取树节点 */
-const renderTreeNodes = ({ data, fieldNames, fileIcon}) => {
+const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
   const { id: idField, children: childrenField, title: titleField, isLeaf: isLeafField } = fieldNames;
   return data.map((item) => {
     const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf } = item;
