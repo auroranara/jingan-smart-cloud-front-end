@@ -4,7 +4,7 @@ import { Button, Col, Input, Row } from 'antd';
 import FcSection from './FcSection';
 import AlarmCard from './AlarmCard';
 
-function AlarmSection(props) {
+export default function AlarmSection(props) {
   const { isBack } = props;
   const title = isBack ? "警情信息反面" : "警情信息";
 
@@ -22,5 +22,3 @@ function AlarmSection(props) {
     </FcSection>
   );
 }
-
-export default AlarmSection;
