@@ -19,6 +19,10 @@ module.exports = [
         path: '/big-platform/safety/company/:companyId',
         component: './BigPlatform/Safety/Company',
       },
+      {
+        path: '/big-platform/fireControl/unitLookUp',
+        component: './BigPlatform/FireControl/UnitLookUp',
+      },
     ],
   },
   // app
