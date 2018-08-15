@@ -93,6 +93,17 @@ const documentTypeIds = [
     value: '2',
   },
 ];
+
+const userGovTypes = [
+  {
+    id: 'gov_leader',
+    label: '政府领导',
+  },
+  {
+    id: 'gov_fulltime_worker',
+    label: '专职人员',
+  },
+];
 @connect(({ account, loading }) => ({
   account,
   loading: loading.models.account,
@@ -219,6 +230,8 @@ export default class accountManagementDetail extends PureComponent {
 
     const documentTypeIdObj = documentTypeIds.find(t => t.value === documentTypeId);
 
+    const userGovTypesObj = userGovTypes.find(t => t.id === userType);
+
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
@@ -240,6 +253,11 @@ export default class accountManagementDetail extends PureComponent {
           {companyType && (
             <Description term={fieldLabels.userType}>
               {userTypeObj ? userTypeObj.label : getEmptyData()}
+            </Description>
+          )}
+          {gavType && (
+            <Description term={fieldLabels.userType}>
+              {userGovTypesObj ? userGovTypesObj.label : getEmptyData()}
             </Description>
           )}
           {gavType && (

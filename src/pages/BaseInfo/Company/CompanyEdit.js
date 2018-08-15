@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -34,7 +34,7 @@ import Safety from './Safety';
 const { TextArea, Search } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
-
+const CompanyTypes = ['', '重点单位', '一般单位', '九小场所'];
 const {
   home: homeUrl,
   company: { list: listUrl, edit: editUrl },
@@ -55,6 +55,7 @@ const fieldLabels = {
   code: '社会信用代码',
   companyIchnography: '单位平面图',
   companyStatus: '单位状态',
+  companyType: '单位类型',
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
@@ -147,6 +148,12 @@ const defaultCompanyNature = '一般企业';
         ...action,
       });
     },
+    fetchOptions(action) {
+      dispatch({
+        type: 'company/fetchOptions',
+        ...action,
+      });
+    },
     // 异常
     goToException() {
       dispatch(routerRedux.push(exceptionUrl));
@@ -184,6 +191,7 @@ export default class CompanyDetail extends PureComponent {
       fetchIndustryType,
       fetchArea,
       clearDetail,
+      fetchOptions,
       match: {
         params: { id },
       },
@@ -284,6 +292,14 @@ export default class CompanyDetail extends PureComponent {
       },
       error,
     });
+    // 获取单位类型
+    fetchOptions({
+      payload: {
+        type: 'companyType',
+        key: 'companyTypes',
+      },
+      error,
+    });
     // 获取规模情况
     gsafeFetchDict({
       payload: {
@@ -331,7 +347,9 @@ export default class CompanyDetail extends PureComponent {
         content: '是否继续编辑安监信息',
         okText: '是',
         cancelText: '否',
-        onOk: () => { this.setState({ tabActiveKey: tabList[1].key }); },
+        onOk: () => {
+          this.setState({ tabActiveKey: tabList[1].key });
+        },
         onCancel: goBack,
       });
     // 新增页面，点击确定跳到编辑页面添加(实际为编辑)安监信息，点击取消返回企业列表
@@ -341,7 +359,9 @@ export default class CompanyDetail extends PureComponent {
         content: '是否需要添加安监信息',
         okText: '是',
         cancelText: '否',
-        onOk() { dispatch(routerRedux.push(`${editUrl}${companyId}?isFromAdd=1`)); },
+        onOk() {
+          dispatch(routerRedux.push(`${editUrl}${companyId}?isFromAdd=1`));
+        },
         onCancel: goBack,
       });
   };
@@ -945,11 +965,21 @@ export default class CompanyDetail extends PureComponent {
         economicTypes,
         scales,
         licenseTypes,
+        companyTypes,
         detail: {
-          data: { economicType, scale, licenseType, createTime, groupName, businessScope },
+          data: {
+            economicType,
+            scale,
+            licenseType,
+            createTime,
+            groupName,
+            businessScope,
+            companyType,
+          },
         },
       },
       form: { getFieldDecorator },
+      match: { params: id },
     } = this.props;
 
     return (
@@ -981,6 +1011,22 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             {this.renderCompanyStatus()}
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.companyType}>
+                {getFieldDecorator('companyType', {
+                  initialValue: id ? CompanyTypes[companyType] : companyType,
+                  rules: [{ required: true, message: '请选择单位类型' }],
+                })(
+                  <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>
+                    {companyTypes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {

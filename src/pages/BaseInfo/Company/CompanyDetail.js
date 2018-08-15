@@ -19,6 +19,7 @@ import SafetyDetail from './SafetyDetail';
 
 const { Description } = DescriptionList;
 
+const companyTypes = ['', '重点单位', '一般单位', '九小场所'];
 // 获取title
 const {
   home: homeTitle,
@@ -65,6 +66,7 @@ const fieldLabels = {
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
+  companyType: '单位类型',
   industryCategory: '行业类别',
   coordinate: '经纬度',
   licenseType: '营业执照类别',
@@ -312,12 +314,12 @@ export default class CompanyDetail extends PureComponent {
               getEmptyData()
             )}
           </Description>
-          <Description term={fieldLabels.registerAddress}>
+          <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
             <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
               {registerAddressLabel || getEmptyData()}
             </Ellipsis>
           </Description>
-          <Description term={fieldLabels.practicalAddress}>
+          <Description term={fieldLabels.practicalAddress} style={{ height: 38 }}>
             <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
               {practicalAddressLabel || getEmptyData()}
             </Ellipsis>
@@ -354,6 +356,7 @@ export default class CompanyDetail extends PureComponent {
             createTime,
             groupName,
             businessScope,
+            companyType,
           },
         },
       },
@@ -367,6 +370,9 @@ export default class CompanyDetail extends PureComponent {
             {economicTypeLabel || getEmptyData()}
           </Description>
           {this.renderCompanyStatus()}
+          <Description term={fieldLabels.companyType}>
+            {companyTypes[companyType] || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
