@@ -7,18 +7,28 @@ import FcSection from './FcSection';
 import AlarmSection from './AlarmSection';
 import bg from './bg.png';
 
+import UnitLookUp from './UnitLookUp';
+
 const HEIGHT_PERCNET = { height: '100%' };
 
 export default class FireControlBigPlatform extends PureComponent {
   render() {
     return (
-      <Row style={{ height: '100%', marginLeft: 0, marginRight: 0, background: `url(${bg}) center center` }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>
+      <Row
+        style={{
+          height: '100%',
+          marginLeft: 0,
+          marginRight: 0,
+          background: `url(${bg}) center center`,
+        }}
+        gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}
+      >
         <Col span={6} style={HEIGHT_PERCNET}>
           <FcModule className={styles.overview}>
             <FcSection title="辖区概况" />
             <FcSection title="辖区概况反面" isBack />
           </FcModule>
-          <div className={styles.gutter1}></div>
+          <div className={styles.gutter1} />
           <FcModule className={styles.alarmInfo}>
             <AlarmSection />
             <AlarmSection isBack />
@@ -29,7 +39,7 @@ export default class FireControlBigPlatform extends PureComponent {
             <FcSection title="Map" />
             <FcSection title="Map Reverse" isBack />
           </FcModule>
-          <div className={styles.gutter2}></div>
+          <div className={styles.gutter2} />
           <Row className={styles.center}>
             <Col span={12} className={styles.centerLeft}>
               <FcModule style={{ height: '100%' }}>
@@ -47,10 +57,10 @@ export default class FireControlBigPlatform extends PureComponent {
         </Col>
         <Col span={6} style={HEIGHT_PERCNET}>
           <FcModule className={styles.inspect}>
-            <FcSection title="单位查岗" />
+            <UnitLookUp />
             <FcSection title="单位查岗反面" isBack />
           </FcModule>
-          <div className={styles.gutter3}></div>
+          <div className={styles.gutter3} />
           <FcModule className={styles.system}>
             <FcSection title="系统接入情况" />
             <FcSection title="系统接入情况反面" isBack />
