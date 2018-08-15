@@ -5,11 +5,11 @@ import React, { PureComponent } from 'react';
 export default class FcModule extends PureComponent {
   state = { rotate: false };
 
-  componentDidMount() {
-    setInterval(() => {
-      this.setState(({ rotate }) => ({ rotate: !rotate }));
-    }, 5000);
-  }
+  // componentDidMount() {
+  //   setInterval(() => {
+  //     this.setState(({ rotate }) => ({ rotate: !rotate }));
+  //   }, 5000);
+  // }
 
   render() {
     let newChildren = null;

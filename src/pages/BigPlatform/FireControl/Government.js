@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Col, Row } from 'antd';
+import { Button, Col, Input, Row } from 'antd';
 
 import styles from './Government.less';
 import FcModule from './FcModule';
 import FcSection from './FcSection';
+import AlarmSection from './AlarmSection';
 import bg from './bg.png';
 
 const HEIGHT_PERCNET = { height: '100%' };
@@ -19,8 +20,8 @@ export default class FireControlBigPlatform extends PureComponent {
           </FcModule>
           <div className={styles.gutter1}></div>
           <FcModule className={styles.alarmInfo}>
-            <FcSection title="警情信息" />
-            <FcSection title="警情信息反面" isBack />
+            <AlarmSection />
+            <AlarmSection isBack />
           </FcModule>
         </Col>
         <Col span={12} style={HEIGHT_PERCNET}>
