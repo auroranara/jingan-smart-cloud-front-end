@@ -1,9 +1,23 @@
 import React, { PureComponent } from 'react';
-import { Button, Col, Input, Row } from 'antd';
+import { Col, Row } from 'antd';
 
 import FcSection from './FcSection';
 import ProgressBar from './ProgressBar';
 import styles from './SystemSection.less';
+import hostIcon from './host.png';
+
+function UnitCard(props) {
+  const { company, hostNum } = props;
+  return (
+    <Row style={{ borderTop: '1px solid rgb(54, 129, 199)' }}>
+      <Col span={16}><p className={styles.unitCard}>{company}</p></Col>
+      <Col span={8}><p className={styles.unitCard}>{hostNum}</p></Col>
+    </Row>
+  );
+}
+
+const systemUint = [...Array(5).keys()].map(i => ({ company: '无锡晶安智慧科技有限公司', hostNum: Math.floor(Math.random() * 10) }));
+
 
 export default function SystemSection(props) {
   return (
@@ -12,17 +26,27 @@ export default function SystemSection(props) {
         <Col span={12}>
           <div className={styles.left}>
             <p className={styles.unit}>接入单位<span className={styles.percent}>67%</span></p>
-            <ProgressBar width="100%" height={10} progress={67} />
+            <ProgressBar width="90%" height={10} progress={67} />
             <p className={styles.unitNumber}>200/300</p>
           </div>
         </Col>
         <Col span={12}>
           <div className={styles.right}>
+            <span className={styles.hostIcon} style={{ background: `url(${hostIcon})`, backgroundSize: 'cover' }} />
             <p className={styles.host}>消防主机</p>
             <p className={styles.hostNumber}>90</p>
           </div>
         </Col>
       </Row>
+      <div className={styles.table}>
+        <Row>
+          <Col span={16}><p className={styles.tableTitle}>接入单位</p></Col>
+          <Col span={8}><p className={styles.tableTitle}>主机数量</p></Col>
+        </Row>
+        <div>
+          {systemUint.map((item, index) => <UnitCard {...item} key={index} /> )}
+        </div>
+      </div>
     </FcSection>
   );
 }

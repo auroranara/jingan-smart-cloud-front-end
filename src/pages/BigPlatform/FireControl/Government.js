@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Button, Col, Row } from 'antd';
+import { Col, Row } from 'antd';
 
 import styles from './Government.less';
 import FcModule from './FcModule';
 import FcSection from './FcSection';
+import OverviewSection from './OverviewSection';
 import AlarmSection from './AlarmSection';
 import SystemSection from './SystemSection';
 import bg from './bg.png';
@@ -11,18 +12,26 @@ import bg from './bg.png';
 const HEIGHT_PERCNET = { height: '100%' };
 
 export default class FireControlBigPlatform extends PureComponent {
+  state = { isRotated: false };
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({ isRotated: true });
+    }, 5000);
+  }
+
   render() {
     return (
       <Row style={{ height: '100%', marginLeft: 0, marginRight: 0, background: `url(${bg}) center center` }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>
         <Col span={6} style={HEIGHT_PERCNET}>
           <FcModule className={styles.overview}>
-            <FcSection title="辖区概况" />
+            <OverviewSection />
             <FcSection title="辖区概况反面" isBack />
           </FcModule>
           <div className={styles.gutter1}></div>
           <FcModule className={styles.alarmInfo}>
             <AlarmSection />
-            <AlarmSection isBack />
+            <FcSection title="警情信息反面" isBack />
           </FcModule>
         </Col>
         <Col span={12} style={HEIGHT_PERCNET}>
