@@ -1,5 +1,5 @@
 export default {
-  v2: {
+  default: {
     logo: '',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
