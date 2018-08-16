@@ -7,7 +7,7 @@ export default {
     projectName: '晶安智慧安全平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '无锡智慧安全平台',
+    safetyGovernmentTitle: '晶安智慧安全云平台',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -22,7 +22,7 @@ export default {
     projectName: '江溪街道智慧安全平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '江溪街道智慧安全平台',
+    safetyGovernmentTitle: '江溪街道智慧安全云平台',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -37,7 +37,7 @@ export default {
     projectName: '徐州智慧安全平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '徐州智慧安全平台',
+    safetyGovernmentTitle: '徐州智慧安全云平台',
     location: {
       x: 117.407812,
       y: 34.501282,
@@ -52,7 +52,7 @@ export default {
     projectName: '常熟智慧安全平台',
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
-    safetyGovernmentTitle: '常熟智慧安全平台',
+    safetyGovernmentTitle: '常熟智慧安全云平台',
     location: {
       x: 120.848825,
       y: 31.639258,
