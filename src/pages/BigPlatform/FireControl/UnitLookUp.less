@@ -6,95 +6,167 @@
     height: 30%;
     position: relative;
     border-bottom: 2px solid #053d83;
+    .circle {
+      width: 95px;
+      height: 95px;
+      margin-left: 48px;
+      margin-top: 18px;
+    }
 
     .circlrLookUp {
       float: left;
+      width: 82px;
+      height: 82px;
       position: absolute;
-      left: 12%;
-      top: 40px;
-      font-size: 24px;
+      left: 55px;
+      top: 25px;
+      font-size: 22px;
       color: #fff;
+      padding-left: 15px;
     }
     .lookUpTime {
       float: left;
       position: absolute;
       left: 40%;
       top: 35px;
+
+      .lastlookUpTime {
+        color: #00a8ff;
+        font-size: 16px;
+      }
+
+      .DayTime {
+        padding-top: 6px;
+        float: left;
+
+        .day {
+          float: left;
+          font-size: 16px;
+          color: #fff;
+        }
+
+        .time {
+          padding-left: 5px;
+          font-size: 16px;
+          float: left;
+          color: #fff;
+        }
+      }
     }
   }
 
   .sectionBottom {
-    padding-top: 10%;
-    padding-left: 12%;
-    height: 70%;
-    .jobRate {
-      height: 42%;
-    }
+    margin-top: 8%;
+    margin-left: 5%;
+    height: 50%;
 
-    .time {
-      height: 42%;
+    .responsetime {
+      margin-top: 2%;
     }
   }
 }
 
-.lastlookUpTime {
-  color: #00a8ff;
+// 在岗率
+.jobRateWrite {
+  height: 25%;
+  float: left;
+  padding-left: 10px;
+  padding-top: 30px;
+  color: #fff;
   font-size: 16px;
 }
 
-.DayTime {
-  float: left;
-
-  .day {
-    float: left;
-    font-size: 16px;
-    color: #fff;
-  }
-
-  .time {
-    padding-left: 5px;
-    font-size: 16px;
-    float: left;
-    color: #fff;
-  }
-}
-
-.jobRateWrite {
-  height: 42%;
-  float: left;
-  padding-left: 10px;
-  padding-top: 10px;
-  color: #fff;
-  font-size: 14px;
-}
-.pie {
-  height: 42%;
-  float: left;
-}
 .jobNum {
-  height: 42%;
+  height: 25%;
   float: left;
   color: #008dd8;
-  font-size: 14px;
+  font-size: 16px;
+  .onJob {
+    margin-top: 10px;
+    .onJobIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background-repeat: no-repeat;
+    }
+    .personnum {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+
+  .leaveJob {
+    margin-top: 10px;
+    .leavelJobIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background-repeat: no-repeat;
+    }
+    .personnum {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
 }
 
+// 应答时间
 .timeWrite {
-  height: 42%;
+  height: 25%;
   float: left;
   padding-left: 10px;
-  padding-top: 10px;
+  padding-top: 25px;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
 }
 .timeIcon {
   width: 48px;
   height: 48px;
   position: absolute;
-  left: 10px;
+  top: 12px;
+  background-repeat: no-repeat;
 }
 .timeNum {
-  height: 42%;
+  height: 25%;
   float: left;
   color: #008dd8;
-  font-size: 14px;
+  font-size: 16px;
+  .rabbit {
+    margin-top: 10px;
+    .rabbitIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background-repeat: no-repeat;
+    }
+    .minutes {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+  .snail {
+    margin-top: 10px;
+    .snailIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 1px;
+      background-repeat: no-repeat;
+    }
+    .minutes {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
 }
