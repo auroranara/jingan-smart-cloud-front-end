@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'dva';
 import { Col, Row } from 'antd';
 
 import styles from './Government.less';
@@ -11,26 +12,31 @@ import bg from './bg.png';
 
 const HEIGHT_PERCNET = { height: '100%' };
 
+@connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
   state = { isRotated: false };
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({ isRotated: true });
-    }, 5000);
+    const { dispatch } = this.props;
+    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
+    dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
+    dispatch({ type: 'bigFireControl/fetchSys' });
+    dispatch({ type: 'bigFireControl/fetchAlarm' });
   }
 
   render() {
+    const { bigFireControl: { overview, alarm, sys }, dispatch } = this.props;
+
     return (
       <Row style={{ height: '100%', marginLeft: 0, marginRight: 0, background: `url(${bg}) center center` }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>
         <Col span={6} style={HEIGHT_PERCNET}>
           <FcModule className={styles.overview}>
-            <OverviewSection />
+            <OverviewSection ovData={overview} />
             <FcSection title="辖区概况反面" isBack />
           </FcModule>
           <div className={styles.gutter1}></div>
           <FcModule className={styles.alarmInfo}>
-            <AlarmSection />
+            <AlarmSection alarmData={alarm} dispatch={dispatch} />
             <FcSection title="警情信息反面" isBack />
           </FcModule>
         </Col>
@@ -62,7 +68,7 @@ export default class FireControlBigPlatform extends PureComponent {
           </FcModule>
           <div className={styles.gutter3}></div>
           <FcModule className={styles.system}>
-            <SystemSection />
+            <SystemSection sysData={sys} />
             <FcSection title="系统接入情况反面" isBack />
           </FcModule>
         </Col>

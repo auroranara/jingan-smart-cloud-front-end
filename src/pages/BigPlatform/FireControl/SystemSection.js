@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Col, Row } from 'antd';
 
 import FcSection from './FcSection';
@@ -16,25 +16,27 @@ function UnitCard(props) {
   );
 }
 
-const systemUint = [...Array(5).keys()].map(i => ({ company: '无锡晶安智慧科技有限公司', hostNum: Math.floor(Math.random() * 10) }));
-
+// const systemUint = [...Array(5).keys()].map(i => ({ company: '无锡晶安智慧科技有限公司', hostNum: Math.floor(Math.random() * 10) }));
 
 export default function SystemSection(props) {
+  const { total = 0, activeCount = 0, deviceCount = 0, companyList = [] } = props.sysData;
+  const percent = total ? Math.floor(activeCount / total * 100) : 0;
+
   return (
     <FcSection title="系统接入">
       <Row>
         <Col span={12}>
           <div className={styles.left}>
-            <p className={styles.unit}>接入单位<span className={styles.percent}>67%</span></p>
-            <ProgressBar width="90%" height={10} progress={67} />
-            <p className={styles.unitNumber}>200/300</p>
+            <p className={styles.unit}>接入单位<span className={styles.percent}>{`${percent}%`}</span></p>
+            <ProgressBar width="90%" height={10} progress={percent} />
+            <p className={styles.unitNumber}>{`${activeCount}/${total}`}</p>
           </div>
         </Col>
         <Col span={12}>
           <div className={styles.right}>
             <span className={styles.hostIcon} style={{ background: `url(${hostIcon})`, backgroundSize: 'cover' }} />
             <p className={styles.host}>消防主机</p>
-            <p className={styles.hostNumber}>90</p>
+            <p className={styles.hostNumber}>{deviceCount}</p>
           </div>
         </Col>
       </Row>
@@ -43,8 +45,8 @@ export default function SystemSection(props) {
           <Col span={16}><p className={styles.tableTitle}>接入单位</p></Col>
           <Col span={8}><p className={styles.tableTitle}>主机数量</p></Col>
         </Row>
-        <div>
-          {systemUint.map((item, index) => <UnitCard {...item} key={index} /> )}
+        <div style={{ overflow: 'auto', height: 'calc(100% - 41px)'}}>
+          {companyList.map(({ name, count }, index) => <UnitCard key={index} company={name} hostNum={count} /> )}
         </div>
       </div>
     </FcSection>

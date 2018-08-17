@@ -6,6 +6,8 @@ import styles from './OvFireCards.less';
 import fireIcon from './ovFire.png';
 
 export default function OvFireCards(props) {
+  const { todayCount, thisWeekCount, thisMonthCount } = props;
+
   return (
     <div className={styles.fire}>
       <Row gutter={20} style={{ margin: 0, height: '100%' }}>
@@ -15,9 +17,9 @@ export default function OvFireCards(props) {
             <p className={styles.title}>火警数量</p>
           </div>
         </Col>
-        <Col style={{ height: '100%'}} span={6}><OvCard title="今日" num={0} /></Col>
-        <Col style={{ height: '100%' }} span={6}><OvCard title="本周" num={0} /></Col>
-        <Col style={{ height: '100%' }} span={6}><OvCard title="本月" num={0} /></Col>
+        <Col style={{ height: '100%'}} span={6}><OvCard title="今日" num={todayCount} /></Col>
+        <Col style={{ height: '100%' }} span={6}><OvCard title="本周" num={thisWeekCount} /></Col>
+        <Col style={{ height: '100%' }} span={6}><OvCard title="本月" num={thisMonthCount} /></Col>
       </Row>
     </div>
   );
