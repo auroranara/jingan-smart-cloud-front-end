@@ -44,14 +44,14 @@ export default class UnitLookUp extends Component {
           },
           data: [
             {
-              value: 90,
+              value: 90.0,
               itemStyle: {
                 shadowColor: 'rgba(0, 0, 0, 0.8)',
                 shadowBlur: 10,
               },
             },
             {
-              value: 100 - 90,
+              value: 100.0 - 90.0,
               itemStyle: { opacity: 0.6 },
               label: { show: false },
             },
@@ -64,13 +64,18 @@ export default class UnitLookUp extends Component {
   render() {
     return (
       <FcSection title="单位查岗">
-        <section className={styles.sectionMain}>
-          <div className={styles.sectionTop}>
+        <section className={styles.main}>
+          <div className={styles.top}>
             <Col span={24}>
               <div className={styles.circle} style={{ background: `url(${Circle})` }}>
                 <Button
                   className={styles.circlrLookUp}
-                  style={{ border: 'none', color: '#FFF', background: `url(${BtnBg})` }}
+                  style={{
+                    border: 'none',
+                    color: '#FFF',
+                    outline: 'none',
+                    background: `url(${BtnBg})`,
+                  }}
                 >
                   查岗
                 </Button>
@@ -82,16 +87,10 @@ export default class UnitLookUp extends Component {
                   <div className={styles.time}>14:00</div>
                 </div>
               </div>
-              {/* <div className={styles.btnLookingUp} style={{ background: `url(${BtnBg})` }}>
-                <span>正在查岗</span>
-              </div>
-              <div className={styles.countDown}>
-
-              </div> */}
             </Col>
           </div>
 
-          <div className={styles.sectionBottom}>
+          <div className={styles.bottom}>
             <Col span={24}>
               <div className={styles.jobRate}>
                 <Col span={4}>

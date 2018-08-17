@@ -8,6 +8,8 @@ import AlarmSection from './AlarmSection';
 import bg from './bg.png';
 
 import UnitLookUp from './UnitLookUp';
+import LookingUp from './LookingUp';
+import OffGuardWarning from './OffGuardWarning';
 
 const HEIGHT_PERCNET = { height: '100%' };
 
@@ -57,7 +59,7 @@ export default class FireControlBigPlatform extends PureComponent {
         </Col>
         <Col span={6} style={HEIGHT_PERCNET}>
           <FcModule className={styles.inspect}>
-            <UnitLookUp />
+            <OffGuardWarning />
             <FcSection title="单位查岗反面" isBack />
           </FcModule>
           <div className={styles.gutter3} />
