@@ -1,10 +1,13 @@
 import React, { PureComponent } from 'react';
-import { Button, Col, Input, Row } from 'antd';
+import { connect } from 'dva';
+import { Col, Row } from 'antd';
 
 import styles from './Government.less';
 import FcModule from './FcModule';
 import FcSection from './FcSection';
+import OverviewSection from './OverviewSection';
 import AlarmSection from './AlarmSection';
+import SystemSection from './SystemSection';
 import bg from './bg.png';
 
 import UnitLookUp from './UnitLookUp';
@@ -13,8 +16,21 @@ import OffGuardWarning from './OffGuardWarning';
 
 const HEIGHT_PERCNET = { height: '100%' };
 
+@connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
+  state = { isRotated: false };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
+    dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
+    dispatch({ type: 'bigFireControl/fetchSys' });
+    dispatch({ type: 'bigFireControl/fetchAlarm' });
+  }
+
   render() {
+    const { bigFireControl: { overview, alarm, sys }, dispatch } = this.props;
+
     return (
       <Row
         style={{
@@ -27,13 +43,13 @@ export default class FireControlBigPlatform extends PureComponent {
       >
         <Col span={6} style={HEIGHT_PERCNET}>
           <FcModule className={styles.overview}>
-            <FcSection title="辖区概况" />
+            <OverviewSection ovData={overview} />
             <FcSection title="辖区概况反面" isBack />
           </FcModule>
           <div className={styles.gutter1} />
           <FcModule className={styles.alarmInfo}>
-            <AlarmSection />
-            <AlarmSection isBack />
+            <AlarmSection alarmData={alarm} dispatch={dispatch} />
+            <FcSection title="警情信息反面" isBack />
           </FcModule>
         </Col>
         <Col span={12} style={HEIGHT_PERCNET}>
@@ -64,7 +80,7 @@ export default class FireControlBigPlatform extends PureComponent {
           </FcModule>
           <div className={styles.gutter3} />
           <FcModule className={styles.system}>
-            <FcSection title="系统接入情况" />
+            <SystemSection sysData={sys} />
             <FcSection title="系统接入情况反面" isBack />
           </FcModule>
         </Col>
