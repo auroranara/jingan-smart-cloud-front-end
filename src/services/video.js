@@ -52,3 +52,13 @@ export async function bindVodeoPermission(params) {
     body: params,
   })
 }
+
+// 获取企业列表（视频权限）
+export async function fetchCompanyList(params) {
+  return request(`/acloud_new/v2/baseInfo/eyeCompanyList?${stringify(params)}`)
+}
+
+// 获取企业下拉列表
+export async function fetchCompanyOptions(params) {
+  return request(`/acloud_new/v2/baseInfo/eyeCompanySelect?${stringify(params)}`)
+}

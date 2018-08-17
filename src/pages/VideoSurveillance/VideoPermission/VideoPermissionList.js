@@ -43,15 +43,72 @@ const getEmptyData = () => {
 @Form.create()
 export default class VideoPermissionList extends PureComponent {
 
-  // 重置筛选
-  handleReset = () => {
-    const { form: { resetFields } } = this.props
-    resetFields()
-
+  componentDidMount() {
+    const {
+      dispatch,
+      video: { permission: { pagination: { pageSize } } },
+    } = this.props
+    dispatch({
+      type: 'video/fetchCompanyList',
+      payload: {
+        pageNum: 1,
+        pageSize,
+      },
+    })
   }
 
+  // 搜索企业
+  handleSearch = () => {
+    const {
+      dispatch,
+      video: { permission: { pagination: { pageSize } } },
+      form: { getFieldValue },
+    } = this.props
+    const name = getFieldValue('name')
+    dispatch({
+      type: 'video/fetchCompanyList',
+      payload: {
+        pageNum: 1,
+        pageSize,
+        name,
+      },
+    })
+  }
+
+  // 重置筛选
+  handleReset = () => {
+    const {
+      dispatch,
+      video: { permission: { pagination: { pageSize } } },
+      form: { resetFields },
+    } = this.props
+    resetFields()
+    dispatch({
+      type: 'video/fetchCompanyList',
+      payload: {
+        pageNum: 1,
+        pageSize,
+      },
+    })
+  }
+
+  // 下拉加载企业列表
   handleLoadMore = flag => {
-    console.log('falg', flag);
+    const {
+      dispatch,
+      video: { permission: { isLast, pagination: { pageNum, pageSize } } },
+    } = this.props;
+    if (!flag || isLast) {
+      return;
+    }
+    // 请求数据
+    dispatch({
+      type: 'video/fetchCompanyListByScorll',
+      payload: {
+        pageNum: pageNum + 1,
+        pageSize,
+      },
+    })
 
   }
 
@@ -76,12 +133,12 @@ export default class VideoPermissionList extends PureComponent {
       <Card>
         <Form layout="inline">
           <FormItem>
-            {getFieldDecorator('danwei', {
-              getValueFromEvent: e => e.target.value.replace(/\s+/, ''),
+            {getFieldDecorator('name', {
+              getValueFromEvent: e => e.target.value.replace(/\s+/g, ''),
             })(<Input style={{ width: '300px' }} placeholder="请输入所属单位"></Input>)}
           </FormItem>
           <FormItem>
-            <Button type="primary">查询</Button>
+            <Button type="primary" onClick={this.handleSearch}>查询</Button>
           </FormItem>
           <FormItem>
             <Button onClick={this.handleReset}>重置</Button>
@@ -95,13 +152,13 @@ export default class VideoPermissionList extends PureComponent {
   }
 
   renderList() {
-    const { video: { permission: { list } } } = this.props
+    const { loading, video: { permission: { list } } } = this.props
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
-          // loading={loading}
+          loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
@@ -168,18 +225,17 @@ export default class VideoPermissionList extends PureComponent {
   }
 
   render() {
-    const { loading, video: { permission: { isLast, list } } } = this.props
+    const { video: { permission: { list } } } = this.props
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderQuery()}
         {this.renderList()}
         {list && list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
-            </div>
-          )}
+        {/* {loading && (
+          <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+            <Spin />
+          </div>
+        )} */}
       </PageHeaderLayout>
     )
   }

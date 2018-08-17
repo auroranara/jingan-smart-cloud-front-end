@@ -1,18 +1,23 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Select, Button, Row, Col, Table } from 'antd'
+import { Card, Select, Button, Row, Col, Table, message, Spin } from 'antd'
 import { connect } from 'dva';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import AsyncTreeModal from 'components/AsyncTreeModal'
 import styles from './VideoPermissionList.less'
+import debounce from 'lodash/debounce';
 
 const Option = Select.Option
 
-@connect(({ video }) => ({
+@connect(({ video, loading }) => ({
   video,
+  optionsLoading: loading.effects['video/fetchCompanyOptions'],
 }))
 export default class VideoPermissionEdit extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.handleSearch = debounce(this.handleSearch, 800)
+  }
   state = {
-    companyId: null,
     visible: false,
     confirmLoading: false,
     tree: [],
@@ -21,36 +26,109 @@ export default class VideoPermissionEdit extends PureComponent {
       halfChecked: [],
     },
     type: 'company',
+    departmentId: '',
+    selectedCompanyId: '',
   }
 
-  // 打开设置权限弹窗
-  handleSetPermission = (type) => {
+  componentDidMount() {
+    const { dispatch, match: { params: { companyId } } } = this.props
+    if (companyId) {
+      // 获取企业信息
+      dispatch({
+        type: 'video/fetchCompanyDetail',
+        payload: { id: companyId },
+      })
+      // 获取部门树
+      dispatch({
+        type: 'video/fetchDepartmentList',
+        payload: { companyId },
+      })
+    }
+  }
+
+  // 打开企业设置权限弹窗
+  handleSetPermission = () => {
+    // TODO: 新增和编辑情况,新增时如果没有选择企业需要提示
+    const { dispatch, match: { params: { companyId } } } = this.props
+    const { selectedCompanyId } = this.state
+    const callback = (list) => {
+      const temp = list.map(item => {
+        return { ...item, parentIds: '0' }
+      })
+      // checkedStatus 0不选 1半选 2选中
+      const checked = [...list].filter(item => item.checkedStatus === 2).map(item => item.id)
+      const halfChecked = [...list].filter(item => item.checkedStatus === 1).map(item => item.id)
+      this.setState({
+        tree: temp,
+        visible: true,
+        checkedKeys: { checked, halfChecked },
+        type: 'company',
+        departmentId: null,
+      })
+    }
+    if (companyId) {
+      // 编辑企业权限
+      dispatch({
+        type: 'video/fetchVideoTree',
+        payload: { cId: companyId },
+        callback: callback,
+      })
+    } else if (selectedCompanyId) {
+      // 新增企业权限
+      dispatch({
+        type: 'video/fetchVideoTree',
+        payload: { cId: selectedCompanyId },
+        callback: callback,
+      })
+    } else {
+      message.error('请选择单位！')
+    }
+  }
+
+  // 打开设置部门权限弹窗
+  handleDepPermission = (departmentId) => {
     const { dispatch } = this.props
     dispatch({
       type: 'video/fetchVideoTree',
+      payload: { cId: departmentId },
       callback: (list) => {
         const temp = list.map(item => {
           return { ...item, parentIds: '0' }
         })
         // checkedStatus 0不选 1半选 2选中
-        const checked = [...list].filter(item => item.checkedStatus === 1).map(item => item.id)
+        const checked = [...list].filter(item => item.checkedStatus === 2).map(item => item.id)
         const halfChecked = [...list].filter(item => item.checkedStatus === 1).map(item => item.id)
         this.setState({
           tree: temp,
           visible: true,
           checkedKeys: { checked, halfChecked },
-          type,
+          type: 'department',
+          departmentId,
         })
       },
     })
   }
 
-  handleSearch = value => {
+  // 保存state
+  saveParentStates = (params) => {
+    this.setState({
+      ...params,
+    })
+  }
 
+  // 企业下拉查询
+  handleSearch = value => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'video/fetchCompanyOptions',
+      payload: {
+        name: value,
+      },
+    })
   }
 
   handleSelect = value => {
-    this.setState({ companyId: value })
+    this.setState({ selectedCompanyId: value })
   }
 
   handleClose = () => {
@@ -61,40 +139,48 @@ export default class VideoPermissionEdit extends PureComponent {
 
   // 保存权限配置
   doSavePermission = (checkedKeys) => {
+    // TODO:新增和编辑情况
     const { dispatch, match: { params: { companyId } } } = this.props
-    const { type } = this.state
+    const { type, departmentId, selectedCompanyId } = this.state
     this.setState({
       confirmLoading: true,
     });
     const checkedIds = checkedKeys.checked.join(',')
-    // const data=(type==='company'&&{checkedIds,linkType:1,linkId:companyId})||(type==='company'&&{checkedIds,linkType:2,linkId:})
-    // dispatch({
-    //   type: 'video/bindVodeoPermission',
-    //   payload: {checkedIds,},
-    // })
+    const data = type === 'company' ? { checkedIds, linkType: 1, linkId: companyId || selectedCompanyId } : { checkedIds, linkType: 2, linkId: departmentId }
+    dispatch({
+      type: 'video/bindVodeoPermission',
+      payload: data,
+      callback: (res) => {
+        if (res && res.code === 200) {
+          message.success('设置权限成功！')
+          this.setState({
+            visible: false,
+            confirmLoading: false,
+          });
+        } else {
+          message.error('设置权限失败！')
+          this.setState({
+            confirmLoading: false,
+          })
+        }
+      },
+    })
+    console.log('checkedKeys', checkedKeys);
 
-
-    // 这里应该调用接口将checkedKeys保存到数据库
-    setTimeout(() => {
-      console.log(checkedKeys);
-      this.setState({
-        visible: false,
-        confirmLoading: false,
-      });
-    }, 1000);
   }
 
   // 点击树节点加载子节点
   handleLoadData = (data, callback) => {
-    const { dispatch } = this.props
+    const { dispatch, match: { params: { companyId } } } = this.props
     const { id } = data;
+    const { type, departmentId, checkedKeys } = this.state
     this.setState({
       loading: true,
     });
     // 调用接口获取当前节点的子元素
     dispatch({
       type: 'video/fetchVideoTree',
-      payload: { parentId: id },
+      payload: type === 'company' ? { parentId: id, cId: companyId } : { parentId: id, dId: departmentId },
       callback: list => {
         const tempList = list.map((item) => {
           return data.parentIds ? { ...item, parentIds: `${data.parentIds}','${id}` } : { ...item, parentIds: `${id}` }
@@ -102,13 +188,14 @@ export default class VideoPermissionEdit extends PureComponent {
         // callback必须调用
         callback(tempList);
         data.children = tempList; // eslint-disable-line
-        const checked = [...this.state.tree].filter(item => item.checkedStatus === 1).map(item => item.id)
-        const halfChecked = [...this.state.tree].filter(item => item.checkedStatus === 1).map(item => item.id)
+        const checked = [...tempList].filter(item => item.checkedStatus === 2).map(item => item.id)
+        const halfChecked = [...tempList].filter(item => item.checkedStatus === 1).map(item => item.id)
         this.setState({
           tree: [...this.state.tree],
           loading: false,
           checkedKeys: {
-            checked, halfChecked,
+            checked: [...checkedKeys.checked, ...checked],
+            halfChecked: [...checkedKeys.halfChecked, ...halfChecked],
           },
         });
       },
@@ -117,26 +204,37 @@ export default class VideoPermissionEdit extends PureComponent {
 
   // 渲染企业信息
   renderCompany = () => {
-    // const options = companyList.map(d => <Option key={d.value}>{d.text}</Option>);
+    const {
+      optionsLoading,
+      video: { permission: { companyDetail, companyOptions } },
+      match: { params: { companyId } },
+    } = this.props
+
+    const options = (companyOptions.length && companyOptions.map(d => <Option key={d.id}>{d.name}</Option>)) || [];
     return (
       <Card title="单位信息">
         <Row>
           <Col span={9}>
-            <Select
-              showSearch
-              placeholder="请选择单位"
-              onSearch={this.handleSearch}
-              onChange={this.handleSelect}
-              defaultActiveFirstOption={false}
-              showArrow={false}
-              filterOption={false}
-              style={{ width: '100%' }}
-            >
-              {/* {options} */}
-            </Select>
+            {companyId ? (
+              <div>单位名称：{companyDetail.name}</div>
+            ) : (
+                <Select
+                  showSearch
+                  placeholder="请选择单位"
+                  notFoundContent={optionsLoading ? <Spin size="small" /> : '暂无数据'}
+                  onSearch={this.handleSearch}
+                  onSelect={this.handleSelect}
+                  defaultActiveFirstOption={false}
+                  showArrow={false}
+                  filterOption={false}
+                  style={{ width: '100%' }}
+                >
+                  {options}
+                </Select>
+              )}
           </Col>
           <Col span={4} offset={1}>
-            <Button onClick={() => this.handleSetPermission('company')} type="primary">设置视频权限</Button>
+            <Button onClick={() => this.handleSetPermission()} type="primary">设置视频权限</Button>
           </Col>
         </Row>
       </Card>
@@ -145,12 +243,7 @@ export default class VideoPermissionEdit extends PureComponent {
 
   // 渲染部门信息
   renderDepartment = () => {
-    const list = [
-      {
-        id: '123',
-        name: 'test',
-      },
-    ]
+    const { video: { permission: { departmentTree } } } = this.props
     const columns = [
       {
         title: '部门名称',
@@ -171,18 +264,18 @@ export default class VideoPermissionEdit extends PureComponent {
         align: 'center',
         render: (val, rows) => (
           <Fragment>
-            <a onClick={() => this.handleSetPermission('department')}>添加</a>
+            <a onClick={() => this.handleDepPermission(rows.id)}>设置</a>
           </Fragment>
         ),
       },
     ]
     return (
       <Card style={{ marginTop: '20px' }} title="部门信息">
-        {list && list.length ? (
+        {departmentTree && departmentTree.length ? (
           <Table
             rowKey="id"
             columns={columns}
-            dataSource={list}
+            dataSource={departmentTree}
             pagination={false}
             defaultExpandAllRows={true}
           ></Table>) : (
@@ -230,6 +323,7 @@ export default class VideoPermissionEdit extends PureComponent {
           title="设置视频权限"
           onCancel={this.handleClose}
           onOk={this.doSavePermission}
+          saveParentStates={this.saveParentStates}
           tree={{
             dataSource: tree,
             checkable: true,
