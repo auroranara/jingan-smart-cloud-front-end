@@ -10,8 +10,12 @@ import BtnBg from './images/btn_bg.png';
 import Circle from './images/circle.png';
 import bubble from './images/bubble.png';
 import styles from './LookingUp.less';
+import Counter from 'components/flip-timer';
 
 export default class LookingUp extends Component {
+  state = {
+    start: false,
+  };
   getOption = () => {
     const option = {
       color: ['#00a8ff', '#032c64'],
@@ -92,7 +96,9 @@ export default class LookingUp extends Component {
           <Col span={16}>
             <div className={styles.right}>
               <div className={styles.countDown}>倒计时</div>
-              <div className={styles.flask} />
+              <div className={styles.flask} style={{ fontSize: '12px' }}>
+                <Counter onStop={() => {}} stop={10 * 1000} start={this.state.start} />
+              </div>
             </div>
           </Col>
         </div>
