@@ -40,8 +40,8 @@ function traverse(list, handle) {
 }
 
 
-// 节流函数,不然每次计算,网页太卡
-function throttle(fn, ms) {
+// 防抖函数,不然每次计算,网页太卡
+function debounce(fn, ms) {
   let timer = null;
   return function (...args) {
     clearTimeout(timer);
@@ -122,7 +122,7 @@ export default class VideoList extends PureComponent {
 
   timer = null;
   // 生成节流函数,以防止网页太卡
-  throttleFn = throttle((folderList, value, expandedKeys) => {
+  debounceFn = debounce((folderList, value, expandedKeys) => {
     traverse(folderList, ({ name, parentId }) => {
       // 不是空字符串 && name包含当前字符串 && expandedKeys数组中还没有其对应的parentId
       if (value && name.includes(value) && !expandedKeys.includes(parentId))
@@ -152,7 +152,7 @@ export default class VideoList extends PureComponent {
     const expandedKeys = [];
     this.setState({ sValue: value });
     // console.log('folderList', folderList);
-    this.throttleFn(folderList, value, expandedKeys);
+    this.debounceFn(folderList, value, expandedKeys);
   };
 
   handleExpand = (expandedKeys, autoExpandParent) => {

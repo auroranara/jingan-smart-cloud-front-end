@@ -15,10 +15,11 @@ export default {
   effects: {
     *fetch({ payload, success, error }, { call, put }) {
       const response = yield call(queryMapCount, payload);
-      if (response.status === 200) {
+      // console.log('response', response);
+      if (response.code === 200) {
         yield put({
           type: 'save',
-          payload: response.result,
+          payload: response.data,
         });
         if (success) {
           success();
@@ -30,10 +31,10 @@ export default {
     },
     *fetchUsers({ payload, success, error}, { call, put }) {
       const response = yield call(queryAroundUsers, payload);
-      if (response.status === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveUsers',
-          payload: response.result.list,
+          payload: response.data.list,
         });
         if (success) {
           success();
@@ -45,10 +46,10 @@ export default {
     },
     *fetchVideos({ payload, success, error }, { call, put }) {
       const response = yield call(queryAroundVideos, payload);
-      if (response.status === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveVideos',
-          payload: response.result.list,
+          payload: response.data.list,
         });
         if (success) {
           success();
@@ -60,10 +61,10 @@ export default {
     },
     *fetchVideoUrl({ payload, success, error }, { call, put }) {
       const response = yield call(queryVideoUrl, payload);
-      if (response.status === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveVideoUrl',
-          payload: response.result,
+          payload: response.data,
         });
         if (success) {
           success();
