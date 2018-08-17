@@ -1,0 +1,16 @@
+{
+  "name": "react-flip-counter",
+  "version": "0.4.0",
+  "description": "React flip countdown timer",
+  "main": "src/Countdown/index.js",
+  "author": "Eugene Yemelin",
+  "license": "ISC",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "prop-types": "^15.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.1.0",
+    "react-dom": "^16.1.0"
+  }
+}
