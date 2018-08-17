@@ -38,8 +38,10 @@ const offGuardUint = [...Array(5).keys()].map(i => ({
 
 export default class OffGuardWarning extends Component {
   render() {
+    const { showed } = this.props;
+
     return (
-      <FcSection title="脱岗警告">
+      <section style={{ display: showed ? 'block' : 'none' }}>
         <Row span={24}>
           <Col span={12}>
             <div className={styles.left}>
@@ -60,7 +62,7 @@ export default class OffGuardWarning extends Component {
             <UnitCard {...item} key={index} />
           ))}
         </div>
-      </FcSection>
+      </section>
     );
   }
 }

@@ -62,6 +62,9 @@ export default class UnitLookUp extends Component {
     return option;
   };
   render() {
+    const { handleRotateMethods } = this.props;
+    const { handleClickLookUp, handleClickOffGuard } = handleRotateMethods;
+
     return (
       <FcSection title="单位查岗">
         <section className={styles.main}>
@@ -70,6 +73,7 @@ export default class UnitLookUp extends Component {
               <div className={styles.circle} style={{ background: `url(${Circle})` }}>
                 <Button
                   className={styles.circlrLookUp}
+                  onClick={handleClickLookUp}
                   style={{
                     border: 'none',
                     color: '#FFF',
@@ -114,7 +118,7 @@ export default class UnitLookUp extends Component {
                       在岗
                       <span className={styles.personnum}>000</span>
                     </p>
-                    <p className={styles.leaveJob}>
+                    <p className={styles.leaveJob} onClick={handleClickOffGuard}>
                       <span
                         className={styles.leavelJobIcon}
                         style={{ background: `url(${LeavelJobIcon})` }}
