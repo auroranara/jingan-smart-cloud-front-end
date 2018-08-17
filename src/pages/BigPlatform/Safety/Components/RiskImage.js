@@ -41,6 +41,7 @@ export default class App extends PureComponent {
     this.state = {
       skew: 0,
     }
+    this.myTimer = null;
     this.handleResize = debounce(this.handleResize, 300);
   }
 
@@ -54,16 +55,20 @@ export default class App extends PureComponent {
   componentWillUnmount() {
     // 销毁时移出事件
     window.removeEventListener('resize', this.handleResize);
+    clearInterval(this.myTimer);
   }
 
+  // resize重新获取容器高度
   handleResize = () => {
-    // resize重新获取容器高度
-    if (this.wrapper) {
-      console.log(this.wrapper);
-      this.setState({
-        skew: this.wrapper.offsetHeight,
-      });
-    }
+    this.myTimer = setInterval(() => {
+      if (this.wrapper && this.wrapper.offsetHeight !== 0) {
+        clearInterval(this.myTimer);
+        this.myTimer = null;
+        this.setState({
+          skew: this.wrapper.offsetHeight,
+        });
+      }
+    }, 2);
   }
 
   renderChildren(children, image) {
@@ -132,7 +137,7 @@ export default class App extends PureComponent {
         {this.renderChildren(children, { skew, rotate: Number.parseFloat(rotate) })}
       </div>
     ) : (
-      <div className={wrapperClassName} style={{ textAlign: 'center', ...wrapperStyle }}>暂无四色图</div>
+      <div className={wrapperClassName} style={{ textAlign: 'center', ...wrapperStyle }}>暂未上传安全四色图</div>
     );
   }
 }

@@ -59,7 +59,7 @@ export async function getCompanyMessage(params) {
   return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
 }
 
-// 企业信息(包含人员数量四色图等)
+// 企业大屏四色风险点
 export async function getCountDangerLocationForCompany(params) {
   return request(`/acloud_new/v2/sfc/countDangerLocationForCompany.json?${stringify(params)}`);
 }
@@ -77,4 +77,9 @@ export async function getRiskDetail(params) {
 // 隐患总数
 export async function getHiddenDanger(params) {
   return request(`/acloud_new/v2/sfc/hiddenDanger.json?${stringify(params)}`);
+}
+
+// 获取安全人员信息
+export async function getSafetyOfficer(params) {
+  return request(`/acloud_new/v2/sfc/showSafePerson.json?${stringify(params)}`);
 }

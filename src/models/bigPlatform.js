@@ -1,4 +1,4 @@
-import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany, getRiskDetail, getRiskPointInfo, getHiddenDanger } from '../services/bigPlatform/bigPlatform.js';
+import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany, getRiskDetail, getRiskPointInfo, getHiddenDanger, getSafetyOfficer } from '../services/bigPlatform/bigPlatform.js';
 
 export default {
   namespace: 'bigPlatform',
@@ -46,12 +46,8 @@ export default {
         countCheckItem: 0,
         countCompanyUser: 0,
       },
-      check_map: {
-        self_check_point: {},
-      },
-      hidden_danger_map: {
-        created_danger: {},
-      },
+      check_map: [],
+      hidden_danger_map: [],
     },
     coItemList: {
       status1: 0,
@@ -61,17 +57,16 @@ export default {
       statusAll: 0,
     },
     specialEquipment: 0,
-    countDangerLocationForCompany: {
-      red: 0,
-      orange: 0,
-      blue: 0,
-      yellow: 0,
-    },
+    // 风险点统计及信息
+    countDangerLocationForCompany: {},
     // 风险点信息
     riskPointInfoList: [],
     // 隐患详情
     riskDetailList: [],
+    // 隐患总数
     hiddenDanger: 0,
+    // 安全人员信息
+    safetyOfficer: {},
   },
 
   effects: {
@@ -220,7 +215,7 @@ export default {
       yield put({
         type: 'coItemList',
         payload: response.total,
-        status: payload.status || '',
+        status: payload.status || 'All',
       });
       if (success) {
         success();
@@ -250,12 +245,7 @@ export default {
       // if (response.code === 200) {
       yield put({
         type: 'countDangerLocationForCompany',
-        payload: response.countDangerLocation[0] || {
-          red: 0,
-          orange: 0,
-          blue: 0,
-          yellow: 0,
-        },
+        payload: response,
       });
       if (success) {
         success();
@@ -290,6 +280,16 @@ export default {
       yield put({
         type: 'hiddenDanger',
         payload: response.total,
+      });
+      if (success) {
+        success();
+      }
+    },
+    *fetchSafetyOfficer({ payload, success }, { call, put }) {
+      const response = yield call(getSafetyOfficer, payload);
+      yield put({
+        type: 'saveSafetyOfficer',
+        payload: response,
       });
       if (success) {
         success();
@@ -353,16 +353,11 @@ export default {
       };
     },
     coItemList(state, { payload, status }) {
-      let obj = {};
-      if (status === '1') obj = { status1: payload };
-      if (status === '2') obj = { status2: payload };
-      if (status === '3') obj = { status3: payload };
-      if (status === '4') obj = { status4: payload };
       return {
         ...state,
         coItemList: {
           ...state.coItemList,
-          ...obj,
+          [`status${status}`]: payload,
         },
       };
     },
@@ -394,6 +389,12 @@ export default {
       return {
         ...state,
         hiddenDanger: payload,
+      }
+    },
+    saveSafetyOfficer(state, { payload: safetyOfficer }) {
+      return {
+        ...state,
+        safetyOfficer,
       }
     },
   },
