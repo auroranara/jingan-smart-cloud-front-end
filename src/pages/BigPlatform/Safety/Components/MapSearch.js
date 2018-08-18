@@ -3,7 +3,6 @@ import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
-import Counter from 'components/flip-timer';
 
 const Input = props => <input {...props} />;
 
@@ -69,7 +68,6 @@ class MapSearch extends PureComponent {
   render() {
     return (
       <div>
-        <Counter onStop={() => {}} stop={10 * 1000} start={this.state.start} />
         <button
           onClick={() => {
             this.handleStart();

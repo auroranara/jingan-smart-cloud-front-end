@@ -101,7 +101,7 @@ export default class LookingUp extends Component {
                   onStop={() => {
                     handleRotateBack();
                   }}
-                  stop={10 * 1000}
+                  stop={10 * 60 * 1000}
                   start={isLookUpRotated}
                 />
               </div>

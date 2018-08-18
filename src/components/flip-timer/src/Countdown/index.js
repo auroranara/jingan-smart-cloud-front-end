@@ -25,15 +25,20 @@ class Countdown extends React.Component {
   componentDidMount() {}
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    console.log('prevProps', prevProps);
-    console.log('this.props', this.props);
     return this.props !== prevProps && this.props.start;
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log('snapshot', snapshot);
     if (snapshot) {
-      this.handleStart();
+      count = this.props.stop;
+      this.setState(
+        {
+          diff: this.getDiffObject(count),
+        },
+        () => {
+          this.handleStart();
+        }
+      );
     }
   }
   /**
@@ -92,7 +97,7 @@ class Countdown extends React.Component {
       this.setState({
         diff: this.getDiffObject(count),
       });
-      console.log(this.state.diff.seconds);
+      // console.log(this.state.diff.seconds);
       this.isTimeOver() && this.stopCount();
     }, 1000);
   }
