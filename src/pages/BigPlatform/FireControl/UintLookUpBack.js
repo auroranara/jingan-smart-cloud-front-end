@@ -15,10 +15,14 @@ const titleMap = {
 };
 
 export default function(props) {
-  const { lookUpShow, handleRotateBack } = props;
+  const { lookUpShow, handleRotateBack, isLookUpRotated } = props;
   return (
     <FcSection title={titleMap[lookUpShow]} style={{ position: 'relative' }} isBack>
-      <LookingUp showed={lookUpShow === LOOKING_UP} />
+      <LookingUp
+        showed={lookUpShow === LOOKING_UP}
+        isLookUpRotated={isLookUpRotated}
+        handleRotateBack={handleRotateBack}
+      />
       <OffGuardWarning showed={lookUpShow === OFF_GUARD} />
       {lookUpShow === OFF_GUARD ? (
         <span

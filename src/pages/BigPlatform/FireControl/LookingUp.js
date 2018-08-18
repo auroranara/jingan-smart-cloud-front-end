@@ -66,7 +66,7 @@ export default class LookingUp extends Component {
     return option;
   };
   render() {
-    const { showed } = this.props;
+    const { showed, isLookUpRotated, handleRotateBack } = this.props;
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -93,11 +93,17 @@ export default class LookingUp extends Component {
               />
             </div>
           </Col>
-          <Col span={16}>
+          <Col span={16} style={{ height: '100%' }}>
             <div className={styles.right}>
               <div className={styles.countDown}>倒计时</div>
               <div className={styles.flask} style={{ fontSize: '12px' }}>
-                <Counter onStop={() => {}} stop={10 * 1000} start={this.state.start} />
+                <Counter
+                  onStop={() => {
+                    handleRotateBack();
+                  }}
+                  stop={10 * 1000}
+                  start={isLookUpRotated}
+                />
               </div>
             </div>
           </Col>

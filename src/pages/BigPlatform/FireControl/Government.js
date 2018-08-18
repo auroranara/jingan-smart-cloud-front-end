@@ -105,6 +105,7 @@ export default class FireControlBigPlatform extends PureComponent {
             <UintLookUpBack
               handleRotateBack={this.handleUnitLookUpRotateBack}
               lookUpShow={lookUpShow}
+              isLookUpRotated={isLookUpRotated}
             />
           </FcModule>
           <div className={styles.gutter3} />
