@@ -18,3 +18,7 @@ export async function queryAlarm(params) {
 export async function querySys() {
   return request(`${URL_PREFIX}/baseInfo/systemAccess`);
 }
+
+export async function queryFireTrend() {
+  return request(`${URL_PREFIX}/fireManage/fireProcessTrend`);
+}

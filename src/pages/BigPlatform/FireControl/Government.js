@@ -8,6 +8,7 @@ import FcSection from './FcSection';
 import OverviewSection from './OverviewSection';
 import AlarmSection from './AlarmSection';
 import SystemSection from './SystemSection';
+import TrendSection from './TrendSection';
 import bg from './bg.png';
 
 const HEIGHT_PERCNET = { height: '100%' };
@@ -22,10 +23,11 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
     dispatch({ type: 'bigFireControl/fetchSys' });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
+    dispatch({ type: 'bigFireControl/fetchFireTrend' });
   }
 
   render() {
-    const { bigFireControl: { overview, alarm, sys }, dispatch } = this.props;
+    const { bigFireControl: { overview, alarm, sys, trend }, dispatch } = this.props;
 
     return (
       <Row style={{ height: '100%', marginLeft: 0, marginRight: 0, background: `url(${bg}) center center` }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>
@@ -49,7 +51,7 @@ export default class FireControlBigPlatform extends PureComponent {
           <Row className={styles.center}>
             <Col span={12} className={styles.centerLeft}>
               <FcModule style={{ height: '100%' }}>
-                <FcSection title="火警趋势" />
+                <TrendSection trendData={trend} />
                 <FcSection title="火警趋势反面" isBack />
               </FcModule>
             </Col>
