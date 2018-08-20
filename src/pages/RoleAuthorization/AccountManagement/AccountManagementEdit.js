@@ -810,7 +810,7 @@ export default class accountManagementEdit extends PureComponent {
                         },
                       ],
                     })(
-                      <Select placeholder="请选择执法证种类">
+                      <Select allowClear placeholder="请选择执法证种类">
                         {documentTypeIds.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
