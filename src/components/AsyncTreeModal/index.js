@@ -233,24 +233,15 @@ export default class AsyncTreeModal extends PureComponent {
 
   /* 展开事件 */
   handleExpand = (expandedKeys, a) => {
-    const { saveParentStates, tree: { expandedKeys: propsKeys } } = this.props
-    // this.setState({
-    //   autoExpandParent: false,
-    // });
-    // saveParentStates({ expandedKeys })
-    if (a.expanded) {
-      setTimeout(() => {
-        this.setState({
-          autoExpandParent: false,
-        });
-        saveParentStates({ expandedKeys: [...propsKeys, a.node.props.dataRef.id] })
-      }, 500);
-    } else {
+    console.log(a, 'a');
+
+    const { saveParentStates } = this.props
+    setTimeout(() => {
       this.setState({
         autoExpandParent: false,
       });
       saveParentStates({ expandedKeys })
-    }
+    }, 500);
   }
 
   /* check事件 */
