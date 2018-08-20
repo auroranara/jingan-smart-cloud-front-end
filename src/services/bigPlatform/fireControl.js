@@ -22,3 +22,7 @@ export async function querySys() {
 export async function queryFireTrend() {
   return request(`${URL_PREFIX}/fireManage/fireProcessTrend`);
 }
+
+export async function getCompanyFireInfo() {
+  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
+}

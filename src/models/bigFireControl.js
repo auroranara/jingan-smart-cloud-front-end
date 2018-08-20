@@ -4,12 +4,18 @@ import {
   queryAlarm,
   querySys,
   queryFireTrend,
+  getCompanyFireInfo,
 } from '../services/bigPlatform/fireControl';
 
 export default {
   namespace: 'bigFireControl',
 
   state: {
+    map: {
+      companyBasicInfoList: [],
+      fireNum: 0,
+      totalNum: 0,
+    },
     overview: {},
     alarm: {},
     sys: {},
@@ -17,6 +23,12 @@ export default {
   },
 
   effects: {
+    *fetchCompanyFireInfo({ payload }, { call, put }) {
+      const response = yield call(getCompanyFireInfo);
+      if (response && response.code === 200) {
+        yield put({ type: 'saveMap', payload: response.data });
+      }
+    },
     *fetchOvAlarmCounts({ payload }, { call, put }) {
       const response = yield call(queryOvAlarmCounts);
       const { code, data } = response;
@@ -52,6 +64,9 @@ export default {
   },
 
   reducers: {
+    saveMap(state, action) {
+      return { ...state, map: action.payload };
+    },
     saveOv(state, action) {
       const overview = { ...state.overview, ...action.payload };
       return { ...state, overview };
