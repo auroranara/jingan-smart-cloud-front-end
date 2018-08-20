@@ -1,9 +1,15 @@
-import { queryOvAlarmCounts, queryOvDangerCounts, queryAlarm, querySys, queryFireTrend } from '../services/bigPlatform/fireControl';
+import {
+  queryOvAlarmCounts,
+  queryOvDangerCounts,
+  queryAlarm,
+  querySys,
+  queryFireTrend,
+} from '../services/bigPlatform/fireControl';
 
 export default {
   namespace: 'bigFireControl',
 
-  state : {
+  state: {
     overview: {},
     alarm: {},
     sys: {},
@@ -14,8 +20,7 @@ export default {
     *fetchOvAlarmCounts({ payload }, { call, put }) {
       const response = yield call(queryOvAlarmCounts);
       const { code, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveOv', payload: data });
+      if (code === 200) yield put({ type: 'saveOv', payload: data });
     },
     *fetchOvDangerCounts({ payload }, { call, put }) {
       const response = yield call(queryOvDangerCounts);
@@ -28,14 +33,13 @@ export default {
     *fetchAlarm({ payload }, { call, put }) {
       const response = yield call(queryAlarm, payload);
       const { code, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveAlarm', payload: data });
+      if (code === 200) yield put({ type: 'saveAlarm', payload: data });
     },
     *fetchSys({ payload }, { call, put }) {
       const response = yield call(querySys);
-      const { code, data } = response;
-      const { total, activeCount } = data;
-      if (code === 200) {
+      if (response && response.code === 200) {
+        const { data } = response;
+        const { total, activeCount } = data;
         yield put({ type: 'saveSys', payload: data });
         yield put({ type: 'saveOv', payload: { total, activeCount } });
       }
@@ -43,8 +47,7 @@ export default {
     *fetchFireTrend({ payload }, { call, put }) {
       const response = yield call(queryFireTrend);
       const { code, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveTrend', payload: data });
+      if (code === 200) yield put({ type: 'saveTrend', payload: data });
     },
   },
 
@@ -63,4 +66,4 @@ export default {
       return { ...state, trend: action.payload };
     },
   },
-}
+};
