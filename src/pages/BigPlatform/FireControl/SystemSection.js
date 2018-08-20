@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Row } from 'antd';
 
 import FcSection from './FcSection';
-import ProgressBar from './ProgressBar';
+import ProgressBar from './components/ProgressBar';
 import styles from './SystemSection.less';
 import hostIcon from './host.png';
 

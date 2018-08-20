@@ -3,7 +3,7 @@ import { Map as GDMap, Marker } from 'react-amap';
 
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
-import MapSearch from './MapSearch';
+import MapSearch from './components/MapSearch';
 
 const { location } = global.PROJECT_CONFIG;
 
@@ -50,7 +50,7 @@ export default class FireControlMap extends PureComponent {
       map: { companyBasicInfoList },
     } = this.props;
     return (
-      <FcSection style={{ padding: 0 }} className={styles.map}>
+      <FcSection style={{ padding: 8 }} className={styles.map}>
         <GDMap
           amapkey="665bd904a802559d49a33335f1e4aa0d"
           plugins={[

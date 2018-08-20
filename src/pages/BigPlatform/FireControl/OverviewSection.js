@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import { Col, Divider, Row } from 'antd';
 
 import FcSection from './FcSection';
-import OvUnit from './OvUnit';
-import OvFireCards from './OvFireCards';
-import OvDangerCards from './OvDangerCards';
+import OvUnit from './components/OvUnit';
+import OvFireCards from './components/OvFireCards';
+import OvDangerCards from './components/OvDangerCards';
 import styles from './OverviewSection.less';
 import companyIcon from './ovCompany.png';
 import hostIcon from './ovHost.png';
