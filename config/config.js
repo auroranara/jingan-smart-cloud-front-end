@@ -20,7 +20,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://192.168.10.6`,
+      target: `http:${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
