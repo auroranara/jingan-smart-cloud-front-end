@@ -1,14 +1,6 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Col, Button } from 'antd';
-import TimeIcon from './images/time.png';
-import OnJobIcon from './images/onJobIcon.png';
-import LeavelJobIcon from './images/leavelJobIcon.png';
-import RabbitIcon from './images/rabbit.png';
-import SnailIcon from './images/snail.png';
-import BtnBg from './images/btn_bg.png';
-import Circle from './images/circle.png';
-import bubble from './images/bubble.png';
 import styles from './LookingUp.less';
 import Counter from 'components/flip-timer';
 
@@ -73,24 +65,13 @@ export default class LookingUp extends Component {
         <div className={styles.top}>
           <Col span={8}>
             <div className={styles.left}>
-              <Button
-                className={styles.circlrLookUp}
-                style={{ border: 'none', color: '#FFF', background: `url(${BtnBg})` }}
-              >
+              <Button className={styles.circlrLookUp} style={{ border: 'none', color: '#FFF' }}>
                 正在
                 <br />
                 查岗
               </Button>
-              <div
-                style={{ background: `url(${Circle})` }}
-                className={styles.ring}
-                onTransitionEnd
-              />
-              <div
-                style={{ background: `url(${bubble})`, backgroundSize: 'cover' }}
-                className={styles.bubble}
-                onTransitionEnd
-              />
+              <div className={styles.ring} onTransitionEnd />
+              <div className={styles.bubble} onTransitionEnd />
             </div>
           </Col>
           <Col span={16} style={{ height: '100%' }}>
@@ -126,18 +107,12 @@ export default class LookingUp extends Component {
               <Col span={12}>
                 <div className={styles.jobNum}>
                   <p className={styles.onJob}>
-                    <span
-                      className={styles.onJobIcon}
-                      style={{ background: `url(${OnJobIcon})` }}
-                    />
+                    <span className={styles.onJobIcon} />
                     在岗
                     <span className={styles.personnum}>000</span>
                   </p>
                   <p className={styles.leaveJob}>
-                    <span
-                      className={styles.leavelJobIcon}
-                      style={{ background: `url(${LeavelJobIcon})` }}
-                    />
+                    <span className={styles.leavelJobIcon} />
                     脱岗
                     <span className={styles.personnum}>000</span>
                   </p>
@@ -152,23 +127,17 @@ export default class LookingUp extends Component {
                 <div className={styles.timeWrite}>应答时间</div>
               </Col>
               <Col span={6}>
-                <div className={styles.timeIcon} style={{ background: `url(${TimeIcon})` }} />
+                <div className={styles.timeIcon} />
               </Col>
               <Col span={12}>
                 <div className={styles.timeNum}>
                   <p className={styles.rabbit}>
-                    <span
-                      className={styles.rabbitIcon}
-                      style={{ background: `url(${RabbitIcon})` }}
-                    />
+                    <span className={styles.rabbitIcon} />
                     最快
                     <span className={styles.minutes}>2'30''</span>
                   </p>
                   <p className={styles.snail}>
-                    <span
-                      className={styles.snailIcon}
-                      style={{ background: `url(${SnailIcon})` }}
-                    />
+                    <span className={styles.snailIcon} />
                     最慢
                     <span className={styles.minutes}>7'30''</span>
                   </p>

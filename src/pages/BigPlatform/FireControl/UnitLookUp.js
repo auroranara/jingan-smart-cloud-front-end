@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Col, Button } from 'antd';
-import TimeIcon from './images/time.png';
-import OnJobIcon from './images/onJobIcon.png';
-import LeavelJobIcon from './images/leavelJobIcon.png';
-import RabbitIcon from './images/rabbit.png';
-import SnailIcon from './images/snail.png';
-import BtnBg from './images/btn_bg.png';
-import Circle from './images/circle.png';
 import FcSection from './FcSection';
 import styles from './UnitLookUp.less';
 
@@ -70,7 +63,7 @@ export default class UnitLookUp extends Component {
         <section className={styles.main}>
           <div className={styles.top}>
             <Col span={24}>
-              <div className={styles.circle} style={{ background: `url(${Circle})` }}>
+              <div className={styles.circle}>
                 <Button
                   className={styles.circlrLookUp}
                   onClick={handleClickLookUp}
@@ -78,7 +71,6 @@ export default class UnitLookUp extends Component {
                     border: 'none',
                     color: '#FFF',
                     outline: 'none',
-                    background: `url(${BtnBg})`,
                   }}
                 >
                   查岗
@@ -111,18 +103,12 @@ export default class UnitLookUp extends Component {
                 <Col span={12}>
                   <div className={styles.jobNum}>
                     <p className={styles.onJob}>
-                      <span
-                        className={styles.onJobIcon}
-                        style={{ background: `url(${OnJobIcon})` }}
-                      />
+                      <span className={styles.onJobIcon} />
                       在岗
                       <span className={styles.personnum}>000</span>
                     </p>
                     <p className={styles.leaveJob} onClick={handleClickOffGuard}>
-                      <span
-                        className={styles.leavelJobIcon}
-                        style={{ background: `url(${LeavelJobIcon})` }}
-                      />
+                      <span className={styles.leavelJobIcon} />
                       脱岗
                       <span className={styles.personnum}>000</span>
                     </p>
@@ -137,23 +123,17 @@ export default class UnitLookUp extends Component {
                   <div className={styles.timeWrite}>应答时间</div>
                 </Col>
                 <Col span={6}>
-                  <div className={styles.timeIcon} style={{ background: `url(${TimeIcon})` }} />
+                  <div className={styles.timeIcon} />
                 </Col>
                 <Col span={12}>
                   <div className={styles.timeNum}>
                     <p className={styles.rabbit}>
-                      <span
-                        className={styles.rabbitIcon}
-                        style={{ background: `url(${RabbitIcon})` }}
-                      />
+                      <span className={styles.rabbitIcon} />
                       最快
                       <span className={styles.minutes}>2'30''</span>
                     </p>
                     <p className={styles.snail}>
-                      <span
-                        className={styles.snailIcon}
-                        style={{ background: `url(${SnailIcon})` }}
-                      />
+                      <span className={styles.snailIcon} />
                       最慢
                       <span className={styles.minutes}>7'30''</span>
                     </p>
