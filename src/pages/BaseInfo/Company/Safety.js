@@ -226,7 +226,7 @@ export default class Safety extends PureComponent {
       else if (next === 'gridId')
         prev[next] = idMap[val];
       else if (next === 'safetyFourPicture') {
-        let list = JSON.parse(val);
+        let list = isJSONStr(val) ? JSON.parse(val) : [];
         list = list.map(({ fileName, webUrl, dbUrl }) => ({ name: fileName, uid: Math.random(), url: webUrl, dbUrl, status: 'done', response: { code: 200 } }));
         this.setState({ safeList: list });
         prev[next] = { fileList: list };
