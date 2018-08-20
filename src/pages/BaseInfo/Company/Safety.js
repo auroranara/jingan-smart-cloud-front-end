@@ -143,7 +143,7 @@ function handleFormValues(fieldsValue) {
   // console.log(fileList);
   const newFileList = fileList
     .filter(({ status, response: { code } }) => status === 'done' && code === 200)
-    .map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }));
+    .map(({ name, url, dbUrl }) => ({ fileName: name, dbUrl }));
   formValues.safetyFourPicture = JSON.stringify(newFileList);
 
   return formValues;
@@ -227,7 +227,7 @@ export default class Safety extends PureComponent {
         prev[next] = idMap[val];
       else if (next === 'safetyFourPicture') {
         let list = JSON.parse(val);
-        list = list.map(({ id, fileName, webUrl, dbUrl }) => ({ name: fileName, uid: id, url: webUrl, dbUrl, status: 'done', respnose: { code: 200 } }));
+        list = list.map(({ fileName, webUrl, dbUrl }) => ({ name: fileName, uid: Math.random(), url: webUrl, dbUrl, status: 'done', response: { code: 200 } }));
         this.setState({ safeList: list });
         prev[next] = { fileList: list };
       } else if (UPLOADERS.includes(next)) {
@@ -237,10 +237,10 @@ export default class Safety extends PureComponent {
           list = JSON.parse(val);
           list = Array.isArray(list) ? list : list.fileList;
           // 不加uid属性会报错
-          list = list.map(({ name, url }) => ({ name, uid: Date.now(), url, status: 'done', response: { code: 200 } }));
+          list = list.map(({ name, url }) => ({ name, uid: Math.random(), url, status: 'done', response: { code: 200 } }));
         // 数据库存的只是个链接
         } else
-          list = [{name: '已上传文件', url: detail[`${next}Web`], dbUrl: val, uid: Date.now(), status: 'done', response: { code: 200 }}];
+          list = [{name: '已上传文件', url: detail[`${next}Web`], dbUrl: val, uid: Math.random(), status: 'done', response: { code: 200 }}];
 
         this.setState({ [UPLOADERS_MAP[next]]: list });
         prev[next] = { fileList: list };

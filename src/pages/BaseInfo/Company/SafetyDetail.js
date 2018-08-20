@@ -88,12 +88,15 @@ function renderDsp(items, detail, menus) {
           break;
         case 'companyLogo':
         case 'reachGradeAccessory':
-        case 'safetyFourPicture':
           val = (
             <a target="_blank" rel="noopener noreferrer" href={detail[`${name}Web`]}>
               已上传文件链接
             </a>
           );
+          break;
+        case 'safetyFourPicture':
+          const list = JSON.parse(v)
+          val = list.map(({ id, fileName, webUrl }) =><a key={id} style={{ marginRight: 10 }} target="_blank" rel="noopener noreferrer" href={webUrl}>{fileName}</a>)
           break;
         default:
           // console.log(name, menus[name], detail[name], menus[name].find(item => item.value === detail[name]));
