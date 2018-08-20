@@ -9,6 +9,7 @@ import OverviewSection from './OverviewSection';
 import AlarmSection from './AlarmSection';
 import SystemSection from './SystemSection';
 import TrendSection from './TrendSection';
+import GridDangerSection from './GridDangerSection';
 import bg from './bg.png';
 
 const HEIGHT_PERCNET = { height: '100%' };
@@ -57,7 +58,7 @@ export default class FireControlBigPlatform extends PureComponent {
             </Col>
             <Col span={12} className={styles.centerRight}>
               <FcModule style={{ height: '100%' }}>
-                <FcSection title="网格隐患巡查" />
+                <GridDangerSection />
                 <FcSection title="网格隐患巡查反面" isBack />
               </FcModule>
             </Col>

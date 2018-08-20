@@ -25,14 +25,14 @@ const data = [...Array(12).keys()].map(i => {
 function handleSource(list) {
   list.reverse();
   const source = [['时间', '真实火警', '误报火警', '误报率']];
-  list.forEach(({ dateTime, warnTrueCount, warnFalseCount, percent }) => source.push([dateTime, warnTrueCount, warnFalseCount, percent]));
+  list.forEach(({ dateTime, warnTrueCount, warnFalseCount, percent }) => source.push([dateTime, warnTrueCount, warnFalseCount, Number.parseInt(percent, 10)]));
   return source;
 }
 
 export default function TrendSection(props) {
   const { trendData: { list = [] } } = props;
-  // const source = handleSource(list);
-  const source = handleSource(data);
+  const source = handleSource(list);
+  // const source = handleSource(data);
 
   const option = {
     legend: {
@@ -41,7 +41,10 @@ export default function TrendSection(props) {
       data: ['真实火警', '误报火警', '误报率'],
       textStyle: { color: '#FFF' },
     },
-    tooltip: {},
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+    },
     dataset: { source },
     xAxis: {
       type: 'category',
@@ -55,7 +58,7 @@ export default function TrendSection(props) {
     }, {
       type: 'value',
       min: 0,
-      max: 1,
+      max: 100,
       axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' } },
       splitLine: { show: false },
     }],
@@ -71,6 +74,8 @@ export default function TrendSection(props) {
         {
           type: 'line',
           yAxisIndex: 1,
+          symbol: 'circle',
+          smooth: true,
           // itemStyle: { color: 'rgb(0,168,255)' },
           lineStyle: { color: 'rgb(0,168,255)' },
         },
