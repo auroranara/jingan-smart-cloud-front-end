@@ -358,7 +358,8 @@ export default class Safety extends PureComponent {
   handleSafeChange = ({ file, fileList, event }) => {
     const { safeLoading } = this.state;
 
-    console.log(file.status, file, fileList, event);
+    // console.log(file.status, file, fileList, event);
+
     const { status } = file;
 
     if (status === 'uploading' && !safeLoading)
