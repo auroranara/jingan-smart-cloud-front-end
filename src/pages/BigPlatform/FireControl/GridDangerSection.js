@@ -16,13 +16,14 @@ function genSource() {
 
 function handleSource(list) {
   const source = [['时间', '巡查次数', '隐患数量']];
+  list.forEach(({ time, inspect, danger }) => source.push([time, inspect, danger]));
   return source;
 }
 
 export default function GridDangerSection(props) {
   const { dangerData: { list = [] } } = props;
-  // const source = handleSource(list);
-  const source = genSource();
+  const source = handleSource(list);
+  // const source = genSource();
 
   const option = {
     legend: {
@@ -31,7 +32,10 @@ export default function GridDangerSection(props) {
       data: ['巡查次数', '隐患数量'],
       textStyle: { color: '#FFF' },
     },
-    tooltip: {},
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+    },
     dataset: { source },
     xAxis: {
       type: 'category',

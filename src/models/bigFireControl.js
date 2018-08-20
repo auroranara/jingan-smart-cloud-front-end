@@ -1,5 +1,17 @@
 import { queryOvAlarmCounts, queryOvDangerCounts, queryAlarm, querySys, queryFireTrend, queryDanger } from '../services/bigPlatform/fireControl';
 
+function handleDanger(response) {
+  const dangerMap = {};
+  response.hidden_danger_map.forEach(({ month, day, created_danger }) => dangerMap[`${month}.${day}`] = created_danger);
+
+  const list = response['check_map'].map(({ month, day, grid_check_point }) => {
+    const danger = dangerMap[`${month}.${day}`];
+    return { time: `${month}/${day}`, inspect: grid_check_point, danger: danger ? danger : 0 };
+  });
+
+  return { list };
+}
+
 export default {
   namespace: 'bigFireControl',
 
@@ -49,9 +61,9 @@ export default {
     },
     *fetchDanger({ payload }, { call, put }) {
       const response = yield call(queryDanger);
-      const { code, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveDanger', payload: data });
+      // const { code, data } = response;
+      if (response)
+        yield put({ type: 'saveDanger', payload: handleDanger(response) });
     },
   },
 
