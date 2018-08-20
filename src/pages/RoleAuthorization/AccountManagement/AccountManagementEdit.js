@@ -505,28 +505,6 @@ export default class accountManagementEdit extends PureComponent {
     } else callback();
   };
 
-  /* 异步验证手机号 */
-  validatePhoneNumber = (rule, value, callback) => {
-    if (value) {
-      const {
-        checkAccountOrPhone,
-        match: {
-          params: { id },
-        },
-      } = this.props;
-      checkAccountOrPhone({
-        payload: {
-          id,
-          phoneNumber: value,
-        },
-        callback(res) {
-          if (res.code === 200) callback();
-          else callback(res.msg);
-        },
-      });
-    } else callback();
-  };
-
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
@@ -666,7 +644,6 @@ export default class accountManagementEdit extends PureComponent {
                       type: 'string',
                       message: '请输入手机号',
                     },
-                    { validator: this.validatePhoneNumber },
                   ],
                 })(<Input placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>
