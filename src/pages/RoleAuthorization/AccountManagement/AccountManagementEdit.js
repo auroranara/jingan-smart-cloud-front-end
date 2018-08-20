@@ -336,10 +336,6 @@ export default class accountManagementEdit extends PureComponent {
             case 1:
               payload.userType = 'company_safer';
               break;
-            // 政府机构
-            case 2:
-              payload.userType = 'gov_grid_worker';
-              break;
             // 运营企业
             case 3:
               payload.userType = 'admin';
@@ -386,7 +382,11 @@ export default class accountManagementEdit extends PureComponent {
         unitTypeChecked: id,
       },
       () => {
-        setFieldsValue({ userType: 'company_legal_person' });
+        if (id === 4) {
+          setFieldsValue({ userType: 'company_legal_person' });
+        } else {
+          setFieldsValue({ userType: undefined });
+        }
       }
     );
   };
@@ -550,6 +550,7 @@ export default class accountManagementEdit extends PureComponent {
         accountStatuses,
         unitIdes,
         userTypes,
+        gavUserTypes,
         documentTypeIds,
         departments,
       },
@@ -773,6 +774,30 @@ export default class accountManagementEdit extends PureComponent {
                 </Col>
               )}
             {/* 当单位类型为政府机构（政府机构对应id为2） */}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === 2 && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.userType}>
+                    {getFieldDecorator('userType', {
+                      initialValue: userType,
+                      rules: [
+                        {
+                          required: true,
+                          message: '请选择用户类型',
+                        },
+                      ],
+                    })(
+                      <Select placeholder="请选择用户类型">
+                        {gavUserTypes.map(item => (
+                          <Option value={item.id} key={item.id}>
+                            {item.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>

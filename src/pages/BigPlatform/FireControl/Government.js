@@ -11,6 +11,7 @@ import AlarmSection from './AlarmSection';
 import SystemSection from './SystemSection';
 import TrendSection from './TrendSection';
 import GridDangerSection from './GridDangerSection';
+import FireControlMap from './FireControlMap';
 import bg from './bg.png';
 
 const HEIGHT_PERCNET = { height: '100%' };
@@ -26,10 +27,15 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchSys' });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
     dispatch({ type: 'bigFireControl/fetchFireTrend' });
+    dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     dispatch({ type: 'bigFireControl/fetchDanger' });
   }
 
   render() {
+    const {
+      bigFireControl: { overview, alarm, sys, trend, map },
+      dispatch,
+    } = this.props;
     const { bigFireControl: { overview, alarm, sys, trend, danger }, dispatch } = this.props;
 
     return (

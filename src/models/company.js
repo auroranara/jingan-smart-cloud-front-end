@@ -11,6 +11,7 @@ import {
   gsafeQueryDict,
   gsafeQueryIndustryType,
   editScreenPermission,
+  queryAddCompanyOptions,
 } from '../services/company/company.js';
 
 // const mergeArea = (area, ids, list) => {
@@ -81,6 +82,8 @@ export default {
     practicalAddress: [],
     // 单位性质
     companyNatures: [],
+    // 单位类型
+    companyTypes: [],
     pageNum: 1,
     isLast: false,
     detail: {
@@ -119,6 +122,7 @@ export default {
         safetyName: undefined,
         safetyPhone: undefined,
         safetyEmail: undefined,
+        companyType: undefined,
       },
     },
     modal: {
@@ -209,13 +213,7 @@ export default {
       }
     },
     /* 获取行业类别 */
-    *fetchIndustryType(
-      {
-        success,
-        error,
-      },
-      { call, put }
-    ) {
+    *fetchIndustryType({ success, error }, { call, put }) {
       const response = yield call(gsafeQueryIndustryType, { parent_id: -1 });
       if (response.code === 200) {
         yield put({
@@ -263,7 +261,11 @@ export default {
     },
     *insertCompany({ payload, success, error }, { call }) {
       const response = yield call(addCompany, payload);
-      const { data: { id }, code, msg } = response;
+      const {
+        data: { id },
+        code,
+        msg,
+      } = response;
       if (code === 200) {
         if (success) {
           success(id);
@@ -332,10 +334,27 @@ export default {
       }
     },
     *editScreenPermission({ payload, success, error }, { call }) {
-      const response = yield call(editScreenPermission, payload)
+      const response = yield call(editScreenPermission, payload);
       if (response.code === 200) {
         if (success) {
           success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    // 新增企业-初始化页面选项
+    *fetchOptions({ success, error }, { call, put }) {
+      const response = yield call(queryAddCompanyOptions);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryOptions',
+          payload: {
+            data: response.data,
+          },
+        });
+        if (success) {
+          success(response.data);
         }
       } else if (error) {
         error(response.msg);
@@ -433,7 +452,9 @@ export default {
       }
     ) {
       const fields = {};
-      keys.forEach(key => { fields[key] = list; });
+      keys.forEach(key => {
+        fields[key] = list;
+      });
       return {
         ...state,
         ...fields,
@@ -452,7 +473,20 @@ export default {
       return {
         ...state,
         list: payload.list,
+      };
+    },
+    queryOptions(
+      state,
+      {
+        payload: {
+          data: { companyType },
+        },
       }
+    ) {
+      return {
+        ...state,
+        companyTypes: companyType,
+      };
     },
   },
 };

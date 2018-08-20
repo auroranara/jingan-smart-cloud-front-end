@@ -1,4 +1,12 @@
 import { queryOvAlarmCounts, queryOvDangerCounts, queryAlarm, querySys, queryFireTrend, queryDanger } from '../services/bigPlatform/fireControl';
+import {
+  queryOvAlarmCounts,
+  queryOvDangerCounts,
+  queryAlarm,
+  querySys,
+  queryFireTrend,
+  getCompanyFireInfo,
+} from '../services/bigPlatform/fireControl';
 
 function handleDanger(response) {
   const dangerMap = {};
@@ -15,7 +23,12 @@ function handleDanger(response) {
 export default {
   namespace: 'bigFireControl',
 
-  state : {
+  state: {
+    map: {
+      companyBasicInfoList: [],
+      fireNum: 0,
+      totalNum: 0,
+    },
     overview: {},
     alarm: {},
     sys: {},
@@ -24,11 +37,16 @@ export default {
   },
 
   effects: {
+    *fetchCompanyFireInfo({ payload }, { call, put }) {
+      const response = yield call(getCompanyFireInfo);
+      if (response && response.code === 200) {
+        yield put({ type: 'saveMap', payload: response.data });
+      }
+    },
     *fetchOvAlarmCounts({ payload }, { call, put }) {
       const response = yield call(queryOvAlarmCounts);
       const { code, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveOv', payload: data });
+      if (code === 200) yield put({ type: 'saveOv', payload: data });
     },
     *fetchOvDangerCounts({ payload }, { call, put }) {
       const response = yield call(queryOvDangerCounts);
@@ -41,14 +59,13 @@ export default {
     *fetchAlarm({ payload }, { call, put }) {
       const response = yield call(queryAlarm, payload);
       const { code, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveAlarm', payload: data });
+      if (code === 200) yield put({ type: 'saveAlarm', payload: data });
     },
     *fetchSys({ payload }, { call, put }) {
       const response = yield call(querySys);
-      const { code, data } = response;
-      const { total, activeCount } = data;
-      if (code === 200) {
+      if (response && response.code === 200) {
+        const { data } = response;
+        const { total, activeCount } = data;
         yield put({ type: 'saveSys', payload: data });
         yield put({ type: 'saveOv', payload: { total, activeCount } });
       }
@@ -56,8 +73,7 @@ export default {
     *fetchFireTrend({ payload }, { call, put }) {
       const response = yield call(queryFireTrend);
       const { code, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveTrend', payload: data });
+      if (code === 200) yield put({ type: 'saveTrend', payload: data });
     },
     *fetchDanger({ payload }, { call, put }) {
       const response = yield call(queryDanger);
@@ -68,6 +84,9 @@ export default {
   },
 
   reducers: {
+    saveMap(state, action) {
+      return { ...state, map: action.payload };
+    },
     saveOv(state, action) {
       const overview = { ...state.overview, ...action.payload };
       return { ...state, overview };
@@ -85,4 +104,4 @@ export default {
       return { ...state, danger: action.payload };
     },
   },
-}
+};

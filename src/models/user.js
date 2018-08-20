@@ -1,4 +1,4 @@
-import { query as queryUsers, queryCurrent } from '../services/user';
+import { query as queryUsers, queryCurrent, activationSendCode, forgetSendCode, verifyCode, updatePwd } from '../services/user';
 
 export default {
   namespace: 'user',
@@ -34,6 +34,22 @@ export default {
           payload: response.data,
         });
       }
+    },
+    *activationSendCode({ payload, callback }, { call }) {
+      const response = yield call(activationSendCode, payload)
+      if (callback) callback(response)
+    },
+    *forgetSendCode({ payload, callback }, { call }) {
+      const response = yield call(forgetSendCode, payload)
+      if (callback) callback(response)
+    },
+    *verifyCode({ payload, callback }, { call }) {
+      const response = yield call(verifyCode, payload)
+      if (callback) callback(response)
+    },
+    *updatePwd({ payload, callback }, { call }) {
+      const response = yield call(updatePwd, payload)
+      if (callback) callback(response)
     },
   },
 

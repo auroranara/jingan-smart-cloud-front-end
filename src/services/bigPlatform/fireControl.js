@@ -26,3 +26,7 @@ export async function queryFireTrend() {
 export async function queryDanger() {
   return request(`${URL_PREFIX}//hdfg/hiddenDangerMap.json`);
 }
+
+export async function getCompanyFireInfo() {
+  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
+}
