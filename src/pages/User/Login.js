@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-// import { Link } from 'dva/router';
+import { Link } from 'dva/router';
 import { Alert, Icon } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
 
 const { /* Tab, */ UserName, Password, /* Mobile, Captcha, */ Submit } = Login;
+// const PROJECT_CONFIG = global.PROJECT_CONFIG;
+
+const isEye = process.env.PROJECT_ENV === 'eye';
 
 @connect(({ login, loading }) => ({
   login,
@@ -54,17 +57,6 @@ export default class LoginPage extends Component {
         },
         callback: response => {
           if (response.code === 200) {
-            // if (response.data.currentAuthority === 'admin') {
-            //   dispatch({
-            //     type: 'setting/changeSetting',
-            //     payload: { grid: 'Fluid', layout: 'sidemenu' },
-            //   });
-            // } else if (response.data.currentAuthority === 'user') {
-            //   dispatch({
-            //     type: 'setting/changeSetting',
-            //     payload: { grid: 'Wide', layout: 'topmenu' },
-            //   });
-            // }
           } else this.setState({ notice: response.msg });
         },
       });
@@ -121,17 +113,16 @@ export default class LoginPage extends Component {
             <Mobile name="mobile" />
             <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
           </Tab> */}
-          <Submit loading={submitting}>登录</Submit>
-          {/* <div className={styles.other}>
-            其他登录方式
-            <Icon className={styles.icon} type="alipay-circle" />
-            <Icon className={styles.icon} type="taobao-circle" />
-            <Icon className={styles.icon} type="weibo-circle" />
-            <Link className={styles.register} to="/User/Register">
-              注册账户
-            </Link>
-          </div> */}
-          <div className={styles.other}>
+          {isEye && (
+            <div className={styles.other}>
+              <Link to="/user/activation">账号激活</Link>
+              <Link to="/user/forget-password">忘记密码</Link>
+            </div>
+          )}
+          <Submit style={{ marginTop: '15px' }} loading={submitting}>
+            登录
+          </Submit>
+          <div className={styles.downloadContainer}>
             <span onClick={this.handleToDownload} className={styles.download}>
               <Icon type="download" />
               APP下载

@@ -42,6 +42,25 @@ export async function getInfoByLocation(params) {
   return request(`/acloud_new/v2/sfg/infoByLocation.json?${stringify(params)}`);
 }
 
+// 查找重点和非重点单位
+export async function getSearchAllCompany(params) {
+  return request(`/acloud_new/v2/sfg/searchAllCompany.json`);
+}
+
+// 政府专职人员列表
+export async function getGovFulltimeWorkerList() {
+  return request(`/acloud_new/v2/sfg/govFulltimeWorkerList.json`);
+}
+
+// 获取超期未整改隐患企业列表
+export async function getOverRectifyCompany() {
+  return request(`/acloud_new/v2/sfg/overRectifyCompany.json`);
+}
+
+// 查找重点单位
+export async function getSearchImportantCompany() {
+  return request(`/acloud_new/v2/sfg/searchImportantCompany.json`);
+}
 
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
@@ -77,4 +96,9 @@ export async function getRiskDetail(params) {
 // 隐患总数
 export async function getHiddenDanger(params) {
   return request(`/acloud_new/v2/sfc/hiddenDanger.json?${stringify(params)}`);
+}
+
+// 单位名称查找
+export async function searchCompanies(params) {
+  return request(`/acloud_new/v2/sfg/searchCompany.json?${stringify(params)}`);
 }
