@@ -65,8 +65,17 @@ const itemLayout1 = {
 const GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime',  'safetyFourPicture', 'companyLogo'];
 const MORE_GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
 
-function generateRules(cName, msg="输入") {
-  return [{ required: true, message: `请${msg}${cName}` }];
+function generateRules(cName, msg="输入", ...rules) {
+  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+}
+
+function genCheckFileList(msg) {
+  return function (rule, value, callback) {
+    if (!value || !value.fileList || !value.fileList.length)
+      callback(`请上传${msg}`);
+    else
+      callback();
+  };
 }
 
 function getOptions(options = []) {
@@ -260,7 +269,7 @@ export default class Safety extends PureComponent {
     e.preventDefault();
     validateFields((err, fieldsValue) => {
       // 获取到的为Option中的value
-      // console.log('formValues in Safety', fieldsValue);
+      console.log('formValues in Safety', fieldsValue);
 
       const { operation } = this.props;
       // 在添加页面安监信息都提示要新建企业基本信息后才能添加，当新建企业基本信息成功后，会询问是否添加安监信息，选择添加，则会跳转到编辑页面
@@ -467,7 +476,7 @@ export default class Safety extends PureComponent {
         name: 'safetyFourPicture',
         cName: '安全四色图',
         span: 24,
-        rules: generateRules('安全四色图', '上传'),
+        rules: generateRules('安全四色图', '上传', { validator: genCheckFileList('安全四色图') }),
         formItemLayout: itemLayout1,
         component: <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}><Button loading={safeLoading} type="primary">{UploadIcon}上传图片</Button></Upload>,
       }, {
@@ -484,7 +493,7 @@ export default class Safety extends PureComponent {
         name: 'reachGradeAccessory',
         cName: '标准化达标等级附件',
         span: 24,
-        rules: generateRules('标准化达标等级附件', '上传'),
+        rules: generateRules('标准化达标等级附件', '上传', { validator: genCheckFileList('标准化达标等级附件') }),
         formItemLayout: itemLayout1,
         component: <Upload {...defaultUploadProps} fileList={standardList} onChange={this.handleStandardChange}><Button loading={standardLoading} type="primary">{UploadIcon}上传附件</Button></Upload>,
       },
