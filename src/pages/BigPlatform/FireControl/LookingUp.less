@@ -1,0 +1,203 @@
+@imgUrl: 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/';
+@keyframes ringRotate {
+  from {
+    transform: rotateZ(0);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+@keyframes bubble {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.main {
+  position: relative;
+  height: 100%;
+
+  .top {
+    height: 30%;
+    position: relative;
+    border-bottom: 2px solid #053d83;
+    .left {
+      width: 95px;
+      height: 95px;
+      margin-left: 48px;
+      margin-top: 18px;
+      position: relative;
+    }
+
+    .circlrLookUp {
+      width: 82px;
+      height: 82px;
+      font-size: 22px;
+      color: #fff;
+      padding-left: 15px;
+      margin: 6.5px;
+      background: url('@{imgUrl}btn_bg.png') no-repeat;
+    }
+    .right {
+      height: 100%;
+      width: 100%;
+      float: left;
+      .countDown {
+        color: #00a8ff;
+        font-size: 16px;
+        float: left;
+        position: absolute;
+        left: 7%;
+        top: 55px;
+      }
+      .flask {
+        width: 70%;
+        height: 70%;
+        float: left;
+        position: absolute;
+        left: 30%;
+        top: 20px;
+      }
+    }
+  }
+
+  .ring {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: url('@{imgUrl}circle.png') no-repeat;
+    animation: ringRotate 5s ease infinite;
+  }
+
+  .bubble {
+    width: 122px;
+    height: 65px;
+    position: absolute;
+    left: -13.5px;
+    bottom: 15px;
+    background: url('@{imgUrl}bubble.png') no-repeat;
+    background-size: cover;
+    animation: bubble 2s ease alternate infinite;
+  }
+
+  .bottom {
+    margin-top: 8%;
+    margin-left: 5%;
+    height: 50%;
+
+    .responsetime {
+      margin-top: 2%;
+    }
+  }
+}
+
+// 在岗率
+.jobRateWrite {
+  height: 25%;
+  float: left;
+  padding-left: 10px;
+  padding-top: 30px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.jobNum {
+  height: 25%;
+  float: left;
+  color: #008dd8;
+  font-size: 16px;
+  .onJob {
+    margin-top: 10px;
+    .onJobIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background: url('@{imgUrl}onJobIcon.png') no-repeat;
+    }
+    .personnum {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+
+  .leaveJob {
+    margin-top: 10px;
+    .leavelJobIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background: url('@{imgUrl}leavelJobIcon.png') no-repeat;
+    }
+    .personnum {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+}
+
+// 应答时间
+.timeWrite {
+  height: 25%;
+  float: left;
+  padding-left: 10px;
+  padding-top: 25px;
+  color: #fff;
+  font-size: 16px;
+}
+.timeIcon {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  top: 12px;
+  background: url('@{imgUrl}time.png') no-repeat;
+}
+.timeNum {
+  height: 25%;
+  float: left;
+  color: #008dd8;
+  font-size: 16px;
+  .rabbit {
+    margin-top: 10px;
+    .rabbitIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background: url('@{imgUrl}rabbit.png') no-repeat;
+    }
+    .minutes {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+  .snail {
+    margin-top: 10px;
+    .snailIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 1px;
+      background: url('@{imgUrl}snail.png') no-repeat;
+    }
+    .minutes {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+}

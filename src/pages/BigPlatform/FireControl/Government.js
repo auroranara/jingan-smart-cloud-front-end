@@ -14,11 +14,19 @@ import GridDangerSection from './GridDangerSection';
 import FireControlMap from './FireControlMap';
 import bg from './bg.png';
 
+import UnitLookUp from './UnitLookUp';
+import UintLookUpBack from './UintLookUpBack';
+
 const HEIGHT_PERCNET = { height: '100%' };
+const LOOKING_UP = 'lookingUp';
+const OFF_GUARD = 'offGuardWarning';
 
 @connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
-  state = { isRotated: false };
+  state = {
+    isLookUpRotated: false,
+    lookUpShow: LOOKING_UP,
+  };
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -31,8 +39,27 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchDanger' });
   }
 
+  handleClickLookUp = () => {
+    this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true });
+  };
+
+  handleClickOffGuard = () => {
+    this.setState({ lookUpShow: OFF_GUARD, isLookUpRotated: true });
+  };
+
+  handleUnitLookUpRotateBack = () => {
+    this.setState({ isLookUpRotated: false });
+  };
+
   render() {
     const { bigFireControl: { overview, alarm, sys, trend, danger, map }, dispatch } = this.props;
+
+    const { isLookUpRotated, lookUpShow } = this.state;
+
+    const handleRotateMethods = {
+      handleClickLookUp: this.handleClickLookUp,
+      handleClickOffGuard: this.handleClickOffGuard,
+    };
 
     return (
       <div className={styles.root} style={{ background: `url(${bg}) center center` }}>
@@ -72,9 +99,13 @@ export default class FireControlBigPlatform extends PureComponent {
             </Row>
           </Col>
           <Col span={6} style={HEIGHT_PERCNET}>
-            <FcModule className={styles.inspect}>
-              <FcSection title="单位查岗" />
-              <FcSection title="单位查岗反面" isBack />
+            <FcModule className={styles.inspect} isRotated={isLookUpRotated}>
+              <UnitLookUp handleRotateMethods={handleRotateMethods} />
+              <UintLookUpBack
+                handleRotateBack={this.handleUnitLookUpRotateBack}
+                lookUpShow={lookUpShow}
+                isLookUpRotated={isLookUpRotated}
+              />
             </FcModule>
             <div className={styles.gutter3}></div>
             <FcModule className={styles.system}>
