@@ -11,27 +11,30 @@ import codes from '../../../utils/codes';
 // import styles from './Role.less';
 
 const { TreeNode } = Tree;
-const { TextArea } = Input
+const { TextArea } = Input;
 
 // 标题
 const addTitle = '新增角色';
 const editTitle = '编辑角色';
 // 获取链接地址
-const { role: { list: backUrl } } = urls;
+const {
+  role: { list: backUrl },
+} = urls;
 // 获取code
-const { role: { list: listCode } } = codes;
+const {
+  role: { list: listCode },
+} = codes;
 /* 根据选中的子节点获取父节点 */
 const checkParent = (list, permissions) => {
   let newList = [];
   list.forEach(item => {
     const { id, childMenus } = item;
     if (childMenus) {
-      const newChildMenu =  checkParent(childMenus, permissions);
+      const newChildMenu = checkParent(childMenus, permissions);
       if (newChildMenu.length !== 0) {
-        newList = newList.concat(newChildMenu, id)
+        newList = newList.concat(newChildMenu, id);
       }
-    }
-    else {
+    } else {
       permissions.includes(id) && newList.push(id);
     }
   });
@@ -42,24 +45,23 @@ const uncheckParent = (list, permissions) => {
   let newList = [];
   list.forEach(({ id, childMenus }) => {
     if (childMenus) {
-      const newChildMenu =  uncheckParent(childMenus, permissions);
+      const newChildMenu = uncheckParent(childMenus, permissions);
       if (newChildMenu.length !== 0) {
-        newList = newList.concat(newChildMenu)
+        newList = newList.concat(newChildMenu);
         if (childMenus.every(({ id }) => newChildMenu.includes(id))) {
           newList = newList.concat(id);
         }
       }
-    }
-    else {
+    } else {
       permissions.includes(id) && newList.push(id);
     }
   });
   return newList;
 };
 /* 对树排序 */
-const sortTree = (list) => {
+const sortTree = list => {
   const newList = [];
-  list.forEach((item) => {
+  list.forEach(item => {
     const { childMenus, sort } = item;
     if (!sort && sort !== 0) {
       newList.push({
@@ -72,14 +74,13 @@ const sortTree = (list) => {
         ...item,
         childMenus: sortTree(childMenus),
       };
-    }
-    else {
+    } else {
       newList[sort] = {
         ...item,
       };
     }
   });
-  for(var i=newList.length-1;i>=0;i--){
+  for (var i = newList.length - 1; i >= 0; i--) {
     if (!newList[i]) {
       newList.splice(i, 1);
     }
@@ -87,60 +88,70 @@ const sortTree = (list) => {
   return newList;
 };
 
-
-@connect(({ role, user, loading }) => ({
-  role,
-  user,
-  loading: loading.models.role,
-}), (dispatch) => ({
-  // 获取详情
-  fetchDetail(action) {
-    dispatch({
-      type: 'role/fetchDetail',
-      ...action,
-    });
-  },
-  // 获取权限树
-  fetchPermissionTree() {
-    dispatch({
-      type: 'role/fetchPermissionTree',
-    });
-  },
-  // 新增角色
-  insertRole(action) {
-    dispatch({
-      type: 'role/insertRole',
-      ...action,
-    });
-  },
-  // 编辑角色
-  updateRole(action) {
-    dispatch({
-      type: 'role/updateRole',
-      ...action,
-    });
-  },
-  // 清空详情
-  clearDetail() {
-    dispatch({
-      type: 'role/clearDetail',
-    });
-  },
-  // 返回
-  goBack() {
-    dispatch(routerRedux.push(backUrl));
-  },
-  dispatch,
-}))
+@connect(
+  ({ role, user, loading }) => ({
+    role,
+    user,
+    loading: loading.models.role,
+  }),
+  dispatch => ({
+    // 获取详情
+    fetchDetail(action) {
+      dispatch({
+        type: 'role/fetchDetail',
+        ...action,
+      });
+    },
+    // 获取权限树
+    fetchPermissionTree() {
+      dispatch({
+        type: 'role/fetchPermissionTree',
+      });
+    },
+    // 新增角色
+    insertRole(action) {
+      dispatch({
+        type: 'role/insertRole',
+        ...action,
+      });
+    },
+    // 编辑角色
+    updateRole(action) {
+      dispatch({
+        type: 'role/updateRole',
+        ...action,
+      });
+    },
+    // 清空详情
+    clearDetail() {
+      dispatch({
+        type: 'role/clearDetail',
+      });
+    },
+    // 返回
+    goBack() {
+      dispatch(routerRedux.push(backUrl));
+    },
+    dispatch,
+  })
+)
 @Form.create()
 export default class RoleHandler extends PureComponent {
-  state={
+  state = {
     submitting: false,
-  }
+  };
 
   /* 挂载后 */
   componentDidMount() {
-    const { fetchDetail, fetchPermissionTree, clearDetail, role: { permissionTree }, match: { params: { id } } } = this.props;
+    const {
+      fetchDetail,
+      fetchPermissionTree,
+      clearDetail,
+      role: { permissionTree },
+      match: {
+        params: { id },
+      },
+    } = this.props;
     // 根据params.id是否存在判断当前为新增还是编辑
     if (id) {
       // 根据id获取详情
@@ -149,8 +160,7 @@ export default class RoleHandler extends PureComponent {
           id,
         },
       });
-    }
-    else {
+    } else {
       // 清空详情
       clearDetail();
     }
@@ -162,7 +172,15 @@ export default class RoleHandler extends PureComponent {
 
   /* 提交 */
   handleSubmit = () => {
-    const { insertRole, updateRole, goBack, form: { validateFieldsAndScroll }, match: { params: { id } } } = this.props;
+    const {
+      insertRole,
+      updateRole,
+      goBack,
+      form: { validateFieldsAndScroll },
+      match: {
+        params: { id },
+      },
+    } = this.props;
     // 验证表单
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -170,7 +188,9 @@ export default class RoleHandler extends PureComponent {
         this.setState({
           submitting: true,
         });
-        const { role: { permissionTree } } = this.props;
+        const {
+          role: { permissionTree },
+        } = this.props;
         const { name, description, permissions } = values;
         const payload = {
           id,
@@ -207,11 +227,18 @@ export default class RoleHandler extends PureComponent {
         }
       }
     });
-  }
+  };
 
   /* 基本信息 */
   renderBasicInfo() {
-    const { role: { detail: { sysRole: { name, description } } }, form: { getFieldDecorator } } = this.props;
+    const {
+      role: {
+        detail: {
+          sysRole: { name, description },
+        },
+      },
+      form: { getFieldDecorator },
+    } = this.props;
 
     return (
       <Card title="基本信息">
@@ -259,7 +286,7 @@ export default class RoleHandler extends PureComponent {
 
   /* 树节点 */
   renderTreeNodes(data) {
-    return data.map((item) => {
+    return data.map(item => {
       const { id, showZname: title, childMenus: children } = item;
       if (children) {
         return (
@@ -274,7 +301,13 @@ export default class RoleHandler extends PureComponent {
 
   /* 权限配置 */
   renderAuthorizationConfiguration() {
-    const { role: { permissionTree, detail: { permissions } }, form: { getFieldDecorator } } = this.props;
+    const {
+      role: {
+        permissionTree,
+        detail: { permissions },
+      },
+      form: { getFieldDecorator },
+    } = this.props;
     const value = permissions && uncheckParent(permissionTree, permissions);
     const tree = sortTree(permissionTree);
 
@@ -297,14 +330,14 @@ export default class RoleHandler extends PureComponent {
               trigger: 'onCheck',
               validateTrigger: 'onCheck',
               valuePropName: 'checkedKeys',
-              rules: [{ required: true, message: '请选择权限', transform: value => value && value.join(',') }],
-            })(
-              <Tree
-                checkable
-              >
-                {this.renderTreeNodes(tree)}
-              </Tree>
-            )}
+              rules: [
+                {
+                  required: true,
+                  message: '请选择权限',
+                  transform: value => value && value.join(','),
+                },
+              ],
+            })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
         </Form>
         {this.renderButtonGroup()}
@@ -314,19 +347,37 @@ export default class RoleHandler extends PureComponent {
 
   /* 按钮组 */
   renderButtonGroup() {
-    const { goBack, loading, user: { currentUser: { permissionCodes } } } = this.props;
+    const {
+      goBack,
+      loading,
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
 
     return (
       <div style={{ textAlign: 'center' }}>
-        <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>返回</Button>
-        <Button type="primary" onClick={this.handleSubmit} loading={loading}>确定</Button>
+        <Button onClick={goBack} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>
+          返回
+        </Button>
+        <Button type="primary" onClick={this.handleSubmit} loading={loading}>
+          确定
+        </Button>
       </div>
     );
   }
 
   render() {
-    const { loading, match: { params: { id } },  user: { currentUser: { permissionCodes } } } = this.props;
+    const {
+      loading,
+      match: {
+        params: { id },
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
     const { submitting } = this.state;
     // 是否有列表权限
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
