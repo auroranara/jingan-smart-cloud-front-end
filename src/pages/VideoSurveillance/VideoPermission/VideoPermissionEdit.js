@@ -28,6 +28,7 @@ export default class VideoPermissionEdit extends PureComponent {
     type: 'company',
     departmentId: '',
     selectedCompanyId: '',
+    expandedKeys: [],
   }
 
   componentDidMount() {
@@ -48,7 +49,6 @@ export default class VideoPermissionEdit extends PureComponent {
 
   // 打开企业设置权限弹窗
   handleSetPermission = () => {
-    // TODO: 新增和编辑情况,新增时如果没有选择企业需要提示
     const { dispatch, match: { params: { companyId } } } = this.props
     const { selectedCompanyId } = this.state
     const callback = (list) => {
@@ -64,6 +64,7 @@ export default class VideoPermissionEdit extends PureComponent {
         checkedKeys: { checked, halfChecked },
         type: 'company',
         departmentId: null,
+        expandedKeys: halfChecked,
       })
     }
     if (companyId) {
@@ -87,10 +88,11 @@ export default class VideoPermissionEdit extends PureComponent {
 
   // 打开设置部门权限弹窗
   handleDepPermission = (departmentId) => {
-    const { dispatch } = this.props
+    const { dispatch, match: { params: { companyId } } } = this.props
+    const { selectedCompanyId } = this.state
     dispatch({
       type: 'video/fetchVideoTree',
-      payload: { cId: departmentId },
+      payload: { dId: departmentId, cId: companyId || selectedCompanyId },
       callback: (list) => {
         const temp = list.map(item => {
           return { ...item, parentIds: '0' }
@@ -104,16 +106,19 @@ export default class VideoPermissionEdit extends PureComponent {
           checkedKeys: { checked, halfChecked },
           type: 'department',
           departmentId,
+          expandedKeys: halfChecked,
         })
       },
     })
   }
 
-  // 保存state
+  // 保存state,接收一个对象
   saveParentStates = (params) => {
     this.setState({
       ...params,
     })
+    console.log('parentstate', this.state);
+
   }
 
   // 企业下拉查询
@@ -139,7 +144,6 @@ export default class VideoPermissionEdit extends PureComponent {
 
   // 保存权限配置
   doSavePermission = (checkedKeys) => {
-    // TODO:新增和编辑情况
     const { dispatch, match: { params: { companyId } } } = this.props
     const { type, departmentId, selectedCompanyId } = this.state
     this.setState({
@@ -165,22 +169,20 @@ export default class VideoPermissionEdit extends PureComponent {
         }
       },
     })
-    console.log('checkedKeys', checkedKeys);
-
   }
 
   // 点击树节点加载子节点
   handleLoadData = (data, callback) => {
     const { dispatch, match: { params: { companyId } } } = this.props
     const { id } = data;
-    const { type, departmentId, checkedKeys } = this.state
+    const { departmentId, checkedKeys, selectedCompanyId } = this.state
     this.setState({
       loading: true,
     });
     // 调用接口获取当前节点的子元素
     dispatch({
       type: 'video/fetchVideoTree',
-      payload: type === 'company' ? { parentId: id, cId: companyId } : { parentId: id, dId: departmentId },
+      payload: { parentId: id, cId: companyId || selectedCompanyId, dId: departmentId },
       callback: list => {
         const tempList = list.map((item) => {
           return data.parentIds ? { ...item, parentIds: `${data.parentIds}','${id}` } : { ...item, parentIds: `${id}` }
@@ -197,6 +199,7 @@ export default class VideoPermissionEdit extends PureComponent {
             checked: [...checkedKeys.checked, ...checked],
             halfChecked: [...checkedKeys.halfChecked, ...halfChecked],
           },
+          expandedKeys: [...checkedKeys.halfChecked, ...halfChecked],
         });
       },
     })
@@ -287,7 +290,7 @@ export default class VideoPermissionEdit extends PureComponent {
 
   render() {
     const { match: { params: { companyId } } } = this.props
-    const { visible, confirmLoading, tree, checkedKeys } = this.state
+    const { visible, confirmLoading, tree, checkedKeys, expandedKeys } = this.state
 
     const title = companyId ? "编辑视频权限" : "新增视频权限"
 
@@ -329,6 +332,7 @@ export default class VideoPermissionEdit extends PureComponent {
             checkable: true,
             checkedKeys: checkedKeys,
             loadData: this.handleLoadData,
+            expandedKeys: expandedKeys,
             fieldNames: {
               id: 'id',
               title: 'name',
