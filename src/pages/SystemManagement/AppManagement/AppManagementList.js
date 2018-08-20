@@ -23,26 +23,28 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const CreateForm = Form.create()((props) => {
-  const { fileList, setFileList, modalVisible, form, setDownloadUrl, setConfirmLoading, handleAdd, handleUpdate,
-    handleModalVisible, confirmLoading, currentRecord, downloadUrl } = props;
+  const { fileList, setFileList, modalVisible, form, setdbUrl, setConfirmLoading, handleAdd, handleUpdate,
+    handleModalVisible, confirmLoading, currentRecord, dbUrl } = props;
   const operationUpdate = !!currentRecord;
-  // console.log('current record', currentRecord);
+
+  // 点击确定（此时downloadUrl为上传成功后保存的dbUrl）
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
       if (operationUpdate) {
-        handleUpdate(fieldsValue);
+        handleUpdate({ ...fieldsValue, downloadUrl: dbUrl });
       } else {
-        handleAdd(fieldsValue);
+        handleAdd({ ...fieldsValue, downloadUrl: dbUrl });
       }
-      setDownloadUrl(''); // 点击确定时，将url清空
+      setdbUrl(''); // 点击确定时，将url清空
       setFileList();
     });
   };
   const cancelHandle = () => {
     handleModalVisible();
-    setDownloadUrl('');
+    setdbUrl('');
+    setFileList();
   };
 
   // console.log(getToken());
@@ -61,8 +63,10 @@ const CreateForm = Form.create()((props) => {
         setConfirmLoading(true);
       } else if (info.file.status === 'done') {
         if (info.file.response && info.file.response.code && info.file.response.code === 200) {
-          form.setFieldsValue({ downloadUrl: info.file.response.data })
-          setDownloadUrl(info.file.response.data);
+          // 上传成功回调拿到data包含webUrl（显示所需） 和dbUrl（上传配置所需）
+          form.setFieldsValue({ downloadUrl: info.file.response.data.webUrl })
+          // 保存dbUrl到父级
+          setdbUrl(info.file.response.data.dbUrl);
           setConfirmLoading(false);
           message.success(`${info.file.name}文件上传成功`);
         } else message.error('文件上传失败');
@@ -114,11 +118,11 @@ const CreateForm = Form.create()((props) => {
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="下载地址">
         {form.getFieldDecorator('downloadUrl', {
-          initialValue: operationUpdate ? currentRecord.downloadUrl : downloadUrl,
+          initialValue: operationUpdate ? currentRecord.downloadUrl : '',
           rules: [
             { required: true, message: '请上传安装文件' },
           ],
-        })(<Input placeholder="请输入" />)}
+        })(<Input disabled={true} placeholder="上传后自动补全" />)}
       </FormItem>
     </Modal>
   );
@@ -135,7 +139,7 @@ export default class AppManagement extends PureComponent {
     modalVisible: false,
     currentRecord: null,
     selectedRows: [],
-    downloadUrl: '',
+    dbUrl: '',
     confirmLoading: false,
     mobileSystemType: '1', // 要设置成字符串，不能是数字1，因为设定select里面的value="1"，而不是value={1}
   };
@@ -157,8 +161,8 @@ export default class AppManagement extends PureComponent {
     });
   }
 
-  setDownloadUrl = (url) => {
-    this.setState({ downloadUrl: url });
+  setdbUrl = (url) => {
+    this.setState({ dbUrl: url });
   };
 
   setFileList = list => {
@@ -192,6 +196,7 @@ export default class AppManagement extends PureComponent {
     this.setState({
       modalVisible: !!flag,
       currentRecord,
+      dbUrl: currentRecord ? currentRecord.dbUrl : '',
     });
   };
 
@@ -333,7 +338,7 @@ export default class AppManagement extends PureComponent {
     data.list = list
 
     const { fileList, selectedRows, modalVisible, currentRecord,
-      downloadUrl, confirmLoading, mobileSystemType } = this.state;
+      dbUrl, confirmLoading, mobileSystemType } = this.state;
 
     const columns = [
       {
@@ -379,7 +384,7 @@ export default class AppManagement extends PureComponent {
       handleAdd: this.handleAdd,
       handleUpdate: this.handleUpdate,
       handleModalVisible: this.handleModalVisible,
-      setDownloadUrl: this.setDownloadUrl,
+      setdbUrl: this.setdbUrl,
       setConfirmLoading: this.setConfirmLoading,
     };
 
@@ -419,7 +424,7 @@ export default class AppManagement extends PureComponent {
           {...parentMethods}
           modalVisible={modalVisible}
           currentRecord={currentRecord}
-          downloadUrl={downloadUrl}
+          dbUrl={dbUrl}
           confirmLoading={confirmLoading}
           fileList={fileList}
         />
