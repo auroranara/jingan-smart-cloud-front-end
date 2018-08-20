@@ -1,10 +1,10 @@
-import { queryOvAlarmCounts, queryOvDangerCounts, queryAlarm, querySys, queryFireTrend, queryDanger } from '../services/bigPlatform/fireControl';
 import {
   queryOvAlarmCounts,
   queryOvDangerCounts,
   queryAlarm,
   querySys,
   queryFireTrend,
+  queryDanger,
   getCompanyFireInfo,
 } from '../services/bigPlatform/fireControl';
 

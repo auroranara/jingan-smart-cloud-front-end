@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker } from 'react-amap';
+
+import FcSection from './FcSection';
 import styles from './FireControlMap.less';
 import MapSearch from './MapSearch';
 
@@ -48,7 +50,7 @@ export default class FireControlMap extends PureComponent {
       map: { companyBasicInfoList },
     } = this.props;
     return (
-      <div style={{ width: '100%', height: '100%' }}>
+      <FcSection style={{ padding: 0 }} className={styles.map}>
         <GDMap
           amapkey="665bd904a802559d49a33335f1e4aa0d"
           plugins={[
@@ -70,7 +72,7 @@ export default class FireControlMap extends PureComponent {
           list={companyBasicInfoList}
           handleSelect={this.handleSelect}
         />
-      </div>
+      </FcSection>
     );
   }
 }

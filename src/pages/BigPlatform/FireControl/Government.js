@@ -32,11 +32,7 @@ export default class FireControlBigPlatform extends PureComponent {
   }
 
   render() {
-    const {
-      bigFireControl: { overview, alarm, sys, trend, map },
-      dispatch,
-    } = this.props;
-    const { bigFireControl: { overview, alarm, sys, trend, danger }, dispatch } = this.props;
+    const { bigFireControl: { overview, alarm, sys, trend, danger, map }, dispatch } = this.props;
 
     return (
       <div className={styles.root} style={{ background: `url(${bg}) center center` }}>
@@ -56,7 +52,7 @@ export default class FireControlBigPlatform extends PureComponent {
           </Col>
           <Col span={12} style={HEIGHT_PERCNET}>
             <FcModule className={styles.map}>
-              <FcSection title="Map" />
+              <FireControlMap map={map} />
               <FcSection title="Map Reverse" isBack />
             </FcModule>
             <div className={styles.gutter2}></div>
