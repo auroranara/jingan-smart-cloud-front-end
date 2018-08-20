@@ -1,4 +1,4 @@
-import { queryOvAlarmCounts, queryOvDangerCounts, queryAlarm, querySys, queryFireTrend } from '../services/bigPlatform/fireControl';
+import { queryOvAlarmCounts, queryOvDangerCounts, queryAlarm, querySys, queryFireTrend, queryDanger } from '../services/bigPlatform/fireControl';
 
 export default {
   namespace: 'bigFireControl',
@@ -8,6 +8,7 @@ export default {
     alarm: {},
     sys: {},
     trend: {},
+    danger: {},
   },
 
   effects: {
@@ -46,6 +47,12 @@ export default {
       if (code === 200)
         yield put({ type: 'saveTrend', payload: data });
     },
+    *fetchDanger({ payload }, { call, put }) {
+      const response = yield call(queryDanger);
+      const { code, data } = response;
+      if (code === 200)
+        yield put({ type: 'saveDanger', payload: data });
+    },
   },
 
   reducers: {
@@ -61,6 +68,9 @@ export default {
     },
     saveTrend(state, action) {
       return { ...state, trend: action.payload };
+    },
+    saveDanger(state, action) {
+      return { ...state, danger: action.payload };
     },
   },
 }

@@ -22,3 +22,7 @@ export async function querySys() {
 export async function queryFireTrend() {
   return request(`${URL_PREFIX}/fireManage/fireProcessTrend`);
 }
+
+export async function queryDanger() {
+  return request(`${URL_PREFIX}//hdfg/hiddenDangerMap.json`);
+}

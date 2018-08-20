@@ -14,8 +14,13 @@ function genSource() {
   return source;
 }
 
+function handleSource(list) {
+  const source = [['时间', '巡查次数', '隐患数量']];
+  return source;
+}
+
 export default function GridDangerSection(props) {
-  // const { trendData: { list = [] } } = props;
+  const { dangerData: { list = [] } } = props;
   // const source = handleSource(list);
   const source = genSource();
 

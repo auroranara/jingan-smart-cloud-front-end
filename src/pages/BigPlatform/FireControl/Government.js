@@ -25,10 +25,11 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchSys' });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
     dispatch({ type: 'bigFireControl/fetchFireTrend' });
+    dispatch({ type: 'bigFireControl/fetchDanger' });
   }
 
   render() {
-    const { bigFireControl: { overview, alarm, sys, trend }, dispatch } = this.props;
+    const { bigFireControl: { overview, alarm, sys, trend, danger }, dispatch } = this.props;
 
     return (
       <Row style={{ height: '100%', marginLeft: 0, marginRight: 0, background: `url(${bg}) center center` }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>
@@ -58,7 +59,7 @@ export default class FireControlBigPlatform extends PureComponent {
             </Col>
             <Col span={12} className={styles.centerRight}>
               <FcModule style={{ height: '100%' }}>
-                <GridDangerSection />
+                <GridDangerSection dangerData={danger} />
                 <FcSection title="网格隐患巡查反面" isBack />
               </FcModule>
             </Col>
