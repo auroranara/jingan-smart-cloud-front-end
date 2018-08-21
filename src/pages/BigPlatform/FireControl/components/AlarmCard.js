@@ -13,10 +13,10 @@ export default function AlarmCard(props) {
 
   return (
     <div className={styles.container}>
-      <p className={styles.company}>{company}</p>
-      <p className={styles.address}><span className={styles.locateIcon} style={{ background: `url(${locateIcon})`, backgroundSize: 'cover' }} />{address}</p>
+      <p className={styles.company}>{company ? company : '暂无信息'}</p>
+      <p className={styles.address}><span className={styles.locateIcon} style={{ background: `url(${locateIcon})`, backgroundSize: 'cover' }} />{address ? address : '暂无信息'}</p>
       <span className={styles.fireIcon} style={{ background: `url(${fireIcon})`, backgroundSize: 'cover' }} />
-      <span className={styles.time}>{time}</span>
+      <span className={styles.time}>{time ? time : '暂无信息'}</span>
     </div>
   );
 }

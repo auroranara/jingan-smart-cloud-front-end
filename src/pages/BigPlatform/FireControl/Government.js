@@ -3,11 +3,15 @@ import { connect } from 'dva';
 import { Col, Row } from 'antd';
 
 import styles from './Government.less';
+import Head from './Head';
 import FcModule from './FcModule';
 import FcSection from './FcSection';
 import OverviewSection from './OverviewSection';
 import AlarmSection from './AlarmSection';
 import SystemSection from './SystemSection';
+import TrendSection from './TrendSection';
+import GridDangerSection from './GridDangerSection';
+import FireControlMap from './FireControlMap';
 import bg from './bg.png';
 
 import UnitLookUp from './UnitLookUp';
@@ -30,6 +34,9 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
     dispatch({ type: 'bigFireControl/fetchSys' });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
+    dispatch({ type: 'bigFireControl/fetchFireTrend' });
+    dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
+    dispatch({ type: 'bigFireControl/fetchDanger' });
   }
 
   handleClickLookUp = () => {
@@ -45,10 +52,7 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   render() {
-    const {
-      bigFireControl: { overview, alarm, sys },
-      dispatch,
-    } = this.props;
+    const { bigFireControl: { overview, alarm, sys, trend, danger, map }, dispatch } = this.props;
 
     const { isLookUpRotated, lookUpShow } = this.state;
 
@@ -58,63 +62,59 @@ export default class FireControlBigPlatform extends PureComponent {
     };
 
     return (
-      <Row
-        style={{
-          height: '100%',
-          marginLeft: 0,
-          marginRight: 0,
-          background: `url(${bg}) center center`,
-        }}
-        gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}
-      >
-        <Col span={6} style={HEIGHT_PERCNET}>
-          <FcModule className={styles.overview}>
-            <OverviewSection ovData={overview} />
-            <FcSection title="辖区概况反面" isBack />
-          </FcModule>
-          <div className={styles.gutter1} />
-          <FcModule className={styles.alarmInfo}>
-            <AlarmSection alarmData={alarm} dispatch={dispatch} />
-            <FcSection title="警情信息反面" isBack />
-          </FcModule>
-        </Col>
-        <Col span={12} style={HEIGHT_PERCNET}>
-          <FcModule className={styles.map}>
-            <FcSection title="Map" />
-            <FcSection title="Map Reverse" isBack />
-          </FcModule>
-          <div className={styles.gutter2} />
-          <Row className={styles.center}>
-            <Col span={12} className={styles.centerLeft}>
-              <FcModule style={{ height: '100%' }}>
-                <FcSection title="火警趋势" />
-                <FcSection title="火警趋势反面" isBack />
-              </FcModule>
-            </Col>
-            <Col span={12} className={styles.centerRight}>
-              <FcModule style={{ height: '100%' }}>
-                <FcSection title="网格隐患巡查" />
-                <FcSection title="网格隐患巡查反面" isBack />
-              </FcModule>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={6} style={HEIGHT_PERCNET}>
-          <FcModule className={styles.inspect} isRotated={isLookUpRotated}>
-            <UnitLookUp handleRotateMethods={handleRotateMethods} />
-            <UintLookUpBack
-              handleRotateBack={this.handleUnitLookUpRotateBack}
-              lookUpShow={lookUpShow}
-              isLookUpRotated={isLookUpRotated}
-            />
-          </FcModule>
-          <div className={styles.gutter3} />
-          <FcModule className={styles.system}>
-            <SystemSection sysData={sys} />
-            <FcSection title="系统接入情况反面" isBack />
-          </FcModule>
-        </Col>
-      </Row>
+      <div className={styles.root} style={{ background: `url(${bg}) center center` }}>
+        <Head title="晶安智慧消防云平台" />
+        <div className={styles.empty} />
+        <Row style={{ height: '88%', marginLeft: 0, marginRight: 0 }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>
+          <Col span={6} style={HEIGHT_PERCNET}>
+            <FcModule className={styles.overview}>
+              <OverviewSection ovData={overview} />
+              <FcSection title="辖区概况反面" isBack />
+            </FcModule>
+            <div className={styles.gutter1}></div>
+            <FcModule className={styles.alarmInfo}>
+              <AlarmSection alarmData={alarm} dispatch={dispatch} />
+              <FcSection title="警情信息反面" isBack />
+            </FcModule>
+          </Col>
+          <Col span={12} style={HEIGHT_PERCNET}>
+            <FcModule className={styles.map}>
+              <FireControlMap map={map} />
+              <FcSection title="Map Reverse" isBack />
+            </FcModule>
+            <div className={styles.gutter2}></div>
+            <Row className={styles.center}>
+              <Col span={12} className={styles.centerLeft}>
+                <FcModule style={{ height: '100%' }}>
+                  <TrendSection trendData={trend} />
+                  <FcSection title="火警趋势反面" isBack />
+                </FcModule>
+              </Col>
+              <Col span={12} className={styles.centerRight}>
+                <FcModule style={{ height: '100%' }}>
+                  <GridDangerSection dangerData={danger} />
+                  <FcSection title="网格隐患巡查反面" isBack />
+                </FcModule>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={6} style={HEIGHT_PERCNET}>
+            <FcModule className={styles.inspect} isRotated={isLookUpRotated}>
+              <UnitLookUp handleRotateMethods={handleRotateMethods} />
+              <UintLookUpBack
+                handleRotateBack={this.handleUnitLookUpRotateBack}
+                lookUpShow={lookUpShow}
+                isLookUpRotated={isLookUpRotated}
+              />
+            </FcModule>
+            <div className={styles.gutter3}></div>
+            <FcModule className={styles.system}>
+              <SystemSection sysData={sys} />
+              <FcSection title="系统接入情况反面" isBack />
+            </FcModule>
+          </Col>
+        </Row>
+      </div>
     );
   }
 }

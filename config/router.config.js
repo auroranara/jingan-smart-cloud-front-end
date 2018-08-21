@@ -8,6 +8,54 @@ module.exports = [
       { path: '/user/login', component: '/User/Login' },
       { path: '/user/register', component: './User/Register' },
       { path: '/user/register-result', component: './User/RegisterResult' },
+      {
+        path: '/user/activation',
+        name: 'activation',
+        key: 'activation',
+        component: './User/Activation',
+        routes: [
+          {
+            path: '/user/activation',
+            redirect: '/user/activation/verification',
+          },
+          {
+            path: '/user/activation/verification',
+            component: './User/Activation/Verification',
+          },
+          {
+            path: '/user/activation/set-password',
+            component: './User/Activation/SetPassword',
+          },
+          {
+            path: '/user/activation/result',
+            component: './User/Activation/Result',
+          },
+        ],
+      },
+      {
+        path: '/user/forget-password',
+        name: 'forgetPassword',
+        key: 'forgetPassword',
+        component: './User/Activation',
+        routes: [
+          {
+            path: '/user/forget-password',
+            redirect: '/user/forget-password/verification',
+          },
+          {
+            path: '/user/forget-password/verification',
+            component: './User/Activation/Verification',
+          },
+          {
+            path: '/user/forget-password/set-password',
+            component: './User/Activation/SetPassword',
+          },
+          {
+            path: '/user/forget-password/result',
+            component: './User/Activation/Result',
+          },
+        ],
+      },
     ],
   },
   {
@@ -19,7 +67,10 @@ module.exports = [
         path: '/big-platform/safety/company/:companyId',
         component: './BigPlatform/Safety/Company',
       },
-      { path: '/big-platform/fire-control/government', component: './BigPlatform/FireControl/Government' },
+      {
+        path: '/big-platform/fire-control/government',
+        component: './BigPlatform/FireControl/Government',
+      },
     ],
   },
   // app
@@ -475,7 +526,7 @@ module.exports = [
         code: 'systemManagement',
         name: 'systemManagement',
         icon: 'setting',
-        hideInMenu: true,
+        hideInMenu: false,
         routes: [
           {
             path: '/system-management/app-management',

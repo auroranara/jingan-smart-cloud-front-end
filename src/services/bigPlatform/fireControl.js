@@ -18,3 +18,15 @@ export async function queryAlarm(params) {
 export async function querySys() {
   return request(`${URL_PREFIX}/baseInfo/systemAccess`);
 }
+
+export async function queryFireTrend() {
+  return request(`${URL_PREFIX}/fireManage/fireProcessTrend`);
+}
+
+export async function queryDanger() {
+  return request(`${URL_PREFIX}//hdfg/hiddenDangerMap.json`);
+}
+
+export async function getCompanyFireInfo() {
+  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
+}

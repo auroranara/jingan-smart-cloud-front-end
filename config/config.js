@@ -106,6 +106,9 @@ export default {
       return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-');
     },
   },
+  define: {
+    'process.env.PROJECT_ENV': process.env.PROJECT_ENV || 'default',
+  },
   disableFastClick: true,
   hashHistory: true,
   manifest: {

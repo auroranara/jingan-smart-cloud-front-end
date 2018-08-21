@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Button, Col, Input, Row } from 'antd';
 
 import FcSection from './FcSection';
-import AlarmCard from './AlarmCard';
+import AlarmCard from './components/AlarmCard';
 
 // const alarms = [...Array(10).keys()].map(i => ({ company: '无锡晶安智慧有限公司', address: '无锡市新吴区汉江路5号', time: Date.now() - Math.floor(Math.random()*10)*60000 }));
 

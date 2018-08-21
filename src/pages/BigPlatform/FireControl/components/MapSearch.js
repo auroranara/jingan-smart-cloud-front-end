@@ -1,53 +1,35 @@
 import React, { PureComponent } from 'react';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
-import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import styles from './MapSearch.less';
 
 const Input = props => <input {...props} />;
 
-@connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSearch extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       value: '',
+      selectList: [],
     };
     this.fetchData = debounce(this.fetchData, 500);
   }
-
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
-  onKeyDown = e => {
-    if (e.keyCode === 13) {
-      console.log('onEnter', this.state.value);
-      this.jump(this.state.value);
-    }
-  };
 
   onSelect = (value, { props: { label } }) => {
     this.jump(label);
   };
 
   jump = item => {
-    console.log('jump ', item);
     this.props.handleSelect(item);
   };
 
   fetchData = value => {
-    this.props.dispatch({
-      type: 'bigPlatformSafetyCompany/fetchSelectList',
-      payload: {
-        name: value,
-      },
-      callback: () => {},
-    });
-
+    const { list } = this.props;
+    const selectList = value ? list.filter(item => item.name.includes(value)) : [];
     this.setState({
       value: value,
+      selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
     });
   };
 
@@ -59,10 +41,8 @@ class MapSearch extends PureComponent {
   };
 
   render() {
-    const {
-      bigPlatformSafetyCompany: { selectList },
-      style,
-    } = this.props;
+    const { style } = this.props;
+    const { selectList } = this.state;
     const options = selectList.map(item => {
       return (
         <Option key={item.id} label={item}>

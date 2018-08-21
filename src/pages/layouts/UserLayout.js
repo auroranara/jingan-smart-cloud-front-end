@@ -6,52 +6,16 @@ import styles from './UserLayout.less';
 import logo from '../../assets/logo.svg';
 import DocumentTitle from 'react-document-title';
 
-const links = [
-  /* {
-    key: 'help',
-    title: '帮助',
-    href: '',
-  },
-  {
-    key: 'privacy',
-    title: '隐私',
-    href: '',
-  },
-  {
-    key: 'terms',
-    title: '条款',
-    href: '',
-  }, */
-];
+const links = [];
+console.log('PROJECT_CONFIG', global.PROJECT_CONFIG);
+const { serviceSupport, servicePhone, projectName } = global.PROJECT_CONFIG;
 
 @connect(({ login }) => ({
   login,
 }))
 export default class UserLayout extends PureComponent {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'login/fetchFooterInfo',
-    });
-  }
-
-  // @TODO title
-  // getPageTitle() {
-  //   const { routerData, location } = this.props;
-  //   const { pathname } = location;
-  //   let title = 'Ant Design Pro';
-  //   if (routerData[pathname] && routerData[pathname].name) {
-  //     title = `${routerData[pathname].name} - Ant Design Pro`;
-  //   }
-  //   return title;
-  // }
-
   render() {
-    const {
-      children,
-      login: { data: { serviceSupport, servicePhone, projectName } },
-    } = this.props;
-
+    const { children } = this.props;
     const copyright = (
       <Fragment>
         <p>
@@ -78,10 +42,8 @@ export default class UserLayout extends PureComponent {
           <div className={styles.content}>
             <div className={styles.top}>
               <div className={styles.header}>
-                {/* <Link to="/"> */}
                 <img alt="logo" className={styles.logo} src={logo} />
                 <span className={styles.title}>{projectName}</span>
-                {/* </Link> */}
               </div>
               <div className={styles.desc} />
             </div>
