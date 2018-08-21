@@ -134,12 +134,12 @@ const switchCheckStatus = value => {
   switch (value) {
     case 1:
       return {
-        color: '#00A181',
+        color: '#fff',
         content: '正常',
       };
     case 2:
       return {
-        color: '#B23535',
+        color: '#FF4848',
         content: '异常',
       };
     case 3:
@@ -149,7 +149,7 @@ const switchCheckStatus = value => {
       };
     case 4:
       return {
-        color: '#B23535',
+        color: '#FF4848',
         content: '已超时',
       };
     default:
@@ -771,7 +771,12 @@ class CompanyLayout extends PureComponent {
             normal: {
               show: false,
               position: 'center',
-              formatter: '{b}\n{c}',
+              formatter: '{b}\n{c|{c}}',
+              rich: {
+                c: {
+                  fontSize: 20,
+                },
+              },
             },
             emphasis: {
               show: true,
