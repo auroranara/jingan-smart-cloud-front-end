@@ -7,6 +7,16 @@ import MapSearch from './components/MapSearch';
 
 const { location } = global.PROJECT_CONFIG;
 
+function handleCompanyBasicInfoList(alarmList, companyList) {
+  return companyList.map(item => {
+    const { name } = item;
+    const alarmed = alarmList.find(({ name: companyName }) => companyName === name)
+    if (alarmed)
+      return { ...item, isFire: true, address: alarmed.searchArea, status: alarmed.status };
+    return { ...item, isFire: false };
+  });
+}
+
 export default class FireControlMap extends PureComponent {
   state = {
     center: [location.x, location.y],
@@ -47,7 +57,7 @@ export default class FireControlMap extends PureComponent {
         }}
       >
         <img
-          src="http://data.jingan-china.cn/v2/big-platform/fire-control/gov/mapDot.png"
+          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
           alt=""
           style={{ display: 'block', width: '26px', height: '34px' }}
         />
@@ -57,13 +67,17 @@ export default class FireControlMap extends PureComponent {
 
   renderCompanyMarker() {
     const {
-      map: { companyBasicInfoList },
+      map: { companyBasicInfoList = [] },
+      alarm: { list = [] },
     } = this.props;
     const { selected } = this.state;
     // 如果有选中的企业就只渲染选中的
+
+    let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
+    // console.log(companyBasicInfoList.length, list.length, newList, newList.filter(i => i.name.includes('晶安')));
     return selected
       ? this.renderMarker(selected)
-      : companyBasicInfoList.map(item => this.renderMarker(item));
+      : newList.map(item => this.renderMarker(item));
   }
   render() {
     const { center, zoom, selected } = this.state;
@@ -112,16 +126,18 @@ export default class FireControlMap extends PureComponent {
               返回
             </Button>
           )}
-          <ul className={styles.mapLegend}>
-            <li>
-              单位总数：
-              {totalNum}
-            </li>
-            <li>
-              报警单位：
-              {fireNum}
-            </li>
-          </ul>
+          {!selected && (
+            <ul className={styles.mapLegend}>
+              <li>
+                单位总数：
+                {totalNum}
+              </li>
+              <li>
+                报警单位：
+                {fireNum}
+              </li>
+            </ul>
+          )}
         </div>
       </FcSection>
     );

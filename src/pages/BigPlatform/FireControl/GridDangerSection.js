@@ -20,11 +20,15 @@ function handleSource(list) {
   return source;
 }
 
-const DELAY = 1000;
+const DELAY = 2000;
 
 export default class GridDangerSection extends PureComponent {
   componentDidMount() {
     this.timer = setInterval(this.tipMove, DELAY);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
 
   timer = null;
@@ -46,15 +50,15 @@ export default class GridDangerSection extends PureComponent {
     this.count = (count + 1) % this.length;
   };
 
-  handleMouseenter = () => {
-    console.log('enter');
-    clearInterval(this.timer);
-  };
+  // handleMouseenter = () => {
+  //   console.log('enter');
+  //   clearInterval(this.timer);
+  // };
 
-  handleMouseleave = () => {
-    console.log('leave');
-    this.timer = setInterval(this.tipMove, DELAY);
-  };
+  // handleMouseleave = () => {
+  //   console.log('leave');
+  //   this.timer = setInterval(this.tipMove, DELAY);
+  // };
 
   render() {
     const { dangerData: { list = [] } } = this.props;
@@ -115,14 +119,18 @@ export default class GridDangerSection extends PureComponent {
   };
 
     return (
-      <FcSection title="网格隐患巡查" style={{ position: 'relative' }} onClick={() => console.log(1)}>
-        <ReactEcharts
-          option={option}
-          style={{ position: 'absolute', left: 0, top: 15, width: '100%', height: '100%' }}
-          onChartReady={chart => { this.chart = chart; }}
-          onMouseenter={this.handleMouseenter}
-          onMouseleave={this.handleMouseleave}
-        />
+      <FcSection
+        title="网格隐患巡查"
+        style={{ position: 'relative' }}
+        // onMouseover={this.handleMouseenter}
+        // onClick={() => console.log(1)}
+        // onMouseleave={this.handleMouseleave}
+      >
+          <ReactEcharts
+            option={option}
+            style={{ position: 'absolute', left: 0, top: 15, width: '100%', height: '100%' }}
+            onChartReady={chart => { this.chart = chart; }}
+          />
       </FcSection>
     );
   }

@@ -79,7 +79,7 @@ export default class FireControlBigPlatform extends PureComponent {
           </Col>
           <Col span={12} style={HEIGHT_PERCNET}>
             <FcModule className={styles.map}>
-              <FireControlMap map={map} />
+              <FireControlMap map={map} alarm={alarm} />
               <FcSection title="Map Reverse" isBack />
             </FcModule>
             <div className={styles.gutter2}></div>
