@@ -62,8 +62,9 @@ export default class UnitLookUp extends Component {
       <FcSection title="单位查岗">
         <section className={styles.main}>
           <div className={styles.top}>
-            <Col span={24}>
-              <div className={styles.circle}>
+            <Col span={8}>
+              <div className={styles.left}>
+                <div className={styles.ring} />
                 <Button
                   className={styles.circlrLookUp}
                   onClick={handleClickLookUp}
@@ -76,7 +77,9 @@ export default class UnitLookUp extends Component {
                   查岗
                 </Button>
               </div>
-              <div className={styles.lookUpTime}>
+            </Col>
+            <Col span={16}>
+              <div className={styles.right}>
                 <div className={styles.lastlookUpTime}>上次查岗时间</div>
                 <div className={styles.DayTime}>
                   <div className={styles.day}>2018-08-01</div>
