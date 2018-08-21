@@ -40,6 +40,13 @@
     .amap-info-sharp {
       display: none;
     }
+    .amap_markers_pop_window {
+      background: rgba(0, 49, 96, 0.9);
+      border: none;
+    }
+    .amap_markers_pop_window::before, .amap_markers_pop_window::after{
+      display: none;
+    }
   }
   .mapLegend {
     font-size: 14px;
@@ -54,4 +61,38 @@
     left: 8px;
     padding: 5px;
   }
+}
+
+.companyName {
+  color: #FFF;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.address, .safety {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.status {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.locateIcon {
+  width: 15.5px;
+  height: 18px;
+  display: inline-block;
+}
+
+.personIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
+.statusIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
 }
