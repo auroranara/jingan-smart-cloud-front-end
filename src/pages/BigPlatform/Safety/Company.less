@@ -82,8 +82,7 @@
           padding: 24px;
           box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
           background: rgba(9, 103, 211, 0.06);
-          overflow-x: hidden;
-          overflow-y: auto;
+          overflow: hidden;
         }
 
         /* 左上角企业信息 */
@@ -332,6 +331,24 @@
   cursor: pointer;
 }
 
+.innerBox {
+  height: calc(~"100% - 20px");
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: rgb(9, 103, 211);
+}
+::-webkit-scrollbar-track {
+  border-radius: 4px;
+  background: rgba(2, 28, 64, 1);
+}
+
 /* 中等大小 */
 @media screen and (min-width: 1200px) and (max-width: 1599px) {
   .main {
@@ -479,6 +496,9 @@
       }
     }
   }
+  .innerBox {
+    height: calc(~"100% - 18px");
+  }
 }
 
 /* 低等大小 */
@@ -624,5 +644,8 @@
         }
       }
     }
+  }
+  .innerBox {
+    height: calc(~"100% - 16px");
   }
 }
