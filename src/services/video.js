@@ -11,7 +11,7 @@ export async function queryFolderTree(params) {
 
 // 获取视频列表(列表)
 export async function queryVideoList(params) {
-  return request(`${URL_PREFIX}/videos/list?${stringify(params)}`);
+  return request(`${URL_PREFIX}/api/videosByFolder?${stringify(params)}`);
 }
 
 // 获取视频列表(树)
@@ -20,8 +20,8 @@ export async function queryVideoList(params) {
 // }
 
 // 获取视频详情
-export async function queryVideoDetail({ id }) {
-  return request(`${URL_PREFIX}/video/${id}`);
+export async function queryVideoDetail(videoId) {
+  return request(`${URL_PREFIX}/api/videoById?${stringify(videoId)}`);
 }
 
 // 新增系统管理员

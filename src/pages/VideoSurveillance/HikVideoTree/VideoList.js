@@ -23,7 +23,7 @@ const { Search } = Input;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理'},
+  { title: '设备管理', name: '设备管理' },
   { title: '海康视频树', name: '海康视频树' },
   { title: '视频列表', name: '视频列表' },
 ];
@@ -126,7 +126,7 @@ export default class VideoList extends PureComponent {
     traverse(folderList, ({ name, parentId }) => {
       // 不是空字符串 && name包含当前字符串 && expandedKeys数组中还没有其对应的parentId
       if (value && name.includes(value) && !expandedKeys.includes(parentId))
-          expandedKeys.push(parentId);
+        expandedKeys.push(parentId);
     });
     this.setState({ expandedKeys, searchValue: value, autoExpandParent: true });
   }, 800);
@@ -243,6 +243,8 @@ export default class VideoList extends PureComponent {
         }, 1000);
       },
     });
+    console.log('click end');
+
   };
 
   /* 播放按钮失焦事件 */
@@ -422,7 +424,7 @@ export default class VideoList extends PureComponent {
                 selectedKeys={selectedKeys}
                 handleExpand={this.handleExpand}
                 handleSelect={this.handleSelect}
-                // handleFormReset={folderId => this.handleFormReset(folderId)}
+              // handleFormReset={folderId => this.handleFormReset(folderId)}
               />
             </Card>
           </Col>
