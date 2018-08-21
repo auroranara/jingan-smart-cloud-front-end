@@ -11,14 +11,8 @@ import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
 
-import { DataView } from '@antv/data-set';
-import { Chart, Axis, Tooltip, Geom, Coord, Label, Legend } from 'bizcharts';
 import styles from './Company.less';
 import riskStyles from './Risk.less';
-
-/**
- * 1. 样式的问题以后再改
- */
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -48,12 +42,12 @@ const abnormalIcon = `${iconPrefix}abnormal-icon.png`;
 const overIcon = `${iconPrefix}over-icon.png`;
 
 // 选中高度
-const selectedHeight = 216;
+const selectedHeight = 180;
 const selectedWidth = 63;
 // 信息offset
 const defaultInfoOffset = {
-  x: 25,
-  y: -selectedHeight,
+  x: 30,
+  y: -selectedHeight-36,
 };
 // 正常点的样式
 const normalStyle = {

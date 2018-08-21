@@ -98,8 +98,8 @@ export default class App extends PureComponent {
         }}
         onClick={this.handleClick}
       >
-        <div style={{ display: 'flex', width: '100%', height: '100%', background: `#021C42 url(${background}) no-repeat center / 100% 100%` }}>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '30px 20px', background: 'rgba(0, 168, 255, 0.3)' }}>
+        <div style={{ display: 'flex', width: '100%', height: '100%', background: `url(${background}) no-repeat center / 100% 100%` }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '30px 20px', background: 'rgba(8, 60, 120, 0.8)', textShadow: '2px 2px 2px #333' }}>
             {data.map(item => {
               return (
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'nowrap' }} key={item[icon]}>
