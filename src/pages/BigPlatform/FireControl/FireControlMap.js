@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker } from 'react-amap';
-
+import { Button, Icon } from 'antd';
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
 import MapSearch from './components/MapSearch';
@@ -11,41 +11,62 @@ export default class FireControlMap extends PureComponent {
   state = {
     center: [location.x, location.y],
     zoom: location.zoom,
+    selected: undefined,
   };
 
-  // 搜索之后跳转
-  handleSelect = ({ latitude, longitude, id }) => {
+  back = () => {
+    this.setState({ zoom: location.zoom, selected: undefined });
+  };
+
+  selectCompany = item => {
+    const { latitude, longitude } = item;
     this.setState({
       center: [longitude, latitude],
       zoom: 18,
+      selected: item,
     });
+  };
+  // 搜索之后跳转
+  handleSelect = item => {
+    this.selectCompany(item);
+  };
+
+  // 点击
+  handleClick = item => {
+    this.selectCompany(item);
+  };
+
+  renderMarker = item => {
+    return (
+      <Marker
+        position={{ longitude: item.longitude, latitude: item.latitude }}
+        key={item.id}
+        offset={[-13, -34]}
+        events={{
+          click: this.handleClick.bind(this, item),
+        }}
+      >
+        <img
+          src="http://data.jingan-china.cn/v2/big-platform/fire-control/gov/mapDot.png"
+          alt=""
+          style={{ display: 'block', width: '26px', height: '34px' }}
+        />
+      </Marker>
+    );
   };
 
   renderCompanyMarker() {
     const {
-      map: { companyBasicInfoList, totalNum, fireNum },
+      map: { companyBasicInfoList },
     } = this.props;
-    return companyBasicInfoList.map(item => {
-      return (
-        item.longitude &&
-        item.latitude && (
-          <Marker
-            position={{ longitude: item.longitude, latitude: item.latitude }}
-            key={item.id}
-            offset={[-13, -34]}
-          >
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/fire-control/gov/mapDot.png"
-              alt=""
-              style={{ display: 'block', width: '26px', height: '34px' }}
-            />
-          </Marker>
-        )
-      );
-    });
+    const { selected } = this.state;
+    // 如果有选中的企业就只渲染选中的
+    return selected
+      ? this.renderMarker(selected)
+      : companyBasicInfoList.map(item => this.renderMarker(item));
   }
   render() {
-    const { center, zoom } = this.state;
+    const { center, zoom, selected } = this.state;
     const {
       map: { companyBasicInfoList, totalNum, fireNum },
     } = this.props;
@@ -73,6 +94,24 @@ export default class FireControlMap extends PureComponent {
             list={companyBasicInfoList}
             handleSelect={this.handleSelect}
           />
+          {selected && (
+            <Button
+              onClick={this.back}
+              style={{
+                background: 'rgba(1, 39, 79, 0.8)',
+                border: 'none',
+                color: '#009eff',
+                width: '80',
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                zIndex: 666,
+              }}
+            >
+              <Icon type="rollback" />
+              返回
+            </Button>
+          )}
           <ul className={styles.mapLegend}>
             <li>
               单位总数：
