@@ -76,7 +76,7 @@ export default function TrendSection(props) {
           yAxisIndex: 1,
           symbol: 'circle',
           smooth: true,
-          // itemStyle: { color: 'rgb(0,168,255)' },
+          itemStyle: { color: 'rgb(0,168,255)' },
           lineStyle: { color: 'rgb(0,168,255)' },
         },
     ],
