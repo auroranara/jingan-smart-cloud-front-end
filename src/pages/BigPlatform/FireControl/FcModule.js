@@ -9,7 +9,7 @@ export default class FcModule extends PureComponent {
     const { children = null, isRotated = false, style = {}, ...restProps } = this.props;
     const newStyle = {
       // overflow: 'hidden',
-      transition: '2s transform ease',
+      transition: '1s transform ease',
       transformStyle: 'preserve-3d',
       transform: isRotated ? 'rotateY(180deg)': 'rotateY(0)',
       ...style,
