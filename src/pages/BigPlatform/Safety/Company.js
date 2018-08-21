@@ -37,8 +37,17 @@ const accidentTypeIcon = `${iconPrefix}accidentType.png`;
 const riskLevelIcon = `${iconPrefix}riskLevel.png`;
 const statusIcon = `${iconPrefix}status.png`;
 const importantIcon = `${iconPrefix}important.png`;
+const checkIcon = `${iconPrefix}check-icon.png`;
+const specialIcon = `${iconPrefix}special-icon.png`;
+const peopleIcon = `${iconPrefix}people-icon.png`;
+const hdIcon = `${iconPrefix}hd-icon.png`;
+const normalIcon = `${iconPrefix}normal-icon.png`;
+const checkingIcon = `${iconPrefix}checking-icon.png`;
+const abnormalIcon = `${iconPrefix}abnormal-icon.png`;
+const overIcon = `${iconPrefix}over-icon.png`;
+
 // 选中高度
-const selectedHeight = 269;
+const selectedHeight = 216;
 const selectedWidth = 63;
 // 信息offset
 const defaultInfoOffset = {
@@ -211,9 +220,18 @@ class CompanyLayout extends PureComponent {
       selectedIndex: 0,
       pieHeight: 0,
       barHeight: 0,
+      // 当前选中的四色图对应的风险点
+      points: [],
+      // 四色图切换按钮显示数量
+      pageSize: 3,
+      // 当前显示的四色图切换按钮页数
+      currentIndex: 0,
+      // 当前选中的四色图的id
+      selectedFourColorImgId: null,
+      // 当前选中的四色图的地址
+      selectedFourColorImgUrl: '',
     };
     this.myTimer = null;
-    this.points = [];
     this.currentPieIndex = -1;
     this.highLightTimer = null;
     this.currentLineIndex = -1;
@@ -229,10 +247,11 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
         month: moment().format('YYYY-MM'),
       },
-      success: ({ point: points, fourColorImg }) => {
-        // 只有图存在时才默认选中，如果第一个元素存在，则默认选中第一个，否则不选中
-        if (/^http/.test(fourColorImg) && points && points[0]) {
-          this.handleClick(points[0].itemId, 0);
+      success: ({ point, fourColorImg: [{ id, webUrl } = {}] }) => {
+        // model中已对point和fourColorImg进行处理，确保point必有坐标值，fourColorImg必为数组
+        // 如果id不存在，则意味着没有四色图，则不做任何操作
+        if (id) {
+          this.filterPointsByFourColorImgId(point, id, webUrl);
         }
       },
     });
@@ -317,6 +336,24 @@ class CompanyLayout extends PureComponent {
   }
 
   /**
+   * 根据当前选中的四色图id筛选出对应的风险点
+   * 将id和points保存到state中
+   * 自动选中第一个point
+   */
+  filterPointsByFourColorImgId = (point, id, webUrl) => {
+    const points = point.filter(({ fixImgId }) => fixImgId === id);
+    const [{ itemId } = {}] = points;
+    this.setState({
+      points,
+      selectedFourColorImgId: id,
+      selectedFourColorImgUrl: webUrl,
+      selectedId: itemId || null,
+      selectedIndex: 0,
+    });
+    this.handleClick(itemId, 0);
+  }
+
+  /**
    * 环形图加载完毕
    */
   handlePieChartReady = (chart, option) => {
@@ -396,10 +433,25 @@ class CompanyLayout extends PureComponent {
     this.showTipTimer = setInterval(showTip, 2000);
   }
 
+  /**
+   * 四色图切换按钮点击事件
+   */
+  handleClickTab = (id, webUrl) => {
+    const { bigPlatform: { companyMessage: { point } } } = this.props;
+    const { selectedFourColorImgId } = this.state;
+    if (selectedFourColorImgId === id) {
+      return;
+    }
+    this.filterPointsByFourColorImgId(point, id, webUrl);
+  }
+
   /* 风险点点击事件 */
   handleClick = (id, index) => {
     const { selectedId } = this.state;
     clearTimeout(this.myTimer);
+    if (!id) {
+      return;
+    }
     this.addTimeout();
     if (selectedId === id) {
       return;
@@ -424,8 +476,7 @@ class CompanyLayout extends PureComponent {
   // 添加风险点轮播定时器
   addTimeout = () => {
     this.myTimer = setTimeout(() => {
-      const { selectedIndex } = this.state;
-      const { bigPlatform: { companyMessage: { point: points } } } = this.props;
+      const { selectedIndex, points } = this.state;
       if (selectedIndex === points.length - 1) {
         this.handleClick(points[0].itemId, 0);
       }
@@ -433,6 +484,24 @@ class CompanyLayout extends PureComponent {
         this.handleClick(points[selectedIndex + 1].itemId, selectedIndex + 1);
       }
     }, 10000);
+  }
+
+  /**
+   * 上一页
+   */
+  handlePrevPage = () => {
+    this.setState(({ currentIndex }) => ({
+      currentIndex: currentIndex - 1,
+    }));
+  }
+
+  /**
+   * 下一页
+   */
+  handleNextPage = () => {
+    this.setState(({ currentIndex }) => ({
+      currentIndex: currentIndex + 1,
+    }));
   }
 
   /**
@@ -452,9 +521,9 @@ class CompanyLayout extends PureComponent {
    */
   renderBody() {
     return (
-      <Row gutter={24} className={styles.mainBody}>
+      <Row gutter={24} className={styles.mainBody} style={{ margin: '0', padding: '16px 12px 24px', overflow: 'hidden' }}>
         <Col span={6} className={styles.column}>
-          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
             {this.renderLeftSection()}
             {this.renderSafety()}
             {this.renderRisk()}
@@ -505,7 +574,7 @@ class CompanyLayout extends PureComponent {
   renderRightSection() {
     const { bigPlatform: { riskDetailList } } = this.props;
     const { selectedId } = this.state;
-    let data = selectedId === null ? riskDetailList.filter(({ status }) => +status !== 4) : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
+    let data = selectedId === null ? [] : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
     data = data.map(({ id, flow_name: description, report_user_name: sbr, report_time: sbsj, rectify_user_name: zgr, plan_rectify_time: zgsj, review_user_name: fcr, status, hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }] }) => ({
       id,
       description,
@@ -565,7 +634,6 @@ class CompanyLayout extends PureComponent {
         <div className={styles.sectionMain}>
           <div className={styles.shadowIn}>
             <div className={styles.companyMain}>
-              <div className={styles.companyIcon}></div>
               <div className={styles.companyInfo}>
                 <div className={styles.companyName} style={{ cursor: 'pointer' }} onClick={() => { window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`); }}>{companyName}</div>
                 <div className={styles.companyCharger}><span className={styles.fieldName}>安全负责人：</span>{headOfSecurity}</div>
@@ -573,32 +641,26 @@ class CompanyLayout extends PureComponent {
               </div>
             </div>
 
-            <div className={styles.summaryBottom}>
-              <Row gutter={6}>
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summaryPeople}></div>
-                  <div className={styles.summaryText}><span className={styles.fieldName}>安全人员</span></div>
-                  <div className={styles.summaryNum} style={{ cursor: 'pointer' }} onClick={() => {this.safety.style.right = 0;this.leftSection.style.opacity = 0;}}>{countCompanyUser}</div>
-                </Col>
+            <div className={styles.summaryBottom} style={{ height: '50%' }}>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${peopleIcon})` }}>
+                <div className={styles.summaryText}><span className={styles.fieldName}>安全人员</span></div>
+                <div className={styles.summaryNum} style={{ cursor: 'pointer' }} onClick={() => {this.safety.style.right = 0;this.leftSection.style.opacity = 0;}}>{countCompanyUser}</div>
+              </div>
 
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summaryCheck}></div>
-                  <div className={styles.summaryText}><span className={styles.fieldName}>风险点</span></div>
-                  <div className={styles.summaryNum} style={{ cursor: 'pointer' }} onClick={() => {this.risk.style.right = 0;this.leftSection.style.opacity = 0;}}>{countCheckItem}</div>
-                </Col>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${checkIcon})` }}>
+                <div className={styles.summaryText}><span className={styles.fieldName}>风险点</span></div>
+                <div className={styles.summaryNum} style={{ cursor: 'pointer' }} onClick={() => {this.risk.style.right = 0;this.leftSection.style.opacity = 0;}}>{countCheckItem}</div>
+              </div>
 
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summarySpecial}></div>
-                  <div className={styles.summaryText}><span className={styles.fieldName}>特种设备</span></div>
-                  <div className={styles.summaryNum}>{specialEquipment}</div>
-                </Col>
+              <div  className={styles.summaryHalf} style={{ backgroundImage: `url(${specialIcon})` }}>
+                <div className={styles.summaryText}><span className={styles.fieldName}>特种设备</span></div>
+                <div className={styles.summaryNum}>{specialEquipment}</div>
+              </div>
 
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summaryhd}></div>
-                  <div className={styles.summaryText}><span className={styles.fieldName}>隐患数量</span></div>
-                  <div className={styles.summaryNum}>{hiddenDanger}</div>
-                </Col>
-              </Row>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${hdIcon})` }}>
+                <div className={styles.summaryText}><span className={styles.fieldName}>隐患数量</span></div>
+                <div className={styles.summaryNum}>{hiddenDanger}</div>
+              </div>
             </div>
 
             {isImportant && <div className={styles.importantUnit}><img src={importantIcon} alt="重要单位" /></div>}
@@ -675,38 +737,34 @@ class CompanyLayout extends PureComponent {
           <div className={styles.shadowIn}>
             <div className={styles.sectionTitle}><span className={styles.sectionTitleIcon}></span>风险点</div>
 
-            <ReactEcharts
-              option={option}
-              style={{ height: '50%' }}
-              onChartReady={(chart) => {this.handlePieChartReady(chart, option);}}
-            />
+            <div className={styles.pieChart}>
+              <ReactEcharts
+                option={option}
+                style={{ height: "100%" }}
+                onChartReady={(chart) => {this.handlePieChartReady(chart, option);}}
+              />
+            </div>
 
-            <div className={styles.summaryBottom} style={{ height: 'calc(50% - 24px)' }}>
-              <Row gutter={6}>
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summaryNormal}></div>
-                  <div className={styles.summaryText} style={{ color: '#00A181' }}>正常</div>
-                  <div className={styles.summaryNum}>{status1}</div>
-                </Col>
+            <div className={styles.summaryBottom} style={{ height: '42%' }}>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${normalIcon})` }}>
+                <div className={styles.summaryText} style={{ color: '#00A181' }}>正常</div>
+                <div className={styles.summaryNum}>{status1}</div>
+              </div>
 
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summaryChecking}></div>
-                  <div className={styles.summaryText} style={{ color: '#4D9ED8' }}>待检查</div>
-                  <div className={styles.summaryNum}>{status3}</div>
-                </Col>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${checkingIcon})` }}>
+                <div className={styles.summaryText} style={{ color: '#4D9ED8' }}>待检查</div>
+                <div className={styles.summaryNum}>{status3}</div>
+              </div>
 
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summaryAbnormal}></div>
-                  <div className={styles.summaryText} style={{ color: '#B23535' }}>异常</div>
-                  <div className={styles.summaryNum}>{status2}</div>
-                </Col>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${abnormalIcon})` }}>
+                <div className={styles.summaryText} style={{ color: '#B23535' }}>异常</div>
+                <div className={styles.summaryNum}>{status2}</div>
+              </div>
 
-                <Col span={12} className={styles.summaryHalf}>
-                  <div className={styles.summaryOver}></div>
-                  <div className={styles.summaryText} style={{ color: '#B23535' }}>已超时</div>
-                  <div className={styles.summaryNum}>{status4}</div>
-                </Col>
-              </Row>
+              <div className={styles.summaryHalf}  style={{ backgroundImage: `url(${overIcon})` }}>
+                <div className={styles.summaryText} style={{ color: '#B23535' }}>已超时</div>
+                <div className={styles.summaryNum}>{status4}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -719,18 +777,23 @@ class CompanyLayout extends PureComponent {
    * 安全风险四色图
    */
   renderCenterTopSection() {
-    const { bigPlatform: { companyMessage: { point: points, fourColorImg }, riskPointInfoList } } = this.props;
-    const { selectedId } = this.state;
+    const { bigPlatform: { companyMessage: { fourColorImg=[] }, riskPointInfoList } } = this.props;
+    const { selectedId, pageSize, currentIndex, selectedFourColorImgId, selectedFourColorImgUrl, points } = this.state;
+    // 页数
+    const pageCount = Math.max(Math.ceil(fourColorImg.length / pageSize), 1);
+    // 是否为第一页
+    const isFirst = currentIndex === 0;
+    // 是否为最后一页
+    const isLast = currentIndex === pageCount - 1;
+    // 当前页的第一个元素
+    const currentFirstIndex = currentIndex * pageSize;
 
     return (
       <div className={riskStyles.fourColorImgContainer}>
         <div className={riskStyles.fourColorImgTitle}>安全风险四色图</div>
         <RiskImage
-          src={fourColorImg || ''}
-          wrapperStyle={{
-            flex: 1,
-            height: `calc(100% - 72px)`,
-          }}
+          src={selectedFourColorImgUrl}
+          wrapperClassName={riskStyles.riskImage}
         // perspective='30em'
           rotate='30deg'
         >
@@ -788,10 +851,9 @@ class CompanyLayout extends PureComponent {
                 <RiskPoint
                   position={position}
                   src={src}
-                  style={selectedId === id ? selectedStyle : style}
+                  style={selectedId === id ? { ...selectedStyle, cursor: 'pointer' } : { ...style, cursor: 'pointer' }}
                   offset={selectedId === id ? selectedOffset : offset}
                   onClick={(point) => { this.handleClick(id, index, point); }}
-                  ref={(point) => { this.points[index] = point; }}
                 />
                 <RiskPoint
                   position={position}
@@ -810,12 +872,37 @@ class CompanyLayout extends PureComponent {
                   style={{
                     display: selectedId === id ? 'block' : 'none',
                     // opacity: selectedId === id ? '1' : '0',
-                    zIndex: selectedId === id ? 10 : 0,
                   }}
                 />
               </Fragment>
             );
           })}
+          <div className={riskStyles.fourColorImgPaginationContainer}>
+            <div className={riskStyles.tabList}>
+              {fourColorImg.map(({id, webUrl, fileName='未命名'}, index) => {
+                if (index < currentFirstIndex || index >= (currentFirstIndex + pageSize)) {
+                  return null;
+                }
+                const backgroundColor = selectedFourColorImgId === id ? '#0967D3': undefined;
+                const i = fileName.indexOf('.');
+                return (
+                  <div className={riskStyles.tabWrapper} key={id}>
+                    <div className={riskStyles.tab} style={{ backgroundColor, transform: selectedFourColorImgId === id ? 'translateX(0)' : undefined }} onClick={() => {this.handleClickTab(id, webUrl);}}>
+                      {i === -1 ? fileName : fileName.slice(0, i)}
+                      <div className={riskStyles.tabRight} style={{ borderLeftColor: backgroundColor }}></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className={riskStyles.paginationWrapper}>
+              <div className={riskStyles.paginationWrapperRight}></div>
+              <div className={riskStyles.paginationList}>
+                <div className={riskStyles.paginationItem}><Icon type="caret-up" style={{ fontSize: 14, color: '#0967D3', cursor: isFirst ? 'not-allowed' : 'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
+                <div className={riskStyles.paginationItem}><Icon type="caret-down" style={{ fontSize: 14, color: '#0967D3', cursor: isLast ? 'not-allowed' : 'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
+              </div>
+            </div>
+          </div>
         </RiskImage>
         <div className={riskStyles.fourColorImgLabelContainer}>
           <div className={riskStyles.fourColorImgLabel}>
@@ -945,7 +1032,6 @@ class CompanyLayout extends PureComponent {
         name: '隐患数量',
         data: dangerList,
         type: 'line',
-
         itemStyle: {
             color: '#F7E68A',
             borderColor: '#F7E68A',
@@ -966,11 +1052,13 @@ class CompanyLayout extends PureComponent {
         <div className={styles.sectionMain}>
           <div className={styles.shadowIn}>
             <div className={styles.sectionTitle}><span className={styles.sectionTitleIcon}></span>单位查询<div className={styles.legendList}><div className={styles.legendItem}><span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }}></span><span className={styles.legendItemName}>巡查</span></div><div className={styles.legendItem}><span className={styles.legendItemIcon} style={{ backgroundColor: '#F7E68A' }}></span><span className={styles.legendItemName}>隐患</span></div></div></div>
-            <ReactEcharts
-              option={option}
-              style={{ height: 'calc(100% - 20px)' }}
-              onChartReady={(chart) => {this.handleLineChartReady(chart, option);}}
-            />
+            <div className={styles.lineChart}>
+              <ReactEcharts
+                option={option}
+                style={{ height: '100%' }}
+                onChartReady={(chart) => {this.handleLineChartReady(chart, option);}}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -1016,7 +1104,7 @@ class CompanyLayout extends PureComponent {
           className={styles.sectionMain}
         >
           <div className={styles.shadowIn}>
-            <div className={styles.sectionTitle}><span className={styles.sectionTitleIcon}></span>安全人员<Icon type="close" style={{ position: 'absolute', top: '0', right: '0', fontSize: '20px', cursor: 'pointer' }} onClick={() => { this.safety.style.right = '110%';this.leftSection.style.opacity = 1; }} /></div>
+            <div className={styles.sectionTitle}><span className={styles.sectionTitleIcon}></span>安全人员<Icon type="close" className={styles.closeButton} onClick={() => { this.safety.style.right = '110%';this.leftSection.style.opacity = 1; }} /></div>
             <Row className={styles.personWrapper}>
               <Col span={12} className={styles.person}>
                 <div className={styles.personName}>单位法人</div>

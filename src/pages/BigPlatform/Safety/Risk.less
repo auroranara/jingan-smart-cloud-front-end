@@ -1,14 +1,11 @@
 /* 风险四色图相关样式 */
 .fourColorImgContainer {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   margin-bottom: 24px;
   height: calc(~'68% - 24px');
 
   .fourColorImgTitle {
-    padding-left: 16px;
-    height: 24px;
-    line-height: 24px;
+    line-height: 1;
     font-size: 20px;
     color: #00A8FF;
   }
@@ -31,5 +28,133 @@
         height: 16px;
       }
     }
+  }
+}
+
+.riskImage {
+  height: calc(~'100% - 68px');
+}
+
+
+.fourColorImgPaginationContainer {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  padding-right: 16px;
+  overflow: hidden;
+
+  .paginationWrapper {
+    position: relative;
+    height: 38px;
+    transform: translateX(-100%);
+
+    .paginationWrapperRight {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      width: 16px;
+      height: 38px;
+      border-width: 10px 0 0 16px;
+      border-style: solid;
+      border-color: transparent transparent transparent #022D5B;
+      z-index: 1;
+    }
+    .paginationList {
+      position: absolute;
+      left: 100%;
+      bottom: 0;
+      width: 16px;
+      z-index: 2;
+      .paginationItem {
+        text-align: center;
+        height: 14px;
+        line-height: 14px;
+      }
+    }
+  }
+  .tabWrapper {
+    margin-bottom: 6px;
+  }
+  .tab {
+    position: relative;
+    display: inline-block;
+    padding: 11px 4px 11px 20px;
+    width: auto;
+    height: 38px;
+    line-height: 1;
+    transform: translateX(-100%);
+    transition: 'transform 0.5s';
+    background-color: #022D5B;
+    cursor: pointer;
+
+    .tabRight {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      width: 16px;
+      height: 38px;
+      border-width: 10px 0 0 16px;
+      border-style: solid;
+      border-color: transparent transparent transparent #022D5B;
+    }
+
+    &:hover {
+      transform: translateX(0);
+      background-color: #0967D3;
+
+      .tabRight {
+        border-left-color: #0967D3;
+      }
+    }
+  }
+}
+
+/* 中等大小 */
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+  .fourColorImgContainer {
+    .fourColorImgTitle {
+      font-size: 18px;
+    }
+    .fourColorImgLabelContainer {
+      padding-top: 20px;
+      height: 40px;
+      line-height: 20px;
+
+      .fourColorImgLabel {
+        .fourColorImgLabelIcon {
+          margin-right: 7px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+  }
+  .riskImage {
+    height: calc(~'100% - 58px');
+  }
+}
+
+/* 低等大小 */
+@media screen and (max-width: 1199px) {
+  .fourColorImgContainer {
+    .fourColorImgTitle {
+      font-size: 16px;
+    }
+    .fourColorImgLabelContainer {
+      padding-top: 16px;
+      height: 32px;
+      line-height: 16px;
+
+      .fourColorImgLabel {
+        .fourColorImgLabelIcon {
+          margin-right: 6px;
+          width: 12px;
+          height: 12px;
+        }
+      }
+    }
+  }
+  .riskImage {
+    height: calc(~'100% - 48px');
   }
 }

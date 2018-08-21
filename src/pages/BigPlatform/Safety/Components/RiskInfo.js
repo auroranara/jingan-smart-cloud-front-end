@@ -72,8 +72,8 @@ export default class App extends PureComponent {
     const { skew, rotate } = image;
     const deg = Math.PI * rotate / 180;
     // 放大倍数
-    const scale = 1 + Math.sin(deg) * (1 - positionY);
-    const bottom = Math.cos(deg) * (skew * (1 - positionY)) - scale * (offsetY + defaultHeight) ;
+    // const scale = 1 + Math.sin(deg) * (1 - positionY);
+    const bottom = Math.cos(deg) * (skew * (1 - positionY)) - /* scale *  */(offsetY + defaultHeight) ;
     const z = -Math.sin(deg) * (skew * (1 - positionY));
 
     return positionX && positionY ? (
@@ -81,7 +81,7 @@ export default class App extends PureComponent {
         className={className}
         style={{
           position: 'absolute',
-          left: positionX < 0.5 ? `calc(${positionX * 100}% + ${scale * offsetX}px)` : `calc(${positionX * 100}% - ${scale * (defaultWidth + offsetX)}px)`,
+          left: positionX < 0.5 ? `calc(${positionX * 100}% + ${/* scale *  */offsetX}px)` : `calc(${positionX * 100}% - ${/* scale *  */(defaultWidth + offsetX)}px)`,
           bottom: `${bottom}px`,
           width: `${defaultWidth}px`,
           height: `${defaultHeight}px`,
@@ -91,7 +91,7 @@ export default class App extends PureComponent {
           borderImageSlice: '12 21',
           transition: 'opacity 0.5s',
           transformOrigin: 'left bottom',
-          transform: `scale(${scale}) translateZ(${z}px)`,
+          transform: `translateZ(${z}px)`,
           whiteSpace: 'no-wrap',
           zIndex: 9,
           ...style,

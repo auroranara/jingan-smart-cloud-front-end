@@ -195,6 +195,7 @@ export default {
       const res = {
         ...response,
         point: response.point && response.point.filter(({itemId, xNum, yNum}) => itemId && (xNum || Number.parseFloat(xNum) === 0) && (yNum || Number.parseFloat(yNum) === 0) ),
+        fourColorImg: (response.fourColorImg && response.fourColorImg.startsWith('[')) ? JSON.parse(response.fourColorImg).filter(({ id, webUrl }) => /^http/.test(webUrl) && id) : [],
       };
       // if (response.code === 200) {
       yield put({
@@ -346,10 +347,10 @@ export default {
         infoByLocation: payload,
       };
     },
-    companyMessage(state, { payload: companyMessage }) {
+    companyMessage(state, { payload }) {
       return {
         ...state,
-        companyMessage,
+        companyMessage: payload,
       };
     },
     coItemList(state, { payload, status }) {

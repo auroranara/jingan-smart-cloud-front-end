@@ -55,8 +55,8 @@ export default class App extends PureComponent {
     const { skew, rotate } = image;
     const deg = Math.PI * rotate / 180;
     // 放大倍数
-    const scale = 1 + Math.sin(deg) * (1 - positionY);
-    const bottom = Math.cos(deg) * (skew * (1 - positionY)) - scale * offsetY;
+    // const scale = 1 + Math.sin(deg) * (1 - positionY);
+    const bottom = Math.cos(deg) * (skew * (1 - positionY)) - /* scale * */ offsetY;
     const z = -Math.sin(deg) * (skew * (1 - positionY));
 
     return positionX && positionY ? (
@@ -69,7 +69,7 @@ export default class App extends PureComponent {
           display: 'inline-block',
           transition: 'bottom 0.5s, height 0.5s',
           transformOrigin: `${phase}px bottom`,
-          transform: `scale(${scale}) translateZ(${z}px)`,
+          transform: `translateZ(${z}px)`,
           width: defaultWidth,
           height: defaultHeight,
           ...style,

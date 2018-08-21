@@ -78,7 +78,7 @@ export default class App extends PureComponent {
               if (child.type) {
                   return React.cloneElement(child, {
                     image,
-                  }, this.renderChildren(child.props.children, image));
+                  }, child.type === Fragment ? this.renderChildren(child.props.children, image) : child.props.children);
               }
               else {
                   return child;
@@ -110,7 +110,6 @@ export default class App extends PureComponent {
           position: 'relative',
           transformStyle: 'preserve-3d',
           transform: `perspective(${isNumber(perspective) ? `${perspective}px` : perspective})`,
-          height: defaultHeight,
           ...wrapperStyle,
         }}
         ref={wrapper => { this.wrapper = wrapper; }}

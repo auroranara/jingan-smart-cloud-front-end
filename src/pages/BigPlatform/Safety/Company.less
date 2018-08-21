@@ -21,29 +21,24 @@
     align-items: center;
     justify-content: center;
     height: 12.685185%;
-    background: url('@{comImgUrl}title-bg.png') no-repeat center center / 100% 100%;
+    background: url('@{comImgUrl}title-bg.png') no-repeat 43% center / 90% 100%;
 
     .mainHeaderTitle {
       font-size: 48px;
     }
 
     .mainHeaderTime {
-      line-height: 1;
-      letter-spacing: 0px;
-      word-spacing: 10px;
-      font-size: 22px;
       position: absolute;
-      bottom: 15px;
-      right: 30px;
+      right: 7.1875%;
+      bottom: 17.518248%;
+      line-height: 1;
+      font-size: 18px;
     }
   }
 
   /* 主体 */
   .mainBody {
     flex: 1;
-    position: relative;
-    padding: 12px 24px 24px;
-    width: 100%;
 
     .column {
       display: flex;
@@ -51,7 +46,9 @@
       height: 100%;
     }
 
+    /* 块容器 */
     .sectionWrapper {
+      /* 块标题 */
       .sectionTitle {
         position: relative;
         width: 100%;
@@ -70,131 +67,71 @@
         }
       }
 
+      /* 为容器添加外阴影 */
       .sectionMain {
+        position: relative;
         width: 100%;
         height: 100%;
-        position: relative;
         box-shadow: 0 0 1.8em #000;
 
+        /* 为容器添加内阴影 */
         .shadowIn {
+          position: relative;
           width: 100%;
           height: 100%;
-          padding: 15px;
-          position: relative;
+          padding: 24px;
           box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
           background: rgba(9, 103, 211, 0.06);
           overflow-x: hidden;
           overflow-y: auto;
         }
 
+        /* 左上角企业信息 */
         .companyMain {
-          .companyIcon {
-            float: left;
-            width: 50px;
-            height: 100px;
-            margin: 0 10px;
-            background: url('@{comImgUrl}company-icon.png') no-repeat center center;
-            background-size: 100% auto;
-          }
+          height: 50%;
 
           .companyInfo {
-            width: calc(~'100% - 71px');
-            float: left;
-            word-wrap: none;
-            overflow: hidden;
-            white-space: nowrap;
+            padding-left: 74px;
+            line-height: 1;
+            background: url('@{comImgUrl}company-icon.png') no-repeat left center / 50px 50px;
 
             .companyName {
-              height: 40px;
-              line-height: 40px;
+              padding: 16px 0;
+              width: 100%;
               font-size: 18px;
+              .overflow;
             }
 
-            .companyCharger {
-              height: 30px;
-              line-height: 30px;
-            }
-
+            .companyCharger,
             .companyPhone {
-              .companyCharger;
+              padding: 8px 0;
+              width: 100%;
+              .overflow;
             }
           }
         }
 
+        /* 左上角统计信息 */
         .summaryBottom {
-          width: calc(~'100% - 30px');
-          position: absolute;
-          bottom: 0;
+          display: flex;
+          align-items: flex-end;
+          flex-wrap: wrap;
 
           .summaryHalf {
-            height: 50%;
-            margin-bottom: 15px;
-
-            .summaryIcon {
-              float: left;
-              width: 50px;
-              height: 50px;
-              margin: 5px 10px;
-            }
+            flex: none;
+            width: 50%;
+            padding-left: 74px;
+            background: transparent no-repeat left center / 50px 50px;
+            line-height: 1;
 
             .summaryText {
-              float: left;
-              width: calc(~'100% - 71px');
-              height: 30px;
-              line-height: 30px;
+              padding-bottom: 10px;
+              .overflow;
             }
 
             .summaryNum {
-              .summaryText;
-              font-size: 16px;
-            }
-
-            .summaryCheck {
-              .summaryIcon;
-              background: url('@{comImgUrl}check-icon.png') no-repeat center center;
-              background-size: 100% 100%;
-            }
-
-            .summarySpecial {
-              .summaryIcon;
-              background: url('@{comImgUrl}special-icon.png') no-repeat center center;
-              background-size: 100% 100%;
-            }
-
-            .summaryPeople {
-              .summaryIcon;
-              background: url('@{comImgUrl}people-icon.png') no-repeat center center;
-              background-size: 100% 100%;
-            }
-
-            .summaryhd {
-              .summaryIcon;
-              background: url('@{comImgUrl}hd-icon.png') no-repeat center center;
-              background-size: 100% 100%;
-            }
-
-            .summaryNormal {
-              .summaryIcon;
-              background: url('@{comImgUrl}normal-icon.png') no-repeat center center;
-              background-size: 100% 100%;
-            }
-
-            .summaryChecking {
-              .summaryIcon;
-              background: url('@{comImgUrl}checking-icon.png') no-repeat center center;
-              background-size: 100% 100%;
-            }
-
-            .summaryAbnormal {
-              .summaryIcon;
-              background: url('@{comImgUrl}abnormal-icon.png') no-repeat center center;
-              background-size: 100% 100%;
-            }
-
-            .summaryOver {
-              .summaryIcon;
-              background: url('@{comImgUrl}over-icon.png') no-repeat center center;
-              background-size: 100% 100%;
+              font-size: 24px;
+              .overflow;
             }
           }
         }
@@ -218,11 +155,11 @@
 
     .infoWrapper {
       margin-bottom: 24px;
-      height: calc(~'44% - 12px');
+      height: calc(~'47% - 24px');
     }
 
     .hdWrapper {
-      height: calc(~'56% - 12px');
+      height: 53%;
     }
   }
 }
@@ -235,6 +172,16 @@
   color: #00A8FF;
 }
 
+/* 环形图 */
+.pieChart {
+  height: calc(~'58% - 20px');
+}
+
+/* 曲线图 */
+.lineChart {
+  height: calc(~'100% - 20px');
+}
+
 /* 安全人员卡片 */
 .safety {
   .personWrapper {
@@ -244,7 +191,6 @@
   .person {
     display: flex;
     padding: 12px 0 12px 32px;
-    font-size: 16px;
     line-height: 1;
 
     .personName {
@@ -262,14 +208,13 @@
     position: relative;
     margin-bottom: 14px;
     padding-left: 26px;
-    padding-right: 88px;
+    padding-right: 90px;
     border-left: 6px solid #fff;
     box-shadow: 3px 3px 3px #000;
     background-color: #011539;
 
     .personItem {
       display: flex;
-      font-size: 16px;
       line-height: 48px;
       overflow: hidden;
 
@@ -289,8 +234,8 @@
       top: 12px;
       right: 8px;
       padding: 4px 0;
-      width: 80px;
-      height: 24px;
+      width: 82px;
+      height: 26px;
       line-height: 1;
       text-align: center;
       color: #00A8FF;
@@ -313,10 +258,6 @@
         margin-bottom: 8px;
         font-size: 24px;
       }
-
-      .riskLevelItemName {
-        font-size: 16px;
-      }
     }
   }
 
@@ -324,7 +265,6 @@
     position: relative;
     margin-bottom: 14px;
     padding: 3px 0 3px 16px;
-    font-size: 16px;
     box-shadow: 3px 3px 3px #000;
     background-color: #011539;
 
@@ -383,6 +323,15 @@
   }
 }
 
+/* 关闭按钮 */
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
 /* 中等大小 */
 @media screen and (min-width: 1200px) and (max-width: 1599px) {
   .main {
@@ -390,92 +339,142 @@
 
     .mainHeader {
       .mainHeaderTitle {
-        font-size: 42px;
+        font-size: 40px;
       }
 
       .mainHeaderTime {
-        font-size: 18px;
+        font-size: 16px;
       }
     }
     .mainBody {
-
       .sectionWrapper {
+        /* 块标题 */
+        .sectionTitle {
+          height: 18px;
+          line-height: 18px;
+          font-size: 14px;
+
+          .sectionTitleIcon {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+
         .sectionMain {
           .shadowIn {
-            padding: 8px;
+            padding: 18px;
           }
+
           .companyMain {
-            .companyIcon {
-              width: 38px;
-              height: 80px;
-              margin: 0 10px;
-            }
             .companyInfo {
-              width: calc(~'100% - 59px');
-              float: left;
-              word-wrap: none;
-              overflow: hidden;
-              white-space: nowrap;
+              padding-left: 56px;
+              background-size: 40px 40px;
+
               .companyName {
-                height: 30px;
-                line-height: 30px;
-                font-size: 15px;
+                padding: 12px 0;
+                font-size: 16px;
               }
-              .companyCharger {
-                height: 25px;
-                line-height: 25px;
-              }
+              .companyCharger,
               .companyPhone {
-                .companyCharger;
+                padding: 6px 0;
               }
             }
           }
           .summaryBottom {
-            width: calc(~'100% - 16px');
-            bottom: 0;
             .summaryHalf {
-              height: 50%;
-              margin-bottom: 10px;
-              .summaryIcon {
-                width: 38px;
-                height: 38px;
-                margin: 5px 10px;
-              }
+              padding-left: 56px;
+              background-size: 40px 40px;
+
               .summaryText {
-                height: 24px;
-                line-height: 24px;
-                width: calc(~'100% - 59px');
+                padding-bottom: 6px;
               }
+
               .summaryNum {
-                .summaryText;
-                font-size: 15px;
-              }
-              .summaryCheck {
-                .summaryIcon;
-              }
-              .summarySpecial {
-                .summaryIcon;
-              }
-              .summaryPeople {
-                .summaryIcon;
-              }
-              .summaryhd {
-                .summaryIcon;
-              }
-              .summaryNormal {
-                .summaryIcon;
-              }
-              .summaryChecking {
-                .summaryIcon;
-              }
-              .summaryAbnormal {
-                .summaryIcon;
-              }
-              .summaryOver {
-                .summaryIcon;
+                font-size: 20px;
               }
             }
           }
+        }
+      }
+    }
+  }
+
+  /* 环形图 */
+  .pieChart {
+    height: calc(~'58% - 18px');
+  }
+  /* 曲线图 */
+  .lineChart {
+    height: calc(~'100% - 18px');
+  }
+  /* 关闭按钮 */
+  .closeButton {
+    font-size: 18px;
+  }
+  /* 安全人员卡片 */
+  .safety {
+    .personWrapper {
+      padding: 8px 0 16px;
+    }
+
+    .person {
+      padding: 8px 0 8px 28px;
+
+      .personName {
+        width: 80px;
+      }
+    }
+
+    .personList {
+      margin-bottom: 12px;
+      padding-left: 23px;
+      padding-right: 78px;
+      border-left: 5px solid #fff;
+
+      .personItem {
+        line-height: 42px;
+      }
+
+      .personLabel {
+        top: 10px;
+        right: 6px;
+        padding: 3px 0;
+        width: 72px;
+        height: 22px;
+        border-radius: 3px;
+      }
+    }
+  }
+  /* 风险点卡片 */
+  .risk {
+    .riskLevelList {
+      padding: 24px 0;
+
+      .riskLevelItem {
+        .riskLevelItemValue {
+          margin-bottom: 6px;
+          font-size: 22px;
+        }
+      }
+    }
+
+    .riskPointItem {
+      margin-bottom: 12px;
+      padding: 3px 0 3px 14px;
+
+      .riskPointItemLabel {
+        right: 16px;
+        width: 26px;
+        height: 32px;
+        line-height: 28px;
+      }
+
+      .riskPointItemNameWrapper {
+        padding: 8px 0;
+
+        .riskPointItemName {
+          width: 70px;
         }
       }
     }
@@ -489,7 +488,7 @@
 
     .mainHeader {
       .mainHeaderTitle {
-        font-size: 36px;
+        font-size: 32px;
       }
 
       .mainHeaderTime {
@@ -497,80 +496,131 @@
       }
     }
     .mainBody {
-
       .sectionWrapper {
+        /* 块标题 */
+        .sectionTitle {
+          height: 16px;
+          line-height: 16px;
+          font-size: 12px;
+
+          .sectionTitleIcon {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+
         .sectionMain {
           .shadowIn {
-            padding: 8px;
+            padding: 12px;
           }
           .companyMain {
-            .companyIcon {
-              width: 32px;
-              height: 80px;
-              margin: 0 5px;
-            }
             .companyInfo {
-              width: calc(~'100% - 43px');
+              padding-left: 38px;
+              background-size: 30px 30px;
+
               .companyName {
-                height: 30px;
-                line-height: 30px;
-                font-size: 12px;
+                padding: 8px 0;
+                font-size: 14px;
               }
-              .companyCharger {
-                height: 25px;
-                line-height: 25px;
-              }
+              .companyCharger,
               .companyPhone {
-                .companyCharger;
+                padding: 4px 0;
               }
             }
           }
           .summaryBottom {
-            width: calc(~'100% - 16px');
-            bottom: 0;
             .summaryHalf {
-              height: 50%;
-              margin-bottom: 10px;
-              .summaryIcon {
-                width: 32px;
-                height: 32px;
-                margin: 5px;
-              }
+              padding-left: 38px;
+              background-size: 30px 30px;
+
               .summaryText {
-                height: 21px;
-                line-height: 21px;
-                width: calc(~'100% - 43px');
+                padding-bottom: 4px;
               }
+
               .summaryNum {
-                .summaryText;
                 font-size: 14px;
-              }
-              .summaryCheck {
-                .summaryIcon;
-              }
-              .summarySpecial {
-                .summaryIcon;
-              }
-              .summaryPeople {
-                .summaryIcon;
-              }
-              .summaryhd {
-                .summaryIcon;
-              }
-              .summaryNormal {
-                .summaryIcon;
-              }
-              .summaryChecking {
-                .summaryIcon;
-              }
-              .summaryAbnormal {
-                .summaryIcon;
-              }
-              .summaryOver {
-                .summaryIcon;
               }
             }
           }
+        }
+      }
+    }
+  }
+  /* 环形图 */
+  .pieChart {
+    height: calc(~'58% - 16px');
+  }
+  /* 曲线图 */
+  .lineChart {
+    height: calc(~'100% - 16px');
+  }
+  /* 关闭按钮 */
+  .closeButton {
+    font-size: 16px;
+  }
+  /* 安全人员卡片 */
+  .safety {
+    .personWrapper {
+      padding: 6px 0 12px;
+    }
+
+    .person {
+      padding: 6px 0 6px 24px;
+
+      .personName {
+        width: 68px;
+      }
+    }
+
+    .personList {
+      margin-bottom: 10px;
+      padding-left: 20px;
+      padding-right: 68px;
+      border-left: 4px solid #fff;
+
+      .personItem {
+        line-height: 36px;
+      }
+
+      .personLabel {
+        top: 8px;
+        right: 4px;
+        padding: 3px 0;
+        width: 62px;
+        height: 20px;
+      }
+    }
+  }
+  /* 风险点卡片 */
+  .risk {
+    .riskLevelList {
+      padding: 16px 0;
+
+      .riskLevelItem {
+        .riskLevelItemValue {
+          margin-bottom: 4px;
+          font-size: 20px;
+        }
+      }
+    }
+
+    .riskPointItem {
+      margin-bottom: 10px;
+      padding: 3px 0 3px 12px;
+
+      .riskPointItemLabel {
+        right: 14px;
+        width: 22px;
+        height: 28px;
+        line-height: 24px;
+      }
+
+      .riskPointItemNameWrapper {
+        padding: 6px 0;
+
+        .riskPointItemName {
+          width: 60px;
         }
       }
     }
