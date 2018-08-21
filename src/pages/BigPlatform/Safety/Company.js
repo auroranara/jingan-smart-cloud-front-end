@@ -1286,71 +1286,73 @@ class CompanyLayout extends PureComponent {
                 }}
               />
             </div>
-            <Row className={styles.personWrapper}>
-              <Col span={12} className={styles.person}>
-                <div className={styles.personName}>单位法人</div>
-                <div className={styles.personValue}>{legalNum}</div>
-              </Col>
+            <div className={styles.innerBox}>
+              <Row className={styles.personWrapper}>
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>单位法人</div>
+                  <div className={styles.personValue}>{legalNum}</div>
+                </Col>
 
-              <Col span={12} className={styles.person}>
-                <div className={styles.personName}>安全负责人</div>
-                <div className={styles.personValue}>{safeChargerNum}</div>
-              </Col>
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>安全负责人</div>
+                  <div className={styles.personValue}>{safeChargerNum}</div>
+                </Col>
 
-              <Col span={12} className={styles.person}>
-                <div className={styles.personName}>安全管理员</div>
-                <div className={styles.personValue}>{safeManagerNum}</div>
-              </Col>
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>安全管理员</div>
+                  <div className={styles.personValue}>{safeManagerNum}</div>
+                </Col>
 
-              <Col span={12} className={styles.person}>
-                <div className={styles.personName}>安全员</div>
-                <div className={styles.personValue}>{saferNum}</div>
-              </Col>
-            </Row>
-            {legalList.length !== 0 && (
-              <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
-                <div className={styles.personLabel}>单位法人</div>
-                {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                  <div className={styles.personItem} key={id}>
-                    <div className={styles.personItemName}>{name}</div>
-                    <div className={styles.personItemPhone}>{phone}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {safeChargerList.length !== 0 && (
-              <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
-                <div className={styles.personLabel}>安全负责人</div>
-                {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                  <div className={styles.personItem} key={id}>
-                    <div className={styles.personItemName}>{name}</div>
-                    <div className={styles.personItemPhone}>{phone}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {safeManagerList.length !== 0 && (
-              <div className={styles.personList} style={{ borderColor: '#00A8FF' }}>
-                <div className={styles.personLabel}>安全管理员</div>
-                {safeManagerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                  <div className={styles.personItem} key={id}>
-                    <div className={styles.personItemName}>{name}</div>
-                    <div className={styles.personItemPhone}>{phone}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {saferList.length !== 0 && (
-              <div className={styles.personList} style={{ borderColor: '#0967D3' }}>
-                <div className={styles.personLabel}>安全员</div>
-                {saferList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                  <div className={styles.personItem} key={id}>
-                    <div className={styles.personItemName}>{name}</div>
-                    <div className={styles.personItemPhone}>{phone}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>安全员</div>
+                  <div className={styles.personValue}>{saferNum}</div>
+                </Col>
+              </Row>
+              {legalList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
+                  <div className={styles.personLabel}>单位法人</div>
+                  {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {safeChargerList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
+                  <div className={styles.personLabel}>安全负责人</div>
+                  {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {safeManagerList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#00A8FF' }}>
+                  <div className={styles.personLabel}>安全管理员</div>
+                  {safeManagerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {saferList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#0967D3' }}>
+                  <div className={styles.personLabel}>安全员</div>
+                  {saferList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -1409,201 +1411,203 @@ class CompanyLayout extends PureComponent {
                 }}
               />
             </div>
-            <Row className={styles.riskLevelList}>
-              <Col span={6} className={styles.riskLevelItem}>
-                <div className={styles.riskLevelItemValue}>{red}</div>
-                <div className={styles.riskLevelItemName} style={{ color: '#FF4848' }}>
-                  红
-                </div>
-              </Col>
+            <div className={styles.innerBox}>
+              <Row className={styles.riskLevelList}>
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{red}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#FF4848' }}>
+                    红
+                  </div>
+                </Col>
 
-              <Col span={6} className={styles.riskLevelItem}>
-                <div className={styles.riskLevelItemValue}>{orange}</div>
-                <div className={styles.riskLevelItemName} style={{ color: '#F17A0A' }}>
-                  橙
-                </div>
-              </Col>
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{orange}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#F17A0A' }}>
+                    橙
+                  </div>
+                </Col>
 
-              <Col span={6} className={styles.riskLevelItem}>
-                <div className={styles.riskLevelItemValue}>{yellow}</div>
-                <div className={styles.riskLevelItemName} style={{ color: '#FBF719' }}>
-                  黄
-                </div>
-              </Col>
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{yellow}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#FBF719' }}>
+                    黄
+                  </div>
+                </Col>
 
-              <Col span={6} className={styles.riskLevelItem}>
-                <div className={styles.riskLevelItemValue}>{blue}</div>
-                <div className={styles.riskLevelItemName} style={{ color: '#1E60FF' }}>
-                  蓝
-                </div>
-              </Col>
-            </Row>
-            {redDangerResult.length === 0 &&
-              orangeDangerResult.length === 0 &&
-              yellowDangerResult.length === 0 &&
-              blueDangerResult.length === 0 && (
-                <div style={{ textAlign: 'center' }}>暂未风险评级</div>
-              )}
-            {redDangerResult.length !== 0 &&
-              redDangerResult.map(
-                ({
-                  item_id: id,
-                  object_title: name,
-                  status,
-                  user_name: checkPerson,
-                  check_date: checkTime,
-                }) => {
-                  const { content, color } = switchCheckStatus(+status);
-                  return (
-                    <div className={styles.riskPointItem} key={id}>
-                      <div
-                        className={styles.riskPointItemLabel}
-                        style={switchColorAndBgColor('红')}
-                      >
-                        红
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>风险点</div>
-                        <div className={styles.riskPointItemValue}>{name}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查人</div>
-                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查时间</div>
-                        <div className={styles.riskPointItemValue}>{checkTime}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>状态</div>
-                        <div className={styles.riskPointItemValue} style={{ color }}>
-                          {content}
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{blue}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#1E60FF' }}>
+                    蓝
+                  </div>
+                </Col>
+              </Row>
+              {redDangerResult.length === 0 &&
+                orangeDangerResult.length === 0 &&
+                yellowDangerResult.length === 0 &&
+                blueDangerResult.length === 0 && (
+                  <div style={{ textAlign: 'center' }}>暂未风险评级</div>
+                )}
+              {redDangerResult.length !== 0 &&
+                redDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('红')}
+                        >
+                          红
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                }
-              )}
-            {orangeDangerResult.length !== 0 &&
-              orangeDangerResult.map(
-                ({
-                  item_id: id,
-                  object_title: name,
-                  status,
-                  user_name: checkPerson,
-                  check_date: checkTime,
-                }) => {
-                  const { content, color } = switchCheckStatus(+status);
-                  return (
-                    <div className={styles.riskPointItem} key={id}>
-                      <div
-                        className={styles.riskPointItemLabel}
-                        style={switchColorAndBgColor('橙')}
-                      >
-                        橙
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>风险点</div>
-                        <div className={styles.riskPointItemValue}>{name}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查人</div>
-                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查时间</div>
-                        <div className={styles.riskPointItemValue}>{checkTime}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>状态</div>
-                        <div className={styles.riskPointItemValue} style={{ color }}>
-                          {content}
+                    );
+                  }
+                )}
+              {orangeDangerResult.length !== 0 &&
+                orangeDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('橙')}
+                        >
+                          橙
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                }
-              )}
-            {yellowDangerResult.length !== 0 &&
-              yellowDangerResult.map(
-                ({
-                  item_id: id,
-                  object_title: name,
-                  status,
-                  user_name: checkPerson,
-                  check_date: checkTime,
-                }) => {
-                  const { content, color } = switchCheckStatus(+status);
-                  return (
-                    <div className={styles.riskPointItem} key={id}>
-                      <div
-                        className={styles.riskPointItemLabel}
-                        style={switchColorAndBgColor('黄')}
-                      >
-                        黄
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>风险点</div>
-                        <div className={styles.riskPointItemValue}>{name}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查人</div>
-                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查时间</div>
-                        <div className={styles.riskPointItemValue}>{checkTime}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>状态</div>
-                        <div className={styles.riskPointItemValue} style={{ color }}>
-                          {content}
+                    );
+                  }
+                )}
+              {yellowDangerResult.length !== 0 &&
+                yellowDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('黄')}
+                        >
+                          黄
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                }
-              )}
-            {blueDangerResult.length !== 0 &&
-              blueDangerResult.map(
-                ({
-                  item_id: id,
-                  object_title: name,
-                  status,
-                  user_name: checkPerson,
-                  check_date: checkTime,
-                }) => {
-                  const { content, color } = switchCheckStatus(+status);
-                  return (
-                    <div className={styles.riskPointItem} key={id}>
-                      <div
-                        className={styles.riskPointItemLabel}
-                        style={switchColorAndBgColor('蓝')}
-                      >
-                        蓝
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>风险点</div>
-                        <div className={styles.riskPointItemValue}>{name}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查人</div>
-                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>检查时间</div>
-                        <div className={styles.riskPointItemValue}>{checkTime}</div>
-                      </div>
-                      <div className={styles.riskPointItemNameWrapper}>
-                        <div className={styles.riskPointItemName}>状态</div>
-                        <div className={styles.riskPointItemValue} style={{ color }}>
-                          {content}
+                    );
+                  }
+                )}
+              {blueDangerResult.length !== 0 &&
+                blueDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('蓝')}
+                        >
+                          蓝
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                }
-              )}
+                    );
+                  }
+                )}
+            </div>
           </div>
         </div>
       </section>
