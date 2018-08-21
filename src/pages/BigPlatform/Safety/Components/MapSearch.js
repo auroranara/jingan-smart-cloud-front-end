@@ -52,8 +52,6 @@ class MapSearch extends PureComponent {
   };
 
   handleChange = (value, { props: { label } }) => {
-    // console.log('label', label);
-    // const keyword = label ? label.name : value;
     this.fetchData(value);
     this.setState({
       value,
