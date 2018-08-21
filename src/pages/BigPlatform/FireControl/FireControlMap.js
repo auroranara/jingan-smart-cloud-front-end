@@ -23,7 +23,7 @@ export default class FireControlMap extends PureComponent {
 
   renderCompanyMarker() {
     const {
-      map: { companyBasicInfoList, totalNum },
+      map: { companyBasicInfoList, totalNum, fireNum },
     } = this.props;
     return companyBasicInfoList.map(item => {
       return (
@@ -47,31 +47,43 @@ export default class FireControlMap extends PureComponent {
   render() {
     const { center, zoom } = this.state;
     const {
-      map: { companyBasicInfoList },
+      map: { companyBasicInfoList, totalNum, fireNum },
     } = this.props;
     return (
       <FcSection style={{ padding: 8 }} className={styles.map}>
-        <GDMap
-          amapkey="665bd904a802559d49a33335f1e4aa0d"
-          plugins={[
-            { name: 'Scale', options: { locate: false } },
-            { name: 'ToolBar', options: { locate: false } },
-          ]}
-          status={{
-            keyboardEnable: false,
-          }}
-          useAMapUI
-          mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
-          center={center}
-          zoom={zoom}
-        >
-          {this.renderCompanyMarker()}
-        </GDMap>
-        <MapSearch
-          style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-          list={companyBasicInfoList}
-          handleSelect={this.handleSelect}
-        />
+        <div className={styles.mapContainer}>
+          <GDMap
+            amapkey="665bd904a802559d49a33335f1e4aa0d"
+            plugins={[
+              { name: 'Scale', options: { locate: false } },
+              { name: 'ToolBar', options: { locate: false } },
+            ]}
+            status={{
+              keyboardEnable: false,
+            }}
+            useAMapUI
+            mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
+            center={center}
+            zoom={zoom}
+          >
+            {this.renderCompanyMarker()}
+          </GDMap>
+          <MapSearch
+            style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
+            list={companyBasicInfoList}
+            handleSelect={this.handleSelect}
+          />
+          <ul className={styles.mapLegend}>
+            <li>
+              单位总数：
+              {totalNum}
+            </li>
+            <li>
+              报警单位：
+              {fireNum}
+            </li>
+          </ul>
+        </div>
       </FcSection>
     );
   }
