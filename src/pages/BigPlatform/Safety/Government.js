@@ -959,10 +959,11 @@ class GovernmentBigPlatform extends Component {
                 />
                 <Ellipsis
                   lines={1}
+                  tooltip
+                  className={styles.riskDescription}
                   style={{
                     flex: 1,
                     color: item[status] === 2 ? '#ff4848' : '#fff',
-                    fontSize: '16px',
                     lineHeight: '24px',
                   }}
                 >
@@ -971,12 +972,12 @@ class GovernmentBigPlatform extends Component {
               </div>
               <div style={{ display: 'flex', padding: '0 0 10px 6px' }}>
                 <div
+                  className={styles.riskImg}
                   style={{
                     flex: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '135px',
                     height: '180px',
                     backgroundColor: '#021C42',
                     overflow: 'hidden',
@@ -1002,50 +1003,47 @@ class GovernmentBigPlatform extends Component {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div
+                    className={styles.riskMsg}
                     style={{
                       display: 'flex',
-                      padding: '5px 0 5px 18px',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '16px',
                       lineHeight: '24px',
                     }}
                   >
                     <span style={{ color: '#00A8FF' }}>上报：</span>
-                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }}>
+                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[sbr]}</span>
                       {item[sbsj]}
                     </Ellipsis>
                   </div>
                   <div
+                    className={styles.riskMsg}
                     style={{
                       display: 'flex',
-                      padding: '5px 0 5px 18px',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '16px',
                       lineHeight: '24px',
                     }}
                   >
                     <span style={{ color: '#00A8FF' }}>整改：</span>
-                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }}>
+                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
                       {item[zgsj]}
                     </Ellipsis>
                   </div>
                   {item[status] === 1 && (
                     <div
+                      className={styles.riskMsg}
                       style={{
                         display: 'flex',
-                        padding: '5px 0 5px 18px',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '16px',
                         lineHeight: '24px',
                       }}
                     >
                       <span style={{ color: '#00A8FF' }}>复查：</span>
-                      <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }}>
+                      <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                         <span style={{ marginRight: '20px' }}>{item[fcr]}</span>
                       </Ellipsis>
                     </div>
