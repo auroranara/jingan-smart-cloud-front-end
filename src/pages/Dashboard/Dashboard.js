@@ -35,20 +35,21 @@ export default class Dashboard extends PureComponent {
       },
     } = this.props;
 
-    fireItem = {
-      src: fire,
-      url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`,
-      key: 'fire',
-    };
+    // fireItem = {
+    //   src: fire,
+    //   url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`,
+    //   key: 'fire',
+    // };
 
     //如果单位为政府或者admin 运营 则显示企业大屏
     if (unitType === 3 || unitType === 2) {
       safeItem.url = '/acloud_new/#/big-platform/safety/government';
-
+      fireItem.url = '/acloud_new/#/big-platform/fire-control/government';
       //TODO 政府大屏开启
-      this.setState({ hasSafeAuthority: true, safetyProduction: 1, fireService: 0 });
+      this.setState({ hasSafeAuthority: true, safetyProduction: 1, fireService: 1 });
     } else {
       safeItem.url = `/acloud_new/#/big-platform/safety/company/${companyId}`;
+      fireItem.url = `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`;
       this.setState({
         hasSafeAuthority: !!companyId,
         safetyProduction,
