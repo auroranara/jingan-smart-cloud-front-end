@@ -215,7 +215,6 @@ class BasicLayout extends React.PureComponent {
             )}
           </ContainerQuery>
         </DocumentTitle>
-        {this.state.rendering ? null : <SettingDarwer />}
       </React.Fragment>
     );
   }

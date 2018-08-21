@@ -14,6 +14,7 @@ import {
   TreeSelect,
   Spin,
   Transfer,
+  AutoComplete,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
@@ -335,10 +336,6 @@ export default class accountManagementEdit extends PureComponent {
             case 1:
               payload.userType = 'company_safer';
               break;
-            // 政府机构
-            case 2:
-              payload.userType = 'gov_grid_worker';
-              break;
             // 运营企业
             case 3:
               payload.userType = 'admin';
@@ -385,7 +382,11 @@ export default class accountManagementEdit extends PureComponent {
         unitTypeChecked: id,
       },
       () => {
-        setFieldsValue({ userType: 'company_legal_person' });
+        if (id === 4) {
+          setFieldsValue({ userType: 'company_legal_person' });
+        } else {
+          setFieldsValue({ userType: undefined });
+        }
       }
     );
   };
@@ -504,28 +505,6 @@ export default class accountManagementEdit extends PureComponent {
     } else callback();
   };
 
-  /* 异步验证手机号 */
-  validatePhoneNumber = (rule, value, callback) => {
-    if (value) {
-      const {
-        checkAccountOrPhone,
-        match: {
-          params: { id },
-        },
-      } = this.props;
-      checkAccountOrPhone({
-        payload: {
-          id,
-          phoneNumber: value,
-        },
-        callback(res) {
-          if (res.code === 200) callback();
-          else callback(res.msg);
-        },
-      });
-    } else callback();
-  };
-
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
@@ -549,6 +528,7 @@ export default class accountManagementEdit extends PureComponent {
         accountStatuses,
         unitIdes,
         userTypes,
+        gavUserTypes,
         documentTypeIds,
         departments,
       },
@@ -664,7 +644,6 @@ export default class accountManagementEdit extends PureComponent {
                       type: 'string',
                       message: '请输入手机号',
                     },
-                    { validator: this.validatePhoneNumber },
                   ],
                 })(<Input placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>
@@ -695,7 +674,7 @@ export default class accountManagementEdit extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitId}>
+              <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
                 {getFieldDecorator('unitId', {
                   initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
                   rules: [
@@ -706,7 +685,7 @@ export default class accountManagementEdit extends PureComponent {
                     },
                   ],
                 })(
-                  <Select
+                  <AutoComplete
                     mode="combobox"
                     labelInValue
                     optionLabelProp="children"
@@ -723,7 +702,7 @@ export default class accountManagementEdit extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
               </Form.Item>
             </Col>
@@ -775,6 +754,30 @@ export default class accountManagementEdit extends PureComponent {
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.userType}>
+                    {getFieldDecorator('userType', {
+                      initialValue: userType,
+                      rules: [
+                        {
+                          required: true,
+                          message: '请选择用户类型',
+                        },
+                      ],
+                    })(
+                      <Select placeholder="请选择用户类型">
+                        {gavUserTypes.map(item => (
+                          <Option value={item.id} key={item.id}>
+                            {item.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === 2 && (
+                <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.documentTypeId}>
                     {getFieldDecorator('documentTypeId', {
                       initialValue: documentTypeId,
@@ -784,7 +787,7 @@ export default class accountManagementEdit extends PureComponent {
                         },
                       ],
                     })(
-                      <Select placeholder="请选择执法证种类">
+                      <Select allowClear placeholder="请选择执法证种类">
                         {documentTypeIds.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
@@ -864,7 +867,7 @@ export default class accountManagementEdit extends PureComponent {
                   initialValue:
                     treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
                 })(
-                  <Select
+                  <AutoComplete
                     mode="combobox"
                     labelInValue
                     optionLabelProp="children"
@@ -878,7 +881,7 @@ export default class accountManagementEdit extends PureComponent {
                         {item.name}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
               </Form.Item>

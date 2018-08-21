@@ -74,16 +74,16 @@ export default class App extends PureComponent {
   renderChildren(children, image) {
     if (children) {
       return React.Children.map(children, child => {
-          if (child) {
-              if (child.type) {
-                  return React.cloneElement(child, {
-                    image,
-                  }, child.type === Fragment ? this.renderChildren(child.props.children, image) : child.props.children);
-              }
-              else {
-                  return child;
-              }
-          }
+        if (child) {
+            if (child.type) {
+                return React.cloneElement(child, {
+                  image,
+                }, child.type === Fragment ? this.renderChildren(child.props.children, image) : child.props.children);
+            }
+            else {
+                return child;
+            }
+        }
       });
     }
   }

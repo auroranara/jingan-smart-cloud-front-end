@@ -8,7 +8,7 @@ const pageRoutes = require('./router.config');
 const hosts = {
   lm: '192.168.10.2', // 吕旻
   gjm: '192.168.10.55', // 顾家铭
-  ct: '192.168.10.8', //孙启政
+  ct: '192.168.10.8', //陈涛
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18080', // 开发
   test: '192.168.10.68:18082', // 测试
@@ -30,7 +30,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.dev}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -106,12 +106,15 @@ export default {
       return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-');
     },
   },
+  define: {
+    'process.env.PROJECT_ENV': process.env.PROJECT_ENV || 'default',
+  },
   disableFastClick: true,
   hashHistory: true,
   manifest: {
     name: 'jing-an-smart-cloud',
     background_color: '#FFF',
-    description: 'An out-of-box UI solution for enterprise applications as a React boilerplate.',
+    description: '',
     display: 'standalone',
     start_url: '/index.html',
     icons: [

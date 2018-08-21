@@ -56,7 +56,9 @@ export default class GlobalHeaderRight extends PureComponent {
     dispatch({
       type: 'login/loginGsafe',
       callback: () => {
-        window.open(url, '_blank');
+        const winHandler = window.open('', '_blank');
+        winHandler.location.href = url;
+        winHandler.focus();
       },
     });
   };

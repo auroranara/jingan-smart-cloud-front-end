@@ -30,7 +30,7 @@ const defaultFieldNames = {
   background: 'background',
 };
 // 获取图章
-const getSeal = (status) => {
+const getSeal = status => {
   switch (status) {
     case 1:
       return dfcIcon;
@@ -58,11 +58,11 @@ export default class App extends PureComponent {
   static propTypes = {
     data: PropTypes.array.isRequired,
     fieldNames: PropTypes.object,
-  }
+  };
 
   static defaultProps = {
     fieldNames: {},
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -145,14 +145,14 @@ export default class App extends PureComponent {
     if (onMouseEnter) {
       onMouseEnter();
     }
-  }
+  };
 
   handleMouseLeave = () => {
     const { onMouseLeave } = this.props;
     if (onMouseLeave) {
       onMouseLeave();
     }
-  }
+  };
 
   render() {
     const {
@@ -225,5 +225,5 @@ export default class App extends PureComponent {
         </div>
       </div>
     );
-  };
+  }
 }

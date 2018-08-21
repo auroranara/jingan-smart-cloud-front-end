@@ -1,4 +1,25 @@
-import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany, getRiskDetail, getRiskPointInfo, getHiddenDanger, getSafetyOfficer } from '../services/bigPlatform/bigPlatform.js';
+import {
+  getProjectName,
+  getLocationCenter,
+  getItemList,
+  getCountDangerLocation,
+  getListForMap,
+  getNewHomePage,
+  getLocation,
+  getInfoByLocation,
+  getCompanyMessage,
+  getSpecialEquipment,
+  getCoItemList,
+  getCountDangerLocationForCompany,
+  getRiskDetail,
+  getRiskPointInfo,
+  getHiddenDanger,
+  getSafetyOfficer,
+  getGovFulltimeWorkerList,
+  getOverRectifyCompany,
+  getSearchImportantCompany,
+  getSearchAllCompany,
+} from '../services/bigPlatform/bigPlatform.js';
 
 export default {
   namespace: 'bigPlatform',
@@ -8,9 +29,17 @@ export default {
     countDangerLocation: {
       total: 0,
       red: 0,
+      red_abnormal: 0,
+      red_company: 0,
       orange: 0,
+      orange_abnormal: 0,
+      orange_company: 0,
       yellow: 0,
+      yellow_abnormal: 0,
+      yellow_company: 0,
       blue: 0,
+      blue_abnormal: 0,
+      blue_company: 0,
     },
     listForMap: {
       gridCheck: 0,
@@ -20,6 +49,7 @@ export default {
       reviewNum: 0,
       selfCheck: 0,
       total: 0,
+      dangerCompany: [],
     },
     newHomePage: {
       companyDto: {
@@ -48,6 +78,7 @@ export default {
       },
       check_map: [],
       hidden_danger_map: [],
+      isImportant: false,
     },
     coItemList: {
       status1: 0,
@@ -67,6 +98,16 @@ export default {
     hiddenDanger: 0,
     // 安全人员信息
     safetyOfficer: {},
+    govFulltimeWorkerList: {
+      total: 0,
+      list: [],
+    },
+    overRectifyCompany: [],
+    searchImportantCompany: [],
+    searchAllCompany: {
+      dataImportant: [],
+      dataUnimportantCompany: [],
+    },
   },
 
   effects: {
@@ -296,6 +337,62 @@ export default {
         success();
       }
     },
+    // 政府专职人员列表
+    *fetchGovFulltimeWorkerList({ payload, success }, { call, put }) {
+      const response = yield call(getGovFulltimeWorkerList, payload);
+      yield put({
+        type: 'govFulltimeWorkerList',
+        payload: response,
+      });
+      if (success) {
+        success();
+      }
+    },
+    // 获取超期未整改隐患企业列表
+    *fetchOverRectifyCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getOverRectifyCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'overRectifyCompany',
+          payload: response.data.list,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 查找重点单位
+    *fetchSearchImportantCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getSearchImportantCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'searchImportantCompany',
+          payload: response.data.list,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 查找重点和非重点单位
+    *fetchSearchAllCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getSearchAllCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'searchAllCompany',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -378,25 +475,49 @@ export default {
       return {
         ...state,
         riskPointInfoList,
-      }
+      };
     },
     saveRiskDetail(state, { payload: riskDetailList }) {
       return {
         ...state,
         riskDetailList,
-      }
+      };
     },
     hiddenDanger(state, { payload }) {
       return {
         ...state,
         hiddenDanger: payload,
-      }
+      };
     },
     saveSafetyOfficer(state, { payload: safetyOfficer }) {
       return {
         ...state,
         safetyOfficer,
       }
+    },
+    govFulltimeWorkerList(state, { payload }) {
+      return {
+        ...state,
+        govFulltimeWorkerList: payload,
+      };
+    },
+    overRectifyCompany(state, { payload }) {
+      return {
+        ...state,
+        overRectifyCompany: payload,
+      };
+    },
+    searchImportantCompany(state, { payload }) {
+      return {
+        ...state,
+        searchImportantCompany: payload,
+      };
+    },
+    searchAllCompany(state, { payload }) {
+      return {
+        ...state,
+        searchAllCompany: payload,
+      };
     },
   },
 };

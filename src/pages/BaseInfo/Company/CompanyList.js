@@ -116,7 +116,7 @@ const breadcrumbList = [
     },
     editScreenPermission(action) {
       dispatch({
-        type: 'company/editCompany',
+        type: 'company/editScreenPermission',
         ...action,
       });
     },

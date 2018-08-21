@@ -11,6 +11,9 @@ import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
 
+import classNames from 'classnames';
+import { DataView } from '@antv/data-set';
+import { Chart, Axis, Tooltip, Geom, Coord, Label, Legend } from 'bizcharts';
 import styles from './Company.less';
 import riskStyles from './Risk.less';
 
@@ -123,18 +126,15 @@ const switchImageColor = (color, isException) => {
   return result;
 }
 // 获取status
-const switchStatus = (status) => {
+const switchStatus = status => {
   const value = +status;
   if (value === 1 || value === 2) {
     return 0;
-  }
-  else if (value === 3) {
+  } else if (value === 3) {
     return 1;
-  }
-  else if (value === 7) {
+  } else if (value === 7) {
     return 2;
-  }
-  else {
+  } else {
     return 0;
   }
 };
@@ -460,18 +460,18 @@ class CompanyLayout extends PureComponent {
       selectedId: id,
       selectedIndex: index,
     });
-  }
+  };
 
   // 鼠标移动到隐患详情
   handleMouseEnter = () => {
     clearTimeout(this.myTimer);
-  }
+  };
 
   // 鼠标移出隐患详情
   handleMouseLeave = () => {
     const { selectedId } = this.state;
     selectedId !== null && this.addTimeout();
-  }
+  };
 
   // 添加风险点轮播定时器
   addTimeout = () => {
@@ -479,12 +479,11 @@ class CompanyLayout extends PureComponent {
       const { selectedIndex, points } = this.state;
       if (selectedIndex === points.length - 1) {
         this.handleClick(points[0].itemId, 0);
-      }
-      else {
+      } else {
         this.handleClick(points[selectedIndex + 1].itemId, selectedIndex + 1);
       }
     }, 10000);
-  }
+  };
 
   /**
    * 上一页
@@ -553,7 +552,7 @@ class CompanyLayout extends PureComponent {
         {this.renderLeftBottomSection()}
       </div>
     );
-  }
+  };
 
   /**
    * 中间部分
@@ -668,7 +667,7 @@ class CompanyLayout extends PureComponent {
         </div>
       </section>
     );
-  }
+  };
 
   /**
    * 左边下部分

@@ -62,7 +62,6 @@ export async function fetchArea(params) {
   return request(`/acloud_new/v2/baseInfo/city/new?${stringify(params)}`);
 }
 
-
 /* gsafe版获取字典 */
 export async function gsafeQueryDict(params) {
   return request(`/gsafe/dict/listForSelect.do?${stringify(params)}`);
@@ -73,4 +72,17 @@ export async function gsafeQueryIndustryType(params) {
   return request(`/gsafe/company/getCompanyIndustryTypeNew.do?${stringify(params)}`, {
     method: 'POST',
   });
+}
+
+/* 企业列表修改大屏权限（点亮） */
+export async function editScreenPermission({ id, ...params }) {
+  return request(`/acloud_new/v2/baseInfo/company/${id}/safety`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+/* 新增账号-初始化页面选项 */
+export async function queryAddCompanyOptions() {
+  return request(`/acloud_new/v2/baseInfo/company/options`);
 }

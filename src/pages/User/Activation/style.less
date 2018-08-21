@@ -1,19 +1,32 @@
 @import '~antd/lib/style/themes/default.less';
-@import '../../../utils/utils.less';
-
-.card {
-  margin-bottom: 24px;
+.main {
+  margin-top: 40px;
+  .stepForm {
+    margin: 0 auto;
+    width: 80%;
+  }
+  .setPassForm {
+    margin: 0 auto;
+    width: 80%;
+  }
 }
 
-.heading {
-  font-size: 14px;
-  line-height: 22px;
-  margin: 0 0 16px 0;
+.nextButton {
+  width: 100%;
+  margin: 40px auto;
+}
+
+.ant-steps-item-process>.ant-steps-item-content>.ant-steps-item-title:after {
+  background-color: #cedfff;
+}
+
+.steps-item-title:after {
+  height: 4px;
 }
 
 .steps:global(.ant-steps) {
   max-width: 750px;
-  margin: 16px auto;
+  margin: 60px auto;
 }
 
 .errorIcon {
@@ -41,7 +54,7 @@
   border-bottom: 1px solid @border-color-split;
   padding: 8px 16px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all .3s;
   &:hover {
     background: @primary-1;
   }
@@ -70,8 +83,19 @@
 }
 
 // custom footer for fixed footer toolbar
-.advancedForm + div {
+.advancedForm+div {
   padding-bottom: 64px;
+}
+
+.advancedForm {
+  :global {
+    .ant-form .ant-row:last-child .ant-form-item {
+      margin-bottom: 24px;
+    }
+    .ant-table td {
+      transition: none !important;
+    }
+  }
 }
 
 .optional {
@@ -79,18 +103,21 @@
   font-style: normal;
 }
 
-/* 返回按钮 */
-.backButton {
-  float: right;
-}
-.maintenanceIdForm {
+.registerResult {
   :global {
-    #maintenanceId {
-      cursor: pointer;
+    .anticon {
+      font-size: 64px;
     }
   }
-}
-
-.hasUnit {
-  height: 69px;
+  .title {
+    margin-top: 32px;
+    font-size: 20px;
+    line-height: 28px;
+  }
+  .actions {
+    margin-top: 40px;
+    a+a {
+      margin-left: 8px;
+    }
+  }
 }

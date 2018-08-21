@@ -1,4 +1,4 @@
-import { query as queryUsers, queryCurrent } from '../services/user';
+import { query as queryUsers, queryCurrent, activationSendCode, forgetSendCode, verifyCode, updatePwd } from '../services/user';
 
 export default {
   namespace: 'user',
@@ -20,11 +20,10 @@ export default {
     *fetchCurrent(_, { call, put }) {
       const setting = { grid: 'Wide', layout: 'topmenu' };
       const response = yield call(queryCurrent);
-      const {
-        data: { unitType },
-      } = response;
-
       if (response && response.data) {
+        const {
+          data: { unitType },
+        } = response;
         // 是否是运营来判断
         yield put({
           type: 'setting/changeSetting',
@@ -35,6 +34,22 @@ export default {
           payload: response.data,
         });
       }
+    },
+    *activationSendCode({ payload, callback }, { call }) {
+      const response = yield call(activationSendCode, payload)
+      if (callback) callback(response)
+    },
+    *forgetSendCode({ payload, callback }, { call }) {
+      const response = yield call(forgetSendCode, payload)
+      if (callback) callback(response)
+    },
+    *verifyCode({ payload, callback }, { call }) {
+      const response = yield call(verifyCode, payload)
+      if (callback) callback(response)
+    },
+    *updatePwd({ payload, callback }, { call }) {
+      const response = yield call(updatePwd, payload)
+      if (callback) callback(response)
     },
   },
 

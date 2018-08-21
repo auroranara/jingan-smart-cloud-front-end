@@ -12,11 +12,6 @@ export default {
 
   state: {
     status: undefined,
-    data: {
-      serviceSupport: null,
-      servicePhone: null,
-      projectName: '晶安智慧安全平台',
-    },
   },
 
   effects: {
