@@ -644,6 +644,7 @@ class CompanyLayout extends PureComponent {
           // 安全人员总数
           countCompanyUser,
         },
+        isImportant,
       },
       // 特种设备总数
       specialEquipment,
@@ -657,8 +658,6 @@ class CompanyLayout extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-    // 是否是重要单位
-    const isImportant = true;
 
     return (
       <section className={infoClassNames}>
