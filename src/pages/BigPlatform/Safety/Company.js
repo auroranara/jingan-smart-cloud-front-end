@@ -898,8 +898,8 @@ class CompanyLayout extends PureComponent {
             <div className={riskStyles.paginationWrapper}>
               <div className={riskStyles.paginationWrapperRight}></div>
               <div className={riskStyles.paginationList}>
-                <div className={riskStyles.paginationItem}><Icon type="caret-up" style={{ fontSize: 14, color: '#0967D3', cursor: isFirst ? 'not-allowed' : 'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
-                <div className={riskStyles.paginationItem}><Icon type="caret-down" style={{ fontSize: 14, color: '#0967D3', cursor: isLast ? 'not-allowed' : 'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
+                <div className={riskStyles.paginationItem}><Icon type="caret-up" style={{ fontSize: 14, color: isFirst ? '#00438a' : '#0967D3', cursor: isFirst ? 'not-allowed' : 'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
+                <div className={riskStyles.paginationItem}><Icon type="caret-down" style={{ fontSize: 14, color: isLast ? '#00438a' : '#0967D3', cursor: isLast ? 'not-allowed' : 'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
               </div>
             </div>
           </div>
