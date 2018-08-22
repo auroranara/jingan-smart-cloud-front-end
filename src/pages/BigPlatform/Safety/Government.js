@@ -320,7 +320,6 @@ class GovernmentBigPlatform extends Component {
   // 弹窗渲染
   renderInfoWindow() {
     const { infoWindowShow, infoWindow } = this.state;
-    // let position = null;
     const position = {
       longitude: infoWindow.longitude,
       latitude: infoWindow.latitude,
@@ -334,16 +333,7 @@ class GovernmentBigPlatform extends Component {
         visible={infoWindowShow}
         events={{ close: this.handleHideInfoWindow }}
       >
-        <div
-          style={{ cursor: 'pointer', padding: '0 5px 0 13px' }}
-          className={styles.companyLabel}
-          onClick={() => {
-            window.open(
-              `/acloud_new/#/big-platform/safety/company/${infoWindow.companyId}`,
-              '_blank'
-            );
-          }}
-        >
+        <div style={{ padding: '0 5px 0 13px' }} className={styles.companyLabel}>
           <div>{infoWindow.companyName}</div>
         </div>
       </InfoWindow>
