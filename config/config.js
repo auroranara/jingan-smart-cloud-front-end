@@ -20,7 +20,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.dev}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -30,7 +30,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.dev}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -42,39 +42,36 @@ export default {
   },
   // add for transfer to umi
   plugins: [
-    'umi-plugin-dva',
-    'umi-plugin-locale',
-    // TODO 决定是否使用约定路由，如果使用配置路由那么 umi-plugin-routes 可以去掉了
-    // [
-    //   'umi-plugin-routes',
-    //   {
-    //     exclude: [/\.test\.js/],
-    //     update(routes) {
-    //       return [...pageRoutes, ...routes];
-    //     },
-    //   },
-    // ],
+    [
+      'umi-plugin-react',
+      {
+        antd: true,
+        dva: {
+          hmr: true,
+        },
+        locale: {
+          enable: true, // default false
+          default: 'zh-CN', // default zh-CN
+          baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
+        },
+        dll: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+      },
+    ],
   ],
-  locale: {
-    enable: true, // default false
-    default: 'zh-CN', // default zh-CN
-    baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
-    antd: true, // use antd, default is true
-  },
 
   // 路由配置
   routes: pageRoutes,
-
+  history: 'hash',
   theme: {
     'card-actions-background': '#f5f8fa',
   },
   // entry: 'src/index.js', // TODO remove
-  extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
-  env: {
-    development: {
-      extraBabelPlugins: ['dva-hmr'],
-    },
-  },
+  // extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
+  // env: {
+  //   development: {
+  //     extraBabelPlugins: ['dva-hmr'],
+  //   },
+  // },
   externals: {
     '@antv/data-set': 'DataSet',
     rollbar: 'rollbar',
@@ -98,19 +95,23 @@ export default {
       ) {
         return localName;
       }
-      const antdProPath = context.resourcePath.match(/src(.*)/)[1].replace('.less', '');
-      const arr = antdProPath
-        .split('/')
-        .map(a => a.replace(/([A-Z])/g, '-$1'))
-        .map(a => a.toLowerCase());
-      return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-');
+      // const antdProPath = context.resourcePath.match(/src(.*)/)[1].replace('.less', '');
+      const match = context.resourcePath.match(/src(.*)/);
+      if (match && match[1]) {
+        const antdProPath = match[1].replace('.less', '');
+        const arr = antdProPath
+          .split('/')
+          .map(a => a.replace(/([A-Z])/g, '-$1'))
+          .map(a => a.toLowerCase());
+        return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-');
+      } else {
+        return localName;
+      }
     },
   },
   define: {
     'process.env.PROJECT_ENV': process.env.PROJECT_ENV || 'default',
   },
-  disableFastClick: true,
-  hashHistory: true,
   manifest: {
     name: 'jing-an-smart-cloud',
     background_color: '#FFF',
@@ -125,4 +126,29 @@ export default {
       },
     ],
   },
+  // chainWebpack(config) {
+  //   const AntDesignThemePlugin = require('antd-theme-webpack-plugin');
+  //   const MergeLessPlugin = require('antd-pro-merge-less');
+
+  //   // 将所有 less 合并为一个供 themePlugin使用
+  //   const outFile = path.join(__dirname, './.temp/ant-design-pro.less');
+  //   const stylesDir = path.join(__dirname, './src/');
+  //   // config
+  //   //   .plugin('merge-less')
+  //   //   .use(MergeLessPlugin, [{
+  //   //     stylesDir,
+  //   //     outFile,
+  //   //   }]);
+
+  //   // config
+  //   //   .plugin('ant-design-theme')
+  //   //   .use(AntDesignThemePlugin, [{
+  //   //     antDir: path.join(__dirname, './node_modules/antd'),
+  //   //     stylesDir,
+  //   //     varFile: path.join(__dirname, './node_modules/antd/lib/style/themes/default.less'),
+  //   //     mainLessFile: outFile,
+  //   //     themeVariables: ['@primary-color'],
+  //   //     indexFileName: 'index.html',
+  //   //   }]);
+  // },
 };
