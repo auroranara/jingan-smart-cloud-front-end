@@ -12,12 +12,16 @@ class MapSearch extends PureComponent {
     this.state = {
       value: '',
       selectList: [],
+      selectedItem: {},
     };
     this.fetchData = debounce(this.fetchData, 500);
   }
 
-  onSelect = (value, { props: { label } }) => {
+  onSelect = (value, option) => {
+    const { props: { label } } = option;
     this.jump(label);
+    console.log('select', label.name);
+    this.setState({ selectedItem: label });
   };
 
   jump = item => {
@@ -28,7 +32,7 @@ class MapSearch extends PureComponent {
     const { list } = this.props;
     const selectList = value ? list.filter(item => item.name.includes(value)) : [];
     this.setState({
-      value: value,
+      value,
       selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
     });
   };
@@ -42,11 +46,16 @@ class MapSearch extends PureComponent {
 
   render() {
     const { style } = this.props;
-    const { selectList } = this.state;
+    const { selectList, value, selectedItem: { id, name } } = this.state;
     const options = selectList.map(item => {
+      const { name } = item;
+      const [front, end] = name.split(value);
+
       return (
-        <Option key={item.id} label={item}>
-          {item.name}
+        <Option key={item.id} label={item} style={{ color: '#FFF' }}>
+          {front}
+          <span className={styles.highlight}>{value}</span>
+          {end}
         </Option>
       );
     });
@@ -57,7 +66,7 @@ class MapSearch extends PureComponent {
             style={{ width: 300, ...style }}
             combobox
             optionLabelProp="children"
-            value={this.state.value}
+            value={id === value ? name : value}
             placeholder="单位名称"
             defaultActiveFirstOption={false}
             getInputElement={() => <Input />}

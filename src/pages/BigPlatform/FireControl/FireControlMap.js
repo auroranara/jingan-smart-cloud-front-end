@@ -190,6 +190,7 @@ export default class FireControlMap extends PureComponent {
             {selected && this.renderInfoWindow()}
           </GDMap>
           <MapSearch
+            className={styles.search}
             style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
             list={newList}
             handleSelect={this.handleSelect}
