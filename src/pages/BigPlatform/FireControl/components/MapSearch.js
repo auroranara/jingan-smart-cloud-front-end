@@ -12,7 +12,7 @@ class MapSearch extends PureComponent {
     this.state = {
       value: '',
       selectList: [],
-      selectedItem: null,
+      selectedItem: {},
     };
     this.fetchData = debounce(this.fetchData, 500);
   }
@@ -21,7 +21,7 @@ class MapSearch extends PureComponent {
     const { props: { label } } = option;
     this.jump(label);
     console.log('select', label.name);
-    this.setState({ selectedName: label.name });
+    this.setState({ selectedItem: label });
   };
 
   jump = item => {
@@ -46,8 +46,7 @@ class MapSearch extends PureComponent {
 
   render() {
     const { style } = this.props;
-    const { selectList, value, selectedName } = this.state;
-    console.log(selectedName);
+    const { selectList, value, selectedItem: { id, name } } = this.state;
     const options = selectList.map(item => {
       const { name } = item;
       const [front, end] = name.split(value);
@@ -67,7 +66,7 @@ class MapSearch extends PureComponent {
             style={{ width: 300, ...style }}
             combobox
             optionLabelProp="children"
-            value={selectedName ? selectedName : this.state.value}
+            value={id === value ? name : value}
             placeholder="单位名称"
             defaultActiveFirstOption={false}
             getInputElement={() => <Input />}
