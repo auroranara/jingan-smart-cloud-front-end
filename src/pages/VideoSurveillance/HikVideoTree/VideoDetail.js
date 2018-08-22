@@ -13,7 +13,7 @@ const breadcrumbList = [
   { title: '设备管理', name: '设备管理' },
   { title: '海康视频树', name: '海康视频树' },
   { title: '视频列表', name: '视频列表', href: '/video-surveillance/hik-video-tree/videoList' },
-  { title: '视频详情', name: '视频详情'},
+  { title: '视频详情', name: '视频详情' },
 ];
 
 @connect(({ video, loading }) => ({
@@ -51,7 +51,7 @@ export default class VideoDetail extends Component {
     dispatch({
       type: 'video/fetchDetail',
       payload: {
-        id: this.props.match.params.id,
+        videoId: this.props.match.params.id,
       },
     });
   }

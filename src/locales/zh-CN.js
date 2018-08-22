@@ -56,6 +56,8 @@ export default {
   'menu.videoSurveillance.hikVideoTree.videoDetail': '视频详情',
   'menu.videoSurveillance.videoPermission': '视频权限',
   'menu.videoSurveillance.videoPermission.list': '视频权限列表',
+  'menu.videoSurveillance.videoPermission.add': '新增视频权限',
+  'menu.videoSurveillance.videoPermission.edit': '编辑视频权限',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
   'menu.dashboard.workplace': '工作台',

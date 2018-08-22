@@ -17,6 +17,7 @@ const defaultFieldNames = {
   children: 'children',
   title: 'title',
   isLeaf: 'isLeaf',
+  disabled: 'disabled',
 };
 /* 根据parentIds从数组中找到对应的节点并判断选中状态 */
 const checkParents = ({ list, parentIds, checkedKeys, fieldNames }) => {
@@ -102,13 +103,14 @@ const checkChildren = ({ list, checkedKeys, isChecked, fieldNames }) => {
 };
 
 /* 获取树节点 */
-const renderTreeNodes = ({ data, fieldNames, fileIcon}) => {
-  const { id: idField, children: childrenField, title: titleField, isLeaf: isLeafField } = fieldNames;
+const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
+  const { id: idField, children: childrenField, title: titleField, isLeaf: isLeafField, disabled: disabledField } = fieldNames;
   return data.map((item) => {
-    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf } = item;
+    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf, [disabledField]: disabled } = item;
     if (children) {
       return (
         <TreeNode
+          disabled={!!disabled}
           title={title}
           key={key}
           dataRef={item}
@@ -129,6 +131,7 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon}) => {
     }
     return (
       <TreeNode
+        disabled={!!disabled}
         title={title}
         key={key}
         dataRef={item}
@@ -153,6 +156,7 @@ export default class AsyncTreeModal extends PureComponent {
     cancelText: PropTypes.string,
     onOk: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
+    saveParentStates: PropTypes.func.isRequired,
     tree: PropTypes.shape({
       dataSource: PropTypes.array.isRequired,
       showIcon: PropTypes.bool,
@@ -180,10 +184,10 @@ export default class AsyncTreeModal extends PureComponent {
 
   constructor(props) {
     super(props);
-    const { expandedKeys, checkedKeys } = props;
+    // const { tree: { expandedKeys } } = props;
     this.state = {
-      expandedKeys: expandedKeys || [],
-      checkedKeys: checkedKeys || { checked: [], halfChecked: [] },
+      // expandedKeys: expandedKeys || [],
+      // checkedKeys: checkedKeys || { checked: [], halfChecked: [] },
       autoExpandParent: true,
       // searchValue: '',
     }
@@ -211,8 +215,7 @@ export default class AsyncTreeModal extends PureComponent {
         resolve();
         return;
       }
-      const { tree: { loadData, fieldNames } } = this.props;
-      const { checkedKeys } = this.state;
+      const { tree: { loadData, fieldNames, checkedKeys } } = this.props;
       loadData(dataRef, (list) => {
         checkChildren({
           list,
@@ -229,16 +232,21 @@ export default class AsyncTreeModal extends PureComponent {
   }
 
   /* 展开事件 */
-  handleExpand = (expandedKeys) => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    });
+  handleExpand = (expandedKeys, a) => {
+    console.log(a, 'a');
+
+    const { saveParentStates } = this.props
+    setTimeout(() => {
+      this.setState({
+        autoExpandParent: false,
+      });
+      saveParentStates({ expandedKeys })
+    }, 500);
   }
 
   /* check事件 */
   handleCheck = (checkedKeys, { checked: isChecked, node: { props: { dataRef: { children, parentIds } } } }) => {
-    const { tree: { fieldNames, dataSource } } = this.props;
+    const { saveParentStates, tree: { fieldNames, dataSource } } = this.props;
     if (parentIds !== '0') {
       checkParents({
         list: dataSource,
@@ -261,19 +269,18 @@ export default class AsyncTreeModal extends PureComponent {
         },
       });
     }
-    this.setState({
+    saveParentStates({
       checkedKeys,
-    });
+    })
   }
 
   handleOk = () => {
-    const { onOk } = this.props;
-    const { checkedKeys } = this.state;
+    const { onOk, tree: { checkedKeys } } = this.props;
     onOk(checkedKeys);
   }
 
   render() {
-    const { expandedKeys, checkedKeys, autoExpandParent } = this.state;
+    const { autoExpandParent } = this.state;
     const {
       visible,
       title,
@@ -291,6 +298,8 @@ export default class AsyncTreeModal extends PureComponent {
         fileIcon,
         checkable,
         fieldNames,
+        checkedKeys,
+        expandedKeys,
       },
     } = this.props;
 

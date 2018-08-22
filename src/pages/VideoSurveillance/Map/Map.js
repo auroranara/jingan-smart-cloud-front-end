@@ -170,7 +170,7 @@ export default class Map extends PureComponent {
         <div><span>当前在线总数：</span><span>{currentCount}</span></div>
         <div><span>今日在线总数：</span><span>{todayCount}</span></div>
         <div><span>故障视频：</span><span style={{ color: '#ED7D31' }}>{faultVideoCount}</span></div>
-        <div><span>在线用户：</span><input type="checkbox" checked={isUsersShow} onChange={this.handleShowUsers} /><span>显示</span></div>
+        {/* <div><span>在线用户：</span><input type="checkbox" checked={isUsersShow} onChange={this.handleShowUsers} /><span>显示</span></div> */}
         <div><span>视频资源：</span><input type="checkbox" checked={isVideosShow} onChange={this.handleShowVideos} /><span>显示</span></div>
       </div>
     );
