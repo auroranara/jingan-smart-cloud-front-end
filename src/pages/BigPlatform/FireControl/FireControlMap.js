@@ -8,6 +8,7 @@ import MapSearch from './components/MapSearch';
 import locateIcon from './mapLocate.png';
 import personIcon from './mapPerson.png';
 import statusIcon from './mapFire.png';
+import status1Icon from './mapFire1.png';
 
 const NO_DATA = '暂无信息';
 
@@ -56,7 +57,7 @@ export default class FireControlMap extends PureComponent {
     this.selectCompany(item);
   };
 
-  renderMarker = item => {
+  renderMarker = (item, isFire) => {
     return (
       <Marker
         position={{ longitude: item.longitude, latitude: item.latitude }}
@@ -67,7 +68,7 @@ export default class FireControlMap extends PureComponent {
         }}
       >
         <img
-          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
+          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
           alt=""
           style={{ display: 'block', width: '26px', height: '34px' }}
         />
@@ -79,8 +80,8 @@ export default class FireControlMap extends PureComponent {
     const { selected } = this.state;
     // 如果有选中的企业就只渲染选中的
     return selected
-      ? this.renderMarker(selected)
-      : newList.map(item => this.renderMarker(item));
+      ? this.renderMarker(selected, false)
+      : newList.map(item => this.renderMarker(item, item.isFire));
   }
 
   renderBackButton() {
@@ -105,16 +106,22 @@ export default class FireControlMap extends PureComponent {
   }
 
   renderInfoWindow() {
-    const { selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA  } } = this.state;
+    const { selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  } } = this.state;
     console.log(this.state.selected);
+
+    const events = {
+      close() { console.log(1) },
+    };
 
     return (
       <InfoWindow
         position={{ longitude, latitude }}
-        offset={[50, 10]}
+        // offset={[50, 10]}
         visible
         isCustom
+        showShadow
         autoMove={false}
+        events={events}
       >
         <h3 className={styles.companyName}>{name}</h3>
         <p className={styles.address}>
@@ -123,11 +130,11 @@ export default class FireControlMap extends PureComponent {
         </p>
         <p className={styles.safety}>
           <span className={styles.personIcon} style={genBackgrondStyle(personIcon)} />
-          <span className={styles.safetyNmae}>{safetyName}</span>
+          <span className={styles.safetyName}>{safetyName}</span>
           <span>{safetyPhone}</span>
         </p>
-        <p className={styles.status}>
-          <span className={styles.statusIcon} style={genBackgrondStyle(statusIcon)} />
+        <p className={isFire ? styles.statusFire : styles.status}>
+          <span className={styles.statusIcon} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
           {status}
         </p>
       </InfoWindow>
