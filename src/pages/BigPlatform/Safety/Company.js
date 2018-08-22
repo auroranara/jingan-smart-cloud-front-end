@@ -1214,7 +1214,7 @@ class CompanyLayout extends PureComponent {
           <div className={styles.shadowIn}>
             <div className={styles.sectionTitle}>
               <span className={styles.sectionTitleIcon} />
-              单位查询
+              单位巡查
               <div className={styles.legendList}>
                 <div className={styles.legendItem}>
                   <span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }} />
