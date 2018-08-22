@@ -754,7 +754,7 @@ class CompanyLayout extends PureComponent {
     const {
       coItemList: { status1, status2, status3, status4 },
       countDangerLocationForCompany: {
-        countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0 }] = [{}],
+        countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0 } = {}] = [{}],
       },
     } = this.props.bigPlatform;
     const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
@@ -1370,7 +1370,7 @@ class CompanyLayout extends PureComponent {
     const {
       bigPlatform: {
         countDangerLocationForCompany: {
-          countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0 }] = [{}],
+          countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0 } = {}] = [{}],
           redDangerResult = [],
           orangeDangerResult = [],
           yellowDangerResult = [],
