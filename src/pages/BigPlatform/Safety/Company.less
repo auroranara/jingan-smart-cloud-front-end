@@ -331,8 +331,15 @@
   cursor: pointer;
 }
 
+.safetyScroll {
+  height: calc(~"100% - 116");
+}
+.riskScroll {
+  height: calc(~"100% - 132px");
+}
 .innerBox {
-  height: calc(~"100% - 20px");
+  margin-right: -8px;
+  padding-right: 8px;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -496,8 +503,11 @@
       }
     }
   }
-  .innerBox {
-    height: calc(~"100% - 18px");
+  .safetyScroll {
+    height: calc(~"100% - 102px");
+  }
+  .riskScroll {
+    height: calc(~"100% - 108px");
   }
 }
 
@@ -645,7 +655,10 @@
       }
     }
   }
-  .innerBox {
-    height: calc(~"100% - 16px");
+  .safetyScroll {
+    height: calc(~"100% - 82px");
+  }
+  .riskScroll {
+    height: calc(~"100% - 84px");
   }
 }
