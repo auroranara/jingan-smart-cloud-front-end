@@ -59,7 +59,7 @@ export default class FireControlMap extends PureComponent {
     this.selectCompany(item);
   };
 
-  renderMarker = (item, isFire) => {
+  renderMarker = (item) => {
     return (
       <Marker
         position={{ longitude: item.longitude, latitude: item.latitude }}
@@ -70,7 +70,7 @@ export default class FireControlMap extends PureComponent {
         }}
       >
         <img
-          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
+          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
           alt=""
           style={{ display: 'block', width: '26px', height: '34px' }}
         />
@@ -82,8 +82,8 @@ export default class FireControlMap extends PureComponent {
     const { selected } = this.state;
     // 如果有选中的企业就只渲染选中的
     return selected
-      ? this.renderMarker(selected, false)
-      : newList.map(item => this.renderMarker(item, item.isFire));
+      ? this.renderMarker(selected)
+      : newList.map(item => this.renderMarker(item));
   }
 
   renderBackButton() {
@@ -190,6 +190,7 @@ export default class FireControlMap extends PureComponent {
             {selected && this.renderInfoWindow()}
           </GDMap>
           <MapSearch
+            className={styles.search}
             style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
             list={newList}
             handleSelect={this.handleSelect}
