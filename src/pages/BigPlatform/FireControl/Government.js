@@ -26,6 +26,7 @@ export default class FireControlBigPlatform extends PureComponent {
   state = {
     isLookUpRotated: false,
     lookUpShow: LOOKING_UP,
+    startLookUp: false,
   };
 
   componentDidMount() {
@@ -40,7 +41,7 @@ export default class FireControlBigPlatform extends PureComponent {
   }
 
   handleClickLookUp = () => {
-    this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true });
+    this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true, startLookUp: true });
   };
 
   handleClickOffGuard = () => {
@@ -52,9 +53,12 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   render() {
-    const { bigFireControl: { overview, alarm, sys, trend, danger, map }, dispatch } = this.props;
+    const {
+      bigFireControl: { overview, alarm, sys, trend, danger, map },
+      dispatch,
+    } = this.props;
 
-    const { isLookUpRotated, lookUpShow } = this.state;
+    const { isLookUpRotated, lookUpShow, startLookUp } = this.state;
 
     const handleRotateMethods = {
       handleClickLookUp: this.handleClickLookUp,
@@ -71,7 +75,7 @@ export default class FireControlBigPlatform extends PureComponent {
               <OverviewSection ovData={overview} />
               <FcSection title="辖区概况反面" isBack />
             </FcModule>
-            <div className={styles.gutter1}></div>
+            <div className={styles.gutter1} />
             <FcModule className={styles.alarmInfo}>
               <AlarmSection alarmData={alarm} dispatch={dispatch} />
               <FcSection title="警情信息反面" isBack />
@@ -82,7 +86,7 @@ export default class FireControlBigPlatform extends PureComponent {
               <FireControlMap map={map} alarm={alarm} />
               <FcSection title="Map Reverse" isBack />
             </FcModule>
-            <div className={styles.gutter2}></div>
+            <div className={styles.gutter2} />
             <Row className={styles.center}>
               <Col span={12} className={styles.centerLeft}>
                 <FcModule style={{ height: '100%' }}>
@@ -105,9 +109,10 @@ export default class FireControlBigPlatform extends PureComponent {
                 handleRotateBack={this.handleUnitLookUpRotateBack}
                 lookUpShow={lookUpShow}
                 isLookUpRotated={isLookUpRotated}
+                startLookUp={startLookUp}
               />
             </FcModule>
-            <div className={styles.gutter3}></div>
+            <div className={styles.gutter3} />
             <FcModule className={styles.system}>
               <SystemSection sysData={sys} />
               <FcSection title="系统接入情况反面" isBack />
