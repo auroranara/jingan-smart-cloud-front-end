@@ -1102,14 +1102,14 @@ class CompanyLayout extends PureComponent {
       dangerList[i] = 0;
     }
     check_map.forEach(({ month, day, self_check_point }) => {
-      const time = month < 10 ? `0${month}-${day}` : `${month}-${day}`;
+      const time = moment(`${month}-${day}`, 'M-D').format('MM-DD');
       const index = timeAxis.indexOf(time);
       if (index !== -1) {
         checkList[index] = self_check_point;
       }
     });
     hidden_danger_map.forEach(({ month, day, created_danger }) => {
-      const time = month < 10 ? `0${month}-${day}` : `${month}-${day}`;
+      const time = moment(`${month}-${day}`, 'M-D').format('MM-DD');
       const index = timeAxis.indexOf(time);
       if (index !== -1) {
         dangerList[index] = created_danger;
