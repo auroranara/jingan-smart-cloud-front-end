@@ -75,6 +75,7 @@ export default {
   theme: {
     'card-actions-background': '#f5f8fa',
   },
+  polyfills: ['ie9'],
   // entry: 'src/index.js', // TODO remove
   // extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
   // env: {
