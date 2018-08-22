@@ -12,10 +12,10 @@ const style2 = { borderRadius: 0 };
 const style3 = { borderRadius: '0 10% 10% 0' };
 
 export default function OvDangerCards(props) {
-  const { total, overdue, rectify, review } = props;
+  const { total, overdue, rectify, review, style={} } = props;
 
   return (
-    <div className={styles.danger}>
+    <div className={styles.danger} style={style}>
       <Row gutter={20} style={{ margin: 0, height: '100%' }}>
         <Col style={{ height: '100%' }} span={6}>
           <div className={styles.container}>
