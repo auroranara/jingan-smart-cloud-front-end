@@ -33,6 +33,7 @@ export default class FireControlMap extends PureComponent {
     center: [location.x, location.y],
     zoom: location.zoom,
     selected: undefined,
+    showInfo: false,
   };
 
   back = () => {
@@ -45,6 +46,7 @@ export default class FireControlMap extends PureComponent {
       center: [longitude, latitude],
       zoom: 18,
       selected: item,
+      showInfo: true,
     });
   };
   // 搜索之后跳转
@@ -106,22 +108,19 @@ export default class FireControlMap extends PureComponent {
   }
 
   renderInfoWindow() {
-    const { selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  } } = this.state;
-    console.log(this.state.selected);
-
-    const events = {
-      close() { console.log(1) },
-    };
+    const {
+      showInfo,
+      selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
+    } = this.state;
 
     return (
       <InfoWindow
         position={{ longitude, latitude }}
         // offset={[50, 10]}
-        visible
         isCustom
         showShadow
         autoMove={false}
-        events={events}
+        visible={showInfo}
       >
         <h3 className={styles.companyName}>{name}</h3>
         <p className={styles.address}>
@@ -137,6 +136,11 @@ export default class FireControlMap extends PureComponent {
           <span className={styles.statusIcon} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
           {status}
         </p>
+        <Icon
+          type="close"
+          onClick={() => this.setState({ showInfo: false })}
+          style={{ color: 'rgb(110,169,221)', position: 'absolute', right: 10, top: 10, cursor: 'pointer' }}
+        />
       </InfoWindow>
     );
   }
@@ -191,7 +195,7 @@ export default class FireControlMap extends PureComponent {
             handleSelect={this.handleSelect}
           />
           {selected && this.renderBackButton()}
-          {!selected && this.renderUnit(totalNum, fireNum)}
+          {this.renderUnit(totalNum, fireNum)}
         </div>
       </FcSection>
     );

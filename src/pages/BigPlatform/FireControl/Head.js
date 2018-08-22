@@ -32,7 +32,7 @@ export default class Head extends PureComponent {
     const hour = `${addZero(time.getHours())}:${addZero(time.getMinutes())}:${addZero(time.getSeconds())}`;
 
     return (
-      <div className={styles.container} style={{ background: `url(${bg})`, backgroundSize: '80% 100%', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat' }}>
+      <div className={styles.container} style={{ backgroundImage: `url(${bg})` }}>
         <h1 className={styles.h}>{title}</h1>
         <p className={styles.time}>
           <span className={styles.date}>{date}</span>
