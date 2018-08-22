@@ -1,0 +1,123 @@
+@import '~antd/lib/style/themes/default.less';
+.main {
+  margin-top: 40px;
+  .stepForm {
+    margin: 0 auto;
+    width: 80%;
+  }
+  .setPassForm {
+    margin: 0 auto;
+    width: 80%;
+  }
+}
+
+.nextButton {
+  width: 100%;
+  margin: 40px auto;
+}
+
+.ant-steps-item-process>.ant-steps-item-content>.ant-steps-item-title:after {
+  background-color: #cedfff;
+}
+
+.steps-item-title:after {
+  height: 4px;
+}
+
+.steps:global(.ant-steps) {
+  max-width: 750px;
+  margin: 60px auto;
+}
+
+.errorIcon {
+  cursor: pointer;
+  color: @error-color;
+  margin-right: 24px;
+  i {
+    margin-right: 4px;
+  }
+}
+
+.errorPopover {
+  :global {
+    .ant-popover-inner-content {
+      padding: 0;
+      max-height: 290px;
+      overflow: auto;
+      min-width: 256px;
+    }
+  }
+}
+
+.errorListItem {
+  list-style: none;
+  border-bottom: 1px solid @border-color-split;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all .3s;
+  &:hover {
+    background: @primary-1;
+  }
+  &:last-child {
+    border: 0;
+  }
+  .errorIcon {
+    color: @error-color;
+    float: left;
+    margin-top: 4px;
+    margin-right: 12px;
+    padding-bottom: 22px;
+  }
+  .errorField {
+    font-size: 12px;
+    color: @text-color-secondary;
+    margin-top: 2px;
+  }
+}
+
+.editable {
+  td {
+    padding-top: 13px !important;
+    padding-bottom: 12.5px !important;
+  }
+}
+
+// custom footer for fixed footer toolbar
+.advancedForm+div {
+  padding-bottom: 64px;
+}
+
+.advancedForm {
+  :global {
+    .ant-form .ant-row:last-child .ant-form-item {
+      margin-bottom: 24px;
+    }
+    .ant-table td {
+      transition: none !important;
+    }
+  }
+}
+
+.optional {
+  color: @text-color-secondary;
+  font-style: normal;
+}
+
+.registerResult {
+  :global {
+    .anticon {
+      font-size: 64px;
+    }
+  }
+  .title {
+    margin-top: 32px;
+    font-size: 20px;
+    line-height: 28px;
+  }
+  .actions {
+    margin-top: 40px;
+    a+a {
+      margin-left: 8px;
+    }
+  }
+}

@@ -1,4 +1,25 @@
-import { getProjectName, getLocationCenter, getItemList, getCountDangerLocation, getListForMap, getNewHomePage, getLocation, getInfoByLocation, getCompanyMessage, getSpecialEquipment, getCoItemList, getCountDangerLocationForCompany, getRiskDetail, getRiskPointInfo, getHiddenDanger } from '../services/bigPlatform/bigPlatform.js';
+import {
+  getProjectName,
+  getLocationCenter,
+  getItemList,
+  getCountDangerLocation,
+  getListForMap,
+  getNewHomePage,
+  getLocation,
+  getInfoByLocation,
+  getCompanyMessage,
+  getSpecialEquipment,
+  getCoItemList,
+  getCountDangerLocationForCompany,
+  getRiskDetail,
+  getRiskPointInfo,
+  getHiddenDanger,
+  getSafetyOfficer,
+  getGovFulltimeWorkerList,
+  getOverRectifyCompany,
+  getSearchImportantCompany,
+  getSearchAllCompany,
+} from '../services/bigPlatform/bigPlatform.js';
 
 export default {
   namespace: 'bigPlatform',
@@ -8,9 +29,17 @@ export default {
     countDangerLocation: {
       total: 0,
       red: 0,
+      red_abnormal: 0,
+      red_company: 0,
       orange: 0,
+      orange_abnormal: 0,
+      orange_company: 0,
       yellow: 0,
+      yellow_abnormal: 0,
+      yellow_company: 0,
       blue: 0,
+      blue_abnormal: 0,
+      blue_company: 0,
     },
     listForMap: {
       gridCheck: 0,
@@ -20,6 +49,8 @@ export default {
       reviewNum: 0,
       selfCheck: 0,
       total: 0,
+      dangerCompany: [],
+      overCheck: 0,
     },
     newHomePage: {
       companyDto: {
@@ -48,6 +79,7 @@ export default {
       },
       check_map: [],
       hidden_danger_map: [],
+      isImportant: false,
     },
     coItemList: {
       status1: 0,
@@ -57,17 +89,26 @@ export default {
       statusAll: 0,
     },
     specialEquipment: 0,
-    countDangerLocationForCompany: {
-      red: 0,
-      orange: 0,
-      blue: 0,
-      yellow: 0,
-    },
+    // 风险点统计及信息
+    countDangerLocationForCompany: {},
     // 风险点信息
     riskPointInfoList: [],
     // 隐患详情
     riskDetailList: [],
+    // 隐患总数
     hiddenDanger: 0,
+    // 安全人员信息
+    safetyOfficer: {},
+    govFulltimeWorkerList: {
+      total: 0,
+      list: [],
+    },
+    overRectifyCompany: [],
+    searchImportantCompany: [],
+    searchAllCompany: {
+      dataImportant: [],
+      dataUnimportantCompany: [],
+    },
   },
 
   effects: {
@@ -196,6 +237,7 @@ export default {
       const res = {
         ...response,
         point: response.point && response.point.filter(({itemId, xNum, yNum}) => itemId && (xNum || Number.parseFloat(xNum) === 0) && (yNum || Number.parseFloat(yNum) === 0) ),
+        fourColorImg: (response.fourColorImg && response.fourColorImg.startsWith('[')) ? JSON.parse(response.fourColorImg).filter(({ id, webUrl }) => /^http/.test(webUrl) && id) : [],
       };
       // if (response.code === 200) {
       yield put({
@@ -216,7 +258,7 @@ export default {
       yield put({
         type: 'coItemList',
         payload: response.total,
-        status: payload.status || '',
+        status: payload.status || 'All',
       });
       if (success) {
         success();
@@ -246,12 +288,7 @@ export default {
       // if (response.code === 200) {
       yield put({
         type: 'countDangerLocationForCompany',
-        payload: response.countDangerLocation[0] || {
-          red: 0,
-          orange: 0,
-          blue: 0,
-          yellow: 0,
-        },
+        payload: response,
       });
       if (success) {
         success();
@@ -289,6 +326,72 @@ export default {
       });
       if (success) {
         success();
+      }
+    },
+    *fetchSafetyOfficer({ payload, success }, { call, put }) {
+      const response = yield call(getSafetyOfficer, payload);
+      yield put({
+        type: 'saveSafetyOfficer',
+        payload: response,
+      });
+      if (success) {
+        success();
+      }
+    },
+    // 政府专职人员列表
+    *fetchGovFulltimeWorkerList({ payload, success }, { call, put }) {
+      const response = yield call(getGovFulltimeWorkerList, payload);
+      yield put({
+        type: 'govFulltimeWorkerList',
+        payload: response,
+      });
+      if (success) {
+        success();
+      }
+    },
+    // 获取超期未整改隐患企业列表
+    *fetchOverRectifyCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getOverRectifyCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'overRectifyCompany',
+          payload: response.data.list,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 查找重点单位
+    *fetchSearchImportantCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getSearchImportantCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'searchImportantCompany',
+          payload: response.data.list,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 查找重点和非重点单位
+    *fetchSearchAllCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getSearchAllCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'searchAllCompany',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
       }
     },
   },
@@ -342,23 +445,18 @@ export default {
         infoByLocation: payload,
       };
     },
-    companyMessage(state, { payload: companyMessage }) {
+    companyMessage(state, { payload }) {
       return {
         ...state,
-        companyMessage,
+        companyMessage: payload,
       };
     },
     coItemList(state, { payload, status }) {
-      let obj = {};
-      if (status === '1') obj = { status1: payload };
-      if (status === '2') obj = { status2: payload };
-      if (status === '3') obj = { status3: payload };
-      if (status === '4') obj = { status4: payload };
       return {
         ...state,
         coItemList: {
           ...state.coItemList,
-          ...obj,
+          [`status${status}`]: payload,
         },
       };
     },
@@ -378,19 +476,49 @@ export default {
       return {
         ...state,
         riskPointInfoList,
-      }
+      };
     },
     saveRiskDetail(state, { payload: riskDetailList }) {
       return {
         ...state,
         riskDetailList,
-      }
+      };
     },
     hiddenDanger(state, { payload }) {
       return {
         ...state,
         hiddenDanger: payload,
+      };
+    },
+    saveSafetyOfficer(state, { payload: safetyOfficer }) {
+      return {
+        ...state,
+        safetyOfficer,
       }
+    },
+    govFulltimeWorkerList(state, { payload }) {
+      return {
+        ...state,
+        govFulltimeWorkerList: payload,
+      };
+    },
+    overRectifyCompany(state, { payload }) {
+      return {
+        ...state,
+        overRectifyCompany: payload,
+      };
+    },
+    searchImportantCompany(state, { payload }) {
+      return {
+        ...state,
+        searchImportantCompany: payload,
+      };
+    },
+    searchAllCompany(state, { payload }) {
+      return {
+        ...state,
+        searchAllCompany: payload,
+      };
     },
   },
 };

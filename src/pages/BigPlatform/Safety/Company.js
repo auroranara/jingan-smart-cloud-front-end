@@ -1,146 +1,120 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Icon } from 'antd';
 import { connect } from 'dva';
-import styles from './Company.less';
 import moment from 'moment';
+import classNames from 'classnames';
+import ReactEcharts from 'echarts-for-react';
+
 import Timer from './Components/Timer';
 import RiskImage from './Components/RiskImage.js';
 import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
 
-import classNames from 'classnames';
-import { DataView } from '@antv/data-set';
-import { Chart, Axis, Tooltip, Geom, Coord, Label, Legend } from 'bizcharts';
+import styles from './Company.less';
+import riskStyles from './Risk.less';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 /* 图片 */
-const red = `${iconPrefix}red.png`;
-const orange = `${iconPrefix}orange.png`;
-const yellow = `${iconPrefix}yellow.png`;
-const blue = `${iconPrefix}blue.png`;
-const sRed = `${iconPrefix}s_red.png`;
-const sOrange = `${iconPrefix}s_orange.png`;
-const sYellow = `${iconPrefix}s_yellow.png`;
-const sBlue = `${iconPrefix}s_blue.png`;
-const exception = `${iconPrefix}exception.png`;
+const red = `${iconPrefix}red_new.png`;
+const orange = `${iconPrefix}orange_new.png`;
+const yellow = `${iconPrefix}yellow_new.png`;
+const blue = `${iconPrefix}blue_new.png`;
+const exceptionRed = `${iconPrefix}exception_red.png`;
+const exceptionOrange = `${iconPrefix}exception_orange.png`;
+const exceptionYellow = `${iconPrefix}exception_yellow.png`;
+const exceptionBlue = `${iconPrefix}exception_blue.png`;
 const selected = `${iconPrefix}selected.png`;
 const pointIcon = `${iconPrefix}point.png`;
 const areaIcon = `${iconPrefix}area.png`;
 const accidentTypeIcon = `${iconPrefix}accidentType.png`;
 const riskLevelIcon = `${iconPrefix}riskLevel.png`;
 const statusIcon = `${iconPrefix}status.png`;
-const defaultIcon = `${iconPrefix}default.png`;
-const sDefaultIcon = `${iconPrefix}s_default.png`;
+const importantIcon = `${iconPrefix}important.png`;
+const checkIcon = `${iconPrefix}check-icon.png`;
+const specialIcon = `${iconPrefix}special-icon.png`;
+const peopleIcon = `${iconPrefix}people-icon.png`;
+const hdIcon = `${iconPrefix}hd-icon.png`;
+const normalIcon = `${iconPrefix}normal-icon.png`;
+const checkingIcon = `${iconPrefix}checking-icon.png`;
+const abnormalIcon = `${iconPrefix}abnormal-icon.png`;
+const overIcon = `${iconPrefix}over-icon.png`;
+
 // 选中高度
-const selectedHeight = 135;
+const selectedHeight = 180;
 const selectedWidth = 63;
 // 信息offset
 const defaultInfoOffset = {
-  x: 50,
-  y: -selectedHeight - 50,
+  x: 30,
+  y: -selectedHeight-36,
 };
 // 正常点的样式
 const normalStyle = {
-  width: 39,
-  height: 40,
-  zIndex: 9,
+  width: 33,
+  height: 35,
+  zIndex: 8,
 };
 // 正常点的偏移
 const normalOffset = {
-  x: -2,
+  x: 0,
   y: 0,
 };
 // 选中点的样式
 const selectedStyle = {
   width: 33,
-  height: 40,
-  zIndex: 8,
+  height: 35,
+  zIndex: 9,
 };
 // 选中点的偏移
 const selectedOffset = {
   x: 0,
-  y: -selectedHeight,
+  y: -selectedHeight + 5,
 };
-// 点图标，0为正常，1为选中，2为异常
-const pointImages = [
-  [
-    {
-      src: defaultIcon,
-      style: normalStyle,
-      offset: normalOffset,
-    },
-    {
-      src: red,
-      style: normalStyle,
-      offset: normalOffset,
-    },
-    {
-      src: orange,
-      style: normalStyle,
-      offset: normalOffset,
-    },
-    {
-      src: yellow,
-      style: normalStyle,
-      offset: normalOffset,
-    },
-    {
-      src: blue,
-      style: normalStyle,
-      offset: normalOffset,
-    },
-  ],
-  [
-    {
-      src: sDefaultIcon,
-      style: selectedStyle,
-      offset: selectedOffset,
-    },
-    {
-      src: sRed,
-      style: selectedStyle,
-      offset: selectedOffset,
-    },
-    {
-      src: sOrange,
-      style: selectedStyle,
-      offset: selectedOffset,
-    },
-    {
-      src: sYellow,
-      style: selectedStyle,
-      offset: selectedOffset,
-    },
-    {
-      src: sBlue,
-      style: selectedStyle,
-      offset: selectedOffset,
-    },
-  ],
-  [
-    {
-      src: exception,
-      style: normalStyle,
-      offset: normalOffset,
-    },
-  ],
-];
 // 根据颜色筛选图片
-const switchImageColor = (list, color) => {
-  switch (color) {
-    case '红':
-      return list[1];
-    case '橙':
-      return list[2];
-    case '黄':
-      return list[3];
-    case '蓝':
-      return list[4];
-    default:
-      return list[0];
+const switchImageColor = (color, isException) => {
+  const result = {
+    style: normalStyle,
+    offset: normalOffset,
+  };
+  if (!isException) {
+    switch (color) {
+      case '红':
+        result.src = red;
+        break;
+      case '橙':
+        result.src = orange;
+        break;
+      case '黄':
+        result.src = yellow;
+        break;
+      case '蓝':
+        result.src = blue;
+        break;
+      default:
+        result.src = blue;
+        break;
+    }
+  } else {
+    switch (color) {
+      case '红':
+        result.src = exceptionRed;
+        break;
+      case '橙':
+        result.src = exceptionOrange;
+        break;
+      case '黄':
+        result.src = exceptionYellow;
+        break;
+      case '蓝':
+        result.src = exceptionBlue;
+        break;
+      default:
+        result.src = exceptionBlue;
+        break;
+    }
   }
+  return result;
 };
 // 获取status
 const switchStatus = status => {
@@ -156,35 +130,77 @@ const switchStatus = status => {
   }
 };
 // 获取颜色和status
-const switchCheckStatus = (value = -1) => {
+const switchCheckStatus = value => {
   switch (value) {
-    case 0:
-      return {
-        color: '#20DE3A',
-        content: '正常',
-      };
     case 1:
       return {
-        color: '#E8292D',
-        content: '异常',
+        color: '#fff',
+        content: '正常',
       };
     case 2:
       return {
-        color: '#794277',
-        content: '待检查',
+        color: '#FF4848',
+        content: '异常',
       };
     case 3:
       return {
-        color: '#EF5150',
+        color: '#4D9ED8',
+        content: '待检查',
+      };
+    case 4:
+      return {
+        color: '#FF4848',
         content: '已超时',
       };
     default:
       return {
-        color: '#20DE3A',
-        content: '',
+        color: '#fff',
+        content: '暂无状态',
       };
   }
 };
+// 根据风险等级获取风险点卡片上标签的颜色和背景
+const switchColorAndBgColor = color => {
+  switch (color) {
+    case '红':
+      return {
+        color: '#fff',
+        backgroundColor: '#FF4848',
+      };
+    case '橙':
+      return {
+        color: '#fff',
+        backgroundColor: '#F17A0A',
+      };
+    case '黄':
+      return {
+        color: '#000',
+        backgroundColor: '#FBF719',
+      };
+    case '蓝':
+      return {
+        color: '#fff',
+        backgroundColor: '#1E60FF',
+      };
+    default:
+      return {
+        color: '#fff',
+        backgroundColor: '#FF4848',
+      };
+  }
+};
+// 获取时间轴
+const timeAxis = (() => {
+  const now = moment();
+  const timeAxis = [];
+  for (let i = 0; i < 31; i++) {
+    const time = moment(now)
+      .subtract(i, 'days')
+      .format('MM-DD');
+    timeAxis.push(time);
+  }
+  return timeAxis.reverse();
+})();
 
 @connect(({ bigPlatform }) => ({
   bigPlatform,
@@ -197,9 +213,22 @@ class CompanyLayout extends PureComponent {
       selectedIndex: 0,
       pieHeight: 0,
       barHeight: 0,
+      // 当前选中的四色图对应的风险点
+      points: [],
+      // 四色图切换按钮显示数量
+      pageSize: 3,
+      // 当前显示的四色图切换按钮页数
+      currentIndex: 0,
+      // 当前选中的四色图的id
+      selectedFourColorImgId: null,
+      // 当前选中的四色图的地址
+      selectedFourColorImgUrl: '',
     };
     this.myTimer = null;
-    this.points = [];
+    this.currentPieIndex = -1;
+    this.highLightTimer = null;
+    this.currentLineIndex = -1;
+    this.showTipTimer = null;
   }
 
   componentDidMount() {
@@ -209,17 +238,6 @@ class CompanyLayout extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-    window.onload = () => {
-      this.reDoChart();
-    };
-
-    setTimeout(() => {
-      this.reDoChart();
-    }, 2000);
-
-    window.addEventListener('resize', () => {
-      this.debounce(this.reDoChart(), 300);
-    });
 
     dispatch({
       type: 'bigPlatform/fetchCompanyMessage',
@@ -227,10 +245,11 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
         month: moment().format('YYYY-MM'),
       },
-      success: ({ point: points, fourColorImg }) => {
-        // 只有图存在时才默认选中，如果第一个元素存在，则默认选中第一个，否则不选中
-        if (/^http/.test(fourColorImg) && points && points[0]) {
-          this.handleClick(points[0].itemId, 0);
+      success: ({ point, fourColorImg: [{ id, webUrl } = {}] }) => {
+        // model中已对point和fourColorImg进行处理，确保point必有坐标值，fourColorImg必为数组
+        // 如果id不存在，则意味着没有四色图，则不做任何操作
+        if (id) {
+          this.filterPointsByFourColorImgId(point, id, webUrl);
         }
       },
     });
@@ -240,6 +259,7 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
       },
     });
+    // 获取正常风险点总数（左下角对应数据）
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
@@ -247,6 +267,7 @@ class CompanyLayout extends PureComponent {
         status: '1',
       },
     });
+    // 获取异常风险点总数（左下角对应数据）
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
@@ -254,6 +275,7 @@ class CompanyLayout extends PureComponent {
         status: '2',
       },
     });
+    // 获取待检查风险点总数（左下角对应数据）
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
@@ -261,6 +283,7 @@ class CompanyLayout extends PureComponent {
         status: '3',
       },
     });
+    // 获取已超时风险点总数（左下角对应数据）
     dispatch({
       type: 'bigPlatform/fetchCoItemList',
       payload: {
@@ -268,45 +291,169 @@ class CompanyLayout extends PureComponent {
         status: '4',
       },
     });
+    // 获取企业大屏四色风险点数量（左下角环形图源数据）
     dispatch({
       type: 'bigPlatform/fetchCountDangerLocationForCompany',
       payload: {
         company_id: companyId,
       },
     });
-    // 获取风险点信息
+    // 获取风险点信息（中间四色图上风险点信息数据）
     dispatch({
       type: 'bigPlatform/fetchRiskPointInfo',
       payload: {
         company_id: companyId,
       },
     });
-    // 获取隐患详情
+    // 获取隐患详情（右边隐患详情源数据）
     dispatch({
       type: 'bigPlatform/fetchRiskDetail',
       payload: {
         company_id: companyId,
       },
     });
-    // 获取隐患数量
+    // 获取隐患数量（左上角隐患数源数据）
     dispatch({
       type: 'bigPlatform/fetchHiddenDanger',
       payload: {
         company_id: companyId,
       },
     });
-
-    this.setViewport();
+    // 获取安全人员信息（安全人员信息卡片源数据）
+    dispatch({
+      type: 'bigPlatform/fetchSafetyOfficer',
+      payload: {
+        company_id: companyId,
+      },
+    });
   }
 
   componentWillUnmount() {
     clearTimeout(this.myTimer);
+    clearInterval(this.highLightTimer);
   }
+
+  /**
+   * 根据当前选中的四色图id筛选出对应的风险点
+   * 将id和points保存到state中
+   * 自动选中第一个point
+   */
+  filterPointsByFourColorImgId = (point, id, webUrl) => {
+    const points = point.filter(({ fixImgId }) => fixImgId === id);
+    const [{ itemId } = {}] = points;
+    this.setState({
+      points,
+      selectedFourColorImgId: id,
+      selectedFourColorImgUrl: webUrl,
+      selectedId: itemId || null,
+      selectedIndex: 0,
+    });
+    this.handleClick(itemId, 0);
+  };
+
+  /**
+   * 环形图加载完毕
+   */
+  handlePieChartReady = (chart, option) => {
+    const changeHighLight = () => {
+      var length = option.series[0].data.length;
+      // 取消之前高亮的图形
+      chart.dispatchAction({
+        type: 'downplay',
+        seriesIndex: 0,
+        dataIndex: this.currentPieIndex,
+      });
+      this.currentPieIndex = (this.currentPieIndex + 1) % length;
+      // 高亮当前图形
+      chart.dispatchAction({
+        type: 'highlight',
+        seriesIndex: 0,
+        dataIndex: this.currentPieIndex,
+      });
+    };
+    // 立即执行高亮操作
+    changeHighLight();
+    // 添加定时器循环
+    this.highLightTimer = setInterval(changeHighLight, 2000);
+    // 绑定mouseover事件
+    chart.on('mouseover', params => {
+      clearInterval(this.highLightTimer);
+      this.highLightTimer = null;
+      if (params.dataIndex !== this.currentPieIndex) {
+        // 取消之前高亮的图形
+        chart.dispatchAction({
+          type: 'downplay',
+          seriesIndex: 0,
+          dataIndex: this.currentPieIndex,
+        });
+        // 高亮当前图形
+        chart.dispatchAction({
+          type: 'highlight',
+          seriesIndex: 0,
+          dataIndex: params.dataIndex,
+        });
+        this.currentPieIndex = params.dataIndex;
+      }
+    });
+    // 绑定mouseout事件
+    chart.on('mouseout', params => {
+      // 高亮当前图形
+      chart.dispatchAction({
+        type: 'highlight',
+        seriesIndex: 0,
+        dataIndex: this.currentPieIndex,
+      });
+      if (this.highLightTimer) {
+        return;
+      }
+      // 添加定时器循环
+      this.highLightTimer = setInterval(changeHighLight, 2000);
+    });
+  };
+
+  /**
+   * 曲线图加载完毕
+   */
+  handleLineChartReady = (chart, option) => {
+    const showTip = () => {
+      var length = option.series[0].data.length;
+      this.currentLineIndex = (this.currentLineIndex + 1) % length;
+      // 显示 tooltip
+      chart.dispatchAction({
+        type: 'showTip',
+        seriesIndex: 0,
+        dataIndex: this.currentLineIndex,
+      });
+    };
+    // 立即显示
+    showTip();
+    // 添加定时器
+    this.showTipTimer = setInterval(showTip, 2000);
+  };
+
+  /**
+   * 四色图切换按钮点击事件
+   */
+  handleClickTab = (id, webUrl) => {
+    const {
+      bigPlatform: {
+        companyMessage: { point },
+      },
+    } = this.props;
+    const { selectedFourColorImgId } = this.state;
+    if (selectedFourColorImgId === id) {
+      return;
+    }
+    this.filterPointsByFourColorImgId(point, id, webUrl);
+  };
 
   /* 风险点点击事件 */
   handleClick = (id, index) => {
     const { selectedId } = this.state;
     clearTimeout(this.myTimer);
+    if (!id) {
+      return;
+    }
     this.addTimeout();
     if (selectedId === id) {
       return;
@@ -317,23 +464,21 @@ class CompanyLayout extends PureComponent {
     });
   };
 
+  // 鼠标移动到隐患详情
   handleMouseEnter = () => {
     clearTimeout(this.myTimer);
   };
 
+  // 鼠标移出隐患详情
   handleMouseLeave = () => {
     const { selectedId } = this.state;
     selectedId !== null && this.addTimeout();
   };
 
+  // 添加风险点轮播定时器
   addTimeout = () => {
     this.myTimer = setTimeout(() => {
-      const { selectedIndex } = this.state;
-      const {
-        bigPlatform: {
-          companyMessage: { point: points },
-        },
-      } = this.props;
+      const { selectedIndex, points } = this.state;
       if (selectedIndex === points.length - 1) {
         this.handleClick(points[0].itemId, 0);
       } else {
@@ -342,229 +487,471 @@ class CompanyLayout extends PureComponent {
     }, 10000);
   };
 
-  setViewport() {
-    const vp = document.querySelector('meta[name=viewport]');
-    const sw = window.screen.width;
-    const stand = 1920;
-    const sca = sw / stand;
-    vp.content =
-      'width=device-width, initial-scale=' +
-      sca +
-      ', maximum-scale=' +
-      sca +
-      ', minimum-scale=' +
-      sca +
-      ', user-scalable=no';
+  /**
+   * 上一页
+   */
+  handlePrevPage = () => {
+    this.setState(({ currentIndex }) => ({
+      currentIndex: currentIndex - 1,
+    }));
+  };
+
+  /**
+   * 下一页
+   */
+  handleNextPage = () => {
+    this.setState(({ currentIndex }) => ({
+      currentIndex: currentIndex + 1,
+    }));
+  };
+
+  /**
+   * 头部
+   */
+  renderHeader() {
+    return (
+      <header className={styles.mainHeader}>
+        <span className={styles.mainHeaderTitle}>晶 安 智 慧 安 全 云 平 台</span>
+        <div className={styles.mainHeaderTime}>
+          <Timer />
+        </div>
+      </header>
+    );
   }
 
-  debounce = (action, delay) => {
-    let timer = null;
-    return function () {
-      const self = this;
-      const args = arguments;
-
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        action.apply(self, args);
-      }, delay);
-    };
-  };
-
-  reDoChart = () => {
-    const pieHeight = document.getElementById('hdPie')
-      ? document.getElementById('hdPie').offsetHeight
-      : 0;
-    const barHeight = document.getElementById('checkBar')
-      ? document.getElementById('checkBar').offsetHeight
-      : 0;
-    this.setState({
-      pieHeight,
-      barHeight,
-    });
-  };
-
-  renderBarChart = dataBar => {
-    const now = moment();
-    const dayList = [];
-    for (let i = 0; i < 30; i++) {
-      const day = moment(now).subtract(i, 'days');
-      dayList.push(day.format('M.D'));
-    }
-    dayList.reverse();
-
-    const dv = new DataView();
-    dv.source(dataBar).transform({
-      type: 'fold',
-      fields: dayList, // 展开字段集
-      key: 'day', // key字段
-      value: 'times', // value字段
-    });
-    const { barHeight } = this.state;
-    const windowWidth = window.screen.width;
-    let padding = [35, 20, 35, 35];
-    if (windowWidth < 1650) padding = [35, 20, 46, 35];
+  /**
+   * 主体
+   */
+  renderBody() {
     return (
-      <Chart height={barHeight} data={dv} forceFit padding={padding}>
-        <Axis
-          name="day"
-          label={{
-            textStyle: {
-              fontSize: 12, // 文本大小
-              textAlign: 'center', // 文本对齐方式
-              fill: '#fff', // 文本颜色
-            },
-          }}
-        />
-        <Axis
-          name="times"
-          label={{
-            textStyle: {
-              fontSize: 12, // 文本大小
-              textAlign: 'center', // 文本对齐方式
-              fill: '#fff', // 文本颜色
-            },
-          }}
-        />
-        <Legend
-          position="top"
-          marker="circle"
-          textStyle={{
-            fontSize: 12, // 文本大小
-            fill: '#fff', // 文本颜色
-          }}
-        />
-        <Tooltip />
-        <Geom type='interval' opacity={this.showBar ? 1 : 0} position="day*times" color={['name', ['#f9d678', '#58bafc']]} adjust={[{ type: 'dodge', marginRatio: 1 / 3 }]} />
-      </Chart>
+      <Row
+        gutter={24}
+        className={styles.mainBody}
+        style={{ margin: '0', padding: '16px 12px 24px', overflow: 'hidden' }}
+      >
+        <Col span={6} className={styles.column}>
+          <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+            {this.renderLeftSection()}
+            {this.renderSafety()}
+            {this.renderRisk()}
+          </div>
+        </Col>
+        <Col span={12} className={styles.column}>
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            {this.renderCenterSection()}
+          </div>
+        </Col>
+        <Col span={6} className={styles.column}>
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            {this.renderRightSection()}
+          </div>
+        </Col>
+      </Row>
     );
-  };
+  }
 
-  renderPieChart = dataPie => {
-    const dv = new DataView();
-    dv.source(dataPie).transform({
-      type: 'percent',
-      field: 'value',
-      dimension: 'name',
-      as: 'percent',
-    });
-    const scale = {
-      percent: {
-        formatter: val => {
-          val = (val * 100).toFixed(2) + '%';
-          return val;
+  /**
+   * 左边部分
+   */
+  renderLeftSection() {
+    return (
+      <div
+        style={{ width: '100%', height: '100%', overflow: 'hidden', transition: 'opacity 0.5s' }}
+        ref={leftSection => (this.leftSection = leftSection)}
+      >
+        {this.renderLeftTopSection()}
+        {this.renderLeftBottomSection()}
+      </div>
+    );
+  }
+
+  /**
+   * 中间部分
+   */
+  renderCenterSection() {
+    return (
+      <div style={{ width: '100%', height: '100%' }}>
+        {this.renderCenterTopSection()}
+        {this.renderCenterBottomSection()}
+      </div>
+    );
+  }
+
+  /**
+   * 右边部分
+   * 隐患详情
+   */
+  renderRightSection() {
+    const {
+      bigPlatform: { riskDetailList },
+    } = this.props;
+    const { selectedId } = this.state;
+    let data =
+      selectedId === null
+        ? []
+        : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
+    data = data.map(
+      ({
+        id,
+        flow_name: description,
+        report_user_name: sbr,
+        report_time: sbsj,
+        rectify_user_name: zgr,
+        plan_rectify_time: zgsj,
+        review_user_name: fcr,
+        status,
+        hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
+      }) => ({
+        id,
+        description,
+        sbr,
+        sbsj: moment(+sbsj).format('YYYY-MM-DD'),
+        zgr,
+        zgsj: moment(+zgsj).format('YYYY-MM-DD'),
+        fcr,
+        status: switchStatus(status),
+        background,
+      })
+    );
+
+    return (
+      <RiskDetail
+        style={{
+          height: '100%',
+        }}
+        data={data}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+      />
+    );
+  }
+
+  /**
+   * 左边上部分
+   */
+  renderLeftTopSection() {
+    const {
+      companyMessage: {
+        companyMessage: {
+          // 企业名称
+          companyName,
+          // 安全负责人
+          headOfSecurity,
+          // 联系电话
+          headOfSecurityPhone,
+          // 风险点总数
+          countCheckItem,
+          // 安全人员总数
+          countCompanyUser,
         },
+        isImportant,
       },
-      nice: false,
-    };
-    const { pieHeight } = this.state;
-    return (
-      <Chart height={pieHeight} data={dataPie} scale={scale} forceFit padding={[40]}>
-        <Coord type="polar" />
-        <Tooltip showTitle={false} />
-        <Geom
-          type="interval"
-          position="name*value"
-          color={['name', ['#c46d6b', '#d39945', '#cfc378', '#4d9ed8']]}
-        >
-          <Label
-            content="name"
-            textStyle={{
-              textAlign: 'center', // 文本对齐方向，可取值为： start middle end
-              fill: '#fff', // 文本的颜色
-              fontSize: '12', // 文本大小
-            }}
-            formatter={(val, item) => {
-              return item.point.value ? val : ''; // =0时不显示label
-            }}
-          />
-        </Geom>
-      </Chart>
-    );
-  };
+      // 特种设备总数
+      specialEquipment,
+      // 隐患总数
+      hiddenDanger,
+    } = this.props.bigPlatform;
+    const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
 
-  /* 风险四色图 */
-  renderRiskFourColor() {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+
+    return (
+      <section className={infoClassNames}>
+        <div className={styles.sectionMain}>
+          <div className={styles.shadowIn}>
+            <div className={styles.companyMain}>
+              <div className={styles.companyInfo}>
+                <div
+                  className={styles.companyName}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
+                  }}
+                >
+                  {companyName}
+                </div>
+                <div className={styles.companyCharger}>
+                  <span className={styles.fieldName}>安全负责人：</span>
+                  {headOfSecurity}
+                </div>
+                <div className={styles.companyPhone}>
+                  <span className={styles.fieldName}>联系方式：</span>
+                  {headOfSecurityPhone}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.summaryBottom} style={{ height: '50%' }}>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${peopleIcon})` }}>
+                <div className={styles.summaryText}>
+                  <span className={styles.fieldName}>安全人员</span>
+                </div>
+                <div
+                  className={styles.summaryNum}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    this.safety.style.right = 0;
+                    this.leftSection.style.opacity = 0;
+                  }}
+                >
+                  {countCompanyUser}
+                </div>
+              </div>
+
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${checkIcon})` }}>
+                <div className={styles.summaryText}>
+                  <span className={styles.fieldName}>风险点</span>
+                </div>
+                <div
+                  className={styles.summaryNum}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    this.risk.style.right = 0;
+                    this.leftSection.style.opacity = 0;
+                  }}
+                >
+                  {countCheckItem}
+                </div>
+              </div>
+
+              <div
+                className={styles.summaryHalf}
+                style={{ backgroundImage: `url(${specialIcon})` }}
+              >
+                <div className={styles.summaryText}>
+                  <span className={styles.fieldName}>特种设备</span>
+                </div>
+                <div className={styles.summaryNum}>{specialEquipment}</div>
+              </div>
+
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${hdIcon})` }}>
+                <div className={styles.summaryText}>
+                  <span className={styles.fieldName}>隐患数量</span>
+                </div>
+                <div className={styles.summaryNum}>{hiddenDanger}</div>
+              </div>
+            </div>
+
+            {isImportant && (
+              <div className={styles.importantUnit}>
+                <img src={importantIcon} alt="重要单位" />
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /**
+   * 左边下部分
+   */
+  renderLeftBottomSection() {
+    const {
+      coItemList: { status1, status2, status3, status4 },
+      countDangerLocationForCompany: {
+        countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0 }] = [{}],
+      },
+    } = this.props.bigPlatform;
+    const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
+    // 图表选项
+    const option = {
+      // color: ['#BF6C6D', '#CC964B', '#C6C181', '#4CA1DE'],
+      series: [
+        {
+          type: 'pie',
+          radius: ['50%', '80%'],
+          hoverOffset: 5,
+          avoidLabelOverlap: false,
+          label: {
+            normal: {
+              show: false,
+              position: 'center',
+              formatter: '{b}\n{c|{c}}',
+              rich: {
+                c: {
+                  fontSize: 20,
+                },
+              },
+            },
+            emphasis: {
+              show: true,
+              textStyle: {
+                fontSize: '16',
+                fontWeight: 'bold',
+              },
+            },
+          },
+          labelLine: {
+            normal: {
+              show: false,
+            },
+          },
+          data: [
+            { value: red, name: '红', itemStyle: { color: '#BF6C6D' } },
+            { value: orange, name: '橙', itemStyle: { color: '#CC964B' } },
+            { value: yellow, name: '黄', itemStyle: { color: '#C6C181' } },
+            { value: blue, name: '蓝', itemStyle: { color: '#4CA1DE' } },
+          ],
+        },
+      ],
+    };
+
+    return (
+      <section className={hdClassNames}>
+        <div className={styles.sectionMain}>
+          <div className={styles.shadowIn}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionTitleIcon} />
+              风险点
+            </div>
+
+            <div className={styles.pieChart}>
+              <ReactEcharts
+                option={option}
+                style={{ height: '100%' }}
+                onChartReady={chart => {
+                  this.handlePieChartReady(chart, option);
+                }}
+              />
+            </div>
+
+            <div className={styles.summaryBottom} style={{ height: '42%' }}>
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${normalIcon})` }}>
+                <div className={styles.summaryText} style={{ color: '#00A181' }}>
+                  正常
+                </div>
+                <div className={styles.summaryNum}>{status1}</div>
+              </div>
+
+              <div
+                className={styles.summaryHalf}
+                style={{ backgroundImage: `url(${checkingIcon})` }}
+              >
+                <div className={styles.summaryText} style={{ color: '#4D9ED8' }}>
+                  待检查
+                </div>
+                <div className={styles.summaryNum}>{status3}</div>
+              </div>
+
+              <div
+                className={styles.summaryHalf}
+                style={{ backgroundImage: `url(${abnormalIcon})` }}
+              >
+                <div className={styles.summaryText} style={{ color: '#B23535' }}>
+                  异常
+                </div>
+                <div className={styles.summaryNum}>{status2}</div>
+              </div>
+
+              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${overIcon})` }}>
+                <div className={styles.summaryText} style={{ color: '#B23535' }}>
+                  已超时
+                </div>
+                <div className={styles.summaryNum}>{status4}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /**
+   * 中间上部分
+   * 安全风险四色图
+   */
+  renderCenterTopSection() {
     const {
       bigPlatform: {
-        companyMessage: { point: points, fourColorImg },
+        companyMessage: { fourColorImg = [] },
         riskPointInfoList,
       },
     } = this.props;
-    const { selectedId } = this.state;
+    const {
+      selectedId,
+      pageSize,
+      currentIndex,
+      selectedFourColorImgId,
+      selectedFourColorImgUrl,
+      points,
+    } = this.state;
+    // 页数
+    const pageCount = Math.max(Math.ceil(fourColorImg.length / pageSize), 1);
+    // 是否为第一页
+    const isFirst = currentIndex === 0;
+    // 是否为最后一页
+    const isLast = currentIndex === pageCount - 1;
+    // 当前页的第一个元素
+    const currentFirstIndex = currentIndex * pageSize;
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '36px 0 10px' }}>
-        <div
-          style={{
-            height: '40px',
-            lineHeight: '40px',
-            paddingLeft: '15px',
-            color: '#00A8FF',
-            fontSize: '20px',
-          }}
-        >
-          <div className={styles.riskTitle}>安全风险四色图</div>
-        </div>
+      <div className={riskStyles.fourColorImgContainer}>
+        <div className={riskStyles.fourColorImgTitle}>安全风险四色图</div>
         <RiskImage
-          src={fourColorImg || ''}
-          wrapperStyle={{
-            flex: 1,
-            height: `calc(100% - 72px)`,
-          }}
-        // perspective='30em'
-        // rotate='45deg'
+          src={selectedFourColorImgUrl}
+          wrapperClassName={riskStyles.riskImage}
+          // perspective='30em'
+          rotate="30deg"
         >
           {points &&
             points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
+              // 筛选风险点对应的信息
               const info = riskPointInfoList.filter(
                 ({ hdLetterInfo: { itemId } }) => itemId === id
               )[0] || {
-                  hdLetterInfo: {
-                    pointName: '',
-                    areaName: '',
-                    accidentTypeName: '',
-                    status: '',
-                    riskLevelName: {
-                      desc: '',
-                    },
+                hdLetterInfo: {
+                  pointName: '',
+                  areaName: '',
+                  accidentTypeName: '',
+                  status: '',
+                  riskLevelName: {
+                    desc: '',
                   },
-                  localPictureUrlList: [],
-                };
+                },
+                localPictureUrlList: [],
+              };
+              // 获取风险点位置，值为百分比
               const position = { x, y };
-              const { src, style, offset } =
-                selectedId === id
-                  ? switchImageColor(pointImages[1], info.hdLetterInfo.riskLevelName.desc)
-                  : +info.hdLetterInfo.status !== 2
-                    ? switchImageColor(pointImages[0], info.hdLetterInfo.riskLevelName.desc)
-                    : pointImages[2][0];
+              // 获取风险点的图片，样式及偏移
+              const { src, style, offset } = switchImageColor(
+                info.hdLetterInfo.riskLevelName.desc,
+                +info.hdLetterInfo.status === 2
+              );
               const infoData = [
                 {
                   icon: pointIcon,
-                  title: info.hdLetterInfo.pointName,
-                  render: title => <span style={{ fontSize: '16px' }}>{title}</span>,
+                  title: '风险点名称',
+                  content: info.hdLetterInfo.pointName,
+                  render: value => <span style={{ fontSize: '16px' }}>{value}</span>,
                 },
                 {
                   icon: areaIcon,
-                  title: info.hdLetterInfo.areaName,
+                  title: '场所/环节/部位名称',
+                  content: info.hdLetterInfo.areaName,
                 },
                 {
                   icon: accidentTypeIcon,
-                  title: info.hdLetterInfo.accidentTypeName,
+                  title: '易导致后果（风险）',
+                  content: info.hdLetterInfo.accidentTypeName,
                 },
                 {
                   icon: statusIcon,
-                  title: info.hdLetterInfo.status,
-                  render: title => {
-                    const { color, content } = switchCheckStatus(title - 1);
+                  title: '检查状态',
+                  content: info.hdLetterInfo.status,
+                  render: value => {
+                    const { color, content } = switchCheckStatus(value);
                     return <span style={{ color }}>{content}</span>;
                   },
                 },
                 {
                   icon: riskLevelIcon,
-                  title: info.hdLetterInfo.riskLevelName.desc,
-                  render: title => (
-                    <span style={{ color: info.hdLetterInfo.riskLevelName.color }}>{title}</span>
-                  ),
+                  title: '风险等级',
+                  content: info.hdLetterInfo.riskLevelName.desc,
                 },
               ];
               return (
@@ -572,13 +959,14 @@ class CompanyLayout extends PureComponent {
                   <RiskPoint
                     position={position}
                     src={src}
-                    style={style}
-                    offset={offset}
+                    style={
+                      selectedId === id
+                        ? { ...selectedStyle, cursor: 'pointer' }
+                        : { ...style, cursor: 'pointer' }
+                    }
+                    offset={selectedId === id ? selectedOffset : offset}
                     onClick={point => {
                       this.handleClick(id, index, point);
-                    }}
-                    ref={point => {
-                      this.points[index] = point;
                     }}
                   />
                   <RiskPoint
@@ -596,60 +984,102 @@ class CompanyLayout extends PureComponent {
                     data={infoData}
                     background={info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl}
                     style={{
-                      opacity: selectedId === id ? '1' : 0,
-                      zIndex: selectedId === id ? 10 : 0,
+                      display: selectedId === id ? 'block' : 'none',
+                      // opacity: selectedId === id ? '1' : '0',
                     }}
                   />
                 </Fragment>
               );
             })}
+          <div className={riskStyles.fourColorImgPaginationContainer}>
+            <div className={riskStyles.tabList}>
+              {fourColorImg.map(({ id, webUrl, fileName = '未命名' }, index) => {
+                if (index < currentFirstIndex || index >= currentFirstIndex + pageSize) {
+                  return null;
+                }
+                const backgroundColor = selectedFourColorImgId === id ? '#0967D3' : undefined;
+                const i = fileName.indexOf('.');
+                return (
+                  <div className={riskStyles.tabWrapper} key={id}>
+                    <div
+                      className={riskStyles.tab}
+                      style={{
+                        backgroundColor,
+                        transform: selectedFourColorImgId === id ? 'translateX(0)' : undefined,
+                      }}
+                      onClick={() => {
+                        this.handleClickTab(id, webUrl);
+                      }}
+                    >
+                      {i === -1 ? fileName : fileName.slice(0, i)}
+                      <div
+                        className={riskStyles.tabRight}
+                        style={{ borderLeftColor: backgroundColor }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className={riskStyles.paginationWrapper}>
+              <div className={riskStyles.paginationWrapperRight} />
+              <div className={riskStyles.paginationList}>
+                <div className={riskStyles.paginationItem}>
+                  <Icon
+                    type="caret-up"
+                    style={{
+                      fontSize: 14,
+                      color: isFirst ? '#00438a' : '#0967D3',
+                      cursor: isFirst ? 'not-allowed' : 'pointer',
+                    }}
+                    onClick={() => {
+                      !isFirst && this.handlePrevPage();
+                    }}
+                  />
+                </div>
+                <div className={riskStyles.paginationItem}>
+                  <Icon
+                    type="caret-down"
+                    style={{
+                      fontSize: 14,
+                      color: isLast ? '#00438a' : '#0967D3',
+                      cursor: isLast ? 'not-allowed' : 'pointer',
+                    }}
+                    onClick={() => {
+                      !isLast && this.handleNextPage();
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </RiskImage>
-        <div style={{ display: 'flex', height: '24px', padding: '16px 0' }}>
-          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <div className={riskStyles.fourColorImgLabelContainer}>
+          <div className={riskStyles.fourColorImgLabel}>
             <span
-              style={{
-                display: 'inline-block',
-                marginRight: '4px',
-                width: '16px',
-                height: '16px',
-                backgroundColor: '#BF6C6E',
-              }}
+              className={riskStyles.fourColorImgLabelIcon}
+              style={{ backgroundColor: '#FC1F02' }}
             />
             <span>重大风险</span>
           </div>
-          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <div className={riskStyles.fourColorImgLabel}>
             <span
-              style={{
-                display: 'inline-block',
-                marginRight: '4px',
-                width: '16px',
-                height: '16px',
-                backgroundColor: '#CC964B',
-              }}
+              className={riskStyles.fourColorImgLabelIcon}
+              style={{ backgroundColor: '#F17A0A' }}
             />
             <span>较大风险</span>
           </div>
-          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <div className={riskStyles.fourColorImgLabel}>
             <span
-              style={{
-                display: 'inline-block',
-                marginRight: '4px',
-                width: '16px',
-                height: '16px',
-                backgroundColor: '#C6BC7A',
-              }}
+              className={riskStyles.fourColorImgLabelIcon}
+              style={{ backgroundColor: '#FBF719' }}
             />
             <span>一般风险</span>
           </div>
-          <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <div className={riskStyles.fourColorImgLabel}>
             <span
-              style={{
-                display: 'inline-block',
-                marginRight: '4px',
-                width: '16px',
-                height: '16px',
-                backgroundColor: '#4C9ED6',
-              }}
+              className={riskStyles.fourColorImgLabelIcon}
+              style={{ backgroundColor: '#1E60FF' }}
             />
             <span>低风险</span>
           </div>
@@ -658,249 +1088,541 @@ class CompanyLayout extends PureComponent {
     );
   }
 
-  /* 隐患详情 */
-  renderRiskDetail() {
+  /**
+   * 中间下部分
+   */
+  renderCenterBottomSection() {
     const {
-      bigPlatform: { riskDetailList },
-    } = this.props;
-    const { selectedId } = this.state;
-    let data =
-      selectedId === null
-        ? riskDetailList.filter(({ status }) => +status !== 4)
-        : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
-    data = data.map(
-      ({
-        id,
-        flow_name: description,
-        report_user_name: sbr,
-        report_time: sbsj,
-        rectify_user_name: zgr,
-        plan_rectify_time: zgsj,
-        review_user_name: fcr,
-        status,
-        hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
-      }) => ({
-        id,
-        description,
-        sbr,
-        sbsj: moment(+sbsj).format('YYYY-MM-DD'),
-        zgr,
-        zgsj: moment(+zgsj).format('YYYY-MM-DD'),
-        fcr,
-        status: switchStatus(status),
-        background,
-      })
-    );
+      companyMessage: { check_map = [], hidden_danger_map = [] },
+    } = this.props.bigPlatform;
+    const checkList = [];
+    const dangerList = [];
+    for (let i = 0; i < 31; i++) {
+      checkList[i] = 0;
+      dangerList[i] = 0;
+    }
+    check_map.forEach(({ month, day, self_check_point }) => {
+      const time = month < 10 ? `0${month}-${day}` : `${month}-${day}`;
+      const index = timeAxis.indexOf(time);
+      if (index !== -1) {
+        checkList[index] = self_check_point;
+      }
+    });
+    hidden_danger_map.forEach(({ month, day, created_danger }) => {
+      const time = month < 10 ? `0${month}-${day}` : `${month}-${day}`;
+      const index = timeAxis.indexOf(time);
+      if (index !== -1) {
+        dangerList[index] = created_danger;
+      }
+    });
+
+    const option = {
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: timeAxis,
+        axisLabel: {
+          interval: 1,
+          color: '#fff',
+        },
+        splitLine: {
+          lineStyle: {
+            color: ['rgb(2,28,66)'],
+          },
+        },
+        axisLine: {
+          lineStyle: {
+            color: ['rgb(2,28,66)'],
+          },
+        },
+      },
+      yAxis: {
+        type: 'value',
+        minInterval: 1,
+        axisLabel: {
+          color: '#fff',
+        },
+        splitLine: {
+          lineStyle: {
+            color: ['rgb(2,28,66)'],
+          },
+        },
+        axisLine: {
+          lineStyle: {
+            color: ['rgb(2,28,66)'],
+          },
+        },
+      },
+      grid: {
+        top: 20,
+        left: 20,
+        right: 20,
+        bottom: 20,
+        containLabel: true,
+      },
+      tooltip: {
+        position: function(point, params, dom, rect, size) {
+          if (point[0] < size.viewSize[0] / 2) {
+            return [point[0] + 10, '10%'];
+          } else {
+            return [point[0] - 10 - size.contentSize[0], '10%'];
+          }
+        },
+        trigger: 'axis',
+      },
+      series: [
+        {
+          name: '巡查次数',
+          data: checkList,
+          type: 'line',
+          itemStyle: {
+            color: '#5EBEFF',
+            borderColor: '#5EBEFF',
+          },
+          lineStyle: {
+            color: '#5EBEFF',
+          },
+          areaStyle: {
+            color: '#5EBEFF',
+            opacity: 0.2,
+          },
+          smooth: true,
+        },
+        {
+          name: '隐患数量',
+          data: dangerList,
+          type: 'line',
+          itemStyle: {
+            color: '#F7E68A',
+            borderColor: '#F7E68A',
+          },
+          lineStyle: {
+            color: '#F7E68A',
+          },
+          areaStyle: {
+            color: '#F7E68A',
+            opacity: 0.2,
+          },
+          smooth: true,
+        },
+      ],
+    };
 
     return (
-      <Col span={6} className={styles.heightFull}>
-        <RiskDetail
-          style={{
-            height: '100%',
-            paddingTop: '36px',
-          }}
-          data={data}
-          onMouseEnter={this.handleMouseEnter}
-          onMouseLeave={this.handleMouseLeave}
-        />
-      </Col>
+      <section className={styles.sectionWrapper} style={{ height: '32%' }}>
+        <div className={styles.sectionMain}>
+          <div className={styles.shadowIn}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionTitleIcon} />
+              单位查询
+              <div className={styles.legendList}>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }} />
+                  <span className={styles.legendItemName}>巡查</span>
+                </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendItemIcon} style={{ backgroundColor: '#F7E68A' }} />
+                  <span className={styles.legendItemName}>隐患</span>
+                </div>
+              </div>
+            </div>
+            <div className={styles.lineChart}>
+              <ReactEcharts
+                option={option}
+                style={{ height: '100%' }}
+                onChartReady={chart => {
+                  this.handleLineChartReady(chart, option);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /**
+   * 安全人员
+   */
+  renderSafety() {
+    const {
+      bigPlatform: {
+        safetyOfficer: {
+          legalNum = 0,
+          safeChargerNum = 0,
+          safeManagerNum = 0,
+          saferNum = 0,
+          legalList = [],
+          safeChargerList = [],
+          safeManagerList = [],
+          saferList = [],
+        },
+      },
+    } = this.props;
+
+    // 类名
+    const className = classNames(styles.sectionWrapper, styles.safety);
+
+    return (
+      <section
+        className={className}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: '110%',
+          width: '100%',
+          height: '100%',
+          transition: 'top 0.5s, left 0.5s, right 0.5s, bottom 0.5s',
+        }}
+        ref={safety => (this.safety = safety)}
+      >
+        <div className={styles.sectionMain}>
+          <div className={styles.shadowIn}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionTitleIcon} />
+              安全人员
+              <Icon
+                type="close"
+                className={styles.closeButton}
+                onClick={() => {
+                  this.safety.style.right = '110%';
+                  this.leftSection.style.opacity = 1;
+                }}
+              />
+            </div>
+            <div className={styles.innerBox}>
+              <Row className={styles.personWrapper}>
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>单位法人</div>
+                  <div className={styles.personValue}>{legalNum}</div>
+                </Col>
+
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>安全负责人</div>
+                  <div className={styles.personValue}>{safeChargerNum}</div>
+                </Col>
+
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>安全管理员</div>
+                  <div className={styles.personValue}>{safeManagerNum}</div>
+                </Col>
+
+                <Col span={12} className={styles.person}>
+                  <div className={styles.personName}>安全员</div>
+                  <div className={styles.personValue}>{saferNum}</div>
+                </Col>
+              </Row>
+              {legalList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
+                  <div className={styles.personLabel}>单位法人</div>
+                  {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {safeChargerList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
+                  <div className={styles.personLabel}>安全负责人</div>
+                  {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {safeManagerList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#00A8FF' }}>
+                  <div className={styles.personLabel}>安全管理员</div>
+                  {safeManagerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {saferList.length !== 0 && (
+                <div className={styles.personList} style={{ borderColor: '#0967D3' }}>
+                  <div className={styles.personLabel}>安全员</div>
+                  {saferList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /**
+   * 风险点
+   */
+  renderRisk() {
+    const {
+      bigPlatform: {
+        countDangerLocationForCompany: {
+          countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0 }] = [{}],
+          redDangerResult = [],
+          orangeDangerResult = [],
+          yellowDangerResult = [],
+          blueDangerResult = [],
+        },
+      },
+    } = this.props;
+
+    // 类名
+    const className = classNames(styles.sectionWrapper, styles.risk);
+
+    return (
+      <section
+        className={className}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: '110%',
+          width: '100%',
+          height: '100%',
+          transition: 'top 0.5s, left 0.5s, right 0.5s, bottom 0.5s',
+        }}
+        ref={risk => (this.risk = risk)}
+      >
+        <div className={styles.sectionMain}>
+          <div className={styles.shadowIn}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionTitleIcon} />
+              风险点
+              <Icon
+                type="close"
+                style={{
+                  position: 'absolute',
+                  top: '0',
+                  right: '0',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                }}
+                onClick={() => {
+                  this.risk.style.right = '110%';
+                  this.leftSection.style.opacity = 1;
+                }}
+              />
+            </div>
+            <div className={styles.innerBox}>
+              <Row className={styles.riskLevelList}>
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{red}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#FF4848' }}>
+                    红
+                  </div>
+                </Col>
+
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{orange}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#F17A0A' }}>
+                    橙
+                  </div>
+                </Col>
+
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{yellow}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#FBF719' }}>
+                    黄
+                  </div>
+                </Col>
+
+                <Col span={6} className={styles.riskLevelItem}>
+                  <div className={styles.riskLevelItemValue}>{blue}</div>
+                  <div className={styles.riskLevelItemName} style={{ color: '#1E60FF' }}>
+                    蓝
+                  </div>
+                </Col>
+              </Row>
+              {redDangerResult.length === 0 &&
+                orangeDangerResult.length === 0 &&
+                yellowDangerResult.length === 0 &&
+                blueDangerResult.length === 0 && (
+                  <div style={{ textAlign: 'center' }}>暂未风险评级</div>
+                )}
+              {redDangerResult.length !== 0 &&
+                redDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('红')}
+                        >
+                          红
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+              {orangeDangerResult.length !== 0 &&
+                orangeDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('橙')}
+                        >
+                          橙
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+              {yellowDangerResult.length !== 0 &&
+                yellowDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('黄')}
+                        >
+                          黄
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+              {blueDangerResult.length !== 0 &&
+                blueDangerResult.map(
+                  ({
+                    item_id: id,
+                    object_title: name,
+                    status,
+                    user_name: checkPerson,
+                    check_date: checkTime,
+                  }) => {
+                    const { content, color } = switchCheckStatus(+status);
+                    return (
+                      <div className={styles.riskPointItem} key={id}>
+                        <div
+                          className={styles.riskPointItemLabel}
+                          style={switchColorAndBgColor('蓝')}
+                        >
+                          蓝
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>风险点</div>
+                          <div className={styles.riskPointItemValue}>{name}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查人</div>
+                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>检查时间</div>
+                          <div className={styles.riskPointItemValue}>{checkTime}</div>
+                        </div>
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+            </div>
+          </div>
+        </div>
+      </section>
     );
   }
 
   render() {
-    const {
-      companyMessage: {
-        companyMessage: {
-          companyName,
-          headOfSecurity,
-          headOfSecurityPhone,
-          countCheckItem,
-          countCompanyUser,
-        },
-        check_map,
-        hidden_danger_map,
-      },
-      coItemList: { status1, status2, status3, status4 },
-      specialEquipment,
-      countDangerLocationForCompany: { red, orange, blue, yellow },
-      hiddenDanger,
-    } = this.props.bigPlatform;
-
-    const dataPie = [
-      { name: '红色风险点', value: red },
-      { name: '橙色风险点', value: orange },
-      { name: '黄色风险点', value: yellow },
-      { name: '蓝色风险点', value: blue },
-    ];
-
-    const self_check_point = {};
-    const created_danger = {};
-
-    if (check_map && check_map.length) {
-      check_map.forEach(item => {
-        self_check_point[item.month + '.' + item.day] = item.self_check_point;
-      });
-    }
-
-    if (hidden_danger_map && hidden_danger_map.length) {
-      hidden_danger_map.forEach(item => {
-        created_danger[item.month + '.' + item.day] = item.created_danger;
-      });
-    }
-
-    this.showBar = true;
-    if (check_map.length === 0 && hidden_danger_map.length === 0) this.showBar = false;
-
-    const dataBar = [
-      { name: '隐患数量', ...created_danger },
-      { name: '巡查次数', ...self_check_point },
-    ];
-
-    const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
-    const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
-
-    let pieShow = true;
-    if (red === 0 && orange === 0 && yellow === 0 && blue === 0) pieShow = false;
-    const {
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
     return (
       <div className={styles.main}>
-        <header className={styles.mainHeader}>
-          <span style={{ display: 'inline-block', marginRight: '-28px' }}>晶安智慧安全云平台</span>
-          <div className={styles.subHeader}>
-            <Timer />
-          </div>
-        </header>
-
-        <article className={styles.mainBody}>
-          <Row gutter={24} className={styles.heightFull}>
-            <Col
-              span={6}
-              className={styles.heightFull}
-              style={{ display: 'flex', flexDirection: 'column' }}
-            >
-              <section className={infoClassNames}>
-                <div className={styles.sectionTitle}>单位信息</div>
-                <div
-                  className={styles.sectionMain}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
-                  }}
-                >
-                  <div className={styles.shadowIn}>
-                    <div className={styles.companyMain}>
-                      <div className={styles.companyIcon} />
-                      <div className={styles.companyInfo}>
-                        <div className={styles.companyName}>{companyName}</div>
-                        <div className={styles.companyCharger}>
-                          安全负责人：
-                          {headOfSecurity}
-                        </div>
-                        <div className={styles.companyPhone}>
-                          联系方式：
-                          {headOfSecurityPhone}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.summaryBottom}>
-                      <Row gutter={6}>
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryPeople} />
-                          <div className={styles.summaryText}>安全人员</div>
-                          <div className={styles.summaryNum}>{countCompanyUser}</div>
-                        </Col>
-
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryCheck} />
-                          <div className={styles.summaryText}>检查点</div>
-                          <div className={styles.summaryNum}>{countCheckItem}</div>
-                        </Col>
-
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summarySpecial} />
-                          <div className={styles.summaryText}>特种设备</div>
-                          <div className={styles.summaryNum}>{specialEquipment}</div>
-                        </Col>
-
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryhd} />
-                          <div className={styles.summaryText}>隐患数量</div>
-                          <div className={styles.summaryNum}>{hiddenDanger}</div>
-                        </Col>
-                      </Row>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section className={hdClassNames} style={{ flex: 1 }}>
-                <div className={styles.sectionTitle}>风险点</div>
-                <div className={styles.sectionMain}>
-                  <div className={styles.shadowIn}>
-                    {pieShow && (
-                      <div className={styles.hdPie} id="hdPie">
-                        {this.renderPieChart(dataPie)}
-                      </div>
-                    )}
-
-                    <div className={styles.summaryBottom}>
-                      <Row gutter={6}>
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryNormal} />
-                          <div className={styles.summaryText}>正常</div>
-                          <div className={styles.summaryNum}>{status1}</div>
-                        </Col>
-
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryChecking} />
-                          <div className={styles.summaryText}>待检查</div>
-                          <div className={styles.summaryNum}>{status3}</div>
-                        </Col>
-
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryAbnormal} />
-                          <div className={styles.summaryText}>异常</div>
-                          <div className={styles.summaryNum}>{status2}</div>
-                        </Col>
-
-                        <Col span={12} className={styles.summaryHalf}>
-                          <div className={styles.summaryOver} />
-                          <div className={styles.summaryText}>已超时</div>
-                          <div className={styles.summaryNum}>{status4}</div>
-                        </Col>
-                      </Row>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </Col>
-
-            <Col
-              span={12}
-              className={styles.heightFull}
-              style={{ display: 'flex', flexDirection: 'column' }}
-            >
-              {this.renderRiskFourColor()}
-              <section className={styles.sectionWrapper} style={{ height: '37%' }}>
-                <div className={styles.sectionTitle}>单位巡查</div>
-                <div className={styles.sectionMain} style={{ padding: '0' }}>
-                  <div className={styles.shadowIn}>
-                    <div className={styles.checkBar} id="checkBar">
-                      {this.renderBarChart(dataBar)}
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </Col>
-
-            {this.renderRiskDetail()}
-          </Row>
-        </article>
+        {this.renderHeader() /* 头部 */}
+        {this.renderBody() /* 主体 */}
       </div>
     );
   }

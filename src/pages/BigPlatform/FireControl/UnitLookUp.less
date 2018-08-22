@@ -1,0 +1,363 @@
+@fireControlImgUrl: 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/';
+.main {
+  position: relative;
+  height: 100%;
+
+  .top {
+    height: 30%;
+    position: relative;
+    border-bottom: 2px solid #053d83;
+
+    .left {
+      height: 100%;
+      width: 100%;
+      position: relative;
+      margin: 0.5rem 0 0 2.5rem;
+      .circlrLookUp {
+        width: 82px;
+        height: 82px;
+        font-size: 22px;
+        color: #fff;
+        padding-left: 15px;
+        margin: 6.5px;
+        background: url('@{fireControlImgUrl}btn_bg.png') no-repeat;
+      }
+      .ring {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: url('@{fireControlImgUrl}circle.png') no-repeat;
+      }
+    }
+
+    .right {
+      height: 100%;
+      width: 100%;
+      float: left;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      .lastlookUpTime {
+        color: #00a8ff;
+        font-size: 16px;
+        display: flex;
+      }
+      .DayTime {
+        padding-top: 6px;
+        float: left;
+        display: flex;
+        .day {
+          float: left;
+          font-size: 16px;
+          color: #fff;
+        }
+        .time {
+          padding-left: 5px;
+          font-size: 16px;
+          float: left;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .bottom {
+    margin-top: 5%;
+    margin-left: 5%;
+    height: 50%;
+
+    .responsetime {
+      margin-top: 2%;
+    }
+  }
+}
+
+// 在岗率
+.jobRateWrite {
+  height: 25%;
+  float: left;
+  padding-left: 10px;
+  padding-top: 30px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.jobNum {
+  height: 25%;
+  float: left;
+  color: #008dd8;
+  font-size: 16px;
+  .onJob {
+    margin-top: 10px;
+    .onJobIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background: url('@{fireControlImgUrl}onJobIcon.png') no-repeat;
+    }
+    .personnum {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+
+  .leaveJob {
+    margin-top: 10px;
+    cursor: pointer;
+    .leavelJobIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background: url('@{fireControlImgUrl}leavelJobIcon.png') no-repeat;
+    }
+    .personnum {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+}
+
+// 应答时间
+.timeWrite {
+  height: 25%;
+  float: left;
+  padding-left: 10px;
+  padding-top: 25px;
+  color: #fff;
+  font-size: 16px;
+}
+.timeIcon {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  top: 12px;
+  background: url('@{fireControlImgUrl}time.png') no-repeat;
+}
+.timeNum {
+  height: 25%;
+  float: left;
+  color: #008dd8;
+  font-size: 16px;
+  .rabbit {
+    margin-top: 10px;
+    .rabbitIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+      background: url('@{fireControlImgUrl}rabbit.png') no-repeat;
+    }
+    .minutes {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+  .snail {
+    margin-top: 10px;
+    .snailIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 1px;
+      background: url('@{fireControlImgUrl}snail.png') no-repeat;
+    }
+    .minutes {
+      color: #fff;
+      margin-left: 25px;
+    }
+  }
+}
+
+@media screen and (max-width: 1441px) {
+  .main {
+    position: relative;
+    height: 100%;
+
+    .top {
+      height: 30%;
+      position: relative;
+      border-bottom: 2px solid #053d83;
+
+      .left {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        margin: 0 0 0 1.5rem;
+        .circlrLookUp {
+          width: 82px;
+          height: 82px;
+          font-size: 22px;
+          color: #fff;
+          padding-left: 15px;
+          margin: 6.5px;
+          background: url('@{fireControlImgUrl}btn_bg.png') no-repeat;
+          background-size: auto 93%;
+        }
+        .ring {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          left: 0;
+          top: 0;
+          background: url('@{fireControlImgUrl}circle.png') no-repeat;
+          background-size: auto 94%;
+        }
+      }
+
+      .right {
+        height: 100%;
+        width: 100%;
+        float: left;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        .lastlookUpTime {
+          color: #00a8ff;
+          font-size: 16px;
+          display: flex;
+        }
+        .DayTime {
+          padding-top: 6px;
+          float: left;
+          display: flex;
+          .day {
+            float: left;
+            font-size: 16px;
+            color: #fff;
+          }
+          .time {
+            padding-left: 5px;
+            font-size: 16px;
+            float: left;
+            color: #fff;
+          }
+        }
+      }
+    }
+
+    .bottom {
+      margin-left: 5%;
+      height: 55%;
+    }
+  }
+
+  // 在岗率
+  .jobRateWrite {
+    height: 25%;
+    float: left;
+    padding-left: 10px;
+    padding-top: 30px;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .jobNum {
+    height: 25%;
+    float: left;
+    color: #008dd8;
+    font-size: 16px;
+    .onJob {
+      margin-top: 10px;
+      .onJobIcon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+        position: relative;
+        top: 2px;
+        background: url('@{fireControlImgUrl}onJobIcon.png') no-repeat;
+      }
+      .personnum {
+        color: #fff;
+        margin-left: 25px;
+      }
+    }
+
+    .leaveJob {
+      margin-top: 10px;
+      cursor: pointer;
+      .leavelJobIcon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+        position: relative;
+        top: 2px;
+        background: url('@{fireControlImgUrl}leavelJobIcon.png') no-repeat;
+      }
+      .personnum {
+        color: #fff;
+        margin-left: 25px;
+      }
+    }
+  }
+
+  // 应答时间
+  .timeWrite {
+    height: 25%;
+    float: left;
+    padding-left: 10px;
+    padding-top: 25px;
+    color: #fff;
+    font-size: 16px;
+  }
+  .timeIcon {
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    top: 12px;
+    background: url('@{fireControlImgUrl}time.png') no-repeat;
+  }
+  .timeNum {
+    height: 25%;
+    float: left;
+    color: #008dd8;
+    font-size: 16px;
+    .rabbit {
+      margin-top: 10px;
+      .rabbitIcon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+        position: relative;
+        top: 2px;
+        background: url('@{fireControlImgUrl}rabbit.png') no-repeat;
+      }
+      .minutes {
+        color: #fff;
+        margin-left: 25px;
+      }
+    }
+    .snail {
+      margin-top: 10px;
+      .snailIcon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+        position: relative;
+        top: 1px;
+        background: url('@{fireControlImgUrl}snail.png') no-repeat;
+      }
+      .minutes {
+        color: #fff;
+        margin-left: 25px;
+      }
+    }
+  }
+}

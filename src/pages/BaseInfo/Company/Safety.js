@@ -12,8 +12,9 @@ const { RangePicker } = DatePicker;
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-const UPLOADERS = ['companyLogo', 'reachGradeAccessory', 'safetyFourPicture'];
-const UPLOADERS_MAP = { companyLogo: 'logoList', reachGradeAccessory: 'standardList', safetyFourPicture: 'safeList' }
+const UPLOADERS = ['companyLogo', 'reachGradeAccessory'];
+// const UPLOADERS = ['companyLogo', 'reachGradeAccessory', 'safetyFourPicture'];
+const UPLOADERS_MAP = { companyLogo: 'logoList', reachGradeAccessory: 'standardList' }
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -64,8 +65,17 @@ const itemLayout1 = {
 const GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime',  'safetyFourPicture', 'companyLogo'];
 const MORE_GET_ITEMS = ['gridId', 'regulatoryClassification', 'regulatoryGrade', 'reachGrade', 'subjection', 'regulatoryOrganization', 'startTime', 'reachGradeAccessory', 'safetyFourPicture', 'companyLogo'];
 
-function generateRules(cName, msg="输入") {
-  return [{ required: true, message: `请${msg}${cName}` }];
+function generateRules(cName, msg="输入", ...rules) {
+  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+}
+
+function genCheckFileList(msg) {
+  return function (rule, value, callback) {
+    if (!value || !value.fileList || !value.fileList.length)
+      callback(`请上传${msg}`);
+    else
+      callback();
+  };
 }
 
 function getOptions(options = []) {
@@ -74,31 +84,31 @@ function getOptions(options = []) {
 }
 
 // 对fileList进行筛选，剔除同名文件，优先保留最新上传成功的文件，其次保留最新上传的失败文件
-// function filterUpList(fileList) {
-//   const names = [];
-//   const listArray = {};
-//   fileList.forEach(f => {
-//     const { name } = f;
-//     if (names.includes(name))
-//       listArray[name].push(f);
-//     else {
-//       names.push(name);
-//       listArray[name] = [f];
-//     }
-//   });
+function filterUpList(fileList) {
+  const names = [];
+  const listArray = {};
+  fileList.forEach(f => {
+    const { name } = f;
+    if (names.includes(name))
+      listArray[name].push(f);
+    else {
+      names.push(name);
+      listArray[name] = [f];
+    }
+  });
 
-//   return names.map(name => {
-//     const arr = listArray[name];
-//     const success = arr.filter(f => f.status === 'done' && f.response.code === 200);
-//     const fail = arr.filter(f => f.status === 'error' || f.response.code !== 200);
-//     const successLength = success.length;
-//     const failLength = fail.length;
-//     if (successLength)
-//       return success[successLength - 1];
-//     else
-//       return fail[failLength - 1];
-//   });
-// }
+  return names.map(name => {
+    const arr = listArray[name];
+    const success = arr.filter(f => f.status === 'done' && f.response.code === 200);
+    const fail = arr.filter(f => f.status === 'error' || f.response.code !== 200);
+    const successLength = success.length;
+    const failLength = fail.length;
+    if (successLength)
+      return success[successLength - 1];
+    else
+      return fail[failLength - 1];
+  });
+}
 
 function addUrl(fileList) {
   fileList.forEach(f => {
@@ -130,13 +140,6 @@ function handleFormValues(fieldsValue) {
       return;
 
     const { fileList } = formValues[key];
-    // console.log(fileList);
-    // const newFileList = fileList
-    //   .filter(({ status, response: { code } }) => status === 'done' && code === 200)
-      // .map(({ uid, name, status, url, response: { code } }) => ({ uid, name, status, url, response: { code } }));
-      // .map(({ uid, name, status, url, response: { code } }) => ({ name, url }));
-    // formValues[key] = JSON.stringify({ fileList: newFileList });
-    // formValues[key] = JSON.stringify(newFileList);
     const file = fileList[0];
     // 筛选成功上传的文件上传
     if (fileList.length && file.status === 'done' && file.response.code === 200)
@@ -144,6 +147,13 @@ function handleFormValues(fieldsValue) {
     else
       formValues[key] = '';
   });
+
+  const { fileList } = formValues.safetyFourPicture;
+  // console.log(fileList);
+  const newFileList = fileList
+    .filter(({ status, response: { code } }) => status === 'done' && code === 200)
+    .map(({ name, url, dbUrl }) => ({ fileName: name, dbUrl }));
+  formValues.safetyFourPicture = JSON.stringify(newFileList);
 
   return formValues;
 }
@@ -224,17 +234,22 @@ export default class Safety extends PureComponent {
         prev.validity = [detail.startTime, detail.endTime].map(timestamp => moment(Number.parseInt(timestamp, 10)));
       else if (next === 'gridId')
         prev[next] = idMap[val];
-      else if (UPLOADERS.includes(next)) {
+      else if (next === 'safetyFourPicture') {
+        let list = isJSONStr(val) ? JSON.parse(val) : [];
+        list = list.map(({ fileName, webUrl, dbUrl }) => ({ name: fileName, uid: Math.random(), url: webUrl, dbUrl, status: 'done', response: { code: 200 } }));
+        this.setState({ safeList: list });
+        prev[next] = { fileList: list };
+      } else if (UPLOADERS.includes(next)) {
         let list = null;
         // 数据库存的是个JSON格式的数组或对象
         if (isJSONStr(val)) {
           list = JSON.parse(val);
           list = Array.isArray(list) ? list : list.fileList;
           // 不加uid属性会报错
-          list = list.map(({ name, url }) => ({ name, uid: Date.now(), url, status: 'done', response: { code: 200 } }));
+          list = list.map(({ name, url }) => ({ name, uid: Math.random(), url, status: 'done', response: { code: 200 } }));
         // 数据库存的只是个链接
         } else
-          list = [{name: '已上传文件', url: detail[`${next}Web`], dbUrl: val, uid: Date.now(), status: 'done', response: { code: 200 }}];
+          list = [{name: '已上传文件', url: detail[`${next}Web`], dbUrl: val, uid: Math.random(), status: 'done', response: { code: 200 }}];
 
         this.setState({ [UPLOADERS_MAP[next]]: list });
         prev[next] = { fileList: list };
@@ -254,7 +269,7 @@ export default class Safety extends PureComponent {
     e.preventDefault();
     validateFields((err, fieldsValue) => {
       // 获取到的为Option中的value
-      // console.log('formValues in Safety', fieldsValue);
+      console.log('formValues in Safety', fieldsValue);
 
       const { operation } = this.props;
       // 在添加页面安监信息都提示要新建企业基本信息后才能添加，当新建企业基本信息成功后，会询问是否添加安监信息，选择添加，则会跳转到编辑页面
@@ -349,58 +364,59 @@ export default class Safety extends PureComponent {
   };
 
   // 可以上传多个文件
-  // handleSafeChange = ({ file, fileList, event }) => {
-  //   const { safeLoading } = this.state;
-
-  //   console.log(file.status, file, fileList, event);
-  //   const { status } = file;
-
-  //   if (status === 'uploading' && !safeLoading)
-  //     this.setState({ safeLoading: true });
-
-  //   if (status === 'uploading' || status === 'removed')
-  //     this.setState({ safeList: fileList });
-
-  //   // 所有文件都已上传
-  //   if (status !== 'removed' && fileList.every(({ status }) => status === 'done' || status === 'error')) {
-  //     // console.log('done');
-  //     this.setState({ safeLoading: false });
-  //     const filteredList = filterUpList(fileList);
-  //     this.setState({ safeList: addUrl(filteredList) });
-
-  //     // const successFileList = fileList.filter(f => f.status === 'done' && f.response.code === 200);
-  //     // const failFileList = fileList.filter(f => f.status !== 'done' || f.response.code !== 200);
-  //     // if (successFileList.length === fileList.length)
-  //     //   message.success('所有文件都已上传成功');
-  //     // else
-  //     //   message.error(`${failFileList.map(f => f.name).join(',')}文件上传失败，请重新上传`);
-  //   }
-
-  //   // const newList = fileList.filter(f => {
-  //   //   if (f.response)
-  //   //     return f.response.code === 200;
-
-  //   //   return true;
-  //   // });
-  // };
-
-  // 上传一个文件
   handleSafeChange = ({ file, fileList, event }) => {
     const { safeLoading } = this.state;
-    const { status, response } = file;
+
+    // console.log(file.status, file, fileList, event);
+
+    const { status } = file;
 
     if (status === 'uploading' && !safeLoading)
       this.setState({ safeLoading: true });
-    else
+
+    if (status === 'uploading' || status === 'removed')
+      this.setState({ safeList: fileList });
+
+    // 所有文件都已上传
+    if (status !== 'removed' && fileList.every(({ status }) => status === 'done' || status === 'error')) {
+      // console.log('done');
       this.setState({ safeLoading: false });
+      const filteredList = filterUpList(fileList);
+      this.setState({ safeList: addUrl(filteredList) });
 
-    this.setState({ safeList: addUrl(fileList.slice(-1)) });
+      // const successFileList = fileList.filter(f => f.status === 'done' && f.response.code === 200);
+      // const failFileList = fileList.filter(f => f.status !== 'done' || f.response.code !== 200);
+      // if (successFileList.length === fileList.length)
+      //   message.success('所有文件都已上传成功');
+      // else
+      //   message.error(`${failFileList.map(f => f.name).join(',')}文件上传失败，请重新上传`);
+    }
 
-    if (status === 'done' && response.code === 200)
-      message.success('上传成功');
-    else if (status === 'error' || status === 'done' && response.code !== 200)
-      message.error('上传失败，请重新上传');
+    // const newList = fileList.filter(f => {
+    //   if (f.response)
+    //     return f.response.code === 200;
+
+    //   return true;
+    // });
   };
+
+  // 上传一个文件
+  // handleSafeChange = ({ file, fileList, event }) => {
+  //   const { safeLoading } = this.state;
+  //   const { status, response } = file;
+
+  //   if (status === 'uploading' && !safeLoading)
+  //     this.setState({ safeLoading: true });
+  //   else
+  //     this.setState({ safeLoading: false });
+
+  //   this.setState({ safeList: addUrl(fileList.slice(-1)) });
+
+  //   if (status === 'done' && response.code === 200)
+  //     message.success('上传成功');
+  //   else if (status === 'error' || status === 'done' && response.code !== 200)
+  //     message.error('上传失败，请重新上传');
+  // };
 
   // FormItem中的值对应的是组件的onChange函数传入的值，所以对于Upload组件，上传时候的值为 { file: ..., fileList: ... }
   renderFormItems(items) {
@@ -460,7 +476,7 @@ export default class Safety extends PureComponent {
         name: 'safetyFourPicture',
         cName: '安全四色图',
         span: 24,
-        rules: generateRules('安全四色图', '上传'),
+        rules: generateRules('安全四色图', '上传', { validator: genCheckFileList('安全四色图') }),
         formItemLayout: itemLayout1,
         component: <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}><Button loading={safeLoading} type="primary">{UploadIcon}上传图片</Button></Upload>,
       }, {
@@ -477,7 +493,7 @@ export default class Safety extends PureComponent {
         name: 'reachGradeAccessory',
         cName: '标准化达标等级附件',
         span: 24,
-        rules: generateRules('标准化达标等级附件', '上传'),
+        rules: generateRules('标准化达标等级附件', '上传', { validator: genCheckFileList('标准化达标等级附件') }),
         formItemLayout: itemLayout1,
         component: <Upload {...defaultUploadProps} fileList={standardList} onChange={this.handleStandardChange}><Button loading={standardLoading} type="primary">{UploadIcon}上传附件</Button></Upload>,
       },

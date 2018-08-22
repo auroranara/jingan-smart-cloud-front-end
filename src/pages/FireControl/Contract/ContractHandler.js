@@ -517,7 +517,7 @@ export default class ContractHandler extends PureComponent {
                 })(<Input placeholder="请输入合同编号" />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24} style={{ height: 93 }}>
               <Form.Item label="维保单位">
                 {getFieldDecorator('maintenanceId', {
                   initialValue:
