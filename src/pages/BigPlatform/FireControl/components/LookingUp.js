@@ -58,7 +58,7 @@ export default class LookingUp extends Component {
     return option;
   };
   render() {
-    const { showed, isLookUpRotated, handleRotateBack } = this.props;
+    const { showed, handleRotateBack, startLookUp } = this.props;
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -83,7 +83,7 @@ export default class LookingUp extends Component {
                     handleRotateBack();
                   }}
                   stop={10 * 60 * 1000}
-                  start={isLookUpRotated}
+                  start={startLookUp}
                 />
               </div>
             </div>
