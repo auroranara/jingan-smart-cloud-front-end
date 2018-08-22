@@ -1,4 +1,4 @@
-import './polyfill';
+// import './polyfill';
 import 'moment/locale/zh-cn';
 import configs from '../config/project.config';
 
