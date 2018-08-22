@@ -9,6 +9,8 @@ import styles from './OverviewSection.less';
 import companyIcon from './ovCompany.png';
 import hostIcon from './ovHost.png';
 
+const HEIGHT = 'calc(50% - 74px)';
+
 export default function OverviewSection(props) {
   const { total=0, activeCount=0, todayCount=0, thisWeekCount=0, thisMonthCount=0, totalDanger=0, overdueNum=0, rectifyNum=0, reviewNum=0 } = props.ovData;
 
@@ -21,8 +23,19 @@ export default function OverviewSection(props) {
         <Col span={12}><div className={styles.unit}><OvUnit url={companyIcon} title="管辖单位" num={total} /></div></Col>
         <Col span={12}><div className={styles.unit}><OvUnit url={hostIcon} title="消防主机单位" num={activeCount} /></div></Col>
       </Row>
-      <OvFireCards todayCount={todayCount} thisWeekCount={thisWeekCount} thisMonthCount={thisMonthCount} />
-      <OvDangerCards total={totalDanger} overdue={overdueNum} rectify={rectifyNum} review={reviewNum} />
+      <OvFireCards
+        todayCount={todayCount}
+        thisWeekCount={thisWeekCount}
+        thisMonthCount={thisMonthCount}
+        style={{ height: HEIGHT }}
+      />
+      <OvDangerCards
+        total={totalDanger}
+        overdue={overdueNum}
+        rectify={rectifyNum}
+        review={reviewNum}
+        style={{ height: HEIGHT }}
+      />
     </FcSection>
   );
 }

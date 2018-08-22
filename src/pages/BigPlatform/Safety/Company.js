@@ -1102,14 +1102,14 @@ class CompanyLayout extends PureComponent {
       dangerList[i] = 0;
     }
     check_map.forEach(({ month, day, self_check_point }) => {
-      const time = month < 10 ? `0${month}-${day}` : `${month}-${day}`;
+      const time = moment(`${month}-${day}`, 'M-D').format('MM-DD');
       const index = timeAxis.indexOf(time);
       if (index !== -1) {
         checkList[index] = self_check_point;
       }
     });
     hidden_danger_map.forEach(({ month, day, created_danger }) => {
-      const time = month < 10 ? `0${month}-${day}` : `${month}-${day}`;
+      const time = moment(`${month}-${day}`, 'M-D').format('MM-DD');
       const index = timeAxis.indexOf(time);
       if (index !== -1) {
         dangerList[index] = created_danger;
@@ -1214,7 +1214,7 @@ class CompanyLayout extends PureComponent {
           <div className={styles.shadowIn}>
             <div className={styles.sectionTitle}>
               <span className={styles.sectionTitleIcon} />
-              单位查询
+              单位巡查
               <div className={styles.legendList}>
                 <div className={styles.legendItem}>
                   <span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }} />
@@ -1262,6 +1262,8 @@ class CompanyLayout extends PureComponent {
 
     // 类名
     const className = classNames(styles.sectionWrapper, styles.safety);
+    // 滚动类名
+    const scrollClassName = classNames(styles.innerBox, styles.safetyScroll);
 
     return (
       <section
@@ -1290,28 +1292,28 @@ class CompanyLayout extends PureComponent {
                 }}
               />
             </div>
-            <div className={styles.innerBox}>
-              <Row className={styles.personWrapper}>
-                <Col span={12} className={styles.person}>
-                  <div className={styles.personName}>单位法人</div>
-                  <div className={styles.personValue}>{legalNum}</div>
-                </Col>
+            <Row className={styles.personWrapper}>
+              <Col span={12} className={styles.person}>
+                <div className={styles.personName}>单位法人</div>
+                <div className={styles.personValue}>{legalNum}</div>
+              </Col>
 
-                <Col span={12} className={styles.person}>
-                  <div className={styles.personName}>安全负责人</div>
-                  <div className={styles.personValue}>{safeChargerNum}</div>
-                </Col>
+              <Col span={12} className={styles.person}>
+                <div className={styles.personName}>安全负责人</div>
+                <div className={styles.personValue}>{safeChargerNum}</div>
+              </Col>
 
-                <Col span={12} className={styles.person}>
-                  <div className={styles.personName}>安全管理员</div>
-                  <div className={styles.personValue}>{safeManagerNum}</div>
-                </Col>
+              <Col span={12} className={styles.person}>
+                <div className={styles.personName}>安全管理员</div>
+                <div className={styles.personValue}>{safeManagerNum}</div>
+              </Col>
 
-                <Col span={12} className={styles.person}>
-                  <div className={styles.personName}>安全员</div>
-                  <div className={styles.personValue}>{saferNum}</div>
-                </Col>
-              </Row>
+              <Col span={12} className={styles.person}>
+                <div className={styles.personName}>安全员</div>
+                <div className={styles.personValue}>{saferNum}</div>
+              </Col>
+            </Row>
+            <div className={scrollClassName}>
               {legalList.length !== 0 && (
                 <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
                   <div className={styles.personLabel}>单位法人</div>
@@ -1381,6 +1383,8 @@ class CompanyLayout extends PureComponent {
 
     // 类名
     const className = classNames(styles.sectionWrapper, styles.risk);
+    // 滚动类名
+    const scrollClassName = classNames(styles.innerBox, styles.riskScroll);
 
     return (
       <section
@@ -1415,36 +1419,36 @@ class CompanyLayout extends PureComponent {
                 }}
               />
             </div>
-            <div className={styles.innerBox}>
-              <Row className={styles.riskLevelList}>
-                <Col span={6} className={styles.riskLevelItem}>
-                  <div className={styles.riskLevelItemValue}>{red}</div>
-                  <div className={styles.riskLevelItemName} style={{ color: '#FF4848' }}>
-                    红
-                  </div>
-                </Col>
+            <Row className={styles.riskLevelList}>
+              <Col span={6} className={styles.riskLevelItem}>
+                <div className={styles.riskLevelItemValue}>{red}</div>
+                <div className={styles.riskLevelItemName} style={{ color: '#FF4848' }}>
+                  红
+                </div>
+              </Col>
 
-                <Col span={6} className={styles.riskLevelItem}>
-                  <div className={styles.riskLevelItemValue}>{orange}</div>
-                  <div className={styles.riskLevelItemName} style={{ color: '#F17A0A' }}>
-                    橙
-                  </div>
-                </Col>
+              <Col span={6} className={styles.riskLevelItem}>
+                <div className={styles.riskLevelItemValue}>{orange}</div>
+                <div className={styles.riskLevelItemName} style={{ color: '#F17A0A' }}>
+                  橙
+                </div>
+              </Col>
 
-                <Col span={6} className={styles.riskLevelItem}>
-                  <div className={styles.riskLevelItemValue}>{yellow}</div>
-                  <div className={styles.riskLevelItemName} style={{ color: '#FBF719' }}>
-                    黄
-                  </div>
-                </Col>
+              <Col span={6} className={styles.riskLevelItem}>
+                <div className={styles.riskLevelItemValue}>{yellow}</div>
+                <div className={styles.riskLevelItemName} style={{ color: '#FBF719' }}>
+                  黄
+                </div>
+              </Col>
 
-                <Col span={6} className={styles.riskLevelItem}>
-                  <div className={styles.riskLevelItemValue}>{blue}</div>
-                  <div className={styles.riskLevelItemName} style={{ color: '#1E60FF' }}>
-                    蓝
-                  </div>
-                </Col>
-              </Row>
+              <Col span={6} className={styles.riskLevelItem}>
+                <div className={styles.riskLevelItemValue}>{blue}</div>
+                <div className={styles.riskLevelItemName} style={{ color: '#1E60FF' }}>
+                  蓝
+                </div>
+              </Col>
+            </Row>
+            <div className={scrollClassName}>
               {redDangerResult.length === 0 &&
                 orangeDangerResult.length === 0 &&
                 yellowDangerResult.length === 0 &&

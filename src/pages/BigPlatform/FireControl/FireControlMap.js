@@ -33,6 +33,7 @@ export default class FireControlMap extends PureComponent {
     center: [location.x, location.y],
     zoom: location.zoom,
     selected: undefined,
+    showInfo: false,
   };
 
   back = () => {
@@ -45,6 +46,7 @@ export default class FireControlMap extends PureComponent {
       center: [longitude, latitude],
       zoom: 18,
       selected: item,
+      showInfo: true,
     });
   };
   // 搜索之后跳转
@@ -57,7 +59,7 @@ export default class FireControlMap extends PureComponent {
     this.selectCompany(item);
   };
 
-  renderMarker = (item, isFire) => {
+  renderMarker = (item) => {
     return (
       <Marker
         position={{ longitude: item.longitude, latitude: item.latitude }}
@@ -68,7 +70,7 @@ export default class FireControlMap extends PureComponent {
         }}
       >
         <img
-          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
+          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
           alt=""
           style={{ display: 'block', width: '26px', height: '34px' }}
         />
@@ -80,8 +82,8 @@ export default class FireControlMap extends PureComponent {
     const { selected } = this.state;
     // 如果有选中的企业就只渲染选中的
     return selected
-      ? this.renderMarker(selected, false)
-      : newList.map(item => this.renderMarker(item, item.isFire));
+      ? this.renderMarker(selected)
+      : newList.map(item => this.renderMarker(item));
   }
 
   renderBackButton() {
@@ -106,22 +108,19 @@ export default class FireControlMap extends PureComponent {
   }
 
   renderInfoWindow() {
-    const { selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  } } = this.state;
-    console.log(this.state.selected);
-
-    const events = {
-      close() { console.log(1) },
-    };
+    const {
+      showInfo,
+      selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
+    } = this.state;
 
     return (
       <InfoWindow
         position={{ longitude, latitude }}
         // offset={[50, 10]}
-        visible
         isCustom
         showShadow
         autoMove={false}
-        events={events}
+        visible={showInfo}
       >
         <h3 className={styles.companyName}>{name}</h3>
         <p className={styles.address}>
@@ -137,6 +136,11 @@ export default class FireControlMap extends PureComponent {
           <span className={styles.statusIcon} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
           {status}
         </p>
+        <Icon
+          type="close"
+          onClick={() => this.setState({ showInfo: false })}
+          style={{ color: 'rgb(110,169,221)', position: 'absolute', right: 10, top: 10, cursor: 'pointer' }}
+        />
       </InfoWindow>
     );
   }
@@ -191,7 +195,7 @@ export default class FireControlMap extends PureComponent {
             handleSelect={this.handleSelect}
           />
           {selected && this.renderBackButton()}
-          {!selected && this.renderUnit(totalNum, fireNum)}
+          {this.renderUnit(totalNum, fireNum)}
         </div>
       </FcSection>
     );

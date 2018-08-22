@@ -6,10 +6,10 @@ import styles from './OvFireCards.less';
 import fireIcon from './ovFire.png';
 
 export default function OvFireCards(props) {
-  const { todayCount, thisWeekCount, thisMonthCount } = props;
+  const { todayCount, thisWeekCount, thisMonthCount, style={} } = props;
 
   return (
-    <div className={styles.fire}>
+    <div className={styles.fire} style={style}>
       <Row gutter={20} style={{ margin: 0, height: '100%' }}>
         <Col style={{ height: '100%'}} span={6}>
           <div className={styles.container}>
