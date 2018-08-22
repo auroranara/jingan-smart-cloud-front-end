@@ -85,6 +85,7 @@ export default class TrendSection extends PureComponent {
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
+        // formatter: '{a0}:{c0}<br/>{a1}:{c1}<br/>{a2}:{c2}',
       },
       dataset: { source },
       xAxis: {
