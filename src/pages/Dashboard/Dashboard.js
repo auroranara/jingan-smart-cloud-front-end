@@ -19,7 +19,6 @@ let fireItem = {
 }))
 export default class Dashboard extends PureComponent {
   state = {
-    hasSafeAuthority: true,
     safetyProduction: 0,
     fireService: 0,
   };
@@ -35,22 +34,30 @@ export default class Dashboard extends PureComponent {
       },
     } = this.props;
 
-    fireItem = {
-      src: fire,
-      url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`,
-      key: 'fire',
-    };
+    // fireItem = {
+    //   src: fire,
+    //   url: `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`,
+    //   key: 'fire',
+    // };
 
     //如果单位为政府或者admin 运营 则显示企业大屏
-    if (unitType === 3 || unitType === 2) {
+    // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
+    // 政府根据companyBasicInfo的数据来
+    if (unitType === 2) {
       safeItem.url = '/acloud_new/#/big-platform/safety/government';
-
+      fireItem.url = '/acloud_new/#/big-platform/fire-control/government';
       //TODO 政府大屏开启
-      this.setState({ hasSafeAuthority: true, safetyProduction: 1, fireService: 0 });
+      this.setState({ safetyProduction, fireService });
+    } else if (unitType === 3) {
+      // 运营可以看所有政府大屏
+      safeItem.url = '/acloud_new/#/big-platform/safety/government';
+      fireItem.url = '/acloud_new/#/big-platform/fire-control/government';
+      this.setState({ safetyProduction: 1, fireService: 1 });
     } else {
+      // 企业根据companyBasicInfo的数据来
       safeItem.url = `/acloud_new/#/big-platform/safety/company/${companyId}`;
+      fireItem.url = `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`;
       this.setState({
-        hasSafeAuthority: !!companyId,
         safetyProduction,
         fireService,
       });
@@ -67,16 +74,10 @@ export default class Dashboard extends PureComponent {
       (!safetyProduction && fireService && [fireItem]) ||
       [];
 
-    const goToBigScreen = i => {
-      const { hasSafeAuthority } = this.state;
-      if (!hasSafeAuthority && imgWrapper[i].key === 'safe') {
-        message.error('该功能暂时未开放！');
-      } else {
-        const url = imgWrapper[i].url;
-        const win = window.open('', '_blank');
-        win.location.href = url;
-        win.focus();
-      }
+    const goToBigScreen = url => {
+      const win = window.open('', '_blank');
+      win.location.href = url;
+      win.focus();
     };
 
     const hasFourItems = { width: '300px', height: '400px', padding: '20px' };
@@ -89,7 +90,7 @@ export default class Dashboard extends PureComponent {
       >
         <div
           className={styles.imgItem}
-          onClick={() => goToBigScreen(i)}
+          onClick={() => goToBigScreen(item.url)}
           style={{
             backgroundImage: `url(${item.src})`,
           }}

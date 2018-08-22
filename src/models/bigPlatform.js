@@ -50,6 +50,7 @@ export default {
       selfCheck: 0,
       total: 0,
       dangerCompany: [],
+      overCheck: 0,
     },
     newHomePage: {
       companyDto: {
