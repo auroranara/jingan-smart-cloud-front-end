@@ -23,7 +23,7 @@ export default function SystemSection(props) {
   const percent = total ? Math.floor(activeCount / total * 100) : 0;
 
   return (
-    <FcSection title="系统接入">
+    <FcSection title="系统接入" style={{ padding: '0 15px 15px' }}>
       <Row>
         <Col span={12}>
           <div className={styles.left}>

@@ -1,9 +1,16 @@
 import React, { PureComponent } from 'react';
-import { Map as GDMap, Marker } from 'react-amap';
+import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
 import { Button, Icon } from 'antd';
+
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
 import MapSearch from './components/MapSearch';
+import locateIcon from './mapLocate.png';
+import personIcon from './mapPerson.png';
+import statusIcon from './mapFire.png';
+import status1Icon from './mapFire1.png';
+
+const NO_DATA = '暂无信息';
 
 const { location } = global.PROJECT_CONFIG;
 
@@ -12,9 +19,13 @@ function handleCompanyBasicInfoList(alarmList, companyList) {
     const { name } = item;
     const alarmed = alarmList.find(({ name: companyName }) => companyName === name)
     if (alarmed)
-      return { ...item, isFire: true, address: alarmed.searchArea, status: alarmed.status };
-    return { ...item, isFire: false };
+      return { address: alarmed.searchArea, ...item, isFire: true, status: alarmed.status };
+    return { ...item, isFire: false, status: item.isFire };
   });
+}
+
+function genBackgrondStyle(url) {
+  return { background: `url(${url})`, backgroundSize: 'cover' };
 }
 
 export default class FireControlMap extends PureComponent {
@@ -46,7 +57,7 @@ export default class FireControlMap extends PureComponent {
     this.selectCompany(item);
   };
 
-  renderMarker = item => {
+  renderMarker = (item, isFire) => {
     return (
       <Marker
         position={{ longitude: item.longitude, latitude: item.latitude }}
@@ -57,7 +68,7 @@ export default class FireControlMap extends PureComponent {
         }}
       >
         <img
-          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
+          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
           alt=""
           style={{ display: 'block', width: '26px', height: '34px' }}
         />
@@ -65,25 +76,95 @@ export default class FireControlMap extends PureComponent {
     );
   };
 
-  renderCompanyMarker() {
-    const {
-      map: { companyBasicInfoList = [] },
-      alarm: { list = [] },
-    } = this.props;
+  renderCompanyMarker(newList) {
     const { selected } = this.state;
     // 如果有选中的企业就只渲染选中的
-
-    let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
-    // console.log(companyBasicInfoList.length, list.length, newList, newList.filter(i => i.name.includes('晶安')));
     return selected
-      ? this.renderMarker(selected)
-      : newList.map(item => this.renderMarker(item));
+      ? this.renderMarker(selected, false)
+      : newList.map(item => this.renderMarker(item, item.isFire));
   }
+
+  renderBackButton() {
+    return (
+      <Button
+        onClick={this.back}
+        style={{
+          background: 'rgba(1, 39, 79, 0.8)',
+          border: 'none',
+          color: '#009eff',
+          width: '80',
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          zIndex: 666,
+        }}
+      >
+        <Icon type="rollback" />
+        返回
+      </Button>
+    );
+  }
+
+  renderInfoWindow() {
+    const { selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  } } = this.state;
+    console.log(this.state.selected);
+
+    const events = {
+      close() { console.log(1) },
+    };
+
+    return (
+      <InfoWindow
+        position={{ longitude, latitude }}
+        // offset={[50, 10]}
+        visible
+        isCustom
+        showShadow
+        autoMove={false}
+        events={events}
+      >
+        <h3 className={styles.companyName}>{name}</h3>
+        <p className={styles.address}>
+          <span className={styles.locateIcon} style={genBackgrondStyle(locateIcon)} />
+          {address}
+        </p>
+        <p className={styles.safety}>
+          <span className={styles.personIcon} style={genBackgrondStyle(personIcon)} />
+          <span className={styles.safetyName}>{safetyName}</span>
+          <span>{safetyPhone}</span>
+        </p>
+        <p className={isFire ? styles.statusFire : styles.status}>
+          <span className={styles.statusIcon} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
+          {status}
+        </p>
+      </InfoWindow>
+    );
+  }
+
+  renderUnit(totalNum, fireNum) {
+    return (
+      <ul className={styles.mapLegend}>
+        <li>
+          单位总数：
+          {totalNum}
+        </li>
+        <li>
+          报警单位：
+          {fireNum}
+        </li>
+      </ul>
+    );
+  }
+
   render() {
     const { center, zoom, selected } = this.state;
     const {
-      map: { companyBasicInfoList, totalNum, fireNum },
+      alarm: { list = [] },
+      map: { companyBasicInfoList = [], totalNum, fireNum },
     } = this.props;
+
+    let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
+
     return (
       <FcSection style={{ padding: 8 }} className={styles.map}>
         <div className={styles.mapContainer}>
@@ -101,43 +182,16 @@ export default class FireControlMap extends PureComponent {
             center={center}
             zoom={zoom}
           >
-            {this.renderCompanyMarker()}
+            {this.renderCompanyMarker(newList)}
+            {selected && this.renderInfoWindow()}
           </GDMap>
           <MapSearch
             style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-            list={companyBasicInfoList}
+            list={newList}
             handleSelect={this.handleSelect}
           />
-          {selected && (
-            <Button
-              onClick={this.back}
-              style={{
-                background: 'rgba(1, 39, 79, 0.8)',
-                border: 'none',
-                color: '#009eff',
-                width: '80',
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                zIndex: 666,
-              }}
-            >
-              <Icon type="rollback" />
-              返回
-            </Button>
-          )}
-          {!selected && (
-            <ul className={styles.mapLegend}>
-              <li>
-                单位总数：
-                {totalNum}
-              </li>
-              <li>
-                报警单位：
-                {fireNum}
-              </li>
-            </ul>
-          )}
+          {selected && this.renderBackButton()}
+          {!selected && this.renderUnit(totalNum, fireNum)}
         </div>
       </FcSection>
     );

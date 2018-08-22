@@ -62,7 +62,7 @@ export default class FireControlBigPlatform extends PureComponent {
     };
 
     return (
-      <div className={styles.root} style={{ background: `url(${bg}) center center` }}>
+      <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}>
         <Head title="晶安智慧消防云平台" />
         <div className={styles.empty} />
         <Row style={{ height: '88%', marginLeft: 0, marginRight: 0 }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>

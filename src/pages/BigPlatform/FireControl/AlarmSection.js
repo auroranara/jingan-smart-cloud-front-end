@@ -19,7 +19,7 @@ export default class AlarmSection extends PureComponent {
     const { list = [] } = this.props.alarmData;
 
     return (
-      <FcSection title="警情信息">
+      <FcSection title="警情信息" style={{ padding: '0 15px 15px' }}>
         <Row gutter={6} style={{ marginBottom: 20 }}>
           <Col span={18}>
             <Input onPressEnter={this.handleSearch} ref={node => { this.node = node; }} style={{ background: 'rgba(9,103,211,0.2)', border: 'none', color: '#FFF' }} />
