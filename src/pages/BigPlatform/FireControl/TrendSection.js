@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react'
 
 import FcSection from './FcSection';
+
+const DELAY = 2000;
 
 function rand(n) {
   return Math.floor(Math.random() * n);
@@ -29,65 +31,122 @@ function handleSource(list) {
   return source;
 }
 
-export default function TrendSection(props) {
-  const { trendData: { list = [] } } = props;
-  const source = handleSource(list);
-  // const source = handleSource(data);
+export default class TrendSection extends PureComponent {
+  componentDidMount() {
+    this.timer = setInterval(this.tipMove, DELAY);
+  }
 
-  const option = {
-    legend: {
-      top: 0,
-      right: 10,
-      data: ['真实火警', '误报火警', '误报率'],
-      textStyle: { color: '#FFF' },
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' },
-    },
-    dataset: { source },
-    xAxis: {
-      type: 'category',
-      axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' },
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  timer = null;
+  count = 0;
+  length = 0;
+  chart = null;
+
+  tipMove = () => {
+    const count = this.count;
+    if (!this.chart || !length)
+      return;
+
+    this.chart.dispatchAction({
+      type: 'showTip',
+      seriesIndex: 0,
+      dataIndex: count,
+    });
+
+    this.count = (count + 1) % this.length;
+  };
+
+  // handleMouseenter = () => {
+  //   console.log('enter');
+  //   clearInterval(this.timer);
+  // };
+
+  // handleMouseleave = () => {
+  //   console.log('leave');
+  //   this.timer = setInterval(this.tipMove, DELAY);
+  // };
+
+  render() {
+    const { trendData: { list = [] } } = this.props;
+    const source = handleSource(list);
+    // const source = handleSource(data);
+
+    this.length = list.length;
+    const option = {
+      legend: {
+        top: 0,
+        right: 10,
+        data: ['真实火警', '误报火警', '误报率'],
+        textStyle: { color: '#FFF' },
       },
-    },
-    yAxis: [{
-      type: 'value',
-      axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' } },
-      splitLine: { show: false },
-    }, {
-      type: 'value',
-      min: 0,
-      max: 100,
-      axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' } },
-      splitLine: { show: false },
-    }],
-    series: [
-        {
-          type: 'bar',
-          // itemStyle: { color: 'rgb(225,103,98)' },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter(params) {
+          return params.reduce(function (prev, next, index) {
+            const { data, marker, seriesName } = next;
+            switch(index) {
+              case 0:
+                return `${prev}${data[0]}<br/>${marker}${seriesName}: ${data[index + 1]}`;
+              case data.length - 2:
+                return `${prev}<br/>${marker}${seriesName}: ${data[index + 1]}%`;
+              default:
+                return `${prev}<br/>${marker}${seriesName}: ${data[index + 1]}`;
+            }
+          }, '');
         },
-        {
-          type: 'bar',
-          // itemStyle: { color: 'rgb(149,167,188)' },
+      },
+      dataset: { source },
+      xAxis: {
+        type: 'category',
+        axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' },
         },
-        {
-          type: 'line',
-          yAxisIndex: 1,
-          symbol: 'circle',
-          smooth: true,
-          // itemStyle: { color: 'rgb(0,168,255)' },
-          lineStyle: { color: 'rgb(0,168,255)' },
-        },
-    ],
-    textStyle: {
-      color: '#FFF',
-    },
-};
+      },
+      yAxis: [{
+        type: 'value',
+        axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' } },
+        splitLine: { show: false },
+      }, {
+        type: 'value',
+        min: 0,
+        max: 100,
+        axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' } },
+        splitLine: { show: false },
+      }],
+      series: [
+          {
+            type: 'bar',
+            // itemStyle: { color: 'rgb(225,103,98)' },
+          },
+          {
+            type: 'bar',
+            // itemStyle: { color: 'rgb(149,167,188)' },
+          },
+          {
+            type: 'line',
+            yAxisIndex: 1,
+            symbol: 'circle',
+            smooth: true,
+            itemStyle: { color: 'rgb(0,168,255)' },
+            lineStyle: { color: 'rgb(0,168,255)' },
+          },
+      ],
+      textStyle: {
+        color: '#FFF',
+      },
+  };
 
-  return (
-    <FcSection title="火警趋势" style={{ position: 'relative' }}>
-      <ReactEcharts option={option} style={{ position: 'absolute', left: 0, top: 15, width: '100%', height: '100%' }} />
-    </FcSection>
-  )
+    return (
+      <FcSection title="火警趋势" style={{ position: 'relative' }}>
+        <ReactEcharts
+          option={option}
+          style={{ position: 'absolute', left: 0, top: 15, width: '100%', height: '100%' }}
+          onChartReady={chart => { this.chart = chart; }}
+        />
+      </FcSection>
+    )
+  }
 }

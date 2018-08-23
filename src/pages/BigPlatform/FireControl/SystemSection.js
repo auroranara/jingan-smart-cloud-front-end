@@ -9,7 +9,7 @@ import hostIcon from './host.png';
 function UnitCard(props) {
   const { company, hostNum } = props;
   return (
-    <Row style={{ borderTop: '1px solid rgb(54, 129, 199)' }}>
+    <Row style={{ borderBottom: '1px solid rgb(54, 129, 199)' }}>
       <Col span={16}><p className={styles.unitCard}>{company}</p></Col>
       <Col span={8}><p className={styles.unitCard}>{hostNum}</p></Col>
     </Row>
@@ -23,7 +23,7 @@ export default function SystemSection(props) {
   const percent = total ? Math.floor(activeCount / total * 100) : 0;
 
   return (
-    <FcSection title="系统接入">
+    <FcSection title="系统接入" style={{ padding: '0 15px 15px' }}>
       <Row>
         <Col span={12}>
           <div className={styles.left}>
@@ -40,12 +40,12 @@ export default function SystemSection(props) {
           </div>
         </Col>
       </Row>
-      <div className={styles.table}>
-        <Row>
+      <div className={styles.table} style={{ height: 'calc(100% - 180px)' }}>
+        <Row style={{ borderBottom: '1px solid rgb(54, 129, 199)' }}>
           <Col span={16}><p className={styles.tableTitle}>接入单位</p></Col>
           <Col span={8}><p className={styles.tableTitle}>主机数量</p></Col>
         </Row>
-        <div style={{ overflow: 'auto', height: 'calc(100% - 41px)'}}>
+        <div style={{ overflow: 'auto', height: 'calc(100% - 42px)'}}>
           {companyList.map(({ name, count }, index) => <UnitCard key={index} company={name} hostNum={count} /> )}
         </div>
       </div>

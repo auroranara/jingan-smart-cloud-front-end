@@ -1,19 +1,17 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Avatar } from 'antd';
+import { Icon } from 'antd';
+import debounce from 'lodash/debounce';
 import Ellipsis from '../../../../components/Ellipsis';
+
+import styles from './RiskDetail.less';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 /* 图片 */
-const detailBorder = `${iconPrefix}detailBorder.png`;
+const detailBorder = `${iconPrefix}detail_border.png`
 const descriptionBlueIcon = `${iconPrefix}description_blue.png`;
 const descriptionRedIcon = `${iconPrefix}description_red.png`;
-const sbrIcon = `${iconPrefix}sbr.png`;
-const sbsjIcon = `${iconPrefix}sbsj.png`;
-const zgrIcon = `${iconPrefix}zgr.png`;
-const zgsjIcon = `${iconPrefix}zgsj.png`;
-const fcrIcon = `${iconPrefix}fcr.png`;
 const ycqIcon = `${iconPrefix}ycq.png`;
 const wcqIcon = `${iconPrefix}wcq.png`;
 const dfcIcon = `${iconPrefix}dfc.png`;
@@ -42,6 +40,19 @@ const getSeal = status => {
       return wcqIcon;
   }
 };
+// 获取当前子元素高度
+const getCurrentItemHeight = () => {
+  const width = window.innerWidth;
+  if (width >= 1600) {
+    return 226;
+  }
+  else if( width < 1600 && width >= 1200) {
+    return 191;
+  }
+  else {
+    return 164;
+  }
+};
 
 export default class App extends PureComponent {
   static propTypes = {
@@ -53,67 +64,84 @@ export default class App extends PureComponent {
     fieldNames: {},
   };
 
-  state = {
-    dataSource: [],
-  };
-
-  myTimer = null;
-
-  addInterVal() {
-    this.myTimer = setInterval(() => {
-      if (
-        this.list &&
-        this.list.children - Number.parseFloat(this.list.style.top) >=
-          this.list.children[0].offsetHeight
-      ) {
-        this.setState(({ dataSource }) => ({
-          dataSource: [...dataSource.slice(1), ...dataSource.slice(0, 1)],
-        }));
-        this.list.style.top = '0px';
-      } else {
-        this.list.style.top = `${Number.parseFloat(this.list.style.top, 10) - 1}px`;
-      }
-    }, 25);
+  constructor(props) {
+    super(props);
+    this.state = {
+      // 当前页码
+      currentIndex: 0,
+      // 页面显示数量
+      pageSize: 3,
+    }
+    this.myTimer = null;
+    this.handleResize = debounce(this.handleResize, 300);
   }
 
-  componentDidUpdate({ data: prevData }, { dataSource: prevDataSource }) {
-    const { data } = this.props;
-    const { dataSource } = this.state;
-    if (data !== prevData) {
+  /**
+   * 挂载后
+   */
+  componentDidMount() {
+    // 初始化
+    this.handleResize();
+    // 添加resize事件
+    window.addEventListener('resize', this.handleResize, false);
+  }
+
+  /**
+   * 组件更新
+   */
+  componentDidUpdate({ data: prevData }) {
+    // 如果源数据更新，则重新返回到第一页
+    if (prevData !== this.props.data) {
       this.setState({
-        dataSource: [...data],
+        currentIndex: 0,
       });
-      clearInterval(this.myTimer);
-      this.list.style.top = '0px';
-      return;
-    }
-    if (dataSource !== prevDataSource) {
-      if (dataSource.includes(prevDataSource[0])) {
-        if (dataSource.length !== 0 && dataSource.length === 2 * prevDataSource.length) {
-          this.addInterVal();
-        }
-      } else {
-        setTimeout(() => {
-          if (this.list.offsetHeight > this.container.offsetHeight) {
-            this.setState({
-              dataSource: [
-                ...dataSource,
-                ...dataSource.map(item => ({ ...item, id: `${item.id}_cpy` })),
-              ],
-            });
-          }
-        }, 10);
-      }
     }
   }
 
+  /**
+   * 组件销毁
+   */
   componentWillUnmount() {
+    // 销毁时移出事件
+    window.removeEventListener('resize', this.handleResize);
     clearInterval(this.myTimer);
+  }
+
+  /**
+   * 根据当前容器高度计算页面显示数量
+   */
+  handleResize = () => {
+    this.myTimer = setInterval(() => {
+      if (this.container && this.container.offsetHeight !== 0) {
+        clearInterval(this.myTimer);
+        this.myTimer = null;
+        this.setState({
+          pageSize: Math.max(Math.floor(this.container.offsetHeight / getCurrentItemHeight()), 1),
+        });
+      }
+    }, 2);
+  }
+
+  /**
+   * 上一页
+   */
+  handlePrevPage = () => {
+    this.setState(({ currentIndex }) => ({
+      currentIndex: currentIndex - 1,
+    }));
+  }
+
+  /**
+   * 下一页
+   */
+  handleNextPage = () => {
+    this.setState(({ currentIndex }) => ({
+      currentIndex: currentIndex + 1,
+    }));
   }
 
   handleMouseEnter = () => {
     const { onMouseEnter } = this.props;
-    clearInterval(this.myTimer);
     if (onMouseEnter) {
       onMouseEnter();
     }
@@ -121,21 +149,28 @@ export default class App extends PureComponent {
 
   handleMouseLeave = () => {
     const { onMouseLeave } = this.props;
-    if (this.list.offsetHeight > this.container.offsetHeight) {
-      this.addInterVal();
-    }
     if (onMouseLeave) {
       onMouseLeave();
     }
   };
 
   render() {
-    const { className, style, data, fieldNames } = this.props;
-    const { dataSource } = this.state;
-    const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = {
-      ...defaultFieldNames,
-      ...fieldNames,
-    };
+    const {
+      className,
+      style,
+      data,
+      fieldNames,
+    } = this.props;
+    const { currentIndex, pageSize } = this.state;
+    const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = { ...defaultFieldNames, ...fieldNames };
+    // 页数
+    const pageCount = Math.max(Math.ceil(data.length / pageSize), 1);
+    // 是否为第一页
+    const isFirst = currentIndex === 0;
+    // 是否为最后一页
+    const isLast = currentIndex === pageCount - 1;
+    // 当前页的第一个元素
+    const currentFirstIndex = currentIndex * pageSize;
 
     return (
       <div
@@ -143,271 +178,49 @@ export default class App extends PureComponent {
         style={{
           display: 'flex',
           flexDirection: 'column',
+          boxShadow: '0 0 1.8em #000',
           ...style,
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            marginBottom: '10px',
-            padding: '0 20px',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              display: 'inline-block',
-              flex: 1,
-              height: '2px',
-              backgroundColor: '#00A8FF',
-              verticalAlign: 'middle',
-            }}
-          />
-          <div
-            style={{
-              display: 'inline-block',
-              padding: '0 20px',
-              color: '#fff',
-              borderLeft: '8px solid #00A8FF',
-              borderRight: '8px solid #00A8FF',
-              fontSize: '16px',
-              verticalAlign: 'middle',
-            }}
-          >
-            隐患详情 ({data.length})
+        <div onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} className={styles.riskDetailWrapper} style={{ borderImage: `url(${detailBorder}) 10` }}>
+          <div className={styles.riskDetailTitleWrapper}>
+            <div className={styles.riskDetailTitleBorder} />
+            <div className={styles.riskDetailTitle}>隐患详情 ({data.length})</div>
+            <div className={styles.riskDetailTitleBorder} />
           </div>
-          <div
-            style={{
-              display: 'inline-block',
-              flex: 1,
-              height: '2px',
-              backgroundColor: '#00A8FF',
-              verticalAlign: 'middle',
-            }}
-          />
-        </div>
-        <div
-          onMouseEnter={this.handleMouseEnter}
-          onMouseLeave={this.handleMouseLeave}
-          style={{
-            display: 'flex',
-            flex: 1,
-            padding: '24px 16px',
-            boxShadow: '0 0 1.1em rgba(9, 103, 211, 0.9) inset',
-            backgroundColor: 'rgba(9, 103, 211, 0.06)',
-          }}
-        >
-          <div
-            style={{ flex: 1, overflow: 'hidden' }}
-            ref={container => {
-              this.container = container;
-            }}
-          >
-            <div
-              style={{ position: 'relative', top: 0 }}
-              ref={list => {
-                this.list = list;
-              }}
-            >
-              {dataSource.length !== 0 ? (
-                dataSource.map(item => {
-                  return (
-                    <div key={item[id]} style={{ paddingBottom: '20px' }}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          backgroundColor: 'rgba(6, 38, 78, 0.8)',
-                          maxHeight: '240px',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: 'relative',
-                            display: 'flex',
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <div
-                            style={{
-                              position: 'absolute',
-                              top: 0,
-                              right: 0,
-                              bottom: 0,
-                              left: 0,
-                              backgroundColor: 'rgba(6, 38, 78, 0.55)',
-                            }}
-                          />
-                          <img
-                            src={item[background]}
-                            alt="隐患图"
-                            style={{ display: 'inline-block', width: '100%', height: 'auto' }}
-                          />
-                        </div>
-                        <div
-                          style={{
-                            display: 'flex',
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <img
-                            src={getSeal(item[status])}
-                            alt="未过期"
-                            style={{ display: 'inline-block', width: '80px', height: '80px' }}
-                          />
+          <div className={styles.riskDetailListContainer} ref={(container) => { this.container = container; }}>
+            {data.length !== 0 ? data.map((ele, index) => {
+              if (index % pageSize === 0) {
+                const top = (index < currentFirstIndex && '-110%') || (index > currentFirstIndex && '110%') || 0;
+                return (
+                  <div className={styles.riskDetailList} style={{ top, transition: currentFirstIndex === index?'top 0.55s, bottom 0.55s':'top 0.5s, bottom 0.5s' }} key={ele[id]}>
+                    {data.slice(index, index+pageSize).map(item => (
+                      <div key={item[id]} className={styles.riskDetailItem} style={{ backgroundImage: `url(${getSeal(item[status])})` }}>
+                        <div className={styles.riskDetailItemTitleWrapper}><div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon})` }} /><Ellipsis lines={1} className={styles.riskDetailItemTitle} style={{ color: item[status] === 2 ? '#ff4848' : '#fff' }} >{item[description] || '暂无信息'}</Ellipsis></div>
+                        <div className={styles.riskDetailItemContentWrapper}>
+                          <div className={styles.riskDetailItemImageWrapper}>
+                            <div style={{ position: 'relative', width: '100%' }}>
+                              <img src={item[background]} alt="" style={{ display: 'block', width: '100%' }} />
+                              <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0, 168, 255, 0.3)' }} />
+                            </div>
+                          </div>
+                          <div style={{ flex: 1  }}>
+                            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>上报：</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{item[sbr]}</span>{item[sbsj]}</Ellipsis></div>
+                            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>整改：</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} ><span className={styles.riskDetailItemTextFirstChild}>{item[zgr]}</span>{item[zgsj]}</Ellipsis></div>
+                            {item[status] === 1 && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>复查：</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{item[fcr]}</span></Ellipsis></div>}
+                          </div>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', padding: '4px 8px' }}>
-                        <Avatar
-                          style={{ marginRight: '8px' }}
-                          src={item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon}
-                          size="small"
-                        />
-                        <Ellipsis
-                          lines={1}
-                          style={{
-                            flex: 1,
-                            color: item[status] === 2 ? '#ff4848' : '#00A8FF',
-                            lineHeight: '24px',
-                          }}
-                        >
-                          {item[description] || '暂无信息'}
-                        </Ellipsis>
-                      </div>
-                      <div style={{ display: 'flex', padding: '4px 8px' }}>
-                        <Avatar style={{ marginRight: '8px' }} src={sbrIcon} size="small" />
-                        <span
-                          style={{
-                            display: 'flex',
-                            color: '#00A8FF',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                          }}
-                        >
-                          上报人
-                        </span>
-                        <span
-                          style={{
-                            display: 'flex',
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            color: '#fff',
-                          }}
-                        >
-                          {item[sbr]}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', padding: '4px 8px' }}>
-                        <Avatar style={{ marginRight: '8px' }} src={sbsjIcon} size="small" />
-                        <span
-                          style={{
-                            display: 'flex',
-                            color: '#00A8FF',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                          }}
-                        >
-                          上报时间
-                        </span>
-                        <span
-                          style={{
-                            display: 'flex',
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            color: '#fff',
-                          }}
-                        >
-                          {item[sbsj]}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', padding: '4px 8px' }}>
-                        <Avatar style={{ marginRight: '8px' }} src={zgrIcon} size="small" />
-                        <span
-                          style={{
-                            display: 'flex',
-                            color: '#00A8FF',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                          }}
-                        >
-                          整改人
-                        </span>
-                        <span
-                          style={{
-                            display: 'flex',
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            color: '#fff',
-                          }}
-                        >
-                          {item[zgr]}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', padding: '4px 8px' }}>
-                        <Avatar style={{ marginRight: '8px' }} src={zgsjIcon} size="small" />
-                        <span
-                          style={{
-                            display: 'flex',
-                            color: '#00A8FF',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                          }}
-                        >
-                          整改时间
-                        </span>
-                        <span
-                          style={{
-                            display: 'flex',
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            color: item[status] === 2 ? '#ff4848' : '#fff',
-                          }}
-                        >
-                          {item[zgsj]}
-                        </span>
-                      </div>
-                      {item[status] === 1 && (
-                        <div style={{ display: 'flex', padding: '4px 8px' }}>
-                          <Avatar style={{ marginRight: '8px' }} src={fcrIcon} size="small" />
-                          <span
-                            style={{
-                              display: 'flex',
-                              color: '#00A8FF',
-                              alignItems: 'center',
-                              justifyContent: 'flex-start',
-                            }}
-                          >
-                            复查人
-                          </span>
-                          <span
-                            style={{
-                              display: 'flex',
-                              flex: 1,
-                              alignItems: 'center',
-                              justifyContent: 'flex-end',
-                              color: '#fff',
-                            }}
-                          >
-                            {item[fcr]}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                );
+              }
+              return null;
+            }) : <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>}
+          </div>
+          <div style={{ flex: 'none', lineHeight: '1' }}>
+            <div style={{ textAlign: 'center' }}><Icon type="caret-up" style={{ color: isFirst?'#022D5B':'#0967D3', cursor: isFirst?'not-allowed':'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
+            <div style={{ textAlign: 'center' }}><Icon type="caret-down" style={{ color: isLast?'#022D5B':'#0967D3', cursor: isLast?'not-allowed':'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
           </div>
         </div>
       </div>

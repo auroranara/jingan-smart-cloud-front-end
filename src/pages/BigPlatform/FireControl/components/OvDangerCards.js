@@ -6,16 +6,16 @@ import styles from './OvDangerCards.less';
 import divider from './divider.png';
 import dangerIcon from './ovDanger.png';
 
-const numStyle = { fontSize: 18, color: 'rgb(0, 168, 255)' };
+const numStyle = { fontSize: 20, color: 'rgb(0, 168, 255)' };
 const style1 = { borderRadius: '10% 0 0 10%' };
 const style2 = { borderRadius: 0 };
 const style3 = { borderRadius: '0 10% 10% 0' };
 
 export default function OvDangerCards(props) {
-  const { total, overdue, rectify, review } = props;
+  const { total, overdue, rectify, review, style={} } = props;
 
   return (
-    <div className={styles.danger}>
+    <div className={styles.danger} style={style}>
       <Row gutter={20} style={{ margin: 0, height: '100%' }}>
         <Col style={{ height: '100%' }} span={6}>
           <div className={styles.container}>
