@@ -1,4 +1,3 @@
-@fireControlImgUrl: 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/';
 @keyframes ringRotate {
   from {
     transform: rotateZ(0);
@@ -38,7 +37,8 @@
         color: #fff;
         padding-left: 15px;
         margin: 6.5px;
-        background: url('@{fireControlImgUrl}btn_bg.png') no-repeat;
+        background-repeat: no-repeat;
+        background-color: transparent;
       }
       .ring {
         width: 100%;
@@ -46,7 +46,7 @@
         position: absolute;
         left: 0;
         top: 0;
-        background: url('@{fireControlImgUrl}circle.png') no-repeat;
+        background-repeat: no-repeat;
         animation: ringRotate 5s ease infinite;
       }
 
@@ -56,7 +56,7 @@
         position: absolute;
         left: -13.5px;
         bottom: 15px;
-        background: url('@{fireControlImgUrl}bubble.png') no-repeat;
+        background-repeat: no-repeat;
         background-size: cover;
         animation: bubble 2s ease alternate infinite;
       }
@@ -86,13 +86,13 @@
   }
 
   .bottom {
-    margin-top: 5%;
+    margin-top: 4%;
     margin-left: 5%;
     height: 50%;
 
-    .responsetime {
-      margin-top: 2%;
-    }
+    // .responsetime {
+    //   margin-top: 2%;
+    // }
   }
 }
 
@@ -120,7 +120,7 @@
       margin-right: 5px;
       position: relative;
       top: 2px;
-      background: url('@{fireControlImgUrl}onJobIcon.png') no-repeat;
+      background-repeat: no-repeat;
     }
     .personnum {
       color: #fff;
@@ -137,7 +137,7 @@
       margin-right: 5px;
       position: relative;
       top: 2px;
-      background: url('@{fireControlImgUrl}leavelJobIcon.png') no-repeat;
+      background-repeat: no-repeat;
     }
     .personnum {
       color: #fff;
@@ -160,7 +160,7 @@
   height: 48px;
   position: absolute;
   top: 12px;
-  background: url('@{fireControlImgUrl}time.png') no-repeat;
+  background-repeat: no-repeat;
 }
 .timeNum {
   height: 25%;
@@ -176,7 +176,7 @@
       margin-right: 5px;
       position: relative;
       top: 2px;
-      background: url('@{fireControlImgUrl}rabbit.png') no-repeat;
+      background-repeat: no-repeat;
     }
     .minutes {
       color: #fff;
@@ -192,7 +192,7 @@
       margin-right: 5px;
       position: relative;
       top: 1px;
-      background: url('@{fireControlImgUrl}snail.png') no-repeat;
+      background-repeat: no-repeat;
     }
     .minutes {
       color: #fff;
@@ -240,7 +240,7 @@
           color: #fff;
           padding-left: 15px;
           margin: 6.5px;
-          background: url('@{fireControlImgUrl}btn_bg.png') no-repeat;
+          background-repeat: no-repeat;
         }
         .ring {
           width: 100%;
@@ -248,7 +248,7 @@
           position: absolute;
           left: 0;
           top: 0;
-          background: url('@{fireControlImgUrl}circle.png') no-repeat;
+          background-repeat: no-repeat;
           animation: ringRotate 5s ease infinite;
         }
 
@@ -258,7 +258,7 @@
           position: absolute;
           left: -13.5px;
           bottom: 15px;
-          background: url('@{fireControlImgUrl}bubble.png') no-repeat;
+          background-repeat: no-repeat;
           background-size: cover;
           animation: bubble 2s ease alternate infinite;
         }
@@ -317,7 +317,7 @@
         margin-right: 5px;
         position: relative;
         top: 2px;
-        background: url('@{fireControlImgUrl}onJobIcon.png') no-repeat;
+        background-repeat: no-repeat;
       }
       .personnum {
         color: #fff;
@@ -334,7 +334,7 @@
         margin-right: 5px;
         position: relative;
         top: 2px;
-        background: url('@{fireControlImgUrl}leavelJobIcon.png') no-repeat;
+        background-repeat: no-repeat;
       }
       .personnum {
         color: #fff;
@@ -357,7 +357,7 @@
     height: 48px;
     position: absolute;
     top: 12px;
-    background: url('@{fireControlImgUrl}time.png') no-repeat;
+    background-repeat: no-repeat;
   }
   .timeNum {
     height: 25%;
@@ -373,7 +373,7 @@
         margin-right: 5px;
         position: relative;
         top: 2px;
-        background: url('@{fireControlImgUrl}rabbit.png') no-repeat;
+        background-repeat: no-repeat;
       }
       .minutes {
         color: #fff;
@@ -389,7 +389,7 @@
         margin-right: 5px;
         position: relative;
         top: 1px;
-        background: url('@{fireControlImgUrl}snail.png') no-repeat;
+        background-repeat: no-repeat;
       }
       .minutes {
         color: #fff;

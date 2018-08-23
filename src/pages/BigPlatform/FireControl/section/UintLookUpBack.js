@@ -5,6 +5,8 @@ import LookingUp from '../components/LookingUp';
 import OffGuardWarning from '../components/OffGuardWarning';
 import styles from './UnitLookUpBack.less';
 
+import back from '../img/back.png';
+
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 
@@ -24,7 +26,11 @@ export default function(props) {
       />
       <OffGuardWarning showed={lookUpShow === OFF_GUARD} />
       {lookUpShow === OFF_GUARD ? (
-        <span onClick={handleRotateBack} className={styles.offGuardBackIcon} />
+        <span
+          onClick={handleRotateBack}
+          className={styles.offGuardBackIcon}
+          style={{ backgroundImage: `url(${back})` }}
+        />
       ) : null}
     </FcSection>
   );
