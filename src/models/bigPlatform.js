@@ -14,6 +14,7 @@ import {
   getRiskDetail,
   getRiskPointInfo,
   getHiddenDanger,
+  getSafetyOfficer,
   getGovFulltimeWorkerList,
   getOverRectifyCompany,
   getSearchImportantCompany,
@@ -49,6 +50,7 @@ export default {
       selfCheck: 0,
       total: 0,
       dangerCompany: [],
+      overCheck: 0,
     },
     newHomePage: {
       companyDto: {
@@ -87,17 +89,16 @@ export default {
       statusAll: 0,
     },
     specialEquipment: 0,
-    countDangerLocationForCompany: {
-      red: 0,
-      orange: 0,
-      blue: 0,
-      yellow: 0,
-    },
+    // 风险点统计及信息
+    countDangerLocationForCompany: {},
     // 风险点信息
     riskPointInfoList: [],
     // 隐患详情
     riskDetailList: [],
+    // 隐患总数
     hiddenDanger: 0,
+    // 安全人员信息
+    safetyOfficer: {},
     govFulltimeWorkerList: {
       total: 0,
       list: [],
@@ -235,14 +236,8 @@ export default {
       const response = yield call(getCompanyMessage, payload);
       const res = {
         ...response,
-        point:
-          response.point &&
-          response.point.filter(
-            ({ itemId, xNum, yNum }) =>
-              itemId &&
-              (xNum || Number.parseFloat(xNum) === 0) &&
-              (yNum || Number.parseFloat(yNum) === 0)
-          ),
+        point: response.point && response.point.filter(({itemId, xNum, yNum}) => itemId && (xNum || Number.parseFloat(xNum) === 0) && (yNum || Number.parseFloat(yNum) === 0) ),
+        fourColorImg: (response.fourColorImg && response.fourColorImg.startsWith('[')) ? JSON.parse(response.fourColorImg).filter(({ id, webUrl }) => /^http/.test(webUrl) && id) : [],
       };
       // if (response.code === 200) {
       yield put({
@@ -263,7 +258,7 @@ export default {
       yield put({
         type: 'coItemList',
         payload: response.total,
-        status: payload.status || '',
+        status: payload.status || 'All',
       });
       if (success) {
         success();
@@ -293,12 +288,7 @@ export default {
       // if (response.code === 200) {
       yield put({
         type: 'countDangerLocationForCompany',
-        payload: response.countDangerLocation[0] || {
-          red: 0,
-          orange: 0,
-          blue: 0,
-          yellow: 0,
-        },
+        payload: response,
       });
       if (success) {
         success();
@@ -333,6 +323,16 @@ export default {
       yield put({
         type: 'hiddenDanger',
         payload: response.total,
+      });
+      if (success) {
+        success();
+      }
+    },
+    *fetchSafetyOfficer({ payload, success }, { call, put }) {
+      const response = yield call(getSafetyOfficer, payload);
+      yield put({
+        type: 'saveSafetyOfficer',
+        payload: response,
       });
       if (success) {
         success();
@@ -445,23 +445,18 @@ export default {
         infoByLocation: payload,
       };
     },
-    companyMessage(state, { payload: companyMessage }) {
+    companyMessage(state, { payload }) {
       return {
         ...state,
-        companyMessage,
+        companyMessage: payload,
       };
     },
     coItemList(state, { payload, status }) {
-      let obj = {};
-      if (status === '1') obj = { status1: payload };
-      if (status === '2') obj = { status2: payload };
-      if (status === '3') obj = { status3: payload };
-      if (status === '4') obj = { status4: payload };
       return {
         ...state,
         coItemList: {
           ...state.coItemList,
-          ...obj,
+          [`status${status}`]: payload,
         },
       };
     },
@@ -494,6 +489,12 @@ export default {
         ...state,
         hiddenDanger: payload,
       };
+    },
+    saveSafetyOfficer(state, { payload: safetyOfficer }) {
+      return {
+        ...state,
+        safetyOfficer,
+      }
     },
     govFulltimeWorkerList(state, { payload }) {
       return {

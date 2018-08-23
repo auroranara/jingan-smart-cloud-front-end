@@ -62,9 +62,12 @@ class GovernmentBigPlatform extends Component {
     },
     infoWindowShow: false,
     infoWindow: {
-      company_name: '',
+      companyId: '',
+      companyName: '',
       level: '',
       address: '',
+      longitude: 120.366011,
+      latitude: 31.544389,
     },
     areaHeight: 0,
     pieHeight: 0,
@@ -94,29 +97,6 @@ class GovernmentBigPlatform extends Component {
         });
       }, 1000);
     });
-
-    // setInterval(() => {
-    //   const { communityCom, comIn } = this.state;
-    //   if (communityCom) {
-    //     this.setState({
-    //       communityCom: !communityCom,
-    //     });
-    //     setTimeout(() => {
-    //       this.setState({
-    //         comIn: !comIn,
-    //       });
-    //     }, 225);
-    //   } else {
-    //     this.setState({
-    //       comIn: !comIn,
-    //     });
-    //     setTimeout(() => {
-    //       this.setState({
-    //         communityCom: !communityCom,
-    //       });
-    //     }, 225);
-    //   }
-    // }, 3000);
 
     dispatch({
       type: 'bigPlatform/fetchItemList',
@@ -276,9 +256,9 @@ class GovernmentBigPlatform extends Component {
     return location.map(company => {
       const position = this.analysisPointData(company.location);
       const level = company.level;
-      let offset = [-10, -10];
+      let offset = [-1, 17];
       if (level === 'A') {
-        offset = [-13, -13];
+        offset = [-5, 14];
       }
 
       return (
@@ -287,10 +267,10 @@ class GovernmentBigPlatform extends Component {
           key={company.company_id}
           offset={offset}
           events={{
-            click: this.handleCompanyLabel.bind(this, {
+            click: this.handleIconClick.bind(this, {
               longitude: position.longitude,
               latitude: position.latitude,
-              ...company,
+              id: company.company_id,
             }),
           }}
         >
@@ -337,97 +317,91 @@ class GovernmentBigPlatform extends Component {
     };
   };
 
-  /* 标注渲染 */
+  // 弹窗渲染
   renderInfoWindow() {
-    const { label, infoWindowShow } = this.state;
-    let position = null;
-    position = {
-      longitude: label.longitude,
-      latitude: label.latitude,
+    const { infoWindowShow, infoWindow } = this.state;
+    const position = {
+      longitude: infoWindow.longitude,
+      latitude: infoWindow.latitude,
     };
     return (
       <InfoWindow
         position={position}
-        offset={[-5, -15]}
+        offset={[-7, 10]}
         isCustom={false}
         autoMove={false}
         visible={infoWindowShow}
-        events={{ close: this.handleHideLabel }}
+        events={{ close: this.handleHideInfoWindow }}
       >
-        {this.renderLabel()}
+        <div style={{ padding: '0 5px 0 13px' }} className={styles.companyLabel}>
+          <div>{infoWindow.companyName}</div>
+        </div>
       </InfoWindow>
     );
   }
 
-  renderLabel = () => {
-    const { infoWindow } = this.state;
-    return (
-      <div
-        style={{ cursor: 'pointer' }}
-        className={styles.companyLabel}
-        onClick={() => {
-          window.open(
-            `/acloud_new/#/big-platform/safety/company/${infoWindow.company_id}`,
-            '_blank'
-          );
-        }}
-      >
-        <div>{infoWindow.company_name}</div>
-        <div>
-          等级：
-          {infoWindow.level}
-        </div>
-        <div>
-          地址：
-          {infoWindow.address}
-        </div>
-      </div>
-    );
-  };
-
-  handleCompanyLabel = company => {
+  handleIconClick = company => {
     const { dispatch } = this.props;
-    const { companyId } = this.state;
-    if (companyId === company.company_id) {
-      this.goComponent('comInfo');
+    const { companyId, infoWindowShow, comInfo } = this.state;
+    if (companyId === company.id) {
+      if (!comInfo) {
+        this.goComponent('comInfo');
+      }
+      if (!infoWindowShow) {
+        this.setState({ infoWindowShow: true });
+      }
       return;
     }
     this.setState({
-      companyId: company.company_id,
+      companyId: company.id,
     });
     // 企业信息
     dispatch({
       type: 'bigPlatform/fetchCompanyMessage',
       payload: {
-        company_id: company.company_id,
+        company_id: company.id,
         month: moment().format('YYYY-MM'),
       },
       success: response => {
-        // this.setState({
-        //   label: company,
-        //   infoWindow: response,
-        //   infoWindowShow: true,
-        // });
         this.goComponent('comInfo');
+        this.setState({
+          infoWindowShow: true,
+          infoWindow: {
+            comapnyId: company.id,
+            longitude: company.longitude,
+            latitude: company.latitude,
+            companyName: response.companyMessage.companyName,
+          },
+        });
       },
     });
     // 特种设备
     dispatch({
       type: 'bigPlatform/fetchSpecialEquipment',
       payload: {
-        company_id: company.company_id,
+        company_id: company.id,
       },
     });
     // 风险点隐患
     dispatch({
       type: 'bigPlatform/fetchRiskDetail',
       payload: {
-        company_id: company.company_id,
+        company_id: company.id,
+        source_type: '3',
+      },
+    });
+
+    // 风险点隐患
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDanger',
+      payload: {
+        company_id: company.id,
+        status: '7',
       },
     });
   };
 
-  handleHideLabel = () => {
+  handleHideInfoWindow = () => {
     this.setState({
       infoWindowShow: false,
     });
@@ -511,11 +485,13 @@ class GovernmentBigPlatform extends Component {
         axisPointer: {
           // 坐标轴指示器，坐标轴触发有效
           type: 'shadow', // 默认为直线，可选为：'line' | 'shadow'
+          shadowStyle: {
+            color: 'rgba(46,78,111,0.5)',
+            opacity: 0.6,
+          },
         },
         backgroundColor: 'rgba(46,78,111,0.5)',
         padding: [5, 15, 5, 15],
-        borderColor: '#ccc',
-        borderWidth: 1,
         formatter: function(params) {
           const icon = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#bfbfbf;"></span>`;
           return `<span style="color:${params[0].color};font-weight: bold;">单位数：${
@@ -556,6 +532,7 @@ class GovernmentBigPlatform extends Component {
           },
           axisLabel: {
             color: '#fff',
+            fontSize: 14,
           },
           data: ['红', '橙', '黄', '蓝'],
         },
@@ -653,10 +630,10 @@ class GovernmentBigPlatform extends Component {
       title: {
         text: hdTotal,
         left: 'center',
-        top: '41%',
+        top: '39%',
         textStyle: {
           color: '#fff',
-          fontSize: 18,
+          fontSize: 22,
         },
         subtext: '总数',
         subtextStyle: {
@@ -674,12 +651,18 @@ class GovernmentBigPlatform extends Component {
             normal: {
               show: false,
               // position: 'center',
-              formatter: '{b}\n{c}',
+              formatter: '{b}\n{number|{c}}',
+              rich: {
+                number: {
+                  fontSize: 22,
+                  color: '#fff',
+                },
+              },
             },
             emphasis: {
               show: true,
               textStyle: {
-                fontSize: '16',
+                fontSize: 14,
                 fontWeight: 'bold',
               },
             },
@@ -729,6 +712,11 @@ class GovernmentBigPlatform extends Component {
   }
 
   goBack = () => {
+    if (this.state.comInfo) {
+      this.setState({
+        infoWindowShow: false,
+      });
+    }
     this.setState({
       comIn: false, // 接入单位统计
       keyCom: false, // 重点单位统计
@@ -745,7 +733,7 @@ class GovernmentBigPlatform extends Component {
   };
 
   goComponent = type => {
-    if (this.state[type]) return;
+    if (this.state[type] && type !== 'comInfo') return;
     const obj = {};
     obj[type] = true;
     this.setState({
@@ -784,11 +772,13 @@ class GovernmentBigPlatform extends Component {
         trigger: 'axis',
         axisPointer: {
           type: 'shadow',
+          shadowStyle: {
+            color: 'rgba(46,78,111,0.5)',
+            opacity: 0.6,
+          },
         },
         backgroundColor: 'rgba(46,78,111,0.5)',
         padding: [5, 15, 5, 15],
-        borderColor: '#ccc',
-        borderWidth: 1,
       },
       color: ['#00a8ff'],
       grid: {
@@ -866,12 +856,15 @@ class GovernmentBigPlatform extends Component {
     window.open(`/acloud_new/#/big-platform/safety/company/${company_id}`, `_blank`);
   };
 
-  handleSelect = ({ latitude, longitude, id }) => {
+  handleSearchSelect = ({ latitude, longitude, id }) => {
     this.setState({
       center: [longitude, latitude],
-      zoom: 18,
+      // zoom: 18,
     });
-    this.handleCompanyLabel({ company_id: id });
+    if (this.mapInstance) {
+      this.mapInstance.setZoom(18);
+    }
+    this.handleIconClick({ latitude, longitude, id });
   };
 
   switchStatus = status => {
@@ -938,10 +931,11 @@ class GovernmentBigPlatform extends Component {
                 />
                 <Ellipsis
                   lines={1}
+                  tooltip
+                  className={styles.riskDescription}
                   style={{
                     flex: 1,
                     color: item[status] === 2 ? '#ff4848' : '#fff',
-                    fontSize: '16px',
                     lineHeight: '24px',
                   }}
                 >
@@ -950,12 +944,12 @@ class GovernmentBigPlatform extends Component {
               </div>
               <div style={{ display: 'flex', padding: '0 0 10px 6px' }}>
                 <div
+                  className={styles.riskImg}
                   style={{
                     flex: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '135px',
                     height: '180px',
                     backgroundColor: '#021C42',
                     overflow: 'hidden',
@@ -981,50 +975,47 @@ class GovernmentBigPlatform extends Component {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div
+                    className={styles.riskMsg}
                     style={{
                       display: 'flex',
-                      padding: '5px 0 5px 18px',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '16px',
                       lineHeight: '24px',
                     }}
                   >
                     <span style={{ color: '#00A8FF' }}>上报：</span>
-                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }}>
+                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[sbr]}</span>
                       {item[sbsj]}
                     </Ellipsis>
                   </div>
                   <div
+                    className={styles.riskMsg}
                     style={{
                       display: 'flex',
-                      padding: '5px 0 5px 18px',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '16px',
                       lineHeight: '24px',
                     }}
                   >
                     <span style={{ color: '#00A8FF' }}>整改：</span>
-                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }}>
+                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
                       {item[zgsj]}
                     </Ellipsis>
                   </div>
                   {item[status] === 1 && (
                     <div
+                      className={styles.riskMsg}
                       style={{
                         display: 'flex',
-                        padding: '5px 0 5px 18px',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '16px',
                         lineHeight: '24px',
                       }}
                     >
                       <span style={{ color: '#00A8FF' }}>复查：</span>
-                      <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }}>
+                      <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                         <span style={{ marginRight: '20px' }}>{item[fcr]}</span>
                       </Ellipsis>
                     </div>
@@ -1067,14 +1058,20 @@ class GovernmentBigPlatform extends Component {
           companyLevelDto,
           countGridCompany,
         },
-        listForMap: { overRectifyNum, rectifyNum, reviewNum, dangerCompany, total: riskTotal },
+        listForMap: {
+          overRectifyNum,
+          rectifyNum,
+          reviewNum,
+          dangerCompany,
+          total: riskTotal,
+          overCheck,
+        },
         govFulltimeWorkerList: { total: fulltimeWorker, list: fulltimeWorkerList },
         overRectifyCompany,
         searchAllCompany: { dataImportant, dataUnimportantCompany },
         riskDetailList,
       },
     } = this.props;
-
     let Anum = 0,
       Bnum = 0,
       Cnum = 0,
@@ -1258,7 +1255,7 @@ class GovernmentBigPlatform extends Component {
                       <div className={styles.legendItem}>
                         <span
                           className={styles.legendIcon}
-                          style={{ backgroundColor: '#fc1f02' }}
+                          style={{ backgroundColor: '#f6b54e' }}
                         />
                         未超期
                         <span className={styles.legendNum}>{rectifyNum}</span>
@@ -1267,7 +1264,7 @@ class GovernmentBigPlatform extends Component {
                       <div className={styles.legendItem}>
                         <span
                           className={styles.legendIcon}
-                          style={{ backgroundColor: '#ed7e12' }}
+                          style={{ backgroundColor: '#2a8bd5' }}
                         />
                         待复查
                         <span className={styles.legendNum}>{reviewNum}</span>
@@ -1276,7 +1273,7 @@ class GovernmentBigPlatform extends Component {
                       <div className={styles.legendItem}>
                         <span
                           className={styles.legendIcon}
-                          style={{ backgroundColor: '#fbf719' }}
+                          style={{ backgroundColor: '#e86767' }}
                         />
                         已超期
                         <span className={styles.legendNum}>{overRectifyNum}</span>
@@ -1363,7 +1360,7 @@ class GovernmentBigPlatform extends Component {
                         <div className={styles.topItem}>
                           <div className={styles.topName}>已整改隐患</div>
                           <div className={styles.topNum} style={{ color: '#fff' }}>
-                            {rectifyNum}
+                            {overCheck}
                           </div>
                         </div>
                       </Tooltip>
@@ -1389,6 +1386,7 @@ class GovernmentBigPlatform extends Component {
                         mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
                         center={center}
                         zoom={zoom}
+                        events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
                       >
                         {this.renderCompanyMarker()}
                         {this.renderInfoWindow()}
@@ -1396,7 +1394,7 @@ class GovernmentBigPlatform extends Component {
 
                       <MapSearch
                         style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-                        handleSelect={this.handleSelect}
+                        handleSelect={this.handleSearchSelect}
                       />
 
                       <Row className={styles.mapLegend}>
@@ -1453,12 +1451,19 @@ class GovernmentBigPlatform extends Component {
                           return (
                             <div
                               className={styles.scrollCol1}
+                              key={item.id}
                               onClick={() => {
                                 this.goCompany(item.id);
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              {item.name}
+                              <Ellipsis
+                                lines={1}
+                                style={{ maxWidth: '72%', margin: '0 auto' }}
+                                tooltip
+                              >
+                                {item.name}
+                              </Ellipsis>
                             </div>
                           );
                         })}
@@ -1477,12 +1482,19 @@ class GovernmentBigPlatform extends Component {
                           return (
                             <div
                               className={styles.scrollCol1}
+                              key={item.id}
                               onClick={() => {
                                 this.goCompany(item.id);
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              {item.name}
+                              <Ellipsis
+                                lines={1}
+                                style={{ maxWidth: '72%', margin: '0 auto' }}
+                                tooltip
+                              >
+                                {item.name}
+                              </Ellipsis>
                             </div>
                           );
                         })}
@@ -1521,12 +1533,19 @@ class GovernmentBigPlatform extends Component {
                           return (
                             <div
                               className={styles.scrollCol1}
+                              key={item.id}
                               onClick={() => {
                                 this.goCompany(item.id);
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              {item.name}
+                              <Ellipsis
+                                lines={1}
+                                style={{ maxWidth: '72%', margin: '0 auto' }}
+                                tooltip
+                              >
+                                {item.name}
+                              </Ellipsis>
                             </div>
                           );
                         })}
@@ -1571,7 +1590,7 @@ class GovernmentBigPlatform extends Component {
                           <tbody>
                             {fulltimeWorkerList.map((item, index) => {
                               return (
-                                <tr>
+                                <tr key={item.phone_number}>
                                   <td>
                                     <span className={styles.tableOrder}>{index + 1}</span>
                                     {item.user_name}
@@ -1623,13 +1642,13 @@ class GovernmentBigPlatform extends Component {
                           <tbody>
                             {overRectifyCompany.map((item, index) => {
                               return (
-                                <tr>
+                                <tr key={item.companyId}>
                                   <td style={{ textAlign: 'left', paddingLeft: '10px' }}>
                                     {index + 1}
                                   </td>
                                   <td>
                                     <span
-                                      className={styles.cursorSpan}
+                                      style={{ cursor: 'pointer' }}
                                       onClick={() => {
                                         this.goCompany(item.companyId);
                                       }}
@@ -1691,46 +1710,26 @@ class GovernmentBigPlatform extends Component {
                           <tbody>
                             {dangerCompany.map(item => {
                               return (
-                                <tr>
+                                <tr key={item.id}>
                                   <td>
                                     {item.company_type === '1' && (
                                       <span className={styles.keyComMark} />
                                     )}
                                   </td>
-                                  <td>{item.name}</td>
+                                  <td>
+                                    <span
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={() => {
+                                        this.goCompany(item.id);
+                                      }}
+                                    >
+                                      {item.name}
+                                    </span>
+                                  </td>
                                   <td>{item.total_danger}</td>
                                 </tr>
                               );
                             })}
-                            {/* <tr>
-                              <td>
-                                <span className={styles.keyComMark} />
-                                无锡晶安司
-                              </td>
-                              <td>131</td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <span className={styles.keyComMark} />
-                                无锡晶安智慧科技有限公司
-                              </td>
-                              <td>24</td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <span className={styles.keyComMark} />
-                                无锡晶安智慧科技有限公司
-                              </td>
-                              <td>45</td>
-                            </tr>
-                            <tr>
-                              <td>无锡晶安智限公司</td>
-                              <td>7</td>
-                            </tr>
-                            <tr>
-                              <td>无锡晶安智慧科技有限公司</td>
-                              <td>578</td>
-                            </tr> */}
                           </tbody>
                         </table>
                       </div>

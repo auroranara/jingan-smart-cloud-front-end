@@ -1014,7 +1014,7 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyType}>
                 {getFieldDecorator('companyType', {
-                  initialValue: id ? CompanyTypes[companyType] : companyType,
+                  initialValue: id ? companyType : undefined,
                   rules: [{ required: true, message: '请选择单位类型' }],
                 })(
                   <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>

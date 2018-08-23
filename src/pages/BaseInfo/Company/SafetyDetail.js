@@ -88,12 +88,17 @@ function renderDsp(items, detail, menus) {
           break;
         case 'companyLogo':
         case 'reachGradeAccessory':
-        case 'safetyFourPicture':
           val = (
             <a target="_blank" rel="noopener noreferrer" href={detail[`${name}Web`]}>
               已上传文件链接
             </a>
           );
+          break;
+        case 'safetyFourPicture':
+          const list = isJSONStr(v) ? JSON.parse(v) : [];
+          val = list.map(({ id, fileName, webUrl }) =><a key={id} style={{ marginRight: 10 }} target="_blank" rel="noopener noreferrer" href={webUrl}>{fileName}</a>)
+          if (!list.length)
+            val = '暂无信息';
           break;
         default:
           // console.log(name, menus[name], detail[name], menus[name].find(item => item.value === detail[name]));
@@ -106,6 +111,12 @@ function renderDsp(items, detail, menus) {
       </Description>
     );
   });
+}
+
+function isJSONStr(str) {
+  const first = str[0];
+  const last = str[str.length - 1];
+  return first === '[' && last === ']' || first === '{' && last === '}';
 }
 
 @connect(({ safety }) => ({ safety }))
