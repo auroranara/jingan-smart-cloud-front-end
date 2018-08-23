@@ -29,7 +29,7 @@ export default class AlarmSection extends PureComponent {
             <Input
               onPressEnter={this.handleSearch}
               ref={node => { this.node = node; }}
-              placeholder="请输入单位名称或地址"
+              placeholder="请输入单位名称"
               style={{ background: 'rgba(9,103,211,0.2)', border: 'none', color: '#FFF' }}
             />
           </Col>
