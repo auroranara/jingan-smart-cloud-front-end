@@ -77,13 +77,7 @@ export default {
   theme: {
     'card-actions-background': '#f5f8fa',
   },
-  // entry: 'src/index.js', // TODO remove
-  // extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
-  // env: {
-  //   development: {
-  //     extraBabelPlugins: ['dva-hmr'],
-  //   },
-  // },
+  runtimePublicPath: true,
   externals: {
     '@antv/data-set': 'DataSet',
     rollbar: 'rollbar',
