@@ -349,9 +349,7 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'queryOptions',
-          payload: {
-            data: response.data,
-          },
+          payload: response.data.companyType,
         });
         if (success) {
           success(response.data);
@@ -478,14 +476,12 @@ export default {
     queryOptions(
       state,
       {
-        payload: {
-          data: { companyType },
-        },
+        payload: companyTypes,
       }
     ) {
       return {
         ...state,
-        companyTypes: companyType,
+        companyTypes: companyTypes,
       };
     },
   },
