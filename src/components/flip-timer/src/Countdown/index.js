@@ -25,7 +25,7 @@ class Countdown extends React.Component {
   componentDidMount() {}
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    return this.props !== prevProps && this.props.start;
+    return this.props !== prevProps.start && this.props.start;
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
