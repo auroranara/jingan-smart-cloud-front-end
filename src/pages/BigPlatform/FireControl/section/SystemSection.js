@@ -2,9 +2,9 @@ import React from 'react';
 import { Col, Row } from 'antd';
 
 import FcSection from './FcSection';
-import ProgressBar from './components/ProgressBar';
+import ProgressBar from '../components/ProgressBar';
 import styles from './SystemSection.less';
-import hostIcon from './host.png';
+import hostIcon from '../img/host.png';
 
 function UnitCard(props) {
   const { company, hostNum } = props;
@@ -34,7 +34,8 @@ export default function SystemSection(props) {
         </Col>
         <Col span={12}>
           <div className={styles.right}>
-            <span className={styles.hostIcon} style={{ background: `url(${hostIcon})`, backgroundSize: 'cover' }} />
+            {/* <span className={styles.hostIcon} /> */}
+            <span className={styles.hostIcon} style={{ backgroundImage: `url(${hostIcon})` }} />
             <p className={styles.host}>消防主机</p>
             <p className={styles.hostNumber}>{deviceCount}</p>
           </div>

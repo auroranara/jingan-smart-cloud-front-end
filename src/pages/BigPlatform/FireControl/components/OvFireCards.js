@@ -3,7 +3,7 @@ import { Row, Col } from 'antd';
 
 import OvCard from './OvCard';
 import styles from './OvFireCards.less';
-import fireIcon from './ovFire.png';
+import fireIcon from '../img/ovFire.png';
 
 export default function OvFireCards(props) {
   const { todayCount, thisWeekCount, thisMonthCount, style={} } = props;
@@ -13,7 +13,8 @@ export default function OvFireCards(props) {
       <Row gutter={20} style={{ margin: 0, height: '100%' }}>
         <Col style={{ height: '100%'}} span={6}>
           <div className={styles.container}>
-            <span className={styles.icon} style={{ background: `url(${fireIcon})`, backgroundSize: 'cover' }} />
+            {/* <span className={styles.icon} /> */}
+            <span className={styles.icon} style={{ backgroundImage: `url(${fireIcon})` }} />
             <p className={styles.title}>火警数量</p>
           </div>
         </Col>
