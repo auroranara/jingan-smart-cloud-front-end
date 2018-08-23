@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
 import { Button, Icon } from 'antd';
+import debounce from 'lodash/debounce';
 
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
@@ -29,15 +30,27 @@ function genBackgrondStyle(url) {
 }
 
 export default class FireControlMap extends PureComponent {
-  state = {
-    center: [location.x, location.y],
-    zoom: location.zoom,
-    selected: undefined,
-    showInfo: false,
-  };
+  constructor(props) {
+    super(props);
+    this.debouncedFetchData = debounce(this.searchFetchData, 500);
+    this.state = {
+      center: [location.x, location.y],
+      zoom: location.zoom,
+      selected: undefined,
+      showInfo: false,
+      searchValue: '',
+      selectList: [],
+    };
+  }
+
+  newList = [];
 
   back = () => {
-    this.setState({ zoom: location.zoom, selected: undefined });
+    this.setState({
+      zoom: location.zoom,
+      selected: undefined,
+      searchValue: '',
+    });
   };
 
   selectCompany = item => {
@@ -70,9 +83,10 @@ export default class FireControlMap extends PureComponent {
         }}
       >
         <img
+          className={styles.dotIcon}
           src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
           alt=""
-          style={{ display: 'block', width: '26px', height: '34px' }}
+          // style={{ display: 'block', width: '30px', height: '30px' }}
         />
       </Marker>
     );
@@ -160,14 +174,35 @@ export default class FireControlMap extends PureComponent {
     );
   }
 
+  searchFetchData = value => {
+    // console.log('fetchData', value);
+    // const { list } = this.props;
+    const list = this.newList;
+    const selectList = value ? list.filter(item => item.name.includes(value)) : [];
+    console.log('fetchData selectList', selectList);
+    this.setState({
+      searchValue: value,
+      selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
+    });
+  };
+
+  handleInputChange = (value, { props: { label } }) => {
+    // console.log('change', value);
+    this.debouncedFetchData(value);
+    this.setState({
+      searchValue: value,
+    });
+  };
+
   render() {
-    const { center, zoom, selected } = this.state;
+    const { center, zoom, selected, searchValue, selectList } = this.state;
     const {
       alarm: { list = [] },
       map: { companyBasicInfoList = [], totalNum, fireNum },
     } = this.props;
 
     let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
+    this.newList = newList;
 
     return (
       <FcSection style={{ padding: 8 }} className={styles.map}>
@@ -193,6 +228,9 @@ export default class FireControlMap extends PureComponent {
             className={styles.search}
             style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
             list={newList}
+            selectList={selectList}
+            value={searchValue}
+            handleChange={this.handleInputChange}
             handleSelect={this.handleSelect}
           />
           {selected && this.renderBackButton()}

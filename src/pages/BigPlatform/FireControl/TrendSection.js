@@ -85,7 +85,19 @@ export default class TrendSection extends PureComponent {
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
-        // formatter: '{a0}:{c0}<br/>{a1}:{c1}<br/>{a2}:{c2}',
+        formatter(params) {
+          return params.reduce(function (prev, next, index) {
+            const { data, marker, seriesName } = next;
+            switch(index) {
+              case 0:
+                return `${prev}${data[0]}<br/>${marker}${seriesName}: ${data[index + 1]}`;
+              case data.length - 2:
+                return `${prev}<br/>${marker}${seriesName}: ${data[index + 1]}%`;
+              default:
+                return `${prev}<br/>${marker}${seriesName}: ${data[index + 1]}`;
+            }
+          }, '');
+        },
       },
       dataset: { source },
       xAxis: {
