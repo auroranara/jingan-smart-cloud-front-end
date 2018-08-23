@@ -179,7 +179,7 @@ export default class FireControlMap extends PureComponent {
     // const { list } = this.props;
     const list = this.newList;
     const selectList = value ? list.filter(item => item.name.includes(value)) : [];
-    console.log('fetchData selectList', selectList);
+    // console.log('fetchData selectList', selectList);
     this.setState({
       searchValue: value,
       selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
