@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 
-import bg from './title.png';
+// import bg from './title.png';
 import styles from './Head.less';
 
 const DAY = ['天', '一', '二', '三', '四', '五', '六'];
@@ -32,7 +32,8 @@ export default class Head extends PureComponent {
     const hour = `${addZero(time.getHours())}:${addZero(time.getMinutes())}:${addZero(time.getSeconds())}`;
 
     return (
-      <div className={styles.container} style={{ backgroundImage: `url(${bg})` }}>
+      <div className={styles.container}>
+      {/* <div className={styles.container} style={{ backgroundImage: `url(${bg})` }}> */}
         <h1 className={styles.h}>{title}</h1>
         <p className={styles.time}>
           <span className={styles.date}>{date}</span>

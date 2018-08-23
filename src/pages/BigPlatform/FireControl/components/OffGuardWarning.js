@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Col, Row, Button } from 'antd';
-import FcSection from '../FcSection';
 import styles from './OffGuardWarning.less';
 
 function UnitCard() {

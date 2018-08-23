@@ -1,8 +1,8 @@
 import React from 'react';
 
 import FcSection from './FcSection';
-import LookingUp from './components/LookingUp';
-import OffGuardWarning from './components/OffGuardWarning';
+import LookingUp from '../components/LookingUp';
+import OffGuardWarning from '../components/OffGuardWarning';
 import styles from './UnitLookUpBack.less';
 
 const LOOKING_UP = 'lookingUp';

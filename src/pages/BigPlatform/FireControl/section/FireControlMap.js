@@ -5,11 +5,14 @@ import debounce from 'lodash/debounce';
 
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
-import MapSearch from './components/MapSearch';
-import locateIcon from './mapLocate.png';
-import personIcon from './mapPerson.png';
-import statusIcon from './mapFire.png';
-import status1Icon from './mapFire1.png';
+import MapSearch from '../components/MapSearch';
+
+import mapDot from '../img/mapDot.png';
+import mapAlarmDot from '../img/mapAlarmDot.png';
+import locateIcon from '../img/mapLocate.png';
+import personIcon from '../img/mapPerson.png';
+import statusIcon from '../img/mapFire.png';
+import status1Icon from '../img/mapFire1.png';
 
 const NO_DATA = '暂无信息';
 
@@ -26,7 +29,7 @@ function handleCompanyBasicInfoList(alarmList, companyList) {
 }
 
 function genBackgrondStyle(url) {
-  return { background: `url(${url})`, backgroundSize: 'cover' };
+  return { backgroundImage: `url(${url})` };
 }
 
 export default class FireControlMap extends PureComponent {
@@ -84,7 +87,8 @@ export default class FireControlMap extends PureComponent {
       >
         <img
           className={styles.dotIcon}
-          src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
+          src={item.isFire ? mapAlarmDot : mapDot}
+          // src={`http://data.jingan-china.cn/v2/big-platform/fire-control/gov/${item.isFire ? 'mapAlarmDot' : 'mapDot'}.png`}
           alt=""
           // style={{ display: 'block', width: '30px', height: '30px' }}
         />
@@ -138,16 +142,19 @@ export default class FireControlMap extends PureComponent {
       >
         <h3 className={styles.companyName}>{name}</h3>
         <p className={styles.address}>
+          {/* <span className={styles.locateIcon} /> */}
           <span className={styles.locateIcon} style={genBackgrondStyle(locateIcon)} />
           {address}
         </p>
         <p className={styles.safety}>
+          {/* <span className={styles.personIcon} /> */}
           <span className={styles.personIcon} style={genBackgrondStyle(personIcon)} />
           <span className={styles.safetyName}>{safetyName}</span>
           <span>{safetyPhone}</span>
         </p>
         <p className={isFire ? styles.statusFire : styles.status}>
-          <span className={styles.statusIcon} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
+          {/* <span className={isFire ? styles.status1Icon : styles.statusIcon} /> */}
+          <span className={styles.statusIconBase} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
           {status}
         </p>
         <Icon
