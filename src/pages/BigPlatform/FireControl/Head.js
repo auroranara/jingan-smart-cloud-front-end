@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 
-// import bg from './title.png';
+// import bg from './img/title.png';
 import styles from './Head.less';
 
 const DAY = ['天', '一', '二', '三', '四', '五', '六'];
