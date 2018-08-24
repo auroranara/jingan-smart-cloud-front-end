@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Col, Row } from 'antd';
+import { Button, Col, Row } from 'antd';
 
 import styles from './Government.less';
 import Head from './Head';
 import FcModule from './FcModule';
+import FcMultiRotateModule from './FcMultiRotateModule';
 import FcSection from './section/FcSection';
 import OverviewSection from './section/OverviewSection';
 import AlarmSection from './section/AlarmSection';
@@ -15,7 +16,8 @@ import FireControlMap from './section/FireControlMap';
 // import bg from './bg.png';
 
 import UnitLookUp from './section/UnitLookUp';
-import UintLookUpBack from './section/UintLookUpBack';
+import UnitLookUpBack from './section/UnitLookUpBack';
+import UnitLookUpReverse from './section/UnitLookUpReverse';
 
 const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
@@ -26,14 +28,15 @@ const DELAY = 2000;
 @connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
   state = {
-    isLookUpRotated: false,
+    showReverse: false, // 假的页面正反面，只是用来判断是否翻转后显示火警或从火警返回
+    isLookUpRotated: false, // 判断单位查岗页面翻转，真正的页面正反面
     lookUpShow: LOOKING_UP,
     startLookUp: false,
   };
 
   componentDidMount() {
     this.initFetch();
-    this.timer = setInterval(this.polling, DELAY);
+    // this.timer = setInterval(this.polling, DELAY);
   }
 
   componentWillUnmount() {
@@ -67,15 +70,19 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   handleClickLookUp = () => {
-    this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true, startLookUp: true });
+    this.setState(({ isLookUpRotated }) => ({ lookUpShow: LOOKING_UP, isLookUpRotated: !isLookUpRotated, startLookUp: true }));
   };
 
   handleClickOffGuard = () => {
-    this.setState({ lookUpShow: OFF_GUARD, isLookUpRotated: true });
+    this.setState(({ isLookUpRotated }) => ({ lookUpShow: OFF_GUARD, isLookUpRotated: !isLookUpRotated }));
   };
 
   handleUnitLookUpRotateBack = () => {
-    this.setState({ isLookUpRotated: false, startLookUp: false });
+    this.setState(({ isLookUpRotated }) => ({ isLookUpRotated: !isLookUpRotated }));
+  };
+
+  rotateAll = () => {
+    this.setState(({ isLookUpRotated, showReverse }) => ({ isLookUpRotated: !isLookUpRotated, showReverse: !showReverse }));
   };
 
   render() {
@@ -84,7 +91,7 @@ export default class FireControlBigPlatform extends PureComponent {
       dispatch,
     } = this.props;
 
-    const { isLookUpRotated, lookUpShow, startLookUp } = this.state;
+    const { isLookUpRotated, lookUpShow, startLookUp, showReverse } = this.state;
 
     const handleRotateMethods = {
       handleClickLookUp: this.handleClickLookUp,
@@ -101,31 +108,31 @@ export default class FireControlBigPlatform extends PureComponent {
           gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}
         >
           <Col span={6} style={HEIGHT_PERCNET}>
-            <FcModule className={styles.overview}>
+            <FcModule className={styles.overview} isRotated={showReverse}>
               <OverviewSection ovData={overview} />
               <FcSection title="辖区概况反面" isBack />
             </FcModule>
             <div className={styles.gutter1} />
-            <FcModule className={styles.alarmInfo}>
-              <AlarmSection alarmData={alarm} dispatch={dispatch} />
-              <FcSection title="警情信息反面" isBack />
+            <FcModule className={styles.alarmInfo} isRotated={showReverse}>
+              <AlarmSection title="警情信息" data={alarm} dispatch={dispatch} reverse={this.rotateAll} />
+              <FcSection title="警情信息反面" isBack><Button onClick={this.rotateAll}>BACK</Button></FcSection>
             </FcModule>
           </Col>
           <Col span={12} style={HEIGHT_PERCNET}>
             <FcModule className={styles.map}>
-              <FireControlMap map={map} alarm={alarm} />
+              <FireControlMap map={map} alarm={alarm} handleRotate={this.rotateAll} />
               <FcSection title="Map Reverse" isBack />
             </FcModule>
             <div className={styles.gutter2} />
             <Row className={styles.center}>
               <Col span={12} className={styles.centerLeft}>
-                <FcModule style={{ height: '100%' }}>
+                <FcModule style={{ height: '100%' }} isRotated={showReverse}>
                   <TrendSection trendData={trend} />
                   <FcSection title="火警趋势反面" isBack />
                 </FcModule>
               </Col>
               <Col span={12} className={styles.centerRight}>
-                <FcModule style={{ height: '100%' }}>
+                <FcModule style={{ height: '100%' }} isRotated={showReverse}>
                   <GridDangerSection dangerData={danger} />
                   <FcSection title="网格隐患巡查反面" isBack />
                 </FcModule>
@@ -133,7 +140,7 @@ export default class FireControlBigPlatform extends PureComponent {
             </Row>
           </Col>
           <Col span={6} style={HEIGHT_PERCNET}>
-            <FcModule className={styles.inspect} isRotated={isLookUpRotated}>
+            {/* <FcModule className={styles.inspect} isRotated={isLookUpRotated}>
               <UnitLookUp handleRotateMethods={handleRotateMethods} />
               <UintLookUpBack
                 handleRotateBack={this.handleUnitLookUpRotateBack}
@@ -141,9 +148,21 @@ export default class FireControlBigPlatform extends PureComponent {
                 isLookUpRotated={isLookUpRotated}
                 startLookUp={startLookUp}
               />
-            </FcModule>
+            </FcModule> */}
+            <FcMultiRotateModule
+              className={styles.inspect}
+              isRotated={isLookUpRotated}
+              showReverse={showReverse}
+              front={<UnitLookUp handleRotateMethods={handleRotateMethods} />}
+              back={<UnitLookUpBack
+                handleRotateBack={this.handleUnitLookUpRotateBack}
+                lookUpShow={lookUpShow}
+                startLookUp={startLookUp}
+              />}
+              reverse={<UnitLookUpReverse isBack={isLookUpRotated} />}
+            />
             <div className={styles.gutter3} />
-            <FcModule className={styles.system}>
+            <FcModule className={styles.system} isRotated={showReverse}>
               <SystemSection sysData={sys} />
               <FcSection title="系统接入情况反面" isBack />
             </FcModule>

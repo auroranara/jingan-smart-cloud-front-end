@@ -49,14 +49,14 @@ export default class AlarmSection extends PureComponent {
   }
 
   render() {
-    const { alarmData: { list = [] } } = this.props;
+    const { data: { list = [] }, title, reverse } = this.props;
 
-    const cards = list.map(({ id, name, searchArea, saveTime }) => <AlarmCard key={id} company={name} address={searchArea} time={saveTime} />);
+    const cards = list.map(({ id, name, searchArea, saveTime }) => <AlarmCard key={id} company={name} address={searchArea} time={saveTime} onClick={reverse} />);
     const noCard = <div className={styles.noCard} />;
     // const noCard = <div className={styles.noCard} style={{ backgroundImage: `url(${noAlarm})`}} />;
 
     return (
-      <FcSection title="警情信息" style={{ padding: '0 15px 15px' }}>
+      <FcSection title={title} style={{ padding: '0 15px 15px' }}>
         <Row gutter={6} style={{ marginBottom: 20 }}>
           <Col span={18}>
             <Input

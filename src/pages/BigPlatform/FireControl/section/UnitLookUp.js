@@ -67,7 +67,7 @@ export default class UnitLookUp extends Component {
     const { handleClickLookUp, handleClickOffGuard } = handleRotateMethods;
 
     return (
-      <FcSection title="单位查岗">
+      <FcSection title="单位查岗" >
         <section className={styles.main}>
           <div className={styles.top}>
             <Col span={8}>

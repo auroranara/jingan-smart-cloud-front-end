@@ -14,7 +14,11 @@ export default class AlarmHandle extends Component {
         <Row>
           <div className={styles.top}>
             <Timeline pending="" reverse={this.state.reverse}>
-              <Timeline.Item />
+              <Timeline.Item>
+                <span />
+                <span />
+                <p />
+              </Timeline.Item>
             </Timeline>
           </div>
         </Row>
