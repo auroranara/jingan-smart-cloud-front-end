@@ -34,8 +34,9 @@ const getEmptyData = () => {
 };
 
 @connect(
-  ({ video, loading }) => ({
+  ({ video, loading, user }) => ({
     video,
+    user,
     loading: loading.models.video,
   })
 )
@@ -128,7 +129,7 @@ export default class VideoPermissionList extends PureComponent {
 
   // 搜索栏
   renderQuery() {
-    const { form: { getFieldDecorator } } = this.props
+    const { form: { getFieldDecorator }, user: { currentUser: { unitType } = {} } } = this.props
     return (
       <Card>
         <Form layout="inline">
@@ -143,9 +144,10 @@ export default class VideoPermissionList extends PureComponent {
           <FormItem>
             <Button onClick={this.handleReset}>重置</Button>
           </FormItem>
-          <FormItem style={{ float: 'right' }}>
-            <Button onClick={this.handleToAdd} type="primary">新增</Button>
-          </FormItem>
+          {unitType && unitType === 3 && (
+            <FormItem style={{ float: 'right' }}>
+              <Button onClick={this.handleToAdd} type="primary">新增</Button>
+            </FormItem>)}
         </Form >
       </Card>
     )
