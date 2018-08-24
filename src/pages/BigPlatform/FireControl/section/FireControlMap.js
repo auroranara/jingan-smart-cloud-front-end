@@ -49,6 +49,9 @@ export default class FireControlMap extends PureComponent {
   newList = [];
 
   back = () => {
+    const { handleRotate } = this.props;
+    handleRotate();
+
     this.setState({
       zoom: location.zoom,
       selected: undefined,
@@ -57,6 +60,9 @@ export default class FireControlMap extends PureComponent {
   };
 
   selectCompany = item => {
+    const { handleRotate } = this.props;
+    handleRotate();
+
     const { latitude, longitude } = item;
     this.setState({
       center: [longitude, latitude],
