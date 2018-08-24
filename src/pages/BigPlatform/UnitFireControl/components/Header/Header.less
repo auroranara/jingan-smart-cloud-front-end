@@ -1,0 +1,52 @@
+/*********************************** 大屏头部 *************************************/
+/* 容器 */
+.header {
+  flex: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10%;
+  background: url('http://data.jingan-china.cn/v2/big-platform/safety/com/title-bg.png') no-repeat 48.333333% center / 90% 100%;
+}
+/* 标题 */
+.headerTitle {
+  font-size: 48px;
+}
+.mixTimeAndExtra() {
+
+}
+/* 当前时间 */
+.headerTime {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding-right: 24px;
+  width: 25%;
+  line-height: 2;
+  font-size: 18px;
+  text-align: center;
+}
+/* 额外内容 */
+.extraContent {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding-left: 24px;
+  width: 25%;
+  line-height: 2;
+  font-size: 18px;
+  text-align: center;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+  .headerTitle {
+    font-size: 40px;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .headerTitle {
+    font-size: 32px;
+  }
+}
