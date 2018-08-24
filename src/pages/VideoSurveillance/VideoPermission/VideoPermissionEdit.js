@@ -134,7 +134,13 @@ export default class VideoPermissionEdit extends PureComponent {
   }
 
   handleSelect = value => {
-    this.setState({ selectedCompanyId: value })
+    const { dispatch } = this.props
+    this.setState({ selectedCompanyId: value }, () => {
+      dispatch({
+        type: 'video/fetchDepartmentList',
+        payload: { companyId: value },
+      })
+    })
   }
 
   handleClose = () => {
