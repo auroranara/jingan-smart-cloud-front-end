@@ -2,7 +2,7 @@ import { stringify } from 'qs';
 import request from 'utils/request';
 
 // const URL_PREFIX = '/eye/api';
-const URL_PREFIX = 'acloud_new/v2/video';
+const URL_PREFIX = '/acloud_new/v2/video';
 
 // 获取单位树
 export async function queryFolderTree(params) {
@@ -43,7 +43,7 @@ export async function queryVideoUrl(params) {
 
 // 视频树逐层获取数据
 export async function fetchVideoTree(params) {
-  return request(`/acloud_new/v2/video/api/getTree?${stringify(params) || ''}`)
+  return request(`/acloud_new/v2/video/api/getTree?${stringify(params) || ''}`);
 }
 
 // 保存视频权限
@@ -51,15 +51,15 @@ export async function bindVodeoPermission(params) {
   return request('/acloud_new/v2/video/api/bindVideo', {
     method: 'POST',
     body: params,
-  })
+  });
 }
 
 // 获取企业列表（视频权限）
 export async function fetchCompanyList(params) {
-  return request(`/acloud_new/v2/baseInfo/eyeCompanyList?${stringify(params)}`)
+  return request(`/acloud_new/v2/baseInfo/eyeCompanyList?${stringify(params)}`);
 }
 
 // 获取企业下拉列表
 export async function fetchCompanyOptions(params) {
-  return request(`/acloud_new/v2/baseInfo/eyeCompanySelect?${stringify(params)}`)
+  return request(`/acloud_new/v2/baseInfo/eyeCompanySelect?${stringify(params)}`);
 }
