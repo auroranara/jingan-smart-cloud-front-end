@@ -1,55 +1,54 @@
 import React, { PureComponent } from 'react';
 import Select, { Option } from 'rc-select';
 import 'rc-select/assets/index.css';
-import debounce from 'lodash/debounce';
 import styles from './MapSearch.less';
 
 const Input = props => <input {...props} />;
 
 class MapSearch extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: '',
-      selectList: [],
-    };
-    this.fetchData = debounce(this.fetchData, 500);
-  }
+  state = { selectedItem: {} };
 
-  onSelect = (value, { props: { label } }) => {
-    this.jump(label);
+  onSelect = (value, option) => {
+    const { handleSelect } = this.props;
+    const { props: { label } } = option;
+    handleSelect(label);
+    // console.log('select', value);
+    this.setState({ selectedItem: label });
   };
 
-  jump = item => {
-    this.props.handleSelect(item);
-  };
-
-  fetchData = value => {
-    const { list } = this.props;
-    const selectList = value ? list.filter(item => item.name.includes(value)) : [];
-    this.setState({
-      value: value,
-      selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
-    });
-  };
-
-  handleChange = (value, { props: { label } }) => {
-    this.fetchData(value);
-    this.setState({
-      value,
-    });
-  };
+  // jump = item => {
+  //   const { methods: { handleSelect } } = this.props;
+  //   handleSelect(item);
+  // };
 
   render() {
-    const { style } = this.props;
-    const { selectList } = this.state;
+    const { selectList, value, style, handleChange } = this.props;
+    const { selectedItem: { id, name } } = this.state;
     const options = selectList.map(item => {
+      const { name } = item;
+      let children = name;
+      // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
+      if (name.includes(value)) {
+        const [front, end] = name.split(value);
+        children = [front, <span className={styles.highlight}>{value}</span>, end];
+      }
+
       return (
-        <Option key={item.id} label={item}>
-          {item.name}
+        <Option key={item.id} label={item} style={{ color: '#FFF' }}>
+          {children}
         </Option>
       );
     });
+
+    // console.log('render value', value);
+    // console.log('render selectList', selectList);
+    // console.log('render options', options);
+    /* Select中的Option <Option key={id} value={id}>xxx</Option>
+       实际上应该设置的是value值，当Option中需要设置key时，应该保证与value值一致，此时可以省略设置value值，若不需要设置key时，就只需要设置value值
+       而onChange,onSelect事件中传入的value值都对应Option的value值，当把某个value值设置给Select时，Select会去找到其Options中具有该value值的Option
+       然后将<Option>xx</Option>中的xx渲染到Select的input上，若xx不是一个字符串，将其转成字符串，若没有找到value值对应的Option，则直接在Select的input
+       中显示该value值
+    */
     return (
       <div className={styles.mapSearchMain}>
         <div>
@@ -57,13 +56,16 @@ class MapSearch extends PureComponent {
             style={{ width: 300, ...style }}
             combobox
             optionLabelProp="children"
-            value={this.state.value}
+            value={value}
+            // 这里就是最后判断一下，若不是自己输入的字符串，而是点击选中之后的值，则为一个id，将其对应的企业名字name渲染出来即可，不然会把对应Option.children
+            // [front, <span />, end]转成字符串 'compnanyName,[Object object],',显示在Select的input中
+            // value={id === value ? name : value}
             placeholder="单位名称"
             defaultActiveFirstOption={false}
             getInputElement={() => <Input />}
             showArrow={false}
             notFoundContent=""
-            onChange={this.handleChange}
+            onChange={handleChange}
             onSelect={this.onSelect}
             filterOption={false}
           >

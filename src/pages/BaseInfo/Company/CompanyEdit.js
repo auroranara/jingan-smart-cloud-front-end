@@ -34,7 +34,6 @@ import Safety from './Safety';
 const { TextArea, Search } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
-const CompanyTypes = ['', '重点单位', '一般单位', '九小场所'];
 const {
   home: homeUrl,
   company: { list: listUrl, edit: editUrl },
@@ -1014,12 +1013,12 @@ export default class CompanyDetail extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyType}>
                 {getFieldDecorator('companyType', {
-                  initialValue: id ? CompanyTypes[companyType] : companyType,
+                  initialValue: id ? companyType+'' : undefined,
                   rules: [{ required: true, message: '请选择单位类型' }],
                 })(
                   <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>
                     {companyTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
+                      <Option key={item.id+''}>
                         {item.label}
                       </Option>
                     ))}

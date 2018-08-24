@@ -1,10 +1,27 @@
 .root {
   height: 100%;
-  padding-bottom: 2px;
+  padding:0 12px 20px;
+  background-image: url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/5.png);
+  // background-image: url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/5.png?imageView2/1/w/1920/h/1080);
+  background-size: 100% 100%;
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgb(9, 103, 211);
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: rgba(2, 28, 64, 1);
+  }
 }
 
 .empty {
-  height: 2%;
+  height: 15px;
 }
 
 .overview {
@@ -57,18 +74,4 @@
 .system {
   height: 49%;
   // background: silver;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background: rgb(9, 103, 211);
-}
-
-::-webkit-scrollbar-track {
-  border-radius: 4px;
-  background: rgba(2, 28, 64, 1);
 }

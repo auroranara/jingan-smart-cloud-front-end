@@ -62,9 +62,12 @@ class GovernmentBigPlatform extends Component {
     },
     infoWindowShow: false,
     infoWindow: {
-      company_name: '',
+      companyId: '',
+      companyName: '',
       level: '',
       address: '',
+      longitude: 120.366011,
+      latitude: 31.544389,
     },
     areaHeight: 0,
     pieHeight: 0,
@@ -94,29 +97,6 @@ class GovernmentBigPlatform extends Component {
         });
       }, 1000);
     });
-
-    // setInterval(() => {
-    //   const { communityCom, comIn } = this.state;
-    //   if (communityCom) {
-    //     this.setState({
-    //       communityCom: !communityCom,
-    //     });
-    //     setTimeout(() => {
-    //       this.setState({
-    //         comIn: !comIn,
-    //       });
-    //     }, 225);
-    //   } else {
-    //     this.setState({
-    //       comIn: !comIn,
-    //     });
-    //     setTimeout(() => {
-    //       this.setState({
-    //         communityCom: !communityCom,
-    //       });
-    //     }, 225);
-    //   }
-    // }, 3000);
 
     dispatch({
       type: 'bigPlatform/fetchItemList',
@@ -276,9 +256,9 @@ class GovernmentBigPlatform extends Component {
     return location.map(company => {
       const position = this.analysisPointData(company.location);
       const level = company.level;
-      let offset = [-10, -10];
+      let offset = [-1, 17];
       if (level === 'A') {
-        offset = [-13, -13];
+        offset = [-5, 14];
       }
 
       return (
@@ -337,59 +317,39 @@ class GovernmentBigPlatform extends Component {
     };
   };
 
-  /* 标注渲染 */
+  // 弹窗渲染
   renderInfoWindow() {
-    const { label, infoWindowShow } = this.state;
-    let position = null;
-    position = {
-      longitude: label.longitude,
-      latitude: label.latitude,
+    const { infoWindowShow, infoWindow } = this.state;
+    const position = {
+      longitude: infoWindow.longitude,
+      latitude: infoWindow.latitude,
     };
     return (
       <InfoWindow
         position={position}
-        offset={[-5, -15]}
+        offset={[-7, 10]}
         isCustom={false}
         autoMove={false}
         visible={infoWindowShow}
-        events={{ close: this.handleHideLabel }}
+        events={{ close: this.handleHideInfoWindow }}
       >
-        {this.renderLabel()}
+        <div style={{ padding: '0 5px 0 13px' }} className={styles.companyLabel}>
+          <div>{infoWindow.companyName}</div>
+        </div>
       </InfoWindow>
     );
   }
 
-  renderLabel = () => {
-    const { infoWindow } = this.state;
-    return (
-      <div
-        style={{ cursor: 'pointer' }}
-        className={styles.companyLabel}
-        onClick={() => {
-          window.open(
-            `/acloud_new/#/big-platform/safety/company/${infoWindow.company_id}`,
-            '_blank'
-          );
-        }}
-      >
-        <div>{infoWindow.company_name}</div>
-        <div>
-          等级：
-          {infoWindow.level}
-        </div>
-        <div>
-          地址：
-          {infoWindow.address}
-        </div>
-      </div>
-    );
-  };
-
   handleIconClick = company => {
     const { dispatch } = this.props;
-    const { companyId } = this.state;
+    const { companyId, infoWindowShow, comInfo } = this.state;
     if (companyId === company.id) {
-      this.goComponent('comInfo');
+      if (!comInfo) {
+        this.goComponent('comInfo');
+      }
+      if (!infoWindowShow) {
+        this.setState({ infoWindowShow: true });
+      }
       return;
     }
     this.setState({
@@ -403,12 +363,16 @@ class GovernmentBigPlatform extends Component {
         month: moment().format('YYYY-MM'),
       },
       success: response => {
-        // this.setState({
-        //   label: company,
-        //   infoWindow: response,
-        //   infoWindowShow: true,
-        // });
         this.goComponent('comInfo');
+        this.setState({
+          infoWindowShow: true,
+          infoWindow: {
+            comapnyId: company.id,
+            longitude: company.longitude,
+            latitude: company.latitude,
+            companyName: response.companyMessage.companyName,
+          },
+        });
       },
     });
     // 特种设备
@@ -437,7 +401,7 @@ class GovernmentBigPlatform extends Component {
     });
   };
 
-  handleHideLabel = () => {
+  handleHideInfoWindow = () => {
     this.setState({
       infoWindowShow: false,
     });
@@ -748,6 +712,11 @@ class GovernmentBigPlatform extends Component {
   }
 
   goBack = () => {
+    if (this.state.comInfo) {
+      this.setState({
+        infoWindowShow: false,
+      });
+    }
     this.setState({
       comIn: false, // 接入单位统计
       keyCom: false, // 重点单位统计
@@ -764,7 +733,7 @@ class GovernmentBigPlatform extends Component {
   };
 
   goComponent = type => {
-    if (this.state[type]) return;
+    if (this.state[type] && type !== 'comInfo') return;
     const obj = {};
     obj[type] = true;
     this.setState({
@@ -890,8 +859,11 @@ class GovernmentBigPlatform extends Component {
   handleSearchSelect = ({ latitude, longitude, id }) => {
     this.setState({
       center: [longitude, latitude],
-      zoom: 18,
+      // zoom: 18,
     });
+    if (this.mapInstance) {
+      this.mapInstance.setZoom(18);
+    }
     this.handleIconClick({ latitude, longitude, id });
   };
 
@@ -1414,6 +1386,7 @@ class GovernmentBigPlatform extends Component {
                         mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
                         center={center}
                         zoom={zoom}
+                        events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
                       >
                         {this.renderCompanyMarker()}
                         {this.renderInfoWindow()}

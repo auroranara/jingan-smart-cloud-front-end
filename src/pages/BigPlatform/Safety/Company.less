@@ -90,9 +90,9 @@
           height: 50%;
 
           .companyInfo {
-            padding-left: 74px;
+            padding-left: 80px;
             line-height: 1;
-            background: url('@{comImgUrl}company-icon.png') no-repeat left center / 50px 50px;
+            background: url('@{comImgUrl}unitIcon.png') no-repeat 6px center / 50px 50px;
 
             .companyName {
               padding: 16px 0;
@@ -119,8 +119,8 @@
           .summaryHalf {
             flex: none;
             width: 50%;
-            padding-left: 74px;
-            background: transparent no-repeat left center / 50px 50px;
+            padding-left: 80px;
+            background: transparent no-repeat 6px center / 50px 50px;
             line-height: 1;
 
             .summaryText {
@@ -331,20 +331,27 @@
   cursor: pointer;
 }
 
+.safetyScroll {
+  height: calc(~"100% - 116");
+}
+.riskScroll {
+  height: calc(~"100% - 132px");
+}
 .innerBox {
-  height: calc(~"100% - 20px");
+  margin-right: -8px;
+  padding-right: 8px;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-::-webkit-scrollbar {
+.innerBox::-webkit-scrollbar {
   width: 8px;
 }
-::-webkit-scrollbar-thumb {
+.innerBox::-webkit-scrollbar-thumb {
   border-radius: 4px;
   background: rgb(9, 103, 211);
 }
-::-webkit-scrollbar-track {
+.innerBox::-webkit-scrollbar-track {
   border-radius: 4px;
   background: rgba(2, 28, 64, 1);
 }
@@ -385,7 +392,7 @@
 
           .companyMain {
             .companyInfo {
-              padding-left: 56px;
+              padding-left: 62px;
               background-size: 40px 40px;
 
               .companyName {
@@ -400,7 +407,7 @@
           }
           .summaryBottom {
             .summaryHalf {
-              padding-left: 56px;
+              padding-left: 62px;
               background-size: 40px 40px;
 
               .summaryText {
@@ -496,8 +503,11 @@
       }
     }
   }
-  .innerBox {
-    height: calc(~"100% - 18px");
+  .safetyScroll {
+    height: calc(~"100% - 102px");
+  }
+  .riskScroll {
+    height: calc(~"100% - 108px");
   }
 }
 
@@ -536,7 +546,7 @@
           }
           .companyMain {
             .companyInfo {
-              padding-left: 38px;
+              padding-left: 44px;
               background-size: 30px 30px;
 
               .companyName {
@@ -551,7 +561,7 @@
           }
           .summaryBottom {
             .summaryHalf {
-              padding-left: 38px;
+              padding-left: 44px;
               background-size: 30px 30px;
 
               .summaryText {
@@ -645,7 +655,10 @@
       }
     }
   }
-  .innerBox {
-    height: calc(~"100% - 16px");
+  .safetyScroll {
+    height: calc(~"100% - 82px");
+  }
+  .riskScroll {
+    height: calc(~"100% - 84px");
   }
 }
