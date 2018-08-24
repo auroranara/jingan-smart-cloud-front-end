@@ -356,7 +356,7 @@ export default class CompanyDetail extends PureComponent {
             createTime,
             groupName,
             businessScope,
-            companyType,
+            companyTypeLabel,
           },
         },
       },
@@ -371,7 +371,7 @@ export default class CompanyDetail extends PureComponent {
           </Description>
           {this.renderCompanyStatus()}
           <Description term={fieldLabels.companyType}>
-            {companyTypes[companyType] || getEmptyData()}
+            {companyTypeLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>

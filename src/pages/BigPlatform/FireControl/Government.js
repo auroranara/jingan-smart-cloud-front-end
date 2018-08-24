@@ -75,7 +75,7 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   handleUnitLookUpRotateBack = () => {
-    this.setState({ isLookUpRotated: false });
+    this.setState({ isLookUpRotated: false, startLookUp: false });
   };
 
   render() {
@@ -93,10 +93,13 @@ export default class FireControlBigPlatform extends PureComponent {
 
     return (
       <div className={styles.root}>
-      {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
+        {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
         <Head title="晶 安 智 慧 消 防 云 平 台" />
         <div className={styles.empty} />
-        <Row style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }} gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}>
+        <Row
+          style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
+          gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}
+        >
           <Col span={6} style={HEIGHT_PERCNET}>
             <FcModule className={styles.overview}>
               <OverviewSection ovData={overview} />
