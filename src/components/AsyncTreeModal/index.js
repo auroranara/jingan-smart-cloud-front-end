@@ -106,7 +106,7 @@ const checkChildren = ({ list, checkedKeys, isChecked, fieldNames }) => {
 const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
   const { id: idField, children: childrenField, title: titleField, isLeaf: isLeafField, disabled: disabledField } = fieldNames;
   return data.map((item) => {
-    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf, [disabledField]: disabled } = item;
+    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf, [disabledField]: disabled, isVideo } = item;
     if (children) {
       return (
         <TreeNode
@@ -135,9 +135,9 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
         title={title}
         key={key}
         dataRef={item}
-        isLeaf={!!isLeaf}
+        isLeaf={isVideo}
         selectable={false}
-        icon={<Icon type={isLeaf ? fileIcon : "folder"} />}
+        icon={<Icon type={isVideo ? fileIcon : "folder"} />}
       />
     );
   });
@@ -232,16 +232,12 @@ export default class AsyncTreeModal extends PureComponent {
   }
 
   /* 展开事件 */
-  handleExpand = (expandedKeys, a) => {
-    console.log(a, 'a');
-
+  handleExpand = (expandedKeys, { expanded, node }) => {
     const { saveParentStates } = this.props
-    setTimeout(() => {
-      this.setState({
-        autoExpandParent: false,
-      });
-      saveParentStates({ expandedKeys })
-    }, 500);
+    this.setState({
+      autoExpandParent: false,
+    });
+    expanded ? saveParentStates({ expandedKeys, expandedId: node.props.dataRef.id }) : saveParentStates({ expandedKeys })
   }
 
   /* check事件 */

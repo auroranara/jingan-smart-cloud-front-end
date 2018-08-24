@@ -29,6 +29,7 @@ export default class VideoPermissionEdit extends PureComponent {
     departmentId: '',
     selectedCompanyId: '',
     expandedKeys: [],
+    expandedId: '',
   }
 
   componentDidMount() {
@@ -117,7 +118,7 @@ export default class VideoPermissionEdit extends PureComponent {
     this.setState({
       ...params,
     })
-    console.log('parentstate', this.state);
+    console.log('params', params);
 
   }
 
@@ -175,7 +176,7 @@ export default class VideoPermissionEdit extends PureComponent {
   handleLoadData = (data, callback) => {
     const { dispatch, match: { params: { companyId } } } = this.props
     const { id } = data;
-    const { departmentId, checkedKeys, selectedCompanyId } = this.state
+    const { departmentId, checkedKeys, selectedCompanyId, expandedId, expandedKeys } = this.state
     this.setState({
       loading: true,
     });
@@ -199,7 +200,9 @@ export default class VideoPermissionEdit extends PureComponent {
             checked: [...checkedKeys.checked, ...checked],
             halfChecked: [...checkedKeys.halfChecked, ...halfChecked],
           },
-          expandedKeys: [...checkedKeys.halfChecked, ...halfChecked],
+          expandedKeys: expandedId ? [...new Set([...expandedKeys, expandedId])] : [...expandedKeys, ...halfChecked],
+          // expandedKeys: [...checkedKeys.halfChecked, ...halfChecked],
+          expandedId: '',
         });
       },
     })
