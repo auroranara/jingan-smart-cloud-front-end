@@ -5,11 +5,12 @@ import moment from 'moment';
 import classNames from 'classnames';
 import ReactEcharts from 'echarts-for-react';
 
-import Timer from './Components/Timer';
+// import Timer from './Components/Timer';
 import RiskImage from './Components/RiskImage.js';
 import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
+import Header from '../UnitFireControl/components/Header/Header';
 
 import styles from './Company.less';
 import riskStyles from './Risk.less';
@@ -508,16 +509,16 @@ class CompanyLayout extends PureComponent {
   /**
    * 头部
    */
-  renderHeader() {
-    return (
-      <header className={styles.mainHeader}>
-        <span className={styles.mainHeaderTitle}>晶 安 智 慧 安 全 云 平 台</span>
-        <div className={styles.mainHeaderTime}>
-          <Timer />
-        </div>
-      </header>
-    );
-  }
+  // renderHeader() {
+  //   return (
+  //     <header className={styles.mainHeader}>
+  //       <span className={styles.mainHeaderTitle}>晶 安 智 慧 安 全 云 平 台</span>
+  //       <div className={styles.mainHeaderTime}>
+  //         <Timer />
+  //       </div>
+  //     </header>
+  //   );
+  // }
 
   /**
    * 主体
@@ -927,7 +928,6 @@ class CompanyLayout extends PureComponent {
                   icon: pointIcon,
                   title: '风险点名称',
                   content: info.hdLetterInfo.pointName,
-                  render: value => <span style={{ fontSize: '16px' }}>{value}</span>,
                 },
                 {
                   icon: areaIcon,
@@ -1625,7 +1625,7 @@ class CompanyLayout extends PureComponent {
   render() {
     return (
       <div className={styles.main}>
-        {this.renderHeader() /* 头部 */}
+        <Header title="晶安智慧安全云平台" />
         {this.renderBody() /* 主体 */}
       </div>
     );

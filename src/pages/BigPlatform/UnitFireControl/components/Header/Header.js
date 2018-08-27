@@ -11,7 +11,7 @@ export default class App extends PureComponent {
    * props类型检测
    */
   static propTypes = {
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     extraContent: PropTypes.string,
   }
 
@@ -19,6 +19,7 @@ export default class App extends PureComponent {
    * props默认值
    */
   static defaultProps = {
+    title: '',
     extraContent: '',
   }
 
@@ -41,10 +42,11 @@ export default class App extends PureComponent {
    */
   render() {
     // 从props中获取标题
-    const { title, style, className, extraContent } = this.props;
+    const { title, extraContent, style, className } = this.props;
+    const headerClassName = className ? `${styles.header} ${className}` : styles.header;
 
     return (
-      <div className={`${styles.header} ${className}`} style={style}>
+      <div className={headerClassName} style={style}>
         <div className={styles.headerTitle}>{title.split('').join(' ')}</div>
         <div className={styles.headerTime}><CurrentTime /></div>
         {extraContent && <div className={styles.extraContent}>{extraContent}</div>}
