@@ -29,6 +29,7 @@ export default class VideoPermissionEdit extends PureComponent {
     departmentId: '',
     selectedCompanyId: '',
     expandedKeys: [],
+    expandedId: '',
   }
 
   componentDidMount() {
@@ -117,7 +118,7 @@ export default class VideoPermissionEdit extends PureComponent {
     this.setState({
       ...params,
     })
-    console.log('parentstate', this.state);
+    console.log('params', params);
 
   }
 
@@ -133,7 +134,13 @@ export default class VideoPermissionEdit extends PureComponent {
   }
 
   handleSelect = value => {
-    this.setState({ selectedCompanyId: value })
+    const { dispatch } = this.props
+    this.setState({ selectedCompanyId: value }, () => {
+      dispatch({
+        type: 'video/fetchDepartmentList',
+        payload: { companyId: value },
+      })
+    })
   }
 
   handleClose = () => {
@@ -175,7 +182,7 @@ export default class VideoPermissionEdit extends PureComponent {
   handleLoadData = (data, callback) => {
     const { dispatch, match: { params: { companyId } } } = this.props
     const { id } = data;
-    const { departmentId, checkedKeys, selectedCompanyId } = this.state
+    const { departmentId, checkedKeys, selectedCompanyId, expandedId, expandedKeys } = this.state
     this.setState({
       loading: true,
     });
@@ -199,7 +206,9 @@ export default class VideoPermissionEdit extends PureComponent {
             checked: [...checkedKeys.checked, ...checked],
             halfChecked: [...checkedKeys.halfChecked, ...halfChecked],
           },
-          expandedKeys: [...checkedKeys.halfChecked, ...halfChecked],
+          expandedKeys: expandedId ? [...new Set([...expandedKeys, expandedId])] : [...expandedKeys, ...halfChecked],
+          // expandedKeys: [...checkedKeys.halfChecked, ...halfChecked],
+          expandedId: '',
         });
       },
     })
@@ -254,13 +263,13 @@ export default class VideoPermissionEdit extends PureComponent {
         key: 'name',
         width: '50%',
       },
-      // {
-      //   title: '部门人数',
-      //   dataIndex: 'allUserCount',
-      //   key: 'allUserCount',
-      //   width: '20%',
-      //   align: 'center',
-      // },
+      {
+        title: '部门人数',
+        dataIndex: 'allUserCount',
+        key: 'allUserCount',
+        width: '20%',
+        align: 'center',
+      },
       {
         title: '视频权限',
         key: '视频权限',

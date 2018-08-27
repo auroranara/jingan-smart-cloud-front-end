@@ -22,6 +22,7 @@ const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 
 const DELAY = 2000;
+const { region } = global.PROJECT_CONFIG;
 
 @connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {

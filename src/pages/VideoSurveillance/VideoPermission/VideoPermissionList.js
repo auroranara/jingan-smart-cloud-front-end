@@ -6,6 +6,8 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import Ellipsis from 'components/Ellipsis';
 import styles from './VideoPermissionList.less'
 import VisibilitySensor from 'react-visibility-sensor';
+import { hasAuthority } from 'utils/customAuth';
+import codes from '../../../utils/codes';
 
 const FormItem = Form.Item
 const ListItem = List.Item
@@ -34,8 +36,9 @@ const getEmptyData = () => {
 };
 
 @connect(
-  ({ video, loading }) => ({
+  ({ video, loading, user }) => ({
     video,
+    user,
     loading: loading.models.video,
   })
 )
@@ -128,14 +131,16 @@ export default class VideoPermissionList extends PureComponent {
 
   // 搜索栏
   renderQuery() {
-    const { form: { getFieldDecorator } } = this.props
-    return (
+    const { form: { getFieldDecorator },
+      user: { currentUser: { unitType } = {} },
+    } = this.props
+    return (unitType && unitType === 3) ? (
       <Card>
         <Form layout="inline">
-          <FormItem>
+          <FormItem label="所属单位：">
             {getFieldDecorator('name', {
               getValueFromEvent: e => e.target.value.replace(/\s+/g, ''),
-            })(<Input style={{ width: '300px' }} placeholder="请输入所属单位"></Input>)}
+            })(<Input style={{ width: '300px' }} placeholder="请输入"></Input>)}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleSearch}>查询</Button>
@@ -148,11 +153,17 @@ export default class VideoPermissionList extends PureComponent {
           </FormItem>
         </Form >
       </Card>
-    )
+    ) : null
   }
 
   renderList() {
-    const { loading, video: { permission: { list } } } = this.props
+    const {
+      loading,
+      video: { permission: { list } },
+      user: { currentUser: { permissionCodes } },
+    } = this.props
+
+    const { videoSurveillance: { videoPermission: { edit } } } = codes
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -186,7 +197,7 @@ export default class VideoPermissionList extends PureComponent {
                   title={name}
                   className={styles.card}
                   actions={[
-                    <Link to={`/video-surveillance/video-permission/edit/${item.id}`}>编辑</Link>,
+                    <Link to={`/video-surveillance/video-permission/edit/${item.id}`} disabled={!hasAuthority(edit, permissionCodes)}>编辑</Link>,
                   ]}
                 /* extra={
                   <Button
