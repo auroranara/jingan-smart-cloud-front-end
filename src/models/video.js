@@ -11,7 +11,11 @@ export default {
     data: {
       list: [],
       tree: [],
-      pagination: {},
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 30,
+      },
     },
     detail: {},
     folderList: [],

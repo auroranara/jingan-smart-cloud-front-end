@@ -93,7 +93,7 @@ export default class VideoList extends PureComponent {
     dispatch({
       type: 'video/fetch',
       payload: {
-        currentPage: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
         folderId,
         ...formValues,
@@ -181,7 +181,7 @@ export default class VideoList extends PureComponent {
     });
 
     const params = {
-      currentPage: pagination.current,
+      pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filteredInfo,
@@ -269,7 +269,7 @@ export default class VideoList extends PureComponent {
           {/* <Col span={7}> */}
           <Col span={12}>
             <FormItem label="视频名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('folderName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           {/* <Col span={5}>
@@ -326,8 +326,8 @@ export default class VideoList extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      current: pagination ? pagination.currentPage : undefined,
       ...pagination,
+      current: pagination ? pagination.pageNum : 1,
     };
     const columns = [
       {
