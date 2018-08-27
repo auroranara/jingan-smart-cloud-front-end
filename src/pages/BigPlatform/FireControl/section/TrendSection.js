@@ -70,17 +70,21 @@ export default class TrendSection extends PureComponent {
   // };
 
   render() {
-    const { trendData: { list = [] } } = this.props;
+    const { data: { list = [] }, title, isBack=false } = this.props;
     const source = handleSource(list);
     // const source = handleSource(data);
 
     this.length = list.length;
     const option = {
       legend: {
-        top: 0,
+        top: 18,
         right: 10,
         data: ['真实火警', '误报火警', '误报率'],
         textStyle: { color: '#FFF' },
+      },
+      grid: {
+        top: 70,
+        bottom: 40,
       },
       tooltip: {
         trigger: 'axis',
@@ -140,10 +144,10 @@ export default class TrendSection extends PureComponent {
   };
 
     return (
-      <FcSection title="火警趋势" style={{ position: 'relative' }}>
+      <FcSection title={title} style={{ position: 'relative' }} isBack={isBack}>
         <ReactEcharts
           option={option}
-          style={{ position: 'absolute', left: 0, top: 15, width: '100%', height: '100%' }}
+          style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
           onChartReady={chart => { this.chart = chart; }}
         />
       </FcSection>

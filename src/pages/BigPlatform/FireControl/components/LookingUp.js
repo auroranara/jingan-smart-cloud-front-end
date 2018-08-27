@@ -70,8 +70,10 @@ export default class LookingUp extends Component {
                 <br />
                 查岗
               </Button>
-              <div className={styles.ring} onTransitionEnd />
-              <div className={styles.bubble} onTransitionEnd />
+              {/* <div className={styles.ring} onTransitionEnd />
+              <div className={styles.bubble} onTransitionEnd /> */}
+              <div className={styles.ring} />
+              <div className={styles.bubble} />
             </div>
           </Col>
           <Col span={16} style={{ height: '100%' }}>

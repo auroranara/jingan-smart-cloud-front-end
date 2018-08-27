@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Col, Divider, Row } from 'antd';
 
 import FcSection from './FcSection';
@@ -14,7 +14,7 @@ const HEIGHT = 'calc(50% - 74px)';
 // const hostIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ovHost.png';
 
 export default function OverviewSection(props) {
-  const { total=0, activeCount=0, todayCount=0, thisWeekCount=0, thisMonthCount=0, totalDanger=0, overdueNum=0, rectifyNum=0, reviewNum=0 } = props.ovData;
+  const { data: { total=0, activeCount=0, todayCount=0, thisWeekCount=0, thisMonthCount=0, totalDanger=0, overdueNum=0, rectifyNum=0, reviewNum=0 } } = props;
 
   return (
     <FcSection style={{ padding: '0 2px' }}>

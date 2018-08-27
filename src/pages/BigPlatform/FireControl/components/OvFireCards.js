@@ -6,7 +6,7 @@ import styles from './OvFireCards.less';
 import fireIcon from '../img/ovFire.png';
 
 export default function OvFireCards(props) {
-  const { todayCount, thisWeekCount, thisMonthCount, style={} } = props;
+  const { todayCount=0, thisWeekCount=0, thisMonthCount=0, style={} } = props;
 
   return (
     <div className={styles.fire} style={style}>

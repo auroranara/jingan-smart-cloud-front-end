@@ -11,8 +11,8 @@ export default class FcModule extends PureComponent {
       // overflow: 'hidden',
       transition: '1s transform ease',
       transformStyle: 'preserve-3d',
-      transform: isRotated ? 'rotateY(180deg)': 'rotateY(0)',
-      background: 'rgba(9,103,211,0.1)',
+      transform: isRotated ? 'rotateY(180deg)': 'rotateY(0deg)',
+      // background: 'rgba(9,103,211,0.1)',
       ...style,
     };
 
