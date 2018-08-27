@@ -263,13 +263,13 @@ export default class VideoPermissionEdit extends PureComponent {
         key: 'name',
         width: '50%',
       },
-      // {
-      //   title: '部门人数',
-      //   dataIndex: 'allUserCount',
-      //   key: 'allUserCount',
-      //   width: '20%',
-      //   align: 'center',
-      // },
+      {
+        title: '部门人数',
+        dataIndex: 'allUserCount',
+        key: 'allUserCount',
+        width: '20%',
+        align: 'center',
+      },
       {
         title: '视频权限',
         key: '视频权限',
