@@ -1,0 +1,29 @@
+/*********************************** 单位消防大屏 **************************************/
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;;
+  line-height: 1;
+  font-size: 16px;
+  color: #fff;
+  background: url('http://data.jingan-china.cn/v2/big-platform/safety/com/company-bg.png') no-repeat center center / 100% 100%;
+  overflow: hidden;
+}
+/* 主体 */
+.mainBody {
+  flex: 1;
+  padding: 16px 24px 24px;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+  .main {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .main {
+    font-size: 12px;
+  }
+}
