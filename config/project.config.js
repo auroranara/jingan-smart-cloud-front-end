@@ -1,6 +1,7 @@
 export default {
   default: {
     logo: '',
+    region: '江溪街道',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
@@ -15,6 +16,7 @@ export default {
     },
   },
   jiangxi: {
+    region: '江溪街道',
     logo: '',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
@@ -31,6 +33,7 @@ export default {
   },
   xuzhou: {
     logo: '',
+    region: '徐州市',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
@@ -46,6 +49,7 @@ export default {
   },
   changshu: {
     logo: '',
+    region: '常熟市',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
@@ -61,6 +65,7 @@ export default {
   },
   eye: {
     logo: '',
+    region: '',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'eye',

@@ -7,6 +7,7 @@
     "precommit": "npm run lint-staged",
     "presite": "npm run generate-mock && cd functions && npm install",
     "start": "cross-env ESLINT=none umi dev",
+    "start:jiangxi": "cross-env PROJECT_ENV=jiangxi ESLINT=none umi dev",
     "start:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi dev",
     "start:no-mock": "cross-env MOCK=none ESLINT=none umi dev",
     "build": "cross-env ESLINT=none umi build",
@@ -108,6 +109,7 @@
     "stylelint-config-standard": "^18.0.0",
     "umi": "^2.0.0-beta.17",
     "umi-plugin-react": "^1.0.0-beta.10"
+
   },
   "optionalDependencies": {
     "puppeteer": "^1.6.0"
