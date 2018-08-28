@@ -19,16 +19,17 @@ export default class AlarmDetailSection extends PureComponent {
         <tbody>
           {KEYS.map((key, index) => {
             let val = detail[key];
+            let v = val;
 
             if (key === 'status' && val === ABNORMAL)
-              val = <span className={styles.abnormal}>{val}</span>;
+              v = <span className={styles.abnormal}>{val}</span>;
             else if (key.toLowerCase().includes('time'))
-              val = moment(val).format('YYYY-MM-DD HH:MM');
+              v = moment(val).format('YYYY-MM-DD HH:MM');
 
             return (
               <tr key={key}>
                 <th>{KEYS_CN[index]}</th>
-                <td>{val ? val : NONE}</td>
+                <td>{val ? v : NONE}</td>
               </tr>
             );
           })}

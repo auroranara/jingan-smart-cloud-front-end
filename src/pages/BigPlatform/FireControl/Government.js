@@ -22,6 +22,8 @@ import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import UnitLookUpReverse from './section/UnitLookUpReverse';
 
+const { location } = global.PROJECT_CONFIG;
+
 const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
@@ -31,12 +33,17 @@ const DELAY = 2000;
 @connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
   state = {
+    alarmDetail: {},
     showReverse: false, // 父组件翻转
     isAlarmRotated: false,
     isDangerRotated: false,
     isLookUpRotated: false, // 单位查岗组件翻转
     lookUpShow: LOOKING_UP,
     startLookUp: false,
+    mapSelected: undefined,
+    mapCenter: [location.x, location.y],
+    mapZoom: location.zoom,
+    mapShowInfo: false,
   };
 
   componentDidMount() {
@@ -49,6 +56,7 @@ export default class FireControlBigPlatform extends PureComponent {
   }
 
   timer = null;
+  mapItemList = [];
 
   initFetch = () => {
     const { dispatch } = this.props;
@@ -91,7 +99,11 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   handleAlarmClick = (alarmDetail) => {
-    this.setState({ showReverse: true, alarmDetail });
+    // 将父组件翻到反面，地图设置zoom，center，及selected
+    console.log('mapItemList', this.mapItemList);
+    const selected = this.mapItemList.find(({ name }) => name === alarmDetail.name);
+    console.log('selected', selected);
+    this.handleMapSelected(selected, alarmDetail);
   }
 
   handleDangerRotate = () => {
@@ -102,13 +114,60 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState(({ showReverse }) => ({ showReverse: !showReverse }));
   };
 
+  handleMapBack = () => {
+    this.setState({ showReverse: false, mapZoom: location.zoom, mapSelected: undefined });
+  };
+
+  handleMapSelected = (item, alarmDetail) => {
+    const { bigFireControl: { alarm: { list = [] } } } = this.props;
+
+    const { latitude, longitude, name } = item;
+    let detail = alarmDetail;
+    // 若alarmDetail没有传，则是在地图中点击的公司，所以在警情列表中筛选该公司的第一个警情，若传了，则是在警情列表中点击的
+    if (!alarmDetail)
+      detail = list.find(li => name === li.name);
+
+    if (!detail)
+      detail = {};
+
+    this.setState({
+      showReverse: true,
+      alarmDetail: detail,
+      mapCenter: [longitude, latitude],
+      mapZoom: 18,
+      mapSelected: item,
+      mapShowInfo: true,
+    });
+  };
+
+  handleMapInfoClose = () => {
+    this.setState({ mapShowInfo: false });
+  };
+
+  // 将地图组件中处理的list缓存到当前组件中
+  setMapItemList = (newList) => {
+    this.mapItemList = newList;
+  };
+
   render() {
     const {
       bigFireControl: { overview, alarm, sys, trend, danger, map },
       dispatch,
     } = this.props;
 
-    const { isAlarmRotated, isDangerRotated, isLookUpRotated, alarmDetail, lookUpShow, startLookUp, showReverse } = this.state;
+    const {
+      isAlarmRotated,
+      isDangerRotated,
+      isLookUpRotated,
+      mapZoom,
+      mapCenter,
+      mapSelected,
+      mapShowInfo,
+      alarmDetail,
+      lookUpShow,
+      startLookUp,
+      showReverse,
+    } = this.state;
 
     const handleRotateMethods = {
       handleClickLookUp: this.handleClickLookUp,
@@ -156,17 +215,33 @@ export default class FireControlBigPlatform extends PureComponent {
                   data={alarm}
                   title="历史火警"
                   backTitle="实时火警"
-                  handleRotate={this.handleAlarmClick}
+                  handleRotate={this.handleAlarmRotate}
                   handleFetch={payload => dispatch({ type: 'bigFireControl/fetchAlarm', payload })}
-                  handleClick={this.rotateAll}
+                  handleClick={this.handleAlarmClick}
                 />
               }
-              reverse={<AlarmDetailSection detail={alarmDetail} handleReverse={this.rotateAll} />}
+              reverse={
+                <AlarmDetailSection
+                  detail={alarmDetail}
+                  handleReverse={this.handleMapBack}
+                />
+              }
             />
           </Col>
           <Col span={12} style={HEIGHT_PERCNET}>
             <FcModule className={styles.map}>
-              <FireControlMap map={map} alarm={alarm} handleRotate={this.rotateAll} />
+              <FireControlMap
+                map={map}
+                alarm={alarm}
+                zoom={mapZoom}
+                center={mapCenter}
+                selected={mapSelected}
+                showInfo={mapShowInfo}
+                handleBack={this.handleMapBack}
+                handleInfoClose={this.handleMapInfoClose}
+                handleSelected={this.handleMapSelected}
+                setMapItemList={this.setMapItemList}
+              />
               <FcSection title="Map Reverse" isBack />
             </FcModule>
             <div className={styles.gutter2} />

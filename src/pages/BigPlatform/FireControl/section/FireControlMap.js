@@ -16,7 +16,7 @@ import status1Icon from '../img/mapFire1.png';
 
 const NO_DATA = '暂无信息';
 
-const { location } = global.PROJECT_CONFIG;
+// const { location } = global.PROJECT_CONFIG;
 
 function handleCompanyBasicInfoList(alarmList, companyList) {
   return companyList.map(item => {
@@ -37,10 +37,10 @@ export default class FireControlMap extends PureComponent {
     super(props);
     this.debouncedFetchData = debounce(this.searchFetchData, 500);
     this.state = {
-      center: [location.x, location.y],
-      zoom: location.zoom,
-      selected: undefined,
-      showInfo: false,
+      // center: [location.x, location.y],
+      // zoom: location.zoom,
+      // selected: undefined,
+      // showInfo: false,
       searchValue: '',
       selectList: [],
     };
@@ -49,27 +49,28 @@ export default class FireControlMap extends PureComponent {
   newList = [];
 
   back = () => {
-    const { handleRotate } = this.props;
-    handleRotate();
+    const { handleBack } = this.props;
+    handleBack();
 
     this.setState({
-      zoom: location.zoom,
-      selected: undefined,
+      // zoom: location.zoom,
+      // selected: undefined,
       searchValue: '',
     });
   };
 
   selectCompany = item => {
-    const { handleRotate } = this.props;
-    handleRotate();
+    const { handleSelected } = this.props;
+    // const { latitude, longitude } = item;
 
-    const { latitude, longitude } = item;
-    this.setState({
-      center: [longitude, latitude],
-      zoom: 18,
-      selected: item,
-      showInfo: true,
-    });
+    handleSelected(item);
+
+    // this.setState({
+    //   center: [longitude, latitude],
+    //   zoom: 18,
+    //   selected: item,
+    //   showInfo: true,
+    // });
   };
   // 搜索之后跳转
   handleSelect = item => {
@@ -103,7 +104,8 @@ export default class FireControlMap extends PureComponent {
   };
 
   renderCompanyMarker(newList) {
-    const { selected } = this.state;
+    // const { selected } = this.state;
+    const { selected } = this.props;
     // 如果有选中的企业就只渲染选中的
     return selected
       ? this.renderMarker(selected)
@@ -132,10 +134,16 @@ export default class FireControlMap extends PureComponent {
   }
 
   renderInfoWindow() {
+    // const {
+    //   showInfo,
+    //   selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
+    // } = this.state;
+
     const {
       showInfo,
       selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
-    } = this.state;
+      handleInfoClose,
+    } = this.props;
 
     return (
       <InfoWindow
@@ -165,7 +173,7 @@ export default class FireControlMap extends PureComponent {
         </p>
         <Icon
           type="close"
-          onClick={() => this.setState({ showInfo: false })}
+          onClick={handleInfoClose}
           style={{ color: 'rgb(110,169,221)', position: 'absolute', right: 10, top: 10, cursor: 'pointer' }}
         />
       </InfoWindow>
@@ -208,14 +216,22 @@ export default class FireControlMap extends PureComponent {
   };
 
   render() {
-    const { center, zoom, selected, searchValue, selectList } = this.state;
+    // const { center, zoom, selected, searchValue, selectList } = this.state;
+    const { searchValue, selectList } = this.state;
     const {
+      zoom,
+      center,
+      selected,
       alarm: { list = [] },
       map: { companyBasicInfoList = [], totalNum, fireNum },
+      setMapItemList,
     } = this.props;
 
     let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
     this.newList = newList;
+    setMapItemList(newList);
+
+    console.log('center', center, 'zoom', zoom);
 
     return (
       <FcSection style={{ padding: 8 }} className={styles.map}>
