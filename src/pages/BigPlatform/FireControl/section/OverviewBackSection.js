@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Col, Row } from 'antd';
 
 import FcSection from './FcSection';
@@ -14,32 +14,62 @@ import riskIcon from '../img/ovRisk.png';
 const UNIT_STYLE = { height: 48 };
 const ICON_STYLE = { width: 48, height: 48 };
 
+const NO_DATA = '暂无信息';
+
 export default function OverviewBackSection(props) {
+  const {
+    data: {
+        selected: { name, safetyName, safetyPhone }={},
+        companyOv: {
+          todayCount=0,
+          thisWeekCount=0,
+          thisMonthCount=0,
+          safetyOfficer=0,
+          riskPointer=0,
+          totalDanger=0,
+          overdueNum=0,
+          rectifyNum=0,
+          reviewNum=0,
+        }={},
+    },
+  } = props;
+
   return (
     <FcSection style={{ padding: 0 }} isBack>
       <div className={styles.up}>
         <div className={styles.unitInfo}>
           <img src={unitIcon} alt="单位图标" width={44} height={42} className={styles.unitIcon} />
-          <p className={styles.name}>无锡晶安机械设备有限公司</p>
-          <p className={styles.safety}>安全负责人：<span className={styles.info}>张小东</span></p>
-          <p>联系方式：<span className={styles.info}>18151518810</span></p>
+          <p className={styles.name}>{name ? name : NO_DATA}</p>
+          <p className={styles.safety}>安全负责人：<span className={styles.info}>{safetyName ? safetyName: NO_DATA}</span></p>
+          <p>联系方式：<span className={styles.info}>{safetyPhone ? safetyPhone : NO_DATA}</span></p>
         </div>
         <Row style={{ marginTop: 0 }}>
           <Col span={12}>
             <div className={styles.unit}>
-              <OvUnit url={safetyIcon} title="安全人员" style={UNIT_STYLE} iconStyle={ICON_STYLE} num={4} />
+              <OvUnit url={safetyIcon} title="安全人员" style={UNIT_STYLE} iconStyle={ICON_STYLE} num={safetyOfficer} />
             </div>
           </Col>
           <Col span={12}>
             <div className={styles.unit}>
-              <OvUnit url={riskIcon} title="风险点" style={UNIT_STYLE} iconStyle={ICON_STYLE} num={3} />
+              <OvUnit url={riskIcon} title="风险点" style={UNIT_STYLE} iconStyle={ICON_STYLE} num={riskPointer} />
             </div>
           </Col>
         </Row>
       </div>
       <div className={styles.down}>
-        <OvFireCards style={{ height: '50%', padding: '15px 10px 8px', margin: 0 }} />
-        <OvDangerCards style={{ height: '50%', border: 'none', padding: '8px 10px 15px' }} />
+        <OvFireCards
+          today={todayCount}
+          thisWeek={thisWeekCount}
+          thisMonth={thisMonthCount}
+          style={{ height: '50%', padding: '15px 10px 8px', margin: 0 }}
+        />
+        <OvDangerCards
+          total={totalDanger}
+          overdue={overdueNum}
+          rectify={rectifyNum}
+          review={reviewNum}
+          style={{ height: '50%', border: 'none', padding: '8px 10px 15px' }}
+        />
       </div>
     </FcSection>
   );

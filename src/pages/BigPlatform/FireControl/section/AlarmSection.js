@@ -15,7 +15,7 @@ export default class AlarmSection extends PureComponent {
   timer = null; // 该模块的轮询定时器
 
   componentDidMount() {
-    // this.startPoll();
+    this.startPoll();
   }
 
   componentWillUnmount() {
@@ -23,7 +23,7 @@ export default class AlarmSection extends PureComponent {
   }
 
   startPoll = () => {
-    this.timer = setInterval(this.fetchAlarm, DELAY);
+    // this.timer = setInterval(this.fetchAlarm, DELAY);
   };
 
   clearPoll = () => {

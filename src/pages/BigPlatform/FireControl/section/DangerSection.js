@@ -22,7 +22,7 @@ function handleSource(list) {
 
 const DELAY = 2000;
 
-export default class GridDangerSection extends PureComponent {
+export default class DangerSection extends PureComponent {
   componentDidMount() {
     this.timer = setInterval(this.tipMove, DELAY);
   }

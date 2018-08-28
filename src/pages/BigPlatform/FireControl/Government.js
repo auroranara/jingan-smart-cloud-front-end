@@ -14,7 +14,7 @@ import AlarmSection from './section/AlarmSection';
 import AlarmDetailSection from './section/AlarmDetailSection';
 import SystemSection from './section/SystemSection';
 import TrendSection from './section/TrendSection';
-import GridDangerSection from './section/GridDangerSection';
+import DangerSection from './section/DangerSection';
 import FireControlMap from './section/FireControlMap';
 // import bg from './bg.png';
 
@@ -65,6 +65,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
     dispatch({ type: 'bigFireControl/fetchSys' });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
+    dispatch({ type: 'bigFireControl/fetchAlarmHistory' });
     dispatch({ type: 'bigFireControl/fetchFireTrend' });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     dispatch({ type: 'bigFireControl/fetchDanger' });
@@ -100,9 +101,9 @@ export default class FireControlBigPlatform extends PureComponent {
 
   handleAlarmClick = (alarmDetail) => {
     // 将父组件翻到反面，地图设置zoom，center，及selected
-    console.log('mapItemList', this.mapItemList);
+    // console.log('mapItemList', this.mapItemList);
     const selected = this.mapItemList.find(({ name }) => name === alarmDetail.name);
-    console.log('selected', selected);
+    // console.log('selected', selected);
     this.handleMapSelected(selected, alarmDetail);
   }
 
@@ -110,18 +111,24 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState(({ isDangerRotated }) => ({ isDangerRotated: !isDangerRotated }));
   };
 
-  rotateAll = () => {
-    this.setState(({ showReverse }) => ({ showReverse: !showReverse }));
-  };
+  // rotateAll = () => {
+  //   this.setState(({ showReverse }) => ({ showReverse: !showReverse }));
+  // };
 
   handleMapBack = () => {
     this.setState({ showReverse: false, mapZoom: location.zoom, mapSelected: undefined });
   };
 
   handleMapSelected = (item, alarmDetail) => {
-    const { bigFireControl: { alarm: { list = [] } } } = this.props;
+    const { dispatch, bigFireControl: { alarm: { list = [] } } } = this.props;
 
-    const { latitude, longitude, name } = item;
+    const { id, name, latitude, longitude } = item;
+    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { companyId: id } });
+    dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { company_id: id } });
+    dispatch({ type: 'bigFireControl/fetchCompanyOv', payload: { company_id: id } });
+    dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id } });
+    dispatch({ type: 'bigFireControl/fetchDanger', payload: { company_id: id } });
+
     let detail = alarmDetail;
     // 若alarmDetail没有传，则是在地图中点击的公司，所以在警情列表中筛选该公司的第一个警情，若传了，则是在警情列表中点击的
     if (!alarmDetail)
@@ -151,7 +158,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
   render() {
     const {
-      bigFireControl: { overview, alarm, sys, trend, danger, map },
+      bigFireControl: { overview, companyOv, alarm, alarmHistory, sys, trend, companyTrend, danger, gridDanger, companyDanger, map },
       dispatch,
     } = this.props;
 
@@ -183,7 +190,7 @@ export default class FireControlBigPlatform extends PureComponent {
           <Col span={6} style={HEIGHT_PERCNET}>
             <FcModule className={styles.overview} isRotated={showReverse}>
               <OverviewSection data={overview} />
-              <OverviewBackSection />
+              <OverviewBackSection data={{ selected: mapSelected, companyOv }} />
             </FcModule>
             <div className={styles.gutter1} />
             {/* <FcModule className={styles.alarmInfo} isRotated={showReverse}>
@@ -212,11 +219,11 @@ export default class FireControlBigPlatform extends PureComponent {
               back={
                 <AlarmSection
                   isBack
-                  data={alarm}
+                  data={alarmHistory}
                   title="历史火警"
                   backTitle="实时火警"
                   handleRotate={this.handleAlarmRotate}
-                  handleFetch={payload => dispatch({ type: 'bigFireControl/fetchAlarm', payload })}
+                  handleFetch={payload => dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload })}
                   handleClick={this.handleAlarmClick}
                 />
               }
@@ -232,7 +239,7 @@ export default class FireControlBigPlatform extends PureComponent {
             <FcModule className={styles.map}>
               <FireControlMap
                 map={map}
-                alarm={alarm}
+                alarm={isAlarmRotated ? alarmHistory : alarm}
                 zoom={mapZoom}
                 center={mapCenter}
                 selected={mapSelected}
@@ -249,21 +256,21 @@ export default class FireControlBigPlatform extends PureComponent {
               <Col span={12} className={styles.centerLeft}>
                 <FcModule style={{ height: '100%' }} isRotated={showReverse}>
                   <TrendSection title="火警趋势" data={trend} />
-                  <TrendSection title="火警趋势反面" data={trend} isBack />
+                  <TrendSection title="单位火警趋势" data={companyTrend} isBack />
                 </FcModule>
               </Col>
               <Col span={12} className={styles.centerRight}>
                 {/* <FcModule style={{ height: '100%' }} isRotated={showReverse}>
-                  <GridDangerSection title="网格隐患巡查" data={danger} />
+                  <DangerSection title="网格隐患巡查" data={danger} />
                   <FcSection title="网格隐患巡查反面" isBack />
                 </FcModule> */}
                 <FcMultiRotateModule
                   style={{ height: '100%' }}
                   isRotated={isDangerRotated}
                   showReverse={showReverse}
-                  front={<GridDangerSection title="辖区隐患巡查" backTitle="网格隐患巡查" data={danger} handleRotate={this.handleDangerRotate} />}
-                  back={<GridDangerSection title="网格隐患巡查" backTitle="辖区隐患巡查" data={danger} handleRotate={this.handleDangerRotate} isBack />}
-                  reverse={<GridDangerSection title="隐患巡查反面" data={danger} isBack />}
+                  front={<DangerSection title="辖区隐患巡查" backTitle="网格隐患巡查" data={danger} handleRotate={this.handleDangerRotate} />}
+                  back={<DangerSection title="网格隐患巡查" backTitle="辖区隐患巡查" data={gridDanger} handleRotate={this.handleDangerRotate} isBack />}
+                  reverse={<DangerSection title="单位隐患巡查" data={companyDanger} isBack />}
                 />
               </Col>
             </Row>

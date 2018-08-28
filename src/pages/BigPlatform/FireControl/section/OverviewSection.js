@@ -14,21 +14,34 @@ const HEIGHT = 'calc(50% - 74px)';
 // const hostIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ovHost.png';
 
 export default function OverviewSection(props) {
-  const { data: { total=0, activeCount=0, todayCount=0, thisWeekCount=0, thisMonthCount=0, totalDanger=0, overdueNum=0, rectifyNum=0, reviewNum=0 } } = props;
+  const {
+    data: {
+      titleName='暂无信息',
+      total=0,
+      activeCount=0,
+      todayCount=0,
+      thisWeekCount=0,
+      thisMonthCount=0,
+      totalDanger=0,
+      overdueNum=0,
+      rectifyNum=0,
+      reviewNum=0,
+    }={},
+  } = props;
 
   return (
     <FcSection style={{ padding: '0 2px' }}>
       <div className={styles.divider}>
-        <Divider><p className={styles.title}>江溪街道办事处</p></Divider>
+        <Divider><p className={styles.title}>{titleName}</p></Divider>
       </div>
       <Row style={{ marginTop: 0 }}>
         <Col span={12}><div className={styles.unit}><OvUnit url={companyIcon} title="管辖单位" num={total} /></div></Col>
         <Col span={12}><div className={styles.unit}><OvUnit url={hostIcon} title="消防主机单位" num={activeCount} /></div></Col>
       </Row>
       <OvFireCards
-        todayCount={todayCount}
-        thisWeekCount={thisWeekCount}
-        thisMonthCount={thisMonthCount}
+        today={todayCount}
+        thisWeek={thisWeekCount}
+        thisMonth={thisMonthCount}
         style={{ height: HEIGHT }}
       />
       <OvDangerCards

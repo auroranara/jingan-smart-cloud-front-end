@@ -30,7 +30,7 @@ class MapSearch extends PureComponent {
       // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
       if (name.includes(value)) {
         const [front, end] = name.split(value);
-        children = [front, <span className={styles.highlight}>{value}</span>, end];
+        children = [front, <span key={value} className={styles.highlight}>{value}</span>, end];
       }
 
       return (

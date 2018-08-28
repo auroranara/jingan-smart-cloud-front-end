@@ -231,7 +231,7 @@ export default class FireControlMap extends PureComponent {
     this.newList = newList;
     setMapItemList(newList);
 
-    console.log('center', center, 'zoom', zoom);
+    // console.log('center', center, 'zoom', zoom);
 
     return (
       <FcSection style={{ padding: 8 }} className={styles.map}>
