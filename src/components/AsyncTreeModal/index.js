@@ -109,7 +109,8 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
     if (children) {
       return (
         <TreeNode
-          disableCheckbox={!!disabled}
+          // disableCheckbox={!!disabled}
+          disabled={!!disabled}
           title={title}
           key={key}
           dataRef={item}
@@ -130,7 +131,8 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
     }
     return (
       <TreeNode
-        disableCheckbox={!!disabled}
+        // disableCheckbox={!!disabled}
+        disabled={!!disabled}
         title={title}
         key={key}
         dataRef={item}
