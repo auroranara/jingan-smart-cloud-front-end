@@ -157,6 +157,7 @@ export default class AsyncTreeModal extends PureComponent {
     onCancel: PropTypes.func.isRequired,
     buttonPermission: PropTypes.bool.isRequired,// 确定按钮的权限 true:可点击
     saveParentStates: PropTypes.func.isRequired,
+    autoExpandParent: PropTypes.bool,
     tree: PropTypes.shape({
       dataSource: PropTypes.array.isRequired,
       showIcon: PropTypes.bool,
@@ -181,6 +182,7 @@ export default class AsyncTreeModal extends PureComponent {
     okText: '确定',
     cancelText: '取消',
     buttonPermission: true,
+    autoExpandParent: true,
   }
 
   constructor(props) {
@@ -189,7 +191,7 @@ export default class AsyncTreeModal extends PureComponent {
     this.state = {
       // expandedKeys: expandedKeys || [],
       // checkedKeys: checkedKeys || { checked: [], halfChecked: [] },
-      autoExpandParent: true,
+      // autoExpandParent: true,
       // searchValue: '',
     }
   }
@@ -235,10 +237,10 @@ export default class AsyncTreeModal extends PureComponent {
   /* 展开事件 */
   handleExpand = (expandedKeys, { expanded, node }) => {
     const { saveParentStates } = this.props
-    this.setState({
-      autoExpandParent: false,
-    });
-    expanded ? saveParentStates({ expandedKeys, expandedId: node.props.dataRef.id }) : saveParentStates({ expandedKeys, expandedId: null })
+    // this.setState({
+    //   autoExpandParent: false,
+    // });
+    expanded ? saveParentStates({ expandedKeys, expandedId: node.props.dataRef.id, autoExpandParent: false }) : saveParentStates({ expandedKeys, expandedId: null, autoExpandParent: false })
   }
 
   /* check事件 */
@@ -281,7 +283,7 @@ export default class AsyncTreeModal extends PureComponent {
   }
 
   render() {
-    const { autoExpandParent } = this.state;
+    // const { autoExpandParent } = this.state;
     const {
       visible,
       title,
@@ -294,6 +296,7 @@ export default class AsyncTreeModal extends PureComponent {
       cancelText,
       onCancel,
       buttonPermission,
+      autoExpandParent,
       tree: {
         dataSource,
         showIcon,

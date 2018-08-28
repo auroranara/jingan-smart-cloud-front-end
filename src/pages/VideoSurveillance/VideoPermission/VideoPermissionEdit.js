@@ -33,6 +33,7 @@ export default class VideoPermissionEdit extends PureComponent {
     expandedKeys: [],
     expandedId: '',
     buttonPermission: true,
+    autoExpandParent: true,
   }
 
   componentDidMount() {
@@ -51,12 +52,20 @@ export default class VideoPermissionEdit extends PureComponent {
       })
     }
     // 新建企业权限时初始化部门
-    if (path.includes('add')) {
-      dispatch({
-        type: 'video/saveDepartmentTree',
-        payload: [],
-      })
-    }
+    // if (path.includes('add')) {
+    //   dispatch({
+    //     type: 'video/saveDepartmentTree',
+    //     payload: [],
+    //   })
+    // }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'video/saveDepartmentTree',
+      payload: [],
+    })
   }
 
   // 打开企业设置权限弹窗
@@ -158,6 +167,10 @@ export default class VideoPermissionEdit extends PureComponent {
 
   handleSelect = value => {
     const { dispatch } = this.props
+    dispatch({
+      type: 'video/saveDepartmentTree',
+      payload: [],
+    })
     this.setState({ selectedCompanyId: value }, () => {
       dispatch({
         type: 'video/fetchDepartmentList',
@@ -360,7 +373,7 @@ export default class VideoPermissionEdit extends PureComponent {
 
   render() {
     const { match: { params: { companyId } } } = this.props
-    const { visible, confirmLoading, tree, checkedKeys, expandedKeys, buttonPermission } = this.state
+    const { visible, confirmLoading, tree, checkedKeys, expandedKeys, buttonPermission, autoExpandParent } = this.state
 
     const title = companyId ? "编辑视频权限" : "新增视频权限"
 
@@ -398,6 +411,7 @@ export default class VideoPermissionEdit extends PureComponent {
           onOk={this.doSavePermission}
           buttonPermission={buttonPermission}
           saveParentStates={this.saveParentStates}
+          autoExpandParent={autoExpandParent}
           tree={{
             dataSource: tree,
             checkable: true,
