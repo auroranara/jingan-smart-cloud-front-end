@@ -109,11 +109,11 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
     if (children) {
       return (
         <TreeNode
-          disabled={!!disabled}
+          disableCheckbox={!!disabled}
           title={title}
           key={key}
           dataRef={item}
-          selectable={false}
+          // selectable={false}
           icon={({ expanded }) => {
             return (
               <Icon type={expanded ? 'folder-open' : 'folder'} />
@@ -130,12 +130,12 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
     }
     return (
       <TreeNode
-        disabled={!!disabled}
+        disableCheckbox={!!disabled}
         title={title}
         key={key}
         dataRef={item}
         isLeaf={isVideo}
-        selectable={false}
+        // selectable={false}
         icon={<Icon type={isVideo ? fileIcon : "folder"} />}
       />
     );
@@ -325,7 +325,7 @@ export default class AsyncTreeModal extends PureComponent {
         // okText={okText}
         // cancelText={cancelText}
         // onOk={this.handleOk}
-        // onCancel={onCancel}
+        onCancel={onCancel}
         footer={footer}
       >
         <Spin spinning={loading}>

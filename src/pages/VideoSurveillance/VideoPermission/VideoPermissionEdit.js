@@ -151,6 +151,7 @@ export default class VideoPermissionEdit extends PureComponent {
       type: 'video/fetchCompanyOptions',
       payload: {
         name: value,
+        eye: 0,
       },
     })
   }
@@ -210,7 +211,9 @@ export default class VideoPermissionEdit extends PureComponent {
     this.setState({
       confirmLoading: true,
     });
-    const checkedIds = _.flattenDeep(this.getCheckedIdsWithoutChildren(tree, checkedKeys));
+    const ids = _.flattenDeep(this.getCheckedIdsWithoutChildren(tree, checkedKeys));
+    const checkedIds = ids.join(',')
+
     const data = type === 'company' ? { checkedIds, linkType: 1, linkId: companyId || selectedCompanyId } : { checkedIds, linkType: 2, linkId: departmentId }
 
     dispatch({
