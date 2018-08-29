@@ -51,19 +51,16 @@ export default class VideoPermissionEdit extends PureComponent {
         payload: { companyId },
       })
     }
-    // 新建企业权限时初始化部门
-    // if (path.includes('add')) {
-    //   dispatch({
-    //     type: 'video/saveDepartmentTree',
-    //     payload: [],
-    //   })
-    // }
   }
 
   componentWillUnmount() {
     const { dispatch } = this.props
     dispatch({
       type: 'video/saveDepartmentTree',
+      payload: [],
+    })
+    dispatch({
+      type: 'video/saveCompanyOptions',
       payload: [],
     })
   }
