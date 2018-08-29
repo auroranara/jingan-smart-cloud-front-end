@@ -25,8 +25,8 @@ function handleDanger(response, isCompany=false) {
     const danger = selfCheck[key];
     const gridDanger = dangerMap[key];
 
-    prev.list.push({ time, inspect: self_check_point, danger: danger ? danger : 0 });
-    prev.gridList.push({ time, inspect: grid_check_point, danger: gridDanger ? gridDanger : 0 });
+    prev.list.push({ time, inspect: self_check_point ? self_check_point : 0, danger: danger ? danger : 0 });
+    prev.gridList.push({ time, inspect: grid_check_point ? grid_check_point : 0, danger: gridDanger ? gridDanger : 0 });
 
     return prev;
   }, { list: [], gridList: [] });

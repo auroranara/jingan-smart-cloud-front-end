@@ -162,6 +162,8 @@ export default class FireControlBigPlatform extends PureComponent {
       dispatch,
     } = this.props;
 
+    console.log(danger, gridDanger, companyDanger);
+
     const {
       isAlarmRotated,
       isDangerRotated,
