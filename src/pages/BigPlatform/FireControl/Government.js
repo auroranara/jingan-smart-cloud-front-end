@@ -16,6 +16,7 @@ import FireControlMap from './section/FireControlMap';
 
 import UnitLookUp from './section/UnitLookUp';
 import UintLookUpBack from './section/UintLookUpBack';
+import VideoPlay from './section/VideoPlay';
 
 const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
@@ -29,11 +30,12 @@ export default class FireControlBigPlatform extends PureComponent {
     isLookUpRotated: false,
     lookUpShow: LOOKING_UP,
     startLookUp: false,
+    videoVisible: true,
   };
 
   componentDidMount() {
     this.initFetch();
-    this.timer = setInterval(this.polling, DELAY);
+    // this.timer = setInterval(this.polling, DELAY);
   }
 
   componentWillUnmount() {
@@ -78,13 +80,29 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ isLookUpRotated: false, startLookUp: false });
   };
 
+  handleVideoClose = () => {
+    this.setState({
+      videoVisible: false,
+    });
+  };
+
+  handleVideoSelect = companyId => {
+    const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'bigFireControl/fetchAllCamera',
+    //   payload: {
+    //     company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
+    //   },
+    // });
+  };
+
   render() {
     const {
-      bigFireControl: { overview, alarm, sys, trend, danger, map },
+      bigFireControl: { overview, alarm, sys, trend, danger, map, allCamera },
       dispatch,
     } = this.props;
 
-    const { isLookUpRotated, lookUpShow, startLookUp } = this.state;
+    const { isLookUpRotated, lookUpShow, startLookUp, videoVisible } = this.state;
 
     const handleRotateMethods = {
       handleClickLookUp: this.handleClickLookUp,
@@ -149,6 +167,12 @@ export default class FireControlBigPlatform extends PureComponent {
             </FcModule>
           </Col>
         </Row>
+        <VideoPlay
+          videoList={allCamera}
+          visible={videoVisible}
+          keyId="" // keyId
+          handleVideoClose={this.handleVideoClose.bind(this)}
+        />
       </div>
     );
   }

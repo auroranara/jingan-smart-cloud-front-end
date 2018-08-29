@@ -6,11 +6,14 @@ import {
   queryFireTrend,
   queryDanger,
   getCompanyFireInfo,
+  getAllCamera,
 } from '../services/bigPlatform/fireControl';
 
 function handleDanger(response) {
   const dangerMap = {};
-  response.hidden_danger_map.forEach(({ month, day, created_danger }) => dangerMap[`${month}.${day}`] = created_danger);
+  response.hidden_danger_map.forEach(
+    ({ month, day, created_danger }) => (dangerMap[`${month}.${day}`] = created_danger)
+  );
 
   const list = response['check_map'].map(({ month, day, grid_check_point }) => {
     const danger = dangerMap[`${month}.${day}`];
@@ -34,6 +37,7 @@ export default {
     sys: {},
     trend: {},
     danger: {},
+    allCamera: [],
   },
 
   effects: {
@@ -78,8 +82,12 @@ export default {
     *fetchDanger({ payload }, { call, put }) {
       const response = yield call(queryDanger);
       // const { code, data } = response;
-      if (response)
-        yield put({ type: 'saveDanger', payload: handleDanger(response) });
+      if (response) yield put({ type: 'saveDanger', payload: handleDanger(response) });
+    },
+    *fetchAllCamera({ payload }, { call, put }) {
+      const response = yield call(getAllCamera, payload);
+      const { list } = response;
+      yield put({ type: 'saveAllCamera', payload: list });
     },
   },
 
@@ -102,6 +110,9 @@ export default {
     },
     saveDanger(state, action) {
       return { ...state, danger: action.payload };
+    },
+    saveAllCamera(state, action) {
+      return { ...state, allCamera: action.payload };
     },
   },
 };

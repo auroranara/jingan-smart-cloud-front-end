@@ -30,3 +30,8 @@ export async function queryDanger() {
 export async function getCompanyFireInfo() {
   return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
 }
+
+// 视频
+export async function getAllCamera(params) {
+  return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
+}
