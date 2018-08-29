@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Col, Row } from 'antd';
+import { Col, Modal, Row } from 'antd';
 
 import styles from './Government.less';
 import Head from './Head';
@@ -22,7 +22,11 @@ import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import UnitLookUpReverse from './section/UnitLookUpReverse';
 
+const { confirm } = Modal;
 const { location } = global.PROJECT_CONFIG;
+
+// const AUTO_LOOKUP_ROTATE = 1;
+const AUTO_LOOKUP_ROTATE = 2;
 
 const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
@@ -69,6 +73,12 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchFireTrend' });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     dispatch({ type: 'bigFireControl/fetchDanger' });
+    dispatch({ type: 'bigFireControl/fetchLookUp', callback: (flag, recordsId) => {
+      if (Number.parseInt(flag, 10) === AUTO_LOOKUP_ROTATE)
+        this.handleClickLookUp(true);
+
+      recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
+    } });
   };
 
   polling = () => {
@@ -83,7 +93,21 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchDanger' });
   };
 
-  handleClickLookUp = () => {
+  handleClickLookUp = (isJump) => {
+    if (isJump) {
+      this.jumpToLookUp();
+      return;
+    }
+
+    confirm({
+      title: '您是否确定进行单位查岗',
+      okText: '确定',
+      cancelText: '取消',
+      onOk: this.jumpToLookUp,
+    });
+  };
+
+  jumpToLookUp = () => {
     this.setState(({ isLookUpRotated }) => ({ lookUpShow: LOOKING_UP, isLookUpRotated: !isLookUpRotated, startLookUp: true }));
   };
 
@@ -158,11 +182,11 @@ export default class FireControlBigPlatform extends PureComponent {
 
   render() {
     const {
-      bigFireControl: { overview, companyOv, alarm, alarmHistory, sys, trend, companyTrend, danger, gridDanger, companyDanger, map },
+      bigFireControl: { overview, companyOv, alarm, alarmHistory, sys, trend, companyTrend, danger, gridDanger, companyDanger, map, lookUp },
       dispatch,
     } = this.props;
 
-    console.log(danger, gridDanger, companyDanger);
+    // console.log(danger, gridDanger, companyDanger);
 
     const {
       isAlarmRotated,
@@ -177,11 +201,6 @@ export default class FireControlBigPlatform extends PureComponent {
       startLookUp,
       showReverse,
     } = this.state;
-
-    const handleRotateMethods = {
-      handleClickLookUp: this.handleClickLookUp,
-      handleClickOffGuard: this.handleClickOffGuard,
-    };
 
     return (
       <div className={styles.root}>
@@ -294,7 +313,13 @@ export default class FireControlBigPlatform extends PureComponent {
               className={styles.inspect}
               isRotated={isLookUpRotated}
               showReverse={showReverse}
-              front={<UnitLookUp handleRotateMethods={handleRotateMethods} />}
+              front={
+                <UnitLookUp
+                  data={lookUp}
+                  handleClickLookUp={this.handleClickLookUp}
+                  handleClickOffGuard={this.handleClickOffGuard}
+                />
+              }
               back={
                 <UnitLookUpBack
                   handleRotateBack={this.handleUnitLookUpRotateBack}

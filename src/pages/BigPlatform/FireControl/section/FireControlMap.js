@@ -16,23 +16,21 @@ import status1Icon from '../img/mapFire1.png';
 import redCircle from '../img/redCircle.png';
 
 const NO_DATA = '暂无信息';
-const NORMAL = '正常';
-const ABNORMAL = '异常';
 
 // const { location } = global.PROJECT_CONFIG;
 
-function handleCompanyBasicInfoList(alarmList, companyList) {
-  return companyList.map(item => {
-    const { name } = item;
-    const alarmed = alarmList.find(({ name: companyName }) => companyName === name)
-    if (alarmed) {
-      const hasFire = !Number.parseInt(alarmed.status, 10);
-      const status = hasFire ? ABNORMAL : NORMAL;
-      return { address: alarmed.searchArea, ...item, hasFire, status };
-    }
-    return { ...item, hasFire: false, status: NORMAL };
-  });
-}
+// function handleCompanyBasicInfoList(alarmList, companyList) {
+  // return companyList.map(item => {
+    // const { name } = item;
+    // const alarmed = alarmList.find(({ name: companyName }) => companyName === name)
+    // if (alarmed) {
+    //   const isFire = !Number.parseInt(alarmed.status, 10);
+    //   const status = isFire ? ABNORMAL : NORMAL;
+    //   return { address: alarmed.searchArea, ...item, isFire, status };
+    // }
+    // return { ...item, isFire: false, status: NORMAL };
+  // });
+// }
 
 function genBackgrondStyle(url) {
   return { backgroundImage: `url(${url})` };
@@ -93,11 +91,11 @@ export default class FireControlMap extends PureComponent {
 
     // 默认情况，有火警且未被选中，不显示红圈
     let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标"/>;
-    const { hasFire } = item;
+    const { isFire } = item;
     const isSelected = !!selected;
 
     // 没有火警，不论选中不选中显示正常图标
-    if (!hasFire)
+    if (!isFire)
       child = <img className={styles.dotIcon} src={mapDot} alt="定位图标"/>;
     // 有火警，且被选中，显示红圈
     else if (isSelected)
@@ -111,7 +109,7 @@ export default class FireControlMap extends PureComponent {
       <Marker
         position={{ longitude: item.longitude, latitude: item.latitude }}
         key={item.id}
-        offset={hasFire && isSelected ? [-100, -122] : [-22, -45]}
+        offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
         events={{ click: this.handleClick.bind(this, item) }}
       >
         {child}
@@ -152,12 +150,12 @@ export default class FireControlMap extends PureComponent {
   renderInfoWindow() {
     // const {
     //   showInfo,
-    //   selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, hasFire  },
+    //   selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
     // } = this.state;
 
     const {
       showInfo,
-      selected: { longitude, latitude, name=NO_DATA, address=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, hasFire  },
+      selected: { longitude, latitude, name=NO_DATA, practicalAddress=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
       handleInfoClose,
     } = this.props;
 
@@ -174,7 +172,7 @@ export default class FireControlMap extends PureComponent {
         <p className={styles.address}>
           {/* <span className={styles.locateIcon} /> */}
           <span className={styles.locateIcon} style={genBackgrondStyle(locateIcon)} />
-          {address}
+          {practicalAddress}
         </p>
         <p className={styles.safety}>
           {/* <span className={styles.personIcon} /> */}
@@ -182,9 +180,9 @@ export default class FireControlMap extends PureComponent {
           <span className={styles.safetyName}>{safetyName}</span>
           <span>{safetyPhone}</span>
         </p>
-        <p className={hasFire ? styles.statusFire : styles.status}>
-          {/* <span className={hasFire ? styles.status1Icon : styles.statusIcon} /> */}
-          <span className={styles.statusIconBase} style={hasFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
+        <p className={isFire ? styles.statusFire : styles.status}>
+          {/* <span className={isFire ? styles.status1Icon : styles.statusIcon} /> */}
+          <span className={styles.statusIconBase} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
           {status}
         </p>
         <Icon
@@ -238,12 +236,13 @@ export default class FireControlMap extends PureComponent {
       zoom,
       center,
       selected,
-      alarm: { list = [] },
+      // alarm: { list = [] },
       map: { companyBasicInfoList = [], totalNum, fireNum },
       setMapItemList,
     } = this.props;
 
-    let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
+    // let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
+    const newList = companyBasicInfoList;
     this.newList = newList;
     setMapItemList(newList);
 

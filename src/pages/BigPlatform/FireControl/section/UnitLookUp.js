@@ -1,11 +1,21 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Col, Button } from 'antd';
+
+import { fillZero } from '../utils';
 import FcSection from './FcSection';
 import styles from './UnitLookUp.less';
 
+
+function formatTime(t) {
+  const [m, s] = t.split(',');
+  return `${fillZero(m)}'${fillZero(s)}"`;
+}
+
 export default class UnitLookUp extends Component {
-  getOption = () => {
+  getOption = (r) => {
+    const rate = Number.parseInt(r, 10);
+
     const option = {
       color: ['#00a8ff', '#032c64'],
       tooltip: {
@@ -37,14 +47,14 @@ export default class UnitLookUp extends Component {
           },
           data: [
             {
-              value: 90.0,
+              value: rate,
               itemStyle: {
                 shadowColor: 'rgba(0, 0, 0, 0.8)',
                 shadowBlur: 10,
               },
             },
             {
-              value: 100.0 - 90.0,
+              value: 100.0 - rate,
               itemStyle: { opacity: 0.6 },
               label: { show: false },
             },
@@ -54,9 +64,11 @@ export default class UnitLookUp extends Component {
     };
     return option;
   };
+
   render() {
-    const { handleRotateMethods } = this.props;
-    const { handleClickLookUp, handleClickOffGuard } = handleRotateMethods;
+    const { data, handleClickLookUp, handleClickOffGuard } = this.props;
+    const { lastTime='0 0', fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
+    const [day, time] = lastTime.split(' ');
 
     return (
       <FcSection title="单位查岗" >
@@ -67,7 +79,7 @@ export default class UnitLookUp extends Component {
                 <div className={styles.ring} />
                 <Button
                   className={styles.circlrLookUp}
-                  onClick={handleClickLookUp}
+                  onClick={e => handleClickLookUp()}
                   style={{
                     border: 'none',
                     color: '#FFF',
@@ -82,8 +94,8 @@ export default class UnitLookUp extends Component {
               <div className={styles.right}>
                 <div className={styles.lastlookUpTime}>上次查岗时间</div>
                 <div className={styles.DayTime}>
-                  <div className={styles.day}>2018-08-01</div>
-                  <div className={styles.time}>14:00</div>
+                  <div className={styles.day}>{day}</div>
+                  <div className={styles.time}>{time}</div>
                 </div>
               </div>
             </Col>
@@ -98,7 +110,7 @@ export default class UnitLookUp extends Component {
                 <Col span={8}>
                   <ReactEcharts
                     style={{ width: '100%', height: '100px' }}
-                    option={this.getOption()}
+                    option={this.getOption(rate)}
                     notMerge={true}
                     lazyUpdate={true}
                   />
@@ -108,12 +120,12 @@ export default class UnitLookUp extends Component {
                     <p className={styles.onJob}>
                       <span className={styles.onJobIcon} />
                       在岗
-                      <span className={styles.personnum}>000</span>
+                      <span className={styles.personnum}>{fillZero(onGuardNum, 3)}</span>
                     </p>
                     <p className={styles.leaveJob} onClick={handleClickOffGuard}>
                       <span className={styles.leavelJobIcon} />
                       脱岗
-                      <span className={styles.personnum}>000</span>
+                      <span className={styles.personnum}>{fillZero(offGuardNum, 3)}</span>
                     </p>
                   </div>
                 </Col>
@@ -133,12 +145,12 @@ export default class UnitLookUp extends Component {
                     <p className={styles.rabbit}>
                       <span className={styles.rabbitIcon} />
                       最快
-                      <span className={styles.minutes}>2'30''</span>
+                      <span className={styles.minutes}>{formatTime(fast)}</span>
                     </p>
                     <p className={styles.snail}>
                       <span className={styles.snailIcon} />
                       最慢
-                      <span className={styles.minutes}>7'30''</span>
+                      <span className={styles.minutes}>{formatTime(slow)}</span>
                     </p>
                   </div>
                 </Col>

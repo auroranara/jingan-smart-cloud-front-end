@@ -34,3 +34,11 @@ export async function queryDanger(params) {
 export async function getCompanyFireInfo() {
   return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
 }
+
+export async function queryLookUp() {
+  return request(`${URL_PREFIX}/screenShowData/inspectionRecords`);
+}
+
+export async function queryOffGuard(params) {
+  return request(`${URL_PREFIX}/screenShowData/companyResponse?${stringify(params)}`);
+}
