@@ -305,13 +305,13 @@ module.exports = [
                 component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
               },
               {
-                path: '/role-authorization/account-management/associated-unit/add',
+                path: '/role-authorization/account-management/associated-unit/add/:id',
                 code: 'roleAuthorization.accountManagement.associatedUnit.add',
                 name: 'addAssociatedUnit',
                 component: './RoleAuthorization/AccountManagement/AssociatedUnit',
               },
               {
-                path: '/role-authorization/account-management/associated-unit/edit/:id',
+                path: '/role-authorization/account-management/associated-unit/edit/:id/:companyId',
                 code: 'roleAuthorization.accountManagement.associatedUnit.edit',
                 name: 'editAssociatedUnit',
                 component: './RoleAuthorization/AccountManagement/AssociatedUnit',

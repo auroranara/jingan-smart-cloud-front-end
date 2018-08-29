@@ -343,18 +343,24 @@ export default class accountManagementList extends PureComponent {
                     >
                       编辑
                     </AuthLink>,
+                    <AuthLink
+                      code={codesMap.account.addAssociatedUnit}
+                      to={`/role-authorization/account-management/associated-unit/add/${item.id}`}
+                    >
+                      关联单位
+                  </AuthLink>,
                   ]}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <AuthDiv
                     code={codesMap.account.detail}

@@ -58,6 +58,9 @@ export default {
     subDepartments: [],
     documentTypeIds: [],
     departments: [],
+    associatedUnit: {
+      form: {},
+    },
   },
 
   effects: {
@@ -357,6 +360,29 @@ export default {
         ...state,
         departments,
       };
+    },
+
+    // 关联企业初始化数据
+    initValue(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          data: {
+            ...state.detail.data,
+            unitType: undefined,
+            unitId: undefined,
+            unitName: undefined,
+            treeIds: undefined,
+            parentId: undefined,
+            departmentId: undefined,
+            departmentName: undefined,
+            userType: undefined,
+            userGovType: undefined,
+            documentTypeId: undefined,
+            execCertificateCode: undefined,
+          },
+        },
+      }
     },
   },
 };
