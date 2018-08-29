@@ -23,7 +23,7 @@ export default class AlarmSection extends PureComponent {
   }
 
   startPoll = () => {
-    this.timer = setInterval(this.fetchAlarm, DELAY);
+    // this.timer = setInterval(this.fetchAlarm, DELAY);
   };
 
   clearPoll = () => {
@@ -31,9 +31,9 @@ export default class AlarmSection extends PureComponent {
   }
 
   fetchAlarm = () => {
-    const { dispatch } = this.props;
+    const { handleFetch } = this.props;
     // console.log('poll alarm');
-    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { searchName: this.node.input.value.trim() } });
+    handleFetch && handleFetch({ searchName: this.node.input.value.trim() });
   };
 
   handleSearch = () => {
@@ -49,37 +49,45 @@ export default class AlarmSection extends PureComponent {
   }
 
   render() {
-    const { data: { list = [] }, title, reverse } = this.props;
+    const { data: { list = [] }, isBack = false, title, backTitle, handleRotate, handleClick } = this.props;
 
-    const cards = list.map(({ id, name, searchArea, saveTime }) => <AlarmCard key={id} company={name} address={searchArea} time={saveTime} onClick={reverse} />);
+    const cards = list.map((item) => {
+      const { id, name, searchArea, saveTime } = item;
+      return <AlarmCard key={id} company={name} address={searchArea} time={saveTime} onClick={() => handleClick(item)} />
+    });
     const noCard = <div className={styles.noCard} />;
     // const noCard = <div className={styles.noCard} style={{ backgroundImage: `url(${noAlarm})`}} />;
 
     return (
-      <FcSection title={title} style={{ padding: '0 15px 15px' }}>
-        <Row gutter={6} style={{ marginBottom: 20 }}>
-          <Col span={18}>
-            <Input
-              onPressEnter={this.handleSearch}
-              onFocus={this.handleFocus}
-              onBlur={this.handleBlur}
-              ref={node => { this.node = node; }}
-              placeholder="请输入单位名称"
-              style={{ background: 'rgba(9,103,211,0.2)', border: 'none', color: '#FFF' }}
-            />
-          </Col>
-          <Col span={6}>
-            <Button
-              onClick={this.handleSearch}
-              style={{ background: 'rgba(9,103,211,0.5)', border: 'none', color: '#FFF', width: '100%' }}
-            >
-              查询
-            </Button>
-          </Col>
-        </Row>
-        <div className={styles.cardContainer} style={{ height: 'calc(100% - 110px)' }}>
-          {list.length ? cards : noCard}
-        </div>
+      <FcSection
+        title={title}
+        backTitle={backTitle}
+        handleRotate={handleRotate}
+        isBack={isBack}
+        style={{ padding: '0 15px 15px', position: 'relative' }}>
+          <Row gutter={6} style={{ marginBottom: 20 }}>
+            <Col span={18}>
+              <Input
+                onPressEnter={this.handleSearch}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                ref={node => { this.node = node; }}
+                placeholder="请输入单位名称"
+                style={{ background: 'rgba(9,103,211,0.2)', border: 'none', color: '#FFF' }}
+              />
+            </Col>
+            <Col span={6}>
+              <Button
+                onClick={this.handleSearch}
+                style={{ background: 'rgba(9,103,211,0.5)', border: 'none', color: '#FFF', width: '100%' }}
+              >
+                查询
+              </Button>
+            </Col>
+          </Row>
+          <div className={styles.cardContainer} style={{ height: 'calc(100% - 110px)' }}>
+            {list.length ? cards : noCard}
+          </div>
       </FcSection>
     );
   }

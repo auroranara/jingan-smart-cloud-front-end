@@ -13,10 +13,8 @@ export default class AlarmHandle extends Component {
   };
 
   render() {
-    const { isBack } = this.props;
-
     return (
-      <FcSection title="警情处理" isBack={isBack}>
+      <FcSection title="警情处理" isBack>
         <section>
           <Row>
             <div className={styles.top}>

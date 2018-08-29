@@ -6,14 +6,14 @@ import styles from './MapSearch.less';
 const Input = props => <input {...props} />;
 
 class MapSearch extends PureComponent {
-  state = { selectedItem: {} };
+  // state = { selectedItem: {} };
 
   onSelect = (value, option) => {
     const { handleSelect } = this.props;
     const { props: { label } } = option;
     handleSelect(label);
     // console.log('select', value);
-    this.setState({ selectedItem: label });
+    // this.setState({ selectedItem: label });
   };
 
   // jump = item => {
@@ -23,14 +23,14 @@ class MapSearch extends PureComponent {
 
   render() {
     const { selectList, value, style, handleChange } = this.props;
-    const { selectedItem: { id, name } } = this.state;
+    // const { selectedItem: { id, name } } = this.state;
     const options = selectList.map(item => {
       const { name } = item;
       let children = name;
       // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
       if (name.includes(value)) {
         const [front, end] = name.split(value);
-        children = [front, <span className={styles.highlight}>{value}</span>, end];
+        children = [front, <span key={value} className={styles.highlight}>{value}</span>, end];
       }
 
       return (
