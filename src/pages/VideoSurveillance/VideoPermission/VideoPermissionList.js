@@ -209,10 +209,7 @@ export default class VideoPermissionList extends PureComponent {
                   </Button>
                 } */
                 >
-                  <div
-                    onClick={() => { this.handleToEdit(item.id) }}
-                    style={{ cursor: 'pointer' }}
-                  >
+                  <div>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       地址：{practicalAddressLabel || getEmptyData()}
                     </Ellipsis>
