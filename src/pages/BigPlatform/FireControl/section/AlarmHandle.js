@@ -1,18 +1,31 @@
 import React, { Component } from 'react';
 import { Row, Timeline, Col } from 'antd';
+import moment from 'moment';
+
 import FcSection from './FcSection';
 import styles from './AlarmHandle.less';
 
 import arrowLeft from '../img/arrowLeft.png';
 import arrowRight from '../img/arrowRight.png';
 import imgBg from '../img/imgBg.png';
+
+function getTime(t) {
+  return moment(t).format('HH:MM:SS');
+}
+
 export default class AlarmHandle extends Component {
   state = {
     // 用于控制节点为正序排列
     reverse: false,
   };
-
   render() {
+    const {
+      data: {
+        startMap: { unitType, createTime },
+        handleMap: { createTime: handleTime, safetyMan, safetyPhone },
+        finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones },
+      },
+    } = this.props;
     return (
       <FcSection title="警情处理" isBack>
         <section>
@@ -25,7 +38,7 @@ export default class AlarmHandle extends Component {
               >
                 <Timeline.Item style={{ paddingBottom: 22 }}>
                   <span className={styles.time} style={{ color: '#fff' }}>
-                    10:00:00
+                    {getTime(createTime)}
                   </span>
                   <div>
                     <span className={styles.status} style={{ color: '#fff' }}>
@@ -34,13 +47,32 @@ export default class AlarmHandle extends Component {
                   </div>
                   <div>
                     <p className={styles.content} style={{ color: '#fff' }}>
-                      上报该火警为真实火警
+                      {unitType}
                     </p>
                   </div>
                 </Timeline.Item>
+
+                {handleTime === null && (
+                  <Timeline.Item style={{ paddingBottom: 10 }}>
+                    <span className={styles.time} style={{ color: '#fff' }}>
+                      {getTime(handleTime)}
+                    </span>
+                    <div>
+                      <span className={styles.bestatus} style={{ color: '#fff' }}>
+                        上报
+                      </span>
+                    </div>
+                    <div>
+                      <p className={styles.content} style={{ color: '#fff' }}>
+                        暂未上报完成
+                      </p>
+                    </div>
+                  </Timeline.Item>
+                )}
+
                 <Timeline.Item style={{ paddingBottom: 10 }}>
                   <span className={styles.time} style={{ color: '#fff' }}>
-                    10:00:00
+                    {getTime(handleTime)}
                   </span>
                   <div>
                     <span className={styles.status} style={{ color: '#fff' }}>
@@ -52,29 +84,36 @@ export default class AlarmHandle extends Component {
                       上报该火警为真实火警
                     </p>
                     <p className={styles.contact} style={{ color: '#4f6793' }}>
-                      <span>安全员：张三</span>
-                      <span className={styles.phone}>17777777777</span>
+                      <span>
+                        安全员：
+                        {safetyMan}
+                      </span>
+                      <span className={styles.phone}>{safetyPhone}</span>
                     </p>
                   </div>
                 </Timeline.Item>
+
+                {endTime === null && (
+                  <Timeline.Item style={{ paddingBottom: 10 }}>
+                    <span className={styles.time} style={{ color: '#fff' }}>
+                      {getTime(Date.now())}
+                    </span>
+                    <div>
+                      <span className={styles.bestatus} style={{ color: '#fff' }}>
+                        处理
+                      </span>
+                    </div>
+                    <div>
+                      <p className={styles.content} style={{ color: '#4f6793' }}>
+                        暂未处理完毕
+                      </p>
+                    </div>
+                  </Timeline.Item>
+                )}
+
                 <Timeline.Item style={{ paddingBottom: 10 }}>
                   <span className={styles.time} style={{ color: '#fff' }}>
-                    10:00:00
-                  </span>
-                  <div>
-                    <span className={styles.bestatus} style={{ color: '#fff' }}>
-                      处理
-                    </span>
-                  </div>
-                  <div>
-                    <p className={styles.content} style={{ color: '#4f6793' }}>
-                      暂未处理完毕
-                    </p>
-                  </div>
-                </Timeline.Item>
-                {/* <Timeline.Item style={{ paddingBottom: 10 }}>
-                  <span className={styles.time} style={{ color: '#fff' }}>
-                    10:00:00
+                    {getTime(endTime)}
                   </span>
                   <div>
                     <span className={styles.status} style={{ color: '#fff' }}>
@@ -86,14 +125,18 @@ export default class AlarmHandle extends Component {
                       上报该火警为真实火警
                     </p>
                     <p className={styles.contact} style={{ color: '#4f6793' }}>
-                      <span>安全员：张三</span>
-                      <span className={styles.phone}>17777777777</span>
+                      <span>
+                        安全员：
+                        {safetyMans}
+                      </span>
+                      <span className={styles.phone}>{safetyPhones}</span>
                     </p>
                   </div>
-                </Timeline.Item> */}
+                </Timeline.Item>
               </Timeline>
             </div>
           </Row>
+
           <Row>
             <div className={styles.bottom}>
               <Col span={2}>
