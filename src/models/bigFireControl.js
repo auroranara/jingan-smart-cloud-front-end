@@ -9,7 +9,11 @@ import {
   getCompanyFireInfo,
   queryLookUp,
   queryOffGuard,
+  postLookingUp,
 } from '../services/bigPlatform/fireControl';
+
+const DEFAULT_CODE = 500;
+const EMPTY_OBJECT = {};
 
 function handleDanger(response, isCompany=false) {
   const dangerMap = {};
@@ -65,18 +69,20 @@ export default {
     gridDanger: {},
     companyDanger: {},
     lookUp: {},
+    lookingUp: {},
     offGuard: {},
   },
 
   effects: {
     *fetchCompanyFireInfo({ payload }, { call, put }) {
-      const response = yield call(getCompanyFireInfo);
+      let response = yield call(getCompanyFireInfo);
       if (response && response.code === 200)
         yield put({ type: 'saveMap', payload: response.data });
     },
     *fetchOvAlarmCounts({ payload }, { call, put }) {
-      const response = yield call(queryOvAlarmCounts, payload);
-      const { code, data={} } = response;
+      let response = yield call(queryOvAlarmCounts, payload);
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
       if (code === 200)
         yield put({ type: payload ? 'saveCompanyOv' : 'saveOv', payload: data });
     },
@@ -95,13 +101,15 @@ export default {
       }
     },
     *fetchAlarm({ payload }, { call, put }) {
-      const response = yield call(queryAlarm, payload);
-      const { code, data={} } = response;
+      let response = yield call(queryAlarm, payload);
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
       if (code === 200) yield put({ type: 'saveAlarm', payload: data });
     },
     *fetchAlarmHistory({ payload }, { call, put }) {
-      const response = yield call(queryAlarm, { ...payload, historyType: 1 });
-      const { code, data={} } = response;
+      let response = yield call(queryAlarm, { ...payload, historyType: 1 });
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
       if (code === 200) {
         yield put({ type: 'saveAlarmHistory', payload: data });
       }
@@ -109,15 +117,16 @@ export default {
     *fetchSys({ payload }, { call, put }) {
       const response = yield call(querySys);
       if (response && response.code === 200) {
-        const { data={} } = response;
+        const { data=EMPTY_OBJECT } = response;
         const { total, activeCount, titleName } = data;
         yield put({ type: 'saveSys', payload: data });
         yield put({ type: 'saveOv', payload: { total, activeCount, titleName } });
       }
     },
     *fetchFireTrend({ payload }, { call, put }) {
-      const response = yield call(queryFireTrend, payload);
-      const { code, data={} } = response;
+      let response = yield call(queryFireTrend, payload);
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
       if (code === 200)
         yield put({ type: payload ? 'saveCompanyTrend' : 'saveTrend', payload: data });
     },
@@ -135,17 +144,25 @@ export default {
       }
     },
     *fetchLookUp({ payload, callback }, { call, put }) {
-      const response = yield call(queryLookUp);
-      const { code, data={} } = response;
+      let response = yield call(queryLookUp);
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
       if (code === 200) {
         yield put({ type: 'saveLookUp', payload: data });
         const { flag, recordsId } = data;
         callback && callback(flag, recordsId);
       }
     },
+    *postLookingUp({ payload, callback }, { call, put }) {
+      let response = yield call(postLookingUp);
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, msg="暂无信息" } = response;
+      callback && callback(code, msg);
+    },
     *fetchOffGuard({ payload }, { call, put }) {
-      const response = yield call(queryOffGuard, payload);
-      const { code, data={} } = response;
+      let response = yield call(queryOffGuard, payload);
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
       if (code === 200)
         yield put({ type: 'saveOffGuard', payload: data });
     },
@@ -190,7 +207,7 @@ export default {
     saveLookUp(state, action) {
       return { ...state, lookUp: action.payload };
     },
-    savaOffGuard(state, action) {
+    saveOffGuard(state, action) {
       return { ...state, offGuard: action.payload };
     },
   },

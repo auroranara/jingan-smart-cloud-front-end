@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { Col, Row, Button } from 'antd';
+
+import { myParseInt } from '../utils';
 import styles from './OffGuardWarning.less';
 
 function UnitCard(props) {
   const { index, companyName, alerted } = props;
 
-  let style = alerted ? { color: '#4092fa', border: '1px solid #4092fa' } : { backgroundColor: '#053d84', color: '#fff' };
+  let style = alerted ? { color: '#4092fa', border: '1px solid #4092fa', backgroundColor: 'transparent' } : { backgroundColor: '#053d84', color: '#fff', border: '1px solid #053d84' };
 
   return (
-    <Row style={{ borderBottom: '1px rgb(54, 129, 199) solid' }}>
+    <Row style={{ borderBottom: '1px rgb(9, 103, 211) solid' }}>
       <Col span={4}>
         <p className={styles.number}>{index}</p>
       </Col>
@@ -19,9 +21,9 @@ function UnitCard(props) {
         <Button
           className={styles.btnWarning}
           // onClick={this.warningOnClick()}
-          style={{ borderRadius: '50px', ...style}}
+          style={style}
         >
-          警告
+          {`${alerted ? '已' : ''}警告`}
         </Button>
       </Col>
     </Row>
@@ -48,7 +50,7 @@ export default class OffGuardWarning extends Component {
             <div className={styles.right}>
               <p>
                 脱岗单位:
-                <span style={{ paddingLeft: '5px' }}>5</span>
+                <span style={{ paddingLeft: '5px' }}>{list.length}</span>
               </p>
             </div>
           </Col>
@@ -56,7 +58,7 @@ export default class OffGuardWarning extends Component {
         <div className={styles.table}>
           {list.map((item, index) => {
             const { id, companyName, alertFlag: flag } = item;
-            return <UnitCard key={id} index={index + 1} companyName={companyName} alerted={flag} />
+            return <UnitCard key={id} index={index + 1} companyName={companyName} alerted={myParseInt(flag)} />
           })}
         </div>
       </section>

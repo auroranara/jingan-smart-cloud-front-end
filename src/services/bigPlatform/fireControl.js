@@ -39,6 +39,10 @@ export async function queryLookUp() {
   return request(`${URL_PREFIX}/screenShowData/inspectionRecords`);
 }
 
+export async function postLookingUp() {
+  return request(`${URL_PREFIX}/screenShowData/inspectionRecords`, { method: 'POST' });
+}
+
 export async function queryOffGuard(params) {
   return request(`${URL_PREFIX}/screenShowData/companyResponse?${stringify(params)}`);
 }

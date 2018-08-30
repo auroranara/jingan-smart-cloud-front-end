@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
 import { Button, Icon } from 'antd';
+// import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
 
 import FcSection from './FcSection';
@@ -155,7 +156,7 @@ export default class FireControlMap extends PureComponent {
 
     const {
       showInfo,
-      selected: { longitude, latitude, name=NO_DATA, practicalAddress=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
+      selected: { id, longitude, latitude, name=NO_DATA, practicalAddress=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
       handleInfoClose,
     } = this.props;
 
@@ -168,7 +169,7 @@ export default class FireControlMap extends PureComponent {
         autoMove={false}
         visible={showInfo}
       >
-        <h3 className={styles.companyName}>{name}</h3>
+        <h3 className={styles.companyName}><a className={styles.link} href={`/#/big-platform/fire-control/unit/${id}`}>{name}</a></h3>
         <p className={styles.address}>
           {/* <span className={styles.locateIcon} /> */}
           <span className={styles.locateIcon} style={genBackgrondStyle(locateIcon)} />

@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Col, Modal, Row } from 'antd';
+import { Col, Modal, Row, message } from 'antd';
 
+import { myParseInt } from './utils';
 import styles from './Government.less';
 import Head from './Head';
 import FcModule from './FcModule';
@@ -33,6 +34,8 @@ const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 
 const DELAY = 2000;
+
+message.config({ getContainer: () => document.querySelector('#unitLookUp') });
 
 @connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
@@ -74,9 +77,10 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     dispatch({ type: 'bigFireControl/fetchDanger' });
     dispatch({ type: 'bigFireControl/fetchLookUp', callback: (flag, recordsId) => {
-      if (Number.parseInt(flag, 10) === AUTO_LOOKUP_ROTATE)
+      if (myParseInt(flag) === AUTO_LOOKUP_ROTATE)
         this.handleClickLookUp(true);
 
+      recordsId = 'ZwNsxkTES_y5Beu560xF5w';
       recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
     } });
   };
@@ -93,8 +97,10 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchDanger' });
   };
 
-  handleClickLookUp = (isJump) => {
-    if (isJump) {
+  handleClickLookUp = (isAutoJump) => {
+    const { dispatch } = this.props;
+
+    if (isAutoJump) {
       this.jumpToLookUp();
       return;
     }
@@ -103,20 +109,31 @@ export default class FireControlBigPlatform extends PureComponent {
       title: '您是否确定进行单位查岗',
       okText: '确定',
       cancelText: '取消',
-      onOk: this.jumpToLookUp,
+      getContainer: () => document.querySelector('#unitLookUp'),
+      onOk: () => {
+        dispatch({
+          type: 'bigFireControl/postLookingUp',
+          callback: (code, msg) => {
+            if (code === 200)
+              this.jumpToLookUp();
+            else
+              message.error(msg);
+          },
+        });
+      },
     });
   };
 
   jumpToLookUp = () => {
-    this.setState(({ isLookUpRotated }) => ({ lookUpShow: LOOKING_UP, isLookUpRotated: !isLookUpRotated, startLookUp: true }));
+    this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true, startLookUp: true });
   };
 
   handleClickOffGuard = () => {
-    this.setState(({ isLookUpRotated }) => ({ lookUpShow: OFF_GUARD, isLookUpRotated: !isLookUpRotated }));
+    this.setState({ lookUpShow: OFF_GUARD, isLookUpRotated: true });
   };
 
   handleUnitLookUpRotateBack = () => {
-    this.setState(({ isLookUpRotated }) => ({ isLookUpRotated: !isLookUpRotated }));
+    this.setState({ isLookUpRotated: false });
   };
 
   handleAlarmRotate = () => {
@@ -336,7 +353,7 @@ export default class FireControlBigPlatform extends PureComponent {
               }
               back={
                 <UnitLookUpBack
-                  data={{ offGuard }}
+                  data={{ lookUp, offGuard }}
                   lookUpShow={lookUpShow}
                   startLookUp={startLookUp}
                   handleRotateBack={this.handleUnitLookUpRotateBack}

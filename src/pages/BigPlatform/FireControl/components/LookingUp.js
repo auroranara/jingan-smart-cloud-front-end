@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Col, Button } from 'antd';
+
+import { fillZero, myParseInt } from '../utils';
 import styles from './LookingUp.less';
 import Counter from 'components/flip-timer';
+
+function formatTime(t) {
+  const [m, s] = t.split(',');
+  return `${fillZero(m)}'${fillZero(s)}"`;
+}
 
 export default class LookingUp extends Component {
   state = {
     start: false,
   };
-  getOption = () => {
+  getOption = (n) => {
+    const p = myParseInt(n);
+
     const option = {
       color: ['#00a8ff', '#032c64'],
       tooltip: {
@@ -40,14 +49,14 @@ export default class LookingUp extends Component {
           },
           data: [
             {
-              value: 90.0,
+              value: p,
               itemStyle: {
                 shadowColor: 'rgba(0, 0, 0, 0.8)',
                 shadowBlur: 10,
               },
             },
             {
-              value: 100.0 - 90.0,
+              value: 100.0 - n,
               itemStyle: { opacity: 0.6 },
               label: { show: false },
             },
@@ -55,10 +64,12 @@ export default class LookingUp extends Component {
         },
       ],
     };
+
     return option;
   };
   render() {
-    const { showed, handleRotateBack, startLookUp } = this.props;
+    const { showed, handleRotateBack, startLookUp, data } = this.props;
+    const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -101,7 +112,7 @@ export default class LookingUp extends Component {
               <Col span={8}>
                 <ReactEcharts
                   style={{ width: '100%', height: '100px' }}
-                  option={this.getOption()}
+                  option={this.getOption(rate)}
                   notMerge={true}
                   lazyUpdate={true}
                 />
@@ -111,12 +122,12 @@ export default class LookingUp extends Component {
                   <p className={styles.onJob}>
                     <span className={styles.onJobIcon} />
                     在岗
-                    <span className={styles.personnum}>000</span>
+                    <span className={styles.personnum}>{fillZero(onGuardNum, 3)}</span>
                   </p>
                   <p className={styles.leaveJob}>
                     <span className={styles.leavelJobIcon} />
                     脱岗
-                    <span className={styles.personnum}>000</span>
+                    <span className={styles.personnum}>{fillZero(offGuardNum, 3)}</span>
                   </p>
                 </div>
               </Col>
@@ -136,12 +147,12 @@ export default class LookingUp extends Component {
                   <p className={styles.rabbit}>
                     <span className={styles.rabbitIcon} />
                     最快
-                    <span className={styles.minutes}>2'30''</span>
+                    <span className={styles.minutes}>{formatTime(fast)}</span>
                   </p>
                   <p className={styles.snail}>
                     <span className={styles.snailIcon} />
                     最慢
-                    <span className={styles.minutes}>7'30''</span>
+                    <span className={styles.minutes}>{formatTime(slow)}</span>
                   </p>
                 </div>
               </Col>

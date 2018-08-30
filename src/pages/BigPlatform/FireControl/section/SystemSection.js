@@ -7,10 +7,14 @@ import styles from './SystemSection.less';
 import hostIcon from '../img/host.png';
 
 function UnitCard(props) {
-  const { company, hostNum } = props;
+  const { comanyId, companyName, hostNum } = props;
   return (
-    <Row style={{ borderBottom: '1px solid rgb(54, 129, 199)' }}>
-      <Col span={16}><p className={styles.unitCard}>{company}</p></Col>
+    <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
+      <Col span={16}>
+        <p className={styles.unitCard}>
+          <a className={styles.link} href={`/#/big-platform/fire-control/unit/${comanyId}`}>{companyName}</a>
+        </p>
+      </Col>
       <Col span={8}><p className={styles.unitCard}>{hostNum}</p></Col>
     </Row>
   );
@@ -42,12 +46,12 @@ export default function SystemSection(props) {
         </Col>
       </Row>
       <div className={styles.table} style={{ height: 'calc(100% - 180px)' }}>
-        <Row style={{ borderBottom: '1px solid rgb(54, 129, 199)' }}>
+        <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
           <Col span={16}><p className={styles.tableTitle}>接入单位</p></Col>
           <Col span={8}><p className={styles.tableTitle}>主机数量</p></Col>
         </Row>
         <div style={{ overflow: 'auto', height: 'calc(100% - 42px)'}}>
-          {companyList.map(({ name, count }, index) => <UnitCard key={index} company={name} hostNum={count} /> )}
+          {companyList.map(({ id, name, count }, index) => <UnitCard key={index} companyName={name} hostNum={count} comanyId={id} /> )}
         </div>
       </div>
     </FcSection>
