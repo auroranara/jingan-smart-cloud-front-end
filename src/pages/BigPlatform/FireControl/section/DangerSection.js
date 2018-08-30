@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react'
 
+import { myParseInt } from '../utils';
 import FcSection from './FcSection';
 
 function rand(n) {
@@ -88,6 +89,8 @@ export default class DangerSection extends PureComponent {
       },
       yAxis: {
         type: 'value',
+        // interval: 1,
+        // min: 0,
         axisLine: {
           show: false,
           lineStyle: { width: 2, color: 'rgb(62,71,89)' },
@@ -95,6 +98,14 @@ export default class DangerSection extends PureComponent {
         splitLine: {
           // show: false,
           lineStyle: { color: 'rgb(37,54,83)' },
+        },
+        axisLabel: {
+          formatter: function (value, index) {
+            if (myParseInt(value) !== value) {
+              return "";
+            }
+            return myParseInt(value);
+          },
         },
       },
       series: [

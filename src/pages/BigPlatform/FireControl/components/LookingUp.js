@@ -7,7 +7,8 @@ import styles from './LookingUp.less';
 import Counter from 'components/flip-timer';
 
 function formatTime(t) {
-  const [m, s] = t.split(',');
+  const time = t || '0,0';
+  const [m, s] = time.split(',');
   return `${fillZero(m)}'${fillZero(s)}"`;
 }
 

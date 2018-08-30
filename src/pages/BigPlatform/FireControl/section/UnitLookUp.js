@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { Col, Button } from 'antd';
+import { Button, Col } from 'antd';
 
 import { fillZero } from '../utils';
 import FcSection from './FcSection';
@@ -8,7 +8,8 @@ import styles from './UnitLookUp.less';
 
 
 function formatTime(t) {
-  const [m, s] = t.split(',');
+  const time = t || '0,0';
+  const [m, s] = time.split(',');
   return `${fillZero(m)}'${fillZero(s)}"`;
 }
 
