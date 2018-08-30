@@ -52,24 +52,6 @@ export default class AlarmHandle extends Component {
                   </div>
                 </Timeline.Item>
 
-                {handleTime === null && (
-                  <Timeline.Item style={{ paddingBottom: 10 }}>
-                    <span className={styles.time} style={{ color: '#fff' }}>
-                      {getTime(handleTime)}
-                    </span>
-                    <div>
-                      <span className={styles.bestatus} style={{ color: '#fff' }}>
-                        上报
-                      </span>
-                    </div>
-                    <div>
-                      <p className={styles.content} style={{ color: '#fff' }}>
-                        暂未上报完成
-                      </p>
-                    </div>
-                  </Timeline.Item>
-                )}
-
                 <Timeline.Item style={{ paddingBottom: 10 }}>
                   <span className={styles.time} style={{ color: '#fff' }}>
                     {getTime(handleTime)}

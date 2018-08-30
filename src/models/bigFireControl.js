@@ -165,7 +165,7 @@ export default {
     *fetchAlarmHandle({ payload }, { call, put }) {
       const response = yield call(queryAlarmHandle, payload);
       if (response.code === 200) {
-        yield put({ type: 'queryAlarmHandle', payload: response.data });
+        yield put({ type: 'saveAlarmHandle', payload: response.data });
       }
     },
   },
@@ -206,7 +206,7 @@ export default {
     saveCompanyDanger(state, action) {
       return { ...state, companyDanger: action.payload };
     },
-    queryAlarmHandle(state, action) {
+    saveAlarmHandle(state, action) {
       return { ...state, alarmProcess: action.payload };
     },
   },

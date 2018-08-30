@@ -140,7 +140,6 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchCompanyOv', payload: { company_id: id } });
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id } });
     dispatch({ type: 'bigFireControl/fetchDanger', payload: { company_id: id } });
-    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { companyId: id } });
 
     let detail = alarmDetail;
     // 若alarmDetail没有传，则是在地图中点击的公司，所以在警情列表中筛选该公司的第一个警情，若传了，则是在警情列表中点击的
