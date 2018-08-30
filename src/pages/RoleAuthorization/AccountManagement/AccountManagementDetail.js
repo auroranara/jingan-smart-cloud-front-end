@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Modal, Input, message } from 'antd';
+import { Form, Card, Modal, Input, message, Badge } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -189,7 +189,7 @@ export default class accountManagementDetail extends PureComponent {
             });
           },
           err: () => {
-            message.err('提交失败！', () => {});
+            message.err('提交失败！', () => { });
           },
         });
       }
@@ -240,14 +240,14 @@ export default class accountManagementDetail extends PureComponent {
           <Description term={fieldLabels.phoneNumber}>
             {(phoneNumber + '').trim() || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.unitType}>
+          {/* <Description term={fieldLabels.unitType}>
             {UnitTypes[unitType] || getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.unitId}>{unitName || getEmptyData()}</Description>
+          </Description> */}
+          {/* <Description term={fieldLabels.unitId}>{unitName || getEmptyData()}</Description> */}
           <Description term={fieldLabels.accountStatus}>
-            {accountStatus === 1 ? '启用' : '禁用' || getEmptyData()}
+            {accountStatus === 1 ? <span><Badge status="success" />启用</span> : <span><Badge status="error" />禁用</span> || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.departmentId}>
+          {/* <Description term={fieldLabels.departmentId}>
             {departmentName || getEmptyData()}
           </Description>
           {companyType && (
@@ -269,7 +269,7 @@ export default class accountManagementDetail extends PureComponent {
             <Description term={fieldLabels.execCertificateCode}>
               {execCertificateCode || getEmptyData()}
             </Description>
-          )}
+          )} */}
         </DescriptionList>
       </Card>
     );
@@ -292,10 +292,10 @@ export default class accountManagementDetail extends PureComponent {
             <div style={{ paddingTop: 8 }}>
               {roleNames
                 ? roleNames.split(',').map(roleName => (
-                    <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                      {roleName}
-                    </p>
-                  ))
+                  <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                    {roleName}
+                  </p>
+                ))
                 : getEmptyData()}
             </div>
           </Description>
@@ -396,7 +396,7 @@ export default class accountManagementDetail extends PureComponent {
         wrapperClassName={styles.advancedForm}
       >
         {this.renderBasicInfo()}
-        {this.renderRolePermission()}
+        {/* {this.renderRolePermission()} */}
         {this.renderFooterToolbar()}
       </PageHeaderLayout>
     );

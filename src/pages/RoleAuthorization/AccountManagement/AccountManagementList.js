@@ -1,7 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Row, Col, Select, AutoComplete, Icon } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Row, Col, Select, AutoComplete, Icon, Modal, Table, Divider } from 'antd';
 import { routerRedux } from 'dva/router';
+import router from 'umi/router'
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -109,6 +110,10 @@ export default class accountManagementList extends PureComponent {
     super(props);
     this.formData = defaultFormData;
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
+    this.state = {
+      modalVisible: false,
+      associatedUnits: [],
+    }
   }
 
   // 生命周期函数
@@ -228,6 +233,25 @@ export default class accountManagementList extends PureComponent {
       },
     });
   };
+
+  // 查看更多关联企业
+  handleViewMore = (list) => {
+    this.setState({
+      modalVisible: true,
+      associatedUnits: list,
+    })
+  }
+
+  handleModalClose = () => {
+    this.setState({
+      modalVisible: false,
+    })
+  }
+
+  // 跳转到编辑关联企业
+  handleToEdit = (id) => {
+    router.push(`/role-authorization/account-management/associated-unit/edit/${id}`)
+  }
 
   /* 渲染form表单 */
   renderForm() {
@@ -387,13 +411,15 @@ export default class accountManagementList extends PureComponent {
                             {item.users[0].unitName}
                           </Ellipsis>
                         </Col>
-                        <Col span={6}>
-                          {item.accountStatus && (<Icon className={styles['unit-edit-icon']} type="link" />)}
-                          {!item.accountStatus && (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                        <Col span={3}>
                           <Icon className={styles['unit-edit-icon']} type="edit" />
                         </Col>
+                        <Col span={3}>
+                          {item.accountStatus && (<Icon className={styles['unit-edit-icon']} type="link" />)}
+                          {!item.accountStatus && (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                        </Col>
                       </Row>) : getEmptyData()}
-                    <p style={{ visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden' }} className={styles.more}>更多...</p>
+                    <p onClick={() => this.handleViewMore(item.users)} style={{ visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden' }} className={styles.more}>更多...</p>
                   </div>
                   {
                     <div className={styles[statusList[status]]}>
@@ -407,6 +433,44 @@ export default class accountManagementList extends PureComponent {
         />
       </div>
     );
+  }
+
+  renderModal = () => {
+    const { modalVisible, associatedUnits } = this.state
+    const columns = [
+      {
+        title: '关联单位',
+        key: 'unitName',
+        dataIndex: 'unitName',
+        align: 'center',
+      },
+      {
+        title: '操作',
+        key: '操作',
+        dataIndex: '操作',
+        align: 'center',
+        render: (val, row) => {
+          return (
+            <Fragment>
+              <Icon onClick={() => this.handleToEdit(row.id)} className={styles['unit-edit-icon']} type="edit" />
+              <Divider type="vertical" />
+              {row.accountStatus && (<Icon className={styles['unit-edit-icon']} type="link" />)}
+              {!row.accountStatus && (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+            </Fragment>
+          )
+        },
+      },
+    ]
+
+    return (
+      <Modal
+        title="关联单位"
+        visible={modalVisible}
+        onCancel={this.handleModalClose}
+      >
+        <Table bordered rowKey="id" columns={columns} dataSource={associatedUnits} pagination={false}></Table>
+      </Modal>
+    )
   }
 
   render() {
@@ -426,6 +490,7 @@ export default class accountManagementList extends PureComponent {
         <BackTop />
         {this.renderForm()}
         {this.renderList()}
+        {this.renderModal()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
         {loading &&
           !isLast && (

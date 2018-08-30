@@ -11,6 +11,9 @@ import {
   queryExecCertificateType,
   queryUserType,
   queryDepartmentList,
+  fetchAssociatedUnitDeatil,
+  addAssociatedUnit,
+  editAssociatedUnit,
 } from '../services/accountManagement.js';
 
 import { checkOldPass, changePass } from '../services/account.js';
@@ -58,9 +61,7 @@ export default {
     subDepartments: [],
     documentTypeIds: [],
     departments: [],
-    associatedUnit: {
-      form: {},
-    },
+    user: {},
   },
 
   effects: {
@@ -244,6 +245,35 @@ export default {
         });
       }
     },
+    // 获取用户详情（关联企业页面）
+    *fetchAssociatedUnitDeatil({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchAssociatedUnitDeatil, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryAccountDetail',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    // 添加关联企业
+    *addAssociatedUnit({ payload, success, error }, { call, put }) {
+      const response = yield call(addAssociatedUnit, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response.msg)
+    },
+    // 修改关联企业
+    *editAssociatedUnit({ payload, success, error }, { call }) {
+      const response = yield call(editAssociatedUnit, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response.msg)
+    },
   },
 
   reducers: {
@@ -382,6 +412,12 @@ export default {
             execCertificateCode: undefined,
           },
         },
+      }
+    },
+    saveUserInfo(state, { payload }) {
+      return {
+        ...state,
+        user: payload,
       }
     },
   },

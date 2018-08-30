@@ -79,12 +79,12 @@ const treeData = data => {
   }),
   dispatch => ({
     // 修改账号
-    updateAccountDetail(action) {
-      dispatch({
-        type: 'account/updateAccountDetail',
-        ...action,
-      });
-    },
+    // updateAccountDetail(action) {
+    //   dispatch({
+    //     type: 'account/updateAccountDetail',
+    //     ...action,
+    //   });
+    // },
 
     // 新增账号
     /* addAccount(action) {
@@ -93,13 +93,33 @@ const treeData = data => {
         ...action,
       });
     }, */
-
+    editAssociatedUnit(action) {
+      dispatch({
+        type: 'account/editAssociatedUnit',
+        ...action,
+      })
+    },
     // 获取账号详情
     fetchAccountDetail(action) {
       dispatch({
         type: 'account/fetchAccountDetail',
         ...action,
       });
+    },
+
+    // 获取用户详情
+    fetchAssociatedUnitDeatil(action) {
+      dispatch({
+        type: 'account/fetchAssociatedUnitDeatil',
+        ...action,
+      })
+    },
+
+    addAssociatedUnit(action) {
+      dispatch({
+        type: 'account/addAssociatedUnit',
+        ...action,
+      })
     },
 
     // 获取单位类型与账号状态
@@ -191,13 +211,13 @@ export default class AssociatedUnit extends PureComponent {
   state = {
     unitTypeChecked: false,
     submitting: false,
-    isAdd: true,
   };
 
   /* 生命周期函数 */
   componentDidMount() {
     const {
       fetchAccountDetail,
+      fetchAssociatedUnitDeatil,
       match: {
         params: { id, userId },
       },
@@ -210,9 +230,6 @@ export default class AssociatedUnit extends PureComponent {
       fetchUserType,
       fetchDepartmentList,
     } = this.props;
-    this.setState({
-      isAdd: !!userId,
-    })
     const success = id
       ? undefined
       : () => {
@@ -230,10 +247,11 @@ export default class AssociatedUnit extends PureComponent {
       };
 
     if (!!userId) {
-      // 获取账号和关联企业详情
-      fetchAccountDetail({
+      // 如果是编辑
+
+      fetchAssociatedUnitDeatil({
         payload: {
-          id,
+          userId,
         },
         success: ({ unitType, unitId }) => {
           this.setState({
@@ -261,31 +279,32 @@ export default class AssociatedUnit extends PureComponent {
         },
       });
     } else {
+      // 如果是新增
       fetchAccountDetail({
         payload: {
           id,
         },
-        success: ({ unitType, unitId }) => {
-          this.setState({
-            unitTypeChecked: unitType,
-          });
-          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-          fetchUnitsFuzzy({
-            payload: {
-              unitType: unitType,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
-          if (unitId) {
-            fetchDepartmentList({
-              payload: {
-                companyId: unitId,
-              },
-              error: goToException,
-            });
-          }
-        },
+        // success: ({ unitType, unitId }) => {
+        //   this.setState({
+        //     unitTypeChecked: unitType,
+        //   });
+        //   // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        //   fetchUnitsFuzzy({
+        //     payload: {
+        //       unitType: unitType,
+        //       pageNum: 1,
+        //       pageSize: defaultPageSize,
+        //     },
+        //   });
+        //   if (unitId) {
+        //     fetchDepartmentList({
+        //       payload: {
+        //         companyId: unitId,
+        //       },
+        //       error: goToException,
+        //     });
+        //   }
+        // },
         error: () => {
           goToException();
         },
@@ -320,12 +339,15 @@ export default class AssociatedUnit extends PureComponent {
   /* 点击提交按钮验证表单信息 */
   handleClickValidate = () => {
     const {
-      updateAccountDetail,
-      // addAccount,
+      addAssociatedUnit,
+      editAssociatedUnit,
       goBack,
       form: { validateFieldsAndScroll },
       match: {
         params: { id, userId },
+      },
+      account: {
+        detail: { data: { loginId } },
       },
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
@@ -353,7 +375,6 @@ export default class AssociatedUnit extends PureComponent {
             submitting: true,
           });
           const payload = {
-            id,
             loginName: loginName.trim(),
             // password: password && password.trim(),
             accountStatus,
@@ -390,23 +411,22 @@ export default class AssociatedUnit extends PureComponent {
               submitting: false,
             });
           };
-          // 如果有companyId，为编辑
+          // 如果有userId，为编辑
           if (userId) {
-            console.log('编辑', payload);
-
-            /* updateAccountDetail({
+            payload.id = userId
+            payload.loginId = loginId
+            editAssociatedUnit({
               payload,
               success,
               error,
-            }); */
+            });
           } else {
-            // addAccount({
-            //   payload,
-            //   success,
-            //   error,
-            // });
-            console.log('新增', payload);
-
+            payload.loginId = id
+            addAssociatedUnit({
+              payload,
+              success,
+              error,
+            })
           }
         }
       }
@@ -425,11 +445,11 @@ export default class AssociatedUnit extends PureComponent {
       },
       () => {
         setFieldsValue({ userType: undefined });
-        /* if (id === 4) {
-          setFieldsValue({ userType: 'company_legal_person' });
-        } else {
-          setFieldsValue({ userType: undefined });
-        } */
+        // if (id === 4) {
+        //   setFieldsValue({ userType: 'company_legal_person' });
+        // } else {
+        //   setFieldsValue({ userType: undefined });
+        // }
       }
     );
   };
@@ -460,14 +480,16 @@ export default class AssociatedUnit extends PureComponent {
       form: { getFieldValue, setFieldsValue },
     } = this.props;
     // 根据输入值获取列表
-    fetchUnitsFuzzy({
-      payload: {
-        unitType: getFieldValue('unitType'),
-        unitName: value && value.trim(),
-        pageNum: 1,
-        pageSize: defaultPageSize,
-      },
-    });
+    if (getFieldValue('unitType')) {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: getFieldValue('unitType'),
+          unitName: value && value.trim(),
+          pageNum: 1,
+          pageSize: defaultPageSize,
+        },
+      });
+    }
     // 清除数据权限输入框的值
     setFieldsValue({
       treeIds: undefined,
@@ -478,11 +500,17 @@ export default class AssociatedUnit extends PureComponent {
   // 所属单位下拉框选择
   handleDataPermissions = value => {
     const {
+      fetchDepartmentList,
       form: { setFieldsValue },
     } = this.props;
     // 根据value从源数组中筛选出对应的数据，获取其值
     setFieldsValue({
       treeIds: value,
+    });
+    fetchDepartmentList({
+      payload: {
+        companyId: value.key,
+      },
     });
   };
 
@@ -512,13 +540,15 @@ export default class AssociatedUnit extends PureComponent {
           unitId: undefined,
           treeIds: undefined,
         });
-        fetchUnitsFuzzy({
-          payload: {
-            unitType: getFieldValue('unitType'),
-            pageNum: 1,
-            pageSize: defaultPageSize,
-          },
-        });
+        if (getFieldValue('unitType')) {
+          fetchUnitsFuzzy({
+            payload: {
+              unitType: getFieldValue('unitType'),
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+        }
       }
     }
   };
@@ -624,7 +654,8 @@ export default class AssociatedUnit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
-                  // initialValue: id ? unitType : unitTypes.length === 0 ? undefined : 4,
+                  // initialValue: userId ? unitType : unitTypes.length === 0 ? undefined : 4,
+                  initialValue: userId ? unitType : null,
                   rules: [
                     {
                       required: true,
@@ -650,7 +681,7 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.unitId}>
                 {getFieldDecorator('unitId', {
                   // TODO：
-                  // initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
+                  initialValue: userId && unitId && unitName ? { key: unitId, label: unitName } : undefined,
                   rules: [
                     {
                       required: unitTypeChecked !== 3, // 如果是运营企业 不需要必填,
@@ -667,7 +698,7 @@ export default class AssociatedUnit extends PureComponent {
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
                     onSelect={this.handleDataPermissions}
-                    onChange={this.handleFetchDepartments}
+                    // onChange={this.handleFetchDepartments}
                     onBlur={this.handleUnitIdBlur}
                     filterOption={false}
                   >
@@ -684,7 +715,7 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.departmentId}>
                 {getFieldDecorator('departmentId', {
                   // TODO：
-                  // initialValue: [departmentId],
+                  initialValue: userId ? [departmentId] : null,
                 })(
                   <TreeSelect
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
@@ -707,6 +738,7 @@ export default class AssociatedUnit extends PureComponent {
                       //   : userTypes.length === 0
                       //     ? undefined
                       //     : userTypes[0].value,
+                      initialValue: userId ? userType : null,
                       rules: [
                         {
                           required: true,
@@ -731,7 +763,7 @@ export default class AssociatedUnit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.userType}>
                     {getFieldDecorator('userType', {
-                      // initialValue: userType,
+                      initialValue: userType,
                       rules: [
                         {
                           required: true,
@@ -755,7 +787,7 @@ export default class AssociatedUnit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.documentTypeId}>
                     {getFieldDecorator('documentTypeId', {
-                      // initialValue: documentTypeId,
+                      initialValue: documentTypeId,
                       rules: [
                         {
                           message: '请选择执法证种类',
@@ -778,7 +810,7 @@ export default class AssociatedUnit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.execCertificateCode}>
                     {getFieldDecorator('execCertificateCode', {
-                      // initialValue: execCertificateCode,
+                      initialValue: execCertificateCode,
                       rules: [
                         {
                           message: '请输入执法证编号',
@@ -816,7 +848,7 @@ export default class AssociatedUnit extends PureComponent {
             <Col span={24}>
               <Form.Item label={fieldLabels.roleIds}>
                 {getFieldDecorator('roleIds', {
-                  // initialValue: roleIds ? roleIds.split(',') : [],
+                  initialValue: roleIds ? roleIds.split(',') : [],
                   valuePropName: 'targetKeys',
                   rules: [
                     {
@@ -839,8 +871,8 @@ export default class AssociatedUnit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.treeIds}>
                 {getFieldDecorator('treeIds', {
-                  // initialValue:
-                  //   treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
+                  initialValue:
+                    treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
                 })(
                   <AutoComplete
                     mode="combobox"

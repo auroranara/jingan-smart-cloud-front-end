@@ -207,18 +207,18 @@ export default class accountManagementEdit extends PureComponent {
     const success = id
       ? undefined
       : () => {
-          this.setState({
-            unitTypeChecked: 4,
-          });
-          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-          fetchUnitsFuzzy({
-            payload: {
-              unitType: 4,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
-        };
+        this.setState({
+          unitTypeChecked: 4,
+        });
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: 4,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
+      };
 
     // 如果id存在的话，就获取详情，即编辑状态
     if (id) {
@@ -280,6 +280,8 @@ export default class accountManagementEdit extends PureComponent {
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
+  handleClearSpace = e => e.target.value.replace(/\s/g, '')
+
   /* 点击提交按钮验证表单信息 */
   handleClickValidate = () => {
     const {
@@ -315,34 +317,7 @@ export default class accountManagementEdit extends PureComponent {
           this.setState({
             submitting: true,
           });
-          const payload = {
-            id,
-            loginName: loginName.trim(),
-            password: password && password.trim(),
-            accountStatus,
-            userName: userName.trim(),
-            phoneNumber: phoneNumber.trim(),
-            unitType,
-            unitId: unitId ? unitId.key : null,
-            treeIds: treeIds ? treeIds.key : null,
-            roleIds: roleIds.join(','),
-            departmentId: Array.isArray(departmentId) ? undefined : departmentId,
-            userType,
-            documentTypeId,
-            execCertificateCode,
-          };
-          switch (payload.unitType) {
-            // 维保企业
-            case 1:
-              payload.userType = 'company_safer';
-              break;
-            // 运营企业
-            case 3:
-              payload.userType = 'admin';
-              break;
-            default:
-              break;
-          }
+
           const success = () => {
             const msg = id ? '编辑成功！' : '新增成功！';
             message.success(msg, 1, goBack);
@@ -356,11 +331,45 @@ export default class accountManagementEdit extends PureComponent {
           // 如果id存在的话，为编辑
           if (id) {
             updateAccountDetail({
-              payload,
+              payload: {
+                loginId: id,
+                loginName,
+                userName,
+                phoneNumber,
+                accountStatus,
+              },
               success,
               error,
             });
           } else {
+            const payload = {
+              id,
+              loginName,
+              password: password && password.trim(),
+              accountStatus,
+              userName,
+              phoneNumber,
+              unitType,
+              unitId: unitId ? unitId.key : null,
+              treeIds: treeIds ? treeIds.key : null,
+              roleIds: roleIds.join(','),
+              departmentId: Array.isArray(departmentId) ? undefined : departmentId,
+              userType,
+              documentTypeId,
+              execCertificateCode,
+            };
+            switch (payload.unitType) {
+              // 维保企业
+              case 1:
+                payload.userType = 'company_safer';
+                break;
+              // 运营企业
+              case 3:
+                payload.userType = 'admin';
+                break;
+              default:
+                break;
+            }
             addAccount({
               payload,
               success,
@@ -553,6 +562,7 @@ export default class accountManagementEdit extends PureComponent {
               <Form.Item label={fieldLabels.loginName}>
                 {getFieldDecorator('loginName', {
                   initialValue: loginName,
+                  getValueFromEvent: this.handleClearSpace,
                   validateTrigger: 'onBlur',
                   rules: [
                     {
@@ -567,8 +577,8 @@ export default class accountManagementEdit extends PureComponent {
                   id ? (
                     <span>{loginName}</span>
                   ) : (
-                    <Input placeholder="请输入用户名" min={1} max={20} />
-                  )
+                      <Input placeholder="请输入用户名" min={1} max={20} />
+                    )
                 )}
               </Form.Item>
             </Col>
@@ -619,7 +629,7 @@ export default class accountManagementEdit extends PureComponent {
               <Form.Item label={fieldLabels.userName}>
                 {getFieldDecorator('userName', {
                   initialValue: userName,
-                  getValueFromEvent: this.handleTrim,
+                  getValueFromEvent: this.handleClearSpace,
                   rules: [
                     {
                       required: true,
@@ -635,7 +645,7 @@ export default class accountManagementEdit extends PureComponent {
               <Form.Item label={fieldLabels.phoneNumber}>
                 {getFieldDecorator('phoneNumber', {
                   initialValue: phoneNumber,
-                  getValueFromEvent: this.handleTrim,
+                  getValueFromEvent: this.handleClearSpace,
                   validateTrigger: 'onBlur',
                   rules: [
                     {
@@ -648,82 +658,85 @@ export default class accountManagementEdit extends PureComponent {
                 })(<Input placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitType}>
-                {getFieldDecorator('unitType', {
-                  initialValue: id ? unitType : unitTypes.length === 0 ? undefined : 4,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择单位类型',
-                    },
-                  ],
-                })(
-                  <Select
-                    placeholder="请选择单位类型"
-                    onSelect={this.handleUnitTypeSelect}
-                    onChange={this.handleUnitTypesChange}
-                  >
-                    {unitTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
-                {getFieldDecorator('unitId', {
-                  initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
-                  rules: [
-                    {
-                      required: unitTypeChecked !== 3, // 如果是运营企业 不需要必填,
-                      transform: value => value && value.label,
-                      message: '请选择所属单位',
-                    },
-                  ],
-                })(
-                  <AutoComplete
-                    mode="combobox"
-                    labelInValue
-                    optionLabelProp="children"
-                    placeholder="请选择所属单位"
-                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    onSearch={this.handleUnitIdChange}
-                    onSelect={this.handleDataPermissions}
-                    onChange={this.handleFetchDepartments}
-                    onBlur={this.handleUnitIdBlur}
-                    filterOption={false}
-                  >
-                    {unitIdes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.name}
-                      </Option>
-                    ))}
-                  </AutoComplete>
-                )}
-              </Form.Item>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.departmentId}>
-                {getFieldDecorator('departmentId', {
-                  initialValue: [departmentId],
-                })(
-                  <TreeSelect
-                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                    allowClear
-                    placeholder="请选择所属部门"
-                  >
-                    {treeList}
-                  </TreeSelect>
-                )}
-              </Form.Item>
-            </Col>
+            {!id && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.unitType}>
+                  {getFieldDecorator('unitType', {
+                    initialValue: id ? unitType : unitTypes.length === 0 ? undefined : 4,
+                    rules: [
+                      {
+                        required: true,
+                        message: '请选择单位类型',
+                      },
+                    ],
+                  })(
+                    <Select
+                      placeholder="请选择单位类型"
+                      onSelect={this.handleUnitTypeSelect}
+                      onChange={this.handleUnitTypesChange}
+                    >
+                      {unitTypes.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>)}
+            {!id && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
+                  {getFieldDecorator('unitId', {
+                    initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
+                    rules: [
+                      {
+                        required: unitTypeChecked !== 3, // 如果是运营企业 不需要必填,
+                        transform: value => value && value.label,
+                        message: '请选择所属单位',
+                      },
+                    ],
+                  })(
+                    <AutoComplete
+                      mode="combobox"
+                      labelInValue
+                      optionLabelProp="children"
+                      placeholder="请选择所属单位"
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      onSearch={this.handleUnitIdChange}
+                      onSelect={this.handleDataPermissions}
+                      onChange={this.handleFetchDepartments}
+                      onBlur={this.handleUnitIdBlur}
+                      filterOption={false}
+                    >
+                      {unitIdes.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.name}
+                        </Option>
+                      ))}
+                    </AutoComplete>
+                  )}
+                </Form.Item>
+              </Col>)}
+            {!id && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.departmentId}>
+                  {getFieldDecorator('departmentId', {
+                    initialValue: [departmentId],
+                  })(
+                    <TreeSelect
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      allowClear
+                      placeholder="请选择所属部门"
+                    >
+                      {treeList}
+                    </TreeSelect>
+                  )}
+                </Form.Item>
+              </Col>)}
             {/* 当单位类型为企事业主体（企事业主体对应id为4） */}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === 4 && (
+              unitTypeChecked === 4 && !id && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.userType}>
                     {getFieldDecorator('userType', {
@@ -752,7 +765,7 @@ export default class accountManagementEdit extends PureComponent {
               )}
             {/* 当单位类型为政府机构（政府机构对应id为2） */}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === 2 && (
+              unitTypeChecked === 2 && !id && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.userType}>
                     {getFieldDecorator('userType', {
@@ -776,7 +789,7 @@ export default class accountManagementEdit extends PureComponent {
                 </Col>
               )}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === 2 && (
+              unitTypeChecked === 2 && !id && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.documentTypeId}>
                     {getFieldDecorator('documentTypeId', {
@@ -799,7 +812,7 @@ export default class accountManagementEdit extends PureComponent {
                 </Col>
               )}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === 2 && (
+              unitTypeChecked === 2 && !id && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.execCertificateCode}>
                     {getFieldDecorator('execCertificateCode', {
@@ -1005,7 +1018,7 @@ export default class accountManagementEdit extends PureComponent {
       >
         <Spin spinning={loading || submitting}>
           {this.renderBasicInfo()}
-          {this.renderRolePermission()}
+          {!id && this.renderRolePermission()}
           {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>
