@@ -8,6 +8,8 @@ import {
   queryDanger,
   getCompanyFireInfo,
   queryAlarmHandle,
+  queryLookUp,
+  queryOffGuard,
 } from '../services/bigPlatform/fireControl';
 
 function handleDanger(response, isCompany = false) {
@@ -47,6 +49,13 @@ function handleDanger(response, isCompany = false) {
   return [{ list }, { list: gridList }];
 }
 
+// function handleMapCompanyList(list) {
+//   return list.map(item => {
+//     const { isFire } = item;
+//     return { ...item, hasFire: isFire === NORMAL ? false: true, status: isFire };
+//   });
+// }
+
 export default {
   namespace: 'bigFireControl',
 
@@ -82,23 +91,24 @@ export default {
         safetyPhone: '',
       },
     },
+    lookUp: {},
+    offGuard: {},
   },
 
   effects: {
     *fetchCompanyFireInfo({ payload }, { call, put }) {
       const response = yield call(getCompanyFireInfo);
-      if (response && response.code === 200) {
+      if (response && response.code === 200)
         yield put({ type: 'saveMap', payload: response.data });
-      }
     },
     *fetchOvAlarmCounts({ payload }, { call, put }) {
       const response = yield call(queryOvAlarmCounts, payload);
-      const { code, data } = response;
-      if (code === 200) yield put({ type: payload ? 'saveCompanyOv' : 'saveOv', payload: data });
+      const { code, data={} } = response;
+      if (code === 200)
+        yield put({ type: payload ? 'saveCompanyOv' : 'saveOv', payload: data });
     },
     *fetchOvDangerCounts({ payload }, { call, put }) {
       const response = yield call(queryOvDangerCounts, payload);
-      // const { code, data } = response;
       if (response) {
         const { total: totalDanger, overRectifyNum: overdueNum, rectifyNum, reviewNum } = response;
         yield put({
@@ -119,25 +129,20 @@ export default {
     },
     *fetchAlarm({ payload }, { call, put }) {
       const response = yield call(queryAlarm, payload);
-      const { code, data } = response;
+      const { code, data={} } = response;
       if (code === 200) yield put({ type: 'saveAlarm', payload: data });
     },
     *fetchAlarmHistory({ payload }, { call, put }) {
       const response = yield call(queryAlarm, { ...payload, historyType: 1 });
-      const { code, data } = response;
+      const { code, data={} } = response;
       if (code === 200) {
-        // let newData = { list: [] };
-        // if (data && data.list && Array.isArray(data.list))
-        //   newData = { ...data, list: data.list.map(item => ({ ...item, isHistory: true })) };
-        // else if (data)
-        //   newData = { ...data, list: [] };
         yield put({ type: 'saveAlarmHistory', payload: data });
       }
     },
     *fetchSys({ payload }, { call, put }) {
       const response = yield call(querySys);
       if (response && response.code === 200) {
-        const { data } = response;
+        const { data={} } = response;
         const { total, activeCount, titleName } = data;
         yield put({ type: 'saveSys', payload: data });
         yield put({ type: 'saveOv', payload: { total, activeCount, titleName } });
@@ -145,7 +150,7 @@ export default {
     },
     *fetchFireTrend({ payload }, { call, put }) {
       const response = yield call(queryFireTrend, payload);
-      const { code, data } = response;
+      const { code, data={} } = response;
       if (code === 200)
         yield put({ type: payload ? 'saveCompanyTrend' : 'saveTrend', payload: data });
     },
@@ -167,6 +172,21 @@ export default {
       if (response.code === 200) {
         yield put({ type: 'saveAlarmHandle', payload: response.data });
       }
+    },
+    *fetchLookUp({ payload, callback }, { call, put }) {
+      const response = yield call(queryLookUp);
+      const { code, data={} } = response;
+      if (code === 200) {
+        yield put({ type: 'saveLookUp', payload: data });
+        const { flag, recordsId } = data;
+        callback && callback(flag, recordsId);
+      }
+    },
+    *fetchOffGuard({ payload }, { call, put }) {
+      const response = yield call(queryOffGuard, payload);
+      const { code, data={} } = response;
+      if (code === 200)
+        yield put({ type: 'saveOffGuard', payload: data });
     },
   },
 
@@ -208,6 +228,12 @@ export default {
     },
     saveAlarmHandle(state, action) {
       return { ...state, alarmProcess: action.payload };
+    },
+    saveLookUp(state, action) {
+      return { ...state, lookUp: action.payload };
+    },
+    savaOffGuard(state, action) {
+      return { ...state, offGuard: action.payload };
     },
   },
 };
