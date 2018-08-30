@@ -26,10 +26,11 @@ export default class AlarmHandle extends Component {
         finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones },
       },
     } = this.props;
+
     return (
       <FcSection title="警情处理" isBack>
-        <section>
-          <Row>
+        <section className={styles.main}>
+          <Row style={{ height: '60%' }}>
             <div className={styles.top}>
               <Timeline
                 pending=""
@@ -52,34 +53,48 @@ export default class AlarmHandle extends Component {
                   </div>
                 </Timeline.Item>
 
-                <Timeline.Item style={{ paddingBottom: 10 }}>
-                  <span className={styles.time} style={{ color: '#fff' }}>
-                    {getTime(handleTime)}
-                  </span>
-                  <div>
-                    <span className={styles.status} style={{ color: '#fff' }}>
-                      上报
-                    </span>
-                  </div>
-                  <div>
-                    <p className={styles.content} style={{ color: '#fff' }}>
-                      上报该火警为真实火警
-                    </p>
-                    <p className={styles.contact} style={{ color: '#4f6793' }}>
-                      <span>
-                        安全员：
-                        {safetyMan}
+                {!handleTime && (
+                  <Timeline.Item style={{ paddingBottom: 10 }}>
+                    <div>
+                      <span className={styles.bestatus} style={{ color: '#fff' }}>
+                        上报
                       </span>
-                      <span className={styles.phone}>{safetyPhone}</span>
-                    </p>
-                  </div>
-                </Timeline.Item>
+                    </div>
+                    <div>
+                      <p className={styles.content} style={{ color: '#4f6793' }}>
+                        暂未上报完毕
+                      </p>
+                    </div>
+                  </Timeline.Item>
+                )}
 
-                {endTime === null && (
+                {handleTime && (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
                     <span className={styles.time} style={{ color: '#fff' }}>
-                      {getTime(Date.now())}
+                      {getTime(handleTime)}
                     </span>
+                    <div>
+                      <span className={styles.status} style={{ color: '#fff' }}>
+                        上报
+                      </span>
+                    </div>
+                    <div>
+                      <p className={styles.content} style={{ color: '#fff' }}>
+                        上报该火警为真实火警
+                      </p>
+                      <p className={styles.contact} style={{ color: '#4f6793' }}>
+                        <span>
+                          安全员：
+                          {safetyMan}
+                        </span>
+                        <span className={styles.phone}>{safetyPhone}</span>
+                      </p>
+                    </div>
+                  </Timeline.Item>
+                )}
+
+                {!endTime && (
+                  <Timeline.Item style={{ paddingBottom: 10 }}>
                     <div>
                       <span className={styles.bestatus} style={{ color: '#fff' }}>
                         处理
@@ -93,50 +108,52 @@ export default class AlarmHandle extends Component {
                   </Timeline.Item>
                 )}
 
-                <Timeline.Item style={{ paddingBottom: 10 }}>
-                  <span className={styles.time} style={{ color: '#fff' }}>
-                    {getTime(endTime)}
-                  </span>
-                  <div>
-                    <span className={styles.status} style={{ color: '#fff' }}>
-                      处理
+                {endTime && (
+                  <Timeline.Item style={{ paddingBottom: 10 }}>
+                    <span className={styles.time} style={{ color: '#fff' }}>
+                      {getTime(endTime)}
                     </span>
-                  </div>
-                  <div>
-                    <p className={styles.content} style={{ color: '#fff' }}>
-                      上报该火警为真实火警
-                    </p>
-                    <p className={styles.contact} style={{ color: '#4f6793' }}>
-                      <span>
-                        安全员：
-                        {safetyMans}
+                    <div>
+                      <span className={styles.status} style={{ color: '#fff' }}>
+                        处理
                       </span>
-                      <span className={styles.phone}>{safetyPhones}</span>
-                    </p>
-                  </div>
-                </Timeline.Item>
+                    </div>
+                    <div>
+                      <p className={styles.content} style={{ color: '#fff' }}>
+                        确认火警已处理完毕
+                      </p>
+                      <p className={styles.contact} style={{ color: '#4f6793' }}>
+                        <span>
+                          安全员：
+                          {safetyMans}
+                        </span>
+                        <span className={styles.phone}>{safetyPhones}</span>
+                      </p>
+                    </div>
+                  </Timeline.Item>
+                )}
               </Timeline>
             </div>
           </Row>
 
-          <Row>
+          <Row style={{ height: '40%' }}>
             <div className={styles.bottom}>
-              <Col span={2}>
+              <Col span={2} style={{ height: '100%' }}>
                 <div
                   className={styles.arrowLeft}
                   style={{ backgroundImage: `url(${arrowLeft})` }}
                 />
               </Col>
-              <Col span={20}>
-                <div className={styles.picMain}>
-                  <div className={styles.fireimg} style={{ backgroundImage: `url(${imgBg})` }} />
+              <Col span={20} style={{ height: '100%' }}>
+                <ul className={styles.picMain}>
+                  <li className={styles.fireimg} style={{ backgroundImage: `url(${imgBg})` }} />
 
-                  <div className={styles.fireimg2} style={{ backgroundImage: `url(${imgBg})` }} />
+                  <li className={styles.fireimg2} style={{ backgroundImage: `url(${imgBg})` }} />
 
-                  <div className={styles.fireimg3} style={{ backgroundImage: `url(${imgBg})` }} />
-                </div>
+                  <li className={styles.fireimg3} style={{ backgroundImage: `url(${imgBg})` }} />
+                </ul>
               </Col>
-              <Col span={2}>
+              <Col span={2} style={{ height: '100%' }}>
                 <div
                   className={styles.arrowRight}
                   style={{ backgroundImage: `url(${arrowRight})` }}

@@ -82,16 +82,8 @@ export default class LookingUp extends Component {
                 <br />
                 查岗
               </Button>
-              <div
-                className={styles.ring}
-                style={{ backgroundImage: `url(${circle})` }}
-                bubbleonTransitionEnd
-              />
-              <div
-                className={styles.bubble}
-                style={{ backgroundImage: `url(${bubble})` }}
-                onTransitionEnd
-              />
+              <div className={styles.ring} style={{ backgroundImage: `url(${circle})` }} />
+              <div className={styles.bubble} style={{ backgroundImage: `url(${bubble})` }} />
             </div>
           </Col>
           <Col span={16} style={{ height: '100%' }}>

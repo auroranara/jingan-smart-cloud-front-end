@@ -36,6 +36,7 @@ export async function getCompanyFireInfo() {
 }
 
 export async function queryAlarmHandle({ id, companyId }) {
+  // console.log('fetch handleAlarm');
   return request(
     `${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ companyId })}`
   );
