@@ -311,7 +311,7 @@ module.exports = [
                 component: './RoleAuthorization/AccountManagement/AssociatedUnit',
               },
               {
-                path: '/role-authorization/account-management/associated-unit/edit/:id/:companyId',
+                path: '/role-authorization/account-management/associated-unit/edit/:userId',
                 code: 'roleAuthorization.accountManagement.associatedUnit.edit',
                 name: 'editAssociatedUnit',
                 component: './RoleAuthorization/AccountManagement/AssociatedUnit',

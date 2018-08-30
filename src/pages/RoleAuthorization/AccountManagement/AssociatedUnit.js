@@ -25,9 +25,9 @@ import styles from './AccountManagementEdit.less';
 const { Option } = Select;
 
 // 编辑页面标题
-const editTitle = '编辑账号';
+const editTitle = '编辑关联单位';
 // 添加页面标题
-const addTitle = '新增账号';
+const addTitle = '关联单位';
 // 返回地址
 const href = '/role-authorization/account-management/list';
 
@@ -199,7 +199,7 @@ export default class AssociatedUnit extends PureComponent {
     const {
       fetchAccountDetail,
       match: {
-        params: { id, companyId },
+        params: { id, userId },
       },
       fetchOptions,
       goToException,
@@ -211,7 +211,7 @@ export default class AssociatedUnit extends PureComponent {
       fetchDepartmentList,
     } = this.props;
     this.setState({
-      isAdd: !!companyId,
+      isAdd: !!userId,
     })
     const success = id
       ? undefined
@@ -229,7 +229,7 @@ export default class AssociatedUnit extends PureComponent {
         });
       };
 
-    if (!!companyId) {
+    if (!!userId) {
       // 获取账号和关联企业详情
       fetchAccountDetail({
         payload: {
@@ -325,7 +325,7 @@ export default class AssociatedUnit extends PureComponent {
       goBack,
       form: { validateFieldsAndScroll },
       match: {
-        params: { id, companyId },
+        params: { id, userId },
       },
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
@@ -355,7 +355,7 @@ export default class AssociatedUnit extends PureComponent {
           const payload = {
             id,
             loginName: loginName.trim(),
-            password: password && password.trim(),
+            // password: password && password.trim(),
             accountStatus,
             userName: userName.trim(),
             phoneNumber: phoneNumber.trim(),
@@ -381,7 +381,7 @@ export default class AssociatedUnit extends PureComponent {
               break;
           }
           const success = () => {
-            const msg = companyId ? '编辑成功！' : '新增成功！';
+            const msg = userId ? '编辑成功！' : '新增成功！';
             message.success(msg, 1, goBack);
           };
           const error = err => {
@@ -391,7 +391,7 @@ export default class AssociatedUnit extends PureComponent {
             });
           };
           // 如果有companyId，为编辑
-          if (companyId) {
+          if (userId) {
             console.log('编辑', payload);
 
             /* updateAccountDetail({
@@ -561,7 +561,7 @@ export default class AssociatedUnit extends PureComponent {
       },
       form: { getFieldDecorator },
       match: {
-        params: { id, companyId },
+        params: { id, userId },
       },
       loading,
     } = this.props;
@@ -609,6 +609,15 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.phoneNumber}>
                 {getFieldDecorator('phoneNumber', {
                   initialValue: phoneNumber,
+                  validateTrigger: 'onBlur',
+                  rules: [
+                    {
+                      required: true,
+                      whitespace: true,
+                      type: 'string',
+                      message: '请输入手机号',
+                    },
+                  ],
                 })(<Input disabled={true} placeholder="请输入手机号" min={11} max={11} />)}
               </Form.Item>
             </Col>
@@ -638,7 +647,7 @@ export default class AssociatedUnit extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
+              <Form.Item label={fieldLabels.unitId}>
                 {getFieldDecorator('unitId', {
                   // TODO：
                   // initialValue: unitId && unitName ? { key: unitId, label: unitName } : undefined,
@@ -926,18 +935,14 @@ export default class AssociatedUnit extends PureComponent {
     const {
       loading,
       match: {
-        params: { id },
+        params: { id, userId },
       },
     } = this.props;
     const { submitting } = this.state;
-    const title = id ? editTitle : addTitle;
+    const title = userId ? editTitle : addTitle;
     const content = (
       <div>
-        <p>
-          {id
-            ? '编辑单个账号的基本信息，角色权限、数据权限'
-            : '创建单个账号，包括基本信息、角色权限等'}
-        </p>
+        <p>一个账号关联多家单位</p>
       </div>
     );
 

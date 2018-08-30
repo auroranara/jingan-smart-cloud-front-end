@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Col, Select, AutoComplete } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Row, Col, Select, AutoComplete, Icon } from 'antd';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -55,6 +55,12 @@ const statusList = {
 const statusLabelList = {
   0: '已禁用',
 };
+const unitTypeList = {
+  1: '维保企业',
+  2: '政府机构',
+  3: '运营企业',
+  4: '企事业主体',
+}
 
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -138,14 +144,14 @@ export default class accountManagementList extends PureComponent {
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
     const {
-      appendfetch,
+      fetch,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
-    appendfetch({
+    fetch({
       payload: {
         pageSize,
         pageNum: 1,
@@ -182,11 +188,11 @@ export default class accountManagementList extends PureComponent {
       return;
     }
     const {
-      fetch,
+      appendfetch,
       account: { pageNum },
     } = this.props;
     // 请求数据
-    fetch({
+    appendfetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
@@ -238,7 +244,7 @@ export default class accountManagementList extends PureComponent {
         <Form layout="inline">
           <Col span={18}>
             <FormItem label="用户">
-              {getFieldDecorator('input', {
+              {getFieldDecorator('userName', {
                 getValueFromEvent: this.handleTrim,
               })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
             </FormItem>
@@ -320,32 +326,32 @@ export default class accountManagementList extends PureComponent {
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
-          rowKey="id"
+          rowKey="loginId"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, loginName, accountStatus } = item;
+            const { loginId, loginName, status } = item;
             return (
-              <List.Item key={id}>
+              <List.Item key={loginId}>
                 <Card
                   title={loginName}
                   className={styles.card}
                   actions={[
                     <AuthLink
                       code={codesMap.account.detail}
-                      to={`/role-authorization/account-management/detail/${item.id}`}
+                      to={`/role-authorization/account-management/detail/${item.loginId}`}
                     >
                       查看
                     </AuthLink>,
                     <AuthLink
                       code={codesMap.account.edit}
-                      to={`/role-authorization/account-management/edit/${item.id}`}
+                      to={`/role-authorization/account-management/edit/${item.loginId}`}
                     >
                       编辑
                     </AuthLink>,
                     <AuthLink
                       code={codesMap.account.addAssociatedUnit}
-                      to={`/role-authorization/account-management/associated-unit/add/${item.id}`}
+                      to={`/role-authorization/account-management/associated-unit/add/${item.loginId}`}
                     >
                       关联单位
                   </AuthLink>,
@@ -362,14 +368,7 @@ export default class accountManagementList extends PureComponent {
                 //   </Button>
                 // }
                 >
-                  <AuthDiv
-                    code={codesMap.account.detail}
-                    // codes={[]}
-                    onClick={() => {
-                      goToDetail(`/role-authorization/account-management/detail/${item.id}`);
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
+                  <div>
                     <Col span={12}>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                         姓名：
@@ -379,14 +378,26 @@ export default class accountManagementList extends PureComponent {
                     <Col span={12}>
                       <p>电话: {item.phoneNumber || getEmptyData()}</p>
                     </Col>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      单位名称：
-                      {item.unitName || getEmptyData()}
-                    </Ellipsis>
-                  </AuthDiv>
+                    {item.users && item.users.length ? (
+                      <Row>
+                        {/* <Col span={6}>{unitTypeList[item.users[0].unitType]}，</Col> */}
+                        <Col span={16}>
+                          <Ellipsis tooltip lines={1} className={styles.ellipsisText} length={13}>
+                            {unitTypeList[item.users[0].unitType]}，
+                            {item.users[0].unitName}
+                          </Ellipsis>
+                        </Col>
+                        <Col span={6}>
+                          {item.accountStatus && (<Icon className={styles['unit-edit-icon']} type="link" />)}
+                          {!item.accountStatus && (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                          <Icon className={styles['unit-edit-icon']} type="edit" />
+                        </Col>
+                      </Row>) : getEmptyData()}
+                    <p style={{ visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden' }} className={styles.more}>更多...</p>
+                  </div>
                   {
-                    <div className={styles[statusList[accountStatus]]}>
-                      {statusLabelList[accountStatus]}
+                    <div className={styles[statusList[status]]}>
+                      {statusLabelList[status]}
                     </div>
                   }
                 </Card>

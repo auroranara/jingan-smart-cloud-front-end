@@ -3,7 +3,7 @@ import request from '../utils/request';
 
 /* 查询账号列表 */
 export async function queryAccountList(params) {
-  return request(`/acloud_new/v2/rolePermission/users?${stringify(params)}`);
+  return request(`/acloud_new/v2/rolePermission/users?${stringify(params)}`)
 }
 
 /* 新增账号-初始化页面选项 */
@@ -26,7 +26,7 @@ export async function updateAccountDetail(params) {
 
 /* 新增账号 */
 export async function addAccount(params) {
-  return request(`/acloud_new/v2/rolePermission/user`, {
+  return request(`/acloud_new/v2/rolePermission/account`, {
     method: 'POST',
     body: params,
   });

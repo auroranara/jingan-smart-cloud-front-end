@@ -67,9 +67,9 @@ export default {
     // 账号列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryAccountList, payload);
-      if (response.code === 200) {
+      if (response && response.code === 200) {
         yield put({
-          type: 'queryAccountList',
+          type: 'saveAccountList',
           payload: response.data,
         });
       }
@@ -78,9 +78,9 @@ export default {
     // 查询账号列表
     *appendfetch({ payload }, { call, put }) {
       const response = yield call(queryAccountList, payload);
-      if (response.code === 200) {
+      if (response && response.code === 200) {
         yield put({
-          type: 'queryList',
+          type: 'saveAccountLoadMoreList',
           payload: response.data,
         });
       }
@@ -247,7 +247,7 @@ export default {
   },
 
   reducers: {
-    queryAccountList(
+    saveAccountList(
       state,
       {
         payload: {
@@ -258,12 +258,12 @@ export default {
     ) {
       return {
         ...state,
-        list: pageNum === 1 ? list : [...state.list, ...list],
+        list: list,
         pageNum,
         isLast: pageNum * pageSize >= total,
       };
     },
-    queryList(
+    saveAccountLoadMoreList(
       state,
       {
         payload: {
@@ -274,7 +274,7 @@ export default {
     ) {
       return {
         ...state,
-        list,
+        list: [...state.list, ...list],
         pageNum,
         isLast: pageNum * pageSize >= total,
       };
