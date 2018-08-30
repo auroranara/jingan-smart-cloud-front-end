@@ -10,6 +10,7 @@ const FormItem = Form.Item;
 
 const OPERATION_CHINESE = { add: '新增', update: '编辑' };
 
+// 处理数字比较麻烦，所以可以将数字都手动转成字符串，不论后台传数字还是字符串都可以操作，最后传给后台的是字符串
 function ModalForm(props) {
   const {
     form,
@@ -26,10 +27,11 @@ function ModalForm(props) {
   } = props;
   // 解构中传入null时，initialValus认为传值了，所以并不会是{}
   // console.log('initialValues in ModalForm', initialValues);
-  const initVals = initialValues || {};
+  let initVals = initialValues || {};
+
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
-      // console.log('err in ModalForm', err, fieldsValue);
+      console.log('err in ModalForm', err, fieldsValue);
       if (err) return;
       form.resetFields();
       // 将fieldsValue做处理，如字符串去掉两边空白，将DatePicker的对象转成对应的日期字符串
@@ -46,6 +48,10 @@ function ModalForm(props) {
     const { type = 'input', disabled, placeholder = '', label, name, options } = item;
     // console.log('disabled in ModalForm-columns-item', disabled);
     let initialValue = initVals[name];
+
+    // 将数字都转化为字符串，需要数字时，再注掉这行代码
+    if (typeof initialValue === 'number')
+      initialValue = initialValue.toString();
 
     // 由于都提交的时候设置了whitespace=true来判断是否是空格，所以默认field value都是字符串，当初始值时数字时，提交时也是数字会校验错误
     // 所以把所有数字都转为字符串，当然也可以校验时把type设为number，这里是为了防止传过来的值变成了字符串而不是数字
