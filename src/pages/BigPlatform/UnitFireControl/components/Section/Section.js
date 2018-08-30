@@ -12,15 +12,25 @@ export default class App extends PureComponent {
       isScrollShow: false,
       // 是否显示占位内容
       isPlaceHolderShow: false,
+      // 是否重置paddingRight
+      isPaddingRightChange: false,
+      // 当前截取的索引
+      currentIndex: 0,
     };
     // 轮播定时器
     this.carouselTimer = null;
+    // 过渡定时器
+    this.transitionTimer = null;
   }
 
   /**
    * 组件挂载
    */
   componentDidMount() {
+    // 初始化
+    this.resetList();
+    // 添加resize事件监听
+    window.addEventListener('resize', this.resetList, false);
     // 添加轮播
     this.addCarousel();
   }
@@ -29,8 +39,24 @@ export default class App extends PureComponent {
    * 组件销毁
    */
   componentWillUnmount() {
+    // 清除事件监听
+    window.removeEventListener('resize', this.resetList, false);
     // 清除轮播
     this.clearCarousel();
+  }
+
+  /**
+   * 重置列表内容
+   */
+  resetList = () => {
+    if (this.container.offsetHeight < this.container.scrollHeight) {
+      this.showPlaceHolder();
+      this.resetPaddingRight(true);
+    }
+    else {
+      this.hidePlaceHolder();
+      this.resetPaddingRight(false);
+    }
   }
 
   /**
@@ -40,21 +66,8 @@ export default class App extends PureComponent {
     const { isCarousel } = this.props;
     if (isCarousel) {
       this.carouselTimer = setInterval(() => {
-        const scrollTop = this.list.scrollTop;
-        const scrollHeight = this.list.scrollHeight;
-        const offsetHeight = this.list.offsetHeight;
-        if (offsetHeight < scrollHeight) {
-          if (scrollTop < scrollHeight / 2) {
-            this.list.scrollTop = scrollTop + 1;
-          }
-          else {
-            this.list.scrollTop = scrollTop - scrollHeight / 2;
-          }
-        }
-      }, 25);
-      if (this.list.offsetHeight < this.list.scrollHeight) {
-        this.showPlaceHolder();
-      }
+        this.transition();
+      },5000);
     }
   }
 
@@ -102,6 +115,34 @@ export default class App extends PureComponent {
   }
 
   /**
+   * 设置是否改变paddingRight
+   */
+  resetPaddingRight = (isPaddingRightChange) => {
+    this.setState({
+      isPaddingRightChange,
+    });
+  }
+
+  /**
+   * 列表从当前位置过渡到目标位置
+   */
+  transition = () => {
+    const height = this.list.scrollHeight / this.list.childNodes.length;
+    const start = this.container.scrollTop;
+    const target = height - start % height;
+    const end = start + target;
+    const duration = 500;
+    const delay = duration / target;
+    this.transitionTimer = setInterval(() => {
+      this.container.scrollTop += 1;
+      if (this.container.scrollTop >= end) {
+        clearInterval(this.transitionTimer);
+        this.handleTransitionEnd(Math.round(this.container.scrollTop / height));
+      }
+    }, delay)
+  }
+
+  /**
    * 鼠标移入事件
    */
   handleMouseEnter = () => {
@@ -110,7 +151,7 @@ export default class App extends PureComponent {
     // 显示滚动条
     this.showScroll();
     // 隐藏占位内容
-    // this.hidePlaceHolder();
+    this.hidePlaceHolder();
   }
 
   /**
@@ -122,7 +163,19 @@ export default class App extends PureComponent {
     // 隐藏滚动条
     this.hideScroll();
     // 显示占位内容
-    // this.showPlaceHolder();
+    this.showPlaceHolder();
+  }
+
+  /**
+   * 过渡结束事件
+   */
+  handleTransitionEnd = (step=1) => {
+    const { children } = this.props;
+    this.container.scrollTop = 0;
+    // 重置索引
+    this.setState(({ currentIndex }) => ({
+      currentIndex: (currentIndex+step) >= children.length ? ((currentIndex+step)%children.length) : (currentIndex+step),
+    }));
   }
 
   /**
@@ -130,8 +183,30 @@ export default class App extends PureComponent {
    */
   render() {
     const { isScroll, isCarousel, title, fixedContent, children, className, style } = this.props;
-    const { isScrollShow, isPlaceHolderShow } = this.state;
+    const { isScrollShow, isPlaceHolderShow, isPaddingRightChange, currentIndex } = this.state;
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
+    let overflowY = undefined;
+    let paddingRight = undefined;
+    if (isScroll) {
+      if (isCarousel) {
+        if (isScrollShow) {
+          overflowY = 'auto';
+          if (isPaddingRightChange) {
+            paddingRight = 8;
+          }
+        }
+      }
+      else {
+        overflowY = 'auto';
+        if (isPaddingRightChange) {
+          paddingRight = 8;
+        }
+      }
+    }
+    const placeHolder =  isCarousel && isPlaceHolderShow ? children.map(child=>({
+      ...child,
+      key: child.key+'_cpy',
+    })) : [];
 
     return (
       <section className={outerClassName} style={style}>
@@ -150,14 +225,21 @@ export default class App extends PureComponent {
           <div
             className={styles.scroll}
             style={{
-              overflowY: isScroll ? (isCarousel ? (isScrollShow ? 'auto' : undefined) : 'auto') : undefined,
+              overflowY,
+              paddingRight,
             }}
             onMouseEnter={isCarousel ? this.handleMouseEnter : undefined}
             onMouseLeave={isCarousel ? this.handleMouseLeave : undefined}
-            ref={list=>this.list=list}
+            ref={container=>this.container=container}
           >
-            {children}
-            {isScroll && isCarousel && isPlaceHolderShow && children}
+            {isCarousel ? (
+              <div
+                className={styles.scrollList}
+                ref={list=>this.list=list}
+              >
+                {[...children.slice(currentIndex), ...placeHolder, ...children.slice(0,currentIndex)]}
+              </div>
+            ) : children}
           </div>
         </div>
       </section>
