@@ -10,9 +10,6 @@ import styles from './StatisticsOfFireControl.less';
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      currentSelectedDate: '今日',
-    }
     // 当前高亮的图标索引
     this.currentFireControlIndex = -1;
     // 消防图表定时器
@@ -84,24 +81,16 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 消防数据统计模块开关点击事件
-   */
-  handleClickFireControlSwitcher = (content) => {
-    this.setState({
-      currentSelectedDate: content,
-    });
-  }
-
-  /**
    * 消防数据统计模块开关
    */
   renderSwitchers() {
-    const { currentSelectedDate } = this.state;
+    const { type, onSwitch } = this.props;
 
     return (
       <div className={styles.switcherContainer}>
         {['今日', '本周', '本月', '本年'].map((item, index) => {
-          return <Switcher style={{ top: index*56, zIndex: currentSelectedDate===item?5:(4-index) }} isSelected={currentSelectedDate===item} content={item} key={item} onClick={() => {this.handleClickFireControlSwitcher(item);}} />;
+          const isSelected = type===(index+1);
+          return <Switcher style={{ top: index*56, zIndex: isSelected?5:(4-index) }} isSelected={isSelected} content={item} key={item} onClick={() => {onSwitch(index+1);}} />;
         })}
       </div>
     );

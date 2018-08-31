@@ -8,27 +8,32 @@ import styles from './StatisticsOfMaintenance.less';
  * 维保情况统计
  */
 export default class App extends PureComponent {
-  state = {
-    currentSelectedPeriod: '近7天',
-  }
-
-  handleClick = (item, index) => {
-    const { onSwitch } = this.props;
-    this.setState({
-      currentSelectedPeriod: item,
-    });
-    if (onSwitch) {
-      onSwitch(item, index);
-    }
-  }
-
   renderSwitchers() {
-    const { currentSelectedPeriod } = this.state;
+    const { type, onSwitch } = this.props;
+    const list = [
+      {
+        label: '近7天',
+        value: 6,
+      },
+      {
+        label: '本月',
+        value: 3,
+      },
+      {
+        label: '本季度',
+        value: 4,
+      },
+      {
+        label: '本年度',
+        value: 5,
+      },
+    ];
 
     return (
       <div className={styles.switcherContainer}>
-        {['近7天', '本月', '本季度', '本年度'].map((item, index) => {
-          return <Switcher style={{ top: index*56, zIndex: currentSelectedPeriod===item?5:(4-index) }} isSelected={currentSelectedPeriod===item} content={item} key={item} onClick={() => {this.handleClick(item, index);}} />;
+        {list.map(({ label, value }, index) => {
+          const isSelected = type === value;
+          return <Switcher style={{ top: index*56, zIndex: isSelected?5:(4-index) }} isSelected={isSelected} content={label} key={label} onClick={() => {onSwitch(value);}} />;
         })}
       </div>
     );
@@ -187,7 +192,7 @@ export default class App extends PureComponent {
               </div>
               <div className={styles.detailItem}>
                 <div>完成率</div>
-                <div style={{ color: '#FFCC54' }}>{`${Math.round(maintenanceRate*100)}%`}</div>
+                <div style={{ color: '#FFCC54' }}>{maintenanceRate}</div>
               </div>
             </div>
             <div>
@@ -197,7 +202,7 @@ export default class App extends PureComponent {
               </div>
               <div className={styles.detailItem}>
                 <div>完成率</div>
-                <div style={{ color: '#FFCC54' }}>{`${Math.round(localRate*100)}%`}</div>
+                <div style={{ color: '#FFCC54' }}>{localRate}</div>
               </div>
             </div>
           </div>

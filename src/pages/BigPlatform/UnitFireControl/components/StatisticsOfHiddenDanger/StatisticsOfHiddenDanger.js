@@ -14,7 +14,6 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      currentSeelctedMonth: '本月',
       currentIndex: 0,
     }
     // 隐患高亮索引
@@ -25,16 +24,6 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
 
   componentWillUnmount() {
     clearInterval(this.hiddenDangerTimer);
-  }
-
-  handleClick = (item) => {
-    const { onSwitch } = this.props;
-    this.setState({
-      currentSeelctedMonth: item,
-    });
-    if (onSwitch) {
-      onSwitch(item);
-    }
   }
 
     /**
@@ -116,8 +105,9 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
   }
 
   renderSwitchers() {
-    const { currentSeelctedMonth, currentIndex } = this.state;
-    const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+    const { type, onSwitch } = this.props;
+    const { currentIndex } = this.state;
+    const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
     const currentMonth = moment().get('month');
     const list = [...months.slice(0, currentMonth), '本月'].reverse();
     const pageSize = 4;
@@ -136,8 +126,9 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
           if (index < currentFirstIndex || index >= currentFirstIndex+pageSize) {
             return null;
           }
+          const isSelected = type === index;
           return (
-            <Switcher style={{ top: (index-currentFirstIndex)*56, zIndex: currentSeelctedMonth===item?(pageSize+1):(pageSize+currentFirstIndex-index) }} isSelected={currentSeelctedMonth===item} content={item} key={item} onClick={() => {this.handleClick(item);}} />
+            <Switcher style={{ top: (index-currentFirstIndex)*56, zIndex: isSelected?(pageSize+1):(pageSize+currentFirstIndex-index) }} isSelected={isSelected} content={item} key={item} onClick={() => {onSwitch(index);}} />
           );
         })}
         <Pagination style={{ top: Math.min(pageSize, currentMonth+1-currentFirstIndex)*56, zIndex: 0 }} onNext={this.handleNext} onPrev={this.handlePrev} isFirst={isFirst} isLast={isLast} />
