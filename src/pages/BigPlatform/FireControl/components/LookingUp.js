@@ -12,6 +12,8 @@ function formatTime(t) {
   return `${fillZero(m)}'${fillZero(s)}"`;
 }
 
+const COUNT_DOWN = 600000;
+
 export default class LookingUp extends Component {
   state = {
     start: false,
@@ -69,10 +71,10 @@ export default class LookingUp extends Component {
     return option;
   };
   render() {
-    const { showed, handleRotateBack, startLookUp, createTime, data } = this.props;
+    const { showed, handleCounterStop, startLookUp, createTime, data } = this.props;
     const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
 
-    const countTime = createTime ? Date.now() - createTime : 600000;
+    const countTime = createTime ? COUNT_DOWN - (Date.now() - createTime) : COUNT_DOWN;
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -96,7 +98,7 @@ export default class LookingUp extends Component {
               <div className={styles.flask} style={{ fontSize: '12px' }}>
                 <Counter
                   onStop={() => {
-                    handleRotateBack();
+                    handleCounterStop();
                   }}
                   stop={countTime}
                   start={startLookUp}

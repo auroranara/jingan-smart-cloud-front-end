@@ -134,8 +134,11 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ lookUpShow: OFF_GUARD, isLookUpRotated: true });
   };
 
-  handleUnitLookUpRotateBack = () => {
+  // 倒计时结束后，翻回来，并重新获取查岗历史记录
+  handleCounterStop = () => {
+    const { dispatch } = this.props;
     this.setState({ isLookUpRotated: false });
+    dispatch({ type: 'bigFireControl/fetchInitLookUp' });
   };
 
   handleAlarmRotate = () => {
@@ -358,7 +361,7 @@ export default class FireControlBigPlatform extends PureComponent {
                   data={{ lookUp, countdown, offGuard }}
                   lookUpShow={lookUpShow}
                   startLookUp={startLookUp}
-                  handleRotateBack={this.handleUnitLookUpRotateBack}
+                  handleCounterStop={this.handleCounterStop}
                 />
               }
               reverse={<UnitLookUpReverse />}
