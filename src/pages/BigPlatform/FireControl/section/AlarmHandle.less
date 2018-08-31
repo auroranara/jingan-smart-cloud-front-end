@@ -55,36 +55,57 @@
   background: no-repeat center center;
 }
 
-.picMain {
+.imgContainer {
+  padding: 5px;
+  width: 118px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.fireImg {
   width: 100%;
   height: 100%;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-
-  .fireimg {
-    width: 100%;
-    height: 100%;
-    float: left;
-    background: no-repeat center center;
-  }
-
-  .fireimg2 {
-    width: 100%;
-    height: 100%;
-    float: left;
-    background: no-repeat center center;
-  }
-  .fireimg3 {
-    width: 100%;
-    height: 100%;
-    float: left;
-    background: no-repeat center center;
-  }
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
+
+// .fireImg:visited {
+//   border: 1px solid rgba(0, 186, 255);
+// }
+
+// .fireImg:active {
+//   border: 1px solid rgba(0, 186, 255);
+// }
+
 .arrowRight {
   height: 100%;
   background: no-repeat center center;
+}
+
+.magnify {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(3, 36, 83, 0.8);
+}
+
+.center {
+  width: 300px;
+  height: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+}
+
+.magImg {
+  font-size: 120px;
+  text-align: center;
+  line-height: 400px;
+  width: 300px;
+  height: 100%;
 }

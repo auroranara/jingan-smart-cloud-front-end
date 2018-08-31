@@ -90,6 +90,7 @@ export default {
         endTime: 0,
         safetyPhone: '',
       },
+      picture: [],
     },
     lookUp: {},
     offGuard: {},
@@ -98,14 +99,12 @@ export default {
   effects: {
     *fetchCompanyFireInfo({ payload }, { call, put }) {
       const response = yield call(getCompanyFireInfo);
-      if (response && response.code === 200)
-        yield put({ type: 'saveMap', payload: response.data });
+      if (response && response.code === 200) yield put({ type: 'saveMap', payload: response.data });
     },
     *fetchOvAlarmCounts({ payload }, { call, put }) {
       const response = yield call(queryOvAlarmCounts, payload);
-      const { code, data={} } = response;
-      if (code === 200)
-        yield put({ type: payload ? 'saveCompanyOv' : 'saveOv', payload: data });
+      const { code, data = {} } = response;
+      if (code === 200) yield put({ type: payload ? 'saveCompanyOv' : 'saveOv', payload: data });
     },
     *fetchOvDangerCounts({ payload }, { call, put }) {
       const response = yield call(queryOvDangerCounts, payload);
@@ -129,12 +128,12 @@ export default {
     },
     *fetchAlarm({ payload }, { call, put }) {
       const response = yield call(queryAlarm, payload);
-      const { code, data={} } = response;
+      const { code, data = {} } = response;
       if (code === 200) yield put({ type: 'saveAlarm', payload: data });
     },
     *fetchAlarmHistory({ payload }, { call, put }) {
       const response = yield call(queryAlarm, { ...payload, historyType: 1 });
-      const { code, data={} } = response;
+      const { code, data = {} } = response;
       if (code === 200) {
         yield put({ type: 'saveAlarmHistory', payload: data });
       }
@@ -142,7 +141,7 @@ export default {
     *fetchSys({ payload }, { call, put }) {
       const response = yield call(querySys);
       if (response && response.code === 200) {
-        const { data={} } = response;
+        const { data = {} } = response;
         const { total, activeCount, titleName } = data;
         yield put({ type: 'saveSys', payload: data });
         yield put({ type: 'saveOv', payload: { total, activeCount, titleName } });
@@ -150,7 +149,7 @@ export default {
     },
     *fetchFireTrend({ payload }, { call, put }) {
       const response = yield call(queryFireTrend, payload);
-      const { code, data={} } = response;
+      const { code, data = {} } = response;
       if (code === 200)
         yield put({ type: payload ? 'saveCompanyTrend' : 'saveTrend', payload: data });
     },
@@ -175,7 +174,7 @@ export default {
     },
     *fetchLookUp({ payload, callback }, { call, put }) {
       const response = yield call(queryLookUp);
-      const { code, data={} } = response;
+      const { code, data = {} } = response;
       if (code === 200) {
         yield put({ type: 'saveLookUp', payload: data });
         const { flag, recordsId } = data;
@@ -184,9 +183,8 @@ export default {
     },
     *fetchOffGuard({ payload }, { call, put }) {
       const response = yield call(queryOffGuard, payload);
-      const { code, data={} } = response;
-      if (code === 200)
-        yield put({ type: 'saveOffGuard', payload: data });
+      const { code, data = {} } = response;
+      if (code === 200) yield put({ type: 'saveOffGuard', payload: data });
     },
   },
 
