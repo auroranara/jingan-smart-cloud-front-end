@@ -186,7 +186,7 @@ export default class DepartmentList extends PureComponent {
 
   // 部门搜索
   handleQuery = async () => {
-    // let temp = []
+    let results = []
     const {
       form: { getFieldValue },
       department: {
@@ -194,8 +194,9 @@ export default class DepartmentList extends PureComponent {
       },
     } = this.props;
     const name = getFieldValue('name');
+    await this.hasName(name, list, results)
     this.setState({ searchName: name });
-    if (name && !this.hasName(name, list)) {
+    if (name && results.length === 0) {
       message.error('未查询到所需数据！');
     }
     // if (name) {
@@ -205,13 +206,14 @@ export default class DepartmentList extends PureComponent {
   };
 
   // 判断数组中的名称是否包含搜索内容
-  hasName = (name, list) => {
+  hasName(name, list, results) {
     for (const item of list) {
-      const index = item.name.indexOf(name);
-      if (index > -1) return true;
-      if (item.children) this.hasName(name, item.children);
+      if (item.name.includes(name)) {
+        results.push(item.name)
+        return;
+      }
+      else if (item.children) this.hasName(name, item.children, results);
     }
-    return false;
   };
 
   // generateExpended = (name, list, temp) => {
@@ -271,16 +273,20 @@ export default class DepartmentList extends PureComponent {
   // 删除部门
   handleDelete = rows => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'department/deleteDepartment',
-      payload: rows.id,
-      callback: response => {
-        if (response && response.code === 200) {
-          this.getDepartments();
-          message.success('删除成功！');
-        } else message.success(response.msg);
-      },
-    });
+    if (rows.allUserCount > 0) {
+      message.error('该部门拥有下属用户，不可删除！')
+    } else {
+      dispatch({
+        type: 'department/deleteDepartment',
+        payload: rows.id,
+        callback: response => {
+          if (response && response.code === 200) {
+            this.getDepartments();
+            message.success('删除成功！');
+          } else message.success(response.msg);
+        },
+      });
+    }
   };
 
   // 新建部门
