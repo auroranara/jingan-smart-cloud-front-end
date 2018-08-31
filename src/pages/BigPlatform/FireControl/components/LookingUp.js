@@ -12,12 +12,15 @@ function formatTime(t) {
   return `${fillZero(m)}'${fillZero(s)}"`;
 }
 
-const COUNT_DOWN = 600000;
+const DELAY = 3000;
+const COUNT_DOWN_MIN = 1;
+const COUNT_DOWN = COUNT_DOWN_MIN * 60000;
 
 export default class LookingUp extends Component {
   state = {
     start: false,
   };
+
   getOption = (n) => {
     const p = myParseInt(n);
 
@@ -70,11 +73,13 @@ export default class LookingUp extends Component {
 
     return option;
   };
+
   render() {
-    const { showed, handleCounterStop, startLookUp, createTime, data } = this.props;
+    const { showed, startLookUp, createTime, data, handleCounterStop } = this.props;
     const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
 
     const countTime = createTime ? COUNT_DOWN - (Date.now() - createTime) : COUNT_DOWN;
+    // console.log('countTime', countTime, createTime);
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -97,9 +102,7 @@ export default class LookingUp extends Component {
               <div className={styles.countDown}>倒计时</div>
               <div className={styles.flask} style={{ fontSize: '12px' }}>
                 <Counter
-                  onStop={() => {
-                    handleCounterStop();
-                  }}
+                  onStop={handleCounterStop}
                   stop={countTime}
                   start={startLookUp}
                 />

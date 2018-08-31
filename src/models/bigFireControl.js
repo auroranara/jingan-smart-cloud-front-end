@@ -215,6 +215,9 @@ export default {
     saveLookUp(state, action) {
       return { ...state, lookUp: action.payload };
     },
+    saveCreateTime(state, action) {
+      return { ...state, lookUp: { ...state.lookUp, createTime: action.payload } };
+    },
     saveCountdown(state, action) {
       return { ...state, countdown: action.payload };
     },

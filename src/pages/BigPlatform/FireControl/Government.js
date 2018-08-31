@@ -47,6 +47,8 @@ export default class FireControlBigPlatform extends PureComponent {
     isLookUpRotated: false, // 单位查岗组件翻转
     lookUpShow: LOOKING_UP,
     startLookUp: false,
+    showConfirm: false,
+    confirmCount: 5,
     mapSelected: undefined,
     mapCenter: [location.x, location.y],
     mapZoom: location.zoom,
@@ -60,9 +62,13 @@ export default class FireControlBigPlatform extends PureComponent {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+    clearInterval(this.confirmTimer);
+    clearInterval(this.lookingUpTimer);
   }
 
   timer = null;
+  confirmTimer = null;
+  lookingUpTimer = null;
   mapItemList = [];
 
   initFetch = () => {
@@ -99,34 +105,85 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchDanger' });
   };
 
-  handleClickLookUp = (isAutoJump) => {
+  handleLookUpConfirmOk = () => {
     const { dispatch } = this.props;
 
-    if (isAutoJump) {
-      this.jumpToLookUp();
-      return;
-    }
-
-    confirm({
-      title: '您是否确定进行单位查岗',
-      okText: '确定',
-      cancelText: '取消',
-      getContainer: () => document.querySelector('#unitLookUp'),
-      onOk: () => {
-        dispatch({
-          type: 'bigFireControl/postLookingUp',
-          callback: (code, msg) => {
-            if (code === 200)
-              this.jumpToLookUp();
-            else
-              message.error(msg);
-          },
-        });
+    dispatch({
+      type: 'bigFireControl/postLookingUp',
+      callback: (code, msg) => {
+        if (code === 200) {
+          this.jumpToLookingUp();
+          // 手动点击开始查岗时，在store中存入当前开始时间，虽然会和服务器开始时间不同，但差距不大，用来骗下用户
+          dispatch({ type: 'bigFireControl/saveCreateTime', payload: Date.now() });
+        }
+        else
+          message.error(msg);
       },
     });
   };
 
-  jumpToLookUp = () => {
+  showLookUpConfirm = (show) => {
+    this.setState({ showConfirm: !!show });
+    clearInterval(this.confirmTimer);
+  };
+
+  renderConfirmModal() {
+    const { showConfirm, confirmCount } =  this.state;
+
+    return (
+      <Modal
+        title="提示"
+        width={300}
+        cancelText={`取消(${confirmCount})`}
+        visible={showConfirm}
+        onOk={this.handleLookUpConfirmOk}
+        onCancel={() => this.showLookUpConfirm()}
+        // 关闭后将confirmCount重新设置为5
+        afterClose={() => this.setState({ confirmCount: 5 })}
+        getContainer={() => document.querySelector('#unitLookUp')}
+      >
+        您是否确定进行单位查岗
+      </Modal>
+    );
+  }
+
+  handleClickLookUp = (isAutoJump) => {
+    if (isAutoJump) {
+      this.jumpToLookingUp();
+      return;
+    }
+
+    let counter = 4;
+    this.showLookUpConfirm(true);
+    this.confirmTimer = setInterval(() => {
+      if (counter) {
+        this.setState({ confirmCount: counter });
+        counter = counter - 1;
+      }
+      // 倒计时到0时，自动取消，并关掉当前modal
+      else {
+        this.showLookUpConfirm();
+        // this.handleLookUpConfirmOk();
+      }
+    }, 1000);
+
+    // confirm({
+    //   title: '您是否确定进行单位查岗',
+    //   okText: '确定',
+    //   cancelText: '取消',
+    //   onOk: this.handleLookUpConfirmOk,
+    // });
+  };
+
+  // 跳转到正在查岗界面
+  jumpToLookingUp = () => {
+    const { dispatch } = this.props;
+
+    // 开始轮询正在查岗数据(倒计时时候的数据)
+    this.lookingUpTimer = setInterval(() => {
+      dispatch({ type: 'bigFireControl/fetchCountdown' });
+    }, DELAY);
+
     this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true, startLookUp: true });
   };
 
@@ -134,11 +191,15 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ lookUpShow: OFF_GUARD, isLookUpRotated: true });
   };
 
-  // 倒计时结束后，翻回来，并重新获取查岗历史记录
-  handleCounterStop = () => {
+  // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，并重新获取查岗历史记录
+  handleLookUpRotateBack = (isCountdownBack=false) => {
     const { dispatch } = this.props;
     this.setState({ isLookUpRotated: false });
-    dispatch({ type: 'bigFireControl/fetchInitLookUp' });
+
+    if (isCountdownBack) {
+      clearInterval(this.lookingUpTimer);
+      dispatch({ type: 'bigFireControl/fetchInitLookUp' });
+    }
   };
 
   handleAlarmRotate = () => {
@@ -358,10 +419,11 @@ export default class FireControlBigPlatform extends PureComponent {
               }
               back={
                 <UnitLookUpBack
+                  dispatch={dispatch}
                   data={{ lookUp, countdown, offGuard }}
                   lookUpShow={lookUpShow}
                   startLookUp={startLookUp}
-                  handleCounterStop={this.handleCounterStop}
+                  handleRotateBack={this.handleLookUpRotateBack}
                 />
               }
               reverse={<UnitLookUpReverse />}
@@ -373,6 +435,7 @@ export default class FireControlBigPlatform extends PureComponent {
             </FcModule>
           </Col>
         </Row>
+        {this.renderConfirmModal()}
       </div>
     );
   }
