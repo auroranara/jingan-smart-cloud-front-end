@@ -8,15 +8,11 @@ let count = 0;
 class Countdown extends React.Component {
   constructor(props) {
     super(props);
-
-    /**
-     * @type {object}
-     * @property {object} diff - initial diff object
-     */
     count = this.props.stop;
     this.state = {
       diff: this.getDiffObject(count),
     };
+    this.interval = null;
   }
 
   /**
@@ -92,14 +88,15 @@ class Countdown extends React.Component {
   }
 
   handleStart() {
-    this.interval = window.setInterval(() => {
-      count = count - 1000;
-      this.setState({
-        diff: this.getDiffObject(count),
-      });
-      // console.log(this.state.diff.seconds);
-      this.isTimeOver() && this.stopCount();
-    }, 1000);
+    if (!this.interval) {
+      this.interval = window.setInterval(() => {
+        count = count - 1000;
+        this.setState({
+          diff: this.getDiffObject(count),
+        });
+        this.isTimeOver() && this.stopCount();
+      }, 1000);
+    }
   }
   /**
    * Render Flipper component for each digit of diff object vals
