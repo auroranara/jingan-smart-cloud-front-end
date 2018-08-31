@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Icon, Tree, Spin } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
@@ -10,9 +10,9 @@ import styles from './VideoPlay.less';
 @connect(({ bigFireControl }) => ({
   bigFireControl,
 }))
-class VideoPlay extends PureComponent {
+class VideoPlay extends Component {
   state = {
-    videoSrc: '',
+    videoSrc: '#',
     activeIndex: 0,
   };
   componentDidMount() {
@@ -80,21 +80,27 @@ class VideoPlay extends PureComponent {
       'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8',
       'http://218.90.184.178:23389/hls/dangkou/test.m3u8',
     ];
-    this.setState({
-      videoSrc: src[index], // videoList[index].src
-      activeIndex: index,
-    });
+    this.setState(
+      {
+        videoSrc: src[index], // videoList[index].src
+        activeIndex: index,
+      },
+      () => {
+        this.forceUpdate();
+      }
+    );
   };
   handleClose = () => {
     this.props.handleVideoClose();
   };
   render() {
-    const { videoList, style = {}, visible, ...restProps } = this.props;
+    const { videoList, style = {}, visible } = this.props;
     const { videoSrc } = this.state;
+    // console.log(videoSrc);
 
     if (!visible) return null;
     return (
-      <div className={styles.videoPlay} style={{ ...style }} {...restProps}>
+      <div className={styles.videoPlay} style={{ ...style }}>
         <div className={styles.titleBar}>
           监控地点：
           {`1号楼3#`}
