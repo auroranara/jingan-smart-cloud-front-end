@@ -1,9 +1,11 @@
-import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Icon } from 'antd';
-import ReactEcharts from 'echarts-for-react';
-import moment from 'moment';
+import React, { PureComponent } from 'react';
+import { Row, Col } from 'antd';
 import Header from './components/Header/Header';
 import Section from './components/Section/Section';
+import FireAlarmSystem from './components/FireAlarmSystem/FireAlarmSystem';
+import StatisticsOfMaintenance from './components/StatisticsOfMaintenance/StatisticsOfMaintenance';
+import StatisticsOfHiddenDanger from './components/StatisticsOfHiddenDanger/StatisticsOfHiddenDanger';
+import StatisticsOfFireControl from './components/StatisticsOfFireControl/StatisticsOfFireControl';
 import Ellipsis from '../../../components/Ellipsis';
 
 import styles from './UnitFireControl.less';
@@ -13,7 +15,6 @@ const fireIcon = `${prefix}fire_hj.png`;
 const faultIcon = `${prefix}fire_gz.png`;
 const positionBlueIcon = `${prefix}fire_position_blue.png`;
 const positionRedIcon = `${prefix}fire_position_red.png`;
-const triangleIcon = `${prefix}triangle.png`;
 const dfcIcon = `${prefix}fire_dfc.png`;
 const wcqIcon = `${prefix}fire_wcq.png`;
 const ycqIcon = `${prefix}fire_ycq.png`;
@@ -56,52 +57,6 @@ const HiddenDangerRecord = ({ id, status, image, description, sbr, sbsj, zgr, zg
 }
 
 /**
- * 切换开关
- */
-const Switcher = ({ content, style={}, color, onClick }) => {
-  return (
-    <div className={styles.switcher} style={{ backgroundColor: color, ...style }} onClick={onClick}>
-      <div style={{ borderRightColor: color }}></div>
-      <div style={{ borderRightColor: color }}></div>
-      {content}
-    </div>
-  );
-}
-
-/**
- * 分页按钮
- */
-const Pagination = ({ isFirst, isLast, style={}, onNext, onPrev }) => {
-  return (
-    <div className={styles.switcher} style={{ cursor: 'auto',  ...style }}>
-      <div></div>
-      <Icon
-        type="caret-up"
-        style={{
-          fontSize: 12,
-          color: isFirst ? '#00438a' : '#FFF',
-          cursor: isFirst ? 'not-allowed' : 'pointer',
-        }}
-        onClick={() => {
-          !isFirst && onPrev();
-        }}
-      />
-      <Icon
-        type="caret-down"
-        style={{
-          fontSize: 12,
-          color: isLast ? '#00438a' : '#FFF',
-          cursor: isLast ? 'not-allowed' : 'pointer',
-        }}
-        onClick={() => {
-          !isLast && onNext();
-        }}
-      />
-    </div>
-  );
-}
-
-/**
  * 根据status获取对应的标记
  */
 const getIconByStatus = (status) => {
@@ -131,25 +86,6 @@ const getIconByStatus = (status) => {
  * 单位消防大屏
  */
 export default class App extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // 当前选中的日期
-      currentSelectedDate: '今日',
-      // 当前选中的月份
-      currentSeelctedMonth: '本月',
-      // 当前隐患巡查月份按钮所在页数
-      currentIndex: 0,
-    };
-    // 当前高亮的图标索引
-    this.currentFireControlIndex = -1;
-    // 消防图表定时器
-    this.fireControlTimer = null;
-    // 隐患高亮索引
-    this.currentHiddenDangerIndex = -1;
-    // 隐患定时器
-    this.hiddenDangerTimer = null;
-  }
 
   /**
    * 挂载后声明周期函数
@@ -158,209 +94,7 @@ export default class App extends PureComponent {
     const { match: { params: { unitId } } } = this.props;
   }
 
-  /**
-   * 消防数据统计图标加载完成事件
-   */
-  handleFireControlPieChartReady = (chart, option) => {
-    const changeHighLight = () => {
-      var length = option.series[0].data.length;
-      // 取消之前高亮的图形
-      chart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: 0,
-        dataIndex: this.currentFireControlIndex,
-      });
-      this.currentFireControlIndex = (this.currentFireControlIndex + 1) % length;
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: this.currentFireControlIndex,
-      });
-    };
-    // 立即执行高亮操作
-    changeHighLight();
-    // 添加定时器循环
-    this.fireControlTimer = setInterval(changeHighLight, 2000);
-    // 绑定mouseover事件
-    chart.on('mouseover', params => {
-      clearInterval(this.fireControlTimer);
-      this.fireControlTimer = null;
-      if (params.dataIndex !== this.currentFireControlIndex) {
-        // 取消之前高亮的图形
-        chart.dispatchAction({
-          type: 'downplay',
-          seriesIndex: 0,
-          dataIndex: this.currentFireControlIndex,
-        });
-        // 高亮当前图形
-        chart.dispatchAction({
-          type: 'highlight',
-          seriesIndex: 0,
-          dataIndex: params.dataIndex,
-        });
-        this.currentFireControlIndex = params.dataIndex;
-      }
-    });
-    // 绑定mouseout事件
-    chart.on('mouseout', params => {
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: this.currentFireControlIndex,
-      });
-      if (this.fireControlTimer) {
-        return;
-      }
-      // 添加定时器循环
-      this.fireControlTimer = setInterval(changeHighLight, 2000);
-    });
-  }
 
-  /**
-   * 隐患巡查统计图表加载完毕
-   */
-  handleHiddenDangerChartReady = (chart, option) => {
-    const changeHighLight = () => {
-      var length = option.series[0].data.length;
-      // 取消之前高亮的图形
-      chart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: 0,
-        dataIndex: this.currentHiddenDangerIndex,
-      });
-      this.currentHiddenDangerIndex = (this.currentHiddenDangerIndex + 1) % length;
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: this.currentHiddenDangerIndex,
-      });
-    };
-    // 立即执行高亮操作
-    changeHighLight();
-    // 添加定时器循环
-    this.hiddenDangerTimer = setInterval(changeHighLight, 2000);
-    // 绑定mouseover事件
-    chart.on('mouseover', params => {
-      clearInterval(this.hiddenDangerTimer);
-      this.hiddenDangerTimer = null;
-      if (params.dataIndex !== this.currentHiddenDangerIndex) {
-        // 取消之前高亮的图形
-        chart.dispatchAction({
-          type: 'downplay',
-          seriesIndex: 0,
-          dataIndex: this.currentHiddenDangerIndex,
-        });
-        // 高亮当前图形
-        chart.dispatchAction({
-          type: 'highlight',
-          seriesIndex: 0,
-          dataIndex: params.dataIndex,
-        });
-        this.currentHiddenDangerIndex = params.dataIndex;
-      }
-    });
-    // 绑定mouseout事件
-    chart.on('mouseout', params => {
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: this.currentHiddenDangerIndex,
-      });
-      if (this.hiddenDangerTimer) {
-        return;
-      }
-      // 添加定时器循环
-      this.hiddenDangerTimer = setInterval(changeHighLight, 2000);
-    });
-  }
-
-  /**
-   * 消防数据统计模块开关点击事件
-   */
-  handleClickFireControlSwitcher = (content) => {
-    this.setState({
-      currentSelectedDate: content,
-    });
-  }
-
-  /**
-   * 隐患巡查统计模块开关点击事件
-   */
-  handleClickHiddenDangerSwitcher = (content) => {
-    this.setState({
-      currentSeelctedMonth: content,
-    });
-  }
-
-  /**
-   * 隐患巡查上一页分页按钮
-   */
-  handlePrev = () => {
-    this.setState(({currentIndex}) => ({
-      currentIndex: currentIndex-1,
-    }));
-  }
-
-   /**
-   * 隐患巡查下一页分页按钮
-   */
-  handleNext = () => {
-    this.setState(({currentIndex}) => ({
-      currentIndex: currentIndex+1,
-    }));
-  }
-
-  /**
-   * 消防数据统计模块开关
-   */
-  renderFireControlCountSectionSwitcher() {
-    const { currentSelectedDate } = this.state;
-
-    return (
-      <div className={styles.fireControlPieChartSwitcherContainer}>
-        {['今日', '本周', '本月', '本年'].map((item, index) => {
-          return <Switcher style={{ right: 0, top: index*56, zIndex: currentSelectedDate===item?5:(4-index) }} color={currentSelectedDate===item?'#0967D3':'#173867'} content={item} key={item} onClick={() => {this.handleClickFireControlSwitcher(item);}} />;
-        })}
-      </div>
-    );
-  }
-
-  /**
-   * 隐患巡查统计模块开关
-   */
-  renderHiddenDangerSwitcher() {
-    const { currentSeelctedMonth, currentIndex } = this.state;
-    const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-    const currentMonth = moment().get('month');
-    const list = [...months.slice(0, currentMonth), '本月'].reverse();
-    const pageSize = 4;
-    // 页数
-    const pageCount = Math.max(Math.ceil((currentMonth+1) / pageSize), 1);
-    // 是否为第一页
-    const isFirst = currentIndex === 0;
-    // 是否为最后一页
-    const isLast = currentIndex === pageCount - 1;
-    // 当前页的第一个元素
-    const currentFirstIndex = currentIndex * pageSize;
-
-    return (
-      <div className={styles.fireControlPieChartSwitcherContainer}>
-        {list.map((item, index) => {
-          if (index < currentFirstIndex || index >= currentFirstIndex+pageSize) {
-            return null;
-          }
-          return (
-            <Switcher style={{ right: 0, top: (index-currentFirstIndex)*56, zIndex: currentSeelctedMonth===item?(pageSize+1):(pageSize+currentFirstIndex-index) }} color={currentSeelctedMonth===item?'#0967D3':'#173867'} content={item} key={item} onClick={() => {this.handleClickHiddenDangerSwitcher(item);}} />
-          );
-        })}
-        <Pagination style={{ right: 0, top: Math.min(pageSize, currentMonth+1-currentFirstIndex)*56, zIndex: 0 }} onNext={this.handleNext} onPrev={this.handlePrev} isFirst={isFirst} isLast={isLast} />
-      </div>
-    );
-  }
 
   /**
    * 渲染所有统计信息块
@@ -412,91 +146,72 @@ export default class App extends PureComponent {
     );
   }
 
+
+
+
+
+  /**
+   * 火灾警报系统
+   */
+  renderFireAlarmSystem() {
+    // 从props中获取数据
+    // const {  } = this.props;
+    // 火警
+    const fire = 1;
+    // 故障
+    const fault = 2;
+    // 屏蔽
+    const shield = 3;
+    // 联动
+    const linkage = 4;
+    // 监管
+    const supervise = 5;
+    // 反馈
+    const feedback = 6;
+    return (
+      <FireAlarmSystem
+        fire={fire}
+        fault={fault}
+        shield={shield}
+        linkage={linkage}
+        supervise={supervise}
+        feedback={feedback}
+      />
+    );
+  }
+
   /**
    * 渲染消防数据统计块
    */
-  renderFireControlCountSection() {
+  renderStatisticsOfFireControl() {
     const real = 0;
     const misinformation = 1;
     const pending = 0;
-    const fire = real+misinformation+pending;
     const fault = 2;
     const shield = 3;
     const linkage = 4;
     const supervise = 5;
     const feedback = 6;
 
-    const option = {
-      color: ['#E86767', '#108EFF', '#847BE6', '#01B0D1', '#FFB13A', '#BBBBBC'],
-      series: [
-        {
-          type: 'pie',
-          radius: '55%',
-          hoverOffset: 0,
-          avoidLabelOverlap: false,
-          label: {
-            normal: {
-              show: false,
-              color: '#fff',
-              fontSize: 14,
-              lineHeight: 20,
-              formatter: '{b}：{c}',
-              rich: {
-
-              },
-            },
-            emphasis: {
-              show: true,
-            },
-          },
-          labelLine: {
-            lineStyle: {
-              color: '#fff',
-            },
-          },
-          data: [
-            { value: fire, name: '火警', label: { formatter: `真实：${real}\n误报：${misinformation}\n待处理：${pending}` } },
-            { value: fault, name: '故障' },
-            { value: shield, name: '屏蔽' },
-            { value: linkage, name: '联动' },
-            { value: supervise, name: '监管' },
-            { value: feedback, name: '反馈' },
-          ],
-        },
-      ],
-    };
-
     return (
-      <Section title="消防数据统计" fixedContent={(
-        <Fragment>
-          <div className={styles.fireControlPieChartLegend}>
-            <div><div style={{ backgroundColor: '#E86767' }}></div><div>火警</div><div>{fire}</div></div>
-            <div><div style={{ backgroundColor: '#108EFF' }}></div><div>故障</div><div>{fault}</div></div>
-            <div><div style={{ backgroundColor: '#847BE6' }}></div><div>屏蔽</div><div>{shield}</div></div>
-            <div><div style={{ backgroundColor: '#01B0D1' }}></div><div>联动</div><div>{linkage}</div></div>
-            <div><div style={{ backgroundColor: '#FFB13A' }}></div><div>监管</div><div>{supervise}</div></div>
-            <div><div style={{ backgroundColor: '#BBBBBC' }}></div><div>反馈</div><div>{feedback}</div></div>
-          </div>
-          {this.renderFireControlCountSectionSwitcher()}
-        </Fragment>
-      )}>
-        <div className={styles.fireControlPieChartContainer}>
-          <ReactEcharts
-            option={option}
-            style={{ height: '100%' }}
-            onChartReady={chart => {
-              this.handleFireControlPieChartReady(chart, option);
-            }}
-          />
-        </div>
-      </Section>
+      <StatisticsOfFireControl
+        real={real}
+        misinformation={misinformation}
+        pending={pending}
+        fault={fault}
+        shield={shield}
+        linkage={linkage}
+        supervise={supervise}
+        feedback={feedback}
+        onSwitch={(item, index)=> {console.log(item, index);}}
+      />
     );
   }
 
   /**
    * 隐患巡查统计模块
    */
-  renderHiddenDangerCountSection() {
+  renderStatisticsOfHiddenDanger() {
     const ssp = 1;
     const fxd = 2;
     const cqwzg = 3;
@@ -504,110 +219,47 @@ export default class App extends PureComponent {
     const dzg = 5;
     const ygb = 6;
 
-    const option = {
-      series: [
-        {
-          type: 'pie',
-          radius: ['65%', '50%'],
-          hoverOffset: 0,
-          avoidLabelOverlap: false,
-          label: {
-            normal: {
-              show: false,
-              color: '#fff',
-              fontSize: 14,
-              lineHeight: 20,
-              align: 'center',
-              formatter: '{d}%\n{b}',
-              rich: {
+    return (
+      <StatisticsOfHiddenDanger
+        ssp={ssp}
+        fxd={fxd}
+        cqwzg={cqwzg}
+        dfc={dfc}
+        dzg={dzg}
+        ygb={ygb}
+        onSwitch={(item) => {console.log(item);}}
+      />
+    );
+  }
 
-              },
-            },
-            emphasis: {
-              show: true,
-            },
-          },
-          labelLine: {
-            length: 30,
-            lineStyle: {
-              color: '#fff',
-            },
-          },
-          data: [
-            { value: cqwzg, name: '超期未整改', itemStyle: { color: '#D16772' } },
-            { value: dfc, name: '待复查', itemStyle: { color: '#2787D5' } },
-            { value: dzg, name: '待整改', itemStyle: { color: '#DEAD5C' } },
-            { value: ygb, name: '已关闭', itemStyle: { color: '#A9B2BE' } },
-          ],
-        },
-        {
-          type: 'pie',
-          radius: '40%',
-          hoverOffset: 0,
-          avoidLabelOverlap: false,
-          label: {
-            normal: {
-              show: false,
-              color: '#fff',
-              fontSize: 14,
-              lineHeight: 20,
-              formatter: '{b}：{c}',
-              position: 'inner',
-              rich: {
-
-              },
-            },
-            emphasis: {
-              show: true,
-            },
-          },
-          labelLine: {
-            lineStyle: {
-              color: '#fff',
-            },
-          },
-          data: [
-            { value: ssp, name: '随手拍', itemStyle: { color: '#00ABC9' } },
-            { value: fxd, name: '风险点', itemStyle: { color: '#E86767' } },
-          ],
-        },
-      ],
-    };
+  /**
+   * 维保情况统计
+   */
+  renderStatisticsOfMaintenance() {
+    // const {
+    //   maintenance: {
+    //     name: maintenanceName="维保单位",
+    //     total: maintenanceTotal=0,
+    //     repaired: maintenanceRepaired=0,
+    //     unrepaired: maintenanceUnrepaired=0,
+    //     repairing: maintenanceRepairing=0,
+    //     duration: maintenanceDuration=0,
+    //     rate: maintenanceRate=0,
+    //   } = {},
+    //   local: {
+    //     total: localTotal=0,
+    //     repaired: localRepaired=0,
+    //     unrepaired: localUnrepaired=0,
+    //     repairing: localRepairing=0,
+    //     duration: localDuration=0,
+    //     rate: localRate=0,
+    //   } = {},
+    // } = this.props;
 
     return (
-      <Section title="隐患巡查统计" fixedContent={(
-        <Fragment>
-          <div className={styles.hiddenDangerChartLegend}>
-            <div className={styles.hiddenDangerChartLegendLeft}>
-              <div><div style={{ backgroundImage: `url(${triangleIcon})` }}></div><div>隐患来源</div></div>
-              <div>
-                <div><div style={{ backgroundColor: '#00ABC9' }}></div><div>随手拍</div><div>{ssp}</div></div>
-                <div><div style={{ backgroundColor: '#E86767' }}></div><div>风险点</div><div>{fxd}</div></div>
-              </div>
-            </div>
-            <div className={styles.hiddenDangerChartLegendRight}>
-              <div><div style={{ backgroundImage: `url(${triangleIcon})` }}></div><div>隐患状态</div></div>
-              <div>
-                <div><div style={{ backgroundColor: '#D16772' }}></div><div>超期未整改</div><div>{cqwzg}</div></div>
-                <div><div style={{ backgroundColor: '#2787D5' }}></div><div>待复查</div><div>{dfc}</div></div>
-                <div><div style={{ backgroundColor: '#DEAD5C' }}></div><div>待整改</div><div>{dzg}</div></div>
-                <div><div style={{ backgroundColor: '#A9B2BE' }}></div><div>已关闭</div><div>{ygb}</div></div>
-              </div>
-            </div>
-          </div>
-          {this.renderHiddenDangerSwitcher()}
-        </Fragment>
-      )}>
-        <div className={styles.hiddenDangerChartContainer}>
-          <ReactEcharts
-            option={option}
-            style={{ height: '100%' }}
-            onChartReady={chart => {
-              this.handleHiddenDangerChartReady(chart, option);
-            }}
-          />
-        </div>
-      </Section>
+      <StatisticsOfMaintenance
+        onSwitch={(item, index) => { console.log(item, index); }}
+      />
     );
   }
 
@@ -637,7 +289,7 @@ export default class App extends PureComponent {
               {this.renderAllCountSection()}
             </Col>
             <Col span={6} style={{ height: '100%' }}>
-              <Section />
+              {this.renderFireAlarmSystem()}
             </Col>
           </Row>
           <Row gutter={16} style={{ height: '51.08%' }}>
@@ -660,13 +312,13 @@ export default class App extends PureComponent {
               </Section>
             </Col>
             <Col span={6} style={{ height: '100%' }}>
-              {this.renderFireControlCountSection()}
+              {this.renderStatisticsOfFireControl()}
             </Col>
             <Col span={6} style={{ height: '100%' }}>
-              {this.renderHiddenDangerCountSection()}
+              {this.renderStatisticsOfHiddenDanger()}
             </Col>
             <Col span={6} style={{ height: '100%' }}>
-              <Section />
+              {this.renderStatisticsOfMaintenance()}
             </Col>
           </Row>
         </div>

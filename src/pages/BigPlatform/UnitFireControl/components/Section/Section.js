@@ -21,6 +21,10 @@ export default class App extends PureComponent {
     this.carouselTimer = null;
     // 过渡定时器
     this.transitionTimer = null;
+    // 起始时间戳
+    this.startTimestamp = null;
+    // 过渡起始时间戳
+    this.startTransitionTimestamp = null;
   }
 
   /**
@@ -65,9 +69,19 @@ export default class App extends PureComponent {
   addCarousel = () => {
     const { isCarousel } = this.props;
     if (isCarousel) {
-      this.carouselTimer = setInterval(() => {
-        this.transition();
-      },5000);
+      const callback = (timestamp) => {
+        if (!this.startTimestamp) {
+          this.startTimestamp = timestamp;
+        }
+        const progress = timestamp - this.startTimestamp;
+        if (progress >= 5000) {
+          this.startTimestamp = null;
+          this.transition();
+        }
+        this.carouselTimer = window.requestAnimationFrame(callback);
+      }
+      // 立即执行
+      this.carouselTimer = window.requestAnimationFrame(callback);
     }
   }
 
@@ -75,7 +89,8 @@ export default class App extends PureComponent {
    * 清除轮播定时器
    */
   clearCarousel = () => {
-    clearInterval(this.carouselTimer);
+    window.cancelAnimationFrame(this.carouselTimer);
+    this.startTimestamp = null;
   }
 
   /**
@@ -127,19 +142,31 @@ export default class App extends PureComponent {
    * 列表从当前位置过渡到目标位置
    */
   transition = () => {
+    // 子元素的高度
     const height = this.list.scrollHeight / this.list.childNodes.length;
+    // 当前的scrollTop
     const start = this.container.scrollTop;
+    // 计算要滚动的距离
     const target = height - start % height;
-    const end = start + target;
-    const duration = 500;
-    const delay = duration / target;
-    this.transitionTimer = setInterval(() => {
-      this.container.scrollTop += 1;
-      if (this.container.scrollTop >= end) {
-        clearInterval(this.transitionTimer);
+    const duration = 600;
+    const callback = (timestamp) => {
+      if (!this.startTransitionTimestamp) {
+        this.startTransitionTimestamp = timestamp;
+      }
+      const progress = timestamp - this.startTransitionTimestamp;
+      const scrollTop = start + Math.min(progress/duration*target, target)
+      console.log('scrollTop:', scrollTop);
+      this.container.scrollTop = scrollTop;
+      if (progress >= duration) {
+        this.startTransitionTimestamp = null;
         this.handleTransitionEnd(Math.round(this.container.scrollTop / height));
       }
-    }, delay)
+      else {
+        this.transitionTimer = window.requestAnimationFrame(callback);
+      }
+    };
+    this.transitionTimer = window.requestAnimationFrame(callback);
+
   }
 
   /**
