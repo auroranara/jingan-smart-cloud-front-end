@@ -116,11 +116,14 @@ export default class FireControlBigPlatform extends PureComponent {
     };
 
     return (
-      <div className={styles.root}>
+      <div
+        className={styles.root}
+        style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
+      >
         {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
         <Head title="晶 安 智 慧 消 防 云 平 台" />
         <div className={styles.empty} />
-        {/* <Row
+        <Row
           style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
           gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}
         >
@@ -172,8 +175,9 @@ export default class FireControlBigPlatform extends PureComponent {
               <FcSection title="系统接入情况反面" isBack />
             </FcModule>
           </Col>
-        </Row> */}
+        </Row>
         <VideoPlay
+          dispatch={dispatch}
           videoList={allCamera}
           visible={videoVisible}
           keyId="" // keyId

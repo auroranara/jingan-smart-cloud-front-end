@@ -1,52 +1,60 @@
 import React, { Component } from 'react';
-import { Icon, Tree, Spin } from 'antd';
+import { Icon } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '../components/HLSSource.js';
 import 'video-react/dist/video-react.css';
 import classNames from 'classnames';
 import styles from './VideoPlay.less';
+import animate from '../../Safety/Animate.less';
 
 @connect(({ bigFireControl }) => ({
   bigFireControl,
 }))
 class VideoPlay extends Component {
   state = {
-    videoSrc: '#',
+    videoSrc: '',
     activeIndex: 0,
   };
-  componentDidMount() {
-    const { videoList, keyId } = this.props;
+  componentDidMount() {}
 
-    if (keyId) {
-      videoList.forEach((item, index) => {
-        if (item.key_id === keyId) {
-          this.setState({
-            activeIndex: index,
-            // videoSrc: item.src,
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return this.props.videoList.toString() !== prevProps.videoList.toString();
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (snapshot) {
+      this.handleInit();
+    }
+  }
+
+  handleInit = () => {
+    const { dispatch, videoList, keyId } = this.props;
+    dispatch({
+      type: 'bigFireControl/fetchStartToPlay',
+      payload: {
+        key_id: keyId || videoList[0].key_id,
+      },
+      success: response => {
+        this.setState({
+          videoSrc: response.src,
+        });
+        if (keyId) {
+          videoList.forEach((item, index) => {
+            if (item.key_id === keyId) {
+              this.setState({
+                activeIndex: index,
+              });
+            }
           });
         }
-      });
-    } else {
-      this.setState({
-        // videoSrc: videoList[0].src,
-      });
-    }
-    this.setState({});
-  }
+      },
+    });
+  };
+
   renderVideoList = () => {
-    const { videoList, keyId } = this.props;
-    let { activeIndex } = this.state;
-    // if (keyId) {
-    //   videoList.forEach((item, index) => {
-    //     if (item.key_id === keyId) {
-    //       this.setState({
-    //         activeIndex: index,
-    //       });
-    //       activeIndex = index;
-    //     }
-    //   });
-    // }
+    const { videoList } = this.props;
+    const { activeIndex } = this.state;
     return (
       <div className={styles.listScroll}>
         <ul className={styles.videoUl}>
@@ -58,7 +66,7 @@ class VideoPlay extends Component {
               <li
                 className={itemStyles}
                 onClick={() => {
-                  this.handleItemClick(index);
+                  this.handleItemClick(index, item.key_id);
                 }}
                 key={item.key_id}
               >
@@ -74,33 +82,33 @@ class VideoPlay extends Component {
       </div>
     );
   };
-  handleItemClick = index => {
-    const { videoList } = this.props;
-    const src = [
-      'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8',
-      'http://218.90.184.178:23389/hls/dangkou/test.m3u8',
-    ];
-    this.setState(
-      {
-        videoSrc: src[index], // videoList[index].src
-        activeIndex: index,
+  handleItemClick = (index, keyId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigFireControl/fetchStartToPlay',
+      payload: {
+        key_id: keyId,
       },
-      () => {
-        this.forceUpdate();
-      }
-    );
+      success: response => {
+        this.setState({
+          videoSrc: response.src,
+          activeIndex: index,
+        });
+      },
+    });
   };
   handleClose = () => {
     this.props.handleVideoClose();
   };
   render() {
-    const { videoList, style = {}, visible } = this.props;
+    const { style = {}, visible } = this.props;
     const { videoSrc } = this.state;
     // console.log(videoSrc);
+    const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
     if (!visible) return null;
     return (
-      <div className={styles.videoPlay} style={{ ...style }}>
+      <div className={wrapperStyles} style={{ ...style }}>
         <div className={styles.titleBar}>
           监控地点：
           {`1号楼3#`}

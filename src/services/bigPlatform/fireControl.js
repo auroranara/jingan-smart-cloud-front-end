@@ -35,3 +35,8 @@ export async function getCompanyFireInfo() {
 export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
+
+// 视频
+export async function getStartToPlay(params) {
+  return request(`/acloud_new/dai/startToPlay?${stringify(params)}`);
+}

@@ -7,6 +7,7 @@ import {
   queryDanger,
   getCompanyFireInfo,
   getAllCamera,
+  getStartToPlay,
 } from '../services/bigPlatform/fireControl';
 
 function handleDanger(response) {
@@ -38,6 +39,7 @@ export default {
     trend: {},
     danger: {},
     allCamera: [],
+    startToPlay: '',
   },
 
   effects: {
@@ -89,6 +91,18 @@ export default {
       const { list } = response;
       yield put({ type: 'saveAllCamera', payload: list });
     },
+    *fetchStartToPlay({ payload, success }, { call, put }) {
+      // const response = yield call(getStartToPlay, payload);
+      // const { list } = response;
+      let response = {};
+      if (payload.key_id === 'zhutongdao') {
+        response = { src: 'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8' };
+      } else if (payload.key_id === 'erdaomenchukou') {
+        response = { src: 'http://218.90.184.178:23389/hls/dangkou/test.m3u8' };
+      }
+      yield put({ type: 'startToPlay', payload: response });
+      if (success) success(response);
+    },
   },
 
   reducers: {
@@ -113,6 +127,9 @@ export default {
     },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
+    },
+    startToPlay(state, action) {
+      return { ...state, startToPlay: action.payload };
     },
   },
 };
