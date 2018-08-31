@@ -14,6 +14,7 @@ import {
   fetchAssociatedUnitDeatil,
   addAssociatedUnit,
   editAssociatedUnit,
+  chnageAccountStatus,
 } from '../services/accountManagement.js';
 
 import { checkOldPass, changePass } from '../services/account.js';
@@ -274,6 +275,13 @@ export default {
         if (success) success()
       } else if (error) error(response.msg)
     },
+    // 绑定、解绑关联企业
+    *chnageAccountStatus({ payload, success, error }, { call }) {
+      const response = yield call(chnageAccountStatus, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response.msg)
+    },
   },
 
   reducers: {
@@ -418,6 +426,12 @@ export default {
       return {
         ...state,
         user: payload,
+      }
+    },
+    saveAccounts(state, { payload }) {
+      return {
+        ...state,
+        list: payload,
       }
     },
   },

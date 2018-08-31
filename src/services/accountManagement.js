@@ -91,3 +91,10 @@ export async function editAssociatedUnit(params) {
     body: params,
   })
 }
+
+// 绑定、解绑用户（关联企业）
+export async function chnageAccountStatus(params) {
+  return request(`/acloud_new/v2/rolePermission/bindUser/${params.id}/${params.accountStatus}`, {
+    method: 'PUT',
+  })
+}

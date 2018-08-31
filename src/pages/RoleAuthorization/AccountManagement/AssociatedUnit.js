@@ -384,7 +384,7 @@ export default class AssociatedUnit extends PureComponent {
             unitId: unitId ? unitId.key : null,
             treeIds: treeIds ? treeIds.key : null,
             roleIds: roleIds.join(','),
-            departmentId: Array.isArray(departmentId) ? undefined : departmentId,
+            departmentId: departmentId || null,
             userType,
             documentTypeId,
             execCertificateCode,
@@ -715,7 +715,7 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.departmentId}>
                 {getFieldDecorator('departmentId', {
                   // TODO：
-                  initialValue: userId ? [departmentId] : null,
+                  initialValue: userId ? departmentId : null,
                 })(
                   <TreeSelect
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}

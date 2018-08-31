@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Row, Col, Select, AutoComplete, Icon, Modal, Table, Divider } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Row, Col, Select, AutoComplete, Icon, Modal, Table, Divider, Popconfirm, message } from 'antd';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router'
 import debounce from 'lodash/debounce';
@@ -102,6 +102,18 @@ const getEmptyData = () => {
     goToDetail(url) {
       dispatch(routerRedux.push(url));
     },
+    saveAccounts(action) {
+      dispatch({
+        type: 'account/saveAccounts',
+        ...action,
+      })
+    },
+    chnageAccountStatus(action) {
+      dispatch({
+        type: 'account/chnageAccountStatus',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -113,6 +125,7 @@ export default class accountManagementList extends PureComponent {
     this.state = {
       modalVisible: false,
       associatedUnits: [],
+      currentLoginId: null,
     }
   }
 
@@ -235,10 +248,11 @@ export default class accountManagementList extends PureComponent {
   };
 
   // 查看更多关联企业
-  handleViewMore = (list) => {
+  handleViewMore = (users, loginId) => {
     this.setState({
       modalVisible: true,
-      associatedUnits: list,
+      associatedUnits: users,
+      currentLoginId: loginId,
     })
   }
 
@@ -251,6 +265,33 @@ export default class accountManagementList extends PureComponent {
   // 跳转到编辑关联企业
   handleToEdit = (id) => {
     router.push(`/role-authorization/account-management/associated-unit/edit/${id}`)
+  }
+
+  // 解绑/开启安全企业
+  handleAccountStatus = ({ accountStatus, id, users, loginId }) => {
+    const { saveAccounts, chnageAccountStatus, account: { list } } = this.props
+    const success = () => {
+      const temp = users.map(item => (item.id === id ? { ...item, accountStatus } : item))
+      const newList = list.map(item => (item.loginId === loginId ? { ...item, users: temp } : item))
+      saveAccounts({
+        payload: newList,
+      })
+      message.success(`${!!accountStatus ? '开启成功！' : '解绑成功！'}`)
+      this.setState({
+        associatedUnits: temp,
+      })
+    }
+    const error = (msg) => {
+      message.error(msg)
+    }
+    chnageAccountStatus({
+      payload: {
+        id,
+        accountStatus,
+      },
+      success,
+      error,
+    })
   }
 
   /* 渲染form表单 */
@@ -404,7 +445,6 @@ export default class accountManagementList extends PureComponent {
                     </Col>
                     {item.users && item.users.length ? (
                       <Row>
-                        {/* <Col span={6}>{unitTypeList[item.users[0].unitType]}，</Col> */}
                         <Col span={16}>
                           <Ellipsis tooltip lines={1} className={styles.ellipsisText} length={13}>
                             {unitTypeList[item.users[0].unitType]}，
@@ -412,14 +452,25 @@ export default class accountManagementList extends PureComponent {
                           </Ellipsis>
                         </Col>
                         <Col span={3}>
-                          <Icon className={styles['unit-edit-icon']} type="edit" />
+                          <Icon onClick={() => this.handleToEdit(item.users[0].id)} className={styles['unit-edit-icon']} type="edit" />
                         </Col>
                         <Col span={3}>
-                          {item.accountStatus && (<Icon className={styles['unit-edit-icon']} type="link" />)}
-                          {!item.accountStatus && (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                          <Popconfirm
+                            title={`确定要${!!item.users[0].accountStatus ? '解绑' : '开启'}关联企业吗？`}
+                            onConfirm={() => this.handleAccountStatus({ accountStatus: Number(!item.users[0].accountStatus), id: item.users[0].id, users: item.users, loginId: item.loginId })}
+                          >
+                            {!!item.users[0].accountStatus
+                              ? (<Icon className={styles['unit-edit-icon']} type="link" />)
+                              : (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                          </Popconfirm>
                         </Col>
-                      </Row>) : getEmptyData()}
-                    <p onClick={() => this.handleViewMore(item.users)} style={{ visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden' }} className={styles.more}>更多...</p>
+                      </Row>) : (<p>{getEmptyData()}</p>)}
+                    <p
+                      onClick={() => this.handleViewMore(item.users, item.loginId)}
+                      style={{ visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden' }}
+                      className={styles.more}>
+                      更多...
+                    </p>
                   </div>
                   {
                     <div className={styles[statusList[status]]}>
@@ -436,7 +487,7 @@ export default class accountManagementList extends PureComponent {
   }
 
   renderModal = () => {
-    const { modalVisible, associatedUnits } = this.state
+    const { modalVisible, associatedUnits, currentLoginId } = this.state
     const columns = [
       {
         title: '关联单位',
@@ -454,19 +505,31 @@ export default class accountManagementList extends PureComponent {
             <Fragment>
               <Icon onClick={() => this.handleToEdit(row.id)} className={styles['unit-edit-icon']} type="edit" />
               <Divider type="vertical" />
-              {row.accountStatus && (<Icon className={styles['unit-edit-icon']} type="link" />)}
-              {!row.accountStatus && (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+              <Popconfirm
+                title={`确定要${!!row.accountStatus ? '解绑' : '开启'}关联企业吗？`}
+                onConfirm={() => this.handleAccountStatus({ accountStatus: Number(!row.accountStatus), id: row.id, users: associatedUnits, loginId: currentLoginId })}
+              >
+                {!!row.accountStatus
+                  ? (<Icon className={styles['unit-edit-icon']} type="link" />)
+                  : (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+              </Popconfirm>
             </Fragment>
           )
         },
       },
     ]
+    const footer = (
+      <Fragment>
+        <Button onClick={this.handleModalClose}>关闭</Button>
+      </Fragment>
+    )
 
     return (
       <Modal
         title="关联单位"
         visible={modalVisible}
         onCancel={this.handleModalClose}
+        footer={footer}
       >
         <Table bordered rowKey="id" columns={columns} dataSource={associatedUnits} pagination={false}></Table>
       </Modal>
