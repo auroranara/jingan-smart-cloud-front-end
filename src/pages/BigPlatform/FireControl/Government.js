@@ -76,11 +76,13 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchFireTrend' });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     dispatch({ type: 'bigFireControl/fetchDanger' });
-    dispatch({ type: 'bigFireControl/fetchLookUp', callback: (flag, recordsId) => {
+    dispatch({ type: 'bigFireControl/fetchInitLookUp', callback: (flag, recordsId) => {
+      // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
       if (myParseInt(flag) === AUTO_LOOKUP_ROTATE)
-        this.handleClickLookUp(true);
+          this.handleClickLookUp(true);
 
-      recordsId = 'ZwNsxkTES_y5Beu560xF5w';
+      // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
+      // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
       recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
     } });
   };
@@ -213,7 +215,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
   render() {
     const {
-      bigFireControl: { overview, companyOv, alarm, alarmHistory, sys, trend, companyTrend, danger, gridDanger, companyDanger, map, lookUp, offGuard },
+      bigFireControl: { overview, companyOv, alarm, alarmHistory, sys, trend, companyTrend, danger, gridDanger, companyDanger, map, lookUp, countdown, offGuard },
       dispatch,
     } = this.props;
 
@@ -353,7 +355,7 @@ export default class FireControlBigPlatform extends PureComponent {
               }
               back={
                 <UnitLookUpBack
-                  data={{ lookUp, offGuard }}
+                  data={{ lookUp, countdown, offGuard }}
                   lookUpShow={lookUpShow}
                   startLookUp={startLookUp}
                   handleRotateBack={this.handleUnitLookUpRotateBack}

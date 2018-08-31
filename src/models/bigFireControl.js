@@ -8,6 +8,7 @@ import {
   queryDanger,
   getCompanyFireInfo,
   queryLookUp,
+  queryCountdown,
   queryOffGuard,
   postLookingUp,
 } from '../services/bigPlatform/fireControl';
@@ -69,7 +70,7 @@ export default {
     gridDanger: {},
     companyDanger: {},
     lookUp: {},
-    lookingUp: {},
+    countdown: {},
     offGuard: {},
   },
 
@@ -143,7 +144,7 @@ export default {
         }
       }
     },
-    *fetchLookUp({ payload, callback }, { call, put }) {
+    *fetchInitLookUp({ payload, callback }, { call, put }) {
       let response = yield call(queryLookUp);
       response = response || EMPTY_OBJECT;
       const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
@@ -152,6 +153,13 @@ export default {
         const { flag, recordsId } = data;
         callback && callback(flag, recordsId);
       }
+    },
+    *fetchCountdown({ payload }, { call, put }) {
+      let response = yield call(queryCountdown);
+      response = response || EMPTY_OBJECT;
+      const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
+      if (code === 200)
+        yield put({ type: 'saveCountdown', payload: data });
     },
     *postLookingUp({ payload, callback }, { call, put }) {
       let response = yield call(postLookingUp);
@@ -206,6 +214,9 @@ export default {
     },
     saveLookUp(state, action) {
       return { ...state, lookUp: action.payload };
+    },
+    saveCountdown(state, action) {
+      return { ...state, countdown: action.payload };
     },
     saveOffGuard(state, action) {
       return { ...state, offGuard: action.payload };

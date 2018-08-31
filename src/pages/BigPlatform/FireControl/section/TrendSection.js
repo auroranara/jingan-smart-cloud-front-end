@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react'
 
+import { myParseInt } from '../utils';
 import FcSection from './FcSection';
 
 const DELAY = 2000;
@@ -113,6 +114,14 @@ export default class TrendSection extends PureComponent {
         type: 'value',
         axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' } },
         splitLine: { show: false },
+        // 小数标签不显示
+        axisLabel: {
+          formatter: function (value, index) {
+              if (myParseInt(value) != value)
+                return "";
+              return myParseInt(value);
+          },
+      },
       }, {
         type: 'value',
         min: 0,

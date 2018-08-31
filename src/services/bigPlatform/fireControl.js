@@ -39,6 +39,10 @@ export async function queryLookUp() {
   return request(`${URL_PREFIX}/screenShowData/inspectionRecords`);
 }
 
+export async function queryCountdown() {
+  return request(`${URL_PREFIX}/screenShowData/countDown`);
+}
+
 export async function postLookingUp() {
   return request(`${URL_PREFIX}/screenShowData/inspectionRecords`, { method: 'POST' });
 }

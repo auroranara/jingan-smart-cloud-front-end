@@ -99,11 +99,11 @@ export default class DangerSection extends PureComponent {
           // show: false,
           lineStyle: { color: 'rgb(37,54,83)' },
         },
+        // 小数标签不显示
         axisLabel: {
           formatter: function (value, index) {
-            if (myParseInt(value) !== value) {
+            if (myParseInt(value) !== value)
               return "";
-            }
             return myParseInt(value);
           },
         },

@@ -69,8 +69,10 @@ export default class LookingUp extends Component {
     return option;
   };
   render() {
-    const { showed, handleRotateBack, startLookUp, data } = this.props;
+    const { showed, handleRotateBack, startLookUp, createTime, data } = this.props;
     const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
+
+    const countTime = createTime ? Date.now() - createTime : 600000;
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -96,7 +98,7 @@ export default class LookingUp extends Component {
                   onStop={() => {
                     handleRotateBack();
                   }}
-                  stop={10 * 60 * 1000}
+                  stop={countTime}
                   start={startLookUp}
                 />
               </div>

@@ -68,7 +68,7 @@ export default class UnitLookUp extends Component {
 
   render() {
     const { data, handleClickLookUp, handleClickOffGuard } = this.props;
-    const { lastTime='0 0', fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
+    const { lastTime='暂无 信息', fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
     const [day, time] = lastTime.split(' ');
 
     return (
