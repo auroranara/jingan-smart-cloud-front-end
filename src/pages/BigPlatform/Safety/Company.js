@@ -687,33 +687,38 @@ class CompanyLayout extends PureComponent {
             </div>
 
             <div className={styles.summaryBottom} style={{ height: '50%' }}>
-              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${peopleIcon})` }}>
+              <div
+                className={`${styles.summaryHalf} ${styles.hoverable}`}
+                style={{ backgroundImage: `url(${peopleIcon})`, cursor: 'pointer' }}
+                onClick={() => {
+                  this.safety.style.right = 0;
+                  this.leftSection.style.opacity = 0;
+                }}
+
+              >
                 <div className={styles.summaryText}>
                   <span className={styles.fieldName}>安全人员</span>
                 </div>
                 <div
                   className={styles.summaryNum}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    this.safety.style.right = 0;
-                    this.leftSection.style.opacity = 0;
-                  }}
                 >
                   {countCompanyUser}
                 </div>
               </div>
 
-              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${checkIcon})` }}>
+              <div
+                className={`${styles.summaryHalf} ${styles.hoverable}`}
+                style={{ backgroundImage: `url(${checkIcon})`, cursor: 'pointer' }}
+                onClick={() => {
+                  this.risk.style.right = 0;
+                  this.leftSection.style.opacity = 0;
+                }}
+              >
                 <div className={styles.summaryText}>
                   <span className={styles.fieldName}>风险点</span>
                 </div>
                 <div
                   className={styles.summaryNum}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    this.risk.style.right = 0;
-                    this.leftSection.style.opacity = 0;
-                  }}
                 >
                   {countCheckItem}
                 </div>
