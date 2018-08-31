@@ -4,8 +4,8 @@ import { connect } from 'dva';
 // import Carousel3d from './Carousel3d';
 import styles from './Dashboard.less';
 import { getToken } from 'utils/authority';
-import fire from '../../assets/fire-big-screen.png';
-import safe from '../../assets/safe-bing-screen.png';
+const fire = 'http://data.jingan-china.cn/v2/dashboard/fire-control.png';
+const safe = 'http://data.jingan-china.cn/v2/dashboard/safety.png';
 
 const safeItem = { src: safe, url: '#/big-platform/safety/government' };
 const fireItem = {
