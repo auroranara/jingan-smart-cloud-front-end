@@ -7,8 +7,6 @@ import {
   getOutOfDateNumber,
   // 获取待整改隐患数量
   getToBeRectifiedNumber,
-  // 获取待维保任务数量（注：未完成，需变更）
-  getToBeMaintainedNumber,
   // 获取待巡查任务数量
   getToBeInspectedNumber,
   // 获取火灾报警系统
@@ -37,8 +35,6 @@ export default {
     outOfDateNumber: 0,
     // 待整改隐患数量
     toBeRectifiedNumber: 0,
-    // 待维保任务数量（注：未完成，需变更）
-    toBeMaintainedNumber: 0,
     // 待巡查任务数量
     toBeInspectedNumber: 0,
     // 火灾报警系统
@@ -138,17 +134,6 @@ export default {
       const response = yield call(getToBeRectifiedNumber, payload);
       yield put({
         type: 'saveToBeRectifiedNumber',
-        payload: response.total,
-      });
-      if (success) {
-        success(response.total);
-      }
-    },
-    // 获取待维保任务数量（注：未完成，需变更）
-    *fetchToBeMaintainedNumber({ payload, success }, { call, put }) {
-      const response = yield call(getToBeMaintainedNumber, payload);
-      yield put({
-        type: 'saveToBeMaintainedNumber',
         payload: response.total,
       });
       if (success) {
@@ -288,13 +273,6 @@ export default {
       return {
         ...state,
         toBeRectifiedNumber,
-      };
-    },
-    // 待维保任务数量（注：未完成，需变更）
-    saveToBeMaintainedNumber(state, { payload: toBeMaintainedNumber }) {
-      return {
-        ...state,
-        toBeMaintainedNumber,
       };
     },
     // 待巡查任务数量

@@ -12,6 +12,7 @@ const hosts = {
   ct: '192.168.10.8', //陈涛
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18080', // 开发
+  dev2: '192.168.10.68:18081', // 开发
   test: '192.168.10.68:18082', // 测试
   mock: '118.126.110.115:3001/mock/28',
   jb: '192.168.10.3', // 杰宝
@@ -22,7 +23,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },

@@ -37,124 +37,84 @@ export async function getCompanyFireInfo() {
  * 获取待处理信息
  */
 export async function getPendingInfo(params) {
-  return request(`/acloud_new/v2/fireData/dangerMessage.json?${Math.random()}`, {
-    method: 'POST',
-    body: params,
-  });
+  return request(`/acloud_new/v2/fireData/dangerMessage.json?${stringify(params)}`);
 }
 
 /**
  * 获取待处理火警和待处理故障数量
  */
 export async function getPendingNumber(params) {
-  return request(`/acloud_new/v2/fireData/countPendingDanger.json?${Math.random()}`, {
-    method: 'POST',
-    body: params,
-  });
+  return request(`/acloud_new/v2/fireData/countPendingDanger.json?${stringify(params)}`);
 }
 
 /**
  * 超期未整改隐患数量
  */
 export async function getOutOfDateNumber(params) {
-  return request(`/acloud_new/v2/hdf/list.json?${Math.random()}`, {
-    method: 'POST',
-    body: {
-      start: 0,
-      end: 0,
-      pageSize: 1,
-      _status: 2,
-      ...params,
-    },
-  });
+  const props = {
+    start: 0,
+    end: 0,
+    pageSize: 1,
+    _status: 2,
+    ...params,
+  };
+  return request(`/acloud_new/v2/hdf/list.json?${stringify(props)}`);
 }
 
 /**
  * 获取待整改隐患数量
  */
 export async function getToBeRectifiedNumber(params) {
-  return request(`/acloud_new/v2/hdf/list.json?${Math.random()}`, {
-    method: 'POST',
-    body: {
-      start: 0,
-      end: 0,
-      pageSize: 1,
-      _status: 7,
-      ...params,
-    },
-  });
-}
-
-/**
- * 获取待维保任务数量（注：未完成，需变更）
- */
-export async function getToBeMaintainedNumber(params) {
-  return request(`/acloud_new/v2/hdf/list.json?${Math.random()}`, {
-    method: 'POST',
-    body: {
-      start: 0,
-      end: 0,
-      pageSize: 1,
-      _status: 1,
-      ...params,
-    },
-  });
+  const props = {
+    start: 0,
+    end: 0,
+    pageSize: 1,
+    _status: 7,
+    ...params,
+  };
+  return request(`/acloud_new/v2/hdf/list.json?${stringify(props)}`);
 }
 
 /**
  * 获取待巡查任务数量
  */
 export async function getToBeInspectedNumber(params) {
-  return request(`/acloud_new/v2/hdf/listTask.json?${Math.random()}`, {
-    method: 'POST',
-    body: {
-      start: 0,
-      end: 0,
-      pageSize: 1,
-      taskStatus: 0,
-      ...params,
-    },
-  });
+  const props = {
+    start: 0,
+    end: 0,
+    pageSize: 1,
+    taskStatus: 0,
+    ...params,
+  };
+  return request(`/acloud_new/v2/hdf/listTask.json?${stringify(props)}`);
 }
 
 /**
  * 获取火灾报警系统
  */
 export async function getFireAlarmSystem(params) {
-  return request(`/acloud_new/v2/fireData/countDanger.json?${Math.random()}`, {
-    method: 'POST',
-    body: params,
-  });
+  return request(`/acloud_new/v2/fireData/countDanger.json?${stringify(params)}`);
 }
 
 /**
  * 获取隐患巡查记录
  */
 export async function getHiddenDangerRecords(params) {
-  return request(`/acloud_new/v2/hdf/dangerList.json`, {
-    method: 'POST',
-    body: params,
-  });
+  return request(`/acloud_new/v2/hdf/dangerList.json?${stringify(params)}`);
 }
 
 /**
  * 获取消防数据统计
  */
 export async function getFireControlCount(params) {
-  return request(`/acloud_new/v2/fireData/dangerChart.json?${Math.random()}`, {
-    method: 'POST',
-    body: params,
-  });
+  return request(`/acloud_new/v2/fireData/dangerChart.json?${stringify(params)}`);
 }
 
 /**
  * 获取隐患巡查统计
  */
 export async function getHiddenDangerCount(params) {
-  return request(`/acloud_new/v2/hdf/gov/newHomePage.json`, {
-    method: 'POST',
-    body: params,
-  });
+  return request(`/acloud_new/v2/hdf/gov/newHomePage.json?${stringify(params)}`);
 }
 
 /**

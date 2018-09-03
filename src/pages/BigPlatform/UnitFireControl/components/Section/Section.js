@@ -2,6 +2,13 @@ import React, { PureComponent } from 'react';
 import styles from './Section.less';
 
 /**
+ * 是否是数组
+ */
+const isArray = function(value) {
+  return Object.prototype.toString.call(value) === '[object Array]';
+};
+
+/**
  * 大屏块
  */
 export default class App extends PureComponent {
@@ -214,8 +221,10 @@ export default class App extends PureComponent {
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
     let overflowY = undefined;
     let paddingRight = undefined;
+    let arr = undefined;
     if (isScroll) {
       if (isCarousel) {
+        arr = isArray(children) ? children : [children];
         if (isScrollShow) {
           overflowY = 'auto';
           if (isPaddingRightChange) {
@@ -230,7 +239,7 @@ export default class App extends PureComponent {
         }
       }
     }
-    const placeHolder =  isCarousel && isPlaceHolderShow ? children.map(child=>({
+    const placeHolder =  isCarousel && isPlaceHolderShow ? arr.map(child=>({
       ...child,
       key: child.key+'_cpy',
     })) : [];
@@ -264,7 +273,7 @@ export default class App extends PureComponent {
                 className={styles.scrollList}
                 ref={list=>this.list=list}
               >
-                {[...children.slice(currentIndex), ...placeHolder, ...children.slice(0,currentIndex)]}
+                {[...arr.slice(currentIndex), ...placeHolder, ...arr.slice(0,currentIndex)]}
               </div>
             ) : children}
           </div>

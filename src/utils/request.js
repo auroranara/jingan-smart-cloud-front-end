@@ -42,7 +42,7 @@ function checkStatus(response) {
  * @param  {object} [options] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
-export default function request(url, options) {
+export default function request(url, options={}) {
   const token = getToken();
   const defaultOptions = {
     headers: {
@@ -52,7 +52,7 @@ export default function request(url, options) {
     },
     credentials: 'include',
   };
-  const newOptions = { ...defaultOptions, ...options };
+  const newOptions = { ...defaultOptions, ...options, headers: { ...defaultOptions.headers, ...options.headers } };
   if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
     if (!(newOptions.body instanceof FormData)) {
       newOptions.headers = {

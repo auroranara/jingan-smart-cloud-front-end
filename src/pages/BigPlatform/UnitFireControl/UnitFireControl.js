@@ -41,7 +41,7 @@ const PendingInfoItem = ({ data }) => {
  * 隐患巡查记录项
  */
 const HiddenDangerRecord = ({ data }) => {
-  const { id, status, flow_name, report_user_name, report_time, rectify_user_name, plan_rectify_time, review_user_name, hiddenDangerRecordDto: [{ fileWebUrl }] = [{ fileWebUrl: '' }] } = data;
+  const { id, status, flow_name, report_user_name, report_time, rectify_user_name, plan_rectify_time, review_user_name, hiddenDangerRecordDto: [{ fileWebUrl }] } = data;
   const { badge, icon, color } = getIconByStatus(status);
   return (
     <div className={styles.hiddenDangerRecord} key={id}>
@@ -218,14 +218,6 @@ export default class App extends PureComponent {
       },
     });
 
-    // 获取待维保任务数量（注：未完成，需变更）
-    dispatch({
-      type: 'unitFireControl/fetchToBeMaintainedNumber',
-      payload: {
-        companyId,
-      },
-    });
-
     // 获取待巡查任务数量
     dispatch({
       type: 'unitFireControl/fetchToBeInspectedNumber',
@@ -329,10 +321,11 @@ export default class App extends PureComponent {
       outOfDateNumber=0,
       // 待整改隐患数量
       toBeRectifiedNumber=0,
-      // 待维保任务数量（注：未完成，需变更）
-      toBeMaintainedNumber=0,
       // 待巡查任务数量
       toBeInspectedNumber=0,
+      maintenanceCount: {
+        needRepairNum=0,
+      }={},
     } = this.props.unitFireControl;
 
     return (
@@ -358,7 +351,7 @@ export default class App extends PureComponent {
               <div className={styles.countName}>待整改隐患</div>
             </Col>
             <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue}>{toBeMaintainedNumber}</div>
+              <div className={styles.countValue}>{needRepairNum}</div>
               <div className={styles.countName}>待维保任务</div>
             </Col>
             <Col span={8} className={styles.countContainerColumn}>
@@ -428,7 +421,7 @@ export default class App extends PureComponent {
         type={fireControlType}
         real={warnTrue}
         misinformation={warnFalse}
-        pending={fire_state}
+        pending={fire_state-warnTrue-warnFalse}
         fault={fault_state}
         shield={shield_state}
         linkage={start_state}
@@ -550,9 +543,12 @@ export default class App extends PureComponent {
           <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
             <Col span={6} style={{ height: '100%' }}>
               <Section isScroll isCarousel>
-                {pendingInfo.map((item) => (
-                  <PendingInfoItem key={item} data={item} />
-                ))}
+                {pendingInfo.length !== 0 ? pendingInfo.map((item, index) => {
+                  const { id } = item;
+                  return (
+                    <PendingInfoItem key={id || index} data={item} />
+                  );
+                }) : <div style={{ textAlign: 'center' }}>暂无待处理信息</div>}
               </Section>
             </Col>
             <Col span={12} style={{ height: '100%' }}>
@@ -565,12 +561,15 @@ export default class App extends PureComponent {
           <Row gutter={16} style={{ height: '51.08%' }}>
             <Col span={6} style={{ height: '100%' }}>
               <Section isScroll isCarousel title="隐患巡查记录">
-                {hiddenDangerRecords.map((item) => (
-                  <HiddenDangerRecord
-                    key={item}
-                    data={item}
-                  />
-                ))}
+                {hiddenDangerRecords.length !== 0 ? hiddenDangerRecords.map((item) => {
+                  const { id } = item;
+                  return (
+                    <HiddenDangerRecord
+                      key={id}
+                      data={item}
+                    />
+                  );
+                }) : <div style={{ textAlign: 'center' }}>暂无隐患巡查记录</div>}
               </Section>
             </Col>
             <Col span={6} style={{ height: '100%' }}>
