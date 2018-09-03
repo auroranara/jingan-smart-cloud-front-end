@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react'
 
+import { myParseInt } from '../utils';
 import FcSection from './FcSection';
 
 function rand(n) {
@@ -22,7 +23,7 @@ function handleSource(list) {
 
 const DELAY = 2000;
 
-export default class GridDangerSection extends PureComponent {
+export default class DangerSection extends PureComponent {
   componentDidMount() {
     this.timer = setInterval(this.tipMove, DELAY);
   }
@@ -61,17 +62,21 @@ export default class GridDangerSection extends PureComponent {
   // };
 
   render() {
-    const { dangerData: { list = [] } } = this.props;
+    const { data: { list = [] }, title, backTitle, isBack, handleRotate } = this.props;
     const source = handleSource(list);
     // const source = genSource();
 
     this.length = list.length;
     const option = {
       legend: {
-        top: 0,
+        top: backTitle ? 45 : 18,
         right: 10,
         data: ['巡查次数', '隐患数量'],
         textStyle: { color: '#FFF' },
+      },
+      grid: {
+        top: 70,
+        bottom: 40,
       },
       tooltip: {
         trigger: 'axis',
@@ -84,6 +89,8 @@ export default class GridDangerSection extends PureComponent {
       },
       yAxis: {
         type: 'value',
+        // interval: 1,
+        // min: 0,
         axisLine: {
           show: false,
           lineStyle: { width: 2, color: 'rgb(62,71,89)' },
@@ -91,6 +98,14 @@ export default class GridDangerSection extends PureComponent {
         splitLine: {
           // show: false,
           lineStyle: { color: 'rgb(37,54,83)' },
+        },
+        // 小数标签不显示
+        axisLabel: {
+          formatter: function (value, index) {
+            if (myParseInt(value) !== value)
+              return "";
+            return myParseInt(value);
+          },
         },
       },
       series: [
@@ -120,7 +135,10 @@ export default class GridDangerSection extends PureComponent {
 
     return (
       <FcSection
-        title="网格隐患巡查"
+        title={title}
+        backTitle={backTitle}
+        handleRotate={handleRotate}
+        isBack={isBack}
         style={{ position: 'relative' }}
         // onMouseover={this.handleMouseenter}
         // onClick={() => console.log(1)}
@@ -128,7 +146,7 @@ export default class GridDangerSection extends PureComponent {
       >
           <ReactEcharts
             option={option}
-            style={{ position: 'absolute', left: 0, top: 15, width: '100%', height: '100%' }}
+            style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: -1 }}
             onChartReady={chart => { this.chart = chart; }}
           />
       </FcSection>

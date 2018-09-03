@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Col, Divider, Row } from 'antd';
 
 import FcSection from './FcSection';
@@ -16,23 +16,24 @@ const { region } = global.PROJECT_CONFIG;
 
 export default function OverviewSection(props) {
   const {
-    total = 0,
-    activeCount = 0,
-    todayCount = 0,
-    thisWeekCount = 0,
-    thisMonthCount = 0,
-    totalDanger = 0,
-    overdueNum = 0,
-    rectifyNum = 0,
-    reviewNum = 0,
-  } = props.ovData;
+    data: {
+      titleName='暂无信息',
+      total=0,
+      activeCount=0,
+      todayCount=0,
+      thisWeekCount=0,
+      thisMonthCount=0,
+      totalDanger=0,
+      overdueNum=0,
+      rectifyNum=0,
+      reviewNum=0,
+    }={},
+  } = props;
 
   return (
     <FcSection style={{ padding: '0 2px' }}>
       <div className={styles.divider}>
-        <Divider>
-          <p className={styles.title}>{`${region}办事处`}</p>
-        </Divider>
+        <Divider><p className={styles.title}>{titleName}</p></Divider>
       </div>
       <Row style={{ marginTop: 0 }}>
         <Col span={12}>
@@ -47,9 +48,9 @@ export default function OverviewSection(props) {
         </Col>
       </Row>
       <OvFireCards
-        todayCount={todayCount}
-        thisWeekCount={thisWeekCount}
-        thisMonthCount={thisMonthCount}
+        today={todayCount}
+        thisWeek={thisWeekCount}
+        thisMonth={thisMonthCount}
         style={{ height: HEIGHT }}
       />
       <OvDangerCards

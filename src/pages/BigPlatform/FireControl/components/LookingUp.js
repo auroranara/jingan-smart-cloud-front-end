@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Col, Button } from 'antd';
+
+import { fillZero, myParseInt } from '../utils';
 import styles from './LookingUp.less';
 import Counter from 'components/flip-timer';
 
@@ -11,13 +13,26 @@ import leavelJobIcon from '../img/leavelJobIcon.png';
 import onJobIcon from '../img/onJobIcon.png';
 import rabbit from '../img/rabbit.png';
 import snail from '../img/snail.png';
-import time from '../img/time.png';
+import timeIcon from '../img/time.png';
+
+function formatTime(t) {
+  const time = t || '0,0';
+  const [m, s] = time.split(',');
+  return `${fillZero(m)}'${fillZero(s)}"`;
+}
+
+const DELAY = 3000;
+const COUNT_DOWN_MIN = 1;
+const COUNT_DOWN = COUNT_DOWN_MIN * 60000;
 
 export default class LookingUp extends Component {
   state = {
     start: false,
   };
-  getOption = () => {
+
+  getOption = n => {
+    const p = myParseInt(n);
+
     const option = {
       color: ['#00a8ff', '#032c64'],
       tooltip: {
@@ -49,14 +64,14 @@ export default class LookingUp extends Component {
           },
           data: [
             {
-              value: 90.0,
+              value: p,
               itemStyle: {
                 shadowColor: 'rgba(0, 0, 0, 0.8)',
                 shadowBlur: 10,
               },
             },
             {
-              value: 100.0 - 90.0,
+              value: 100.0 - n,
               itemStyle: { opacity: 0.6 },
               label: { show: false },
             },
@@ -64,10 +79,15 @@ export default class LookingUp extends Component {
         },
       ],
     };
+
     return option;
   };
+
   render() {
-    const { showed, handleRotateBack, startLookUp } = this.props;
+    const { showed, startLookUp, createTime, data, handleCounterStop } = this.props;
+    const { fast = '0,0', slow = '0,0', rate = 0, onGuardNum = 0, offGuardNum = 0 } = data;
+
+    const countTime = createTime ? COUNT_DOWN - (Date.now() - createTime) : COUNT_DOWN;
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -82,29 +102,15 @@ export default class LookingUp extends Component {
                 <br />
                 查岗
               </Button>
-              <div
-                className={styles.ring}
-                style={{ backgroundImage: `url(${circle})` }}
-                bubbleonTransitionEnd
-              />
-              <div
-                className={styles.bubble}
-                style={{ backgroundImage: `url(${bubble})` }}
-                onTransitionEnd
-              />
+              <div className={styles.ring} style={{ backgroundImage: `url(${circle})` }} />
+              <div className={styles.bubble} style={{ backgroundImage: `url(${bubble})` }} />
             </div>
           </Col>
           <Col span={16} style={{ height: '100%' }}>
             <div className={styles.right}>
               <div className={styles.countDown}>倒计时</div>
               <div className={styles.flask} style={{ fontSize: '12px' }}>
-                <Counter
-                  onStop={() => {
-                    handleRotateBack();
-                  }}
-                  stop={10 * 60 * 1000}
-                  start={startLookUp}
-                />
+                <Counter onStop={handleCounterStop} stop={countTime} start={startLookUp} />
               </div>
             </div>
           </Col>
@@ -119,7 +125,7 @@ export default class LookingUp extends Component {
               <Col span={8}>
                 <ReactEcharts
                   style={{ width: '100%', height: '100px' }}
-                  option={this.getOption()}
+                  option={this.getOption(rate)}
                   notMerge={true}
                   lazyUpdate={true}
                 />
@@ -132,7 +138,7 @@ export default class LookingUp extends Component {
                       style={{ backgroundImage: `url(${onJobIcon})` }}
                     />
                     在岗
-                    <span className={styles.personnum}>000</span>
+                    <span className={styles.personnum}>{fillZero(onGuardNum, 3)}</span>
                   </p>
                   <p className={styles.leaveJob}>
                     <span
@@ -140,7 +146,7 @@ export default class LookingUp extends Component {
                       style={{ backgroundImage: `url(${leavelJobIcon})` }}
                     />
                     脱岗
-                    <span className={styles.personnum}>000</span>
+                    <span className={styles.personnum}>{fillZero(offGuardNum, 3)}</span>
                   </p>
                 </div>
               </Col>
@@ -153,7 +159,7 @@ export default class LookingUp extends Component {
                 <div className={styles.timeWrite}>应答时间</div>
               </Col>
               <Col span={6}>
-                <div className={styles.timeIcon} style={{ backgroundImage: `url(${time})` }} />
+                <div className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
               </Col>
               <Col span={12}>
                 <div className={styles.timeNum}>
@@ -163,7 +169,7 @@ export default class LookingUp extends Component {
                       style={{ backgroundImage: `url(${rabbit})` }}
                     />
                     最快
-                    <span className={styles.minutes}>2'30''</span>
+                    <span className={styles.minutes}>{formatTime(fast)}</span>
                   </p>
                   <p className={styles.snail}>
                     <span
@@ -171,7 +177,7 @@ export default class LookingUp extends Component {
                       style={{ backgroundImage: `url(${snail})` }}
                     />
                     最慢
-                    <span className={styles.minutes}>7'30''</span>
+                    <span className={styles.minutes}>{formatTime(slow)}</span>
                   </p>
                 </div>
               </Col>

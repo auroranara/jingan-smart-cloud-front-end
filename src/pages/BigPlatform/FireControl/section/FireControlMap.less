@@ -69,14 +69,32 @@
 
 .dotIcon {
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 45px;
+  height: 45px;
+}
+
+.dotSelectedIcon:extend(.dotIcon) {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.redCircle {
+  width: 199px;
+  height: 199px;
+  background-size: 100% 100%;
+  position: relative;
 }
 
 .companyName {
-  color: #FFF;
+  // color: #FFF;
   font-size: 16px;
   margin-bottom: 8px;
+}
+
+.link {
+  color: #FFF;
 }
 
 .infoItem {
