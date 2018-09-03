@@ -7,6 +7,7 @@ import {
   queryFireTrend,
   queryDanger,
   getCompanyFireInfo,
+  queryAlarmHandle,
   queryLookUp,
   queryCountdown,
   queryOffGuard,
@@ -25,21 +26,31 @@ function handleDanger(response, isCompany=false) {
     dangerMap[key] = created_danger;
   });
 
-  const { list, gridList } = response['check_map'].reduce(function (prev, next) {
-    const { month, day, grid_check_point, self_check_point } = next;
-    const key = `${month}.${day}`;
-    const time = `${month}/${day}`;
-    const danger = selfCheck[key];
-    const gridDanger = dangerMap[key];
+  const { list, gridList } = response['check_map'].reduce(
+    function(prev, next) {
+      const { month, day, grid_check_point, self_check_point } = next;
+      const key = `${month}.${day}`;
+      const time = `${month}/${day}`;
+      const danger = selfCheck[key];
+      const gridDanger = dangerMap[key];
 
-    prev.list.push({ time, inspect: self_check_point ? self_check_point : 0, danger: danger ? danger : 0 });
-    prev.gridList.push({ time, inspect: grid_check_point ? grid_check_point : 0, danger: gridDanger ? gridDanger : 0 });
+      prev.list.push({
+        time,
+        inspect: self_check_point ? self_check_point : 0,
+        danger: danger ? danger : 0,
+      });
+      prev.gridList.push({
+        time,
+        inspect: grid_check_point ? grid_check_point : 0,
+        danger: gridDanger ? gridDanger : 0,
+      });
 
-    return prev;
-  }, { list: [], gridList: [] });
+      return prev;
+    },
+    { list: [], gridList: [] }
+  );
 
-  if (isCompany)
-    return { list };
+  if (isCompany) return { list };
   return [{ list }, { list: gridList }];
 }
 
@@ -69,6 +80,23 @@ export default {
     danger: {},
     gridDanger: {},
     companyDanger: {},
+    alarmProcess: {
+      startMap: {
+        unitType: '',
+        createTime: 0,
+      },
+      handleMap: {
+        createTime: 0,
+        safetyMan: '',
+        safetyPhone: '',
+      },
+      finshMap: {
+        safetyMan: '',
+        endTime: 0,
+        safetyPhone: '',
+      },
+      picture: [],
+    },
     lookUp: {},
     countdown: {},
     offGuard: {},
@@ -91,13 +119,19 @@ export default {
       const response = yield call(queryOvDangerCounts, payload);
       if (response) {
         const { total: totalDanger, overRectifyNum: overdueNum, rectifyNum, reviewNum } = response;
-        yield put({ type: payload ? 'saveCompanyOv' : 'saveOv', payload: { totalDanger, overdueNum, rectifyNum, reviewNum } });
+        yield put({
+          type: payload ? 'saveCompanyOv' : 'saveOv',
+          payload: { totalDanger, overdueNum, rectifyNum, reviewNum },
+        });
       }
     },
     *fetchCompanyOv({ payload }, { call, put }) {
       const response = yield call(queryCompanyOv, payload);
       if (response && response.companyMessage) {
-        const { countCompanyUser: safetyOfficer, countCheckItem: riskPointer } = response.companyMessage;
+        const {
+          countCompanyUser: safetyOfficer,
+          countCheckItem: riskPointer,
+        } = response.companyMessage;
         yield put({ type: 'saveCompanyOv', payload: { safetyOfficer, riskPointer } });
       }
     },
@@ -176,6 +210,12 @@ export default {
       if (code === 200)
         yield put({ type: 'saveOffGuard', payload: data });
     },
+    *fetchAlarmHandle({ payload }, { call, put }) {
+      const response = yield call(queryAlarmHandle, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveAlarmHandle', payload: response.data });
+      }
+    },
   },
 
   reducers: {
@@ -213,6 +253,9 @@ export default {
     },
     saveCompanyDanger(state, action) {
       return { ...state, companyDanger: action.payload };
+    },
+    saveAlarmHandle(state, action) {
+      return { ...state, alarmProcess: action.payload };
     },
     saveLookUp(state, action) {
       return { ...state, lookUp: action.payload };

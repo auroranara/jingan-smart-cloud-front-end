@@ -35,6 +35,13 @@ export async function getCompanyFireInfo() {
   return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
 }
 
+export async function queryAlarmHandle({ id, companyId }) {
+  // console.log('fetch handleAlarm');
+  return request(
+    `${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ companyId })}`
+  );
+}
+
 export async function queryLookUp() {
   return request(`${URL_PREFIX}/screenShowData/inspectionRecords`);
 }

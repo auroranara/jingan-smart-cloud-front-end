@@ -6,6 +6,15 @@ import { fillZero, myParseInt } from '../utils';
 import styles from './LookingUp.less';
 import Counter from 'components/flip-timer';
 
+import btnBg from '../img/btnBg.png';
+import circle from '../img/circle.png';
+import bubble from '../img/bubble.png';
+import leavelJobIcon from '../img/leavelJobIcon.png';
+import onJobIcon from '../img/onJobIcon.png';
+import rabbit from '../img/rabbit.png';
+import snail from '../img/snail.png';
+import time from '../img/time.png';
+
 function formatTime(t) {
   const time = t || '0,0';
   const [m, s] = time.split(',');
@@ -86,15 +95,16 @@ export default class LookingUp extends Component {
         <div className={styles.top}>
           <Col span={8}>
             <div className={styles.left}>
-              <Button className={styles.circlrLookUp} style={{ border: 'none', color: '#FFF' }}>
+              <Button
+                className={styles.circlrLookUp}
+                style={{ border: 'none', color: '#FFF', backgroundImage: `url(${btnBg})` }}
+              >
                 正在
                 <br />
                 查岗
               </Button>
-              {/* <div className={styles.ring} onTransitionEnd />
-              <div className={styles.bubble} onTransitionEnd /> */}
-              <div className={styles.ring} />
-              <div className={styles.bubble} />
+              <div className={styles.ring} style={{ backgroundImage: `url(${circle})` }} />
+              <div className={styles.bubble} style={{ backgroundImage: `url(${bubble})` }} />
             </div>
           </Col>
           <Col span={16} style={{ height: '100%' }}>
@@ -128,12 +138,18 @@ export default class LookingUp extends Component {
               <Col span={12}>
                 <div className={styles.jobNum}>
                   <p className={styles.onJob}>
-                    <span className={styles.onJobIcon} />
+                    <span
+                      className={styles.onJobIcon}
+                      style={{ backgroundImage: `url(${onJobIcon})` }}
+                    />
                     在岗
                     <span className={styles.personnum}>{fillZero(onGuardNum, 3)}</span>
                   </p>
                   <p className={styles.leaveJob}>
-                    <span className={styles.leavelJobIcon} />
+                    <span
+                      className={styles.leavelJobIcon}
+                      style={{ backgroundImage: `url(${leavelJobIcon})` }}
+                    />
                     脱岗
                     <span className={styles.personnum}>{fillZero(offGuardNum, 3)}</span>
                   </p>
@@ -148,17 +164,23 @@ export default class LookingUp extends Component {
                 <div className={styles.timeWrite}>应答时间</div>
               </Col>
               <Col span={6}>
-                <div className={styles.timeIcon} />
+                <div className={styles.timeIcon} style={{ backgroundImage: `url(${time})` }} />
               </Col>
               <Col span={12}>
                 <div className={styles.timeNum}>
                   <p className={styles.rabbit}>
-                    <span className={styles.rabbitIcon} />
+                    <span
+                      className={styles.rabbitIcon}
+                      style={{ backgroundImage: `url(${rabbit})` }}
+                    />
                     最快
                     <span className={styles.minutes}>{formatTime(fast)}</span>
                   </p>
                   <p className={styles.snail}>
-                    <span className={styles.snailIcon} />
+                    <span
+                      className={styles.snailIcon}
+                      style={{ backgroundImage: `url(${snail})` }}
+                    />
                     最慢
                     <span className={styles.minutes}>{formatTime(slow)}</span>
                   </p>

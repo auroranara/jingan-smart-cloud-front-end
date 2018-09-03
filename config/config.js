@@ -73,16 +73,11 @@ export default {
   // 路由配置
   routes: pageRoutes,
   history: 'hash',
+  publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',
   },
-  // entry: 'src/index.js', // TODO remove
-  // extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
-  // env: {
-  //   development: {
-  //     extraBabelPlugins: ['dva-hmr'],
-  //   },
-  // },
+  runtimePublicPath: true,
   externals: {
     '@antv/data-set': 'DataSet',
     rollbar: 'rollbar',

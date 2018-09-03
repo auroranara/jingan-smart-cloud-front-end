@@ -144,7 +144,7 @@ const switchCheckStatus = value => {
       };
     case 3:
       return {
-        color: '#4D9ED8',
+        color: '#fff',
         content: '待检查',
       };
     case 4:
