@@ -6,6 +6,16 @@
   overflow: hidden;
   position: relative;
   border-bottom: 2px solid #053d83;
+
+  :global {
+    .ant-timeline-item-head {
+      width: 11px;
+      height: 11px;
+    }
+    .ant-timeline-item-tail {
+      border-color: rgba(0, 186, 255);
+    }
+  }
 }
 .time {
   position: absolute;
@@ -57,7 +67,7 @@
 
 .imgContainer {
   padding: 5px;
-  width: 118px;
+  // width: 118px;
   height: 100%;
   cursor: pointer;
 }
@@ -70,9 +80,9 @@
   background-position: center center;
 }
 
-// .fireImg:visited {
-//   border: 1px solid rgba(0, 186, 255);
-// }
+.fireImg:visited {
+  border: 1px solid rgba(0, 186, 255);
+}
 
 // .fireImg:active {
 //   border: 1px solid rgba(0, 186, 255);
@@ -95,6 +105,7 @@
 .center {
   width: 300px;
   height: 100%;
+  padding: 20px 0 20px;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -108,4 +119,12 @@
   line-height: 400px;
   width: 300px;
   height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.magLeft {
+  height: 100%;
+  background: no-repeat center center;
 }
