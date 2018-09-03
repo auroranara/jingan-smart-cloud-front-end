@@ -178,6 +178,7 @@ export default class FireControlBigPlatform extends PureComponent {
         </Row>
         <VideoPlay
           dispatch={dispatch}
+          style={{}}
           videoList={allCamera}
           visible={videoVisible}
           keyId="" // keyId

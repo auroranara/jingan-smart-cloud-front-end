@@ -101,9 +101,8 @@ class VideoPlay extends Component {
     this.props.handleVideoClose();
   };
   render() {
-    const { style = {}, visible } = this.props;
-    const { videoSrc } = this.state;
-    // console.log(videoSrc);
+    const { style = {}, visible, videoList } = this.props;
+    const { videoSrc, activeIndex } = this.state;
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
     if (!visible) return null;
@@ -111,7 +110,7 @@ class VideoPlay extends Component {
       <div className={wrapperStyles} style={{ ...style }}>
         <div className={styles.titleBar}>
           监控地点：
-          {`1号楼3#`}
+          {videoList[activeIndex].name}
           <Icon
             type="close"
             className={styles.iconClose}
