@@ -208,7 +208,8 @@ export default class FireControlBigPlatform extends PureComponent {
 
     if (isCountdownBack) {
       clearInterval(this.lookingUpTimer);
-      dispatch({ type: 'bigFireControl/fetchInitLookUp' });
+      // 为了防止后台没有处理完，延迟一点发送请求
+      setTimeout(() => dispatch({ type: 'bigFireControl/fetchInitLookUp' }), 1500);
     }
   };
 
