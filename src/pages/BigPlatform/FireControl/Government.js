@@ -23,6 +23,7 @@ import VideoSection from './section/VideoSection';
 import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
+import VideoPlay from './section/VideoPlay';
 
 // const { confirm } = Modal;
 const { location } = global.PROJECT_CONFIG;
@@ -55,6 +56,7 @@ export default class FireControlBigPlatform extends PureComponent {
     mapCenter: [location.x, location.y],
     mapZoom: location.zoom,
     mapShowInfo: false,
+    videoVisible: true,
   };
 
   componentDidMount() {
@@ -94,6 +96,12 @@ export default class FireControlBigPlatform extends PureComponent {
         // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
         // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
+      },
+    });
+    dispatch({
+      type: 'bigFireControl/fetchAllCamera',
+      payload: {
+        company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
       },
     });
   };
@@ -299,6 +307,22 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
+  handleVideoClose = () => {
+    this.setState({
+      videoVisible: false,
+    });
+  };
+
+  handleVideoSelect = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigFireControl/fetchAllCamera',
+      payload: {
+        company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
+      },
+    });
+  };
+
   render() {
     const {
       bigFireControl: {
@@ -317,11 +341,10 @@ export default class FireControlBigPlatform extends PureComponent {
         countdown,
         offGuard,
         alarmProcess,
+        allCamera,
       },
       dispatch,
     } = this.props;
-
-    // console.log(danger, gridDanger, companyDanger);
 
     const {
       isAlarmRotated,
@@ -335,10 +358,14 @@ export default class FireControlBigPlatform extends PureComponent {
       lookUpShow,
       startLookUp,
       showReverse,
+      videoVisible,
     } = this.state;
 
     return (
-      <div className={styles.root}>
+      <div
+        className={styles.root}
+        style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
+      >
         {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
         <Head title="晶 安 智 慧 消 防 云 平 台" />
         <div className={styles.empty} />
@@ -491,6 +518,14 @@ export default class FireControlBigPlatform extends PureComponent {
           </Col>
         </Row>
         {this.renderConfirmModal()}
+        <VideoPlay
+          dispatch={dispatch}
+          style={{}}
+          videoList={allCamera}
+          visible={videoVisible}
+          keyId="" // keyId
+          handleVideoClose={this.handleVideoClose.bind(this)}
+        />
       </div>
     );
   }
