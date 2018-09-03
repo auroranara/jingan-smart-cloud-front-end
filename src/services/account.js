@@ -32,3 +32,8 @@ export async function changePass(params) {
 export async function fetchFooterInfo() {
   return request('/acloud_new/v2/pi/getIndexBottom');
 }
+
+// 多用户切换（右上角）
+export async function changerUser(params) {
+  return request(`/acloud_new/v2/rolePermission/user/changerUser/${params.id}`)
+}
