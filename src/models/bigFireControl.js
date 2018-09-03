@@ -154,12 +154,14 @@ export default {
         callback && callback(flag, recordsId);
       }
     },
-    *fetchCountdown({ payload }, { call, put }) {
+    *fetchCountdown({ payload, callback }, { call, put }) {
       let response = yield call(queryCountdown);
       response = response || EMPTY_OBJECT;
       const { code=DEFAULT_CODE, data=EMPTY_OBJECT } = response;
-      if (code === 200)
+      if (code === 200) {
         yield put({ type: 'saveCountdown', payload: data });
+        callback && callback(data.ended);
+      }
     },
     *postLookingUp({ payload, callback }, { call, put }) {
       let response = yield call(postLookingUp);

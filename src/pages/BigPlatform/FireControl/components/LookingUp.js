@@ -76,10 +76,10 @@ export default class LookingUp extends Component {
 
   render() {
     const { showed, startLookUp, createTime, data, handleCounterStop } = this.props;
-    const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
+    const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0, ended=false } = data;
 
     const countTime = createTime ? COUNT_DOWN - (Date.now() - createTime) : COUNT_DOWN;
-    // console.log('countTime', countTime, createTime);
+    console.log('countTime', countTime, createTime);
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>

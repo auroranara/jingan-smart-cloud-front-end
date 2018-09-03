@@ -34,6 +34,7 @@ const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 
 const DELAY = 2000;
+const LOOKING_UP_DELAY = 5000;
 
 message.config({ getContainer: () => document.querySelector('#unitLookUp') });
 
@@ -70,6 +71,7 @@ export default class FireControlBigPlatform extends PureComponent {
   confirmTimer = null;
   lookingUpTimer = null;
   mapItemList = [];
+  // hasGotCreateTime = false;
 
   initFetch = () => {
     const { dispatch } = this.props;
@@ -107,6 +109,8 @@ export default class FireControlBigPlatform extends PureComponent {
 
   handleLookUpConfirmOk = () => {
     const { dispatch } = this.props;
+
+    this.showLookUpConfirm();
 
     dispatch({
       type: 'bigFireControl/postLookingUp',
@@ -179,10 +183,16 @@ export default class FireControlBigPlatform extends PureComponent {
   jumpToLookingUp = () => {
     const { dispatch } = this.props;
 
-    // 开始轮询正在查岗数据(倒计时时候的数据)
+    // 开始轮询正在查岗数据(倒计时时候的数据)，可能会提早结束，所以轮询时判断返回的值，若提早结束，则直接赚回来
     this.lookingUpTimer = setInterval(() => {
-      dispatch({ type: 'bigFireControl/fetchCountdown' });
-    }, DELAY);
+      dispatch({
+        type: 'bigFireControl/fetchCountdown',
+        callback: (ended) => {
+          if (ended)
+            this.handleLookUpRotateBack(true);
+        },
+      });
+    }, LOOKING_UP_DELAY);
 
     this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true, startLookUp: true });
   };
