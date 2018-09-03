@@ -12,10 +12,17 @@ function UnitCard(props) {
     <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
       <Col span={16}>
         <p className={styles.unitCard}>
-          <a className={styles.link} href={`/#/big-platform/fire-control/unit/${comanyId}`}>{companyName}</a>
+          <a
+            className={styles.link}
+            href={`${window.publicPath}#/big-platform/fire-control/company/${comanyId}`}
+          >
+            {companyName}
+          </a>
         </p>
       </Col>
-      <Col span={8}><p className={styles.unitCard}>{hostNum}</p></Col>
+      <Col span={8}>
+        <p className={styles.unitCard}>{hostNum}</p>
+      </Col>
     </Row>
   );
 }
@@ -24,14 +31,17 @@ function UnitCard(props) {
 
 export default function SystemSection(props) {
   const { total = 0, activeCount = 0, deviceCount = 0, companyList = [] } = props.sysData;
-  const percent = total ? Math.floor(activeCount / total * 100) : 0;
+  const percent = total ? Math.floor((activeCount / total) * 100) : 0;
 
   return (
     <FcSection title="系统接入" style={{ padding: '0 15px 15px' }}>
       <Row>
         <Col span={12}>
           <div className={styles.left}>
-            <p className={styles.unit}>接入单位<span className={styles.percent}>{`${percent}%`}</span></p>
+            <p className={styles.unit}>
+              接入单位
+              <span className={styles.percent}>{`${percent}%`}</span>
+            </p>
             <ProgressBar width="90%" height={10} progress={percent} />
             <p className={styles.unitNumber}>{`${activeCount}/${total}`}</p>
           </div>
@@ -47,11 +57,17 @@ export default function SystemSection(props) {
       </Row>
       <div className={styles.table} style={{ height: 'calc(100% - 180px)' }}>
         <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
-          <Col span={16}><p className={styles.tableTitle}>接入单位</p></Col>
-          <Col span={8}><p className={styles.tableTitle}>主机数量</p></Col>
+          <Col span={16}>
+            <p className={styles.tableTitle}>接入单位</p>
+          </Col>
+          <Col span={8}>
+            <p className={styles.tableTitle}>主机数量</p>
+          </Col>
         </Row>
-        <div style={{ overflow: 'auto', height: 'calc(100% - 42px)'}}>
-          {companyList.map(({ id, name, count }, index) => <UnitCard key={index} companyName={name} hostNum={count} comanyId={id} /> )}
+        <div style={{ overflow: 'auto', height: 'calc(100% - 42px)' }}>
+          {companyList.map(({ id, name, count }, index) => (
+            <UnitCard key={index} companyName={name} hostNum={count} comanyId={id} />
+          ))}
         </div>
       </div>
     </FcSection>
