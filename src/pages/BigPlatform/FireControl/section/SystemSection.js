@@ -23,7 +23,7 @@ function UnitCard(props) {
 // const systemUint = [...Array(5).keys()].map(i => ({ company: '无锡晶安智慧科技有限公司', hostNum: Math.floor(Math.random() * 10) }));
 
 export default function SystemSection(props) {
-  const { total = 0, activeCount = 0, deviceCount = 0, companyList = [] } = props.sysData;
+  const { total = 0, activeCount = 0, deviceCount = 0, companyList = [] } = props.data;
   const percent = total ? Math.floor(activeCount / total * 100) : 0;
 
   return (

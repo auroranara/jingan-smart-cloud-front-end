@@ -17,13 +17,14 @@ import SystemSection from './section/SystemSection';
 import TrendSection from './section/TrendSection';
 import DangerSection from './section/DangerSection';
 import FireControlMap from './section/FireControlMap';
+import VideoSection from './section/VideoSection';
 // import bg from './bg.png';
 
 import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 
-const { confirm } = Modal;
+// const { confirm } = Modal;
 const { location } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
@@ -466,8 +467,8 @@ export default class FireControlBigPlatform extends PureComponent {
             />
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
-              <SystemSection sysData={sys} />
-              <FcSection title="系统接入情况反面" isBack />
+              <SystemSection data={sys} />
+              <VideoSection />
             </FcModule>
           </Col>
         </Row>
