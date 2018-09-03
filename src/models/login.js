@@ -5,7 +5,7 @@ import { setAuthority, setToken } from '../utils/authority';
 // import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
-import { accountLogin, accountLoginGsafe, fetchFooterInfo } from '../services/account';
+import { accountLogin, accountLoginGsafe, fetchFooterInfo, changerUser } from '../services/account';
 
 export default {
   namespace: 'login',
@@ -109,6 +109,20 @@ export default {
           payload: response.data,
         });
       }
+    },
+    *changerUser({ payload, success, error }, { call, put }) {
+      const response = yield call(changerUser, payload)
+      if (response && response.code === 200 && response.data && response.data.webToken) {
+        // yield put({
+        //   type: 'changeLoginStatus',
+        //   payload: { type: payload.type, status: true, ...response.data },
+        // });
+        yield setToken(response.data.webToken);
+        reloadAuthorized();
+        yield put(routerRedux.replace({ pathname: '/' }));
+        if (success) success()
+
+      } else if (error) error()
     },
   },
 

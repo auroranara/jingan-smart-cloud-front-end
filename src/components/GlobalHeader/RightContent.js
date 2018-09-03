@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { FormattedMessage, setLocale, getLocale } from 'umi/locale';
-import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip /*Button*/ } from 'antd';
+import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, message /*Button*/ } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import toUpper from 'lodash/toUpper';
@@ -70,6 +70,20 @@ export default class GlobalHeaderRight extends PureComponent {
     return { backgroundColor: colors[number], verticalAlign: 'middle' };
   };
 
+  handleChangeUser = (userId) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'login/changerUser',
+      payload: { id: userId },
+      success: () => {
+        message.success('切换成功！')
+      },
+      error: () => {
+        message.error('切换失败！')
+      },
+    })
+  }
+
   render() {
     const { currentUser, onMenuClick, theme } = this.props;
     const menu = (
@@ -92,6 +106,15 @@ export default class GlobalHeaderRight extends PureComponent {
         </Menu.Item>
       </Menu>
     );
+    const users = (
+      <Menu>
+        {currentUser.moreUser && currentUser.moreUser.length > 1 && currentUser.moreUser.map(item => (
+          <Menu.Item disabled={currentUser.id === item.userId} onClick={() => this.handleChangeUser(item.userId)} key={item.userId}>
+            {item.unitName}
+          </Menu.Item>
+        ))}
+      </Menu>
+    )
     // const noticeData = this.getNoticeData();
     let className = styles.right;
     if (theme === 'dark') {
@@ -99,6 +122,16 @@ export default class GlobalHeaderRight extends PureComponent {
     }
     return (
       <div className={className}>
+        {currentUser && currentUser.isMoreUser && currentUser.moreUser.length > 1 && (
+          <Dropdown overlay={users}>
+            <span
+              className={styles.action}
+            >
+              <Icon type="swap" theme="outlined" />
+              切换企业
+            </span>
+          </Dropdown>
+        )}
         {currentUser &&
           currentUser.unitType === 3 && (
             <Tooltip title="数据维护">
@@ -130,8 +163,8 @@ export default class GlobalHeaderRight extends PureComponent {
             </span>
           </Dropdown>
         ) : (
-          <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-        )}
+            <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+          )}
         {/*
         <Button
           size="small"
