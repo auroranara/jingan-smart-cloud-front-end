@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import ReactDOM from 'react-dom';
 import styles from './Section.less';
 
 /**
@@ -47,6 +48,17 @@ export default class App extends PureComponent {
   }
 
   /**
+   * 组件更新
+   */
+  componentDidUpdate({ children: prevChildren }) {
+    const { children } = this.props;
+    const { isScrollShow } = this.state;
+    if (children !== prevChildren && !isScrollShow) {
+      this.resetList();
+    }
+  }
+
+  /**
    * 组件销毁
    */
   componentWillUnmount() {
@@ -60,14 +72,8 @@ export default class App extends PureComponent {
    * 重置列表内容
    */
   resetList = () => {
-    if (this.container.offsetHeight < this.container.scrollHeight) {
-      this.showPlaceHolder();
-      this.resetPaddingRight(true);
-    }
-    else {
-      this.hidePlaceHolder();
-      this.resetPaddingRight(false);
-    }
+    this.showPlaceHolder();
+    this.resetPaddingRight();
   }
 
   /**
@@ -122,9 +128,16 @@ export default class App extends PureComponent {
    * 显示占位内容
    */
   showPlaceHolder = () => {
-    this.setState({
-      isPlaceHolderShow: true,
-    });
+    if (this.container.offsetHeight < this.container.scrollHeight) {
+      this.setState({
+        isPlaceHolderShow: true,
+      });
+    }
+    else {
+      this.setState({
+        isPlaceHolderShow: false,
+      });
+    }
   }
 
   /**
@@ -139,10 +152,17 @@ export default class App extends PureComponent {
   /**
    * 设置是否改变paddingRight
    */
-  resetPaddingRight = (isPaddingRightChange) => {
-    this.setState({
-      isPaddingRightChange,
-    });
+  resetPaddingRight = () => {
+    if (this.container.offsetHeight < this.container.scrollHeight) {
+      this.setState({
+        isPaddingRightChange: true,
+      });
+    }
+    else {
+      this.setState({
+        isPaddingRightChange: false,
+      });
+    }
   }
 
   /**
@@ -162,11 +182,10 @@ export default class App extends PureComponent {
       }
       const progress = timestamp - this.startTransitionTimestamp;
       const scrollTop = start + Math.min(progress/duration*target, target)
-      console.log('scrollTop:', scrollTop);
       this.container.scrollTop = scrollTop;
       if (progress >= duration) {
         this.startTransitionTimestamp = null;
-        this.handleTransitionEnd(Math.round(this.container.scrollTop / height));
+        this.handleTransitionEnd(Math.round(scrollTop / height));
       }
       else {
         this.transitionTimer = window.requestAnimationFrame(callback);
@@ -197,7 +216,7 @@ export default class App extends PureComponent {
     // 隐藏滚动条
     this.hideScroll();
     // 显示占位内容
-    this.showPlaceHolder();
+    this.resetList();
   }
 
   /**
@@ -221,10 +240,9 @@ export default class App extends PureComponent {
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
     let overflowY = undefined;
     let paddingRight = undefined;
-    let arr = undefined;
+    let arr = isArray(children) ? children : [children];
     if (isScroll) {
       if (isCarousel) {
-        arr = isArray(children) ? children : [children];
         if (isScrollShow) {
           overflowY = 'auto';
           if (isPaddingRightChange) {
@@ -275,7 +293,7 @@ export default class App extends PureComponent {
               >
                 {[...arr.slice(currentIndex), ...placeHolder, ...arr.slice(0,currentIndex)]}
               </div>
-            ) : children}
+            ) : arr}
           </div>
         </div>
       </section>

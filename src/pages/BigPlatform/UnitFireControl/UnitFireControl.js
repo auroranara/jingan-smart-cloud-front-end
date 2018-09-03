@@ -41,7 +41,8 @@ const PendingInfoItem = ({ data }) => {
  * 隐患巡查记录项
  */
 const HiddenDangerRecord = ({ data }) => {
-  const { id, status, flow_name, report_user_name, report_time, rectify_user_name, plan_rectify_time, review_user_name, hiddenDangerRecordDto: [{ fileWebUrl }] } = data;
+  const { id, status, flow_name, report_user_name, report_time, rectify_user_name, plan_rectify_time, review_user_name, hiddenDangerRecordDto } = data;
+  const [{ fileWebUrl="" }={}] = hiddenDangerRecordDto || [];
   const { badge, icon, color } = getIconByStatus(status);
   return (
     <div className={styles.hiddenDangerRecord} key={id}>
