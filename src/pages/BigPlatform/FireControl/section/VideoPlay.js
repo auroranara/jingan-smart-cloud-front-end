@@ -7,6 +7,7 @@ import 'video-react/dist/video-react.css';
 import classNames from 'classnames';
 import styles from './VideoPlay.less';
 import animate from '../../Safety/Animate.less';
+import Draggable from 'react-draggable';
 
 @connect(({ bigFireControl }) => ({
   bigFireControl,
@@ -82,6 +83,7 @@ class VideoPlay extends Component {
       </div>
     );
   };
+
   handleItemClick = (index, keyId) => {
     const { dispatch } = this.props;
     dispatch({
@@ -97,20 +99,26 @@ class VideoPlay extends Component {
       },
     });
   };
+
   handleClose = () => {
     this.props.handleVideoClose();
   };
-  render() {
-    const { style = {}, visible, videoList } = this.props;
+
+  renderPan = () => {
+    const { style = {}, videoList = [], draggable = true, showList = true } = this.props;
     const { videoSrc, activeIndex } = this.state;
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
-
-    if (!visible) return null;
     return (
       <div className={wrapperStyles} style={{ ...style }}>
-        <div className={styles.titleBar}>
-          监控地点：
-          {videoList[activeIndex].name}
+        <div
+          id="dragBar"
+          className={styles.titleBar}
+          style={{ cursor: draggable ? 'move' : 'default' }}
+        >
+          <span style={{ cursor: 'default' }}>
+            监控地点：
+            {videoList.length > 0 ? videoList[activeIndex].name : ''}
+          </span>
           <Icon
             type="close"
             className={styles.iconClose}
@@ -120,17 +128,33 @@ class VideoPlay extends Component {
           />
         </div>
         <div className={styles.videoMain}>
-          <div className={styles.videoContent}>
+          <div className={styles.videoContent} style={{ paddingRight: showList ? 0 : '5px' }}>
             <Player>
               <HLSSource isVideoChild src={videoSrc} />
             </Player>
           </div>
-          <div className={styles.videoList}>
-            <div style={{ height: '36px', lineHeight: '36px', paddingLeft: '10px' }}>设备列表</div>
-            {this.renderVideoList()}
-          </div>
+          {showList && (
+            <div className={styles.videoList}>
+              <div style={{ height: '36px', lineHeight: '36px', paddingLeft: '10px' }}>
+                设备列表
+              </div>
+              {this.renderVideoList()}
+            </div>
+          )}
         </div>
       </div>
+    );
+  };
+
+  render() {
+    const { visible, draggable = true } = this.props;
+    if (!visible) return null;
+    return draggable ? (
+      <Draggable handle="#dragBar" bounds="parent">
+        {this.renderPan()}
+      </Draggable>
+    ) : (
+      this.renderPan()
     );
   }
 }
