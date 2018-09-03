@@ -308,6 +308,18 @@ module.exports = [
                 name: 'detail',
                 component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
               },
+              {
+                path: '/role-authorization/account-management/associated-unit/add/:id',
+                code: 'roleAuthorization.accountManagement.associatedUnit.add',
+                name: 'addAssociatedUnit',
+                component: './RoleAuthorization/AccountManagement/AssociatedUnit',
+              },
+              {
+                path: '/role-authorization/account-management/associated-unit/edit/:userId',
+                code: 'roleAuthorization.accountManagement.associatedUnit.edit',
+                name: 'editAssociatedUnit',
+                component: './RoleAuthorization/AccountManagement/AssociatedUnit',
+              },
             ],
           },
           {

@@ -3,7 +3,7 @@ import request from '../utils/request';
 
 /* 查询账号列表 */
 export async function queryAccountList(params) {
-  return request(`/acloud_new/v2/rolePermission/users?${stringify(params)}`);
+  return request(`/acloud_new/v2/rolePermission/users?${stringify(params)}`)
 }
 
 /* 新增账号-初始化页面选项 */
@@ -13,12 +13,13 @@ export async function queryAddAccountOptions() {
 
 /* 查看账号详情 */
 export async function queryAccountDetail({ id }) {
-  return request(`/acloud_new/v2/rolePermission/user/${id}`);
+  // return request(`/acloud_new/v2/rolePermission/user/${id}`);
+  return request(`/acloud_new/v2/rolePermission/account/${id}`)
 }
 
 /* 修改账号信息 */
 export async function updateAccountDetail(params) {
-  return request(`/acloud_new/v2/rolePermission/user`, {
+  return request(`/acloud_new/v2/rolePermission/account`, {
     method: 'PUT',
     body: params,
   });
@@ -26,7 +27,7 @@ export async function updateAccountDetail(params) {
 
 /* 新增账号 */
 export async function addAccount(params) {
-  return request(`/acloud_new/v2/rolePermission/user`, {
+  return request(`/acloud_new/v2/rolePermission/account`, {
     method: 'POST',
     body: params,
   });
@@ -68,4 +69,32 @@ export function queryUserType() {
 // 获取部门列表
 export async function queryDepartmentList(params) {
   return request(`/acloud_new/v2/sys/sysDepartment?${stringify(params)}`);
+}
+
+// 获取用户详情(关联企业详情)
+export async function fetchAssociatedUnitDeatil({ userId }) {
+  return request(`/acloud_new/v2/rolePermission/user/${userId}`)
+}
+
+// 新增用户（关联企业）
+export async function addAssociatedUnit(params) {
+  return request('/acloud_new/v2/rolePermission/user', {
+    method: 'POST',
+    body: params,
+  })
+}
+
+// 修改用户信息（关联企业）
+export async function editAssociatedUnit(params) {
+  return request(`/acloud_new/v2/rolePermission/user`, {
+    method: 'PUT',
+    body: params,
+  })
+}
+
+// 绑定、解绑用户（关联企业）
+export async function chnageAccountStatus(params) {
+  return request(`/acloud_new/v2/rolePermission/bindUser/${params.id}/${params.accountStatus}`, {
+    method: 'PUT',
+  })
 }
