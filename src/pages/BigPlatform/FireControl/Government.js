@@ -122,6 +122,7 @@ export default class FireControlBigPlatform extends PureComponent {
         }
         else
           message.error(msg);
+          // message.error(msg, 0);
       },
     });
   };
@@ -136,17 +137,18 @@ export default class FireControlBigPlatform extends PureComponent {
 
     return (
       <Modal
-        title="提示"
+        // title="提示"
         width={300}
         cancelText={`取消(${confirmCount})`}
         visible={showConfirm}
+        closable={false}
         onOk={this.handleLookUpConfirmOk}
         onCancel={() => this.showLookUpConfirm()}
         // 关闭后将confirmCount重新设置为5
         afterClose={() => this.setState({ confirmCount: 5 })}
         getContainer={() => document.querySelector('#unitLookUp')}
       >
-        您是否确定进行单位查岗
+        您是否确定进行查岗操作？
       </Modal>
     );
   }
