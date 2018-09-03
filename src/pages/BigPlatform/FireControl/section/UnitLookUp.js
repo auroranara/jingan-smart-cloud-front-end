@@ -12,7 +12,7 @@ import leavelJobIcon from '../img/leavelJobIcon.png';
 import onJobIcon from '../img/onJobIcon.png';
 import rabbit from '../img/rabbit.png';
 import snail from '../img/snail.png';
-import time from '../img/time.png';
+import timeIcon from '../img/time.png';
 
 
 function formatTime(t) {
@@ -154,7 +154,7 @@ export default class UnitLookUp extends Component {
                   <div className={styles.timeWrite}>应答时间</div>
                 </Col>
                 <Col span={6}>
-                  <div className={styles.timeIcon} style={{ backgroundImage: `url(${time})` }} />
+                  <div className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
                 </Col>
                 <Col span={12}>
                   <div className={styles.timeNum}>

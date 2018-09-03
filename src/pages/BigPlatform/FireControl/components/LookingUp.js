@@ -13,7 +13,7 @@ import leavelJobIcon from '../img/leavelJobIcon.png';
 import onJobIcon from '../img/onJobIcon.png';
 import rabbit from '../img/rabbit.png';
 import snail from '../img/snail.png';
-import time from '../img/time.png';
+import timeIcon from '../img/time.png';
 
 function formatTime(t) {
   const time = t || '0,0';
@@ -85,10 +85,10 @@ export default class LookingUp extends Component {
 
   render() {
     const { showed, startLookUp, createTime, data, handleCounterStop } = this.props;
-    const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0, ended=false } = data;
+    const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
 
     const countTime = createTime ? COUNT_DOWN - (Date.now() - createTime) : COUNT_DOWN;
-    console.log('countTime', countTime, createTime);
+    // console.log('countTime', countTime, createTime);
 
     return (
       <section className={styles.main} style={{ display: showed ? 'block' : 'none' }}>
@@ -164,7 +164,7 @@ export default class LookingUp extends Component {
                 <div className={styles.timeWrite}>应答时间</div>
               </Col>
               <Col span={6}>
-                <div className={styles.timeIcon} style={{ backgroundImage: `url(${time})` }} />
+                <div className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
               </Col>
               <Col span={12}>
                 <div className={styles.timeNum}>
