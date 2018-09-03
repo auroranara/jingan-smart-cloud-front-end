@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Tree, /* Input, */ Modal, Icon, Spin } from 'antd';
+import { Tree, /* Input, */ Modal, Icon, Spin, Button } from 'antd';
 
 const { TreeNode } = Tree;
 // const { Search } = Input;
@@ -17,6 +17,7 @@ const defaultFieldNames = {
   children: 'children',
   title: 'title',
   isLeaf: 'isLeaf',
+  disabled: 'disabled',
 };
 /* 根据parentIds从数组中找到对应的节点并判断选中状态 */
 const checkParents = ({ list, parentIds, checkedKeys, fieldNames }) => {
@@ -57,8 +58,7 @@ const checkParents = ({ list, parentIds, checkedKeys, fieldNames }) => {
         }
         length += 0.5;
       }
-    }
-    else {
+    } else {
       let index = checked.indexOf(id);
       if (index !== -1) {
         length += 1;
@@ -102,17 +102,19 @@ const checkChildren = ({ list, checkedKeys, isChecked, fieldNames }) => {
 };
 
 /* 获取树节点 */
-const renderTreeNodes = ({ data, fieldNames, fileIcon}) => {
-  const { id: idField, children: childrenField, title: titleField, isLeaf: isLeafField } = fieldNames;
+const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
+  const { id: idField, children: childrenField, title: titleField, isLeaf: isLeafField, disabled: disabledField } = fieldNames;
   return data.map((item) => {
-    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf } = item;
+    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf, [disabledField]: disabled, isVideo } = item;
     if (children) {
       return (
         <TreeNode
+          // disableCheckbox={!!disabled}
+          disabled={!!disabled}
           title={title}
           key={key}
           dataRef={item}
-          selectable={false}
+          // selectable={false}
           icon={({ expanded }) => {
             return (
               <Icon type={expanded ? 'folder-open' : 'folder'} />
@@ -129,12 +131,14 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon}) => {
     }
     return (
       <TreeNode
+        // disableCheckbox={!!disabled}
+        disabled={!!disabled}
         title={title}
         key={key}
         dataRef={item}
-        isLeaf={!!isLeaf}
-        selectable={false}
-        icon={<Icon type={isLeaf ? fileIcon : "folder"} />}
+        isLeaf={isVideo}
+        // selectable={false}
+        icon={<Icon type={isVideo ? fileIcon : "folder"} />}
       />
     );
   });
@@ -153,6 +157,9 @@ export default class AsyncTreeModal extends PureComponent {
     cancelText: PropTypes.string,
     onOk: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
+    buttonPermission: PropTypes.bool.isRequired,// 确定按钮的权限 true:可点击
+    saveParentStates: PropTypes.func.isRequired,
+    autoExpandParent: PropTypes.bool,
     tree: PropTypes.shape({
       dataSource: PropTypes.array.isRequired,
       showIcon: PropTypes.bool,
@@ -176,15 +183,17 @@ export default class AsyncTreeModal extends PureComponent {
     loading: false,
     okText: '确定',
     cancelText: '取消',
+    buttonPermission: true,
+    autoExpandParent: true,
   }
 
   constructor(props) {
     super(props);
-    const { expandedKeys, checkedKeys } = props;
+    // const { tree: { expandedKeys } } = props;
     this.state = {
-      expandedKeys: expandedKeys || [],
-      checkedKeys: checkedKeys || { checked: [], halfChecked: [] },
-      autoExpandParent: true,
+      // expandedKeys: expandedKeys || [],
+      // checkedKeys: checkedKeys || { checked: [], halfChecked: [] },
+      // autoExpandParent: true,
       // searchValue: '',
     }
   }
@@ -211,8 +220,7 @@ export default class AsyncTreeModal extends PureComponent {
         resolve();
         return;
       }
-      const { tree: { loadData, fieldNames } } = this.props;
-      const { checkedKeys } = this.state;
+      const { tree: { loadData, fieldNames, checkedKeys } } = this.props;
       loadData(dataRef, (list) => {
         checkChildren({
           list,
@@ -229,16 +237,17 @@ export default class AsyncTreeModal extends PureComponent {
   }
 
   /* 展开事件 */
-  handleExpand = (expandedKeys) => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    });
+  handleExpand = (expandedKeys, { expanded, node }) => {
+    const { saveParentStates } = this.props
+    // this.setState({
+    //   autoExpandParent: false,
+    // });
+    expanded ? saveParentStates({ expandedKeys, expandedId: node.props.dataRef.id, autoExpandParent: false }) : saveParentStates({ expandedKeys, expandedId: null, autoExpandParent: false })
   }
 
   /* check事件 */
   handleCheck = (checkedKeys, { checked: isChecked, node: { props: { dataRef: { children, parentIds } } } }) => {
-    const { tree: { fieldNames, dataSource } } = this.props;
+    const { saveParentStates, tree: { fieldNames, dataSource } } = this.props;
     if (parentIds !== '0') {
       checkParents({
         list: dataSource,
@@ -261,19 +270,22 @@ export default class AsyncTreeModal extends PureComponent {
         },
       });
     }
-    this.setState({
-      checkedKeys,
-    });
+    saveParentStates({
+      checkedKeys: {
+        checked: [...new Set(checkedKeys.checked)],
+        halfChecked: [...new Set(checkedKeys.halfChecked)],
+      },
+    })
+
   }
 
   handleOk = () => {
-    const { onOk } = this.props;
-    const { checkedKeys } = this.state;
+    const { onOk, tree: { checkedKeys } } = this.props;
     onOk(checkedKeys);
   }
 
   render() {
-    const { expandedKeys, checkedKeys, autoExpandParent } = this.state;
+    // const { autoExpandParent } = this.state;
     const {
       visible,
       title,
@@ -285,14 +297,27 @@ export default class AsyncTreeModal extends PureComponent {
       okText,
       cancelText,
       onCancel,
+      buttonPermission,
+      autoExpandParent,
       tree: {
         dataSource,
         showIcon,
         fileIcon,
         checkable,
         fieldNames,
+        checkedKeys,
+        expandedKeys,
       },
     } = this.props;
+
+    // 弹窗的确定取消按钮
+    const footer = (
+      <Fragment>
+        <Button onClick={onCancel}>{cancelText}</Button>
+        <Button disabled={!buttonPermission} type="primary" onClick={this.handleOk}>{okText}</Button>
+      </Fragment>
+    )
+
 
     return (
       <Modal
@@ -302,10 +327,11 @@ export default class AsyncTreeModal extends PureComponent {
         keyboard={keyboard}
         destroyOnClose={destroyOnClose}
         confirmLoading={confirmLoading}
-        okText={okText}
-        cancelText={cancelText}
-        onOk={this.handleOk}
+        // okText={okText}
+        // cancelText={cancelText}
+        // onOk={this.handleOk}
         onCancel={onCancel}
+        footer={footer}
       >
         <Spin spinning={loading}>
           {/* <Search

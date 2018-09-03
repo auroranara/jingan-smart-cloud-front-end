@@ -28,11 +28,22 @@ const {
 // 获取链接地址
 const {
   home: homeUrl,
-  company: { detail: detailUrl, edit: editUrl, add: addUrl, department: { list: departmentUrl } },
+  company: {
+    detail: detailUrl,
+    edit: editUrl,
+    add: addUrl,
+    department: { list: departmentUrl },
+  },
 } = urls;
 // 获取code
 const {
-  company: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode, department: { list: viewDepCode } },
+  company: {
+    detail: detailCode,
+    edit: editCode,
+    add: addCode,
+    delete: deleteCode,
+    department: { list: viewDepCode },
+  },
 } = codes;
 // 默认页面显示数量
 const pageSize = 18;
@@ -331,7 +342,7 @@ export default class CompanyList extends PureComponent {
     // 是否有编辑权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
     // 是否有查看部门权限
-    const hasViewDepAuthority = hasAuthority(viewDepCode, permissionCodes)
+    const hasViewDepAuthority = hasAuthority(viewDepCode, permissionCodes);
     // 是否有删除权限
     const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes);
 
@@ -387,19 +398,21 @@ export default class CompanyList extends PureComponent {
                       to={departmentUrl + id}
                       onClick={hasViewDepAuthority ? null : preventDefault}
                       disabled={!hasViewDepAuthority}
-                    >部门</Link>,
+                    >
+                      部门
+                    </Link>,
                   ]}
-                // extra={hasDeleteAuthority ? (
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // ) : null}
+                  // extra={hasDeleteAuthority ? (
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // ) : null}
                 >
                   <div
                   // onClick={hasDetailAuthority ? () => {
@@ -425,7 +438,7 @@ export default class CompanyList extends PureComponent {
                     </Ellipsis>
                     {unitType === 3 ? (
                       <Popconfirm
-                        title={`确定要${safetyProduction ? '关闭' : '开启'}安全大屏权限吗？`}
+                        title={`确定要${safetyProduction ? '关闭' : '开启'}安全驾驶舱权限吗？`}
                         onConfirm={() =>
                           this.handleScreenPermission(
                             id,
@@ -442,16 +455,16 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                        <img
-                          className={styles.defaultIcon}
-                          src={safetyProduction ? safe : safeGray}
-                          alt="safe"
-                        />
-                      )}
+                      <img
+                        className={styles.defaultIcon}
+                        src={safetyProduction ? safe : safeGray}
+                        alt="safe"
+                      />
+                    )}
                     {unitType === 3 ? (
                       <Popconfirm
                         className={styles.ml30}
-                        title={`确定要${fireService ? '关闭' : '开启'}消防大屏权限吗？`}
+                        title={`确定要${fireService ? '关闭' : '开启'}消防驾驶舱权限吗？`}
                         onConfirm={() =>
                           this.handleScreenPermission(
                             id,
@@ -468,12 +481,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                        <img
-                          className={`${styles.defaultIcon} ${styles.ml30}`}
-                          src={fireService ? fire : fireGray}
-                          alt="fire"
-                        />
-                      )}
+                      <img
+                        className={`${styles.defaultIcon} ${styles.ml30}`}
+                        src={fireService ? fire : fireGray}
+                        alt="fire"
+                      />
+                    )}
                   </div>
                 </Card>
               </List.Item>

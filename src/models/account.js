@@ -11,6 +11,10 @@ import {
   queryExecCertificateType,
   queryUserType,
   queryDepartmentList,
+  fetchAssociatedUnitDeatil,
+  addAssociatedUnit,
+  editAssociatedUnit,
+  chnageAccountStatus,
 } from '../services/accountManagement.js';
 
 import { checkOldPass, changePass } from '../services/account.js';
@@ -58,15 +62,16 @@ export default {
     subDepartments: [],
     documentTypeIds: [],
     departments: [],
+    user: {},
   },
 
   effects: {
     // 账号列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryAccountList, payload);
-      if (response.code === 200) {
+      if (response && response.code === 200) {
         yield put({
-          type: 'queryAccountList',
+          type: 'saveAccountList',
           payload: response.data,
         });
       }
@@ -75,9 +80,9 @@ export default {
     // 查询账号列表
     *appendfetch({ payload }, { call, put }) {
       const response = yield call(queryAccountList, payload);
-      if (response.code === 200) {
+      if (response && response.code === 200) {
         yield put({
-          type: 'queryList',
+          type: 'saveAccountLoadMoreList',
           payload: response.data,
         });
       }
@@ -241,10 +246,46 @@ export default {
         });
       }
     },
+    // 获取用户详情（关联企业页面）
+    *fetchAssociatedUnitDeatil({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchAssociatedUnitDeatil, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryAccountDetail',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+    // 添加关联企业
+    *addAssociatedUnit({ payload, success, error }, { call, put }) {
+      const response = yield call(addAssociatedUnit, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response.msg)
+    },
+    // 修改关联企业
+    *editAssociatedUnit({ payload, success, error }, { call }) {
+      const response = yield call(editAssociatedUnit, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response.msg)
+    },
+    // 绑定、解绑关联企业
+    *chnageAccountStatus({ payload, success, error }, { call }) {
+      const response = yield call(chnageAccountStatus, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response.msg)
+    },
   },
 
   reducers: {
-    queryAccountList(
+    saveAccountList(
       state,
       {
         payload: {
@@ -255,12 +296,12 @@ export default {
     ) {
       return {
         ...state,
-        list: pageNum === 1 ? list : [...state.list, ...list],
+        list: list,
         pageNum,
         isLast: pageNum * pageSize >= total,
       };
     },
-    queryList(
+    saveAccountLoadMoreList(
       state,
       {
         payload: {
@@ -271,7 +312,7 @@ export default {
     ) {
       return {
         ...state,
-        list,
+        list: [...state.list, ...list],
         pageNum,
         isLast: pageNum * pageSize >= total,
       };
@@ -357,6 +398,41 @@ export default {
         ...state,
         departments,
       };
+    },
+
+    // 关联企业初始化数据
+    initValue(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          data: {
+            ...state.detail.data,
+            unitType: undefined,
+            unitId: undefined,
+            unitName: undefined,
+            treeIds: undefined,
+            parentId: undefined,
+            departmentId: undefined,
+            departmentName: undefined,
+            userType: undefined,
+            userGovType: undefined,
+            documentTypeId: undefined,
+            execCertificateCode: undefined,
+          },
+        },
+      }
+    },
+    saveUserInfo(state, { payload }) {
+      return {
+        ...state,
+        user: payload,
+      }
+    },
+    saveAccounts(state, { payload }) {
+      return {
+        ...state,
+        list: payload,
+      }
     },
   },
 };

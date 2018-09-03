@@ -85,15 +85,17 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchFireTrend' });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     dispatch({ type: 'bigFireControl/fetchDanger' });
-    dispatch({ type: 'bigFireControl/fetchInitLookUp', callback: (flag, recordsId) => {
-      // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
-      if (myParseInt(flag) === AUTO_LOOKUP_ROTATE)
-          this.handleClickLookUp(true);
+    dispatch({
+      type: 'bigFireControl/fetchInitLookUp',
+      callback: (flag, recordsId) => {
+        // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
+        if (myParseInt(flag) === AUTO_LOOKUP_ROTATE) this.handleClickLookUp(true);
 
-      // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
-      // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
-      recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
-    } });
+        // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
+        // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
+        recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
+      },
+    });
   };
 
   polling = () => {
@@ -205,9 +207,9 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，并重新获取查岗历史记录
-  handleLookUpRotateBack = (isCountdownBack=false) => {
+  handleLookUpRotateBack = (isCountdownBack = false) => {
     const { dispatch } = this.props;
-    this.setState({ isLookUpRotated: false });
+    this.setState({ isLookUpRotated: false, startLookUp: false });
 
     if (isCountdownBack) {
       clearInterval(this.lookingUpTimer);
@@ -299,7 +301,23 @@ export default class FireControlBigPlatform extends PureComponent {
 
   render() {
     const {
-      bigFireControl: { overview, companyOv, alarm, alarmHistory, sys, trend, companyTrend, danger, gridDanger, companyDanger, map, lookUp, countdown, offGuard, alarmProcess },
+      bigFireControl: {
+        overview,
+        companyOv,
+        alarm,
+        alarmHistory,
+        sys,
+        trend,
+        companyTrend,
+        danger,
+        gridDanger,
+        companyDanger,
+        map,
+        lookUp,
+        countdown,
+        offGuard,
+        alarmProcess,
+      },
       dispatch,
     } = this.props;
 

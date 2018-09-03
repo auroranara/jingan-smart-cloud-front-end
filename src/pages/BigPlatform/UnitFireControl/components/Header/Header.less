@@ -1,0 +1,57 @@
+/*********************************** 大屏头部 *************************************/
+/* 容器 */
+.header {
+  flex: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10%;
+  background: url('http://data.jingan-china.cn/v2/big-platform/fire-control/gov/title.png') no-repeat 45% center / 90% 100%;
+}
+/* 标题 */
+.headerTitle {
+  font-size: 48px;
+}
+/* 当前时间和额外内容的公共样式 */
+.mixTimeAndExtra() {
+  position: absolute;
+  bottom: 0;
+  width: 25%;
+  line-height: 2;
+  text-align: center;
+}
+/* 当前时间 */
+.headerTime {
+  .mixTimeAndExtra;
+  right: 0;
+  padding-right: 24px;
+  font-size: 18px;
+}
+/* 额外内容 */
+.extraContent {
+  .mixTimeAndExtra;
+  left: 0;
+  padding-left: 24px;
+  font-size: 18px;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+  .headerTitle {
+    font-size: 40px;
+  }
+  .headerTime,
+  .extraContent {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .headerTitle {
+    font-size: 32px;
+  }
+  .headerTime,
+  .extraContent {
+    font-size: 14px;
+  }
+}

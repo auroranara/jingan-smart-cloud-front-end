@@ -13,6 +13,7 @@ class Timer extends Component {
   }
 
   componentWillUnmount() {
+    clearInterval(this.timer);
     window.removeEventListener('resize', this.resize);
   }
 
@@ -25,7 +26,7 @@ class Timer extends Component {
     const timeText = moment(now).format('HH:mm:ss');
 
     this.setState({
-      time: `${dayText}  ${weekday[myday]}  ${timeText}`,
+      time: `${dayText} ${weekday[myday]} ${timeText}`,
     });
   };
 

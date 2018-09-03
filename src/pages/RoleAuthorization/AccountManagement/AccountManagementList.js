@@ -1,7 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Col, Select, AutoComplete } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Row, Col, Select, AutoComplete, Icon, Modal, Table, Divider, Popconfirm, message } from 'antd';
 import { routerRedux } from 'dva/router';
+import router from 'umi/router'
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -55,6 +56,12 @@ const statusList = {
 const statusLabelList = {
   0: '已禁用',
 };
+const unitTypeList = {
+  1: '维保企业',
+  2: '政府机构',
+  3: '运营企业',
+  4: '企事业主体',
+}
 
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -95,6 +102,18 @@ const getEmptyData = () => {
     goToDetail(url) {
       dispatch(routerRedux.push(url));
     },
+    saveAccounts(action) {
+      dispatch({
+        type: 'account/saveAccounts',
+        ...action,
+      })
+    },
+    chnageAccountStatus(action) {
+      dispatch({
+        type: 'account/chnageAccountStatus',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -103,6 +122,11 @@ export default class accountManagementList extends PureComponent {
     super(props);
     this.formData = defaultFormData;
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
+    this.state = {
+      modalVisible: false,
+      associatedUnits: [],
+      currentLoginId: null,
+    }
   }
 
   // 生命周期函数
@@ -138,14 +162,14 @@ export default class accountManagementList extends PureComponent {
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
     const {
-      appendfetch,
+      fetch,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
-    appendfetch({
+    fetch({
       payload: {
         pageSize,
         pageNum: 1,
@@ -182,11 +206,11 @@ export default class accountManagementList extends PureComponent {
       return;
     }
     const {
-      fetch,
+      appendfetch,
       account: { pageNum },
     } = this.props;
     // 请求数据
-    fetch({
+    appendfetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
@@ -223,6 +247,53 @@ export default class accountManagementList extends PureComponent {
     });
   };
 
+  // 查看更多关联企业
+  handleViewMore = (users, loginId) => {
+    this.setState({
+      modalVisible: true,
+      associatedUnits: users,
+      currentLoginId: loginId,
+    })
+  }
+
+  handleModalClose = () => {
+    this.setState({
+      modalVisible: false,
+    })
+  }
+
+  // 跳转到编辑关联企业
+  handleToEdit = (id) => {
+    router.push(`/role-authorization/account-management/associated-unit/edit/${id}`)
+  }
+
+  // 解绑/开启安全企业
+  handleAccountStatus = ({ accountStatus, id, users, loginId }) => {
+    const { saveAccounts, chnageAccountStatus, account: { list } } = this.props
+    const success = () => {
+      const temp = users.map(item => (item.id === id ? { ...item, accountStatus } : item))
+      const newList = list.map(item => (item.loginId === loginId ? { ...item, users: temp } : item))
+      saveAccounts({
+        payload: newList,
+      })
+      message.success(`${!!accountStatus ? '开启成功！' : '解绑成功！'}`)
+      this.setState({
+        associatedUnits: temp,
+      })
+    }
+    const error = (msg) => {
+      message.error(msg)
+    }
+    chnageAccountStatus({
+      payload: {
+        id,
+        accountStatus,
+      },
+      success,
+      error,
+    })
+  }
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -238,7 +309,7 @@ export default class accountManagementList extends PureComponent {
         <Form layout="inline">
           <Col span={18}>
             <FormItem label="用户">
-              {getFieldDecorator('input', {
+              {getFieldDecorator('userName', {
                 getValueFromEvent: this.handleTrim,
               })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
             </FormItem>
@@ -320,50 +391,49 @@ export default class accountManagementList extends PureComponent {
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
-          rowKey="id"
+          rowKey="loginId"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, loginName, accountStatus } = item;
+            const { loginId, loginName, status } = item;
             return (
-              <List.Item key={id}>
+              <List.Item key={loginId}>
                 <Card
                   title={loginName}
                   className={styles.card}
                   actions={[
                     <AuthLink
                       code={codesMap.account.detail}
-                      to={`/role-authorization/account-management/detail/${item.id}`}
+                      to={`/role-authorization/account-management/detail/${item.loginId}`}
                     >
                       查看
                     </AuthLink>,
                     <AuthLink
                       code={codesMap.account.edit}
-                      to={`/role-authorization/account-management/edit/${item.id}`}
+                      to={`/role-authorization/account-management/edit/${item.loginId}`}
                     >
                       编辑
                     </AuthLink>,
+                    <AuthLink
+                      code={codesMap.account.addAssociatedUnit}
+                      to={`/role-authorization/account-management/associated-unit/add/${item.loginId}`}
+                    >
+                      关联单位
+                  </AuthLink>,
                   ]}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
-                  <AuthDiv
-                    code={codesMap.account.detail}
-                    // codes={[]}
-                    onClick={() => {
-                      goToDetail(`/role-authorization/account-management/detail/${item.id}`);
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
+                  <div>
                     <Col span={12}>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                         姓名：
@@ -373,14 +443,38 @@ export default class accountManagementList extends PureComponent {
                     <Col span={12}>
                       <p>电话: {item.phoneNumber || getEmptyData()}</p>
                     </Col>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      单位名称：
-                      {item.unitName || getEmptyData()}
-                    </Ellipsis>
-                  </AuthDiv>
+                    {item.users && item.users.length ? (
+                      <Row>
+                        <Col span={16}>
+                          <Ellipsis tooltip lines={1} className={styles.ellipsisText} length={13}>
+                            {unitTypeList[item.users[0].unitType]}，
+                            {item.users[0].unitName}
+                          </Ellipsis>
+                        </Col>
+                        <Col span={3}>
+                          <Icon onClick={() => this.handleToEdit(item.users[0].id)} className={styles['unit-edit-icon']} type="edit" />
+                        </Col>
+                        <Col span={3}>
+                          <Popconfirm
+                            title={`确定要${!!item.users[0].accountStatus ? '解绑' : '开启'}关联企业吗？`}
+                            onConfirm={() => this.handleAccountStatus({ accountStatus: Number(!item.users[0].accountStatus), id: item.users[0].id, users: item.users, loginId: item.loginId })}
+                          >
+                            {!!item.users[0].accountStatus
+                              ? (<Icon className={styles['unit-edit-icon']} type="link" />)
+                              : (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                          </Popconfirm>
+                        </Col>
+                      </Row>) : (<p>{getEmptyData()}</p>)}
+                    <p
+                      onClick={() => this.handleViewMore(item.users, item.loginId)}
+                      style={{ visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden' }}
+                      className={styles.more}>
+                      更多...
+                    </p>
+                  </div>
                   {
-                    <div className={styles[statusList[accountStatus]]}>
-                      {statusLabelList[accountStatus]}
+                    <div className={styles[statusList[status]]}>
+                      {statusLabelList[status]}
                     </div>
                   }
                 </Card>
@@ -390,6 +484,56 @@ export default class accountManagementList extends PureComponent {
         />
       </div>
     );
+  }
+
+  renderModal = () => {
+    const { modalVisible, associatedUnits, currentLoginId } = this.state
+    const columns = [
+      {
+        title: '关联单位',
+        key: 'unitName',
+        dataIndex: 'unitName',
+        align: 'center',
+      },
+      {
+        title: '操作',
+        key: '操作',
+        dataIndex: '操作',
+        align: 'center',
+        render: (val, row) => {
+          return (
+            <Fragment>
+              <Icon onClick={() => this.handleToEdit(row.id)} className={styles['unit-edit-icon']} type="edit" />
+              <Divider type="vertical" />
+              <Popconfirm
+                title={`确定要${!!row.accountStatus ? '解绑' : '开启'}关联企业吗？`}
+                onConfirm={() => this.handleAccountStatus({ accountStatus: Number(!row.accountStatus), id: row.id, users: associatedUnits, loginId: currentLoginId })}
+              >
+                {!!row.accountStatus
+                  ? (<Icon className={styles['unit-edit-icon']} type="link" />)
+                  : (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+              </Popconfirm>
+            </Fragment>
+          )
+        },
+      },
+    ]
+    const footer = (
+      <Fragment>
+        <Button onClick={this.handleModalClose}>关闭</Button>
+      </Fragment>
+    )
+
+    return (
+      <Modal
+        title="关联单位"
+        visible={modalVisible}
+        onCancel={this.handleModalClose}
+        footer={footer}
+      >
+        <Table bordered rowKey="id" columns={columns} dataSource={associatedUnits} pagination={false}></Table>
+      </Modal>
+    )
   }
 
   render() {
@@ -409,6 +553,7 @@ export default class accountManagementList extends PureComponent {
         <BackTop />
         {this.renderForm()}
         {this.renderList()}
+        {this.renderModal()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
         {loading &&
           !isLast && (

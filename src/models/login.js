@@ -12,14 +12,54 @@ export default {
 
   state: {
     status: undefined,
+    username: null,
+    password: null,
+    users: [],
   },
 
   effects: {
-    *login({ payload, callback }, { call, put }) {
+    // *login({ payload, error }, { call, put }) {
+    //   const response = yield call(accountLogin, payload);
+    //   // Login successfully
+    //   if (response && response.code === 200) {
+    //     yield put({
+    //       type: 'changeLoginStatus',
+    //       payload: { type: payload.type, status: true, ...response.data },
+    //     });
+    //     // 登录1.0
+    //     yield call(accountLoginGsafe, payload);
+    //     reloadAuthorized();
+    //     yield put(routerRedux.replace({ pathname: '/' }));
+    //   } else if (error) error(response.msg)
+    // },
+
+    *login({ payload, error, handleMoreUser }, { call, put }) {
       const response = yield call(accountLogin, payload);
-      if (callback) callback(response);
-      // Login successfully
-      if (response.code && response.code === 200) {
+      if (response && response.code === 200) {
+        if (response.data.isMoreUser) {
+          // 如果是多用户
+          yield put({
+            type: 'saveMoreUser',
+            payload: response.data.moreUser,
+          })
+          if (handleMoreUser) handleMoreUser()
+        } else {
+          // 如果不是多用户，直接登录进去
+          yield put({
+            type: 'changeLoginStatus',
+            payload: { type: payload.type, status: true, ...response.data },
+          });
+          // 登录1.0
+          yield call(accountLoginGsafe, payload);
+          reloadAuthorized();
+          yield put(routerRedux.replace({ pathname: '/' }));
+        }
+      } else error(response.msg)
+    },
+
+    *loginWithUserId({ payload }, { call, put }) {
+      const response = yield call(accountLogin, payload);
+      if (response && response.code === 200) {
         yield put({
           type: 'changeLoginStatus',
           payload: { type: payload.type, status: true, ...response.data },
@@ -87,6 +127,12 @@ export default {
         ...state,
         data: payload,
       };
+    },
+    saveMoreUser(state, { payload }) {
+      return {
+        ...state,
+        users: payload,
+      }
     },
   },
 };

@@ -12,6 +12,7 @@ import hostIcon from '../img/ovHost.png';
 const HEIGHT = 'calc(50% - 74px)';
 // const companyIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ovCompany.png';
 // const hostIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ovHost.png';
+const { region } = global.PROJECT_CONFIG;
 
 export default function OverviewSection(props) {
   const {
@@ -35,8 +36,16 @@ export default function OverviewSection(props) {
         <Divider><p className={styles.title}>{titleName}</p></Divider>
       </div>
       <Row style={{ marginTop: 0 }}>
-        <Col span={12}><div className={styles.unit}><OvUnit url={companyIcon} title="管辖单位" num={total} /></div></Col>
-        <Col span={12}><div className={styles.unit}><OvUnit url={hostIcon} title="消防主机单位" num={activeCount} /></div></Col>
+        <Col span={12}>
+          <div className={styles.unit}>
+            <OvUnit url={companyIcon} title="管辖单位" num={total} />
+          </div>
+        </Col>
+        <Col span={12}>
+          <div className={styles.unit}>
+            <OvUnit url={hostIcon} title="消防主机单位" num={activeCount} />
+          </div>
+        </Col>
       </Row>
       <OvFireCards
         today={todayCount}

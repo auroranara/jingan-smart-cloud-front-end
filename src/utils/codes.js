@@ -11,6 +11,8 @@ export default {
     detail: 'roleAuthorization.accountManagement.view',
     add: 'roleAuthorization.accountManagement.add',
     reset: 'roleAuthorization.accountManagement.reset',
+    addAssociatedUnit: 'roleAuthorization.accountManagement.associatedUnit.add',
+    editAssociatedUnit: 'roleAuthorization.accountManagement.associatedUnit.edit',
   },
   deviceManagement: {
     transmission: {
@@ -30,6 +32,10 @@ export default {
     hikVideoTree: {
       detail: 'videoSurveillance.hikVideoTree.detailView',
       play: 'videoSurveillance.hikVideoTree.play',
+    },
+    videoPermission: {
+      edit: 'videoSurveillance.videoPermission.edit',
+      add: 'videoSurveillance.videoPermission.add',
     },
   },
   company: {

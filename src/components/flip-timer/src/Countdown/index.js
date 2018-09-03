@@ -44,6 +44,7 @@ class Countdown extends React.Component {
    */
   stopCount() {
     window.clearInterval(this.interval);
+    this.interval = null;
     this.props.onStop && this.props.onStop();
   }
 

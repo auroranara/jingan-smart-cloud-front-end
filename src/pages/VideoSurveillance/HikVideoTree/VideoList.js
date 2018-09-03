@@ -23,7 +23,7 @@ const { Search } = Input;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理'},
+  { title: '设备管理', name: '设备管理' },
   { title: '海康视频树', name: '海康视频树' },
   { title: '视频列表', name: '视频列表' },
 ];
@@ -40,8 +40,8 @@ function traverse(list, handle) {
 }
 
 
-// 节流函数,不然每次计算,网页太卡
-function throttle(fn, ms) {
+// 防抖函数,不然每次计算,网页太卡
+function debounce(fn, ms) {
   let timer = null;
   return function (...args) {
     clearTimeout(timer);
@@ -93,7 +93,7 @@ export default class VideoList extends PureComponent {
     dispatch({
       type: 'video/fetch',
       payload: {
-        currentPage: 1,
+        pageNum: 1,
         pageSize: PAGE_SIZE,
         folderId,
         ...formValues,
@@ -122,11 +122,11 @@ export default class VideoList extends PureComponent {
 
   timer = null;
   // 生成节流函数,以防止网页太卡
-  throttleFn = throttle((folderList, value, expandedKeys) => {
+  debounceFn = debounce((folderList, value, expandedKeys) => {
     traverse(folderList, ({ name, parentId }) => {
       // 不是空字符串 && name包含当前字符串 && expandedKeys数组中还没有其对应的parentId
       if (value && name.includes(value) && !expandedKeys.includes(parentId))
-          expandedKeys.push(parentId);
+        expandedKeys.push(parentId);
     });
     this.setState({ expandedKeys, searchValue: value, autoExpandParent: true });
   }, 800);
@@ -152,7 +152,7 @@ export default class VideoList extends PureComponent {
     const expandedKeys = [];
     this.setState({ sValue: value });
     // console.log('folderList', folderList);
-    this.throttleFn(folderList, value, expandedKeys);
+    this.debounceFn(folderList, value, expandedKeys);
   };
 
   handleExpand = (expandedKeys, autoExpandParent) => {
@@ -181,7 +181,7 @@ export default class VideoList extends PureComponent {
     });
 
     const params = {
-      currentPage: pagination.current,
+      pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filteredInfo,
@@ -243,6 +243,8 @@ export default class VideoList extends PureComponent {
         }, 1000);
       },
     });
+    console.log('click end');
+
   };
 
   /* 播放按钮失焦事件 */
@@ -267,7 +269,7 @@ export default class VideoList extends PureComponent {
           {/* <Col span={7}> */}
           <Col span={12}>
             <FormItem label="视频名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('folderName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           {/* <Col span={5}>
@@ -324,8 +326,8 @@ export default class VideoList extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      current: pagination ? pagination.currentPage : undefined,
       ...pagination,
+      current: pagination ? pagination.pageNum : 1,
     };
     const columns = [
       {
@@ -422,7 +424,7 @@ export default class VideoList extends PureComponent {
                 selectedKeys={selectedKeys}
                 handleExpand={this.handleExpand}
                 handleSelect={this.handleSelect}
-                // handleFormReset={folderId => this.handleFormReset(folderId)}
+              // handleFormReset={folderId => this.handleFormReset(folderId)}
               />
             </Card>
           </Col>

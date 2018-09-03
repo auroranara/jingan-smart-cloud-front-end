@@ -30,7 +30,7 @@ export default class LookingUp extends Component {
     start: false,
   };
 
-  getOption = (n) => {
+  getOption = n => {
     const p = myParseInt(n);
 
     const option = {
@@ -85,7 +85,7 @@ export default class LookingUp extends Component {
 
   render() {
     const { showed, startLookUp, createTime, data, handleCounterStop } = this.props;
-    const { fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
+    const { fast = '0,0', slow = '0,0', rate = 0, onGuardNum = 0, offGuardNum = 0 } = data;
 
     const countTime = createTime ? COUNT_DOWN - (Date.now() - createTime) : COUNT_DOWN;
     // console.log('countTime', countTime, createTime);
@@ -111,11 +111,7 @@ export default class LookingUp extends Component {
             <div className={styles.right}>
               <div className={styles.countDown}>倒计时</div>
               <div className={styles.flask} style={{ fontSize: '12px' }}>
-                <Counter
-                  onStop={handleCounterStop}
-                  stop={countTime}
-                  start={startLookUp}
-                />
+                <Counter onStop={handleCounterStop} stop={countTime} start={startLookUp} />
               </div>
             </div>
           </Col>

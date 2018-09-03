@@ -19,6 +19,7 @@ import {
   getOverRectifyCompany,
   getSearchImportantCompany,
   getSearchAllCompany,
+  getDangerLocationCompanyData,
 } from '../services/bigPlatform/bigPlatform.js';
 
 export default {
@@ -109,6 +110,7 @@ export default {
       dataImportant: [],
       dataUnimportantCompany: [],
     },
+    dangerLocationCompanyData: [],
   },
 
   effects: {
@@ -236,8 +238,20 @@ export default {
       const response = yield call(getCompanyMessage, payload);
       const res = {
         ...response,
-        point: response.point && response.point.filter(({itemId, xNum, yNum}) => itemId && (xNum || Number.parseFloat(xNum) === 0) && (yNum || Number.parseFloat(yNum) === 0) ),
-        fourColorImg: (response.fourColorImg && response.fourColorImg.startsWith('[')) ? JSON.parse(response.fourColorImg).filter(({ id, webUrl }) => /^http/.test(webUrl) && id) : [],
+        point:
+          response.point &&
+          response.point.filter(
+            ({ itemId, xNum, yNum }) =>
+              itemId &&
+              (xNum || Number.parseFloat(xNum) === 0) &&
+              (yNum || Number.parseFloat(yNum) === 0)
+          ),
+        fourColorImg:
+          response.fourColorImg && response.fourColorImg.startsWith('[')
+            ? JSON.parse(response.fourColorImg).filter(
+                ({ id, webUrl }) => /^http/.test(webUrl) && id
+              )
+            : [],
       };
       // if (response.code === 200) {
       yield put({
@@ -394,6 +408,21 @@ export default {
         error();
       }
     },
+    // 风险点点击的具体信息
+    *fetchDangerLocationCompanyData({ payload, success, error }, { call, put }) {
+      const response = yield call(getDangerLocationCompanyData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'dangerLocationCompanyData',
+          payload: response.data.list,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -494,7 +523,7 @@ export default {
       return {
         ...state,
         safetyOfficer,
-      }
+      };
     },
     govFulltimeWorkerList(state, { payload }) {
       return {
@@ -518,6 +547,12 @@ export default {
       return {
         ...state,
         searchAllCompany: payload,
+      };
+    },
+    dangerLocationCompanyData(state, { payload }) {
+      return {
+        ...state,
+        dangerLocationCompanyData: payload,
       };
     },
   },

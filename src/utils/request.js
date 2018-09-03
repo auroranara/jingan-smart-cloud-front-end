@@ -42,17 +42,17 @@ function checkStatus(response) {
  * @param  {object} [options] The options we want to pass to "fetch"
  * @return {object}           An object containing either "data" or "err"
  */
-export default function request(url, options) {
+export default function request(url, options={}) {
   const token = getToken();
   const defaultOptions = {
     headers: {
       'JA-Token': token,
-      'Eye-Token':
-        'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJleHAiOjE1MzU1OTgzOTAsImlhdCI6MTUzMjkxOTk5MH0.hJ-49DJeLGjB5Id2HtwO16ycrLZW5cX5LS6EUajFSIE',
+      // 'Eye-Token':
+        // 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJleHAiOjE1MzU1OTgzOTAsImlhdCI6MTUzMjkxOTk5MH0.hJ-49DJeLGjB5Id2HtwO16ycrLZW5cX5LS6EUajFSIE',
     },
     credentials: 'include',
   };
-  const newOptions = { ...defaultOptions, ...options };
+  const newOptions = { ...defaultOptions, ...options, headers: { ...defaultOptions.headers, ...options.headers } };
   if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
     if (!(newOptions.body instanceof FormData)) {
       newOptions.headers = {

@@ -11,8 +11,8 @@ import Ellipsis from '../../../components/Ellipsis';
 
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
 import ReactEcharts from 'echarts-for-react';
-import RiskDetail from './Components/RiskDetail';
-import RiskDetailGov from './Components/RiskDetailGov';
+import MapTypeBar from './Components/MapTypeBar';
+
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 const descriptionBlueIcon = `${iconPrefix}description_blue.png`;
@@ -48,7 +48,7 @@ const getSeal = status => {
 };
 
 const { location } = global.PROJECT_CONFIG;
-
+const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点'];
 @connect(({ bigPlatform }) => ({
   bigPlatform,
 }))
@@ -81,7 +81,15 @@ class GovernmentBigPlatform extends Component {
     overHd: false, // 已超期隐患
     hdCom: false, // 隐患单位统计
     comInfo: false, // 企业信息
+    riskColors: false, // 风险点
+    hdDetail: false, // 风险点详情
     companyId: '',
+    riskTitle: '红色风险点',
+    riskSummary: {
+      risk: 0,
+      abnormal: 0,
+      company: 0,
+    },
   };
 
   // UNSAFE_componentWillUpdate() {
@@ -589,7 +597,7 @@ class GovernmentBigPlatform extends Component {
     return option;
   }
 
-  onHdAreaReadyCallback(chart) {
+  onHdAreaReadyCallback = chart => {
     if (!chart) return;
     let currentIndex = -1;
     const chartAnimate = () => {
@@ -618,7 +626,66 @@ class GovernmentBigPlatform extends Component {
     setInterval(() => {
       chartAnimate();
     }, 5000);
-  }
+
+    chart.on('click', params => {
+      const {
+        dispatch,
+        bigPlatform: {
+          countDangerLocation: {
+            red,
+            red_abnormal,
+            red_company,
+            orange,
+            orange_abnormal,
+            orange_company,
+            yellow,
+            yellow_abnormal,
+            yellow_company,
+            blue,
+            blue_abnormal,
+            blue_company,
+          },
+        },
+      } = this.props;
+      const risks = [
+        {
+          risk: red,
+          abnormal: red_abnormal,
+          company: red_company,
+        },
+        {
+          risk: orange,
+          abnormal: orange_abnormal,
+          company: orange_company,
+        },
+        {
+          risk: yellow,
+          abnormal: yellow_abnormal,
+          company: yellow_company,
+        },
+        {
+          risk: blue,
+          abnormal: blue_abnormal,
+          company: blue_company,
+        },
+      ];
+      dispatch({
+        type: 'bigPlatform/fetchDangerLocationCompanyData',
+        payload: {
+          riskLevel: params.dataIndex + 1,
+        },
+      });
+      this.goComponent('riskColors');
+      this.setState({
+        riskTitle: riskTitles[params.dataIndex],
+        riskSummary: {
+          risk: risks[params.dataIndex].risk,
+          abnormal: risks[params.dataIndex].abnormal,
+          company: risks[params.dataIndex].company,
+        },
+      });
+    });
+  };
 
   getHdPieOption() {
     const {
@@ -656,6 +723,7 @@ class GovernmentBigPlatform extends Component {
                 number: {
                   fontSize: 22,
                   color: '#fff',
+                  align: 'center',
                 },
               },
             },
@@ -724,6 +792,7 @@ class GovernmentBigPlatform extends Component {
       overHd: false, // 已超期隐患
       hdCom: false, // 隐患单位统计
       comInfo: false, // 企业信息
+      riskColors: false, // 风险点
     });
     setTimeout(() => {
       this.setState({
@@ -732,8 +801,19 @@ class GovernmentBigPlatform extends Component {
     }, 225);
   };
 
+  goBackToOver = () => {
+    this.setState({
+      hdDetail: false,
+    });
+    setTimeout(() => {
+      this.setState({
+        overHd: true,
+      });
+    }, 225);
+  };
+
   goComponent = type => {
-    if (this.state[type] && type !== 'comInfo') return;
+    // if (this.state[type] && type !== 'comInfo') return;
     const obj = {};
     obj[type] = true;
     this.setState({
@@ -744,6 +824,8 @@ class GovernmentBigPlatform extends Component {
       overHd: false,
       hdCom: false,
       comInfo: false,
+      riskColors: false,
+      hdDetail: false,
     });
     setTimeout(() => {
       this.setState(obj);
@@ -1028,14 +1110,6 @@ class GovernmentBigPlatform extends Component {
           <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>
         )}
       </div>
-      // <RiskDetailGov
-      //   style={{
-      //     height: '100%',
-      //   }}
-      //   data={riskDetailData}
-      //   // onMouseEnter={this.handleMouseEnter}
-      //   // onMouseLeave={this.handleMouseLeave}
-      // />
     );
   };
 
@@ -1049,9 +1123,14 @@ class GovernmentBigPlatform extends Component {
       overHd,
       hdCom,
       comInfo,
+      riskColors,
+      hdDetail,
       safetyGovernmentTitle,
+      riskTitle,
+      riskSummary: { risk, abnormal, company },
     } = this.state;
     const {
+      dispatch,
       bigPlatform: {
         newHomePage: {
           companyDto: { company_num_with_item },
@@ -1070,6 +1149,7 @@ class GovernmentBigPlatform extends Component {
         overRectifyCompany,
         searchAllCompany: { dataImportant, dataUnimportantCompany },
         riskDetailList,
+        dangerLocationCompanyData,
       },
     } = this.props;
     let Anum = 0,
@@ -1119,6 +1199,16 @@ class GovernmentBigPlatform extends Component {
     const stylesComInfo = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: comInfo,
       [rotate.out]: !comInfo,
+    });
+
+    const stylesRiskColors = classNames(styles.sectionWrapper, rotate.flip, {
+      [rotate.in]: riskColors,
+      [rotate.out]: !riskColors,
+    });
+
+    const stylesHdDetail = classNames(styles.sectionWrapper, rotate.flip, {
+      [rotate.in]: hdDetail,
+      [rotate.out]: !hdDetail,
     });
 
     const {
@@ -1390,6 +1480,7 @@ class GovernmentBigPlatform extends Component {
                       >
                         {this.renderCompanyMarker()}
                         {this.renderInfoWindow()}
+                        <MapTypeBar />
                       </GDMap>
 
                       <MapSearch
@@ -1656,7 +1747,23 @@ class GovernmentBigPlatform extends Component {
                                       {item.companyName}
                                     </span>
                                   </td>
-                                  <td>{item.hiddenDangerCount}</td>
+                                  <td>
+                                    <span
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={() => {
+                                        dispatch({
+                                          type: 'bigPlatform/fetchRiskDetail',
+                                          payload: {
+                                            company_id: item.companyId,
+                                            status: '7',
+                                          },
+                                        });
+                                        this.goComponent('hdDetail');
+                                      }}
+                                    >
+                                      {item.hiddenDangerCount}
+                                    </span>
+                                  </td>
                                 </tr>
                               );
                             })}
@@ -1884,6 +1991,119 @@ class GovernmentBigPlatform extends Component {
                         </span>
                       </div>
 
+                      <div className={styles.scrollContainer}>{this.renderComRisk()}</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section
+                className={stylesRiskColors}
+                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
+              >
+                <div className={styles.sectionWrapperIn}>
+                  <div className={styles.sectionTitle}>
+                    <span className={styles.titleBlock} />
+                    {riskTitle}
+                  </div>
+                  <div
+                    className={styles.backBtn}
+                    onClick={() => {
+                      this.goBack();
+                    }}
+                  />
+                  <div className={styles.sectionMain}>
+                    <div className={styles.sectionContent}>
+                      <Row style={{ borderBottom: '2px solid #0967d3', padding: '6px 0' }}>
+                        <Col span={8}>
+                          <div className={styles.riskContent}>
+                            <span className={styles.iconCom} />
+                            <div className={styles.riskWrapper}>
+                              单位数量
+                              <div className={styles.riskNum}>{company}</div>
+                            </div>
+                          </div>
+                        </Col>
+                        <Col span={8}>
+                          <div className={styles.riskContent}>
+                            <span className={styles.iconRisk} />
+                            <div className={styles.riskWrapper}>
+                              风险点
+                              <div className={styles.riskNum}>{risk}</div>
+                            </div>
+                          </div>
+                        </Col>
+                        <Col span={8}>
+                          <div className={styles.riskContent}>
+                            <span className={styles.iconDanger} />
+                            <div className={styles.riskWrapper}>
+                              异常
+                              <div className={styles.riskNum}>{abnormal}</div>
+                            </div>
+                          </div>
+                        </Col>
+                      </Row>
+                      <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
+                        <table className={styles.scrollTable}>
+                          <thead>
+                            <tr>
+                              <th style={{ width: '70%' }}>单位</th>
+                              <th style={{ width: '18%' }}>风险点</th>
+                              <th style={{ color: 'rgba(232, 103, 103, 0.8)' }}>异常</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {dangerLocationCompanyData.map((item, index) => {
+                              return (
+                                <tr key={item.company_id}>
+                                  <td>
+                                    <span
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={() => {
+                                        this.goCompany(item.company_id);
+                                      }}
+                                    >
+                                      {item.company_name}
+                                    </span>
+                                  </td>
+                                  <td>{item.fxd}</td>
+                                  <td
+                                    style={{
+                                      color: item.ycd
+                                        ? 'rgba(232, 103, 103, 0.8)'
+                                        : 'rgba(255, 255, 255, 0.7)',
+                                    }}
+                                  >
+                                    {item.ycd}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section
+                className={stylesHdDetail}
+                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
+              >
+                <div className={styles.sectionWrapperIn}>
+                  <div className={styles.sectionTitle}>
+                    <span className={styles.titleBlock} />
+                    已超期隐患详情
+                  </div>
+                  <div
+                    className={styles.backBtn}
+                    onClick={() => {
+                      this.goBackToOver();
+                    }}
+                  />
+                  <div className={styles.sectionMain}>
+                    <div className={styles.sectionContent}>
                       <div className={styles.scrollContainer}>{this.renderComRisk()}</div>
                     </div>
                   </div>

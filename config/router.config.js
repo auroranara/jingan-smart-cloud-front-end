@@ -71,6 +71,10 @@ module.exports = [
         path: '/big-platform/fire-control/government',
         component: './BigPlatform/FireControl/Government',
       },
+      {
+        path: '/big-platform/fire-control/unit/:unitId',
+        component: './BigPlatform/UnitFireControl/UnitFireControl',
+      },
     ],
   },
   // app
@@ -304,6 +308,18 @@ module.exports = [
                 name: 'detail',
                 component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
               },
+              {
+                path: '/role-authorization/account-management/associated-unit/add/:id',
+                code: 'roleAuthorization.accountManagement.associatedUnit.add',
+                name: 'addAssociatedUnit',
+                component: './RoleAuthorization/AccountManagement/AssociatedUnit',
+              },
+              {
+                path: '/role-authorization/account-management/associated-unit/edit/:userId',
+                code: 'roleAuthorization.accountManagement.associatedUnit.edit',
+                name: 'editAssociatedUnit',
+                component: './RoleAuthorization/AccountManagement/AssociatedUnit',
+              },
             ],
           },
           {
@@ -454,7 +470,7 @@ module.exports = [
         code: 'videoSurveillance',
         icon: 'video-camera',
         name: 'videoSurveillance',
-        hideInMenu: true,
+        // hideInMenu: true,
         routes: [
           {
             path: '/video-surveillance/map',
@@ -515,7 +531,19 @@ module.exports = [
                 path: '/video-surveillance/video-permission/list',
                 code: 'videoSurveillance.videoPermission.listView',
                 name: 'list',
-                component: './VideoSurveillance/VideoPermission/List',
+                component: './VideoSurveillance/VideoPermission/VideoPermissionList',
+              },
+              {
+                path: '/video-surveillance/video-permission/edit/:companyId',
+                code: 'videoSurveillance.videoPermission.edit',
+                name: 'edit',
+                component: './VideoSurveillance/VideoPermission/VideoPermissionEdit',
+              },
+              {
+                path: '/video-surveillance/video-permission/add',
+                code: 'videoSurveillance.videoPermission.add',
+                name: 'add',
+                component: './VideoSurveillance/VideoPermission/VideoPermissionEdit',
               },
             ],
           },
