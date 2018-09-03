@@ -23,8 +23,8 @@ export default function VideoSection(props) {
           <Col span={12} style={COL_STYLE}>{videos[1]}</Col>
         </Row>
         <Row gutter={GUTTER} style={ROW_STYLE}>
+          <Col span={12} style={COL_STYLE}>{videos[2]}</Col>
           <Col span={12} style={COL_STYLE}>{videos[3]}</Col>
-          <Col span={12} style={COL_STYLE}>{videos[4]}</Col>
         </Row>
       </div>
     </FcSection>
