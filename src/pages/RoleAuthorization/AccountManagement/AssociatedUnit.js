@@ -384,7 +384,7 @@ export default class AssociatedUnit extends PureComponent {
             unitId: unitId ? unitId.key : null,
             treeIds: treeIds ? treeIds.key : null,
             roleIds: roleIds.join(','),
-            departmentId: departmentId || null,
+            departmentId: departmentId || '',
             userType,
             documentTypeId,
             execCertificateCode,
