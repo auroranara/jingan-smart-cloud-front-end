@@ -80,7 +80,7 @@ export default class VideoDetail extends Component {
               <Badge status={statusMap[detail.status]} text={status[detail.status]} />
             </Description>
           </DescriptionList>
-          <Divider style={{ marginBottom: 32 }} />
+          {/* <Divider style={{ marginBottom: 32 }} />
           {detail.repairCompany ? (
             <DescriptionList size="large" title="维保信息" style={{ marginBottom: 32 }}>
               <Description term="维保公司">{detail.repairCompany.company}</Description>
@@ -93,9 +93,9 @@ export default class VideoDetail extends Component {
               <DescriptionList size="large" title="维保信息" style={{ marginBottom: 32 }}>
                 <div style={{ padding: '16px', fontSize: '14px', color: 'rgba(0,0,0,0.45)', textAlign: 'center' }}>暂无数据</div>
               </DescriptionList>
-            )}
-          <Divider style={{ marginBottom: 32 }} />
-          <div className={styles.titleWrapper}>
+            )} */}
+          {/* <Divider style={{ marginBottom: 32 }} /> */}
+          {/* <div className={styles.titleWrapper}>
             <div className={styles.title} style={{ display: 'inline-block', width: '50%', verticalAlign: 'top' }}>维修记录</div>
             <div style={{ display: 'inline-block', marginBottom: '8px', width: '50%', textAlign: 'right', verticalAlign: 'top' }}>
               <Button
@@ -107,8 +107,8 @@ export default class VideoDetail extends Component {
                 新建
               </Button>
             </div>
-          </div>
-          <Table
+          </div> */}
+          {/* <Table
             style={{ marginBottom: 24 }}
             pagination={false}
             loading={loading}
@@ -116,7 +116,7 @@ export default class VideoDetail extends Component {
             columns={this.state.records}
             rowKey="id"
             bordered
-          />
+          /> */}
         </Card>
       </PageHeaderLayout>
     );

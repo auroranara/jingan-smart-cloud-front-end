@@ -150,6 +150,14 @@ export default class DepartmentList extends PureComponent {
     this.getDepartments();
   }
 
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'department/saveDepartment',
+      payload: [],
+    })
+  }
+
   // 获取部门列表
   getDepartments = () => {
     const {

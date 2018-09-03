@@ -594,7 +594,15 @@ export default class accountManagementEdit extends PureComponent {
                         message: '请输入密码',
                       },
                     ],
-                  })(<Input placeholder="请输入密码" min={6} max={20} type="password" />)}
+                  })(
+                    <Input
+                      placeholder="请输入密码"
+                      min={6}
+                      max={20}
+                      type="password"
+                      autocomplete="new-password"
+                    />
+                  )}
                 </Form.Item>
               </Col>
             )}

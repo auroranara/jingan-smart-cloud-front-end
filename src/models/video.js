@@ -11,7 +11,11 @@ export default {
     data: {
       list: [],
       tree: [],
-      pagination: {},
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 30,
+      },
     },
     detail: {},
     folderList: [],
@@ -89,9 +93,11 @@ export default {
         callback();
       }
     },
-    *fetchVideoTree({ payload, callback }, { call, put }) {
+    *fetchVideoTree({ payload, success, error }, { call, put }) {
       const response = yield call(fetchVideoTree, payload)
-      if (callback) callback(response.data.list)
+      if (response && response.code === 200) {
+        if (success) success(response.data.list)
+      } else error(response.msg || '请求失败')
     },
     *bindVodeoPermission({ payload, callback }, { call }) {
       const response = yield call(bindVodeoPermission, payload)

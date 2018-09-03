@@ -48,10 +48,10 @@ const deviceModalFormItems = [
   {
     label: '装置编号',
     name: 'deviceCode',
-    type: 'inputNumber',
+    // type: 'inputNumber',
     // deviceCode为数字，则要设置type=number，不然默认为string，下面主机中的两个deviceCode同理
-    options: { rules: [{ required: true, type: 'number', message: '请输入用户传输装置编号' }] },
-    // options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置编号' }] },
+    // options: { rules: [{ required: true, type: 'number', message: '请输入用户传输装置编号' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入用户传输装置编号' }] },
   },
   {
     label: '品牌',
@@ -76,9 +76,9 @@ const hostModalFormItems = [
     label: '传输装置编号',
     name: 'transmissionDeviceCode',
     disabled: true,
-    type: 'inputNumber',
-    options: { rules: [{ required: true, type: 'number', message: '请输入消防主机对应的用户传输装置编号' }] },
-    // options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机对应的用户传输装置编号' }] },
+    // type: 'inputNumber',
+    // options: { rules: [{ required: true, type: 'number', message: '请输入消防主机对应的用户传输装置编号' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机对应的用户传输装置编号' }] },
   },
   {
     label: '传输接口',
@@ -89,9 +89,9 @@ const hostModalFormItems = [
     label: '主机编号',
     name: 'deviceCode',
     // deviceCode为数字，则要设置type=number，不然默认为string
-    type: 'inputNumber',
-    options: { rules: [{ required: true, type: 'number', message: '请输入消防主机对应的用户传输装置编号' }] },
-    // options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机编号' }] },
+    // type: 'inputNumber',
+    // options: { rules: [{ required: true, type: 'number', message: '请输入消防主机编号' }] },
+    options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机编号' }] },
   },
   {
     label: '品牌',
@@ -111,8 +111,10 @@ const hostModalFormItems = [
   { label: '生产日期', type: 'date-picker', placehoder: '请选择日期', name: 'productionDate' },
 ];
 
-const hostModalFormItemsUpdate = disableDeviceCode(hostModalFormItems);
-const deviceModalFormItemsUpdate = disableDeviceCode(deviceModalFormItems);
+const hostModalFormItemsUpdate = hostModalFormItems;
+// const hostModalFormItemsUpdate = disableDeviceCode(hostModalFormItems);
+const deviceModalFormItemsUpdate = deviceModalFormItems;
+// const deviceModalFormItemsUpdate = disableDeviceCode(deviceModalFormItems);
 
 // 添加用户传输装置/消防主机时，装置编号不可修改
 function disableDeviceCode(items) {

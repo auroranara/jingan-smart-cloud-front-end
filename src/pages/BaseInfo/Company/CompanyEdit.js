@@ -978,7 +978,7 @@ export default class CompanyDetail extends PureComponent {
         },
       },
       form: { getFieldDecorator },
-      match: { params: id },
+      match: { params: { id } },
     } = this.props;
 
     return (

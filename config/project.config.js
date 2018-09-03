@@ -1,6 +1,7 @@
 export default {
   default: {
     logo: '',
+    region: '江溪街道',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
@@ -15,6 +16,7 @@ export default {
     },
   },
   jiangxi: {
+    region: '江溪街道',
     logo: '',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
@@ -31,6 +33,7 @@ export default {
   },
   xuzhou: {
     logo: '',
+    region: '徐州市',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
@@ -46,6 +49,7 @@ export default {
   },
   changshu: {
     logo: '',
+    region: '常熟市',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
@@ -61,10 +65,11 @@ export default {
   },
   eye: {
     logo: '',
+    region: '',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
-    projectKey: 'v2_test',
-    projectName: '天翼云眼',
+    projectKey: 'eye',
+    projectName: '晶安智慧安全平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
     safetyGovernmentTitle: '无锡智慧安全平台',

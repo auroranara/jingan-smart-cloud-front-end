@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Tree, /* Input, */ Modal, Icon, Spin } from 'antd';
+import { Tree, /* Input, */ Modal, Icon, Spin, Button } from 'antd';
 
 const { TreeNode } = Tree;
 // const { Search } = Input;
@@ -58,8 +58,7 @@ const checkParents = ({ list, parentIds, checkedKeys, fieldNames }) => {
         }
         length += 0.5;
       }
-    }
-    else {
+    } else {
       let index = checked.indexOf(id);
       if (index !== -1) {
         length += 1;
@@ -106,15 +105,16 @@ const checkChildren = ({ list, checkedKeys, isChecked, fieldNames }) => {
 const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
   const { id: idField, children: childrenField, title: titleField, isLeaf: isLeafField, disabled: disabledField } = fieldNames;
   return data.map((item) => {
-    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf, [disabledField]: disabled } = item;
+    const { [idField]: key, [childrenField]: children, [titleField]: title, [isLeafField]: isLeaf, [disabledField]: disabled, isVideo } = item;
     if (children) {
       return (
         <TreeNode
+          // disableCheckbox={!!disabled}
           disabled={!!disabled}
           title={title}
           key={key}
           dataRef={item}
-          selectable={false}
+          // selectable={false}
           icon={({ expanded }) => {
             return (
               <Icon type={expanded ? 'folder-open' : 'folder'} />
@@ -131,13 +131,14 @@ const renderTreeNodes = ({ data, fieldNames, fileIcon }) => {
     }
     return (
       <TreeNode
+        // disableCheckbox={!!disabled}
         disabled={!!disabled}
         title={title}
         key={key}
         dataRef={item}
-        isLeaf={!!isLeaf}
-        selectable={false}
-        icon={<Icon type={isLeaf ? fileIcon : "folder"} />}
+        isLeaf={isVideo}
+        // selectable={false}
+        icon={<Icon type={isVideo ? fileIcon : "folder"} />}
       />
     );
   });
@@ -156,7 +157,9 @@ export default class AsyncTreeModal extends PureComponent {
     cancelText: PropTypes.string,
     onOk: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
+    buttonPermission: PropTypes.bool.isRequired,// 确定按钮的权限 true:可点击
     saveParentStates: PropTypes.func.isRequired,
+    autoExpandParent: PropTypes.bool,
     tree: PropTypes.shape({
       dataSource: PropTypes.array.isRequired,
       showIcon: PropTypes.bool,
@@ -180,6 +183,8 @@ export default class AsyncTreeModal extends PureComponent {
     loading: false,
     okText: '确定',
     cancelText: '取消',
+    buttonPermission: true,
+    autoExpandParent: true,
   }
 
   constructor(props) {
@@ -188,7 +193,7 @@ export default class AsyncTreeModal extends PureComponent {
     this.state = {
       // expandedKeys: expandedKeys || [],
       // checkedKeys: checkedKeys || { checked: [], halfChecked: [] },
-      autoExpandParent: true,
+      // autoExpandParent: true,
       // searchValue: '',
     }
   }
@@ -232,16 +237,12 @@ export default class AsyncTreeModal extends PureComponent {
   }
 
   /* 展开事件 */
-  handleExpand = (expandedKeys, a) => {
-    console.log(a, 'a');
-
+  handleExpand = (expandedKeys, { expanded, node }) => {
     const { saveParentStates } = this.props
-    setTimeout(() => {
-      this.setState({
-        autoExpandParent: false,
-      });
-      saveParentStates({ expandedKeys })
-    }, 500);
+    // this.setState({
+    //   autoExpandParent: false,
+    // });
+    expanded ? saveParentStates({ expandedKeys, expandedId: node.props.dataRef.id, autoExpandParent: false }) : saveParentStates({ expandedKeys, expandedId: null, autoExpandParent: false })
   }
 
   /* check事件 */
@@ -270,8 +271,12 @@ export default class AsyncTreeModal extends PureComponent {
       });
     }
     saveParentStates({
-      checkedKeys,
+      checkedKeys: {
+        checked: [...new Set(checkedKeys.checked)],
+        halfChecked: [...new Set(checkedKeys.halfChecked)],
+      },
     })
+
   }
 
   handleOk = () => {
@@ -280,7 +285,7 @@ export default class AsyncTreeModal extends PureComponent {
   }
 
   render() {
-    const { autoExpandParent } = this.state;
+    // const { autoExpandParent } = this.state;
     const {
       visible,
       title,
@@ -292,6 +297,8 @@ export default class AsyncTreeModal extends PureComponent {
       okText,
       cancelText,
       onCancel,
+      buttonPermission,
+      autoExpandParent,
       tree: {
         dataSource,
         showIcon,
@@ -303,6 +310,15 @@ export default class AsyncTreeModal extends PureComponent {
       },
     } = this.props;
 
+    // 弹窗的确定取消按钮
+    const footer = (
+      <Fragment>
+        <Button onClick={onCancel}>{cancelText}</Button>
+        <Button disabled={!buttonPermission} type="primary" onClick={this.handleOk}>{okText}</Button>
+      </Fragment>
+    )
+
+
     return (
       <Modal
         visible={visible}
@@ -311,10 +327,11 @@ export default class AsyncTreeModal extends PureComponent {
         keyboard={keyboard}
         destroyOnClose={destroyOnClose}
         confirmLoading={confirmLoading}
-        okText={okText}
-        cancelText={cancelText}
-        onOk={this.handleOk}
+        // okText={okText}
+        // cancelText={cancelText}
+        // onOk={this.handleOk}
         onCancel={onCancel}
+        footer={footer}
       >
         <Spin spinning={loading}>
           {/* <Search

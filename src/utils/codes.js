@@ -33,6 +33,10 @@ export default {
       detail: 'videoSurveillance.hikVideoTree.detailView',
       play: 'videoSurveillance.hikVideoTree.play',
     },
+    videoPermission: {
+      edit: 'videoSurveillance.videoPermission.edit',
+      add: 'videoSurveillance.videoPermission.add',
+    },
   },
   company: {
     list: 'baseInfo.company.listView',
