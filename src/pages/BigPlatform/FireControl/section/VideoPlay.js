@@ -19,11 +19,14 @@ class VideoPlay extends Component {
   };
   componentDidMount() {}
 
+  // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    return this.props.videoList.toString() !== prevProps.videoList.toString();
+    return this.props.videoList.toString() !== prevProps.videoList.toString() || this.props.keyId !== prevProps.keyId;
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    // console.log(snapshot);
+
     if (snapshot) {
       this.handleInit();
     }
@@ -31,10 +34,14 @@ class VideoPlay extends Component {
 
   handleInit = () => {
     const { dispatch, videoList, keyId } = this.props;
+    const firstKeyId = videoList[0] && videoList[0].key_id;
+
+    // console.log(keyId);
+
     dispatch({
       type: 'bigFireControl/fetchStartToPlay',
       payload: {
-        key_id: keyId || videoList[0].key_id,
+        key_id: keyId || firstKeyId,
       },
       success: response => {
         this.setState({

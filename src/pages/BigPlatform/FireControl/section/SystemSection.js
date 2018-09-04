@@ -51,7 +51,7 @@ export default function SystemSection(props) {
           <Col span={8}><p className={styles.tableTitle}>主机数量</p></Col>
         </Row>
         <div style={{ overflow: 'auto', height: 'calc(100% - 42px)'}}>
-          {companyList.map(({ id, name, count }, index) => <UnitCard key={index} companyName={name} hostNum={count} comanyId={id} /> )}
+          {companyList.map(({ companyId, name, count }, index) => <UnitCard key={index} companyName={name} hostNum={count} comanyId={companyId} /> )}
         </div>
       </div>
     </FcSection>

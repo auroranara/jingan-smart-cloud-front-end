@@ -56,7 +56,8 @@ export default class FireControlBigPlatform extends PureComponent {
     mapCenter: [location.x, location.y],
     mapZoom: location.zoom,
     mapShowInfo: false,
-    videoVisible: true,
+    videoVisible: false,
+    videoKeyId: undefined,
   };
 
   componentDidMount() {
@@ -98,12 +99,12 @@ export default class FireControlBigPlatform extends PureComponent {
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
       },
     });
-    dispatch({
-      type: 'bigFireControl/fetchAllCamera',
-      payload: {
-        company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
-      },
-    });
+    // dispatch({
+    //   type: 'bigFireControl/fetchAllCamera',
+    //   payload: {
+    //     company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
+    //   },
+    // });
   };
 
   polling = () => {
@@ -266,6 +267,9 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id } });
     dispatch({ type: 'bigFireControl/fetchDanger', payload: { company_id: id } });
 
+    // 点击火警或地图中的企业时，获取视频相关信息
+    this.handleVideoSelect(id);
+
     // 如果从地图中选中时且没有火警，不需要翻转
     if (isInMap && !isFire) {
       this.setState({
@@ -307,10 +311,12 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
+  handleVideoShow = (keyId) => {
+    this.setState({ videoVisible: true, videoKeyId: keyId });
+  };
+
   handleVideoClose = () => {
-    this.setState({
-      videoVisible: false,
-    });
+    this.setState({ videoVisible: false, videoKeyId: undefined});
   };
 
   handleVideoSelect = companyId => {
@@ -318,7 +324,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({
       type: 'bigFireControl/fetchAllCamera',
       payload: {
-        company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
+        company_id: companyId, // companyId
       },
     });
   };
@@ -359,7 +365,10 @@ export default class FireControlBigPlatform extends PureComponent {
       startLookUp,
       showReverse,
       videoVisible,
+      videoKeyId,
     } = this.state;
+
+    // console.log(videoKeyId);
 
     return (
       <div
@@ -513,18 +522,18 @@ export default class FireControlBigPlatform extends PureComponent {
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
               <SystemSection data={sys} />
-              <VideoSection />
+              <VideoSection data={allCamera} showVideo={this.handleVideoShow} />
             </FcModule>
           </Col>
         </Row>
         {this.renderConfirmModal()}
         <VideoPlay
           dispatch={dispatch}
-          style={{}}
+          // style={{}}
           videoList={allCamera}
           visible={videoVisible}
-          keyId="" // keyId
-          handleVideoClose={this.handleVideoClose.bind(this)}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
         />
       </div>
     );

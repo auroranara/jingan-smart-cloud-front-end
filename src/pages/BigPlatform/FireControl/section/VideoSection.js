@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Row } from 'antd';
+import { Col, Icon, Row } from 'antd';
 
 import FcSection from './FcSection';
 import styles from './VideoSection.less';
@@ -8,11 +8,35 @@ const GUTTER = 12;
 const ROW_STYLE = { height: '50%', paddingBottom: 6 };
 const COL_STYLE = { height: '100%', paddingTop: 6 };
 
+const PLAY_STYLE = {
+  left: '50%',
+  top: '50%',
+  color: 'rgba(0, 49, 96, 0.9)',
+  fontSize: 50,
+  position: 'absolute',
+  transform: 'translate(-50%, -50%)',
+};
+
 export default function VideoSection(props) {
-  const srcs = ['http://58.215.171.233:10080/hls/tonghe_zhiyao/zhutongdao/zhutongdao.png', 'http://58.215.171.233:10080/hls/tonghe_zhiyao/erdaomenchukou/erdaomenchukou.png']
+  const { showVideo, data: list } = props;
+
+  const srcs = list.map(({ photo, key_id: keyId }) => ({ photo, keyId }));
+  // const srcs = ['http://58.215.171.233:10080/hls/tonghe_zhiyao/zhutongdao/zhutongdao.png', 'http://58.215.171.233:10080/hls/tonghe_zhiyao/erdaomenchukou/erdaomenchukou.png'];
   const videos = [...Array(4).keys()].map(i => {
-    const url = srcs[i];
-    return <div className={styles.cover} style={{ backgroundImage: url ? `url(${url})` : 'none', cursor: url ? 'pointer' : 'auto' }} />;
+    const hasVideo = i < srcs.length;
+    const url = hasVideo ? srcs[i].photo : null;
+    return (
+      <div
+        className={styles.cover}
+        onClick={hasVideo ? () => showVideo(srcs[i].keyId) : null}
+        style={{
+          backgroundImage: url ? `url(${url})` : 'none',
+          cursor: hasVideo ? 'pointer' : 'auto',
+        }}
+      >
+        <Icon type="play-circle" style={PLAY_STYLE} />
+      </div>
+    );
   });
 
   return (
