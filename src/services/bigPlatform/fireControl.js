@@ -35,11 +35,9 @@ export async function getCompanyFireInfo() {
   return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
 }
 
-export async function queryAlarmHandle({ id, companyId }) {
+export async function queryAlarmHandle({ id }) {
   // console.log('fetch handleAlarm');
-  return request(
-    `${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ companyId })}`
-  );
+  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory`);
 }
 
 export async function queryLookUp() {
@@ -57,7 +55,6 @@ export async function postLookingUp() {
 export async function queryOffGuard(params) {
   return request(`${URL_PREFIX}/screenShowData/companyResponse?${stringify(params)}`);
 }
-
 
 /************************************** 单位消防 *********************************************** */
 /**
