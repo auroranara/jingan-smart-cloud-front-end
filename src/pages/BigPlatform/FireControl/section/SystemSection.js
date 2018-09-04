@@ -14,7 +14,7 @@ function UnitCard(props) {
         <p className={styles.unitCard}>
           <a
             className={styles.link}
-            href={`/#/big-platform/fire-control/company/${comanyId}`}
+            href={`${window.publicPath}#/big-platform/fire-control/company/${comanyId}`}
             target="_blank"
             rel="noopener noreferrer"
           >

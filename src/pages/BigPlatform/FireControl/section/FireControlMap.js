@@ -181,7 +181,7 @@ export default class FireControlMap extends PureComponent {
         <h3 className={styles.companyName}>
           <a
             className={styles.link}
-            href={`/#/big-platform/fire-control/company/${id}`}
+            href={`${window.publicPath}#/big-platform/fire-control/company/${id}`}
             target="_blank"
             rel="noopener noreferrer"
           >

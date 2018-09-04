@@ -42,8 +42,8 @@ export default class Dashboard extends PureComponent {
       this.setState({ safetyProduction: 1, fireService: 1 });
     } else {
       // 企业根据companyBasicInfo的数据来
-      safeItem.url = `#/big-platform/safety/company/${companyId}`;
-      fireItem.url = `#/big-platform/fire-control/company/${companyId}`;
+      safeItem.url = `${window.publicPath}#/big-platform/safety/company/${companyId}`;
+      fireItem.url = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
       this.setState({
         safetyProduction,
         fireService,
