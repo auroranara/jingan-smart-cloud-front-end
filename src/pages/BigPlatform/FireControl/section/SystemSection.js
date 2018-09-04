@@ -12,12 +12,7 @@ function UnitCard(props) {
     <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
       <Col span={16}>
         <p className={styles.unitCard}>
-          <a
-            className={styles.link}
-            href={`${window.publicPath}#/big-platform/fire-control/company/${comanyId}`}
-          >
-            {companyName}
-          </a>
+          <a className={styles.link} href={`/#/big-platform/fire-control/unit/${comanyId}`} target="_blank" rel="noopener noreferrer">{companyName}</a>
         </p>
       </Col>
       <Col span={8}>
