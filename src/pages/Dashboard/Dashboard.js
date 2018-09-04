@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
-import { message } from 'antd';
 import { connect } from 'dva';
 // import Carousel3d from './Carousel3d';
 import styles from './Dashboard.less';
-import { getToken } from 'utils/authority';
+
 const fire = 'http://data.jingan-china.cn/v2/dashboard/fire-control.png';
 const safe = 'http://data.jingan-china.cn/v2/dashboard/safety.png';
 
@@ -44,7 +43,7 @@ export default class Dashboard extends PureComponent {
     } else {
       // 企业根据companyBasicInfo的数据来
       safeItem.url = `#/big-platform/safety/company/${companyId}`;
-      fireItem.url = `/acloud_new/v2/hdf/fireIndex.htm?token=${getToken()}&companyId=${companyId}`;
+      fireItem.url = `#/big-platform/fire-control/company/${companyId}`;
       this.setState({
         safetyProduction,
         fireService,

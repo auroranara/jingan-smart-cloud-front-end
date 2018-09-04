@@ -15,7 +15,9 @@ function UnitCard(props) {
           <a className={styles.link} href={`/#/big-platform/fire-control/unit/${comanyId}`} target="_blank" rel="noopener noreferrer">{companyName}</a>
         </p>
       </Col>
-      <Col span={8}><p className={styles.unitCard}>{hostNum}</p></Col>
+      <Col span={8}>
+        <p className={styles.unitCard}>{hostNum}</p>
+      </Col>
     </Row>
   );
 }
@@ -31,7 +33,10 @@ export default function SystemSection(props) {
       <Row>
         <Col span={12}>
           <div className={styles.left}>
-            <p className={styles.unit}>接入单位<span className={styles.percent}>{`${percent}%`}</span></p>
+            <p className={styles.unit}>
+              接入单位
+              <span className={styles.percent}>{`${percent}%`}</span>
+            </p>
             <ProgressBar width="90%" height={10} progress={percent} />
             <p className={styles.unitNumber}>{`${activeCount}/${total}`}</p>
           </div>
@@ -47,8 +52,12 @@ export default function SystemSection(props) {
       </Row>
       <div className={styles.table} style={{ height: 'calc(100% - 180px)' }}>
         <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
-          <Col span={16}><p className={styles.tableTitle}>接入单位</p></Col>
-          <Col span={8}><p className={styles.tableTitle}>主机数量</p></Col>
+          <Col span={16}>
+            <p className={styles.tableTitle}>接入单位</p>
+          </Col>
+          <Col span={8}>
+            <p className={styles.tableTitle}>主机数量</p>
+          </Col>
         </Row>
         <div style={{ overflow: 'auto', height: 'calc(100% - 42px)'}}>
           {companyList.map(({ companyId, name, count }, index) => <UnitCard key={index} companyName={name} hostNum={count} comanyId={companyId} /> )}

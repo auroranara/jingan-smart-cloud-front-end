@@ -21,16 +21,16 @@ const NO_DATA = '暂无信息';
 // const { location } = global.PROJECT_CONFIG;
 
 // function handleCompanyBasicInfoList(alarmList, companyList) {
-  // return companyList.map(item => {
-    // const { name } = item;
-    // const alarmed = alarmList.find(({ name: companyName }) => companyName === name)
-    // if (alarmed) {
-    //   const isFire = !Number.parseInt(alarmed.status, 10);
-    //   const status = isFire ? ABNORMAL : NORMAL;
-    //   return { address: alarmed.searchArea, ...item, isFire, status };
-    // }
-    // return { ...item, isFire: false, status: NORMAL };
-  // });
+// return companyList.map(item => {
+// const { name } = item;
+// const alarmed = alarmList.find(({ name: companyName }) => companyName === name)
+// if (alarmed) {
+//   const isFire = !Number.parseInt(alarmed.status, 10);
+//   const status = isFire ? ABNORMAL : NORMAL;
+//   return { address: alarmed.searchArea, ...item, isFire, status };
+// }
+// return { ...item, isFire: false, status: NORMAL };
+// });
 // }
 
 function genBackgrondStyle(url) {
@@ -87,7 +87,7 @@ export default class FireControlMap extends PureComponent {
     this.selectCompany(item);
   };
 
-  renderMarker = (item) => {
+  renderMarker = item => {
     const { selected } = this.props;
 
     // 默认情况，有火警且未被选中，不显示红圈
@@ -96,13 +96,12 @@ export default class FireControlMap extends PureComponent {
     const isSelected = !!selected;
 
     // 没有火警，不论选中不选中显示正常图标
-    if (!isFire)
-      child = <img className={styles.dotIcon} src={mapDot} alt="定位图标"/>;
+    if (!isFire) child = <img className={styles.dotIcon} src={mapDot} alt="定位图标" />;
     // 有火警，且被选中，显示红圈
     else if (isSelected)
       child = (
         <div className={styles.redCircle} style={{ backgroundImage: `url(${redCircle})` }}>
-          <img className={styles.dotSelectedIcon} src={mapAlarmDot} alt="定位图标"/>;
+          <img className={styles.dotSelectedIcon} src={mapAlarmDot} alt="定位图标" />;
         </div>
       );
 
@@ -122,9 +121,7 @@ export default class FireControlMap extends PureComponent {
     // const { selected } = this.state;
     const { selected } = this.props;
     // 如果有选中的企业就只渲染选中的
-    return selected
-      ? this.renderMarker(selected)
-      : newList.map(item => this.renderMarker(item));
+    return selected ? this.renderMarker(selected) : newList.map(item => this.renderMarker(item));
   }
 
   renderBackButton() {
@@ -158,7 +155,17 @@ export default class FireControlMap extends PureComponent {
 
     const {
       showInfo,
-      selected: { id, longitude, latitude, name=NO_DATA, practicalAddress=NO_DATA, safetyName=NO_DATA, safetyPhone=NO_DATA, status=NO_DATA, isFire  },
+      selected: {
+        id,
+        longitude,
+        latitude,
+        name = NO_DATA,
+        practicalAddress = NO_DATA,
+        safetyName = NO_DATA,
+        safetyPhone = NO_DATA,
+        status = NO_DATA,
+        isFire,
+      },
       handleInfoClose,
     } = this.props;
 
@@ -185,13 +192,22 @@ export default class FireControlMap extends PureComponent {
         </p>
         <p className={isFire ? styles.statusFire : styles.status}>
           {/* <span className={isFire ? styles.status1Icon : styles.statusIcon} /> */}
-          <span className={styles.statusIconBase} style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)} />
+          <span
+            className={styles.statusIconBase}
+            style={isFire ? genBackgrondStyle(status1Icon) : genBackgrondStyle(statusIcon)}
+          />
           {status}
         </p>
         <Icon
           type="close"
           onClick={handleInfoClose}
-          style={{ color: 'rgb(110,169,221)', position: 'absolute', right: 10, top: 10, cursor: 'pointer' }}
+          style={{
+            color: 'rgb(110,169,221)',
+            position: 'absolute',
+            right: 10,
+            top: 10,
+            cursor: 'pointer',
+          }}
         />
       </InfoWindow>
     );

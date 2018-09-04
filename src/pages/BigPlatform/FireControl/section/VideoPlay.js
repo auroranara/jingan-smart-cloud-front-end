@@ -21,13 +21,17 @@ class VideoPlay extends Component {
 
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    return this.props.videoList.toString() !== prevProps.videoList.toString() || this.props.keyId !== prevProps.keyId;
+    return (
+      this.props.videoList.toString() !== prevProps.videoList.toString() ||
+      this.props.keyId !== prevProps.keyId
+    );
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     // console.log(snapshot);
 
     if (snapshot) {
+      console.log('initinitinitinitinitinitinit');
       this.handleInit();
     }
   }
@@ -36,8 +40,6 @@ class VideoPlay extends Component {
     const { dispatch, videoList, keyId } = this.props;
     const firstKeyId = videoList[0] && videoList[0].key_id;
 
-    // console.log(keyId);
-
     dispatch({
       type: 'bigFireControl/fetchStartToPlay',
       payload: {
@@ -45,7 +47,7 @@ class VideoPlay extends Component {
       },
       success: response => {
         this.setState({
-          videoSrc: response.src,
+          videoSrc: response.data.url,
         });
         if (keyId) {
           videoList.forEach((item, index) => {
@@ -100,7 +102,7 @@ class VideoPlay extends Component {
       },
       success: response => {
         this.setState({
-          videoSrc: response.src,
+          videoSrc: response.data.url,
           activeIndex: index,
         });
       },
