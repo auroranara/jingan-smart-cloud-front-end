@@ -8,8 +8,10 @@ import backIcon from '../img/back.png';
 const KEYS = ['sysName', 'typeName', 'installAddress', 'status', 'reportName', 'reportTime'];
 const KEYS_CN = ['所属系统', '设备名称', '位置', '状态', '上报人', '上报时间'];
 
+// const STATUS_CN = ['正常', '异常'];
+
 const NONE = '暂无信息';
-const ABNORMAL = '异常';
+// const ABNORMAL = '异常';
 
 export default class AlarmDetailSection extends PureComponent {
   renderTable() {
@@ -21,8 +23,10 @@ export default class AlarmDetailSection extends PureComponent {
             let val = detail[key];
             let v = val;
 
-            if (key === 'status' && val === ABNORMAL)
-              v = <span className={styles.abnormal}>{val}</span>;
+            // if (key === 'status' && val === ABNORMAL)
+            //   v = <span className={styles.abnormal}>{val}</span>;
+            if (key === 'status')
+              v = <span className={styles.abnormal}>异常</span>
             else if (key.toLowerCase().includes('time'))
               v = moment(val).format('YYYY-MM-DD HH:MM');
 

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import { Button, Icon } from 'antd';
+import { Button, Icon, Tooltip } from 'antd';
 // import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
 
@@ -53,9 +53,9 @@ export default class FireControlMap extends PureComponent {
 
   newList = [];
 
-  back = () => {
+  back = (isFire) => {
     const { handleBack } = this.props;
-    handleBack();
+    handleBack(isFire);
 
     this.setState({
       // zoom: location.zoom,
@@ -92,7 +92,7 @@ export default class FireControlMap extends PureComponent {
 
     // 默认情况，有火警且未被选中，不显示红圈
     let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标"/>;
-    const { isFire } = item;
+    const { name, isFire } = item;
     const isSelected = !!selected;
 
     // 没有火警，不论选中不选中显示正常图标
@@ -113,7 +113,7 @@ export default class FireControlMap extends PureComponent {
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
         events={{ click: this.handleClick.bind(this, item) }}
       >
-        {child}
+        <Tooltip title={name}>{child}</Tooltip>
       </Marker>
     );
   };
@@ -128,9 +128,11 @@ export default class FireControlMap extends PureComponent {
   }
 
   renderBackButton() {
+    const { selected={} } = this.props;
+
     return (
       <Button
-        onClick={this.back}
+        onClick={() => this.back(!!selected.isFire)}
         style={{
           background: 'rgba(1, 39, 79, 0.8)',
           border: 'none',
@@ -169,7 +171,7 @@ export default class FireControlMap extends PureComponent {
         autoMove={false}
         visible={showInfo}
       >
-        <h3 className={styles.companyName}><a className={styles.link} href={`/#/big-platform/fire-control/unit/${id}`}>{name}</a></h3>
+        <h3 className={styles.companyName}><a className={styles.link} href={`/#/big-platform/fire-control/unit/${id}`} target="_blank" rel="noopener noreferrer">{name}</a></h3>
         <p className={styles.address}>
           {/* <span className={styles.locateIcon} /> */}
           <span className={styles.locateIcon} style={genBackgrondStyle(locateIcon)} />

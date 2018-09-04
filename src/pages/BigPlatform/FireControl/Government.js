@@ -247,8 +247,13 @@ export default class FireControlBigPlatform extends PureComponent {
   //   this.setState(({ showReverse }) => ({ showReverse: !showReverse }));
   // };
 
-  handleMapBack = () => {
-    this.setState({ showReverse: false, mapZoom: location.zoom, mapSelected: undefined });
+  handleMapBack = (isAlarmRotatedInit=false, isFire=false) => {
+    // 需要重置警情模块，即地图中返回时(且是从有火警的地图中返回，点击无火警的公司由于不需要翻页，返回时无需处理)，警情模块初始化为实时警情
+    if (isAlarmRotatedInit && isFire)
+      this.setState({ showReverse: false, isAlarmRotated: false, mapZoom: location.zoom, mapCenter: [location.x, location.y], mapSelected: undefined });
+    // 警情详情中返回时，原来的状态保持不变
+    else
+      this.setState({ showReverse: false, mapZoom: location.zoom, mapCenter: [location.x, location.y], mapSelected: undefined });
   };
 
   handleMapSelected = (item, alarmDetail) => {
@@ -425,7 +430,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 />
               }
               reverse={
-                <AlarmDetailSection detail={alarmDetail} handleReverse={this.handleMapBack} />
+                <AlarmDetailSection detail={alarmDetail} handleReverse={() => this.handleMapBack()} />
               }
             />
           </Col>
@@ -438,7 +443,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 center={mapCenter}
                 selected={mapSelected}
                 showInfo={mapShowInfo}
-                handleBack={this.handleMapBack}
+                handleBack={isFire => this.handleMapBack(true, isFire)}
                 handleInfoClose={this.handleMapInfoClose}
                 handleSelected={this.handleMapSelected}
                 setMapItemList={this.setMapItemList}
