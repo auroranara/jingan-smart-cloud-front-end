@@ -53,7 +53,7 @@ export default class FireControlMap extends PureComponent {
 
   newList = [];
 
-  back = (isFire) => {
+  back = isFire => {
     const { handleBack } = this.props;
     handleBack(isFire);
 
@@ -91,7 +91,7 @@ export default class FireControlMap extends PureComponent {
     const { selected } = this.props;
 
     // 默认情况，有火警且未被选中，不显示红圈
-    let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标"/>;
+    let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标" />;
     const { name, isFire } = item;
     const isSelected = !!selected;
 
@@ -125,7 +125,7 @@ export default class FireControlMap extends PureComponent {
   }
 
   renderBackButton() {
-    const { selected={} } = this.props;
+    const { selected = {} } = this.props;
 
     return (
       <Button
@@ -178,7 +178,16 @@ export default class FireControlMap extends PureComponent {
         autoMove={false}
         visible={showInfo}
       >
-        <h3 className={styles.companyName}><a className={styles.link} href={`/#/big-platform/fire-control/unit/${id}`} target="_blank" rel="noopener noreferrer">{name}</a></h3>
+        <h3 className={styles.companyName}>
+          <a
+            className={styles.link}
+            href={`/#/big-platform/fire-control/company/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {name}
+          </a>
+        </h3>
         <p className={styles.address}>
           {/* <span className={styles.locateIcon} /> */}
           <span className={styles.locateIcon} style={genBackgrondStyle(locateIcon)} />
