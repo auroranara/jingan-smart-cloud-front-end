@@ -17,6 +17,7 @@ import {
   AutoComplete,
 } from 'antd';
 import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import FooterToolbar from 'components/FooterToolbar';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
@@ -76,6 +77,8 @@ const treeData = data => {
   ({ account, loading }) => ({
     account,
     loading: loading.models.account,
+    editSubmitting: loading.effects['account/editAssociatedUnit'],
+    addSubmitting: loading.effects['account/addAssociatedUnit'],
   }),
   dispatch => ({
     // 修改账号
@@ -136,11 +139,6 @@ const treeData = data => {
         type: 'account/fetchUnitListFuzzy',
         ...action,
       });
-    },
-
-    // 返回列表页面
-    goBack() {
-      dispatch(routerRedux.push('/role-authorization/account-management/list'));
     },
 
     // 检验是否符合规则
@@ -230,7 +228,7 @@ export default class AssociatedUnit extends PureComponent {
       fetchUserType,
       fetchDepartmentList,
     } = this.props;
-    const success = id
+    const success = userId
       ? undefined
       : () => {
         this.setState({
@@ -336,12 +334,16 @@ export default class AssociatedUnit extends PureComponent {
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
+  // 返回列表
+  goBack = () => {
+    router.push('/role-authorization/account-management/list')
+  }
+
   /* 点击提交按钮验证表单信息 */
   handleClickValidate = () => {
     const {
       addAssociatedUnit,
       editAssociatedUnit,
-      goBack,
       form: { validateFieldsAndScroll },
       match: {
         params: { id, userId },
@@ -350,33 +352,30 @@ export default class AssociatedUnit extends PureComponent {
         detail: { data: { loginId } },
       },
     } = this.props;
+    const { unitTypeChecked } = this.state
+
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
-      (
-        error,
-        {
-          loginName,
-          accountStatus,
-          userName,
-          phoneNumber,
-          unitType,
-          unitId,
-          treeIds,
-          password,
-          roleIds,
-          departmentId,
-          userType,
-          documentTypeId,
-          execCertificateCode,
-        }
-      ) => {
+      (error, {
+        loginName,
+        accountStatus,
+        userName,
+        phoneNumber,
+        unitType,
+        unitId,
+        treeIds,
+        roleIds,
+        departmentId,
+        userType,
+        documentTypeId = null,
+        execCertificateCode = null,
+      }) => {
         if (!error) {
           this.setState({
             submitting: true,
           });
           const payload = {
             loginName: loginName.trim(),
-            // password: password && password.trim(),
             accountStatus,
             userName: userName.trim(),
             phoneNumber: phoneNumber.trim(),
@@ -386,8 +385,8 @@ export default class AssociatedUnit extends PureComponent {
             roleIds: roleIds.join(','),
             departmentId: departmentId || '',
             userType,
-            documentTypeId,
-            execCertificateCode,
+            documentTypeId, // 执法证种类id
+            execCertificateCode,// 执法证编号
           };
           switch (payload.unitType) { //单位类型
             // 维保企业 设置用户类型
@@ -401,11 +400,11 @@ export default class AssociatedUnit extends PureComponent {
             default:
               break;
           }
-          const success = () => {
+          const successCallback = () => {
             const msg = userId ? '编辑成功！' : '新增成功！';
-            message.success(msg, 1, goBack);
+            message.success(msg, 1, this.goBack());
           };
-          const error = err => {
+          const errorCallback = err => {
             message.error(err, 1);
             this.setState({
               submitting: false,
@@ -417,15 +416,15 @@ export default class AssociatedUnit extends PureComponent {
             payload.loginId = loginId
             editAssociatedUnit({
               payload,
-              success,
-              error,
+              successCallback,
+              errorCallback,
             });
           } else {
             payload.loginId = id
             addAssociatedUnit({
               payload,
-              success,
-              error,
+              successCallback,
+              errorCallback,
             })
           }
         }
@@ -655,7 +654,7 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
                   // initialValue: userId ? unitType : unitTypes.length === 0 ? undefined : 4,
-                  initialValue: userId ? unitType : null,
+                  initialValue: userId ? unitType : 4,
                   rules: [
                     {
                       required: true,
@@ -738,7 +737,7 @@ export default class AssociatedUnit extends PureComponent {
                       //   : userTypes.length === 0
                       //     ? undefined
                       //     : userTypes[0].value,
-                      initialValue: userId ? userType : null,
+                      initialValue: userId ? userType : userTypes.length === 0 ? undefined : userTypes[0].value,
                       rules: [
                         {
                           required: true,
