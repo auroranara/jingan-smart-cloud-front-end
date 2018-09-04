@@ -45,11 +45,9 @@ export async function getStartToPlay(params) {
   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
 }
 
-export async function queryAlarmHandle({ id, companyId }) {
+export async function queryAlarmHandle({ id }) {
   // console.log('fetch handleAlarm');
-  return request(
-    `${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ companyId })}`
-  );
+  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory`);
 }
 
 export async function queryLookUp() {

@@ -295,8 +295,11 @@ export default class FireControlBigPlatform extends PureComponent {
     // 地图中选择的所属公司没有找到对应的火警，实际上这种情况不可能，但是为了防止后台数据错误，作此处理
     if (!detail) detail = {};
 
-    const { id: detailId, companyId } = detail;
-    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: detailId, companyId } });
+    const { 
+      id: detailId, 
+      // companyId, 
+    } = detail;
+    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: detailId } });
 
     this.setState({
       showReverse: true,

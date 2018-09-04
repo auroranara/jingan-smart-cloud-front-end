@@ -91,11 +91,13 @@ export default {
         createTime: 0,
         safetyMan: '',
         safetyPhone: '',
+        type: '',
       },
       finshMap: {
         safetyMan: '',
         endTime: 0,
         safetyPhone: '',
+        type: '',
       },
       picture: [],
     },

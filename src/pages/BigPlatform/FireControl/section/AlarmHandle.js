@@ -63,8 +63,8 @@ export default class AlarmHandle extends Component {
     const {
       data: {
         startMap: { unitType, createTime },
-        handleMap: { createTime: handleTime, safetyMan, safetyPhone },
-        finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones },
+        handleMap: { createTime: handleTime, safetyMan, safetyPhone, type },
+        finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones, type: endType },
         picture,
       },
     } = this.props;
@@ -187,8 +187,7 @@ export default class AlarmHandle extends Component {
                       </p>
                       <p className={styles.contact} style={{ color: '#4f6793' }}>
                         <span>
-                          安全员：
-                          {safetyMan}
+                          {type}：{safetyMan}
                         </span>
                         <span className={styles.phone}>{safetyPhone}</span>
                       </p>
@@ -230,8 +229,7 @@ export default class AlarmHandle extends Component {
                       </p>
                       <p className={styles.contact} style={{ color: '#4f6793' }}>
                         <span>
-                          安全员：
-                          {safetyMans}
+                          {endType}：{safetyMans}
                         </span>
                         <span className={styles.phone}>{safetyPhones}</span>
                       </p>
