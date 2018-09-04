@@ -262,25 +262,31 @@ export default {
       }
     },
     // 添加关联企业
-    *addAssociatedUnit({ payload, success, error }, { call, put }) {
+    *addAssociatedUnit({ payload, successCallback, errorCallback }, { call, put }) {
       const response = yield call(addAssociatedUnit, payload)
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error(response.msg)
+        if (successCallback) successCallback()
+      } else if (errorCallback) {
+        errorCallback(response.msg)
+      }
     },
     // 修改关联企业
-    *editAssociatedUnit({ payload, success, error }, { call }) {
+    *editAssociatedUnit({ payload, successCallback, errorCallback }, { call }) {
       const response = yield call(editAssociatedUnit, payload)
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error(response.msg)
+        if (successCallback) successCallback()
+      } else if (errorCallback) {
+        errorCallback(response.msg)
+      }
     },
     // 绑定、解绑关联企业
     *chnageAccountStatus({ payload, success, error }, { call }) {
       const response = yield call(chnageAccountStatus, payload)
       if (response && response.code === 200) {
         if (success) success()
-      } else if (error) error(response.msg)
+      } else if (error) {
+        error(response.msg)
+      }
     },
   },
 
