@@ -21,7 +21,7 @@ function formatTime(t) {
   return `${fillZero(m)}'${fillZero(s)}"`;
 }
 
-const DELAY = 3000;
+// const DELAY = 3000;
 const COUNT_DOWN_MIN = 1;
 const COUNT_DOWN = COUNT_DOWN_MIN * 60000;
 

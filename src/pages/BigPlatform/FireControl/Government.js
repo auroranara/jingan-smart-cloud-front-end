@@ -35,10 +35,14 @@ const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 
-const DELAY = 2000;
+// const DELAY = 2000;
 const LOOKING_UP_DELAY = 5000;
 
-message.config({ getContainer: () => document.querySelector('#unitLookUp') });
+message.config({
+  getContainer: () => {
+    return document.querySelector('#unitLookUp') || document.querySelector('body');
+  },
+});
 
 @connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
@@ -131,21 +135,19 @@ export default class FireControlBigPlatform extends PureComponent {
           this.jumpToLookingUp();
           // 手动点击开始查岗时，在store中存入当前开始时间，虽然会和服务器开始时间不同，但差距不大，用来骗下用户
           dispatch({ type: 'bigFireControl/saveCreateTime', payload: Date.now() });
-        }
-        else
-          message.error(msg);
-          // message.error(msg, 0);
+        } else message.error(msg);
+        // message.error(msg, 0);
       },
     });
   };
 
-  showLookUpConfirm = (show) => {
+  showLookUpConfirm = show => {
     this.setState({ showConfirm: !!show });
     clearInterval(this.confirmTimer);
   };
 
   renderConfirmModal() {
-    const { showConfirm, confirmCount } =  this.state;
+    const { showConfirm, confirmCount } = this.state;
 
     return (
       <Modal
@@ -165,7 +167,7 @@ export default class FireControlBigPlatform extends PureComponent {
     );
   }
 
-  handleClickLookUp = (isAutoJump) => {
+  handleClickLookUp = isAutoJump => {
     if (isAutoJump) {
       this.jumpToLookingUp();
       return;
@@ -201,9 +203,8 @@ export default class FireControlBigPlatform extends PureComponent {
     this.lookingUpTimer = setInterval(() => {
       dispatch({
         type: 'bigFireControl/fetchCountdown',
-        callback: (ended) => {
-          if (ended)
-            this.handleLookUpRotateBack(true);
+        callback: ended => {
+          if (ended) this.handleLookUpRotateBack(true);
         },
       });
     }, LOOKING_UP_DELAY);
@@ -311,12 +312,12 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
-  handleVideoShow = (keyId) => {
+  handleVideoShow = keyId => {
     this.setState({ videoVisible: true, videoKeyId: keyId });
   };
 
   handleVideoClose = () => {
-    this.setState({ videoVisible: false, videoKeyId: undefined});
+    this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
   handleVideoSelect = companyId => {
