@@ -600,7 +600,7 @@ export default class accountManagementEdit extends PureComponent {
                       min={6}
                       max={20}
                       type="password"
-                      autocomplete="new-password"
+                      autoComplete="new-password"
                     />
                   )}
                 </Form.Item>

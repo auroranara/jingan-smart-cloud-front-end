@@ -117,7 +117,7 @@ export default class ChangePassword extends PureComponent {
             </FormItem>
             <FormItem {...formItemLayout} label="新密码">
               {getFieldDecorator('newPassword', {
-                rules: [{ required: true, message: '请输入新密码', whitespace: true }, { min: 6, max: 20, message: '密码长度请控制在6到20位' }],
+                rules: [{ required: true, message: '请输入新密码', whitespace: true }, { min: 6, max: 20, message: '密码长度请控制在5到15位' }],
               })(
                 <Input type="password"></Input>
               )}
