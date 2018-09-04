@@ -390,8 +390,8 @@ export default class AssociatedUnit extends PureComponent {
           const payload = {
             loginName: loginName.trim(),
             accountStatus,
-            userName: userName.trim(),
-            phoneNumber: phoneNumber.trim(),
+            userName,
+            phoneNumber,
             unitType,
             // unitId: unitId ? unitId.key : null,
             unitId: unitTypeChecked === 2 ? unitId.value : unitId.key,
