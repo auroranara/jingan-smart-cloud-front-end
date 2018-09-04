@@ -24,6 +24,7 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
+const TreeNode = TreeSelect.TreeNode;
 
 // 编辑页面标题
 const editTitle = '编辑关联单位';
@@ -31,8 +32,6 @@ const editTitle = '编辑关联单位';
 const addTitle = '关联单位';
 // 返回地址
 const href = '/role-authorization/account-management/list';
-
-const TreeNode = TreeSelect.TreeNode;
 
 /* 表单标签 */
 const fieldLabels = {
@@ -66,6 +65,20 @@ const treeData = data => {
       return (
         <TreeNode title={item.name} key={item.id} value={item.id}>
           {treeData(item.children)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.name} key={item.id} value={item.id} />;
+  });
+};
+
+// 生成树节点
+const generateTressNode = data => {
+  return data.map(item => {
+    if (item.child && item.child.length) {
+      return (
+        <TreeNode title={item.name} key={item.id} value={item.id}>
+          {treeData(item.child)}
         </TreeNode>
       );
     }
@@ -339,7 +352,7 @@ export default class AssociatedUnit extends PureComponent {
     router.push('/role-authorization/account-management/list')
   }
 
-  /* 点击提交按钮验证表单信息 */
+  /* 提交表单信息 */
   handleClickValidate = () => {
     const {
       addAssociatedUnit,
@@ -377,10 +390,11 @@ export default class AssociatedUnit extends PureComponent {
           const payload = {
             loginName: loginName.trim(),
             accountStatus,
-            userName: userName.trim(),
-            phoneNumber: phoneNumber.trim(),
+            userName,
+            phoneNumber,
             unitType,
-            unitId: unitId ? unitId.key : null,
+            // unitId: unitId ? unitId.key : null,
+            unitId: unitTypeChecked === 2 ? unitId.value : unitId.key,
             treeIds: treeIds ? treeIds.key : null,
             roleIds: roleIds.join(','),
             departmentId: departmentId || '',
@@ -512,6 +526,21 @@ export default class AssociatedUnit extends PureComponent {
       },
     });
   };
+
+  handleUnitSelect = ({ value, label }) => {
+    const {
+      fetchDepartmentList,
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      treeIds: { key: value, label },
+    });
+    fetchDepartmentList({
+      payload: {
+        companyId: value,
+      },
+    });
+  }
 
   /** 所属单位下拉框失焦 */
   handleUnitIdBlur = value => {
@@ -676,40 +705,66 @@ export default class AssociatedUnit extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.unitId}>
-                {getFieldDecorator('unitId', {
-                  // TODO：
-                  initialValue: userId && unitId && unitName ? { key: unitId, label: unitName } : undefined,
-                  rules: [
-                    {
-                      required: unitTypeChecked !== 3, // 如果是运营企业 不需要必填,
-                      transform: value => value && value.label,
-                      message: '请选择所属单位',
-                    },
-                  ],
-                })(
-                  <AutoComplete
-                    mode="combobox"
-                    labelInValue
-                    optionLabelProp="children"
-                    placeholder="请选择所属单位"
-                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    onSearch={this.handleUnitIdChange}
-                    onSelect={this.handleDataPermissions}
-                    // onChange={this.handleFetchDepartments}
-                    onBlur={this.handleUnitIdBlur}
-                    filterOption={false}
-                  >
-                    {unitIdes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.name}
-                      </Option>
-                    ))}
-                  </AutoComplete>
-                )}
-              </Form.Item>
-            </Col>
+            {unitTypeChecked !== 2 && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.unitId}>
+                  {getFieldDecorator('unitId', {
+                    // TODO：
+                    initialValue: userId && unitId && unitName ? { key: unitId, label: unitName } : undefined,
+                    rules: [
+                      {
+                        required: unitTypeChecked !== 3, // 如果是运营企业 不需要必填,
+                        transform: value => value && value.label,
+                        message: '请选择所属单位',
+                      },
+                    ],
+                  })(
+                    <AutoComplete
+                      mode="combobox"
+                      labelInValue
+                      optionLabelProp="children"
+                      placeholder="请选择所属单位"
+                      notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                      onSearch={this.handleUnitIdChange}
+                      onSelect={this.handleDataPermissions}
+                      // onChange={this.handleFetchDepartments}
+                      onBlur={this.handleUnitIdBlur}
+                      filterOption={false}
+                    >
+                      {unitIdes.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.name}
+                        </Option>
+                      ))}
+                    </AutoComplete>
+                  )}
+                </Form.Item>
+              </Col>)}
+            {/* 单位类型为政府时的所属单位 */}
+            {unitTypeChecked === 2 && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.unitId}>
+                  {getFieldDecorator('unitId', {
+                    // TODO：
+                    initialValue: userId && unitId && unitName ? { value: unitId, label: unitName } : undefined,
+                    rules: [
+                      {
+                        required: true, // 如果是运营企业 不需要必填,
+                        message: '请选择所属单位',
+                      },
+                    ],
+                  })(
+                    <TreeSelect
+                      allowClear
+                      placeholder="请选择所属单位"
+                      labelInValue
+                      onSelect={this.handleUnitSelect}
+                    >
+                      {generateTressNode(unitIdes)}
+                    </TreeSelect>
+                  )}
+                </Form.Item>
+              </Col>)}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.departmentId}>
                 {getFieldDecorator('departmentId', {

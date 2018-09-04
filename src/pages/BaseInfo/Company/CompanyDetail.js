@@ -19,7 +19,7 @@ import SafetyDetail from './SafetyDetail';
 
 const { Description } = DescriptionList;
 
-const companyTypes = ['', '重点单位', '一般单位', '九小场所'];
+// const companyTypes = ['', '重点单位', '一般单位', '九小场所'];
 // 获取title
 const {
   home: homeTitle,
@@ -356,7 +356,7 @@ export default class CompanyDetail extends PureComponent {
             createTime,
             groupName,
             businessScope,
-            companyTypeLabel,
+            companyTypeLable,
           },
         },
       },
@@ -371,7 +371,7 @@ export default class CompanyDetail extends PureComponent {
           </Description>
           {this.renderCompanyStatus()}
           <Description term={fieldLabels.companyType}>
-            {companyTypeLabel || getEmptyData()}
+            {companyTypeLable || getEmptyData()}
           </Description>
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>

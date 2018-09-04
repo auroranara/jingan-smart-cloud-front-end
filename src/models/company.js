@@ -275,6 +275,7 @@ export default {
       }
     },
     *editCompany({ payload, success, error }, { call, put }) {
+      console.log('success', success);
       const response = yield call(updateCompany, payload);
       if (response.code === 200) {
         yield put({
@@ -473,12 +474,7 @@ export default {
         list: payload.list,
       };
     },
-    queryOptions(
-      state,
-      {
-        payload: companyTypes,
-      }
-    ) {
+    queryOptions(state, { payload: companyTypes }) {
       return {
         ...state,
         companyTypes: companyTypes,

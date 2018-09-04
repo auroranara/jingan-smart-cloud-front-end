@@ -9,12 +9,12 @@ import styles from './AlarmHandle.less';
 import arrowLeft from '../img/arrowLeft.png';
 import arrowRight from '../img/arrowRight.png';
 import imgBg from '../img/imgBg.png';
-import b1 from '../img/b1.jpg';
-import b2 from '../img/b2.jpg';
-import b3 from '../img/b3.jpg';
-import b4 from '../img/b4.jpg';
-import b5 from '../img/b5.jpg';
-import b6 from '../img/b6.jpg';
+// import b1 from '../img/b1.jpg';
+// import b2 from '../img/b2.jpg';
+// import b3 from '../img/b3.jpg';
+// import b4 from '../img/b4.jpg';
+// import b5 from '../img/b5.jpg';
+// import b6 from '../img/b6.jpg';
 
 // const IMG_WIDTH = 118;
 // const MAG_IMG_WIDTH = 300;
@@ -25,6 +25,10 @@ const ICON_STYLE = {
   // cursor: 'pointer',
   color: 'rgb(9,103,211)',
 };
+
+function getYearTime(t) {
+  return moment(t).format('YYYY-MM-DD');
+}
 
 function getTime(t) {
   return moment(t).format('HH:MM:SS');
@@ -59,8 +63,8 @@ export default class AlarmHandle extends Component {
     const {
       data: {
         startMap: { unitType, createTime },
-        handleMap: { createTime: handleTime, safetyMan, safetyPhone },
-        finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones },
+        handleMap: { createTime: handleTime, safetyMan, safetyPhone, type },
+        finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones, type: endType },
         picture,
       },
     } = this.props;
@@ -111,7 +115,7 @@ export default class AlarmHandle extends Component {
               <Timeline
                 pending=""
                 reverse={this.state.reverse}
-                style={{ marginLeft: 65, marginTop: 10 }}
+                style={{ marginLeft: 86, marginTop: 10 }}
               >
                 {!createTime && (
                   <Timeline.Item style={{ paddingBottom: 22 }}>
@@ -130,6 +134,9 @@ export default class AlarmHandle extends Component {
 
                 {createTime && (
                   <Timeline.Item style={{ paddingBottom: 22 }}>
+                    <span className={styles.yearTime} style={{ color: '#fff' }}>
+                      {getYearTime(createTime)}
+                    </span>
                     <span className={styles.time} style={{ color: '#fff' }}>
                       {getTime(createTime)}
                     </span>
@@ -163,6 +170,9 @@ export default class AlarmHandle extends Component {
 
                 {handleTime && (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
+                    <span className={styles.yearTime} style={{ color: '#fff' }}>
+                      {getYearTime(handleTime)}
+                    </span>
                     <span className={styles.time} style={{ color: '#fff' }}>
                       {getTime(handleTime)}
                     </span>
@@ -177,8 +187,7 @@ export default class AlarmHandle extends Component {
                       </p>
                       <p className={styles.contact} style={{ color: '#4f6793' }}>
                         <span>
-                          安全员：
-                          {safetyMan}
+                          {type}：{safetyMan}
                         </span>
                         <span className={styles.phone}>{safetyPhone}</span>
                       </p>
@@ -203,6 +212,9 @@ export default class AlarmHandle extends Component {
 
                 {endTime && (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
+                    <span className={styles.yearTime} style={{ color: '#fff' }}>
+                      {getYearTime(endTime)}
+                    </span>
                     <span className={styles.time} style={{ color: '#fff' }}>
                       {getTime(endTime)}
                     </span>
@@ -217,8 +229,7 @@ export default class AlarmHandle extends Component {
                       </p>
                       <p className={styles.contact} style={{ color: '#4f6793' }}>
                         <span>
-                          安全员：
-                          {safetyMans}
+                          {endType}：{safetyMans}
                         </span>
                         <span className={styles.phone}>{safetyPhones}</span>
                       </p>

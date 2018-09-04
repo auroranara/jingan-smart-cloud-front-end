@@ -61,9 +61,9 @@ class Countdown extends React.Component {
    */
   getDiffObject(ms) {
     var s = Math.floor(ms / 1000),
-      m = Math.floor(s / 60),
-      h = Math.floor(m / 60),
-      d = Math.floor(h / 24);
+      m = Math.floor(s / 60);
+    // h = Math.floor(m / 60)
+    // d = Math.floor(h / 24);
 
     return {
       // days: Math.floor(h / 24),

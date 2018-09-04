@@ -72,6 +72,19 @@ const treeData = data => {
   });
 };
 
+const generateUnitsTree = data => {
+  return data.map(item => {
+    if (item.child && item.child.length) {
+      return (
+        <TreeNode title={item.name} key={item.id} value={item.id}>
+          {treeData(item.child)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.name} key={item.id} value={item.id} />;
+  });
+}
+
 @connect(
   ({ account, loading }) => ({
     account,
@@ -293,6 +306,7 @@ export default class accountManagementEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
+    const { unitTypeChecked } = this.state
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
       (
@@ -350,7 +364,7 @@ export default class accountManagementEdit extends PureComponent {
               userName,
               phoneNumber,
               unitType,
-              unitId: unitId ? unitId.key : null,
+              unitId: unitId ? (unitTypeChecked === 2 ? unitId.value : unitId.key) : null,
               treeIds: treeIds ? treeIds.key : null,
               roleIds: roleIds.join(','),
               departmentId: Array.isArray(departmentId) ? undefined : departmentId,
@@ -443,14 +457,37 @@ export default class accountManagementEdit extends PureComponent {
 
   // 所属单位下拉框选择
   handleDataPermissions = value => {
+    console.log('value', value);
+
     const {
+      fetchDepartmentList,
       form: { setFieldsValue },
     } = this.props;
     // 根据value从源数组中筛选出对应的数据，获取其值
     setFieldsValue({
       treeIds: value,
     });
+    fetchDepartmentList({
+      payload: {
+        companyId: value.key,
+      },
+    });
   };
+
+  handleUnitSelect = ({ value, label }) => {
+    const {
+      fetchDepartmentList,
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      treeIds: { key: value, label },
+    });
+    fetchDepartmentList({
+      payload: {
+        companyId: value,
+      },
+    });
+  }
 
   /** 所属单位下拉框失焦 */
   handleUnitIdBlur = value => {
@@ -489,14 +526,14 @@ export default class accountManagementEdit extends PureComponent {
     }
   };
 
-  handleFetchDepartments = item => {
+  /* handleFetchDepartments = item => {
     const { fetchDepartmentList } = this.props;
     fetchDepartmentList({
       payload: {
         companyId: item.key,
       },
     });
-  };
+  }; */
 
   /* 异步验证用户名 */
   validateUserName = (rule, value, callback) => {
@@ -692,7 +729,7 @@ export default class accountManagementEdit extends PureComponent {
                   )}
                 </Form.Item>
               </Col>)}
-            {!id && (
+            {!id && unitTypeChecked !== 2 && (
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.unitId} className={styles.hasUnit}>
                   {getFieldDecorator('unitId', {
@@ -713,7 +750,7 @@ export default class accountManagementEdit extends PureComponent {
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleUnitIdChange}
                       onSelect={this.handleDataPermissions}
-                      onChange={this.handleFetchDepartments}
+                      // onChange={this.handleFetchDepartments}
                       onBlur={this.handleUnitIdBlur}
                       filterOption={false}
                     >
@@ -726,6 +763,32 @@ export default class accountManagementEdit extends PureComponent {
                   )}
                 </Form.Item>
               </Col>)}
+
+            {!id && unitTypeChecked === 2 && (
+              <Col lg={8} md={12} sm={24}>
+                <Form.Item label={fieldLabels.unitId}>
+                  {getFieldDecorator('unitId', {
+                    // TODO：
+                    initialValue: unitId && unitName ? { value: unitId, label: unitName } : undefined,
+                    rules: [
+                      {
+                        required: true, // 如果是运营企业 不需要必填,
+                        message: '请选择所属单位',
+                      },
+                    ],
+                  })(
+                    <TreeSelect
+                      allowClear
+                      placeholder="请选择所属单位"
+                      labelInValue
+                      onSelect={this.handleUnitSelect}
+                    >
+                      {generateUnitsTree(unitIdes)}
+                    </TreeSelect>
+                  )}
+                </Form.Item>
+              </Col>)}
+
             {!id && (
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.departmentId}>

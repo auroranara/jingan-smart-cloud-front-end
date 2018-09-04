@@ -35,10 +35,14 @@ const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 
-const DELAY = 2000;
+// const DELAY = 2000;
 const LOOKING_UP_DELAY = 5000;
 
-message.config({ getContainer: () => document.querySelector('#unitLookUp') });
+message.config({
+  getContainer: () => {
+    return document.querySelector('#unitLookUp') || document.querySelector('body');
+  },
+});
 
 @connect(({ bigFireControl }) => ({ bigFireControl }))
 export default class FireControlBigPlatform extends PureComponent {
@@ -131,21 +135,19 @@ export default class FireControlBigPlatform extends PureComponent {
           this.jumpToLookingUp();
           // 手动点击开始查岗时，在store中存入当前开始时间，虽然会和服务器开始时间不同，但差距不大，用来骗下用户
           dispatch({ type: 'bigFireControl/saveCreateTime', payload: Date.now() });
-        }
-        else
-          message.error(msg);
-          // message.error(msg, 0);
+        } else message.error(msg);
+        // message.error(msg, 0);
       },
     });
   };
 
-  showLookUpConfirm = (show) => {
+  showLookUpConfirm = show => {
     this.setState({ showConfirm: !!show });
     clearInterval(this.confirmTimer);
   };
 
   renderConfirmModal() {
-    const { showConfirm, confirmCount } =  this.state;
+    const { showConfirm, confirmCount } = this.state;
 
     return (
       <Modal
@@ -165,7 +167,7 @@ export default class FireControlBigPlatform extends PureComponent {
     );
   }
 
-  handleClickLookUp = (isAutoJump) => {
+  handleClickLookUp = isAutoJump => {
     if (isAutoJump) {
       this.jumpToLookingUp();
       return;
@@ -201,9 +203,8 @@ export default class FireControlBigPlatform extends PureComponent {
     this.lookingUpTimer = setInterval(() => {
       dispatch({
         type: 'bigFireControl/fetchCountdown',
-        callback: (ended) => {
-          if (ended)
-            this.handleLookUpRotateBack(true);
+        callback: ended => {
+          if (ended) this.handleLookUpRotateBack(true);
         },
       });
     }, LOOKING_UP_DELAY);
@@ -247,8 +248,13 @@ export default class FireControlBigPlatform extends PureComponent {
   //   this.setState(({ showReverse }) => ({ showReverse: !showReverse }));
   // };
 
-  handleMapBack = () => {
-    this.setState({ showReverse: false, mapZoom: location.zoom, mapSelected: undefined });
+  handleMapBack = (isAlarmRotatedInit=false, isFire=false) => {
+    // 需要重置警情模块，即地图中返回时(且是从有火警的地图中返回，点击无火警的公司由于不需要翻页，返回时无需处理)，警情模块初始化为实时警情
+    if (isAlarmRotatedInit && isFire)
+      this.setState({ showReverse: false, isAlarmRotated: false, mapZoom: location.zoom, mapCenter: [location.x, location.y], mapSelected: undefined });
+    // 警情详情中返回时，原来的状态保持不变
+    else
+      this.setState({ showReverse: false, mapZoom: location.zoom, mapCenter: [location.x, location.y], mapSelected: undefined });
   };
 
   handleMapSelected = (item, alarmDetail) => {
@@ -289,8 +295,11 @@ export default class FireControlBigPlatform extends PureComponent {
     // 地图中选择的所属公司没有找到对应的火警，实际上这种情况不可能，但是为了防止后台数据错误，作此处理
     if (!detail) detail = {};
 
-    const { id: detailId, companyId } = detail;
-    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: detailId, companyId } });
+    const { 
+      id: detailId, 
+      // companyId, 
+    } = detail;
+    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: detailId } });
 
     this.setState({
       showReverse: true,
@@ -311,12 +320,12 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
-  handleVideoShow = (keyId) => {
+  handleVideoShow = keyId => {
     this.setState({ videoVisible: true, videoKeyId: keyId });
   };
 
   handleVideoClose = () => {
-    this.setState({ videoVisible: false, videoKeyId: undefined});
+    this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
   handleVideoSelect = companyId => {
@@ -425,7 +434,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 />
               }
               reverse={
-                <AlarmDetailSection detail={alarmDetail} handleReverse={this.handleMapBack} />
+                <AlarmDetailSection detail={alarmDetail} handleReverse={() => this.handleMapBack()} />
               }
             />
           </Col>
@@ -438,7 +447,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 center={mapCenter}
                 selected={mapSelected}
                 showInfo={mapShowInfo}
-                handleBack={this.handleMapBack}
+                handleBack={isFire => this.handleMapBack(true, isFire)}
                 handleInfoClose={this.handleMapInfoClose}
                 handleSelected={this.handleMapSelected}
                 setMapItemList={this.setMapItemList}
