@@ -38,7 +38,7 @@
     "@antv/data-set": "^0.9.0",
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
-    "antd": "^3.8.2",
+    "antd": "^3.9.0",
     "bizcharts": "^3.1.10",
     "bizcharts-plugin-slider": "^2.0.3",
     "classnames": "^2.2.6",
@@ -97,7 +97,7 @@
     "gh-pages": "^1.2.0",
     "husky": "^1.0.0-rc.8",
     "lint-staged": "^7.2.0",
-    "merge-umi-mock-data": "^0.0.2",
+    "merge-umi-mock-data": "^0.0.3",
     "mockjs": "^1.0.1-beta3",
     "prettier": "1.14.2",
     "pro-download": "^1.0.1",
@@ -107,9 +107,8 @@
     "stylelint": "^9.4.0",
     "stylelint-config-prettier": "^4.0.0",
     "stylelint-config-standard": "^18.0.0",
-    "umi": "^2.0.0-beta.17",
-    "umi-plugin-react": "^1.0.0-beta.10"
-
+    "umi": "^2.0.0",
+    "umi-plugin-react": "^1.0.0"
   },
   "optionalDependencies": {
     "puppeteer": "^1.6.0"
