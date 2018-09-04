@@ -43,8 +43,8 @@ export default function OverviewBackSection(props) {
           <div className={styles.name} onClick={e => window.open(`/#/big-platform/fire-control/unit/${id}`)}>
             <Ellipsis lines={1} tooltip>
               {/* <a className={styles.link} href={`/#/big-platform/fire-control/unit/${id}`} target="_blank" rel="noopener noreferrer"> */}
-                无锡晶安智慧科技有限公司无锡晶安智慧科技有限公司
-                {/* {name ? name : NO_DATA} */}
+                {/* 无锡晶安智慧科技有限公司无锡晶安智慧科技有限公司 */}
+                {name ? name : NO_DATA}
               {/* </a> */}
             </Ellipsis>
           </div>
