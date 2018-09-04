@@ -183,13 +183,13 @@ export default class accountManagementDetail extends PureComponent {
             id,
             password: aesEncrypt(password),
           },
-          success: () => {
-            message.success('提交成功！', () => {
+          callback: response => {
+            if (response.code && response.code === 200) {
               this.handleCancel();
-            });
-          },
-          err: () => {
-            message.err('提交失败！', () => { });
+              message.success('提交成功！');
+            } else {
+              message.error(response.msg || '提交失败！!');
+            }
           },
         });
       }
@@ -212,13 +212,13 @@ export default class accountManagementDetail extends PureComponent {
             loginName,
             userName,
             phoneNumber,
-            unitType,
-            unitName,
+            // unitType,
+            // unitName,
             accountStatus,
-            departmentName,
+            // departmentName,
             userType,
             documentTypeId,
-            execCertificateCode,
+            // execCertificateCode,
           },
         },
       },
@@ -245,7 +245,19 @@ export default class accountManagementDetail extends PureComponent {
           </Description> */}
           {/* <Description term={fieldLabels.unitId}>{unitName || getEmptyData()}</Description> */}
           <Description term={fieldLabels.accountStatus}>
-            {accountStatus === 1 ? <span><Badge status="success" />启用</span> : <span><Badge status="error" />禁用</span> || getEmptyData()}
+            {accountStatus === 1 ? (
+              <span>
+                <Badge status="success" />
+                启用
+              </span>
+            ) : (
+              (
+                <span>
+                  <Badge status="error" />
+                  禁用
+                </span>
+              ) || getEmptyData()
+            )}
           </Description>
           {/* <Description term={fieldLabels.departmentId}>
             {departmentName || getEmptyData()}
@@ -292,10 +304,10 @@ export default class accountManagementDetail extends PureComponent {
             <div style={{ paddingTop: 8 }}>
               {roleNames
                 ? roleNames.split(',').map(roleName => (
-                  <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                    {roleName}
-                  </p>
-                ))
+                    <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                      {roleName}
+                    </p>
+                  ))
                 : getEmptyData()}
             </div>
           </Description>

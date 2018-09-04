@@ -167,15 +167,9 @@ export default {
     },
 
     // 修改密码
-    *updateAccountPwd({ payload, success, error }, { call, put }) {
+    *updateAccountPwd({ payload, callback }, { call }) {
       const response = yield call(updatePassword, payload);
-      if (response.code === 200) {
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error(response.msg);
-      }
+      if (callback) callback(response);
     },
 
     // 查询用户名和手机号是否唯一
@@ -248,7 +242,7 @@ export default {
     },
     // 获取用户详情（关联企业页面）
     *fetchAssociatedUnitDeatil({ payload, success, error }, { call, put }) {
-      const response = yield call(fetchAssociatedUnitDeatil, payload)
+      const response = yield call(fetchAssociatedUnitDeatil, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'queryAccountDetail',
@@ -281,7 +275,7 @@ export default {
     },
     // 绑定、解绑关联企业
     *chnageAccountStatus({ payload, success, error }, { call }) {
-      const response = yield call(chnageAccountStatus, payload)
+      const response = yield call(chnageAccountStatus, payload);
       if (response && response.code === 200) {
         if (success) success()
       } else if (error) {
@@ -426,19 +420,19 @@ export default {
             execCertificateCode: undefined,
           },
         },
-      }
+      };
     },
     saveUserInfo(state, { payload }) {
       return {
         ...state,
         user: payload,
-      }
+      };
     },
     saveAccounts(state, { payload }) {
       return {
         ...state,
         list: payload,
-      }
+      };
     },
   },
 };
