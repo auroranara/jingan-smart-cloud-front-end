@@ -112,7 +112,7 @@ export default class FireControlMap extends PureComponent {
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
         events={{ click: this.handleClick.bind(this, item) }}
       >
-        <Tooltip title={name}>{child}</Tooltip>
+        <Tooltip title={name} mouseLeaveDelay={0}>{child}</Tooltip>
       </Marker>
     );
   };
@@ -178,7 +178,7 @@ export default class FireControlMap extends PureComponent {
         autoMove={false}
         visible={showInfo}
       >
-        <h3 className={styles.companyName}><a className={styles.link} href={`/#/big-platform/fire-control/unit/${id}`} target="_blank" rel="noopener noreferrer">{name}</a></h3>
+        <h3 className={styles.companyName}><a className={styles.link} href={`/#/big-platform/fire-control/company/${id}`} target="_blank" rel="noopener noreferrer">{name}</a></h3>
         <p className={styles.address}>
           {/* <span className={styles.locateIcon} /> */}
           <span className={styles.locateIcon} style={genBackgrondStyle(locateIcon)} />
