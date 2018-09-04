@@ -8,6 +8,7 @@ import styles from './VideoPermissionList.less'
 import VisibilitySensor from 'react-visibility-sensor';
 import { hasAuthority } from 'utils/customAuth';
 import codes from '../../../utils/codes';
+import { AuthLink } from '../../../utils/customAuth';
 
 const FormItem = Form.Item
 const ListItem = List.Item
@@ -197,7 +198,11 @@ export default class VideoPermissionList extends PureComponent {
                   title={name}
                   className={styles.card}
                   actions={[
-                    <Link to={`/video-surveillance/video-permission/edit/${item.id}`} disabled={!hasAuthority(edit, permissionCodes)}>编辑</Link>,
+                    (<AuthLink
+                      code={edit}
+                      to={`/video-surveillance/video-permission/edit/${item.id}`}
+                    >
+                      编辑</AuthLink>),
                   ]}
                 /* extra={
                   <Button

@@ -113,14 +113,11 @@ export default {
     *changerUser({ payload, success, error }, { call, put }) {
       const response = yield call(changerUser, payload)
       if (response && response.code === 200 && response.data && response.data.webToken) {
-        // yield put({
-        //   type: 'changeLoginStatus',
-        //   payload: { type: payload.type, status: true, ...response.data },
-        // });
+        if (success) success()
         yield setToken(response.data.webToken);
         reloadAuthorized();
         yield put(routerRedux.replace({ pathname: '/' }));
-        if (success) success()
+        window.location.reload(true)
 
       } else if (error) error()
     },
