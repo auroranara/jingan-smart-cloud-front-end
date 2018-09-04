@@ -31,6 +31,7 @@ class VideoPlay extends Component {
     // console.log(snapshot);
 
     if (snapshot) {
+      console.log('initinitinitinitinitinitinit');
       this.handleInit();
     }
   }
@@ -101,7 +102,7 @@ class VideoPlay extends Component {
       },
       success: response => {
         this.setState({
-          videoSrc: response.src,
+          videoSrc: response.data.url,
           activeIndex: index,
         });
       },
