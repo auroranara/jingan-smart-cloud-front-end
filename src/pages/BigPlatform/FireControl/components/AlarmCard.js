@@ -6,8 +6,8 @@ import locateIcon  from '../img/locate.png';
 
 const NO_DATA = '暂无信息';
 
-function isTimeShort(time) {
-  return !time || time.includes('今日') || time.includes('分钟') || time.includes('刚刚');
+function isTimeShort(time='') {
+  return time.includes('今日') || time.includes('分钟') || time.includes('刚刚');
 }
 
 export default function AlarmCard(props) {

@@ -17,13 +17,15 @@ import SystemSection from './section/SystemSection';
 import TrendSection from './section/TrendSection';
 import DangerSection from './section/DangerSection';
 import FireControlMap from './section/FireControlMap';
+import VideoSection from './section/VideoSection';
 // import bg from './bg.png';
 
 import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
+import VideoPlay from './section/VideoPlay';
 
-const { confirm } = Modal;
+// const { confirm } = Modal;
 const { location } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
@@ -54,6 +56,8 @@ export default class FireControlBigPlatform extends PureComponent {
     mapCenter: [location.x, location.y],
     mapZoom: location.zoom,
     mapShowInfo: false,
+    videoVisible: false,
+    videoKeyId: undefined,
   };
 
   componentDidMount() {
@@ -95,6 +99,12 @@ export default class FireControlBigPlatform extends PureComponent {
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
       },
     });
+    // dispatch({
+    //   type: 'bigFireControl/fetchAllCamera',
+    //   payload: {
+    //     company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
+    //   },
+    // });
   };
 
   polling = () => {
@@ -121,18 +131,21 @@ export default class FireControlBigPlatform extends PureComponent {
           this.jumpToLookingUp();
           // 手动点击开始查岗时，在store中存入当前开始时间，虽然会和服务器开始时间不同，但差距不大，用来骗下用户
           dispatch({ type: 'bigFireControl/saveCreateTime', payload: Date.now() });
-        } else message.error(msg);
+        }
+        else
+          message.error(msg);
+          // message.error(msg, 0);
       },
     });
   };
 
-  showLookUpConfirm = show => {
+  showLookUpConfirm = (show) => {
     this.setState({ showConfirm: !!show });
     clearInterval(this.confirmTimer);
   };
 
   renderConfirmModal() {
-    const { showConfirm, confirmCount } = this.state;
+    const { showConfirm, confirmCount } =  this.state;
 
     return (
       <Modal
@@ -152,7 +165,7 @@ export default class FireControlBigPlatform extends PureComponent {
     );
   }
 
-  handleClickLookUp = isAutoJump => {
+  handleClickLookUp = (isAutoJump) => {
     if (isAutoJump) {
       this.jumpToLookingUp();
       return;
@@ -188,8 +201,9 @@ export default class FireControlBigPlatform extends PureComponent {
     this.lookingUpTimer = setInterval(() => {
       dispatch({
         type: 'bigFireControl/fetchCountdown',
-        callback: ended => {
-          if (ended) this.handleLookUpRotateBack(true);
+        callback: (ended) => {
+          if (ended)
+            this.handleLookUpRotateBack(true);
         },
       });
     }, LOOKING_UP_DELAY);
@@ -253,6 +267,9 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id } });
     dispatch({ type: 'bigFireControl/fetchDanger', payload: { company_id: id } });
 
+    // 点击火警或地图中的企业时，获取视频相关信息
+    this.handleVideoSelect(id);
+
     // 如果从地图中选中时且没有火警，不需要翻转
     if (isInMap && !isFire) {
       this.setState({
@@ -294,6 +311,24 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
+  handleVideoShow = (keyId) => {
+    this.setState({ videoVisible: true, videoKeyId: keyId });
+  };
+
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false, videoKeyId: undefined});
+  };
+
+  handleVideoSelect = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigFireControl/fetchAllCamera',
+      payload: {
+        company_id: companyId, // companyId
+      },
+    });
+  };
+
   render() {
     const {
       bigFireControl: {
@@ -312,11 +347,10 @@ export default class FireControlBigPlatform extends PureComponent {
         countdown,
         offGuard,
         alarmProcess,
+        allCamera,
       },
       dispatch,
     } = this.props;
-
-    // console.log(danger, gridDanger, companyDanger);
 
     const {
       isAlarmRotated,
@@ -330,10 +364,17 @@ export default class FireControlBigPlatform extends PureComponent {
       lookUpShow,
       startLookUp,
       showReverse,
+      videoVisible,
+      videoKeyId,
     } = this.state;
 
+    // console.log(videoKeyId);
+
     return (
-      <div className={styles.root}>
+      <div
+        className={styles.root}
+        style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
+      >
         {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
         <Head title="晶 安 智 慧 消 防 云 平 台" />
         <div className={styles.empty} />
@@ -480,12 +521,20 @@ export default class FireControlBigPlatform extends PureComponent {
             />
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
-              <SystemSection sysData={sys} />
-              <FcSection title="系统接入情况反面" isBack />
+              <SystemSection data={sys} />
+              <VideoSection data={allCamera} showVideo={this.handleVideoShow} />
             </FcModule>
           </Col>
         </Row>
         {this.renderConfirmModal()}
+        <VideoPlay
+          dispatch={dispatch}
+          // style={{}}
+          videoList={allCamera}
+          visible={videoVisible}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
+        />
       </div>
     );
   }
