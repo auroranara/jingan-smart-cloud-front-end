@@ -58,8 +58,13 @@ export default {
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
         polyfills: ['ie9'],
-        dll: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+        dynamicImport: true,
+        dll: {
+          include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+          exclude: ['@babel/runtime'],
+        },
         hardSource: true,
+
         // ...(
         //   require('os').platform() === 'darwin'
         //   ? {
