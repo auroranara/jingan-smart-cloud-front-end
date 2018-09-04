@@ -31,7 +31,6 @@ class VideoPlay extends Component {
     // console.log(snapshot);
 
     if (snapshot) {
-      console.log('initinitinitinitinitinitinit');
       this.handleInit();
     }
   }
