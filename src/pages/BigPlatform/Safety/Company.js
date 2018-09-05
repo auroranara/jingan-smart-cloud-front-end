@@ -449,7 +449,7 @@ class CompanyLayout extends PureComponent {
   };
 
   /* 风险点点击事件 */
-  handleClick = (id, index) => {
+  handleClick = (id, index, flag) => {
     const { selectedId } = this.state;
     clearTimeout(this.myTimer);
     if (!id) {
@@ -457,6 +457,11 @@ class CompanyLayout extends PureComponent {
     }
     this.addTimeout();
     if (selectedId === id) {
+      if (flag) {
+        this.setState({
+          selectedId: null,
+        });
+      }
       return;
     }
     this.setState({
@@ -970,8 +975,8 @@ class CompanyLayout extends PureComponent {
                         : { ...style, cursor: 'pointer' }
                     }
                     offset={selectedId === id ? selectedOffset : offset}
-                    onClick={point => {
-                      this.handleClick(id, index, point);
+                    onClick={() => {
+                      this.handleClick(id, index, true);
                     }}
                   />
                   <RiskPoint
@@ -1026,37 +1031,39 @@ class CompanyLayout extends PureComponent {
                 );
               })}
             </div>
-            <div className={riskStyles.paginationWrapper}>
-              <div className={riskStyles.paginationWrapperRight} />
-              <div className={riskStyles.paginationList}>
-                <div className={riskStyles.paginationItem}>
-                  <Icon
-                    type="caret-up"
-                    style={{
-                      fontSize: 14,
-                      color: isFirst ? '#00438a' : '#0967D3',
-                      cursor: isFirst ? 'not-allowed' : 'pointer',
-                    }}
-                    onClick={() => {
-                      !isFirst && this.handlePrevPage();
-                    }}
-                  />
-                </div>
-                <div className={riskStyles.paginationItem}>
-                  <Icon
-                    type="caret-down"
-                    style={{
-                      fontSize: 14,
-                      color: isLast ? '#00438a' : '#0967D3',
-                      cursor: isLast ? 'not-allowed' : 'pointer',
-                    }}
-                    onClick={() => {
-                      !isLast && this.handleNextPage();
-                    }}
-                  />
+            {pageCount > 1 && (
+              <div className={riskStyles.paginationWrapper}>
+                <div className={riskStyles.paginationWrapperRight} />
+                <div className={riskStyles.paginationList}>
+                  <div className={riskStyles.paginationItem}>
+                    <Icon
+                      type="caret-up"
+                      style={{
+                        fontSize: 14,
+                        color: isFirst ? '#00438a' : '#0967D3',
+                        cursor: isFirst ? 'not-allowed' : 'pointer',
+                      }}
+                      onClick={() => {
+                        !isFirst && this.handlePrevPage();
+                      }}
+                    />
+                  </div>
+                  <div className={riskStyles.paginationItem}>
+                    <Icon
+                      type="caret-down"
+                      style={{
+                        fontSize: 14,
+                        color: isLast ? '#00438a' : '#0967D3',
+                        cursor: isLast ? 'not-allowed' : 'pointer',
+                      }}
+                      onClick={() => {
+                        !isLast && this.handleNextPage();
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </RiskImage>
         <div className={riskStyles.fourColorImgLabelContainer}>

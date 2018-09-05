@@ -218,10 +218,12 @@ export default class App extends PureComponent {
               return null;
             }) : <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>}
           </div>
-          <div style={{ flex: 'none', lineHeight: '1' }}>
-            <div style={{ textAlign: 'center' }}><Icon type="caret-up" style={{ color: isFirst?'#022D5B':'#0967D3', cursor: isFirst?'not-allowed':'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
-            <div style={{ textAlign: 'center' }}><Icon type="caret-down" style={{ color: isLast?'#022D5B':'#0967D3', cursor: isLast?'not-allowed':'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
-          </div>
+          {pageCount > 1 && (
+            <div style={{ flex: 'none', lineHeight: '1' }}>
+              <div style={{ textAlign: 'center' }}><Icon type="caret-up" style={{ color: isFirst?'#022D5B':'#0967D3', cursor: isFirst?'not-allowed':'pointer' }} onClick={() => { !isFirst && this.handlePrevPage();}} /></div>
+              <div style={{ textAlign: 'center' }}><Icon type="caret-down" style={{ color: isLast?'#022D5B':'#0967D3', cursor: isLast?'not-allowed':'pointer' }} onClick={() => { !isLast && this.handleNextPage();}} /></div>
+            </div>
+          )}
         </div>
       </div>
     );

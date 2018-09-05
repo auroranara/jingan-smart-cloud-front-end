@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -8,7 +8,13 @@ import FireAlarmSystem from './components/FireAlarmSystem/FireAlarmSystem';
 import StatisticsOfMaintenance from './components/StatisticsOfMaintenance/StatisticsOfMaintenance';
 import StatisticsOfHiddenDanger from './components/StatisticsOfHiddenDanger/StatisticsOfHiddenDanger';
 import StatisticsOfFireControl from './components/StatisticsOfFireControl/StatisticsOfFireControl';
+import Rotate from './components/Rotate/Rotate';
+import VideoPlay from '../FireControl/section/VideoPlay';
 import Ellipsis from '../../../components/Ellipsis';
+import resetKeyIcon from './images/resetKey.png';
+import resetKeyPressIcon from './images/resetKeyPress.png';
+import hostIcon from './images/hostIcon.png';
+import backIcon from '../FireControl/img/back.png';
 
 import styles from './UnitFireControl.less';
 
@@ -24,12 +30,11 @@ const splitIcon = `${prefix}split.png`;
 const splitHIcon = `${prefix}split_h.png`;
 /* 待处理信息项 */
 const PendingInfoItem = ({ data }) => {
-  const { id, t, install_address, component_region, component_no, label } = data;
-  const type = getPendingInfoType(data);
-  const isFire = type === '火警';
+  const { id, t, install_address, component_region, component_no, label, pendingInfoType } = data;
+  const isFire = pendingInfoType === '火警';
   return (
     <div key={id} className={styles.pendingInfoItem} style={{ color: isFire?'#FF6464':'#00ADFF' }}>
-      <div style={{ backgroundImage: `url(${isFire?fireIcon:faultIcon})` }}>{type}<div className={styles.pendingInfoItemTime}>{t}</div></div>
+      <div style={{ backgroundImage: `url(${isFire?fireIcon:faultIcon})` }}>{pendingInfoType}<div className={styles.pendingInfoItemTime}>{t}</div></div>
       <div>{component_region}回路{component_no}号</div>
       <div>{label}</div>
       <div style={{ backgroundImage: `url(${isFire?positionRedIcon:positionBlueIcon})` }}>{install_address}</div>
@@ -54,7 +59,7 @@ const HiddenDangerRecord = ({ data }) => {
         </div>
       </div>
       <div>
-        <div style={{ backgroundImage: `url(${icon})`, color }}><Ellipsis lines={2} tooltip>{flow_name}</Ellipsis></div>
+        <div style={{ backgroundImage: `url(${icon})`, color }}><Ellipsis lines={2} tooltip>{flow_name || <span style={{ color: '#fff' }}>暂无信息</span>}</Ellipsis></div>
         <div><span>上报：</span><Ellipsis lines={1}><span style={{ marginRight: '16px' }}>{report_user_name}</span>{moment(+report_time).format('YYYY-MM-DD')}</Ellipsis></div>
         <div><span>整改：</span><Ellipsis lines={1}><span style={{ marginRight: '16px' }}>{rectify_user_name}</span><span style={{ color: '#FF6464' }}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Ellipsis></div>
         {+status === 3 && <div><span>复查：</span><Ellipsis lines={1}><span>{review_user_name}</span></Ellipsis></div>}
@@ -62,6 +67,23 @@ const HiddenDangerRecord = ({ data }) => {
     </div>
   );
 }
+
+/**
+ * 复位主机
+ */
+const Host = ({ data, onClick }) => {
+  const { id, deviceCode, installLocation, isReset } = data;
+  return (
+    <div className={styles.hostContainer} key={id}>
+      <div className={styles.hostIconContainer}><img src={hostIcon} alt=""/></div>
+      <div className={styles.hostInfoContainer}>
+        <div className={styles.hostInfoItem}><span>主机编号：</span><span>{deviceCode}</span></div>
+        <div className={styles.hostInfoItem}><span>安装位置：</span><span>{installLocation}</span></div>
+      </div>
+      <div className={styles.hostResetButton} style={{ cursor: isReset?'not-allowed':'pointer' }} onClick={isReset?undefined:onClick}><img src={isReset ? resetKeyPressIcon : resetKeyIcon} alt=""/></div>
+    </div>
+  );
+};
 
 /**
  * 根据status获取对应的标记
@@ -74,6 +96,7 @@ const getIconByStatus = (status) => {
       badge: dfcIcon,
       icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
     };
+    case 1:
     case 2:
     return {
       color: '#00ADFF',
@@ -140,6 +163,8 @@ export default class App extends PureComponent {
       fireControlType: defaultFireControlType,
       hiddenDangerType: defaultHiddenDangerType,
       maintenanceType: defaultMaintenanceType,
+      frontIndex: 0,
+      videoVisible: false,
     };
     // 轮询定时器
     this.pollingTimer = null;
@@ -157,7 +182,7 @@ export default class App extends PureComponent {
     dispatch({
       type: 'unitFireControl/fetchHiddenDangerRecords',
       payload: {
-        companyId,
+        company_id: companyId,
       },
     });
 
@@ -167,6 +192,14 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         month: moment({ month: defaultHiddenDangerType }).format('YYYY-MM'),
+      },
+    });
+
+    // 获取视频列表
+    dispatch({
+      type: 'unitFireControl/fetchVideoList',
+      payload: {
+        company_id: companyId,
       },
     });
 
@@ -308,6 +341,77 @@ export default class App extends PureComponent {
     });
   }
 
+  /**
+   * 显示一键复位模块
+   */
+  handleShowResetSection = () => {
+    const { dispatch, match: { params: { unitId } } } = this.props;
+    // 获取主机列表
+    dispatch({
+      type: 'unitFireControl/fetchHosts',
+      payload: {
+        companyId: unitId,
+      },
+    });
+    // 显示一键复位模块
+    this.setState({
+      frontIndex: 1,
+    });
+  }
+
+  /**
+   * 隐藏一键复位模块
+   */
+  handleHideResetSection = () => {
+    // 立即更新数据
+    this.polling();
+    // 隐藏一键复位模块
+    this.setState({
+      frontIndex: 0,
+    });
+  }
+
+  /**
+   * 复位单个主机
+   */
+  handleResetSingleHost = (id) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitFireControl/changeSingleHost',
+      payload: {
+        id,
+      },
+    });
+  }
+
+  /**
+   * 复位所有主机
+   */
+  handleResetAllHosts = () => {
+    const { dispatch, match: { params: { unitId } } } = this.props;
+    // 获取主机列表
+    dispatch({
+      type: 'unitFireControl/changeAllHosts',
+      payload: {
+        companyId: unitId,
+      },
+    });
+  }
+
+  /**
+   * 打开视频播放
+   */
+  handleVideoOpen = () => {
+    this.setState({ videoVisible: true });
+  }
+
+  /**
+   * 关闭视频播放
+   */
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false });
+  };
+
 
   /**
    * 渲染所有统计信息块
@@ -386,16 +490,42 @@ export default class App extends PureComponent {
         shield_state=0,
         feedback_state=0,
       },
+      hosts,
     } = this.props.unitFireControl;
+    const { frontIndex } = this.state;
+    const isResetAll = hosts.filter(({isReset}) => isReset).length === hosts.length;
     return (
-      <FireAlarmSystem
-        fire={fire_state}
-        fault={fault_state}
-        shield={shield_state}
-        linkage={start_state}
-        supervise={supervise_state}
-        feedback={feedback_state}
-      />
+      <Rotate frontIndex={frontIndex}>
+        <FireAlarmSystem
+          fire={fire_state}
+          fault={fault_state}
+          shield={shield_state}
+          linkage={start_state}
+          supervise={supervise_state}
+          feedback={feedback_state}
+          fixedContent={(
+            <div className={styles.resetButton} onClick={this.handleShowResetSection}>
+              <img src={resetKeyIcon} alt="" />
+              一键复位
+            </div>
+          )}
+          onClick={this.handleVideoOpen}
+        />
+        <Section title="一键复位" isScroll contentStyle={{ borderTop: '2px solid #0967D3', paddingLeft: '16px', marginLeft: '-16px', paddingBottom: '48px' }} fixedContent={(
+          <Fragment>
+            <div className={styles.backButton} onClick={this.handleHideResetSection}><img src={backIcon} alt="" /></div>
+            <div className={styles.hostSectionBottom}>
+              <div className={styles.hostNumber}><span>主机数量：</span><span>{hosts.length}</span></div>
+              <div className={styles.resetAllHostsButton} style={{ cursor: isResetAll?'not-allowed':undefined, backgroundColor: isResetAll?'#0D3473':undefined, color: isResetAll?'#0967d3':undefined }} onClick={isResetAll?undefined:this.handleResetAllHosts}>全部复位</div>
+            </div>
+          </Fragment>
+        )}>
+          {hosts.length !== 0 ? hosts.map(item => {
+            const { id } = item;
+            return <Host key={id} data={item} onClick={() => {this.handleResetSingleHost(id);}} />
+          }) : <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>暂无主机</div>}
+        </Section>
+      </Rotate>
     );
   }
 
@@ -526,16 +656,28 @@ export default class App extends PureComponent {
   render() {
     // 从props中获取单位名称
     const {
-      // 待处理信息
-      pendingInfo,
-      // 消防巡查统计
-      hiddenDangerCount: {
-        // 企业名称
-        companyName,
+      unitFireControl: {
+        // 待处理信息
+        pendingInfo,
+        // 消防巡查统计
+        hiddenDangerCount: {
+          // 企业名称
+          companyName,
+        },
+        // 隐患巡查记录
+        hiddenDangerRecords,
+        // 视频列表
+        videoList,
       },
-      // 隐患巡查记录
-      hiddenDangerRecords,
-    } = this.props.unitFireControl;
+      dispatch,
+    } = this.props;
+    const { videoVisible } = this.state;
+    const pendingInfoList = pendingInfo.map(item => {
+      return {
+        ...item,
+        pendingInfoType: getPendingInfoType(item),
+      };
+    })
 
     return (
       <div className={styles.main}>
@@ -544,7 +686,7 @@ export default class App extends PureComponent {
           <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
             <Col span={6} style={{ height: '100%' }}>
               <Section isScroll isCarousel>
-                {pendingInfo.length !== 0 ? pendingInfo.map((item, index) => {
+                {pendingInfoList.length !== 0 ? [...(pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType === '火警')), ...(pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType !== '火警'))].map((item, index) => {
                   const { id } = item;
                   return (
                     <PendingInfoItem key={id || index} data={item} />
@@ -584,6 +726,12 @@ export default class App extends PureComponent {
             </Col>
           </Row>
         </div>
+        <VideoPlay
+          dispatch={dispatch}
+          videoList={videoList}
+          visible={videoVisible}
+          handleVideoClose={this.handleVideoClose}
+        />
       </div>
     );
   }

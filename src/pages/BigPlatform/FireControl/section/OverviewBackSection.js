@@ -1,5 +1,6 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Col, Row } from 'antd';
+import Ellipsis from 'components/Ellipsis';
 
 import FcSection from './FcSection';
 import OvUnit from '../components/OvUnit';
@@ -19,7 +20,7 @@ const NO_DATA = '暂无信息';
 export default function OverviewBackSection(props) {
   const {
     data: {
-        selected: { name, safetyName, safetyPhone }={},
+        selected: { id, name, safetyName, safetyPhone }={},
         companyOv: {
           todayCount=0,
           thisWeekCount=0,
@@ -39,7 +40,14 @@ export default function OverviewBackSection(props) {
       <div className={styles.up}>
         <div className={styles.unitInfo}>
           <img src={unitIcon} alt="单位图标" width={44} height={42} className={styles.unitIcon} />
-          <p className={styles.name}>{name ? name : NO_DATA}</p>
+          <div className={styles.name} onClick={e => window.open(`/#/big-platform/fire-control/unit/${id}`)}>
+            <Ellipsis lines={1} tooltip>
+              {/* <a className={styles.link} href={`/#/big-platform/fire-control/unit/${id}`} target="_blank" rel="noopener noreferrer"> */}
+                {/* 无锡晶安智慧科技有限公司无锡晶安智慧科技有限公司 */}
+                {name ? name : NO_DATA}
+              {/* </a> */}
+            </Ellipsis>
+          </div>
           <p className={styles.safety}>安全负责人：<span className={styles.info}>{safetyName ? safetyName: NO_DATA}</span></p>
           <p>联系方式：<span className={styles.info}>{safetyPhone ? safetyPhone : NO_DATA}</span></p>
         </div>

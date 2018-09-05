@@ -131,7 +131,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
             <Switcher style={{ top: (index-currentFirstIndex)*56, zIndex: isSelected?(pageSize+1):(pageSize+currentFirstIndex-index) }} isSelected={isSelected} content={item} key={item} onClick={() => {onSwitch(list.length - 1 - index);}} />
           );
         })}
-        <Pagination style={{ top: Math.min(pageSize, currentMonth+1-currentFirstIndex)*56, zIndex: 0 }} onNext={this.handleNext} onPrev={this.handlePrev} isFirst={isFirst} isLast={isLast} />
+        {pageCount > 1 && <Pagination style={{ top: Math.min(pageSize, currentMonth+1-currentFirstIndex)*56, zIndex: 0 }} onNext={this.handleNext} onPrev={this.handlePrev} isFirst={isFirst} isLast={isLast} />}
       </div>
     );
   }
