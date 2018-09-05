@@ -38,27 +38,28 @@ export default class App extends PureComponent {
       // 反馈
       feedback=0,
       onClick,
+      fixedContent,
     } = this.props;
 
     return (
-      <Section title="火灾报警系统">
+      <Section title="火灾报警系统" fixedContent={fixedContent}>
         <div style={{ height: '100%' }}>
           <Row style={{ height: '50%' }}>
             <Col span={8} style={{ height: '100%' }}>
               <div className={styles.item}>
-                <div className={styles.itemValue} style={{ backgroundImage: `url(${fireUrl})`, color: '#F54F5D', cursor: fire ? 'cursor': undefined }} onClick={fire ? onClick : undefined}>{fire}</div>
+                <div className={styles.itemValue} style={{ backgroundImage: `url(${fireUrl})`, color: '#F54F5D', cursor: fire ? 'pointer': undefined }} onClick={fire ? onClick : undefined}>{fire}</div>
                 <div className={styles.itemName}>火警</div>
               </div>
             </Col>
             <Col span={8} style={{ height: '100%' }}>
               <div className={styles.item}>
-                <div className={styles.itemValue} style={{ backgroundImage: `url(${faultUrl})`, color: '#00BAFF', cursor: fault ? 'cursor': undefined }} onClick={fault ? onClick : undefined}>{fault}</div>
+                <div className={styles.itemValue} style={{ backgroundImage: `url(${faultUrl})`, color: '#00BAFF', cursor: fault ? 'pointer': undefined }} onClick={fault ? onClick : undefined}>{fault}</div>
                 <div className={styles.itemName}>故障</div>
               </div>
             </Col>
             <Col span={8} style={{ height: '100%' }}>
               <div className={styles.item}>
-                <div className={styles.itemValue} style={{ backgroundImage: `url(${linkageUrl})`, color: '#F6B54E', cursor: linkage ? 'cursor': undefined }} onClick={linkage ? onClick : undefined}>{linkage}</div>
+                <div className={styles.itemValue} style={{ backgroundImage: `url(${linkageUrl})`, color: '#F6B54E', cursor: linkage ? 'pointer': undefined }} onClick={linkage ? onClick : undefined}>{linkage}</div>
                 <div className={styles.itemName}>联动</div>
               </div>
             </Col>
@@ -66,19 +67,19 @@ export default class App extends PureComponent {
           <Row style={{ height: '50%' }}>
             <Col span={8} style={{ height: '100%' }}>
               <div className={styles.item}>
-                <div className={styles.itemValue} style={{ backgroundImage: `url(${superviseUrl})`, color: '#847BE6', cursor: supervise ? 'cursor': undefined }} onClick={supervise ? onClick : undefined}>{supervise}</div>
+                <div className={styles.itemValue} style={{ backgroundImage: `url(${superviseUrl})`, color: '#847BE6', cursor: supervise ? 'pointer': undefined }} onClick={supervise ? onClick : undefined}>{supervise}</div>
                 <div className={styles.itemName}>监管</div>
               </div>
             </Col>
             <Col span={8} style={{ height: '100%' }}>
               <div className={styles.item}>
-                <div className={styles.itemValue} style={{ backgroundImage: `url(${shieldUrl})`, color: '#01B0D1', cursor: shield ? 'cursor': undefined }} onClick={shield ? onClick : undefined}>{shield}</div>
+                <div className={styles.itemValue} style={{ backgroundImage: `url(${shieldUrl})`, color: '#01B0D1', cursor: shield ? 'pointer': undefined }} onClick={shield ? onClick : undefined}>{shield}</div>
                 <div className={styles.itemName}>屏蔽</div>
               </div>
             </Col>
             <Col span={8} style={{ height: '100%' }}>
               <div className={styles.item}>
-                <div className={styles.itemValue} style={{ backgroundImage: `url(${feedbackUrl})`, color: '#BBBBBC', cursor: feedback ? 'cursor': undefined }} onClick={feedback ? onClick : undefined}>{feedback}</div>
+                <div className={styles.itemValue} style={{ backgroundImage: `url(${feedbackUrl})`, color: '#BBBBBC', cursor: feedback ? 'pointer': undefined }} onClick={feedback ? onClick : undefined}>{feedback}</div>
                 <div className={styles.itemName}>反馈</div>
               </div>
             </Col>

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import { Button, Icon } from 'antd';
+import { Button, Icon, Tooltip } from 'antd';
 // import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
 
@@ -93,9 +93,9 @@ export default class FireControlMap extends PureComponent {
     const isSelected = !!selected;
 
     // 默认情况，有火警且未被选中，不显示红圈
-    let child = (
-      <div className={styles.dotIcon} style={{ backgroundImage: `url(${mapAlarmDot})`}} />
-    );
+    let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标"/>;
+    const { name, isFire } = item;
+    const isSelected = !!selected;
 
     // 没有火警，不论选中不选中显示正常图标
     if (!isFire)
@@ -118,7 +118,7 @@ export default class FireControlMap extends PureComponent {
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
         events={{ click: this.handleClick.bind(this, item) }}
       >
-        {child}
+        <Tooltip title={name}>{child}</Tooltip>
       </Marker>
     );
   };
