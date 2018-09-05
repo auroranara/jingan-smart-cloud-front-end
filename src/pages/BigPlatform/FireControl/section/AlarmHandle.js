@@ -8,7 +8,7 @@ import styles from './AlarmHandle.less';
 
 import arrowLeft from '../img/arrowLeft.png';
 import arrowRight from '../img/arrowRight.png';
-import imgBg from '../img/imgBg.png';
+import cameraIcon from '../img/camera.png';
 // import b1 from '../img/b1.jpg';
 // import b2 from '../img/b2.jpg';
 // import b3 from '../img/b3.jpg';
@@ -89,19 +89,26 @@ export default class AlarmHandle extends Component {
     //   </div>
     // ));
 
-    const defaultImg = [imgBg, imgBg, imgBg];
+    const defaultImg = [cameraIcon, cameraIcon, cameraIcon];
     defaultImg.splice(0, picLength, ...picture);
     // console.log(defaultImg, picture);
 
-    const imgs = defaultImg.map((src, i) => (
-      <div key={i} className={styles.imgContainer} style={{ width: `calc(100% / ${imgLength})` }}>
-        <div
-          className={styles.fireImg}
-          style={{ backgroundImage: `url(${src})` }}
-          onClick={i > picLength - 1 && i < 3 ? null : () => this.handleClickImg(i)}
-        />
-      </div>
-    ));
+    const imgs = defaultImg.map((src, i) => {
+      const isCamera = src === cameraIcon;
+
+      return (
+        <div key={i} className={styles.imgContainer} style={{ width: `calc(100% / ${imgLength})` }}>
+          <div
+            className={isCamera ? styles.emptyImg : styles.fireImg}
+            style={{
+              backgroundImage: `url(${src})`,
+              cursor: isCamera ? 'auto' : 'pointer',
+            }}
+            onClick={i > picLength - 1 && i < 3 ? null : () => this.handleClickImg(i)}
+          />
+        </div>
+      );
+    });
 
     const magImgs = picture.map(src => (
       <div className={styles.magImg} key={src} style={{ backgroundImage: `url(${src})` }} />
@@ -246,8 +253,10 @@ export default class AlarmHandle extends Component {
                 <div
                   className={styles.arrowLeft}
                   style={{
-                    backgroundImage: index ? `url(${arrowLeft})` : 'none',
+                    // opacity: 1,
+                    opacity: index ? 1 : 0.5,
                     cursor: index ? 'pointer' : 'auto',
+                    backgroundImage: `url(${arrowLeft})`,
                   }}
                   onClick={index ? () => this.handleLeft('index') : null}
                 />
@@ -261,8 +270,9 @@ export default class AlarmHandle extends Component {
                 <div
                   className={styles.arrowRight}
                   style={{
-                    backgroundImage: isEnd ? 'none' : `url(${arrowRight})`,
+                    opacity: isEnd ? 0.5 : 1,
                     cursor: isEnd ? 'auto' : 'pointer',
+                    backgroundImage: `url(${arrowRight})`,
                   }}
                   onClick={isEnd ? null : () => this.handleRight('index')}
                 />

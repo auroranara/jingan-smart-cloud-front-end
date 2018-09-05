@@ -116,12 +116,13 @@ export default class FireControlBigPlatform extends PureComponent {
 
     // 只需要轮询火警相关，其他不必轮询
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
-    // dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
-    // dispatch({ type: 'bigFireControl/fetchSys' });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory' });
+    dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
+
+    // dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
+    // dispatch({ type: 'bigFireControl/fetchSys' });
     // dispatch({ type: 'bigFireControl/fetchFireTrend' });
-    // dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     // dispatch({ type: 'bigFireControl/fetchDanger' });
   };
 
