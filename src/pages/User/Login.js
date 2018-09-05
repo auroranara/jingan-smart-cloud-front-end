@@ -178,7 +178,7 @@ export default class LoginPage extends Component {
         renderItem={item => (
           <List.Item key={item.userId} className={styles.listItem}>
             <Card.Grid onClick={() => this.handleSelect(item.userId)} className={styles.cardGrid}>
-              <span>{item.unitName}</span>
+              {item.unitName ? (<span>{item.unitName}</span>) : '运营企业'}
             </Card.Grid>
           </List.Item>
         )}
