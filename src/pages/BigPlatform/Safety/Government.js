@@ -1,5 +1,5 @@
 import React, { Fragment, Component } from 'react';
-import { Row, Col, Avatar, Tooltip } from 'antd';
+import { Row, Col, Avatar, Tooltip, Icon } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
@@ -47,7 +47,7 @@ const getSeal = status => {
   }
 };
 
-const { location } = global.PROJECT_CONFIG;
+const { location: locationDefault } = global.PROJECT_CONFIG;
 const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点'];
 @connect(({ bigPlatform }) => ({
   bigPlatform,
@@ -71,8 +71,8 @@ class GovernmentBigPlatform extends Component {
     },
     areaHeight: 0,
     pieHeight: 0,
-    center: [location.x, location.y],
-    zoom: location.zoom,
+    center: [locationDefault.x, locationDefault.y],
+    zoom: locationDefault.zoom,
     // 右侧显示
     communityCom: true, // 社区接入单位数
     comIn: false, // 接入单位统计
@@ -90,6 +90,8 @@ class GovernmentBigPlatform extends Component {
       abnormal: 0,
       company: 0,
     },
+    filter: 'All',
+    legendActive: null,
   };
 
   // UNSAFE_componentWillUpdate() {
@@ -261,9 +263,11 @@ class GovernmentBigPlatform extends Component {
 
   renderCompanyMarker() {
     const { location } = this.props.bigPlatform;
+    const { filter } = this.state;
     return location.map(company => {
       const position = this.analysisPointData(company.location);
       const level = company.level;
+      if (filter !== level && filter !== 'All') return null;
       let offset = [-1, 17];
       if (level === 'A') {
         offset = [-5, 14];
@@ -280,6 +284,15 @@ class GovernmentBigPlatform extends Component {
               latitude: position.latitude,
               id: company.company_id,
             }),
+            // mouseover: this.handleIconEnter.bind(this, {
+            //   longitude: position.longitude,
+            //   latitude: position.latitude,
+            //   id: company.company_id,
+            //   name: company.company_name,
+            // }),
+            // mouseleave: () => {
+            //   this.setState({ infoWindowShow: false });
+            // },
           }}
         >
           {level === 'A' && (
@@ -315,6 +328,13 @@ class GovernmentBigPlatform extends Component {
     });
   }
 
+  // 按level筛选地图企业
+  filterPoint = filter => {
+    this.setState({
+      filter,
+    });
+  };
+
   analysisPointData = data => {
     // POINT ()
     const str = data.substring(7, data.length - 1);
@@ -348,9 +368,23 @@ class GovernmentBigPlatform extends Component {
     );
   }
 
+  handleIconEnter = company => {
+    const { id, longitude, latitude, name } = company;
+    this.setState({
+      infoWindowShow: true,
+      infoWindow: {
+        comapnyId: id,
+        longitude: longitude,
+        latitude: latitude,
+        companyName: name,
+      },
+    });
+  };
+
   handleIconClick = company => {
     const { dispatch } = this.props;
     const { companyId, infoWindowShow, comInfo } = this.state;
+    const { id } = company;
     if (companyId === company.id) {
       if (!comInfo) {
         this.goComponent('comInfo');
@@ -361,13 +395,13 @@ class GovernmentBigPlatform extends Component {
       return;
     }
     this.setState({
-      companyId: company.id,
+      companyId: id,
     });
     // 企业信息
     dispatch({
       type: 'bigPlatform/fetchCompanyMessage',
       payload: {
-        company_id: company.id,
+        company_id: id,
         month: moment().format('YYYY-MM'),
       },
       success: response => {
@@ -390,14 +424,14 @@ class GovernmentBigPlatform extends Component {
     dispatch({
       type: 'bigPlatform/fetchSpecialEquipment',
       payload: {
-        company_id: company.id,
+        company_id: id,
       },
     });
     // 风险点隐患
     dispatch({
       type: 'bigPlatform/fetchRiskDetail',
       payload: {
-        company_id: company.id,
+        company_id: id,
         source_type: '3',
       },
     });
@@ -406,7 +440,7 @@ class GovernmentBigPlatform extends Component {
     dispatch({
       type: 'bigPlatform/fetchHiddenDanger',
       payload: {
-        company_id: company.id,
+        company_id: id,
         status: '7',
       },
     });
@@ -950,7 +984,6 @@ class GovernmentBigPlatform extends Component {
   handleSearchSelect = ({ latitude, longitude, id }) => {
     this.setState({
       center: [longitude, latitude],
-      // zoom: 18,
     });
     if (this.mapInstance) {
       this.mapInstance.setZoom(18);
@@ -1137,6 +1170,10 @@ class GovernmentBigPlatform extends Component {
       safetyGovernmentTitle,
       riskTitle,
       riskSummary: { risk, abnormal, company },
+      center,
+      zoom,
+      companyId,
+      legendActive,
     } = this.state;
     const {
       dispatch,
@@ -1165,14 +1202,12 @@ class GovernmentBigPlatform extends Component {
       Bnum = 0,
       Cnum = 0,
       Dnum = 0;
-    companyLevelDto.map(item => {
+    companyLevelDto.forEach(item => {
       if (item.level === 'A') Anum = item.num;
       if (item.level === 'B') Bnum = item.num;
       if (item.level === 'C') Cnum = item.num;
       if (item.level === 'D') Dnum = item.num;
     });
-
-    const { center, zoom } = this.state;
 
     // communityCom: true, // 社区接入单位数
     // comIn: false, // 接入单位统计
@@ -1241,7 +1276,29 @@ class GovernmentBigPlatform extends Component {
       hiddenDanger,
     } = this.props.bigPlatform;
 
-    const { companyId } = this.state;
+    const mapLegends = [
+      {
+        level: 'A',
+        icon: styles.dotRed,
+        number: Anum,
+      },
+      {
+        level: 'B',
+        icon: styles.dotOrange,
+        number: Bnum,
+      },
+      {
+        level: 'C',
+        icon: styles.dotYel,
+        number: Cnum,
+      },
+      {
+        level: 'D',
+        icon: styles.dotBlue,
+        number: Dnum,
+      },
+    ];
+
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
@@ -1490,6 +1547,26 @@ class GovernmentBigPlatform extends Component {
                         {this.renderCompanyMarker()}
                         {this.renderInfoWindow()}
                         <MapTypeBar />
+                        <div
+                          className={styles.allPoint}
+                          onClick={() => {
+                            this.filterPoint('All');
+                            this.setState({
+                              center: [locationDefault.x, locationDefault.y],
+                              infoWindowShow: false,
+                              legendActive: null,
+                            });
+                            if (this.mapInstance) {
+                              this.mapInstance.setZoom(locationDefault.zoom);
+                            }
+                            if (this.state.comInfo) {
+                              this.goBack();
+                            }
+                          }}
+                        >
+                          <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
+                          重置
+                        </div>
                       </GDMap>
 
                       <MapSearch
@@ -1498,22 +1575,29 @@ class GovernmentBigPlatform extends Component {
                       />
 
                       <Row className={styles.mapLegend}>
-                        <Col span={6}>
-                          <span className={styles.dotRed} />
-                          A类单位 （{Anum}）
-                        </Col>
-                        <Col span={6}>
-                          <span className={styles.dotOrange} />
-                          B类单位 （{Bnum}）
-                        </Col>
-                        <Col span={6}>
-                          <span className={styles.dotYel} />
-                          C类单位 （{Cnum}）
-                        </Col>
-                        <Col span={6}>
-                          <span className={styles.dotBlue} />
-                          D类单位 （{Dnum}）
-                        </Col>
+                        {mapLegends.map((item, index) => {
+                          const { level, icon, number } = item;
+                          const legendStyles = classNames(styles.legendItem, {
+                            [styles.notActive]: legendActive !== index && legendActive !== null,
+                          });
+                          return (
+                            <Col span={6}>
+                              <span
+                                className={legendStyles}
+                                onClick={() => {
+                                  this.filterPoint(level);
+                                  this.setState({
+                                    legendActive: index,
+                                  });
+                                }}
+                              >
+                                <span className={icon} />
+                                {level}
+                                类单位 （{number}）
+                              </span>
+                            </Col>
+                          );
+                        })}
                       </Row>
                     </div>
                   </div>

@@ -74,7 +74,9 @@
     justify-content: center;
     width: 108px;
     height: 144px;
-    background-color: #021C42;
+    /* background-color: #021C42; */
+    background: transparent no-repeat center center;
+    background-size: 50% auto;
     overflow: hidden;
   }
   & > :nth-child(3) {
@@ -232,6 +234,15 @@
     .hostInfoItem {
       display: flex;
       font-size: 14px;
+
+      &.fireHostInfoItem {
+        &>:first-child {
+          color: #FF6464;
+        }
+        &>:nth-child(2) {
+          color: #FF6464;
+        }
+      }
 
       &:first-child {
         margin-bottom: 10px;

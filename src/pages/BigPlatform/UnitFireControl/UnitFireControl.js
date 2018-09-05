@@ -14,6 +14,8 @@ import Ellipsis from '../../../components/Ellipsis';
 import resetKeyIcon from './images/resetKey.png';
 import resetKeyPressIcon from './images/resetKeyPress.png';
 import hostIcon from './images/hostIcon.png';
+import fireHostIcon from './images/fireHostIcon.png';
+import noPhotoIcon from './images/noPhoto.png';
 import backIcon from '../FireControl/img/back.png';
 
 import styles from './UnitFireControl.less';
@@ -52,9 +54,9 @@ const HiddenDangerRecord = ({ data }) => {
   return (
     <div className={styles.hiddenDangerRecord} key={id}>
       <div className={styles.hiddenDangerRecordBadge} style={{ backgroundImage: badge && `url(${badge})` }}></div>
-      <div>
-        <div style={{ position: 'relative', width: '100%' }}>
-          <img src={fileWebUrl} alt="暂无图片" style={{ display: 'block', width: '100%' }} />
+      <div style={{ backgroundImage: `url(${noPhotoIcon})` }}>
+        <div style={{ position: 'relative', width: '100%', textAlign: 'center' }}>
+          <img src={fileWebUrl} alt="" style={{ display: 'block', width: '100%', margin: '0 auto' }} />
           <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0, 168, 255, 0.3)' }} />
         </div>
       </div>
@@ -72,13 +74,14 @@ const HiddenDangerRecord = ({ data }) => {
  * 复位主机
  */
 const Host = ({ data, onClick }) => {
-  const { id, deviceCode, installLocation, isReset } = data;
+  const { id, deviceCode, installLocation, isReset, isFire } = data;
+  const hostInfoItemClassName = +isFire? `${styles.hostInfoItem} ${styles.fireHostInfoItem}` : styles.hostInfoItem;
   return (
     <div className={styles.hostContainer} key={id}>
-      <div className={styles.hostIconContainer}><img src={hostIcon} alt=""/></div>
+      <div className={styles.hostIconContainer}><img src={+isFire?fireHostIcon:hostIcon} alt=""/></div>
       <div className={styles.hostInfoContainer}>
-        <div className={styles.hostInfoItem}><span>主机编号：</span><span>{deviceCode}</span></div>
-        <div className={styles.hostInfoItem}><span>安装位置：</span><span>{installLocation}</span></div>
+        <div className={hostInfoItemClassName}><span>主机编号：</span><span>{deviceCode}</span></div>
+        <div className={hostInfoItemClassName}><span>安装位置：</span><span>{installLocation}</span></div>
       </div>
       <div className={styles.hostResetButton} style={{ cursor: isReset?'not-allowed':'pointer' }} onClick={isReset?undefined:onClick}><img src={isReset ? resetKeyPressIcon : resetKeyIcon} alt=""/></div>
     </div>
