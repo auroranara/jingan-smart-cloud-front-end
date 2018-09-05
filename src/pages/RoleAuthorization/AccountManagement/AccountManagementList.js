@@ -447,8 +447,8 @@ export default class accountManagementList extends PureComponent {
                       <Row>
                         <Col span={16}>
                           <Ellipsis tooltip lines={1} className={styles.ellipsisText} length={13}>
-                            {unitTypeList[item.users[0].unitType]}，
-                            {item.users[0].unitName}
+                            {unitTypeList[item.users[0].unitType]}
+                            {item.users[0].unitName && `，${item.users[0].unitName}`}
                           </Ellipsis>
                         </Col>
                         <Col span={3}>
@@ -494,6 +494,13 @@ export default class accountManagementList extends PureComponent {
         key: 'unitName',
         dataIndex: 'unitName',
         align: 'center',
+        render: (val, row) => {
+          return val ? (
+            <Fragment><span>{val}</span></Fragment>
+          ) : (
+              <Fragment><span>运营企业</span></Fragment>
+            )
+        },
       },
       {
         title: '操作',
