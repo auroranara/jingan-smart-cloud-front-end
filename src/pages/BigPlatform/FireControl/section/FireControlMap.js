@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import { Button, Icon, Tooltip } from 'antd';
+import { Button, Icon } from 'antd';
 // import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
 

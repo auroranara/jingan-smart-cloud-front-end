@@ -35,7 +35,7 @@ const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 
-// const DELAY = 2000;
+const DELAY = 2000;
 const LOOKING_UP_DELAY = 5000;
 
 message.config({
@@ -66,7 +66,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
   componentDidMount() {
     this.initFetch();
-    // this.timer = setInterval(this.polling, DELAY);
+    this.timer = setInterval(this.polling, DELAY);
   }
 
   componentWillUnmount() {
@@ -114,13 +114,15 @@ export default class FireControlBigPlatform extends PureComponent {
   polling = () => {
     const { dispatch } = this.props;
 
+    // 只需要轮询火警相关，其他不必轮询
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
-    dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
-    dispatch({ type: 'bigFireControl/fetchSys' });
-    // dispatch({ type: 'bigFireControl/fetchAlarm' });
-    dispatch({ type: 'bigFireControl/fetchFireTrend' });
+    // dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
+    // dispatch({ type: 'bigFireControl/fetchSys' });
+    dispatch({ type: 'bigFireControl/fetchAlarm' });
+    dispatch({ type: 'bigFireControl/fetchAlarmHistory' });
+    // dispatch({ type: 'bigFireControl/fetchFireTrend' });
     // dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
-    dispatch({ type: 'bigFireControl/fetchDanger' });
+    // dispatch({ type: 'bigFireControl/fetchDanger' });
   };
 
   handleLookUpConfirmOk = () => {
@@ -295,9 +297,9 @@ export default class FireControlBigPlatform extends PureComponent {
     // 地图中选择的所属公司没有找到对应的火警，实际上这种情况不可能，但是为了防止后台数据错误，作此处理
     if (!detail) detail = {};
 
-    const { 
-      id: detailId, 
-      // companyId, 
+    const {
+      id: detailId,
+      // companyId,
     } = detail;
     dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: detailId } });
 
