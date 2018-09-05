@@ -261,10 +261,12 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'saveHosts',
-          payload: response.data.list,
+          payload: response.data.list.sort((a, b) => {
+            return +b.isFire-a.isFire;
+          }),
         });
         if (success) {
-          success(response.data.list);
+          success();
         }
       }
       else if (error) {
