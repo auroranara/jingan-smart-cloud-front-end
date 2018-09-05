@@ -77,7 +77,7 @@ const generateUnitsTree = data => {
     if (item.child && item.child.length) {
       return (
         <TreeNode title={item.name} key={item.id} value={item.id}>
-          {treeData(item.child)}
+          {generateUnitsTree(item.child)}
         </TreeNode>
       );
     }
@@ -424,13 +424,21 @@ export default class accountManagementEdit extends PureComponent {
     setFieldsValue({ unitId: undefined });
     setFieldsValue({ departmentId: undefined });
     // 根据当前选中的单位类型获取对应的所属单位列表
-    fetchUnitsFuzzy({
-      payload: {
-        unitType: value,
-        pageNum: 1,
-        pageSize: defaultPageSize,
-      },
-    });
+    if (value === 2) {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: value,
+        },
+      })
+    } else {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: value,
+          pageNum: 1,
+          pageSize: defaultPageSize,
+        },
+      });
+    }
   };
 
   // 所属单位下拉框输入
