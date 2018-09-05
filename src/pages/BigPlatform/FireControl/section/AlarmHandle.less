@@ -72,18 +72,26 @@
 }
 
 .imgContainer {
-  padding: 5px;
+  padding: 10px 5px 15px;
   // width: 118px;
   height: 100%;
   cursor: pointer;
 }
 
-.fireImg {
+.imgBase {
   width: 100%;
   height: 100%;
-  background-size: contain;
+  background-color: rgba(9, 103, 211, 0.2);
   background-repeat: no-repeat;
   background-position: center center;
+}
+
+.emptyImg:extend(.imgBase) {
+  background-size: 50% auto;
+}
+
+.fireImg:extend(.imgBase) {
+  background-size: contain;
 }
 
 .fireImg:visited {
