@@ -47,8 +47,9 @@ const UserTypes = [
   },
 ];
 
-@connect(({ account, loading }) => ({
+@connect(({ account, user, loading }) => ({
   account,
+  user,
   loading: loading.models.account,
 }))
 @Form.create()
@@ -59,20 +60,19 @@ export default class PersonalInfo extends PureComponent {
 
   /* 生命周期函数 */
   componentDidMount() {
+    console.log('props', this.props);
     const {
       dispatch,
       match: {
         params: { id },
       },
+      user: { currentUser },
     } = this.props;
-
-    console.log(id);
-
     // 获取详情
     dispatch({
-      type: 'account/fetchAccountDetail',
+      type: 'account/fetchAssociatedUnitDeatil',
       payload: {
-        id,
+        userId: id,
       },
       success: ({ unitType }) => {
         this.setState({
@@ -115,8 +115,8 @@ export default class PersonalInfo extends PureComponent {
           col={1}
           style={{
             position: 'relative',
-            top: '50%',
-            left: '45%',
+            // top: '50%',
+            marginLeft: '45%',
           }}
         >
           <Description term="用户名">{loginName || getEmptyData()}</Description>

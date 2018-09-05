@@ -20,6 +20,8 @@ import {
   getSearchImportantCompany,
   getSearchAllCompany,
   getDangerLocationCompanyData,
+  getAllCamera,
+  getStartToPlay,
 } from '../services/bigPlatform/bigPlatform.js';
 
 export default {
@@ -111,6 +113,8 @@ export default {
       dataUnimportantCompany: [],
     },
     dangerLocationCompanyData: [],
+    allCamera: [],
+    startToPlay: '',
   },
 
   effects: {
@@ -423,6 +427,19 @@ export default {
         error();
       }
     },
+    *fetchAllCamera({ payload, success }, { call, put }) {
+      const response = yield call(getAllCamera, payload);
+      const { list } = response;
+      yield put({ type: 'saveAllCamera', payload: list });
+      if (success) success(response);
+    },
+    *fetchStartToPlay({ payload, success }, { call, put }) {
+      const response = yield call(getStartToPlay, payload);
+      if (response && response.code === 200) {
+        yield put({ type: 'startToPlay', payload: { src: response.data.url } });
+        if (success) success(response);
+      }
+    },
   },
 
   reducers: {
@@ -554,6 +571,12 @@ export default {
         ...state,
         dangerLocationCompanyData: payload,
       };
+    },
+    saveAllCamera(state, action) {
+      return { ...state, allCamera: action.payload };
+    },
+    startToPlay(state, action) {
+      return { ...state, startToPlay: action.payload };
     },
   },
 };

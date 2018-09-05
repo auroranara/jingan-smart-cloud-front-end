@@ -48,7 +48,7 @@ class HeaderView extends PureComponent {
     const {
       dispatch,
       user: {
-        currentUser: { id },
+        currentUser: { userId },
       },
     } = this.props;
     if (key === 'userCenter') {
@@ -64,7 +64,7 @@ class HeaderView extends PureComponent {
       return;
     }
     if (key === 'personalInfo') {
-      dispatch(routerRedux.push(`/account/personal-info/${id}`));
+      dispatch(routerRedux.push(`/account/personal-info/${userId}`));
       return;
     }
     if (key === 'logout') {
@@ -143,14 +143,14 @@ class HeaderView extends PureComponent {
             {...this.props}
           />
         ) : (
-          <GlobalHeader
-            onCollapse={handleMenuCollapse}
-            onNoticeClear={this.handleNoticeClear}
-            onMenuClick={this.handleMenuClick}
-            onNoticeVisibleChange={this.handleNoticeVisibleChange}
-            {...this.props}
-          />
-        )}
+            <GlobalHeader
+              onCollapse={handleMenuCollapse}
+              onNoticeClear={this.handleNoticeClear}
+              onMenuClick={this.handleMenuClick}
+              onNoticeVisibleChange={this.handleNoticeVisibleChange}
+              {...this.props}
+            />
+          )}
       </Header>
     ) : null;
     return (

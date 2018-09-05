@@ -20,18 +20,27 @@ const NO_DATA = '暂无信息';
 
 // const { location } = global.PROJECT_CONFIG;
 
-// function handleCompanyBasicInfoList(alarmList, companyList) {
-// return companyList.map(item => {
-// const { name } = item;
-// const alarmed = alarmList.find(({ name: companyName }) => companyName === name)
-// if (alarmed) {
-//   const isFire = !Number.parseInt(alarmed.status, 10);
-//   const status = isFire ? ABNORMAL : NORMAL;
-//   return { address: alarmed.searchArea, ...item, isFire, status };
-// }
-// return { ...item, isFire: false, status: NORMAL };
-// });
-// }
+// 从实时火警中筛选并标记有火警的企业
+function handleCompanyBasicInfoList(alarmList, companyList) {
+  // 遍历companyList中的企业，若有火警则标记
+  return companyList.map(item => {
+    const { id } = item;
+    const alarmed = alarmList.find(({ companyId }) => companyId === id)
+    if (alarmed)
+      return { address: alarmed.searchArea, ...item, isFire: true };
+    return { ...item, isFire: false };
+  });
+}
+
+// 从实时火警中统计出不重复企业的数量
+function getFireNum(list) {
+  return list.reduce((prev, next) => {
+    const { companyId } = next;
+    if (!prev.includes(companyId))
+      prev.push(companyId);
+    return prev;
+  }, []).length;
+}
 
 function genBackgrondStyle(url) {
   return { backgroundImage: `url(${url})` };
@@ -268,13 +277,14 @@ export default class FireControlMap extends PureComponent {
       zoom,
       center,
       selected,
-      // alarm: { list = [] },
-      map: { companyBasicInfoList = [], totalNum, fireNum },
+      alarm: { list = [] },
+      map: { companyBasicInfoList = [], totalNum },
       setMapItemList,
     } = this.props;
 
-    // let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
-    const newList = companyBasicInfoList;
+    const fireNum = getFireNum(list);
+    let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
+    // const newList = companyBasicInfoList;
     this.newList = newList;
     setMapItemList(newList);
 

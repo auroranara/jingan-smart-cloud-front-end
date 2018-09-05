@@ -35,6 +35,8 @@ export default function VideoSection(props) {
         }}
       >
         <Icon type="play-circle" style={PLAY_STYLE} />
+        {/* <span className={styles.playIcon} />
+        <div className={styles.cameraName}></div> */}
       </div>
     );
   });
