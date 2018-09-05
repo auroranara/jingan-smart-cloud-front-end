@@ -14,6 +14,8 @@ import Header from '../UnitFireControl/components/Header/Header';
 
 import styles from './Company.less';
 import riskStyles from './Risk.less';
+import videoIcon from './img/icon-video.png';
+import VideoPlay from '../FireControl/section/VideoPlay.js';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -48,7 +50,7 @@ const selectedWidth = 63;
 // 信息offset
 const defaultInfoOffset = {
   x: 30,
-  y: -selectedHeight-36,
+  y: -selectedHeight - 36,
 };
 // 正常点的样式
 const normalStyle = {
@@ -224,6 +226,8 @@ class CompanyLayout extends PureComponent {
       selectedFourColorImgId: null,
       // 当前选中的四色图的地址
       selectedFourColorImgUrl: '',
+      videoVisible: false,
+      videoKeyId: '',
     };
     this.myTimer = null;
     this.currentPieIndex = -1;
@@ -327,12 +331,30 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
       },
     });
+
+    // 获取视频列表
+    dispatch({
+      type: 'bigPlatform/fetchAllCamera',
+      payload: {
+        company_id: companyId,
+      },
+    });
   }
 
   componentWillUnmount() {
     clearTimeout(this.myTimer);
     clearInterval(this.highLightTimer);
   }
+
+  // 显示视频弹框
+  handleVideoShow = keyId => {
+    this.setState({ videoVisible: true, videoKeyId: keyId });
+  };
+
+  // 隐藏视频弹框
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false, videoKeyId: undefined });
+  };
 
   /**
    * 根据当前选中的四色图id筛选出对应的风险点
@@ -699,16 +721,11 @@ class CompanyLayout extends PureComponent {
                   this.safety.style.right = 0;
                   this.leftSection.style.opacity = 0;
                 }}
-
               >
                 <div className={styles.summaryText}>
                   <span className={styles.fieldName}>安全人员</span>
                 </div>
-                <div
-                  className={styles.summaryNum}
-                >
-                  {countCompanyUser}
-                </div>
+                <div className={styles.summaryNum}>{countCompanyUser}</div>
               </div>
 
               <div
@@ -722,11 +739,7 @@ class CompanyLayout extends PureComponent {
                 <div className={styles.summaryText}>
                   <span className={styles.fieldName}>风险点</span>
                 </div>
-                <div
-                  className={styles.summaryNum}
-                >
-                  {countCheckItem}
-                </div>
+                <div className={styles.summaryNum}>{countCheckItem}</div>
               </div>
 
               <div
@@ -881,6 +894,7 @@ class CompanyLayout extends PureComponent {
       bigPlatform: {
         companyMessage: { fourColorImg = [] },
         riskPointInfoList,
+        allCamera = [],
       },
     } = this.props;
     const {
@@ -909,6 +923,23 @@ class CompanyLayout extends PureComponent {
           // perspective='30em'
           rotate="30deg"
         >
+          {allCamera.length > 0 &&
+            allCamera.map(({ id, fix_img_id: fixImgId, x_num: x, y_num: y, key_id }, index) => {
+              const position = { x, y };
+              return selectedFourColorImgId === fixImgId ? (
+                <Fragment key={id}>
+                  <RiskPoint
+                    position={position}
+                    src={videoIcon}
+                    style={{ ...normalStyle, cursor: 'pointer' }}
+                    offset={normalOffset}
+                    onClick={point => {
+                      this.handleVideoShow(key_id);
+                    }}
+                  />
+                </Fragment>
+              ) : null;
+            })}
           {points &&
             points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
               // 筛选风险点对应的信息
@@ -1635,10 +1666,24 @@ class CompanyLayout extends PureComponent {
   }
 
   render() {
+    const {
+      dispatch,
+      bigPlatform: { allCamera = [] },
+    } = this.props;
+    const { videoVisible, videoKeyId } = this.state;
     return (
       <div className={styles.main}>
         <Header title="晶安智慧安全云平台" />
         {this.renderBody() /* 主体 */}
+        <VideoPlay
+          dispatch={dispatch}
+          style={{ zIndex: 99999999 }}
+          videoList={allCamera}
+          visible={videoVisible}
+          showList={false}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
+        />
       </div>
     );
   }

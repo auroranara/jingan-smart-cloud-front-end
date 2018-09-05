@@ -112,3 +112,13 @@ export async function getSafetyOfficer(params) {
 export async function searchCompanies(params) {
   return request(`/acloud_new/v2/sfg/searchCompany.json?${stringify(params)}`);
 }
+
+// 视频
+export async function getAllCamera(params) {
+  return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
+}
+
+// 视频路径
+export async function getStartToPlay(params) {
+  return request(`/acloud_new/dai/startToPlay?${stringify(params)}`);
+}
