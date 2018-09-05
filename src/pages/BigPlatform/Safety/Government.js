@@ -381,6 +381,9 @@ class GovernmentBigPlatform extends Component {
             companyName: response.companyMessage.companyName,
           },
         });
+        if (document.querySelector('#companyRisk')) {
+          document.querySelector('#companyRisk').scrollTop = 0;
+        }
       },
     });
     // 特种设备
@@ -524,6 +527,12 @@ class GovernmentBigPlatform extends Component {
           lineStyle: {
             color: ['rgb(2,28,66)'],
             width: 2,
+          },
+        },
+        axisLabel: {
+          formatter: function(value, index) {
+            if (parseInt(value, 10) != value) return '';
+            return parseInt(value, 10);
           },
         },
       },
@@ -1759,6 +1768,9 @@ class GovernmentBigPlatform extends Component {
                                           },
                                         });
                                         this.goComponent('hdDetail');
+                                        if (document.querySelector('#overRisk')) {
+                                          document.querySelector('#overRisk').scrollTop = 0;
+                                        }
                                       }}
                                     >
                                       {item.hiddenDangerCount}
@@ -1991,7 +2003,9 @@ class GovernmentBigPlatform extends Component {
                         </span>
                       </div>
 
-                      <div className={styles.scrollContainer}>{this.renderComRisk()}</div>
+                      <div className={styles.scrollContainer} id="companyRisk">
+                        {this.renderComRisk()}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2104,7 +2118,9 @@ class GovernmentBigPlatform extends Component {
                   />
                   <div className={styles.sectionMain}>
                     <div className={styles.sectionContent}>
-                      <div className={styles.scrollContainer}>{this.renderComRisk()}</div>
+                      <div className={styles.scrollContainer} id="overRisk">
+                        {this.renderComRisk()}
+                      </div>
                     </div>
                   </div>
                 </div>
