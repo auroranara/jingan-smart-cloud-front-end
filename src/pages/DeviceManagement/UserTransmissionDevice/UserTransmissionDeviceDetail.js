@@ -96,7 +96,7 @@ const hostModalFormItems = [
     // options: { rules: [{ required: true, type: 'number', message: '请输入消防主机编号' }] },
     options: { rules: [
       { required: true, whitespace: true, message: '请输入消防主机编号' },
-      { pattern: /^\d+$/, message: '装置编号请输入纯数字' },
+      { pattern: /^\d+$/, message: '主机编号请输入纯数字' },
     ] },
   },
   {
