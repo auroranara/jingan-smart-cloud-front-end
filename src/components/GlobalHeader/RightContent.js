@@ -127,8 +127,8 @@ export default class GlobalHeaderRight extends PureComponent {
             <span
               className={styles.action}
             >
-              <Icon type="swap" theme="outlined" />
-              切换企业
+              <Icon type="swap" style={{ fontSize: '18px' }} />
+              <span style={{ verticalAlign: 'middle' }}>切换企业</span>
             </span>
           </Dropdown>
         )}
@@ -143,7 +143,7 @@ export default class GlobalHeaderRight extends PureComponent {
                 onClick={this.handleGoGsafe}
               >
                 <Icon type="hdd" />
-                <span style={{ marginLeft: 8, marginRight: 8 }}>数据维护</span>
+                <span style={{ marginLeft: 8, marginRight: 8, verticalAlign: 'middle' }}>数据维护</span>
               </span>
             </Tooltip>
           )}
@@ -159,7 +159,7 @@ export default class GlobalHeaderRight extends PureComponent {
               <Avatar className={styles.avatar} style={this.generateStyle()} size="small">
                 {toUpper(currentUser.userName.split('')[0])}
               </Avatar>
-              <span className={styles.name}>{currentUser.userName}</span>
+              <span style={{ verticalAlign: 'middle' }}>{currentUser.userName}</span>
             </span>
           </Dropdown>
         ) : (

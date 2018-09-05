@@ -169,8 +169,8 @@ export default class LoginPage extends Component {
   } */
 
   renderMoreUser = () => {
-    const { login: { users } } = this.props
-
+    let { login: { users } } = this.props
+    users = users.slice(0, 5)
     return (
       <List
         dataSource={users}

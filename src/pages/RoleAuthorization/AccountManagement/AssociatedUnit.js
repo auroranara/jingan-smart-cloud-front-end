@@ -78,7 +78,7 @@ const generateTressNode = data => {
     if (item.child && item.child.length) {
       return (
         <TreeNode title={item.name} key={item.id} value={item.id}>
-          {treeData(item.child)}
+          {generateTressNode(item.child)}
         </TreeNode>
       );
     }
