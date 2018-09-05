@@ -118,7 +118,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory' });
-    dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
+    // dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
 
     // dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
     // dispatch({ type: 'bigFireControl/fetchSys' });
@@ -445,7 +445,7 @@ export default class FireControlBigPlatform extends PureComponent {
             <FcModule className={styles.map}>
               <FireControlMap
                 map={map}
-                alarm={isAlarmRotated ? alarmHistory : alarm}
+                alarm={alarm}
                 zoom={mapZoom}
                 center={mapCenter}
                 selected={mapSelected}
