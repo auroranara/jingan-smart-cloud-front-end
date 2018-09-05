@@ -89,14 +89,19 @@ export default class FireControlMap extends PureComponent {
 
   renderMarker = item => {
     const { selected } = this.props;
-
-    // 默认情况，有火警且未被选中，不显示红圈
-    let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标" />;
     const { name, isFire } = item;
     const isSelected = !!selected;
 
+    // 默认情况，有火警且未被选中，不显示红圈
+    let child = (
+      <div className={styles.dotIcon} style={{ backgroundImage: `url(${mapAlarmDot})`}} />
+    );
+
     // 没有火警，不论选中不选中显示正常图标
-    if (!isFire) child = <img className={styles.dotIcon} src={mapDot} alt="定位图标" />;
+    if (!isFire)
+      child = (
+        <div className={styles.dotIcon} style={{ backgroundImage: `url(${mapDot})`}} />
+      );
     // 有火警，且被选中，显示红圈
     else if (isSelected)
       child = (
@@ -107,12 +112,13 @@ export default class FireControlMap extends PureComponent {
 
     return (
       <Marker
+        title={name}
         position={{ longitude: item.longitude, latitude: item.latitude }}
         key={item.id}
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
         events={{ click: this.handleClick.bind(this, item) }}
       >
-        <Tooltip title={name}>{child}</Tooltip>
+        {child}
       </Marker>
     );
   };
@@ -296,15 +302,18 @@ export default class FireControlMap extends PureComponent {
             {this.renderCompanyMarker(newList)}
             {selected && this.renderInfoWindow()}
           </GDMap>
-          <MapSearch
-            className={styles.search}
-            style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-            list={newList}
-            selectList={selectList}
-            value={searchValue}
-            handleChange={this.handleInputChange}
-            handleSelect={this.handleSelect}
-          />
+          {/* 点击到具体企业时不显示搜索框，只有在全局地图时显示搜索框 */}
+          {!selected && (
+            <MapSearch
+              className={styles.search}
+              style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
+              list={newList}
+              selectList={selectList}
+              value={searchValue}
+              handleChange={this.handleInputChange}
+              handleSelect={this.handleSelect}
+            />
+          )}
           {selected && this.renderBackButton()}
           {!selected && this.renderUnit(totalNum, fireNum)}
         </div>
