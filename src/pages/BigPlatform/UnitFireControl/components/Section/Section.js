@@ -235,7 +235,7 @@ export default class App extends PureComponent {
    * 渲染函数
    */
   render() {
-    const { isScroll, isCarousel, title, fixedContent, children, className, style } = this.props;
+    const { isScroll, isCarousel, title, fixedContent, children, className, style, contentStyle } = this.props;
     const { isScrollShow, isPlaceHolderShow, isPaddingRightChange, currentIndex } = this.state;
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
     let overflowY = undefined;
@@ -281,6 +281,7 @@ export default class App extends PureComponent {
             style={{
               overflowY,
               paddingRight,
+              ...contentStyle,
             }}
             onMouseEnter={isCarousel ? this.handleMouseEnter : undefined}
             onMouseLeave={isCarousel ? this.handleMouseLeave : undefined}

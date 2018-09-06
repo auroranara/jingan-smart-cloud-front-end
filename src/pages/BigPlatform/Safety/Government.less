@@ -1,7 +1,7 @@
-// @import './BigPlatform.less';
 @imgUrl: 'http://data.jingan-china.cn/v2/big-platform/safety/gov';
 @comImgUrl2: 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 @govImgUrl2: 'http://data.jingan-china.cn/v2/big-platform/safety/gov/';
+@safetyLoc: './Img/';
 .main {
   width: 100%;
   height: 100vh;
@@ -9,7 +9,7 @@
   overflow: hidden;
   padding: 0 20px 30px;
   color: #fff;
-  background: url('@{comImgUrl2}company-bg.png') no-repeat center center;
+  background: url('@{govImgUrl2}safety-bg.png') no-repeat center center;
   background-size: 100% 100%;
   display: flex;
   flex-direction: column;
@@ -561,6 +561,25 @@
   width: 100%;
   height: 100%;
   position: relative; // padding: 12px 10px;
+  .allPoint {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 12px;
+    background-color: rgba(4, 71, 134, 0.8);
+    color: #6ea9dd;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+  }
+  .allPoint:hover {
+    opacity: 0.85;
+  }
+  .allPoint:active {
+    color: #fff;
+  }
   :global {
     .amap-toolbar.amap-touch-toolbar {
       right: 10px !important;
@@ -615,36 +634,59 @@
     padding-left: 15px;
     padding-right: 25px;
     white-space: nowrap;
-    .legendIcon {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      position: relative;
-      top: 4px;
-      margin-right: 3px;
+    .legendItem {
+      cursor: pointer;
+      .legendIcon {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: 4px;
+        margin-right: 3px;
+      }
+      .dotRed {
+        .legendIcon; // background: url('@{imgUrl}dot-red.svg') no-repeat center center;
+        background: url('@{govImgUrl2}dot-red.png') no-repeat center center;
+        background-size: 100% 100%; // width: 24px;
+        // height: 24px;
+        // top: 7px;
+      }
+      .dotOrange {
+        .legendIcon;
+        background: url('@{govImgUrl2}dot-orange.png') no-repeat center center;
+        background-size: 100% 100%;
+      }
+      .dotYel {
+        .legendIcon;
+        background: url('@{govImgUrl2}dot-yel.png') no-repeat center center;
+        background-size: 100% 100%;
+      }
+      .dotBlue {
+        .legendIcon;
+        background: url('@{govImgUrl2}dot-blue.png') no-repeat center center;
+        background-size: 100% 100%;
+      }
     }
-    .dotRed {
-      .legendIcon;
-      background: url('@{imgUrl}dot-red.svg') no-repeat center center;
-      background-size: 100% 100%;
-      width: 24px;
-      height: 24px;
-      top: 7px;
+    .legendItem.notActive {
+      .dotRed {
+        background: url('@{govImgUrl2}red-hollow.png') no-repeat center center;
+        background-size: 100% 100%;
+      }
+      .dotOrange {
+        background: url('@{govImgUrl2}orange-hollow.png') no-repeat center center;
+        background-size: 100% 100%;
+      }
+      .dotYel {
+        background: url('@{govImgUrl2}yel-hollow.png') no-repeat center center;
+        background-size: 100% 100%;
+      }
+      .dotBlue {
+        background: url('@{govImgUrl2}blue-hollow.png') no-repeat center center;
+        background-size: 100% 100%;
+      }
     }
-    .dotOrange {
-      .legendIcon;
-      background: url('@{imgUrl}dot-orange.png') no-repeat center center;
-      background-size: 100% 100%;
-    }
-    .dotYel {
-      .legendIcon;
-      background: url('@{imgUrl}dot-yel.png') no-repeat center center;
-      background-size: 100% 100%;
-    }
-    .dotBlue {
-      .legendIcon;
-      background: url('@{imgUrl}dot-blue.png') no-repeat center center;
-      background-size: 100% 100%;
+    .legendItem:hover {
+      color: rgb(0, 186, 255);
     }
   }
 }

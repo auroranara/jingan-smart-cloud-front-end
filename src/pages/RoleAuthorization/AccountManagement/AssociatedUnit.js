@@ -362,7 +362,7 @@ export default class AssociatedUnit extends PureComponent {
         params: { id, userId },
       },
       account: {
-        detail: { data: { loginId } },
+        detail: { data: { loginId, active } },
       },
     } = this.props;
     const { unitTypeChecked } = this.state
@@ -387,14 +387,13 @@ export default class AssociatedUnit extends PureComponent {
           this.setState({
             submitting: true,
           });
-          const payload = {
+          let payload = {
             loginName: loginName.trim(),
             accountStatus,
             userName,
             phoneNumber,
             unitType,
-            // unitId: unitId ? unitId.key : null,
-            unitId: unitTypeChecked === 2 ? unitId.value : unitId.key,
+            unitId: unitId ? (unitTypeChecked === 2 ? unitId.value : unitId.key) : null,
             treeIds: treeIds ? treeIds.key : null,
             roleIds: roleIds.join(','),
             departmentId: departmentId || '',
@@ -426,8 +425,7 @@ export default class AssociatedUnit extends PureComponent {
           };
           // 如果有userId，为编辑
           if (userId) {
-            payload.id = userId
-            payload.loginId = loginId
+            payload = { ...payload, active, id: userId, loginId }
             editAssociatedUnit({
               payload,
               successCallback,

@@ -19,6 +19,14 @@ import {
   getHiddenDangerCount,
   // 获取维保情况统计
   getMaintenanceCount,
+  // 获取复位主机
+  getHosts,
+  // 复位单个主机
+  resetSingleHost,
+  // 复位所有主机
+  resetAllHosts,
+  // 获取视频列表
+  getVideoList,
 } from '../services/bigPlatform/fireControl';
 
 export default {
@@ -83,6 +91,10 @@ export default {
       "assignAllNum": 0,
       "assignRate": "100%",
     },
+    // 复位主机列表
+    hosts: [],
+    // 视频列表
+    videoList: [],
   },
 
   effects: {
@@ -180,10 +192,10 @@ export default {
       const response = yield call(getHiddenDangerRecords, payload);
       yield put({
         type: 'saveHiddenDangerRecords',
-        payload: response.dangerList,
+        payload: response.hiddenDangers.filter(({ status }) => +status !== 4),
       });
       if (success) {
-        success(response.dangerList);
+        success(response.hiddenDangers);
       }
     },
     // 获取消防数据统计
@@ -241,6 +253,66 @@ export default {
       }
       else if (error) {
         error();
+      }
+    },
+    // 获取主机
+    *fetchHosts({ payload, success, error }, { call, put }) {
+      const response = yield call(getHosts, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveHosts',
+          payload: response.data.list.sort((a, b) => {
+            return +b.isFire-a.isFire;
+          }),
+        });
+        if (success) {
+          success();
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    // 复位单个主机
+    *changeSingleHost({ payload, success, error }, { call, put }) {
+      const response = yield call(resetSingleHost, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updateSingleHost',
+          payload: payload.id,
+        });
+        if (success) {
+          success();
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    // 复位所有主机
+    *changeAllHosts({ payload, success, error }, { call, put }) {
+      const response = yield call(resetAllHosts, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updateAllHosts',
+        });
+        if (success) {
+          success();
+        }
+      }
+      else if (error) {
+        error();
+      }
+    },
+    // 获取视频列表
+    *fetchVideoList({ payload, success, error }, { call, put }) {
+      const response = yield call(getVideoList, payload);
+      yield put({
+        type: 'saveVideoList',
+        payload: response.list,
+      });
+      if (success) {
+        success();
       }
     },
   },
@@ -315,6 +387,47 @@ export default {
       return {
         ...state,
         maintenanceCount,
+      };
+    },
+    // 主机
+    saveHosts(state, { payload: hosts }) {
+      return {
+        ...state,
+        hosts,
+      };
+    },
+    // 复位单个主机
+    updateSingleHost(state, { payload }) {
+      return {
+        ...state,
+        hosts: state.hosts.map(item => {
+          if (item.id === payload) {
+            return {
+              ...item,
+              isReset: true,
+            };
+          }
+          return item;
+        }),
+      };
+    },
+    // 复位所有主机
+    updateAllHosts(state) {
+      return {
+        ...state,
+        hosts: state.hosts.map(item => {
+          return {
+            ...item,
+            isReset: true,
+          };
+        }),
+      };
+    },
+    // 视频列表
+    saveVideoList(state, { payload: videoList }) {
+      return {
+        ...state,
+        videoList,
       };
     },
   },
