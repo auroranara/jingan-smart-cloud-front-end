@@ -93,21 +93,38 @@ export default class FireControlMap extends PureComponent {
 
   // 点击
   handleClick = item => {
+    const { hideTooltip } = this.props;
+
+    hideTooltip();
     this.selectCompany(item);
   };
 
   renderMarker = item => {
-    const { selected } = this.props;
+    const { selected, showTooltip, hideTooltip } = this.props;
     const { name, isFire } = item;
     const isSelected = !!selected;
 
+    const handleMouseEnter = e => showTooltip(e, name);
+
     // 默认情况，有火警且未被选中，不显示红圈
-    let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标"/>;
+    let child = (
+      <div
+        className={styles.dotIcon}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={hideTooltip}
+        style={{ backgroundImage: `url(${mapAlarmDot})`}}
+      />
+    );
 
     // 没有火警，不论选中不选中显示正常图标
     if (!isFire)
       child = (
-        <div className={styles.dotIcon} style={{ backgroundImage: `url(${mapDot})`}} />
+        <div
+          className={styles.dotIcon}
+          onMouseEnter={isSelected ? null : handleMouseEnter}
+          onMouseLeave={isSelected ? null : hideTooltip}
+          style={{ backgroundImage: `url(${mapDot})`}}
+        />
       );
     // 有火警，且被选中，显示红圈
     else if (isSelected)
@@ -119,7 +136,7 @@ export default class FireControlMap extends PureComponent {
 
     return (
       <Marker
-        title={name}
+        // title={name}
         position={{ longitude: item.longitude, latitude: item.latitude }}
         key={item.id}
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}

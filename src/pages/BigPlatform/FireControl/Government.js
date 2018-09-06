@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Col, Modal, Row, message } from 'antd';
 
-import { myParseInt } from './utils';
+import { myParseInt, getOffset } from './utils';
 import styles from './Government.less';
 import Head from './Head';
 import FcModule from './FcModule';
@@ -18,8 +18,7 @@ import TrendSection from './section/TrendSection';
 import DangerSection from './section/DangerSection';
 import FireControlMap from './section/FireControlMap';
 import VideoSection from './section/VideoSection';
-// import bg from './bg.png';
-
+import Tooltip from './section/Tooltip';
 import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
@@ -62,6 +61,9 @@ export default class FireControlBigPlatform extends PureComponent {
     mapShowInfo: false,
     videoVisible: false,
     videoKeyId: undefined,
+    tooltipName: '',
+    tooltipVisible: false,
+    tooltipPosition: [0, 0],
   };
 
   componentDidMount() {
@@ -341,6 +343,15 @@ export default class FireControlBigPlatform extends PureComponent {
     });
   };
 
+  showTooltip = (e, name) => {
+    const offset = e.target.getBoundingClientRect();
+    this.setState({ tooltipName: name, tooltipVisible: true, tooltipPosition: [offset.left, offset.top] });
+  };
+
+  hideTooltip = () => {
+    this.setState({ tooltipVisible: false });
+  };
+
   render() {
     const {
       bigFireControl: {
@@ -378,6 +389,9 @@ export default class FireControlBigPlatform extends PureComponent {
       showReverse,
       videoVisible,
       videoKeyId,
+      tooltipName,
+      tooltipVisible,
+      tooltipPosition,
     } = this.state;
 
     // console.log(videoKeyId);
@@ -454,6 +468,8 @@ export default class FireControlBigPlatform extends PureComponent {
                 handleInfoClose={this.handleMapInfoClose}
                 handleSelected={this.handleMapSelected}
                 setMapItemList={this.setMapItemList}
+                showTooltip={this.showTooltip}
+                hideTooltip={this.hideTooltip}
               />
               <FcSection title="Map Reverse" isBack />
             </FcModule>
@@ -547,6 +563,7 @@ export default class FireControlBigPlatform extends PureComponent {
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
         />
+        <Tooltip visible={tooltipVisible} title={tooltipName} position={tooltipPosition} offset={[23, -38]} />
       </div>
     );
   }
