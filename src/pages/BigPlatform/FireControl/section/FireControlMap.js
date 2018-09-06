@@ -14,7 +14,7 @@ import locateIcon from '../img/mapLocate.png';
 import personIcon from '../img/mapPerson.png';
 import statusIcon from '../img/mapFire.png';
 import status1Icon from '../img/mapFire1.png';
-import redCircle from '../img/redCircle.png';
+// import redCircle from '../img/redCircle.png';
 
 const NO_DATA = '暂无信息';
 
@@ -129,7 +129,8 @@ export default class FireControlMap extends PureComponent {
     // 有火警，且被选中，显示红圈
     else if (isSelected)
       child = (
-        <div className={styles.redCircle} style={{ backgroundImage: `url(${redCircle})` }}>
+        // <div className={styles.redCircle} style={{ backgroundImage: `url(${redCircle})` }}>
+        <div className={styles.redCircle}>
           <img className={styles.dotSelectedIcon} src={mapAlarmDot} alt="定位图标" />;
         </div>
       );
