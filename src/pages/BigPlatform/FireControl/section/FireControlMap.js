@@ -7,6 +7,7 @@ import debounce from 'lodash/debounce';
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
 import MapSearch from '../components/MapSearch';
+import MapTypeBar from '../../Safety/Components/MapTypeBar';
 
 import mapDot from '../img/mapDot.png';
 import mapAlarmDot from '../img/mapAlarmDot.png';
@@ -14,7 +15,7 @@ import locateIcon from '../img/mapLocate.png';
 import personIcon from '../img/mapPerson.png';
 import statusIcon from '../img/mapFire.png';
 import status1Icon from '../img/mapFire1.png';
-import redCircle from '../img/redCircle.png';
+// import redCircle from '../img/redCircle.png';
 
 const NO_DATA = '暂无信息';
 
@@ -93,33 +94,51 @@ export default class FireControlMap extends PureComponent {
 
   // 点击
   handleClick = item => {
+    const { hideTooltip } = this.props;
+
+    hideTooltip();
     this.selectCompany(item);
   };
 
   renderMarker = item => {
-    const { selected } = this.props;
+    const { selected, showTooltip, hideTooltip } = this.props;
     const { name, isFire } = item;
     const isSelected = !!selected;
 
+    const handleMouseEnter = e => showTooltip(e, name);
+
     // 默认情况，有火警且未被选中，不显示红圈
-    let child = <img className={styles.dotIcon} src={mapAlarmDot} alt="定位图标"/>;
+    let child = (
+      <div
+        className={styles.dotIcon}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={hideTooltip}
+        style={{ backgroundImage: `url(${mapAlarmDot})`}}
+      />
+    );
 
     // 没有火警，不论选中不选中显示正常图标
     if (!isFire)
       child = (
-        <div className={styles.dotIcon} style={{ backgroundImage: `url(${mapDot})`}} />
+        <div
+          className={styles.dotIcon}
+          onMouseEnter={isSelected ? null : handleMouseEnter}
+          onMouseLeave={isSelected ? null : hideTooltip}
+          style={{ backgroundImage: `url(${mapDot})`}}
+        />
       );
     // 有火警，且被选中，显示红圈
     else if (isSelected)
       child = (
-        <div className={styles.redCircle} style={{ backgroundImage: `url(${redCircle})` }}>
+        // <div className={styles.redCircle} style={{ backgroundImage: `url(${redCircle})` }}>
+        <div className={styles.redCircle}>
           <img className={styles.dotSelectedIcon} src={mapAlarmDot} alt="定位图标" />;
         </div>
       );
 
     return (
       <Marker
-        title={name}
+        // title={name}
         position={{ longitude: item.longitude, latitude: item.latitude }}
         key={item.id}
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
@@ -282,6 +301,8 @@ export default class FireControlMap extends PureComponent {
       setMapItemList,
     } = this.props;
 
+    const mapBarStyle = selected ? { top: 11, right: 100 } : { top: 11, right: 15 };
+
     const fireNum = getFireNum(list);
     let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
     // const newList = companyBasicInfoList;
@@ -309,6 +330,7 @@ export default class FireControlMap extends PureComponent {
           >
             {this.renderCompanyMarker(newList)}
             {selected && this.renderInfoWindow()}
+            <MapTypeBar style={mapBarStyle} />
           </GDMap>
           {/* 点击到具体企业时不显示搜索框，只有在全局地图时显示搜索框 */}
           {!selected && (

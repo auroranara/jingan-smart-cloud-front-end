@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 
 import FcSection from './FcSection';
-import styles from './AlarmDetialSection.less';
+import styles from './AlarmDetailSection.less';
 import backIcon from '../img/back.png';
 
 const KEYS = ['sysName', 'typeName', 'installAddress', 'status', 'reportName', 'reportTime'];
