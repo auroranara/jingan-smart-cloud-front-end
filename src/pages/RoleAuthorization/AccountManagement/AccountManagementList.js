@@ -10,7 +10,7 @@ import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementList.less';
-import { AuthLink, AuthButton, AuthDiv } from 'utils/customAuth';
+import { AuthLink, AuthButton, AuthSpan } from 'utils/customAuth';
 import codesMap from 'utils/codes';
 
 // 标题
@@ -99,9 +99,9 @@ const getEmptyData = () => {
         ...action,
       });
     },
-    goToDetail(url) {
+    /* goToDetail(url) {
       dispatch(routerRedux.push(url));
-    },
+    }, */
     saveAccounts(action) {
       dispatch({
         type: 'account/saveAccounts',
@@ -385,7 +385,6 @@ export default class accountManagementList extends PureComponent {
   renderList() {
     const {
       account: { list },
-      goToDetail,
     } = this.props;
 
     return (
@@ -452,16 +451,24 @@ export default class accountManagementList extends PureComponent {
                           </Ellipsis>
                         </Col>
                         <Col span={3}>
-                          <Icon onClick={() => this.handleToEdit(item.users[0].id)} className={styles['unit-edit-icon']} type="edit" />
+                          <AuthSpan
+                            code={codesMap.account.editAssociatedUnit}
+                            onClick={() => this.handleToEdit(item.users[0].id)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <Icon type="edit" />
+                          </AuthSpan>
                         </Col>
                         <Col span={3}>
                           <Popconfirm
                             title={`确定要${!!item.users[0].accountStatus ? '解绑' : '开启'}关联企业吗？`}
                             onConfirm={() => this.handleAccountStatus({ accountStatus: Number(!item.users[0].accountStatus), id: item.users[0].id, users: item.users, loginId: item.loginId })}
                           >
-                            {!!item.users[0].accountStatus
-                              ? (<Icon className={styles['unit-edit-icon']} type="link" />)
-                              : (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                            <AuthSpan code={codesMap.account.bindAssociatedUnit} style={{ cursor: 'pointer' }}>
+                              {!!item.users[0].accountStatus
+                                ? (<Icon type="link" />)
+                                : (<Icon style={{ color: 'red' }} type="disconnect" />)}
+                            </AuthSpan>
                           </Popconfirm>
                         </Col>
                       </Row>) : (<p>{getEmptyData()}</p>)}
@@ -510,15 +517,23 @@ export default class accountManagementList extends PureComponent {
         render: (val, row) => {
           return (
             <Fragment>
-              <Icon onClick={() => this.handleToEdit(row.id)} className={styles['unit-edit-icon']} type="edit" />
+              <AuthSpan
+                code={codesMap.account.editAssociatedUnit}
+                onClick={() => this.handleToEdit(row.id)}
+                style={{ cursor: 'pointer' }}
+              >
+                <Icon type="edit" />
+              </AuthSpan>
               <Divider type="vertical" />
               <Popconfirm
                 title={`确定要${!!row.accountStatus ? '解绑' : '开启'}关联企业吗？`}
                 onConfirm={() => this.handleAccountStatus({ accountStatus: Number(!row.accountStatus), id: row.id, users: associatedUnits, loginId: currentLoginId })}
               >
-                {!!row.accountStatus
-                  ? (<Icon className={styles['unit-edit-icon']} type="link" />)
-                  : (<Icon className={styles['unit-status-icon']} type="disconnect" />)}
+                <AuthSpan code={codesMap.account.bindAssociatedUnit} style={{ cursor: 'pointer' }}>
+                  {!!row.accountStatus
+                    ? (<Icon type="link" />)
+                    : (<Icon style={{ color: 'red' }} type="disconnect" />)}
+                </AuthSpan>
               </Popconfirm>
             </Fragment>
           )
