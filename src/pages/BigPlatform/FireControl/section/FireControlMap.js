@@ -7,6 +7,7 @@ import debounce from 'lodash/debounce';
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
 import MapSearch from '../components/MapSearch';
+import MapTypeBar from '../../Safety/Components/MapTypeBar';
 
 import mapDot from '../img/mapDot.png';
 import mapAlarmDot from '../img/mapAlarmDot.png';
@@ -300,6 +301,8 @@ export default class FireControlMap extends PureComponent {
       setMapItemList,
     } = this.props;
 
+    const mapBarStyle = selected ? { top: 11, right: 100 } : { top: 11, right: 15 };
+
     const fireNum = getFireNum(list);
     let newList = handleCompanyBasicInfoList(list, companyBasicInfoList);
     // const newList = companyBasicInfoList;
@@ -327,6 +330,7 @@ export default class FireControlMap extends PureComponent {
           >
             {this.renderCompanyMarker(newList)}
             {selected && this.renderInfoWindow()}
+            <MapTypeBar style={mapBarStyle} />
           </GDMap>
           {/* 点击到具体企业时不显示搜索框，只有在全局地图时显示搜索框 */}
           {!selected && (
