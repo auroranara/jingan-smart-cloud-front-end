@@ -501,6 +501,7 @@ export default class accountManagementList extends PureComponent {
         key: 'unitName',
         dataIndex: 'unitName',
         align: 'center',
+        width: '80%',
         render: (val, row) => {
           return val ? (
             <Fragment><span>{val}</span></Fragment>
