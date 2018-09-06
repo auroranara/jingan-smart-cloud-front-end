@@ -58,6 +58,12 @@ class MapSearch extends PureComponent {
     });
   };
 
+  handleClear = () => {
+    console.log(111111111111);
+
+    this.setState({ value: '' });
+  };
+
   render() {
     const {
       bigPlatformSafetyCompany: { selectList },

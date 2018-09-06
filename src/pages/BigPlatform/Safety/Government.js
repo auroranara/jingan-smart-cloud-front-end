@@ -82,7 +82,8 @@ class GovernmentBigPlatform extends Component {
     hdCom: false, // 隐患单位统计
     comInfo: false, // 企业信息
     riskColors: false, // 风险点
-    hdDetail: false, // 风险点详情
+    hdDetail: false, // 已超期隐患详情
+    hiddenDanger: false, // 隐患详情
     companyId: '',
     riskTitle: '红色风险点',
     riskSummary: {
@@ -844,6 +845,7 @@ class GovernmentBigPlatform extends Component {
     }, 225);
   };
 
+  // 返回已超期隐患
   goBackToOver = () => {
     this.setState({
       hdDetail: false,
@@ -851,6 +853,18 @@ class GovernmentBigPlatform extends Component {
     setTimeout(() => {
       this.setState({
         overHd: true,
+      });
+    }, 225);
+  };
+
+  // 返回隐患单位统计
+  goBackToHdCom = () => {
+    this.setState({
+      hiddenDanger: false,
+    });
+    setTimeout(() => {
+      this.setState({
+        hdCom: true,
       });
     }, 225);
   };
@@ -869,6 +883,7 @@ class GovernmentBigPlatform extends Component {
       comInfo: false,
       riskColors: false,
       hdDetail: false,
+      hiddenDanger: false,
     });
     setTimeout(() => {
       this.setState(obj);
@@ -1174,6 +1189,7 @@ class GovernmentBigPlatform extends Component {
       zoom,
       companyId,
       legendActive,
+      hiddenDanger,
     } = this.state;
     const {
       dispatch,
@@ -1255,6 +1271,11 @@ class GovernmentBigPlatform extends Component {
       [rotate.out]: !hdDetail,
     });
 
+    const stylesHiddenDanger = classNames(styles.sectionWrapper, rotate.flip, {
+      [rotate.in]: hiddenDanger,
+      [rotate.out]: !hiddenDanger,
+    });
+
     const {
       companyMessage: {
         companyMessage: {
@@ -1273,7 +1294,7 @@ class GovernmentBigPlatform extends Component {
       // 特种设备总数
       specialEquipment,
       // 隐患总数
-      hiddenDanger,
+      hiddenDanger: hiddenDangerNum,
     } = this.props.bigPlatform;
 
     const mapLegends = [
@@ -1562,6 +1583,8 @@ class GovernmentBigPlatform extends Component {
                             if (this.state.comInfo) {
                               this.goBack();
                             }
+                            console.log(this.refs.mapSearch);
+                            // this.refs.mapSearch.handleClear();
                           }}
                         >
                           <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
@@ -1572,6 +1595,7 @@ class GovernmentBigPlatform extends Component {
                       <MapSearch
                         style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
                         handleSelect={this.handleSearchSelect}
+                        ref="mapSearch"
                       />
 
                       <Row className={styles.mapLegend}>
@@ -1581,7 +1605,7 @@ class GovernmentBigPlatform extends Component {
                             [styles.notActive]: legendActive !== index && legendActive !== null,
                           });
                           return (
-                            <Col span={6}>
+                            <Col span={6} key={level}>
                               <span
                                 className={legendStyles}
                                 onClick={() => {
@@ -1929,7 +1953,25 @@ class GovernmentBigPlatform extends Component {
                                       {item.name}
                                     </span>
                                   </td>
-                                  <td>{item.total_danger}</td>
+                                  <td>
+                                    <span
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={() => {
+                                        dispatch({
+                                          type: 'bigPlatform/fetchRiskDetail',
+                                          payload: {
+                                            company_id: item.id,
+                                          },
+                                        });
+                                        this.goComponent('hiddenDanger');
+                                        if (document.querySelector('#hiddenDanger')) {
+                                          document.querySelector('#hiddenDanger').scrollTop = 0;
+                                        }
+                                      }}
+                                    >
+                                      {item.total_danger}
+                                    </span>
+                                  </td>
                                 </tr>
                               );
                             })}
@@ -2075,7 +2117,7 @@ class GovernmentBigPlatform extends Component {
                             <div className={styles.summaryText}>
                               <span className={styles.fieldName}>已超期隐患</span>
                             </div>
-                            <div className={styles.summaryNum}>{hiddenDanger}</div>
+                            <div className={styles.summaryNum}>{hiddenDangerNum}</div>
                           </Col>
                         </Row>
                       </div>
@@ -2203,6 +2245,31 @@ class GovernmentBigPlatform extends Component {
                   <div className={styles.sectionMain}>
                     <div className={styles.sectionContent}>
                       <div className={styles.scrollContainer} id="overRisk">
+                        {this.renderComRisk()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section
+                className={stylesHiddenDanger}
+                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
+              >
+                <div className={styles.sectionWrapperIn}>
+                  <div className={styles.sectionTitle}>
+                    <span className={styles.titleBlock} />
+                    隐患详情
+                  </div>
+                  <div
+                    className={styles.backBtn}
+                    onClick={() => {
+                      this.goBackToHdCom();
+                    }}
+                  />
+                  <div className={styles.sectionMain}>
+                    <div className={styles.sectionContent}>
+                      <div className={styles.scrollContainer} id="hiddenDanger">
                         {this.renderComRisk()}
                       </div>
                     </div>
