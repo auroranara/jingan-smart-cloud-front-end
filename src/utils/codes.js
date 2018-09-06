@@ -13,6 +13,7 @@ export default {
     reset: 'roleAuthorization.accountManagement.reset',
     addAssociatedUnit: 'roleAuthorization.accountManagement.associatedUnit.add',
     editAssociatedUnit: 'roleAuthorization.accountManagement.associatedUnit.edit',
+    bindAssociatedUnit: 'roleAuthorization.accountManagement.associatedUnit.bind',
   },
   deviceManagement: {
     transmission: {
