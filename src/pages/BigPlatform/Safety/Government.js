@@ -6,7 +6,9 @@ import classNames from 'classnames';
 import styles from './Government.less';
 import rotate from './Animate.less';
 import Timer from './Components/Timer';
-import MapSearch from './Components/MapSearch';
+// import MapSearch from './Components/MapSearch';
+import MapSearch from '../FireControl/components/MapSearch';
+import debounce from 'lodash/debounce';
 import Ellipsis from '../../../components/Ellipsis';
 
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
@@ -49,51 +51,57 @@ const getSeal = status => {
 
 const { location: locationDefault } = global.PROJECT_CONFIG;
 const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点'];
-@connect(({ bigPlatform }) => ({
+@connect(({ bigPlatform, bigPlatformSafetyCompany }) => ({
   bigPlatform,
+  bigPlatformSafetyCompany,
 }))
 class GovernmentBigPlatform extends Component {
-  state = {
-    safetyGovernmentTitle: global.PROJECT_CONFIG.safetyGovernmentTitle,
-    scrollNodeTop: 0,
-    label: {
-      longitude: 120.366011,
-      latitude: 31.544389,
-    },
-    infoWindowShow: false,
-    infoWindow: {
+  constructor(props) {
+    super(props);
+    this.debouncedFetchData = debounce(this.fetchData, 500);
+    this.state = {
+      safetyGovernmentTitle: global.PROJECT_CONFIG.safetyGovernmentTitle,
+      scrollNodeTop: 0,
+      label: {
+        longitude: 120.366011,
+        latitude: 31.544389,
+      },
+      infoWindowShow: false,
+      infoWindow: {
+        companyId: '',
+        companyName: '',
+        level: '',
+        address: '',
+        longitude: 120.366011,
+        latitude: 31.544389,
+      },
+      areaHeight: 0,
+      pieHeight: 0,
+      center: [locationDefault.x, locationDefault.y],
+      zoom: locationDefault.zoom,
+      // 右侧显示
+      communityCom: true, // 社区接入单位数
+      comIn: false, // 接入单位统计
+      keyCom: false, // 重点单位统计
+      fullStaff: false, // 专职人员统计
+      overHd: false, // 已超期隐患
+      hdCom: false, // 隐患单位统计
+      comInfo: false, // 企业信息
+      riskColors: false, // 风险点
+      hdDetail: false, // 已超期隐患详情
+      hiddenDanger: false, // 隐患详情
       companyId: '',
-      companyName: '',
-      level: '',
-      address: '',
-      longitude: 120.366011,
-      latitude: 31.544389,
-    },
-    areaHeight: 0,
-    pieHeight: 0,
-    center: [locationDefault.x, locationDefault.y],
-    zoom: locationDefault.zoom,
-    // 右侧显示
-    communityCom: true, // 社区接入单位数
-    comIn: false, // 接入单位统计
-    keyCom: false, // 重点单位统计
-    fullStaff: false, // 专职人员统计
-    overHd: false, // 已超期隐患
-    hdCom: false, // 隐患单位统计
-    comInfo: false, // 企业信息
-    riskColors: false, // 风险点
-    hdDetail: false, // 已超期隐患详情
-    hiddenDanger: false, // 隐患详情
-    companyId: '',
-    riskTitle: '红色风险点',
-    riskSummary: {
-      risk: 0,
-      abnormal: 0,
-      company: 0,
-    },
-    filter: 'All',
-    legendActive: null,
-  };
+      riskTitle: '红色风险点',
+      riskSummary: {
+        risk: 0,
+        abnormal: 0,
+        company: 0,
+      },
+      filter: 'All',
+      legendActive: null,
+      searchValue: '',
+    };
+  }
 
   // UNSAFE_componentWillUpdate() {
   //   requestAnimationFrame(this.resolveAnimationFrame);
@@ -1170,6 +1178,40 @@ class GovernmentBigPlatform extends Component {
     );
   };
 
+  handleInputChange = (value, { props: { label } }) => {
+    console.log(value);
+
+    this.debouncedFetchData(value);
+    this.setState({
+      searchValue: value,
+    });
+  };
+
+  // debouncedFetchData = value => {
+  //   console.log(11111111);
+  //   debounce(() => {
+  //     console.log(222222222);
+
+  //     this.fetchData(value);
+  //   }, 500);
+  // };
+
+  fetchData = value => {
+    console.log(33333333);
+
+    this.props.dispatch({
+      type: 'bigPlatformSafetyCompany/fetchSelectList',
+      payload: {
+        name: value,
+      },
+      callback: () => {},
+    });
+
+    this.setState({
+      value: value,
+    });
+  };
+
   render() {
     const {
       scrollNodeTop,
@@ -1190,6 +1232,7 @@ class GovernmentBigPlatform extends Component {
       companyId,
       legendActive,
       hiddenDanger,
+      searchValue,
     } = this.state;
     const {
       dispatch,
@@ -1213,6 +1256,7 @@ class GovernmentBigPlatform extends Component {
         riskDetailList,
         dangerLocationCompanyData,
       },
+      bigPlatformSafetyCompany: { selectList },
     } = this.props;
     let Anum = 0,
       Bnum = 0,
@@ -1576,6 +1620,7 @@ class GovernmentBigPlatform extends Component {
                               center: [locationDefault.x, locationDefault.y],
                               infoWindowShow: false,
                               legendActive: null,
+                              searchValue: '',
                             });
                             if (this.mapInstance) {
                               this.mapInstance.setZoom(locationDefault.zoom);
@@ -1583,7 +1628,6 @@ class GovernmentBigPlatform extends Component {
                             if (this.state.comInfo) {
                               this.goBack();
                             }
-                            console.log(this.refs.mapSearch);
                             // this.refs.mapSearch.handleClear();
                           }}
                         >
@@ -1592,10 +1636,18 @@ class GovernmentBigPlatform extends Component {
                         </div>
                       </GDMap>
 
-                      <MapSearch
+                      {/* <MapSearch
                         style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
                         handleSelect={this.handleSearchSelect}
                         ref="mapSearch"
+                      /> */}
+                      <MapSearch
+                        style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
+                        // list={newList}
+                        selectList={selectList}
+                        value={searchValue}
+                        handleChange={this.handleInputChange}
+                        handleSelect={this.handleSearchSelect}
                       />
 
                       <Row className={styles.mapLegend}>

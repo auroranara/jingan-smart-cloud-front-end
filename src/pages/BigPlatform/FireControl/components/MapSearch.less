@@ -19,8 +19,7 @@
       .rc-select-search__field {
         color: #fff;
       }
-    }
-    // .rc-select-dropdown {
+    } // .rc-select-dropdown {
     //   background-color: transparent;
     //   li.rc-select-dropdown-menu-item {
     //     background-color: rgba(1, 29, 67, 0.8);
@@ -33,9 +32,18 @@
   .rc-select-dropdown {
     border: none;
     li.rc-select-dropdown-menu-item {
-      background-color: #003160;
-      // background-color: red;
+      background-color: #003160; // background-color: red;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+    li.rc-select-dropdown-menu-item-active {
+      background-color: #04498c;
+    }
+  }
+  .rc-select-dropdown:first-child {
+    overflow: hidden;
+    width: 100%;
   }
 }
 
