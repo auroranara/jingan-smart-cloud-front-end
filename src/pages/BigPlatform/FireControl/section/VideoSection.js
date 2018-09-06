@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Col, Icon, Row } from 'antd';
+import { Col, Row } from 'antd';
 
 import FcSection from './FcSection';
 import styles from './VideoSection.less';
@@ -9,14 +9,14 @@ const GUTTER = 12;
 const ROW_STYLE = { height: '50%', paddingBottom: 6 };
 const COL_STYLE = { height: '100%', paddingTop: 6 };
 
-const PLAY_STYLE = {
-  left: '50%',
-  top: '50%',
-  color: 'rgba(0, 49, 96, 0.9)',
-  fontSize: 50,
-  position: 'absolute',
-  transform: 'translate(-50%, -50%)',
-};
+// const PLAY_STYLE = {
+//   left: '50%',
+//   top: '50%',
+//   color: 'rgba(0, 49, 96, 0.9)',
+//   fontSize: 50,
+//   position: 'absolute',
+//   transform: 'translate(-50%, -50%)',
+// };
 
 export default class VideoSection extends PureComponent {
   state = { chosen: -1 };
@@ -51,13 +51,15 @@ export default class VideoSection extends PureComponent {
     //   );
     // });
 
-    const srcList = [...Array(4).keys()].map(i => srcs[i % srcs.length]);
+    const srcList = [...Array(4).keys()].map(i => srcs[i % srcs.length]).filter(item => item);
 
     const videos = srcList.map(({ name, photo, keyId }, i) => (
       <div
         className={i === chosen ? styles.coverChosen : styles.cover}
-        onClick={() => showVideo(keyId)}
-        onMouseEnter={this.setIndex(i)}
+        onClick={() => {
+          showVideo(keyId);
+          this.setIndex(i);
+        }}
         style={{ backgroundImage: `url(${photo})` }}
       >
         <span className={styles.playIcon} style={{ backgroundImage: `url(${playIcon})` }} />
