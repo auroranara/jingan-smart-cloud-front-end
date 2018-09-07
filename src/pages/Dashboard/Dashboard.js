@@ -6,10 +6,10 @@ import styles from './Dashboard.less';
 const fire = 'http://data.jingan-china.cn/v2/dashboard/fire-control.png';
 const safe = 'http://data.jingan-china.cn/v2/dashboard/safety.png';
 
-const safeItem = { src: safe, url: '#/big-platform/safety/government' };
+const safeItem = { src: safe, url: '' };
 const fireItem = {
   src: fire,
-  url: '#/big-platform/fire-control/government',
+  url: '',
 };
 
 @connect(({ user }) => ({
@@ -32,6 +32,8 @@ export default class Dashboard extends PureComponent {
       },
     } = this.props;
 
+    safeItem.url = `${window.publicPath}#/big-platform/safety/government`
+    fireItem.url = `${window.publicPath}#/big-platform/fire-control/government`
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
     if (unitType === 2) {
@@ -62,14 +64,8 @@ export default class Dashboard extends PureComponent {
       [];
 
     const goToBigScreen = url => {
-      if (url.includes('acloud_new')) {
-        const win = window.open(url, '_blank');
-        // win.location.href = window.publicPath + url;
-        win.focus();
-      } else {
-        const win = window.open(window.publicPath + url, '_blank');
-        win.focus();
-      }
+      const win = window.open(url, '_blank');
+      win.focus();
     };
 
     const hasFourItems = { width: '300px', height: '400px', padding: '20px' };
