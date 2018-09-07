@@ -196,7 +196,7 @@ export default class App extends PureComponent {
                   <div className={styles.riskDetailList} style={{ top, transition: currentFirstIndex === index?'top 0.55s, bottom 0.55s':'top 0.5s, bottom 0.5s' }} key={ele[id]}>
                     {data.slice(index, index+pageSize).map(item => (
                       <div key={item[id]} className={styles.riskDetailItem} style={{ backgroundImage: `url(${getSeal(item[status])})` }}>
-                        <div className={styles.riskDetailItemTitleWrapper}><div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon})` }} /><Ellipsis lines={1} className={styles.riskDetailItemTitle} style={{ color: item[status] === 2 ? '#ff4848' : '#fff' }} >{item[description] || '暂无信息'}</Ellipsis></div>
+                        <div className={styles.riskDetailItemTitleWrapper}><div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon})` }} /><Ellipsis lines={1} className={styles.riskDetailItemTitle} style={{ color: item[status] === 2 ? '#ff4848' : '#fff' }} >{item[description] || '暂无隐患描述'}</Ellipsis></div>
                         <div className={styles.riskDetailItemContentWrapper}>
                           <div className={styles.riskDetailItemImageWrapper}>
                             <div style={{ position: 'relative', width: '100%' }}>

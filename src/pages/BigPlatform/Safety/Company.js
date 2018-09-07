@@ -621,7 +621,7 @@ class CompanyLayout extends PureComponent {
     data = data.map(
       ({
         id,
-        flow_name: description,
+        desc: description,
         report_user_name: sbr,
         report_time: sbsj,
         rectify_user_name: zgr,

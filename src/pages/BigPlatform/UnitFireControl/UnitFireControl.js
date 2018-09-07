@@ -48,7 +48,7 @@ const PendingInfoItem = ({ data }) => {
  * 隐患巡查记录项
  */
 const HiddenDangerRecord = ({ data }) => {
-  const { id, status, flow_name, report_user_name, report_time, rectify_user_name, plan_rectify_time, review_user_name, hiddenDangerRecordDto } = data;
+  const { id, status, desc, report_user_name, report_time, rectify_user_name, plan_rectify_time, review_user_name, hiddenDangerRecordDto } = data;
   const [{ fileWebUrl="" }={}] = hiddenDangerRecordDto || [];
   const { badge, icon, color } = getIconByStatus(status);
   return (
@@ -61,7 +61,7 @@ const HiddenDangerRecord = ({ data }) => {
         </div>
       </div>
       <div>
-        <div style={{ backgroundImage: `url(${icon})`, color }}><Ellipsis lines={2} tooltip>{flow_name || <span style={{ color: '#fff' }}>暂无信息</span>}</Ellipsis></div>
+        <div style={{ backgroundImage: `url(${icon})`, color }}><Ellipsis lines={2} tooltip>{desc || <span style={{ color: '#fff' }}>暂无隐患描述</span>}</Ellipsis></div>
         <div><span>上报：</span><Ellipsis lines={1}><span style={{ marginRight: '16px' }}>{report_user_name}</span>{moment(+report_time).format('YYYY-MM-DD')}</Ellipsis></div>
         <div><span>整改：</span><Ellipsis lines={1}><span style={{ marginRight: '16px' }}>{rectify_user_name}</span><span style={{ color: '#FF6464' }}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Ellipsis></div>
         {+status === 3 && <div><span>复查：</span><Ellipsis lines={1}><span>{review_user_name}</span></Ellipsis></div>}
