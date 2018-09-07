@@ -1034,7 +1034,7 @@ class GovernmentBigPlatform extends Component {
     const riskDetailData = riskDetailList.map(
       ({
         id,
-        flow_name: description,
+        desc: description,
         report_user_name: sbr,
         report_time: sbsj,
         rectify_user_name: zgr,
@@ -1179,26 +1179,13 @@ class GovernmentBigPlatform extends Component {
   };
 
   handleInputChange = (value, { props: { label } }) => {
-    console.log(value);
-
     this.debouncedFetchData(value);
     this.setState({
       searchValue: value,
     });
   };
 
-  // debouncedFetchData = value => {
-  //   console.log(11111111);
-  //   debounce(() => {
-  //     console.log(222222222);
-
-  //     this.fetchData(value);
-  //   }, 500);
-  // };
-
   fetchData = value => {
-    console.log(33333333);
-
     this.props.dispatch({
       type: 'bigPlatformSafetyCompany/fetchSelectList',
       payload: {
