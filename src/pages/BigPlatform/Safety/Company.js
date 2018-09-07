@@ -14,7 +14,8 @@ import Header from '../UnitFireControl/components/Header/Header';
 
 import styles from './Company.less';
 import riskStyles from './Risk.less';
-import videoIcon from './img/videoPoint.png';
+import videoPointIcon from './img/videoPoint.png';
+import unselectedVideoPointIcon from './img/unselectedVideoPoint.png';
 import VideoPlay from '../FireControl/section/VideoPlay.js';
 
 /* 图片地址前缀 */
@@ -930,8 +931,8 @@ class CompanyLayout extends PureComponent {
                 <Fragment key={id}>
                   <RiskPoint
                     position={position}
-                    src={videoIcon}
-                    style={{ width: 33, height: 33, cursor: 'pointer' }}
+                    src={videoPointIcon}
+                    style={{ width: 26, height: 26, cursor: 'pointer', boxShadow: '0 0 5px rgba(0,0,0,0.9)', borderRadius: '50%' }}
                     offset={normalOffset}
                     onClick={() => {
                       this.handleVideoShow(key_id);
@@ -1099,41 +1100,25 @@ class CompanyLayout extends PureComponent {
         </RiskImage>
         <div className={riskStyles.fourColorImgLabelContainer}>
           <div className={riskStyles.fourColorImgLabel}>
-            <span
-              className={riskStyles.fourColorImgLabelIcon}
-            >
-              <span className={riskStyles.fourColorImgLabelIconInner} style={{ backgroundColor: '#FC1F02' }} />
-            </span>
+            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FC1F02' }} />
             <span>重大风险</span>
           </div>
           <div className={riskStyles.fourColorImgLabel}>
-            <span
-              className={riskStyles.fourColorImgLabelIcon}
-            >
-              <span className={riskStyles.fourColorImgLabelIconInner} style={{ backgroundColor: '#F17A0A' }} />
-            </span>
+            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#F17A0A' }} />
             <span>较大风险</span>
           </div>
           <div className={riskStyles.fourColorImgLabel}>
-            <span
-              className={riskStyles.fourColorImgLabelIcon}
-            >
-              <span className={riskStyles.fourColorImgLabelIconInner} style={{ backgroundColor: '#FBF719' }} />
-            </span>
+            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FBF719' }} />
             <span>一般风险</span>
           </div>
           <div className={riskStyles.fourColorImgLabel}>
-            <span
-              className={riskStyles.fourColorImgLabelIcon}
-            >
-              <span className={riskStyles.fourColorImgLabelIconInner} style={{ backgroundColor: '#1E60FF' }} />
-            </span>
+            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#1E60FF' }} />
             <span>低风险</span>
           </div>
           <div className={riskStyles.fourColorImgLabel}>
             <span
               className={riskStyles.fourColorImgLabelIcon}
-              style={{ backgroundImage: `url(${videoIcon})` }}
+              style={{ backgroundImage: `url(${videoPointIcon})`, boxShadow: 'none', border: 'none' }}
             />
             <span>视频监控</span>
           </div>
