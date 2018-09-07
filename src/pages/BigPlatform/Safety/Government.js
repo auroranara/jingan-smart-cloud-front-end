@@ -1421,6 +1421,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#bfbfbf' }}
                         />
                         异常状态
+                        <span style={{ opacity: 0 }}>点</span>
                       </div>
                     </div>
                   </div>
