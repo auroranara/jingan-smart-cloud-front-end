@@ -1115,13 +1115,15 @@ class CompanyLayout extends PureComponent {
             <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#1E60FF' }} />
             <span>低风险</span>
           </div>
-          <div className={riskStyles.fourColorImgLabel}>
-            <span
-              className={riskStyles.fourColorImgLabelIcon}
-              style={{ backgroundImage: `url(${videoPointIcon})`, boxShadow: 'none', border: 'none' }}
-            />
-            <span>视频监控</span>
-          </div>
+          {allCamera.length > 0 && (
+            <div className={riskStyles.fourColorImgLabel}>
+              <span
+                className={riskStyles.fourColorImgLabelIcon}
+                style={{ backgroundImage: `url(${videoPointIcon})`, boxShadow: 'none', border: 'none' }}
+              />
+              <span>视频监控</span>
+            </div>
+          )}
         </div>
       </div>
     );
