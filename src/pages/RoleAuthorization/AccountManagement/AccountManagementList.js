@@ -6,12 +6,12 @@ import router from 'umi/router'
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
 
-import Ellipsis from 'components/Ellipsis';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import Ellipsis from '@/components/Ellipsis';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementList.less';
-import { AuthLink, AuthButton, AuthSpan } from 'utils/customAuth';
-import codesMap from 'utils/codes';
+import { AuthLink, AuthButton, AuthSpan } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
 
 // 标题
 const title = '账号管理';

@@ -3,10 +3,10 @@ import { connect } from 'dva';
 import { Form, Card, Input, Button, Spin, Tree, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { hasAuthority } from '../../../utils/customAuth';
-import urls from '../../../utils/urls';
-import codes from '../../../utils/codes';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
 
 // import styles from './Role.less';
 

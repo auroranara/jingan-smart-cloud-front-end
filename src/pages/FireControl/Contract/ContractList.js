@@ -3,14 +3,14 @@ import { connect } from 'dva';
 import { Form, List, Card, Input, Button, Select, Spin, DatePicker } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
-import Ellipsis from 'components/Ellipsis';
+import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 
 import InlineForm from '../../BaseInfo/Company/InlineForm';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { hasAuthority } from 'utils/customAuth';
-import urls from 'utils/urls';
-import codes from 'utils/codes';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
 
 import styles from './Contract.less';
 

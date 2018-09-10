@@ -4,12 +4,12 @@ import { Form, List, Card, Button, Icon, Input, Modal, message, Spin, Popconfirm
 import { Link, routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
-import Ellipsis from 'components/Ellipsis';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { hasAuthority } from '../../../utils/customAuth';
-import urls from '../../../utils/urls';
-import codes from '../../../utils/codes';
-import titles from '../../../utils/titles';
+import Ellipsis from '@/components/Ellipsis';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
+import titles from '@/utils/titles';
 import safe from '../../../assets/safe.png';
 import safeGray from '../../../assets/safe-gray.png';
 import fire from '../../../assets/fire.png';

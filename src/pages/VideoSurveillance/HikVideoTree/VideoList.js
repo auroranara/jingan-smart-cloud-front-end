@@ -2,12 +2,12 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'dva/router';
 import { Row, Col, Card, Form, Input, Button, Table, Badge, Checkbox, Divider, Modal, Select } from 'antd';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import FolderTree from './FolderTree';
 
 import styles from './VideoList.less';
-import { AuthLink, AuthBtn } from '../../../utils/customAuth';
-import buttonMap from '../../../utils/codes';
+import { AuthLink, AuthBtn } from '@/utils/customAuth';
+import buttonMap from '@/utils/codes';
 
 const PAGE_SIZE = 20;
 

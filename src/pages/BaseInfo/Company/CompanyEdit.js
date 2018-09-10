@@ -21,12 +21,12 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import { Map, Marker } from 'react-amap';
 
-import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { phoneReg, emailReg } from 'utils/validate';
-import urls from 'utils/urls';
-import titles from 'utils/titles';
-import { getToken } from 'utils/authority';
+import FooterToolbar from '@/components/FooterToolbar';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { phoneReg, emailReg } from '@/utils/validate';
+import urls from '@/utils/urls';
+import titles from '@/utils/titles';
+import { getToken } from '@/utils/authority';
 
 import styles from './Company.less';
 import Safety from './Safety';

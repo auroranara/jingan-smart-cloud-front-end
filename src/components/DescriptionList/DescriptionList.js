@@ -6,7 +6,7 @@ import styles from './index.less';
 const DescriptionList = ({
   className,
   title,
-  col = 1,
+  col = 3,
   layout = 'horizontal',
   gutter = 32,
   children,

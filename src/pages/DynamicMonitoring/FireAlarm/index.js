@@ -2,11 +2,11 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
 import Ellipsis from 'components/Ellipsis';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
 import VisibilitySensor from 'react-visibility-sensor';
-import { AuthLink, ERROR_MSG } from 'utils/customAuth';
-import codesMap from 'utils/codes';
+import { AuthLink, ERROR_MSG } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
 
 const PAGE_SIZE = 18;
 

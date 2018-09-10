@@ -5,10 +5,10 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { hasAuthority } from '../../../utils/customAuth';
-import urls from '../../../utils/urls';
-import codes from '../../../utils/codes';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
 
 import styles from './Contract.less';
 

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Menu, Icon } from 'antd';
-import { Link } from 'dva/router';
+import Link from 'umi/link';
 import { formatMessage } from 'umi/locale';
 import pathToRegexp from 'path-to-regexp';
 import { urlToList } from '../_utils/pathTools';
@@ -22,18 +22,14 @@ const getIcon = icon => {
   return icon;
 };
 
-export const getMenuMatches = (flatMenuKeys, path) => {
-  return flatMenuKeys.filter(item => {
-    return pathToRegexp(item).test(path);
-  });
-};
-
+export const getMenuMatches = (flatMenuKeys, path) =>
+  flatMenuKeys.filter(item => item && pathToRegexp(item).test(path));
 
 // BaseMenu布局不同时，在TopNavHeader及SiderMenu组件中引入
 export default class BaseMenu extends PureComponent {
   // constructor(props) {
   //   super(props);
-  //   this.flatMenuKeys = this.getFlatMenuKeys(props.menuData); // 一开始menuData = []，所以flatMenuKeys = []
+  //   this.flatMenuKeys = this.getFlatMenuKeys(props.menuData);
   // }
 
   /**
@@ -81,8 +77,8 @@ export default class BaseMenu extends PureComponent {
     // flatMenuKeys存在时，则由SiderMenu传入，父组件为SiderMenu，布局为菜单栏在左边，当flatMenuKeys不存在时，则父组件为TopNavBar，布局为菜单栏在上面
     // 当然其实可以直接fmKeys = this.getFlatMenuKeys(menuData)，而不论布局，但是这样每次渲染都会进行计算，所以当在左边时，直接传入就避免了一直调用getFlatMenuKeys
     const fMKeys = flatMenuKeys || this.getFlatMenuKeys(menuData);
+
     // return urlToList(pathname).map(itemPath => getMenuMatches(this.flatMenuKeys, itemPath).pop());
-    // return urlToList(pathname).map(itemPath => getMenuMatches(this.getFlatMenuKeys(menuData), itemPath).pop());
     return urlToList(pathname).map(itemPath => getMenuMatches(fMKeys, itemPath).pop());
   };
 
@@ -90,8 +86,8 @@ export default class BaseMenu extends PureComponent {
    * get SubMenu or Item
    */
   getSubMenuOrItem = item => {
-    // doc: add hideChildren
-    if (item.children && !item.hideChildren && item.children.some(child => child.name)) {
+    // doc: add hideChildrenInMenu
+    if (item.children && !item.hideChildrenInMenu && item.children.some(child => child.name)) {
       const name = formatMessage({ id: item.locale });
       return (
         <SubMenu
@@ -110,9 +106,8 @@ export default class BaseMenu extends PureComponent {
           {this.getNavMenuItems(item.children)}
         </SubMenu>
       );
-    } else {
-      return <Menu.Item key={item.path}>{this.getMenuItemPath(item)}</Menu.Item>;
     }
+    return <Menu.Item key={item.path}>{this.getMenuItemPath(item)}</Menu.Item>;
   };
 
   /**
@@ -153,6 +148,7 @@ export default class BaseMenu extends PureComponent {
       </Link>
     );
   };
+
   // permission to check
   checkPermissionItem = (authority, ItemDom) => {
     const { Authorized } = this.props;
@@ -166,27 +162,25 @@ export default class BaseMenu extends PureComponent {
   conversionPath = path => {
     if (path && path.indexOf('http') === 0) {
       return path;
-    } else {
-      return `/${path || ''}`.replace(/\/+/g, '/');
     }
+    return `/${path || ''}`.replace(/\/+/g, '/');
   };
 
   render() {
     const { openKeys, theme, mode } = this.props;
-    // console.log('baseMenu', this.props, Date.now());
     // if pathname can't match, use the nearest parent's key
     let selectedKeys = this.getSelectedMenuKeys();
     if (!selectedKeys.length && openKeys) {
       selectedKeys = [openKeys[openKeys.length - 1]];
     }
     let props = {};
-    // console.log('keys in menu', selectedKeys, openKeys);
     if (openKeys) {
       props = {
         openKeys,
       };
     }
     const { handleOpenChange, style, menuData } = this.props;
+    // console.log(this.getNavMenuItems(menuData));
     return (
       <Menu
         key="Menu"

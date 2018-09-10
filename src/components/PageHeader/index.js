@@ -1,8 +1,6 @@
 import React, { PureComponent, createElement } from 'react';
 import pathToRegexp from 'path-to-regexp';
-import { Breadcrumb, Tabs, Card } from 'antd';
-import memoizeOne from 'memoize-one';
-import deepEqual from 'lodash.isequal';
+import { Breadcrumb, Tabs, Skeleton } from 'antd';
 import classNames from 'classnames';
 import styles from './index.less';
 import { urlToList } from '../_utils/pathTools';
@@ -21,11 +19,6 @@ export const getBreadcrumb = (breadcrumbNameMap, url) => {
 };
 
 export default class PageHeader extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.conversionFromLocation = memoizeOne(this.conversionFromLocation, deepEqual);
-  }
-
   state = {
     breadcrumb: null,
   };
@@ -35,12 +28,12 @@ export default class PageHeader extends PureComponent {
   }
 
   componentDidUpdate(preProps) {
-    const {
-      tabActiveKey,
-      location: { pathname },
-    } = this.props;
+    const { location } = this.props;
+    if (!location || !preProps.location) {
+      return;
+    }
     const prePathname = preProps.location.pathname;
-    if (preProps.tabActiveKey !== tabActiveKey || prePathname !== pathname) {
+    if (prePathname !== location.pathname) {
       this.getBreadcrumbDom();
     }
   }
@@ -101,6 +94,9 @@ export default class PageHeader extends PureComponent {
     // Loop data mosaic routing
     const extraBreadcrumbItems = pathSnippets.map((url, index) => {
       const currentBreadcrumb = getBreadcrumb(breadcrumbNameMap, url);
+      if (currentBreadcrumb.inherited) {
+        return null;
+      }
       const isLinkable = index !== pathSnippets.length - 1 && currentBreadcrumb.component;
       const name = itemRender ? itemRender(currentBreadcrumb) : currentBreadcrumb.name;
       return currentBreadcrumb.name && !currentBreadcrumb.hideInBreadcrumb ? (
@@ -155,7 +151,6 @@ export default class PageHeader extends PureComponent {
         />
       );
     }
-
     // 根据 location 生成 面包屑
     // Generate breadcrumbs based on location
     if (routerLocation && routerLocation.pathname) {
@@ -196,6 +191,7 @@ export default class PageHeader extends PureComponent {
       tabDefaultActiveKey,
       tabBarExtraContent,
       loading = false,
+      wide = false,
     } = this.props;
     const { breadcrumb } = this.state;
 
@@ -208,33 +204,44 @@ export default class PageHeader extends PureComponent {
       activeKeyProps.activeKey = tabActiveKey;
     }
     return (
-      <Card className={clsString} bodyStyle={{ padding: 0 }} loading={loading}>
-        {breadcrumb}
-        <div className={styles.detail}>
-          {logo && <div className={styles.logo}>{logo}</div>}
-          <div className={styles.main}>
-            <div className={styles.row}>
-              {title && <h1 className={styles.title}>{title}</h1>}
-              {action && <div className={styles.action}>{action}</div>}
+      <div className={clsString}>
+        <div className={wide ? styles.wide : ''}>
+          <Skeleton
+            loading={loading}
+            title={false}
+            active
+            paragraph={{ rows: 3 }}
+            avatar={{ size: 'large', shape: 'circle' }}
+          >
+            {breadcrumb}
+            <div className={styles.detail}>
+              {logo && <div className={styles.logo}>{logo}</div>}
+              <div className={styles.main}>
+                <div className={styles.row}>
+                  {title && <h1 className={styles.title}>{title}</h1>}
+                  {action && <div className={styles.action}>{action}</div>}
+                </div>
+                <div className={styles.row}>
+                  {content && <div className={styles.content}>{content}</div>}
+                  {extraContent && <div className={styles.extraContent}>{extraContent}</div>}
+                </div>
+              </div>
             </div>
-            <div className={styles.row}>
-              {content && <div className={styles.content}>{content}</div>}
-              {extraContent && <div className={styles.extraContent}>{extraContent}</div>}
-            </div>
-          </div>
+            {tabList && tabList.length ? (
+              <Tabs
+                className={styles.tabs}
+                {...activeKeyProps}
+                onChange={this.onChange}
+                tabBarExtraContent={tabBarExtraContent}
+              >
+                {tabList.map(item => (
+                  <TabPane tab={item.tab} key={item.key} />
+                ))}
+              </Tabs>
+            ) : null}
+          </Skeleton>
         </div>
-        {tabList &&
-          tabList.length && (
-            <Tabs
-              className={styles.tabs}
-              {...activeKeyProps}
-              onChange={this.onChange}
-              tabBarExtraContent={tabBarExtraContent}
-            >
-              {tabList.map(item => <TabPane tab={item.tab} key={item.key} />)}
-            </Tabs>
-          )}
-      </Card>
+      </div>
     );
   }
 }

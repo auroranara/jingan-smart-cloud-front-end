@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Button, Form, Card, Input, message } from 'antd';
-import PageHeaderLayout from '../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { connect } from 'dva';
-import { aesEncrypt } from '../../utils/utils'
+import { aesEncrypt } from '@/utils/utils'
 
 const FormItem = Form.Item;
 

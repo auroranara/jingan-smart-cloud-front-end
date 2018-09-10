@@ -20,7 +20,6 @@ const getFlatMenuKeys = menuData => {
 
 const SiderMenuWrapper = props => {
   const { isMobile, menuData, collapsed } = props;
-  // console.log('menuData in index', menuData);
   return isMobile ? (
     <Drawer
       visible={!collapsed}

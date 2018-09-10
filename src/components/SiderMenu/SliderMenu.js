@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Layout } from 'antd';
 import pathToRegexp from 'path-to-regexp';
-import { Link } from 'dva/router';
+import classNames from 'classnames';
+import Link from 'umi/link';
 import styles from './index.less';
 import BaseMenu, { getMenuMatches } from './BaseMenu';
 import { urlToList } from '../_utils/pathTools';
@@ -17,11 +18,8 @@ const getDefaultCollapsedSubMenus = props => {
     location: { pathname },
     flatMenuKeys,
   } = props;
-  // console.log(props);
   return urlToList(pathname)
-    .map(item => {
-      return getMenuMatches(flatMenuKeys, item)[0];
-    })
+    .map(item => getMenuMatches(flatMenuKeys, item)[0])
     .filter(item => item);
 };
 
@@ -70,6 +68,7 @@ export default class SiderMenu extends PureComponent {
     }
     return null;
   }
+
   isMainMenu = key => {
     const { menuData } = this.props;
     return menuData.some(item => {
@@ -79,18 +78,26 @@ export default class SiderMenu extends PureComponent {
       return false;
     });
   };
+
   handleOpenChange = openKeys => {
     const moreThanOne = openKeys.filter(openKey => this.isMainMenu(openKey)).length > 1;
     this.setState({
       openKeys: moreThanOne ? [openKeys.pop()] : [...openKeys],
     });
   };
+
   render() {
     const { logo, collapsed, onCollapse, fixSiderbar, theme } = this.props;
-    // console.log('siderMenu.js', this.props, Date.now());
     const { openKeys } = this.state;
+    // const defaultProps = collapsed ? {} : { openKeys };
     // 若openKeys为空数组，则更新一下它的值(当然第一次render返回还是空数组，当menuData不为空数组时，更新后为新的值)，若不是空数组即用原来的值
     const defaultProps = collapsed ? {} : { openKeys: openKeys.length ? openKeys : getDefaultCollapsedSubMenus(this.props) };
+
+    const siderClassName = classNames(styles.sider, {
+      [styles.fixSiderbar]: fixSiderbar,
+      [styles.light]: theme === 'light',
+    });
+
     return (
       <Sider
         trigger={null}
@@ -99,19 +106,17 @@ export default class SiderMenu extends PureComponent {
         breakpoint="lg"
         onCollapse={onCollapse}
         width={256}
-        className={`${styles.sider} ${fixSiderbar ? styles.fixSiderbar : ''} ${
-          theme === 'light' ? styles.light : ''
-        }`}
+        theme={theme}
+        className={siderClassName}
       >
-        <div className={styles.logo} key="logo" id="logo">
+        <div className={styles.logo} id="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1> 晶安智慧云 </h1>
+            <h1>Ant Design Pro</h1>
           </Link>
         </div>
         <BaseMenu
           {...this.props}
-          key="Menu"
           mode="inline"
           handleOpenChange={this.handleOpenChange}
           onOpenChange={this.handleOpenChange}

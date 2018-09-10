@@ -13,8 +13,8 @@ import {
   Popover,
 } from 'antd';
 import { connect } from 'dva';
-import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../layouts/PageHeaderLayout';
+import FooterToolbar from '@/components/FooterToolbar';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import TableForm from './TableForm';
 import styles from './style.less';
 

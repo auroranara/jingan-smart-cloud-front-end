@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Icon, Input, message, Spin, Col } from 'antd';
 import { Link, routerRedux } from 'dva/router';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import Ellipsis from 'components/Ellipsis';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './VideoPermissionList.less'
 import VisibilitySensor from 'react-visibility-sensor';
-import { hasAuthority } from 'utils/customAuth';
-import codes from '../../../utils/codes';
-import { AuthLink } from '../../../utils/customAuth';
+// import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+import { AuthLink } from '@/utils/customAuth';
 
 const FormItem = Form.Item
 const ListItem = List.Item

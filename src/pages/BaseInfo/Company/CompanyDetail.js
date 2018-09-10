@@ -5,14 +5,14 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import { Map, Marker } from 'react-amap';
 
-import DescriptionList from 'components/DescriptionList';
-import Ellipsis from 'components/Ellipsis';
-import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import { hasAuthority } from '../../../utils/customAuth';
-import urls from '../../../utils/urls';
-import codes from '../../../utils/codes';
-import titles from '../../../utils/titles';
+import DescriptionList from '@/components/DescriptionList';
+import Ellipsis from '@/components/Ellipsis';
+import FooterToolbar from '@/components/FooterToolbar';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
+import titles from '@/utils/titles';
 
 import styles from './Company.less';
 import SafetyDetail from './SafetyDetail';

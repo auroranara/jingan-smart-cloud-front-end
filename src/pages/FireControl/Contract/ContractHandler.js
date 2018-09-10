@@ -18,11 +18,11 @@ import {
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
-import { getToken } from 'utils/authority';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { hasAuthority } from '../../../utils/customAuth';
-import urls from '../../../utils/urls';
-import codes from '../../../utils/codes';
+import { getToken } from '@/utils/authority';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
 
 import styles from './Contract.less';
 

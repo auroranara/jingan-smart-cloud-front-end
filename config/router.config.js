@@ -2,7 +2,7 @@ module.exports = [
   // user
   {
     path: '/user',
-    component: './layouts/UserLayout',
+    component: '../layouts/UserLayout',
     routes: [
       { path: '/user', redirect: '/user/login' },
       { path: '/user/login', component: '/User/Login' },
@@ -58,6 +58,7 @@ module.exports = [
       },
     ],
   },
+  //big platform
   {
     path: '/big-platform',
     routes: [
@@ -77,10 +78,20 @@ module.exports = [
       },
     ],
   },
+  //404
+  {
+    path: '/404',
+    component: './404',
+  },
   // app
   {
     path: '/',
-    component: './layouts/LoadingPage',
+    component: '../layouts/BasicLayout',
+    /* 权限组件，当渲染该路径时渲染Authorized组件，而BasicLayout为其children，在该组件中判断权限，
+     * 若没权限，则渲染noMatch对应的组件，一般会选择一个403页面(整个页面渲染为403)，若想显示菜单栏则只能单独再引入一个BasicLayout，将403页面放在里面，
+     * 若有权限，则渲染children，即BasicLayout组件
+     */
+    // Routes: ['src/pages/Authorized'],
     routes: [
       { path: '/', redirect: '/dashboard/view' },
       {
@@ -88,7 +99,7 @@ module.exports = [
         icon: 'home',
         code: 'dashboard',
         name: 'dashboard',
-        hideChildren: true,
+        hideChildrenInMenuInMenu: true,
         routes: [
           {
             path: '/dashboard',
@@ -135,7 +146,7 @@ module.exports = [
             path: '/base-info/company',
             code: 'baseInfo.company',
             name: 'company',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/base-info/company',
@@ -188,7 +199,7 @@ module.exports = [
             path: '/fire-control/contract',
             code: 'fireControl.contract',
             name: 'contract',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/fire-control/contract',
@@ -224,7 +235,7 @@ module.exports = [
             path: '/fire-control/maintenance-company',
             code: 'fireControl.maintenanceCompany',
             name: 'maintenanceCompany',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/fire-control/maintenance-company',
@@ -277,7 +288,7 @@ module.exports = [
             path: '/role-authorization/account-management',
             code: 'roleAuthorization.accountManagement',
             name: 'account',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/role-authorization/account-management',
@@ -326,7 +337,7 @@ module.exports = [
             path: '/role-authorization/role',
             code: 'roleAuthorization.role',
             name: 'role',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/role-authorization/role',
@@ -391,7 +402,7 @@ module.exports = [
             path: '/dynamic-monitoring/fire-alarm',
             code: 'dynamicMonitoring.fireAlarm',
             name: 'fireAlarm',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/dynamic-monitoring/fire-alarm',
@@ -433,7 +444,7 @@ module.exports = [
             path: '/device-management/user-transmission-device',
             code: 'deviceManagement.userTransmissionDevice',
             name: 'userTransmissionDevice',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/device-management/user-transmission-device',
@@ -476,7 +487,7 @@ module.exports = [
             path: '/video-surveillance/map',
             code: 'videoSurveillance.map',
             name: 'map',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/video-surveillance/map',
@@ -495,7 +506,7 @@ module.exports = [
             path: '/video-surveillance/hik-video-tree',
             code: 'videoSurveillance.hikVideoTree',
             name: 'hikVideoTree',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/video-surveillance/hik-video-tree',
@@ -520,7 +531,7 @@ module.exports = [
             path: '/video-surveillance/video-permission',
             code: 'videoSurveillance.videoPermission',
             name: 'videoPermission',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/video-surveillance/video-permission',
@@ -560,7 +571,7 @@ module.exports = [
             path: '/system-management/app-management',
             code: 'systemManagement.appManagement',
             name: 'appManagement',
-            hideChildren: true,
+            hideChildrenInMenu: true,
             routes: [
               {
                 path: '/system-management/app-management',

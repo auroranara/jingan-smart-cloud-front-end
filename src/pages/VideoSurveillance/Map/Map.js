@@ -4,7 +4,7 @@ import coordtransform from 'coordtransform';
 import { Card, Spin, Badge, Button, Modal } from 'antd';
 // import { Map as BaiduMap, Marker } from 'react-bmap';
 import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './Map.less';
 
 const statusMap = ['default', 'success', 'error', 'processing'];

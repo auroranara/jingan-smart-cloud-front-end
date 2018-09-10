@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Card } from 'antd';
 // import Ellipsis from 'components/Ellipsis';
-import DescriptionList from 'components/DescriptionList';
+import DescriptionList from '@/components/DescriptionList';
 
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import { convertMsToDate } from './AutoFireAlarm';
 

@@ -8,6 +8,10 @@ import LoginContext from './loginContext';
 const FormItem = Form.Item;
 
 class WarpFormItem extends Component {
+  static defaultProps = {
+    buttonText: '获取验证码',
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -79,6 +83,7 @@ class WarpFormItem extends Component {
       defaultValue,
       rules,
       name,
+      buttonText,
       updateActive,
       type,
       ...restProps
@@ -103,7 +108,7 @@ class WarpFormItem extends Component {
                 size="large"
                 onClick={this.onGetCaptcha}
               >
-                {count ? `${count} s` : '获取验证码'}
+                {count ? `${count} s` : buttonText}
               </Button>
             </Col>
           </Row>
@@ -121,22 +126,20 @@ class WarpFormItem extends Component {
 const LoginItem = {};
 Object.keys(ItemMap).forEach(key => {
   const item = ItemMap[key];
-  LoginItem[key] = props => {
-    return (
-      <LoginContext.Consumer>
-        {context => (
-          <WarpFormItem
-            customprops={item.props}
-            {...props}
-            rules={item.rules}
-            type={key}
-            updateActive={context.updateActive}
-            form={context.form}
-          />
-        )}
-      </LoginContext.Consumer>
-    );
-  };
+  LoginItem[key] = props => (
+    <LoginContext.Consumer>
+      {context => (
+        <WarpFormItem
+          customprops={item.props}
+          {...props}
+          rules={item.rules}
+          type={key}
+          updateActive={context.updateActive}
+          form={context.form}
+        />
+      )}
+    </LoginContext.Consumer>
+  );
 });
 
 export default LoginItem;
