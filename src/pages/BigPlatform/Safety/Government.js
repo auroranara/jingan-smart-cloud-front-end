@@ -304,34 +304,36 @@ class GovernmentBigPlatform extends Component {
             // },
           }}
         >
-          {level === 'A' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
-              alt=""
-              style={{ display: 'block', width: '26px', height: '26px' }}
-            />
-          )}
-          {level === 'B' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
-          {level === 'C' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
-          {level === 'D' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
+          <Tooltip placement="top" title={company.company_name}>
+            {level === 'A' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
+                alt=""
+                style={{ display: 'block', width: '26px', height: '26px' }}
+              />
+            )}
+            {level === 'B' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
+                alt=""
+                style={{ display: 'block', width: '20px', height: '20px' }}
+              />
+            )}
+            {level === 'C' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
+                alt=""
+                style={{ display: 'block', width: '20px', height: '20px' }}
+              />
+            )}
+            {level === 'D' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
+                alt=""
+                style={{ display: 'block', width: '20px', height: '20px' }}
+              />
+            )}
+          </Tooltip>
         </Marker>
       );
     });
