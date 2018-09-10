@@ -25,8 +25,8 @@ export default class VideoSection extends PureComponent {
     this.setState({ chosen: index });
   };
 
-  render(props) {
-    const { showVideo, data: list } = this.props;
+  render() {
+    const { showVideo, data: list, ...restProps } = this.props;
     const { chosen } = this.state;
 
     const srcs = list.map(({ name, photo, key_id: keyId }) => ({ name, photo, keyId }));
@@ -68,7 +68,7 @@ export default class VideoSection extends PureComponent {
     ));
 
     return (
-      <FcSection title="视频监控" isBack>
+      <FcSection title="视频监控" isBack {...restProps}>
         <div className={styles.container} style={{ height: 'calc(100% - 58px)' }}>
           {[...Array(2).keys()].map(i => (
             <Row key={i} gutter={GUTTER} style={ROW_STYLE}>

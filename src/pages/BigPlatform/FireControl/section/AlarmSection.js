@@ -62,7 +62,7 @@ export default class AlarmSection extends PureComponent {
       <FcSection
         title={title}
         backTitle={backTitle}
-        handleRotate={handleRotate}
+        handleBack={handleRotate}
         isBack={isBack}
         style={{ padding: '0 15px 15px', position: 'relative' }}>
           <Row gutter={6} style={{ marginBottom: 20 }}>
