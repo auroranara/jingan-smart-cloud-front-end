@@ -129,7 +129,7 @@ class HeaderView extends PureComponent {
 
   render() {
     const { isMobile, handleMenuCollapse, setting } = this.props;
-    const { navTheme, layout, fixedHeader } = setting;
+    const { layout, fixedHeader } = setting;
     const { visible } = this.state;
     const isTop = layout === 'topmenu';
     const width = this.getHeadWidth();
@@ -137,7 +137,7 @@ class HeaderView extends PureComponent {
       <Header style={{ padding: 0, width }} className={fixedHeader ? styles.fixedHeader : ''}>
         {isTop && !isMobile ? (
           <TopNavHeader
-            theme={navTheme}
+            theme="dark"
             mode="horizontal"
             Authorized={Authorized}
             onCollapse={handleMenuCollapse}
