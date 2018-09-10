@@ -1,4 +1,11 @@
-import { query as queryUsers, queryCurrent, activationSendCode, forgetSendCode, verifyCode, updatePwd } from '../services/user';
+import {
+  query as queryUsers,
+  queryCurrent,
+  activationSendCode,
+  forgetSendCode,
+  verifyCode,
+  updatePwd,
+} from '../services/user';
 
 export default {
   namespace: 'user',
@@ -18,7 +25,7 @@ export default {
       });
     },
     *fetchCurrent(_, { call, put }) {
-      const setting = { grid: 'Wide', layout: 'topmenu' };
+      const setting = { contentWidth: 'Fixed', layout: 'topmenu' };
       const response = yield call(queryCurrent);
       if (response && response.data) {
         const {
@@ -27,7 +34,7 @@ export default {
         // 是否是运营来判断
         yield put({
           type: 'setting/changeSetting',
-          payload: unitType === 3 ? { grid: 'Fluid', layout: 'sidemenu' } : setting,
+          payload: unitType === 3 ? { contentWidth: 'Fluid', layout: 'sidemenu' } : setting,
         });
         yield put({
           type: 'saveCurrentUser',
@@ -36,20 +43,20 @@ export default {
       }
     },
     *activationSendCode({ payload, callback }, { call }) {
-      const response = yield call(activationSendCode, payload)
-      if (callback) callback(response)
+      const response = yield call(activationSendCode, payload);
+      if (callback) callback(response);
     },
     *forgetSendCode({ payload, callback }, { call }) {
-      const response = yield call(forgetSendCode, payload)
-      if (callback) callback(response)
+      const response = yield call(forgetSendCode, payload);
+      if (callback) callback(response);
     },
     *verifyCode({ payload, callback }, { call }) {
-      const response = yield call(verifyCode, payload)
-      if (callback) callback(response)
+      const response = yield call(verifyCode, payload);
+      if (callback) callback(response);
     },
     *updatePwd({ payload, callback }, { call }) {
-      const response = yield call(updatePwd, payload)
-      if (callback) callback(response)
+      const response = yield call(updatePwd, payload);
+      if (callback) callback(response);
     },
   },
 
