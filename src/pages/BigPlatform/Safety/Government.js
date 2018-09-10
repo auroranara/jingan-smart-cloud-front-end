@@ -1076,18 +1076,20 @@ class GovernmentBigPlatform extends Component {
                   src={item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon}
                   size="small"
                 />
-                <Ellipsis
-                  lines={1}
-                  tooltip
-                  className={styles.riskDescription}
-                  style={{
-                    flex: 1,
-                    color: item[status] === 2 ? '#ff4848' : '#fff',
-                    lineHeight: '24px',
-                  }}
-                >
-                  {item[description] || '暂无信息'}
-                </Ellipsis>
+                <Tooltip placement="bottom" title={item[description] || '暂无信息'}>
+                  <Ellipsis
+                    lines={1}
+                    // tooltip
+                    className={styles.riskDescription}
+                    style={{
+                      flex: 1,
+                      color: item[status] === 2 ? '#ff4848' : '#fff',
+                      lineHeight: '24px',
+                    }}
+                  >
+                    {item[description] || '暂无信息'}
+                  </Ellipsis>
+                </Tooltip>
               </div>
               <div style={{ display: 'flex', padding: '0 0 10px 6px' }}>
                 <div
