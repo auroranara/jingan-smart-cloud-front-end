@@ -300,11 +300,16 @@ class GovernmentBigPlatform extends Component {
             //   name: company.company_name,
             // }),
             // mouseleave: () => {
-            //   this.setState({ infoWindowShow: false });
+            //   this.setState({ tooltipVisible: false });
             // },
           }}
         >
-          <Tooltip placement="top" title={company.company_name}>
+          <Tooltip
+            placement="bottom"
+            title={company.company_name}
+            // visible={tooltipVisible}
+            // trigger="hover"
+          >
             {level === 'A' && (
               <img
                 src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
