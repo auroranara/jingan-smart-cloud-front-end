@@ -54,9 +54,7 @@ class HeaderView extends PureComponent {
   handleMenuClick = ({ key }) => {
     const {
       dispatch,
-      user: {
-        currentUser: { userId },
-      },
+      currentUser: { userId },
     } = this.props;
     if (key === 'userCenter') {
       dispatch(routerRedux.push('/account/center'));
@@ -147,14 +145,14 @@ class HeaderView extends PureComponent {
             {...this.props}
           />
         ) : (
-          <GlobalHeader
-            onCollapse={handleMenuCollapse}
-            onNoticeClear={this.handleNoticeClear}
-            onMenuClick={this.handleMenuClick}
-            onNoticeVisibleChange={this.handleNoticeVisibleChange}
-            {...this.props}
-          />
-        )}
+            <GlobalHeader
+              onCollapse={handleMenuCollapse}
+              onNoticeClear={this.handleNoticeClear}
+              onMenuClick={this.handleMenuClick}
+              onNoticeVisibleChange={this.handleNoticeVisibleChange}
+              {...this.props}
+            />
+          )}
       </Header>
     ) : null;
     return (
