@@ -55,6 +55,7 @@ export default class VideoSection extends PureComponent {
 
     const videos = srcList.map(({ name, photo, keyId }, i) => (
       <div
+        key={keyId}
         className={i === chosen ? styles.coverChosen : styles.cover}
         onClick={() => {
           showVideo(keyId);

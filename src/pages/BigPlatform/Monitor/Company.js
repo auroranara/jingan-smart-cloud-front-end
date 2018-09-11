@@ -9,6 +9,7 @@ import VideoSection from './sections/VideoSection';
 import GasSection from './sections/GasSection';
 import GasBackSection from './sections/GasBackSection';
 import VideoPlay from './sections/VideoPlay';
+import { ALL } from './components/gasStatus';
 
 /**
  * 动态监测
@@ -19,9 +20,23 @@ import VideoPlay from './sections/VideoPlay';
 export default class App extends PureComponent {
   state = {
     gasRotated: false,
+    gasStatus: ALL,
     videoVisible: false,
     keyId: undefined,
   };
+
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } =  this.props;
+
+    dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId } });
+    dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
+  }
 
   /**
    * 实时报警
@@ -89,11 +104,11 @@ export default class App extends PureComponent {
   /**
    * 可燃/有毒气体监测
    */
-  renderGasMonitor() {
-    return (
-      <div></div>
-    );
-  }
+  // renderGasMonitor() {
+  //   return (
+  //     <div></div>
+  //   );
+  // }
 
   /**
    * 废水监测
@@ -113,8 +128,16 @@ export default class App extends PureComponent {
     );
   }
 
-  handleGasRotate = () => {
-    this.setState(({ gasRotated }) => ({ gasRotated: !gasRotated }));
+  handleGasNumClick = (status) => {
+    this.setState({ gasRotated: true, gasStatus: status });
+  };
+
+  handleGasLabelClick = (status) => {
+    this.setState({ gasStatus: status });
+  };
+
+  handleGasBack = () => {
+    this.setState({ gasRotated: false });
   };
 
   handleVideoShow = keyId => {
@@ -130,12 +153,15 @@ export default class App extends PureComponent {
     const {
       monitor: {
         allCamera = [],
+        gasCount,
+        gasList,
       },
       dispatch,
     } = this.props;
 
     const {
       gasRotated,
+      gasStatus,
       videoVisible,
       videoKeyId,
     } = this.state;
@@ -176,8 +202,14 @@ export default class App extends PureComponent {
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
                 <Col span={8} style={{ height: '100%' }}>
                   <FcModule isRotated={gasRotated} style={{ height: '100%' }}>
-                    <GasSection handleRotate={this.handleGasRotate} />
-                    <GasBackSection handleRotate={this.handleGasRotate} />
+                    <GasSection handleClick={this.handleGasNumClick} data={gasCount} />
+                    <GasBackSection
+                      dispatch={dispatch}
+                      status={gasStatus}
+                      data={{gasCount, gasList}}
+                      handleLabelClick={this.handleGasLabelClick}
+                      handleBack={this.handleGasBack}
+                    />
                   </FcModule>
                 </Col>
                 <Col span={8} style={{ height: '100%' }}>{this.renderEffluentMonitor()}</Col>
@@ -188,6 +220,7 @@ export default class App extends PureComponent {
         </div>
         <VideoPlay
           dispatch={dispatch}
+          actionType="monitor/fetchStartToPlay"
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
