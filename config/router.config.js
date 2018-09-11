@@ -117,6 +117,24 @@ module.exports = [
           },
         ],
       },
+      {
+        path: '/grid',
+        code: 'grid',
+        name: 'grid',
+        hideInMenu: true,
+        routes: [
+          {
+            path: '/grid',
+            redirect: '/grid/:id/map',
+          },
+          {
+            path: '/grid/:id/map',
+            code: 'grid.map',
+            name: 'view',
+            component: './Grid/Map',
+          },
+        ],
+      },
       // account
       {
         path: '/account',

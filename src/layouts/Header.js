@@ -145,14 +145,14 @@ class HeaderView extends PureComponent {
             {...this.props}
           />
         ) : (
-            <GlobalHeader
-              onCollapse={handleMenuCollapse}
-              onNoticeClear={this.handleNoticeClear}
-              onMenuClick={this.handleMenuClick}
-              onNoticeVisibleChange={this.handleNoticeVisibleChange}
-              {...this.props}
-            />
-          )}
+          <GlobalHeader
+            onCollapse={handleMenuCollapse}
+            onNoticeClear={this.handleNoticeClear}
+            onMenuClick={this.handleMenuClick}
+            onNoticeVisibleChange={this.handleNoticeVisibleChange}
+            {...this.props}
+          />
+        )}
       </Header>
     ) : null;
     return (
