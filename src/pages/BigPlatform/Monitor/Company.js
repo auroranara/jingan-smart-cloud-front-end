@@ -6,6 +6,7 @@ import Header from '../UnitFireControl/components/Header/Header';
 import styles from './Company.less';
 
 import ExhaustMonitor from './ExhaustMonitor';
+import EffluentMonitor from './EffluentMonitor';
 
 /**
  * 动态监测
@@ -73,9 +74,9 @@ export default class App extends PureComponent {
   /**
    * 废水监测
    */
-  renderEffluentMonitor() {
-    return <div />;
-  }
+  // renderEffluentMonitor() {
+  //   return <div />;
+  // }
 
   /**
    * 废气监测
@@ -131,7 +132,7 @@ export default class App extends PureComponent {
                   {this.renderGasMonitor}
                 </Col>
                 <Col span={8} style={{ height: '100%' }}>
-                  {this.renderEffluentMonitor}
+                  <EffluentMonitor />
                 </Col>
                 <Col span={8} style={{ height: '100%' }}>
                   <ExhaustMonitor />

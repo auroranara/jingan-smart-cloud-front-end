@@ -1,8 +1,8 @@
 import React from 'react';
 
-import styles from './ExhaustCards.less';
+import styles from './OxygenCard.less';
 
-export default function ExhaustCards(props) {
+export default function OxygenCard(props) {
   const { num, unit, title } = props;
   return (
     <div className={styles.card}>
