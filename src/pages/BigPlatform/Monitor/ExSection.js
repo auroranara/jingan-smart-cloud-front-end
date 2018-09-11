@@ -14,7 +14,6 @@ export default class ExSection extends PureComponent {
       background: 'rgba(9,103,211,0.1)',
       ...style,
     };
-
     return (
       <div style={newStyle} {...restProps}>
         {title ? (

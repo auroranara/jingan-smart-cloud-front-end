@@ -2,9 +2,8 @@ import React from 'react';
 import { Row, Col, Select } from 'antd';
 
 import styles from './ExhaustMonitor.less';
-import ExhaustCards from './ExhaustCards';
+import ExhaustCards from './components/ExhaustCards';
 import ExSection from './ExSection';
-import OxygenCard from './OxygenCard';
 
 import timeIcon from './timeIcon.png';
 
@@ -52,7 +51,7 @@ export default function ExhaustMonitor() {
         <ExhaustCards num="8.91" unit="MPa" title="压力" />
       </Col>
       <Col style={{ height: '100%' }} span={6}>
-        <OxygenCard num="8.91" unit="%" title="氧浓度" />
+        <ExhaustCards num="8.91" unit="%" title="氧浓度" color="rgb(232, 103, 103)" />
       </Col>
     </Row>
   );
