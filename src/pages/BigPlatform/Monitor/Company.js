@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
-
+import WasteWaterWave from './components/WasteWaterWave';
 import styles from './Company.less';
 
 import ExhaustMonitor from './ExhaustMonitor';
