@@ -13,8 +13,8 @@ export async function getStartToPlay(params) {
   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
 }
 
-export async function getGasCount() {
-  return request(`${URL_PREFIX}/monitor/countStatus.json`);
+export async function getGasCount(params) {
+  return request(`${URL_PREFIX}/monitor/countStatus.json?${stringify(params)}`);
 }
 
 export async function getGasList(params) {
