@@ -3,7 +3,7 @@ import React from 'react';
 import styles from './GasCircle.less';
 
 export default function GasCircle(props) {
-  const { percent='-', label='LEL', width=64, color='#FFF', style={}, ...restProps } = props;
+  const { desc='NONE', unit='%', val='-', width=64, color='#FFF', style={}, ...restProps } = props;
 
   const newStyle = {
     width,
@@ -15,8 +15,8 @@ export default function GasCircle(props) {
 
   return (
     <div className={styles.circle} style={newStyle} {...restProps}>
-      <p className={styles.percent}><span className={styles.percentNum}>{percent}</span>%</p>
-      <p className={styles.label} style={{ backgroundColor: color }}>{label}</p>
+      <p className={styles.percent}><span className={styles.percentNum}>{val}</span>{unit}</p>
+      <p className={styles.desc} style={{ backgroundColor: color }}>{desc}</p>
     </div>
   );
 }

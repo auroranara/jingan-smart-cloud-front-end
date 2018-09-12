@@ -24,7 +24,7 @@ export default function GasSection(props) {
           <span className={styles.point}>监测点</span>
         </div>
         <div className={styles.progressContainer}>
-          {sts.map(item => <ProgressBar {...item} />)}
+          {sts.map((item, index) => <ProgressBar key={index} {...item} />)}
         </div>
       </div>
     </FcSection>

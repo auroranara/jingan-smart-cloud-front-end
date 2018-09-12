@@ -6,7 +6,7 @@ import GasCard from '../components/GasCard';
 import backIcon from '../../FireControl/img/back.png';
 import styles from './GasBackSection.less';
 
-import { ALL } from '../components/gasStatus';
+import { ALL, LOSS } from '../components/gasStatus';
 
 const tempList = [
   { id: 0, status: 0, desc: '厂区九车间：氯乙烷压缩机东', time: '2018-09-06 09:11:32' },
@@ -22,9 +22,11 @@ function handleGasList(list=[], status=ALL, searchVal='') {
     return [];
 
   const newList = list.map(item => {
-    const { deviceId, area, location, realTimeData: { updateTime, status, realTimeData }} = item;
-    const lel = realTimeData ? realTimeData.lel : '-';
-    return { id: deviceId, status: STATUS_FIX[status], desc: `${area} ${location}`, time: updateTime, lel };
+    const { deviceId, area, location, realTimeData: { updateTime, status, realTimeData }, deviceParams} = item;
+    const fixedStatus = STATUS_FIX[status];
+    // 失联状态，realTimeData = null，对应参数的值设为'-'，原params数组中每个对象的code对应realTimedData中的键名
+    const params = deviceParams.map(({ id, code, desc, unit }) => ({ id, desc, unit, value: fixedStatus === LOSS ? '-' : realTimeData[code] }));
+    return { id: deviceId, status: fixedStatus, location: `${area} ${location}`, time: updateTime, params };
   });
 
   const statusFilteredList = status === ALL ? newList : newList.filter(item => item.status === status);
@@ -63,7 +65,7 @@ export default class GasSection extends PureComponent {
           {nums.map((n, i) => <GasStatusLabel key={i} num={n} status={i} selected={status === i} onClick={() => handleLabelClick(i)} />)}
         </div>
         <div className={styles.cardsContainer}>
-          {gList.map(({ id, status, desc, time }) => <GasCard key={id} status={status} desc={desc} time={time} />)}
+          {gList.map(({ id, status, location, time, params }) => <GasCard key={id} status={status} location={location} time={time} params={params} />)}
         </div>
         <span
           className={styles.back}

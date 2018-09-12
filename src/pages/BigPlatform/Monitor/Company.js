@@ -22,7 +22,7 @@ export default class App extends PureComponent {
     gasRotated: false,
     gasStatus: ALL,
     videoVisible: false,
-    keyId: undefined,
+    videoKeyId: undefined,
   };
 
   componentDidMount() {
