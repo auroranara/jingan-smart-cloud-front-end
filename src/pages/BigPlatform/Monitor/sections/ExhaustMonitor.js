@@ -2,10 +2,10 @@ import React from 'react';
 import { Row, Col, Select } from 'antd';
 
 import styles from './ExhaustMonitor.less';
-import ExhaustCards from './components/ExhaustCards';
+import ExhaustCards from '../components/ExhaustCards';
 import ExSection from './ExSection';
 
-import timeIcon from './timeIcon.png';
+import timeIcon from '../imgs/timeIcon.png';
 
 export default function ExhaustMonitor() {
   const Option = Select.Option;

@@ -4,9 +4,9 @@ import moment from 'moment';
 
 import styles from './EffluentMonitor.less';
 import ExSection from './ExSection';
-import WasteWaterWave from './components/WasteWaterWave/index';
+import WasteWaterWave from '../components/WasteWaterWave/index';
 
-import timeIcon from './timeIcon.png';
+import timeIcon from '../imgs/timeIcon.png';
 
 const Option = Select.Option;
 
@@ -70,20 +70,24 @@ export default function EffluentMonitor(props) {
           <div key={i} className={styles.oneCards}>
             <Row gutter={24} style={{ margin: 0, height: '100%' }}>
               {[0, 1, 2].map(index => {
-                let item = handledParams[2 * i + index] || {};
-                const { id, desc, unit, value, isBeyond } = item;
-                return (
-                  <Col key={id} style={{ height: '100%' }} span={8}>
-                    <WasteWaterWave
-                      height={110}
-                      percent={34}
-                      title={desc}
-                      num={value}
-                      unit={unit}
-                      color={isBeyond ? COLOR : undefined}
-                    />
-                  </Col>
-                );
+                let item = handledParams[3 * i + index];
+                if (item) {
+                  const { id, desc, unit, value, isBeyond } = item;
+                  return (
+                    <Col key={id} style={{ height: '100%' }} span={8}>
+                      <WasteWaterWave
+                        height={110}
+                        percent={34}
+                        title={desc}
+                        num={value}
+                        unit={unit}
+                        color={isBeyond ? COLOR : undefined}
+                      />
+                    </Col>
+                  );
+                }
+                else
+                  return null;
               })}
             </Row>
           </div>

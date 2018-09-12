@@ -11,8 +11,8 @@ import GasBackSection from './sections/GasBackSection';
 import VideoPlay from './sections/VideoPlay';
 import { ALL } from './components/gasStatus';
 
-import ExhaustMonitor from './ExhaustMonitor';
-import EffluentMonitor from './EffluentMonitor';
+import ExhaustMonitor from './sections/ExhaustMonitor';
+import EffluentMonitor from './sections/EffluentMonitor';
 
 /**
  * 动态监测
