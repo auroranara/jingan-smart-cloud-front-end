@@ -17,6 +17,8 @@ import EffluentMonitor from './sections/EffluentMonitor';
 import RealTimeAlarm from './sections/RealTimeAlarm.js'
 import TopCenter from './sections/TopCenter.js'
 
+import ElectricityCharts from './Sections/ElectricityCharts';
+
 /**
  * 动态监测
  */
@@ -117,9 +119,13 @@ export default class App extends PureComponent {
   /**
    * 用电安全监测
    */
-  renderElectricitySafetyMonitor() {
-    return <div />;
-  }
+  renderElectricitySafetyMonitor = () => {
+    return (
+      <div style={{ height: '100%', width: '100%' }}>
+        <ElectricityCharts />
+      </div>
+    );
+  };
 
   handleGasNumClick = (status) => {
     this.setState({ gasRotated: true, gasStatus: status });
@@ -201,7 +207,9 @@ export default class App extends PureComponent {
                   countAndExponent={countAndExponent}
                   realTimeAlarm={realTimeAlarm}
                 />
-                <Col span={11} style={{ height: '100%' }}>{this.renderElectricitySafetyMonitor()}</Col>
+                <Col span={11} style={{ height: '100%' }}>
+                  {this.renderElectricitySafetyMonitor()}
+                </Col>
               </Row>
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
                 <Col span={8} style={{ height: '100%' }}>
