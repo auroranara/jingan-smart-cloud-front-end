@@ -37,16 +37,6 @@ export default class App extends PureComponent {
         payload: { companyId, overFlag: 0 },
       })
     }, 5000)
-    /*     setTimeout(() => {
-          dispatch({
-            type: 'monitor/saveRealTimeAlarm',
-            payload: [],
-          })
-          dispatch({
-            type: 'monitor/saveCountAndExponent',
-            payload: { score: 80, count: 80, outContact: 80, unnormal: 80 },
-          })
-        }, 5000); */
   }
   componentWillUnmount() {
     clearInterval(this.alarmInternal)

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import autoHeight from '../autoHeight';
-import styles from './New.less';
+import styles from './index.less';
 
 /* eslint no-return-assign: 0 */
 /* eslint no-mixed-operators: 0 */
@@ -25,8 +25,8 @@ class NewWaterWave extends PureComponent {
   }
 
   componentDidUpdate(props) {
-    const { percent } = this.props;
-    if (props.percent !== percent) {
+    const { percent, color } = this.props;
+    if (props.percent !== percent || props.color !== color) {
       // 不加这个会造成绘制缓慢
       this.renderChart('update');
     }
@@ -51,7 +51,7 @@ class NewWaterWave extends PureComponent {
   };
 
   renderChart(type) {
-    const { percent, color = '#1890FF' } = this.props;
+    const { percent, color } = this.props;
     const data = percent / 100;
     const self = this;
     cancelAnimationFrame(this.timer);

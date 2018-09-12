@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd'
-import WaterWave from 'components/Charts/WaterWave/New';
+import WaterWave from 'components/Charts/ScoreWaterWave';
 import styles from './TopCenter.less'
 // import classNames from 'classnames';
 
@@ -11,22 +11,25 @@ import missingDevice from '../../../../assets/missing-device.png'
 export default class TopCenter extends PureComponent {
 
   // 检测指数
-  renderCurrentState = (number = 0) => {
-    const { realTimeAlarm } = this.props
-    const color = ((realTimeAlarm && realTimeAlarm.length || number < 80) && '#FF5256') || '#0082FD'
+  renderCurrentState = () => {
+    const {
+      countAndExponent: { score, unnormal },
+    } = this.props
+    const color = ((!!unnormal || score < 80) && "#FF5256") || "#0082FD"
+
     return (
       <div className={styles.sectionMain}>
         <div className={styles.shadowIn}>
           <div className={styles.topTitle}>监测指数</div>
           <div className={styles.content}>
-            <WaterWave
-              color={color}
-              percentColor="white"
-              percentFontSize="48px"
-              percent={number}
-              isNumber={true}
-            // style={{ width: '100%', height: 'calc(100% - 10px)' }}
-            />
+            {score && (
+              <WaterWave
+                color={color}
+                percentColor="white"
+                percentFontSize="48px"
+                percent={score}
+                isNumber={true}
+              />)}
           </div>
         </div>
       </div>
@@ -59,7 +62,7 @@ export default class TopCenter extends PureComponent {
     return (
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
         <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-          <Col span={12} style={{ height: '100%' }}>{this.renderCurrentState(score)}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderCurrentState()}</Col>
           <Col span={12} style={{ height: '100%' }}>{this.renderSection('设备总数', deviceTotalNumber, count)}</Col>
         </Row>
         <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
