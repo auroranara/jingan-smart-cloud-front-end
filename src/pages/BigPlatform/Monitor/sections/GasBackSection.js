@@ -30,7 +30,7 @@ function handleGasList(list=[], status=ALL, searchVal='') {
   });
 
   const statusFilteredList = status === ALL ? newList : newList.filter(item => item.status === status);
-  return searchVal ? statusFilteredList.filter(({ desc }) => desc.includes(searchVal)) : statusFilteredList;
+  return searchVal ? statusFilteredList.filter(item => item.location.includes(searchVal)) : statusFilteredList;
 }
 
 export default class GasSection extends PureComponent {
@@ -48,7 +48,7 @@ export default class GasSection extends PureComponent {
     this.setState({ inputVal: '' });
   };
 
-  render(props) {
+  render() {
     const { handleLabelClick, status, data } = this.props;
     const { gasCount: { normal=0, unnormal: abnormal=0, outContact: loss=0 }, gasList=[] } = data;
     const { inputVal } = this.state;
