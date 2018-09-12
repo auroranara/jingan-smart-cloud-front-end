@@ -80,7 +80,7 @@ export default class FireControlBigPlatform extends PureComponent {
   confirmTimer = null;
   lookingUpTimer = null;
   mapItemList = [];
-  // hasGotCreateTime = false;
+  dropdownDOM = null;
 
   initFetch = () => {
     const { dispatch } = this.props;
