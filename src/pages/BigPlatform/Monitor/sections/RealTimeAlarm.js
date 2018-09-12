@@ -50,7 +50,9 @@ export default class RealTimeAlarm extends PureComponent {
           <div className={styles.sectionTitle}>
             <div className={styles.sectionTitleIcon} />
             实时报警
-            <div className={styles.count}>共计<span style={{ color: '#FF5256' }}> 4 </span>条</div>
+            <div className={styles.count}>共计 <span style={{ color: '#FF5256' }}>
+              {(realTimeAlarm&&realTimeAlarm.length)?realTimeAlarm.length: 0 } 
+             </span> 条</div>
             {/* <div className={styles.history}>历史纪录>></div> */}
           </div>
           {realTimeAlarm && realTimeAlarm.length ? (

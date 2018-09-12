@@ -112,10 +112,10 @@ export default {
     // 获取实时报警
     *fetchRealTimeAlarm({ payload }, { call, put }) {
       const response = yield call(fetchAlarmInfo, payload)
-      if (response && response.error && response.error.code === 200) {
+      if (response&& response.code === 200) {
         yield put({
           type: 'saveRealTimeAlarm',
-          payload: response.result,
+          payload: response.data.list,
         })
       }
     },
