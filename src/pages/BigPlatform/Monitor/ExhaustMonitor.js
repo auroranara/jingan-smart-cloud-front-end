@@ -8,15 +8,12 @@ import ExSection from './ExSection';
 import timeIcon from './timeIcon.png';
 
 export default function ExhaustMonitor() {
-  // const {
-  //   data: { list = [] },
-  // } = this.props;
   const Option = Select.Option;
 
   const cards = (
     <Row gutter={16} style={{ margin: 0, height: '100%' }}>
       <Col style={{ height: '100%' }} span={6}>
-        <ExhaustCards num="8.91" unit="mg/m³" title="SO2" />
+        <ExhaustCards num="8.91" unit="mg/m³" title="SO₂" />
       </Col>
       <Col style={{ height: '100%' }} span={6}>
         <ExhaustCards num="8.91" unit="mg/m³" title="NOX" />
@@ -32,7 +29,7 @@ export default function ExhaustMonitor() {
   const twoCards = (
     <Row gutter={16} style={{ margin: 0, height: '100%' }}>
       <Col style={{ height: '100%' }} span={6}>
-        <ExhaustCards num="8.91" unit="mg/m³" title="SO2折算" />
+        <ExhaustCards num="8.91" unit="mg/m³" title="SO₂折算" />
       </Col>
       <Col style={{ height: '100%' }} span={6}>
         <ExhaustCards num="8.91" unit="mg/m³" title="NOX折算" />
@@ -56,16 +53,12 @@ export default function ExhaustMonitor() {
     </Row>
   );
 
-  // const noCards = <div className={styles.noCards} />;
-
   return (
     <ExSection title="废气监测">
       <section className={styles.container}>
         <span className={styles.selectIcon}>
           <Select defaultValue="厂区：一车间" style={{ width: 140 }}>
             <Option value="one">厂区：一车间</Option>
-            <Option value="two">厂区：二车间</Option>
-            <Option value="three">厂区：三车间</Option>
           </Select>
         </span>
         <Row span={24} style={{ height: '12%' }}>

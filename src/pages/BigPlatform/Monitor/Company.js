@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
-import WasteWaterWave from './components/WasteWaterWave';
+// import WasteWaterWave from './components/WasteWaterWave';
 import styles from './Company.less';
 
 import ExhaustMonitor from './ExhaustMonitor';
@@ -15,6 +15,32 @@ import EffluentMonitor from './EffluentMonitor';
   monitor,
 }))
 export default class App extends PureComponent {
+  state = {
+    waterSelectVal: '',
+  };
+
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+
+    // 根据传感器类型获取企业传感器列表
+    dispatch({
+      type: 'monitor/fetchCompanyDevices',
+      payload: { companyId, type: 3 },
+      callback: firstDeviceId => {
+        // console.log(firstDeviceId);
+        this.setState({ waterSelectVal: firstDeviceId });
+        // 获取传感器监测参数
+        dispatch({ type: 'monitor/fetchDeviceConfig', payload: { deviceId: firstDeviceId } });
+        // 获取传感器实时数据和状态
+        dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: firstDeviceId } });
+      },
+    });
+  }
   /**
    * 实时报警
    */
@@ -85,13 +111,21 @@ export default class App extends PureComponent {
   //   return <div />;
   // }
 
+  handleWaterSelect = value => {
+    const { dispatch } = this.props;
+    this.setState({ waterSelectVal: value });
+    dispatch({ type: 'monitor/fetchDeviceConfig', payload: { deviceId: value } });
+    dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: value } });
+  };
+
   render() {
     // 从props中获取企业名称
-    // const {
-    //   monitor: {
+    const {
+      monitor: { waterCompanyDevicesData, waterDeviceConfig, waterRealTimeData },
+    } = this.props;
 
-    //   },
-    // } = this.props;
+    const { waterSelectVal } = this.state;
+
     const companyName = '无锡晶安智慧';
 
     return (
@@ -132,7 +166,11 @@ export default class App extends PureComponent {
                   {this.renderGasMonitor}
                 </Col>
                 <Col span={8} style={{ height: '100%' }}>
-                  <EffluentMonitor />
+                  <EffluentMonitor
+                    selectVal={waterSelectVal}
+                    handleSelect={this.handleWaterSelect}
+                    data={{ waterCompanyDevicesData, waterDeviceConfig, waterRealTimeData }}
+                  />
                 </Col>
                 <Col span={8} style={{ height: '100%' }}>
                   <ExhaustMonitor />

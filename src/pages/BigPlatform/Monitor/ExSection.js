@@ -10,7 +10,7 @@ export default class ExSection extends PureComponent {
       overflow: 'hidden',
       height: '100%',
       backfaceVisibility: 'hidden',
-      boxShadow: '0 0 1.1em rgba(200, 70, 70, 0.9) inset',
+      boxShadow: '0 0 1.1em rgba(9, 103, 211, 0.9) inset',
       background: 'rgba(9,103,211,0.1)',
       ...style,
     };

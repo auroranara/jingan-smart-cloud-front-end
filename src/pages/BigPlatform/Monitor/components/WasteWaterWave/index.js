@@ -203,7 +203,7 @@ class WasteWaterWave extends PureComponent {
         </div>
         <div className={styles.title} style={{ width: height }}>
           <div className={styles.num} style={{ color: color }}>
-            {num}
+            {!num && num !== 0 ? '-' : num}
           </div>
           <div className={styles.unit}>{unit}</div>
         </div>

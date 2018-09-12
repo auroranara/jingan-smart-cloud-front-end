@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col, Select } from 'antd';
+import moment from 'moment';
 
 import styles from './EffluentMonitor.less';
 import ExSection from './ExSection';
@@ -7,67 +8,86 @@ import WasteWaterWave from './components/WasteWaterWave/index';
 
 import timeIcon from './timeIcon.png';
 
-export default function EffluentMonitor() {
-  const Option = Select.Option;
+const Option = Select.Option;
 
-  const cards = (
-    <Row gutter={24} style={{ margin: 0, height: '100%' }}>
-      <Col style={{ height: '100%' }} span={8}>
-        <WasteWaterWave height={110} percent={34} title="COD" num="12" unit="mg/L" />
-      </Col>
-      <Col style={{ height: '100%' }} span={8}>
-        <WasteWaterWave
-          height={110}
-          percent={34}
-          title="氨氧"
-          num="0.007"
-          unit="mg/L"
-          color="rgb(232, 103, 103)"
-        />
-      </Col>
-      <Col style={{ height: '100%' }} span={8}>
-        <WasteWaterWave height={110} percent={34} title="总磷" num="0.006" unit="mg/L" />
-      </Col>
-    </Row>
-  );
+const COLOR = 'rgb(200, 70, 70)';
 
-  const twoCards = (
-    <Row gutter={24} style={{ margin: 0, height: '100%' }}>
-      <Col style={{ height: '100%' }} span={8}>
-        <WasteWaterWave height={110} percent={34} title="PH" num="8.81" unit="" />
-      </Col>
-      <Col style={{ height: '100%' }} span={8}>
-        <WasteWaterWave height={110} percent={34} title="瞬时流量" num="12" unit="m³/h" />
-      </Col>
-      <Col style={{ height: '100%' }} span={8}>
-        <WasteWaterWave height={110} percent={34} title="累计流量" num="350" unit="m³/h" />
-      </Col>
-    </Row>
-  );
+function getDayTime(t) {
+  return moment(t).format('YYYY-MM-DD');
+}
 
+function getTime(t) {
+  return moment(t).format('HH:MM:SS');
+}
+
+export default function EffluentMonitor(props) {
   // const noCards = <div className={styles.noCards} />;
+  const {
+    selectVal,
+    handleSelect,
+    data: {
+      waterCompanyDevicesData: { list = [] },
+      waterDeviceConfig: { list: params = [] },
+      waterRealTimeData: { status, updateTime, realTimeData = {}, unnormalCodes = [] },
+    },
+  } = props;
+
+  let rtData = realTimeData;
+  if (status === '0') rtData = {};
+
+  const handledParams = params.map(({ id, code, desc, unit }) => ({
+    id,
+    desc,
+    unit,
+    value: rtData[code],
+    isBeyond: unnormalCodes.includes(code),
+  }));
+
+  const sectionStyle = {
+    boxShadow: `0 0 1.1em rgba(${status === '2' ? '200,70,70' : '9,103,211'}, 0.9) inset`,
+  };
 
   return (
-    <ExSection title="废水监测">
+    <ExSection title="废水监测" style={sectionStyle}>
       <section className={styles.container}>
         <span className={styles.selectIcon}>
-          <Select defaultValue="厂区：一车间" style={{ width: 140 }}>
-            <Option value="one">厂区：一车间</Option>
-            <Option value="two">厂区：二车间</Option>
-            <Option value="three">厂区：三车间</Option>
+          <Select style={{ width: 140 }} value={selectVal} onSelect={handleSelect}>
+            {list.map(({ deviceId, area, location }) => (
+              <Option key={deviceId}>{`${area}：${location}`}</Option>
+            ))}
           </Select>
         </span>
         <Row span={24} style={{ height: '12%' }}>
           <Col span={24} style={{ height: '100%' }}>
             <div className={styles.timeSection}>
               <span className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
-              <span className={styles.day}>2018-08-17</span>
-              <span className={styles.min}>15:30</span>
+              <span className={styles.day}>{getDayTime(updateTime)}</span>
+              <span className={styles.min}>{getTime(updateTime)}</span>
             </div>
           </Col>
         </Row>
-        <div className={styles.oneCards}>{cards}</div>
-        <div className={styles.twoCards}>{twoCards}</div>
+        {[0, 1].map(i => (
+          <div key={i} className={styles.oneCards}>
+            <Row gutter={24} style={{ margin: 0, height: '100%' }}>
+              {[0, 1, 2].map(index => {
+                let item = handledParams[2 * i + index] || {};
+                const { id, desc, unit, value, isBeyond } = item;
+                return (
+                  <Col key={id} style={{ height: '100%' }} span={8}>
+                    <WasteWaterWave
+                      height={110}
+                      percent={34}
+                      title={desc}
+                      num={value}
+                      unit={unit}
+                      color={isBeyond ? COLOR : undefined}
+                    />
+                  </Col>
+                );
+              })}
+            </Row>
+          </div>
+        ))}
       </section>
     </ExSection>
   );
