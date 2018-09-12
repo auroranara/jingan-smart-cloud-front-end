@@ -1,5 +1,5 @@
 import { stringify } from 'qs';
-import request from '../utils/request';
+import request from '../../utils/request';
 
 export async function fetchGridLocationById(params) {
   return request(`/acloud_new/v2/gridInfo/getMapLocation?${stringify(params)}`);
