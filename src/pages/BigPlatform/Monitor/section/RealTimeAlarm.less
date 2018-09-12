@@ -59,6 +59,7 @@
       height: calc(100% - 35px);
       padding: 0;
       overflow-y: scroll;
+      overflow-x: hidden;
       .alarmItem {
         height: 80px;
         padding: 15px;
@@ -100,6 +101,25 @@
           }
         }
       }
+    }
+    .sectionContent::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
+      background-color: #021c40;
+    }
+    .sectionContent::-webkit-scrollbar {
+      width: 7px;
+      background-color: #021c40;
+    }
+    .sectionContent::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #06428a;
+    }
+    .noAlarmContainer {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 35px);
+      padding: 0;
+      overflow: hidden;
     }
   }
   .mt10 {

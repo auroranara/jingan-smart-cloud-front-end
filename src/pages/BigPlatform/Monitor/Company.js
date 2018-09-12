@@ -14,13 +14,42 @@ import TopCenter from './section/TopCenter.js'
   monitor,
 }))
 export default class App extends PureComponent {
-  /**
-   * 实时报警
-   */
-  renderRealTimeAlarm() {
-    return (
-      <div></div>
-    );
+
+  componentDidMount() {
+    const {
+      dispatch,
+      match: { params: { companyId } },
+    } = this.props
+
+    // 获取监测指数和设备数量
+    dispatch({
+      type: 'monitor/fetchCountAndExponent',
+      payload: { companyId },
+    })
+    // 获取实时警报信息
+    dispatch({
+      type: 'monitor/fetchRealTimeAlarm',
+      payload: { companyId, overFlag: 0 },
+    })
+    this.alarmInternal = setInterval(() => {
+      dispatch({
+        type: 'monitor/fetchRealTimeAlarm',
+        payload: { companyId, overFlag: 0 },
+      })
+    }, 5000)
+    /*     setTimeout(() => {
+          dispatch({
+            type: 'monitor/saveRealTimeAlarm',
+            payload: [],
+          })
+          dispatch({
+            type: 'monitor/saveCountAndExponent',
+            payload: { score: 80, count: 80, outContact: 80, unnormal: 80 },
+          })
+        }, 5000); */
+  }
+  componentWillUnmount() {
+    clearInterval(this.alarmInternal)
   }
 
   /**
@@ -41,32 +70,6 @@ export default class App extends PureComponent {
     );
   }
 
-  /**
-   * 设备总数
-   */
-  renderDeviceTotalNumber() {
-    return (
-      <div></div>
-    );
-  }
-
-  /**
-   * 失联设备
-   */
-  renderMissingDevice() {
-    return (
-      <div></div>
-    );
-  }
-
-  /**
-   * 异常设备
-   */
-  renderAbnormalDevice() {
-    return (
-      <div></div>
-    );
-  }
 
   /**
    * 用电安全监测
@@ -106,11 +109,12 @@ export default class App extends PureComponent {
 
   render() {
     // 从props中获取企业名称
-    // const {
-    //   monitor: {
-
-    //   },
-    // } = this.props;
+    const {
+      monitor: {
+        countAndExponent,
+        realTimeAlarm,
+      },
+    } = this.props;
     const companyName = '无锡晶安智慧';
 
     return (
@@ -119,13 +123,19 @@ export default class App extends PureComponent {
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
-              <div className={styles.realTimeAlarmContainer}><RealTimeAlarm /></div>{/* zyc */}
+              <div className={styles.realTimeAlarmContainer}>
+                <RealTimeAlarm
+                  realTimeAlarm={realTimeAlarm}
+                />
+              </div>
               <div className={styles.videoMonitorContainer}>{this.renderVideoMonitor()}</div>
             </Col>
             <Col span={18} style={{ height: '100%' }}>
               <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-                <TopCenter />
-                {/* zyc */}
+                <TopCenter
+                  countAndExponent={countAndExponent}
+                  realTimeAlarm={realTimeAlarm}
+                />
                 <Col span={11} style={{ height: '100%' }}>{this.renderElectricitySafetyMonitor()}</Col>
               </Row>
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>

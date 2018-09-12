@@ -201,7 +201,7 @@ class NewWaterWave extends PureComponent {
             height={height * 2}
           />
         </div>
-        <div className={styles.text} style={{ width: height, fontSize: percentFontSize }}>
+        <div className={styles.text} style={{ fontSize: percentFontSize }}>
           {percent && <span style={{ color: percentColor, verticalAlign: 'center' }}>{percent}{!isNumber && '%'}</span>}
         </div>
       </div>

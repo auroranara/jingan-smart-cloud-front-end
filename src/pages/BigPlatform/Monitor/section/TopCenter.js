@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd'
 import WaterWave from 'components/Charts/WaterWave/New';
 import styles from './TopCenter.less'
-import classNames from 'classnames';
+// import classNames from 'classnames';
 
 import abnormalDevice from '../../../../assets/abnormal-device.png'
 import deviceTotalNumber from '../../../../assets/device-total-number.png'
@@ -11,37 +11,28 @@ import missingDevice from '../../../../assets/missing-device.png'
 export default class TopCenter extends PureComponent {
 
   // 检测指数
-  renderCurrentState = () => {
+  renderCurrentState = (number = 0) => {
+    const { realTimeAlarm } = this.props
+    const color = ((realTimeAlarm && realTimeAlarm.length || number < 80) && '#FF5256') || '#0082FD'
     return (
       <div className={styles.sectionMain}>
         <div className={styles.shadowIn}>
           <div className={styles.topTitle}>监测指数</div>
           <div className={styles.content}>
             <WaterWave
-              color="#FF5256"
+              color={color}
               percentColor="white"
               percentFontSize="48px"
-              percent={45}
+              percent={number}
               isNumber={true}
+            // style={{ width: '100%', height: 'calc(100% - 10px)' }}
             />
           </div>
         </div>
       </div>
     )
   }
-  // 设备总数
-  renderDeviceTotalNumber = () => {
-    return this.renderSection('设备总数', deviceTotalNumber, 500)
-  }
-  // 失联设备
-  renderMissingDevice = () => {
-    return this.renderSection('失联设备', missingDevice, 50)
-  }
-  // 报警设备
-  renderAbnormalDevice = () => {
-    return this.renderSection('报警设备', abnormalDevice, 10)
-  }
-  renderSection = (title, src, number) => {
+  renderSection = (title, src, number = 0) => {
     return (
       <div className={styles.sectionMain}>
         <div className={styles.shadowIn}>
@@ -62,15 +53,18 @@ export default class TopCenter extends PureComponent {
     )
   }
   render() {
+    const { countAndExponent: { score, count, outContact, unnormal } } = this.props
+
+
     return (
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
         <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-          <Col span={12} style={{ height: '100%' }}>{this.renderCurrentState()}</Col>
-          <Col span={12} style={{ height: '100%' }}>{this.renderDeviceTotalNumber()}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderCurrentState(score)}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderSection('设备总数', deviceTotalNumber, count)}</Col>
         </Row>
         <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
-          <Col span={12} style={{ height: '100%' }}>{this.renderMissingDevice()}</Col>
-          <Col span={12} style={{ height: '100%' }}>{this.renderAbnormalDevice()}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderSection('失联设备', missingDevice, outContact)}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderSection('报警设备', abnormalDevice, unnormal)}</Col>
         </Row>
       </Col>
     )
