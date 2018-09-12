@@ -1,0 +1,44 @@
+.sectionWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 1.8em #000;
+  .sectionWrapperIn {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
+    background: rgba(9, 103, 211, 0.06);
+    display: flex;
+    flex-direction: column;
+    .sectionTitle {
+      font-size: 16px;
+      margin-bottom: 5px;
+      line-height: 30px;
+      height: 30px;
+      display: inline-block;
+      padding-left: 10px;
+      font-weight: bold;
+      .titleBlock {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background-color: #0967d3;
+        margin-right: 10px;
+        position: relative;
+        top: 2px;
+      }
+    }
+    .sectionMain {
+      width: 100%;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

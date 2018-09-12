@@ -51,7 +51,7 @@ class WasteWaterWave extends PureComponent {
   };
 
   renderChart(type) {
-    const { percent, color = '#1890FF' } = this.props;
+    const { percent, color = 'rgb(9,103,211)' } = this.props;
     const data = percent / 100;
     const self = this;
     cancelAnimationFrame(this.timer);
@@ -186,7 +186,7 @@ class WasteWaterWave extends PureComponent {
 
   render() {
     const { radio } = this.state;
-    const { title, height } = this.props;
+    const { title, height, num, unit, color } = this.props;
     return (
       <div
         className={styles.waterWave}
@@ -202,8 +202,10 @@ class WasteWaterWave extends PureComponent {
           />
         </div>
         <div className={styles.title} style={{ width: height }}>
-          <div className={styles.num}>0.008</div>
-          <div>mg/L</div>
+          <div className={styles.num} style={{ color: color }}>
+            {!num && num !== 0 ? '-' : num}
+          </div>
+          <div className={styles.unit}>{unit}</div>
         </div>
         <div className={styles.text} style={{ width: height }}>
           {title && <span>{title}</span>}

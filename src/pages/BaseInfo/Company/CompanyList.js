@@ -499,12 +499,27 @@ export default class CompanyList extends PureComponent {
 
   render() {
     const {
-      company: { list, isLast },
+      company: {
+        data: {
+          pagination: { total },
+        },
+        list,
+        isLast,
+      },
       loading,
     } = this.props;
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            单位总数：
+            {total}{' '}
+          </div>
+        }
+      >
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}

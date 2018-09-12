@@ -257,50 +257,47 @@ export default {
     },
     // 添加关联企业
     *addAssociatedUnit({ payload, successCallback, errorCallback }, { call, put }) {
-      const response = yield call(addAssociatedUnit, payload)
+      const response = yield call(addAssociatedUnit, payload);
       if (response && response.code === 200) {
-        if (successCallback) successCallback()
+        if (successCallback) successCallback();
       } else if (errorCallback) {
-        errorCallback(response.msg)
+        errorCallback(response.msg);
       }
     },
     // 修改关联企业
     *editAssociatedUnit({ payload, successCallback, errorCallback }, { call }) {
-      const response = yield call(editAssociatedUnit, payload)
+      const response = yield call(editAssociatedUnit, payload);
       if (response && response.code === 200) {
-        if (successCallback) successCallback()
+        if (successCallback) successCallback();
       } else if (errorCallback) {
-        errorCallback(response.msg)
+        errorCallback(response.msg);
       }
     },
     // 绑定、解绑关联企业
     *chnageAccountStatus({ payload, success, error }, { call }) {
       const response = yield call(chnageAccountStatus, payload);
       if (response && response.code === 200) {
-        if (success) success()
+        if (success) success();
       } else if (error) {
-        error(response.msg)
+        error(response.msg);
       }
     },
   },
 
   reducers: {
-    saveAccountList(
-      state,
-      {
-        payload: {
-          list,
-          pagination: { pageNum, pageSize, total },
-        },
-      }
-    ) {
+    saveAccountList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
       return {
         ...state,
-        list: list,
-        pageNum,
+        list,
+        data: payload,
         isLast: pageNum * pageSize >= total,
       };
     },
+
     saveAccountLoadMoreList(
       state,
       {
