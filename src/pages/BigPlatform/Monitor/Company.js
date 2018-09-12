@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
-// import WasteWaterWave from './components/WasteWaterWave';
 import styles from './Company.less';
 import FcModule from '../FireControl/FcModule';
 import VideoSection from './sections/VideoSection';
@@ -13,6 +12,10 @@ import { ALL } from './components/gasStatus';
 
 import ExhaustMonitor from './sections/ExhaustMonitor';
 import EffluentMonitor from './sections/EffluentMonitor';
+
+// 实时报警
+import RealTimeAlarm from './sections/RealTimeAlarm.js'
+import TopCenter from './sections/TopCenter.js'
 
 /**
  * 动态监测
@@ -54,6 +57,27 @@ export default class App extends PureComponent {
         dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: firstDeviceId } });
       },
     });
+
+    // 获取监测指数和设备数量
+    dispatch({
+      type: 'monitor/fetchCountAndExponent',
+      payload: { companyId },
+    })
+    // 获取实时警报信息
+    dispatch({
+      type: 'monitor/fetchRealTimeAlarm',
+      payload: { companyId, overFlag: 0 },
+    })
+    this.alarmInternal = setInterval(() => {
+      dispatch({
+        type: 'monitor/fetchRealTimeAlarm',
+        payload: { companyId, overFlag: 0 },
+      })
+    }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.alarmInternal)
   }
 
   /**
@@ -62,16 +86,6 @@ export default class App extends PureComponent {
   renderRealTimeAlarm() {
     return <div />;
   }
-
-  /**
-   * 视频监控
-   */
-  // renderVideoMonitor() {
-  //   return (
-  //     <div></div>
-  //   );
-  // }
-
   /**
    * 当前状态
    */
@@ -106,29 +120,6 @@ export default class App extends PureComponent {
   renderElectricitySafetyMonitor() {
     return <div />;
   }
-
-  /**
-   * 可燃/有毒气体监测
-   */
-  // renderGasMonitor() {
-  //   return (
-  //     <div></div>
-  //   );
-  // }
-
-  /**
-   * 废水监测
-   */
-  // renderEffluentMonitor() {
-  //   return <div />;
-  // }
-
-  /**
-   * 废气监测
-   */
-  // renderExhaustMonitor() {
-  //   return <div />;
-  // }
 
   handleGasNumClick = (status) => {
     this.setState({ gasRotated: true, gasStatus: status });
@@ -167,6 +158,8 @@ export default class App extends PureComponent {
         waterCompanyDevicesData,
         waterDeviceConfig,
         waterRealTimeData,
+        countAndExponent,
+        realTimeAlarm,
       },
       dispatch,
     } = this.props;
@@ -187,40 +180,28 @@ export default class App extends PureComponent {
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
-              <div className={styles.realTimeAlarmContainer}>{this.renderRealTimeAlarm()}</div>
+              <div className={styles.realTimeAlarmContainer}>
+                <RealTimeAlarm
+                  realTimeAlarm={realTimeAlarm}
+                />
+              </div>
               <div className={styles.videoMonitorContainer}>
-              <VideoSection
-                data={allCamera}
-                showVideo={this.handleVideoShow}
-                style={{ transform: 'none' }}
-                backTitle="更多"
-                handleBack={() => this.handleVideoShow()}
-              />
+                <VideoSection
+                  data={allCamera}
+                  showVideo={this.handleVideoShow}
+                  style={{ transform: 'none' }}
+                  backTitle="更多"
+                  handleBack={() => this.handleVideoShow()}
+                />
               </div>
             </Col>
             <Col span={18} style={{ height: '100%' }}>
               <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-                <Col span={13} style={{ height: '100%' }}>
-                  <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-                    <Col span={12} style={{ height: '100%' }}>
-                      {this.renderCurrentState}
-                    </Col>
-                    <Col span={12} style={{ height: '100%' }}>
-                      {this.renderDeviceTotalNumber}
-                    </Col>
-                  </Row>
-                  <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
-                    <Col span={12} style={{ height: '100%' }}>
-                      {this.renderMissingDevice}
-                    </Col>
-                    <Col span={12} style={{ height: '100%' }}>
-                      {this.renderAbnormalDevice}
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={11} style={{ height: '100%' }}>
-                  {this.renderElectricitySafetyMonitor}
-                </Col>
+                <TopCenter
+                  countAndExponent={countAndExponent}
+                  realTimeAlarm={realTimeAlarm}
+                />
+                <Col span={11} style={{ height: '100%' }}>{this.renderElectricitySafetyMonitor()}</Col>
               </Row>
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
                 <Col span={8} style={{ height: '100%' }}>
