@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
-
+// import WasteWaterWave from './components/WasteWaterWave';
 import styles from './Company.less';
 import FcModule from '../FireControl/FcModule';
 import VideoSection from './sections/VideoSection';
@@ -10,6 +10,9 @@ import GasSection from './sections/GasSection';
 import GasBackSection from './sections/GasBackSection';
 import VideoPlay from './sections/VideoPlay';
 import { ALL } from './components/gasStatus';
+
+import ExhaustMonitor from './ExhaustMonitor';
+import EffluentMonitor from './EffluentMonitor';
 
 /**
  * 动态监测
@@ -23,6 +26,7 @@ export default class App extends PureComponent {
     gasStatus: ALL,
     videoVisible: false,
     videoKeyId: undefined,
+    waterSelectVal: '',
   };
 
   componentDidMount() {
@@ -36,15 +40,27 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 }});
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
+
+    // 根据传感器类型获取企业传感器列表
+    dispatch({
+      type: 'monitor/fetchCompanyDevices',
+      payload: { companyId, type: 3 },
+      callback: firstDeviceId => {
+        // console.log(firstDeviceId);
+        this.setState({ waterSelectVal: firstDeviceId });
+        // 获取传感器监测参数
+        dispatch({ type: 'monitor/fetchDeviceConfig', payload: { deviceId: firstDeviceId } });
+        // 获取传感器实时数据和状态
+        dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: firstDeviceId } });
+      },
+    });
   }
 
   /**
    * 实时报警
    */
   renderRealTimeAlarm() {
-    return (
-      <div></div>
-    );
+    return <div />;
   }
 
   /**
@@ -60,45 +76,35 @@ export default class App extends PureComponent {
    * 当前状态
    */
   renderCurrentState() {
-    return (
-      <div></div>
-    );
+    return <div />;
   }
 
   /**
    * 设备总数
    */
   renderDeviceTotalNumber() {
-    return (
-      <div></div>
-    );
+    return <div />;
   }
 
   /**
    * 失联设备
    */
   renderMissingDevice() {
-    return (
-      <div></div>
-    );
+    return <div />;
   }
 
   /**
    * 异常设备
    */
   renderAbnormalDevice() {
-    return (
-      <div></div>
-    );
+    return <div />;
   }
 
   /**
    * 用电安全监测
    */
   renderElectricitySafetyMonitor() {
-    return (
-      <div></div>
-    );
+    return <div />;
   }
 
   /**
@@ -113,20 +119,16 @@ export default class App extends PureComponent {
   /**
    * 废水监测
    */
-  renderEffluentMonitor() {
-    return (
-      <div></div>
-    );
-  }
+  // renderEffluentMonitor() {
+  //   return <div />;
+  // }
 
   /**
    * 废气监测
    */
-  renderExhaustMonitor() {
-    return (
-      <div></div>
-    );
-  }
+  // renderExhaustMonitor() {
+  //   return <div />;
+  // }
 
   handleGasNumClick = (status) => {
     this.setState({ gasRotated: true, gasStatus: status });
@@ -148,6 +150,13 @@ export default class App extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
+  handleWaterSelect = value => {
+    const { dispatch } = this.props;
+    this.setState({ waterSelectVal: value });
+    dispatch({ type: 'monitor/fetchDeviceConfig', payload: { deviceId: value } });
+    dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: value } });
+  };
+
   render() {
     // 从props中获取企业名称
     const {
@@ -155,6 +164,9 @@ export default class App extends PureComponent {
         allCamera = [],
         gasCount,
         gasList,
+        waterCompanyDevicesData,
+        waterDeviceConfig,
+        waterRealTimeData,
       },
       dispatch,
     } = this.props;
@@ -164,6 +176,7 @@ export default class App extends PureComponent {
       gasStatus,
       videoVisible,
       videoKeyId,
+      waterSelectVal,
     } = this.state;
 
     const companyName = '无锡晶安智慧';
@@ -189,15 +202,25 @@ export default class App extends PureComponent {
               <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
                 <Col span={13} style={{ height: '100%' }}>
                   <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-                    <Col span={12} style={{ height: '100%' }}>{this.renderCurrentState()}</Col>
-                    <Col span={12} style={{ height: '100%' }}>{this.renderDeviceTotalNumber()}</Col>
+                    <Col span={12} style={{ height: '100%' }}>
+                      {this.renderCurrentState}
+                    </Col>
+                    <Col span={12} style={{ height: '100%' }}>
+                      {this.renderDeviceTotalNumber}
+                    </Col>
                   </Row>
                   <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
-                    <Col span={12} style={{ height: '100%' }}>{this.renderMissingDevice()}</Col>
-                    <Col span={12} style={{ height: '100%' }}>{this.renderAbnormalDevice()}</Col>
+                    <Col span={12} style={{ height: '100%' }}>
+                      {this.renderMissingDevice}
+                    </Col>
+                    <Col span={12} style={{ height: '100%' }}>
+                      {this.renderAbnormalDevice}
+                    </Col>
                   </Row>
                 </Col>
-                <Col span={11} style={{ height: '100%' }}>{this.renderElectricitySafetyMonitor()}</Col>
+                <Col span={11} style={{ height: '100%' }}>
+                  {this.renderElectricitySafetyMonitor}
+                </Col>
               </Row>
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
                 <Col span={8} style={{ height: '100%' }}>
@@ -212,8 +235,16 @@ export default class App extends PureComponent {
                     />
                   </FcModule>
                 </Col>
-                <Col span={8} style={{ height: '100%' }}>{this.renderEffluentMonitor()}</Col>
-                <Col span={8} style={{ height: '100%' }}>{this.renderExhaustMonitor()}</Col>
+                <Col span={8} style={{ height: '100%' }}>
+                  <EffluentMonitor
+                    selectVal={waterSelectVal}
+                    handleSelect={this.handleWaterSelect}
+                    data={{ waterCompanyDevicesData, waterDeviceConfig, waterRealTimeData }}
+                  />
+                </Col>
+                <Col span={8} style={{ height: '100%' }}>
+                  <ExhaustMonitor />
+                </Col>
               </Row>
             </Col>
           </Row>
