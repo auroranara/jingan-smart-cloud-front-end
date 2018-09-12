@@ -64,7 +64,7 @@ class ElectricityCharts extends PureComponent {
     } = this.props;
     const { activeTab } = this.state;
     let option = {};
-    console.log(gsmsHstData, electricityPieces);
+    // console.log(gsmsHstData, electricityPieces);
     if (!gsmsHstData.today) return option;
     const {
       timeList: xData,
@@ -360,7 +360,7 @@ class ElectricityCharts extends PureComponent {
 
   render() {
     const { selectVal, handleSelect, data: { chartDeviceList: { list=[] } } } = this.props;
-    console.log(list);
+    // console.log(list);
 
     return (
       <div className={styles.ElectricityCharts} style={{ height: '100%', width: '100%' }}>
