@@ -19,6 +19,9 @@ import TopCenter from './sections/TopCenter.js'
 
 import ElectricityCharts from './Sections/ElectricityCharts';
 
+const DELAY = 5 * 1000;
+const CHART_DELAY = 10 * 60 * 1000;
+
 /**
  * 动态监测
  */
@@ -32,6 +35,7 @@ export default class App extends PureComponent {
     videoVisible: false,
     videoKeyId: undefined,
     waterSelectVal: '',
+    chartSelectVal: '',
   };
 
   componentDidMount() {
@@ -46,7 +50,7 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 }});
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
-    // 根据传感器类型获取企业传感器列表
+    // 根据传感器类型获取企业传感器列表 1 电 2 表示可燃有毒气体 3 水质 4 废气
     dispatch({
       type: 'monitor/fetchCompanyDevices',
       payload: { companyId, type: 3 },
@@ -60,6 +64,24 @@ export default class App extends PureComponent {
       },
     });
 
+    dispatch({
+      type: 'monitor/fetchCompanyDevices',
+      payload: { companyId, type: 1 },
+      callback: firstDeviceId => {
+        this.setState({ chartSelectVal: firstDeviceId });
+        // 获取传感器历史
+        dispatch({
+          type: 'monitor/fetchGsmsHstData',
+          payload: { deviceId: firstDeviceId },
+        });
+        // 获取上下线的区块
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v1' },
+        });
+      },
+    });
+
     // 获取监测指数和设备数量
     dispatch({
       type: 'monitor/fetchCountAndExponent',
@@ -70,61 +92,59 @@ export default class App extends PureComponent {
       type: 'monitor/fetchRealTimeAlarm',
       payload: { companyId, overFlag: 0 },
     })
-    this.alarmInternal = setInterval(() => {
+    this.alarmTimer = setInterval(() => {
       dispatch({
         type: 'monitor/fetchRealTimeAlarm',
         payload: { companyId, overFlag: 0 },
       })
     }, 5000);
+
+    // 轮询
+    this.pollTimer = setInterval(this.polling, DELAY);
+    this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
   }
 
   componentWillUnmount() {
-    clearInterval(this.alarmInternal)
+    clearInterval(this.alarmTimer);
+    clearInterval(this.pollTimer);
+    clearInterval(this.chartPollTimer);
   }
 
-  /**
-   * 实时报警
-   */
-  renderRealTimeAlarm() {
-    return <div />;
-  }
-  /**
-   * 当前状态
-   */
-  renderCurrentState() {
-    return <div />;
-  }
+  alarmTimer = null;
+  pollTimer = null;
+  chartPollTimer = null;
 
-  /**
-   * 设备总数
-   */
-  renderDeviceTotalNumber() {
-    return <div />;
-  }
+  polling = () => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } =  this.props;
 
-  /**
-   * 失联设备
-   */
-  renderMissingDevice() {
-    return <div />;
-  }
+    const { waterSelectVal } = this.state;
 
-  /**
-   * 异常设备
-   */
-  renderAbnormalDevice() {
-    return <div />;
-  }
+    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 }});
+    dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
-  /**
-   * 用电安全监测
-   */
-  renderElectricitySafetyMonitor = () => {
-    return (
-      <div style={{ height: '100%', width: '100%' }}>
-        <ElectricityCharts />
-      </div>
-    );
+    waterSelectVal && dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+  };
+
+  chartPolling = () => {
+    const { dispatch } =  this.props;
+    const { chartSelectVal } = this.state;
+
+    if (!chartSelectVal)
+      return;
+
+    dispatch({
+      type: 'monitor/fetchGsmsHstData',
+      payload: { deviceId: chartSelectVal },
+    });
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: chartSelectVal, code: 'v1' },
+    });
   };
 
   handleGasNumClick = (status) => {
@@ -154,6 +174,27 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: value } });
   };
 
+  handleChartSelect = value => {
+    const { dispatch } = this.props;
+    this.setState({ chartSelectVal: value });
+    // 获取传感器历史
+    dispatch({
+      type: 'monitor/fetchGsmsHstData',
+      payload: { deviceId: value },
+      error: () => {
+        dispatch({
+          type: 'monitor/gsmsHstData',
+          payload: {},
+        });
+      },
+    });
+    // 获取上下线的区块
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: value, code: 'v1' },
+    });
+  };
+
   render() {
     // 从props中获取企业名称
     const {
@@ -166,6 +207,9 @@ export default class App extends PureComponent {
         waterRealTimeData,
         countAndExponent,
         realTimeAlarm,
+        chartDeviceList,
+        gsmsHstData,
+        electricityPieces,
       },
       dispatch,
     } = this.props;
@@ -176,6 +220,7 @@ export default class App extends PureComponent {
       videoVisible,
       videoKeyId,
       waterSelectVal,
+      chartSelectVal,
     } = this.state;
 
     const companyName = '无锡晶安智慧';
@@ -208,7 +253,13 @@ export default class App extends PureComponent {
                   realTimeAlarm={realTimeAlarm}
                 />
                 <Col span={11} style={{ height: '100%' }}>
-                  {this.renderElectricitySafetyMonitor()}
+                  <div style={{ height: '100%', width: '100%' }}>
+                    <ElectricityCharts
+                      data={{chartDeviceList, gsmsHstData, electricityPieces}}
+                      selectVal={chartSelectVal}
+                      handleSelect={this.handleChartSelect}
+                    />
+                  </div>
                 </Col>
               </Row>
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>

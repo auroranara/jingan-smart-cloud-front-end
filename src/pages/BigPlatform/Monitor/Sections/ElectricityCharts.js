@@ -1,11 +1,13 @@
 import React, { PureComponent } from 'react';
-// import { Row, Col } from 'antd';
+import { Select } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
+
+const { Option } = Select;
 
 const tabList = [
   {
@@ -25,32 +27,32 @@ const tabList = [
     code: 'volte',
   },
 ];
-@connect(({ monitorCompany }) => ({
-  monitorCompany,
-}))
+// @connect(({ monitorCompany }) => ({
+//   monitorCompany,
+// }))
 class ElectricityCharts extends PureComponent {
   state = {
     activeTab: 0,
   };
 
-  componentDidMount() {
-    const { dispatch } = this.props;
-    // 获取传感器历史
-    dispatch({
-      type: 'monitorCompany/fetchGsmsHstData',
-      payload: {
-        deviceId: '0DNDTtrpRomhqSCSapzm9A', // need to get device id 1st
-      },
-    });
-    // 获取上下线的区块
-    dispatch({
-      type: 'monitorCompany/fetchPieces',
-      payload: {
-        deviceId: '0DNDTtrpRomhqSCSapzm9A', // need to get device id 1st
-        code: 'v1',
-      },
-    });
-  }
+  // componentDidMount() {
+  //   const { dispatch } = this.props;
+  //   // 获取传感器历史
+  //   dispatch({
+  //     type: 'monitorCompany/fetchGsmsHstData',
+  //     payload: {
+  //       deviceId: '0DNDTtrpRomhqSCSapzm9A', // need to get device id 1st
+  //     },
+  //   });
+  //   // 获取上下线的区块
+  //   dispatch({
+  //     type: 'monitorCompany/fetchPieces',
+  //     payload: {
+  //       deviceId: '0DNDTtrpRomhqSCSapzm9A', // need to get device id 1st
+  //       code: 'v1',
+  //     },
+  //   });
+  // }
 
   componentWillUnmount() {
     clearInterval(this.echartAnimate);
@@ -58,10 +60,11 @@ class ElectricityCharts extends PureComponent {
 
   getOptions = () => {
     const {
-      monitorCompany: { gsmsHstData, electricityPieces },
+      data: { gsmsHstData, electricityPieces },
     } = this.props;
     const { activeTab } = this.state;
     let option = {};
+    console.log(gsmsHstData, electricityPieces);
     if (!gsmsHstData.today) return option;
     const {
       timeList: xData,
@@ -162,7 +165,7 @@ class ElectricityCharts extends PureComponent {
             },
           ],
         };
-        if (pieces.length > 0) {
+        if (pieces && pieces.length > 0) {
           const markLine = pieces.filter(d => d.lte).map(item => {
             return {
               yAxis: item.lte,
@@ -289,6 +292,10 @@ class ElectricityCharts extends PureComponent {
   };
 
   onChartReadyCallback = chart => {
+    const {
+      data: { gsmsHstData },
+    } = this.props;
+    if (!gsmsHstData.today) return;
     if (!chart) return;
     this.currentIndex = -1;
     const chartAnimate = () => {
@@ -352,10 +359,18 @@ class ElectricityCharts extends PureComponent {
   };
 
   render() {
-    // const { time } = this.state;
+    const { selectVal, handleSelect, data: { chartDeviceList: { list=[] } } } = this.props;
+    console.log(list);
 
     return (
       <div className={styles.ElectricityCharts} style={{ height: '100%', width: '100%' }}>
+        <div className={styles.selectIcon}>
+          <Select style={{ width: 140 }} value={selectVal} onSelect={handleSelect}>
+            {list.map(({ deviceId, area, location }) => (
+              <Option key={deviceId}>{`${area}：${location}`}</Option>
+            ))}
+          </Select>
+        </div>
         <SectionWrapper title="用电安全监测">
           {this.renderTabs()}
           <ReactEcharts

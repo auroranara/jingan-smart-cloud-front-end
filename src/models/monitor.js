@@ -8,6 +8,8 @@ import {
   getGasList,
   fetchCountAndExponent,
   fetchAlarmInfo,
+  getGsmsHstData,
+  getPieces,
 } from '../services/bigPlatform/monitor';
 
 const DEFAULT_CODE = 500;
@@ -27,6 +29,9 @@ export default {
     waterCompanyDevicesData: [],
     waterDeviceConfig: [],
     waterRealTimeData: [],
+    chartDeviceList: [],
+    gsmsHstData: {},
+    electricityPieces: {},
   },
 
   effects: {
@@ -57,9 +62,21 @@ export default {
     },
     // 获取企业传感器列表 根据传感器类型
     *fetchCompanyDevices({ payload, callback }, { call, put }) {
+      const { type } = payload;
       const response = yield call(getCompanyDevices, payload);
       if (response.code === 200) {
-        yield put({ type: 'saveCompanyDevices', payload: response.data });
+        // 1 电 2 表示可燃有毒气体 3 水质 4 废气
+        switch(type) {
+          case 1:
+            yield put({ type: 'saveChartDeviceList', payload: response.data });
+            break;
+          case 3:
+            yield put({ type: 'saveCompanyDevices', payload: response.data });
+            break;
+          default:
+            // do noting;
+        }
+
         const {
           data: { list = [] },
         } = response;
@@ -106,6 +123,37 @@ export default {
     // *fetchHistoryAlarm({ payload }, { call, put }) {
     //   const response = yield call(fetchAlarmInfo, payload);
     // },
+    // 获取传感器历史
+    *fetchGsmsHstData({ payload, success, error }, { call, put }) {
+      const response = yield call(getGsmsHstData, payload);
+      if (response.code === 200 && !response.data.isError) {
+        yield put({
+          type: 'gsmsHstData',
+          payload: response.data.result,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 获取上下线的区块
+    *fetchPieces({ payload, success, error }, { call, put }) {
+      const response = yield call(getPieces, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'electricityPieces',
+          payload: response.data.list,
+          code: payload.code,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -117,6 +165,9 @@ export default {
     },
     saveGasList(state, action) {
       return { ...state, gasList: action.payload };
+    },
+    saveChartDeviceList(state, action) {
+      return { ...state, chartDeviceList: action.payload };
     },
     saveCompanyDevices(state, action) {
       return { ...state, waterCompanyDevicesData: action.payload };
@@ -145,5 +196,22 @@ export default {
         historyAlarm:payload,
       }
     }, */
+    gsmsHstData(state, action) {
+      return {
+        ...state,
+        gsmsHstData: action.payload,
+      };
+    },
+    electricityPieces(state, action) {
+      const obj = {};
+      obj[action.code] = action.payload;
+      return {
+        ...state,
+        electricityPieces: {
+          ...state.electricityPieces,
+          ...obj,
+        },
+      };
+    },
   },
 };
