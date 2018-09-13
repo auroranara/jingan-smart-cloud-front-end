@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col, Select } from 'antd';
+import moment from 'moment';
 
 import styles from './ExhaustMonitor.less';
 import ExhaustCards from '../components/ExhaustCards';
@@ -7,11 +8,19 @@ import ExSection from './ExSection';
 
 import timeIcon from '../imgs/timeIcon.png';
 
+function getDayTime(t) {
+  return moment(t).format('YYYY-MM-DD');
+}
+
+function getTime(t) {
+  return moment(t).format('HH:MM:SS');
+}
+
 export default function ExhaustMonitor() {
   const Option = Select.Option;
 
   const cards = (
-    <Row gutter={16} style={{ margin: 0, height: '100%' }}>
+    <Row gutter={12} style={{ margin: 0, height: '100%' }}>
       <Col style={{ height: '100%' }} span={6}>
         <ExhaustCards num="8.91" unit="mg/m³" title="SO₂" />
       </Col>
@@ -24,10 +33,6 @@ export default function ExhaustMonitor() {
       <Col style={{ height: '100%' }} span={6}>
         <ExhaustCards num="8.91" unit="m/s" title="流速" />
       </Col>
-    </Row>
-  );
-  const twoCards = (
-    <Row gutter={16} style={{ margin: 0, height: '100%' }}>
       <Col style={{ height: '100%' }} span={6}>
         <ExhaustCards num="8.91" unit="mg/m³" title="SO₂折算" />
       </Col>
@@ -40,15 +45,11 @@ export default function ExhaustMonitor() {
       <Col style={{ height: '100%' }} span={6}>
         <ExhaustCards num="8.91" unit="℃" title="温度" />
       </Col>
-    </Row>
-  );
-  const threeCards = (
-    <Row gutter={16} style={{ margin: 0, height: '100%' }}>
       <Col style={{ height: '100%' }} span={6}>
         <ExhaustCards num="8.91" unit="MPa" title="压力" />
       </Col>
       <Col style={{ height: '100%' }} span={6}>
-        <ExhaustCards num="8.91" unit="%" title="氧浓度" color="rgb(232, 103, 103)" />
+        <ExhaustCards num="8.91" unit="%" title="氧浓度" />
       </Col>
     </Row>
   );
@@ -65,14 +66,12 @@ export default function ExhaustMonitor() {
           <Col span={24} style={{ height: '100%' }}>
             <div className={styles.timeSection}>
               <span className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
-              <span className={styles.day}>2018-08-17</span>
-              <span className={styles.min}>15:30</span>
+              <span className={styles.day}>{getDayTime()}</span>
+              <span className={styles.min}>{getTime()}</span>
             </div>
           </Col>
         </Row>
         <div className={styles.oneCards}>{cards}</div>
-        <div className={styles.twoCards}>{twoCards}</div>
-        <div className={styles.threeCards}>{threeCards}</div>
       </section>
     </ExSection>
   );
