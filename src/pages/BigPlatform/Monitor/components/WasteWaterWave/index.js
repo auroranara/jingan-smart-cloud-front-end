@@ -51,7 +51,7 @@ class WasteWaterWave extends PureComponent {
   };
 
   renderChart(type) {
-    const { percent, color } = this.props;
+    const { percent, color = 'rgb(9,103,211)' } = this.props;
     console.log('colorcolorcolor', color);
     const data = percent / 100;
     const self = this;
