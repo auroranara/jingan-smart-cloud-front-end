@@ -146,9 +146,21 @@ class ElectricityCharts extends PureComponent {
       },
       series: [],
     };
+    const noData = {
+      title: {
+        show: true,
+        text: '暂未接入',
+        top: '30%',
+        left: 'center',
+        textStyle: {
+          color: '#fff',
+        },
+      },
+    };
     switch (tabList[activeTab].code) {
       case 'v1':
         const pieces = electricityPieces['v1'];
+        const v1 = v1List.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -187,8 +199,18 @@ class ElectricityCharts extends PureComponent {
             ],
           };
         }
+        if (v1.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       case 'temp':
+        const t1 = v2List.filter(a => a !== '-');
+        const t2 = v3List.filter(a => a !== '-');
+        const t3 = v4List.filter(a => a !== '-');
+        const t4 = v5List.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -222,8 +244,17 @@ class ElectricityCharts extends PureComponent {
             },
           ],
         };
+        if (t1.length === 0 && t2.length === 0 && t3.length === 0 && t4.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       case 'ampere':
+        const ia = iaList.filter(a => a !== '-');
+        const ib = ibList.filter(a => a !== '-');
+        const ic = icList.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -251,8 +282,17 @@ class ElectricityCharts extends PureComponent {
             },
           ],
         };
+        if (ia.length === 0 && ib.length === 0 && ic.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       case 'volte':
+        const ua = uaList.filter(a => a !== '-');
+        const ub = ubList.filter(a => a !== '-');
+        const uc = ucList.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -280,6 +320,12 @@ class ElectricityCharts extends PureComponent {
             },
           ],
         };
+        if (ua.length === 0 && ub.length === 0 && uc.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       default:
         option = {
