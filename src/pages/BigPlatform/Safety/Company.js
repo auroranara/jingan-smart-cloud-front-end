@@ -1688,6 +1688,7 @@ class CompanyLayout extends PureComponent {
           videoList={allCamera}
           visible={videoVisible}
           showList={false}
+          actionType="bigFireControl/fetchStartToPlay"
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
         />
