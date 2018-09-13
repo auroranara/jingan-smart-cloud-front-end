@@ -513,8 +513,8 @@ export default class FireControlBigPlatform extends PureComponent {
         </Row>
         {this.renderConfirmModal()}
         <VideoPlay
-          dispatch={dispatch}
-          actionType="bigFireControl/fetchStartToPlay"
+          // dispatch={dispatch}
+          // actionType="bigFireControl/fetchStartToPlay"
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
