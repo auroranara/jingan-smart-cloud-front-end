@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Select } from 'antd';
-import { connect } from 'dva';
+// import { connect } from 'dva';
 import classNames from 'classnames';
 import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
@@ -63,8 +63,19 @@ class ElectricityCharts extends PureComponent {
       data: { gsmsHstData, electricityPieces },
     } = this.props;
     const { activeTab } = this.state;
+    const noData = {
+      title: {
+        show: true,
+        text: '暂未接入',
+        top: '30%',
+        left: 'center',
+        textStyle: {
+          color: '#fff',
+        },
+      },
+    };
     let option = {};
-    if (!gsmsHstData.today) return option;
+    if (!gsmsHstData.today) return { ...option, ...noData };
     const {
       timeList: xData,
       iaList,
@@ -149,6 +160,7 @@ class ElectricityCharts extends PureComponent {
     switch (tabList[activeTab].code) {
       case 'v1':
         const pieces = electricityPieces['v1'];
+        const v1 = v1List.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -165,30 +177,40 @@ class ElectricityCharts extends PureComponent {
           ],
         };
         if (pieces && pieces.length > 0) {
-          const markLine = pieces.filter(d => d.lte).map(item => {
-            return {
-              yAxis: item.lte,
-            };
-          });
+          // const markLine = pieces.filter(d => d.lte).map(item => {
+          //   return {
+          //     yAxis: item.lte,
+          //   };
+          // });
+          // option = {
+          //   ...option,
+          //   visualMap: {
+          //     show: false,
+          //     pieces: pieces,
+          //   },
+          //   series: [
+          //     {
+          //       ...option.series[0],
+          //       markLine: {
+          //         silent: true,
+          //         data: markLine,
+          //       },
+          //     },
+          //   ],
+          // };
+        }
+        if (v1.length === 0) {
           option = {
             ...option,
-            visualMap: {
-              show: false,
-              pieces: pieces,
-            },
-            series: [
-              {
-                ...option.series[0],
-                markLine: {
-                  silent: true,
-                  data: markLine,
-                },
-              },
-            ],
+            ...noData,
           };
         }
         break;
       case 'temp':
+        const t1 = v2List.filter(a => a !== '-');
+        const t2 = v3List.filter(a => a !== '-');
+        const t3 = v4List.filter(a => a !== '-');
+        const t4 = v5List.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -222,8 +244,17 @@ class ElectricityCharts extends PureComponent {
             },
           ],
         };
+        if (t1.length === 0 && t2.length === 0 && t3.length === 0 && t4.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       case 'ampere':
+        const ia = iaList.filter(a => a !== '-');
+        const ib = ibList.filter(a => a !== '-');
+        const ic = icList.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -251,8 +282,17 @@ class ElectricityCharts extends PureComponent {
             },
           ],
         };
+        if (ia.length === 0 && ib.length === 0 && ic.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       case 'volte':
+        const ua = uaList.filter(a => a !== '-');
+        const ub = ubList.filter(a => a !== '-');
+        const uc = ucList.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -280,6 +320,12 @@ class ElectricityCharts extends PureComponent {
             },
           ],
         };
+        if (ua.length === 0 && ub.length === 0 && uc.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       default:
         option = {
