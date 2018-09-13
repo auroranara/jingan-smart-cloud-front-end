@@ -24,7 +24,6 @@
     right: 20px;
     z-index: 99;
     cursor: pointer;
-
     :global {
       .ant-select {
         font-size: 12px;
@@ -50,12 +49,18 @@
       }
     }
   }
+  .noCards {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+  }
 }
 
 .selectDropDown {
   padding: 4px 0;
   background-color: #022d5b;
-
   :global {
     .ant-select-dropdown-menu-item {
       padding-left: 16px;
@@ -64,7 +69,6 @@
       font-size: 12px;
       border-radius: 0;
       background-color: #022d5b;
-
       &:hover {
         color: #fff;
         background-color: #022d5b;

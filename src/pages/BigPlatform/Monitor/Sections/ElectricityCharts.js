@@ -6,6 +6,7 @@ import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
+import waterBg from '../imgs/waterBg.png';
 
 const { Option } = Select;
 
@@ -181,6 +182,9 @@ class ElectricityCharts extends PureComponent {
       },
       yAxis: {
         scale: true,
+        nameTextStyle: {
+          color: '#fff',
+        },
         axisLabel: {
           color: '#fff',
           fontSize: 14,
@@ -220,6 +224,10 @@ class ElectricityCharts extends PureComponent {
             formatter: params => {
               return this.tootipFormatter(params);
             },
+          },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(mA)',
           },
           series: [
             {
@@ -271,6 +279,10 @@ class ElectricityCharts extends PureComponent {
             formatter: params => {
               return this.tootipFormatter(params);
             },
+          },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(℃)',
           },
           series: [
             {
@@ -339,6 +351,10 @@ class ElectricityCharts extends PureComponent {
               return this.tootipFormatter(params);
             },
           },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(A)',
+          },
           series: [
             {
               type: 'line',
@@ -398,6 +414,10 @@ class ElectricityCharts extends PureComponent {
             formatter: params => {
               return this.tootipFormatter(params);
             },
+          },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(V)',
           },
           series: [
             {
@@ -518,26 +538,40 @@ class ElectricityCharts extends PureComponent {
 
     return (
       <div className={styles.ElectricityCharts} style={{ height: '100%', width: '100%' }}>
-        <div className={styles.selectIcon}>
-          <Select
-            value={selectVal}
-            onSelect={handleSelect}
-            dropdownClassName={styles.selectDropDown}
-          >
-            {list.map(({ deviceId, area, location }) => (
-              <Option key={deviceId}>{`${area}：${location}`}</Option>
-            ))}
-          </Select>
-        </div>
+        {list && list.length ? (
+          <div className={styles.selectIcon}>
+            <Select
+              value={selectVal}
+              onSelect={handleSelect}
+              dropdownClassName={styles.selectDropDown}
+            >
+              {list.map(({ deviceId, area, location }) => (
+                <Option key={deviceId}>{`${area}：${location}`}</Option>
+              ))}
+            </Select>
+          </div>
+        ) : null}
         <SectionWrapper title="用电安全监测">
           {this.renderTabs()}
-          <ReactEcharts
-            option={this.getOptions()}
-            style={{ flex: 1, width: '100%' }}
-            className="echarts-for-echarts"
-            notMerge={true}
-            onChartReady={this.onChartReadyCallback}
-          />
+          {list && list.length ? (
+            <ReactEcharts
+              option={this.getOptions()}
+              style={{ flex: 1, width: '100%' }}
+              className="echarts-for-echarts"
+              notMerge={true}
+              onChartReady={this.onChartReadyCallback}
+            />
+          ) : (
+            <div
+              className={styles.noCards}
+              style={{
+                background: `url(${waterBg})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: 'auto 55%',
+              }}
+            />
+          )}
         </SectionWrapper>
       </div>
     );
