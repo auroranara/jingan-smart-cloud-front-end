@@ -80,6 +80,56 @@ export default class App extends PureComponent {
           type: 'monitor/fetchPieces',
           payload: { deviceId: firstDeviceId, code: 'v1' },
         });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v2' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v3' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v4' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v5' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ia' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ib' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ic' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ua' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ub' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'uc' },
+        });
       },
     });
 
@@ -143,10 +193,10 @@ export default class App extends PureComponent {
       type: 'monitor/fetchGsmsHstData',
       payload: { deviceId: chartSelectVal },
     });
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: chartSelectVal, code: 'v1' },
-    });
+    // dispatch({
+    //   type: 'monitor/fetchPieces',
+    //   payload: { deviceId: chartSelectVal, code: 'v1' },
+    // });
   };
 
   handleGasNumClick = status => {
