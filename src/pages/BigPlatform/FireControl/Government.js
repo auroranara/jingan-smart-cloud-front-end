@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Col, Modal, Row, message } from 'antd';
 
-import { myParseInt, getOffset } from './utils';
+import { myParseInt } from './utils';
 import styles from './Government.less';
 import Head from './Head';
 import FcModule from './FcModule';
@@ -24,7 +24,6 @@ import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
 
-// const { confirm } = Modal;
 const { location } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
@@ -81,7 +80,7 @@ export default class FireControlBigPlatform extends PureComponent {
   confirmTimer = null;
   lookingUpTimer = null;
   mapItemList = [];
-  // hasGotCreateTime = false;
+  dropdownDOM = null;
 
   initFetch = () => {
     const { dispatch } = this.props;
@@ -105,12 +104,6 @@ export default class FireControlBigPlatform extends PureComponent {
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
       },
     });
-    // dispatch({
-    //   type: 'bigFireControl/fetchAllCamera',
-    //   payload: {
-    //     company_id: '_w1_0hUYSGCADpw_WqUMFg', // companyId
-    //   },
-    // });
   };
 
   polling = () => {
@@ -191,13 +184,6 @@ export default class FireControlBigPlatform extends PureComponent {
         // this.handleLookUpConfirmOk();
       }
     }, 1000);
-
-    // confirm({
-    //   title: '您是否确定进行单位查岗',
-    //   okText: '确定',
-    //   cancelText: '取消',
-    //   onOk: this.handleLookUpConfirmOk,
-    // });
   };
 
   // 跳转到正在查岗界面
@@ -248,10 +234,6 @@ export default class FireControlBigPlatform extends PureComponent {
   handleDangerRotate = () => {
     this.setState(({ isDangerRotated }) => ({ isDangerRotated: !isDangerRotated }));
   };
-
-  // rotateAll = () => {
-  //   this.setState(({ showReverse }) => ({ showReverse: !showReverse }));
-  // };
 
   handleMapBack = (isAlarmRotatedInit=false, isFire=false) => {
     // 需要重置警情模块，即地图中返回时(且是从有火警的地图中返回，点击无火警的公司由于不需要翻页，返回时无需处理)，警情模块初始化为实时警情
@@ -414,15 +396,6 @@ export default class FireControlBigPlatform extends PureComponent {
               <OverviewBackSection data={{ selected: mapSelected, companyOv }} />
             </FcModule>
             <div className={styles.gutter1} />
-            {/* <FcModule className={styles.alarmInfo} isRotated={showReverse}>
-              <AlarmSection
-                title="警情信息"
-                data={alarm}
-                handleFetch={payload => dispatch({ type: 'bigFireControl/fetchAlarm', payload })}
-                reverse={this.rotateAll}
-              />
-              <FcSection title="警情信息反面" isBack><Button onClick={this.rotateAll}>BACK</Button></FcSection>
-            </FcModule> */}
             <FcMultiRotateModule
               className={styles.alarmInfo}
               isRotated={isAlarmRotated}
@@ -482,49 +455,33 @@ export default class FireControlBigPlatform extends PureComponent {
                 </FcModule>
               </Col>
               <Col span={12} className={styles.centerRight}>
-                {/* <FcModule style={{ height: '100%' }} isRotated={showReverse}>
-                  <DangerSection title="网格隐患巡查" data={danger} />
-                  <FcSection title="网格隐患巡查反面" isBack />
-                </FcModule> */}
                 <FcMultiRotateModule
                   style={{ height: '100%' }}
                   isRotated={isDangerRotated}
                   showReverse={showReverse}
                   front={
                     <DangerSection
-                      title="辖区隐患巡查"
-                      backTitle="网格隐患巡查"
-                      data={danger}
+                      title="监督巡查/隐患"
+                      backTitle="辖区巡查/隐患"
+                      data={gridDanger}
                       handleRotate={this.handleDangerRotate}
                     />
                   }
                   back={
                     <DangerSection
-                      title="网格隐患巡查"
-                      backTitle="辖区隐患巡查"
-                      data={gridDanger}
+                      title="辖区巡查/隐患"
+                      backTitle="监督巡查/隐患"
+                      data={danger}
                       handleRotate={this.handleDangerRotate}
                       isBack
                     />
                   }
-                  reverse={<DangerSection title="单位隐患巡查" data={companyDanger} isBack />}
+                  reverse={<DangerSection title="单位巡查/隐患" data={companyDanger} isBack />}
                 />
               </Col>
             </Row>
           </Col>
           <Col span={6} style={HEIGHT_PERCNET}>
-            {/* <FcMultiRotateModule
-              className={styles.inspect}
-              isRotated={isLookUpRotated}
-              showReverse={showReverse}
-              front={<UnitLookUp handleRotateMethods={handleRotateMethods} />}
-              back={<UnitLookUpBack
-                handleRotateBack={this.handleUnitLookUpRotateBack}
-                lookUpShow={lookUpShow}
-                startLookUp={startLookUp}
-              />}
-              reverse={<UnitLookUpReverse isBack={isLookUpRotated} />}
-            /> */}
             <FcMultiRotateModule
               className={styles.inspect}
               isRotated={isLookUpRotated}
@@ -557,7 +514,7 @@ export default class FireControlBigPlatform extends PureComponent {
         {this.renderConfirmModal()}
         <VideoPlay
           dispatch={dispatch}
-          // style={{}}
+          actionType="bigFireControl/fetchStartToPlay"
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId

@@ -137,7 +137,7 @@ export default class DangerSection extends PureComponent {
       <FcSection
         title={title}
         backTitle={backTitle}
-        handleRotate={handleRotate}
+        handleBack={handleRotate}
         isBack={isBack}
         style={{ position: 'relative' }}
         // onMouseover={this.handleMouseenter}

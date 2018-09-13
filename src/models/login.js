@@ -18,21 +18,6 @@ export default {
   },
 
   effects: {
-    // *login({ payload, error }, { call, put }) {
-    //   const response = yield call(accountLogin, payload);
-    //   // Login successfully
-    //   if (response && response.code === 200) {
-    //     yield put({
-    //       type: 'changeLoginStatus',
-    //       payload: { type: payload.type, status: true, ...response.data },
-    //     });
-    //     // 登录1.0
-    //     yield call(accountLoginGsafe, payload);
-    //     reloadAuthorized();
-    //     yield put(routerRedux.replace({ pathname: '/' }));
-    //   } else if (error) error(response.msg)
-    // },
-
     *login({ payload, error, handleMoreUser }, { call, put }) {
       const response = yield call(accountLogin, payload);
       if (response && response.code === 200) {
@@ -41,8 +26,8 @@ export default {
           yield put({
             type: 'saveMoreUser',
             payload: response.data.moreUser,
-          })
-          if (handleMoreUser) handleMoreUser()
+          });
+          if (handleMoreUser) handleMoreUser();
         } else {
           // 如果不是多用户，直接登录进去
           yield put({
@@ -54,7 +39,7 @@ export default {
           reloadAuthorized();
           yield put(routerRedux.replace({ pathname: '/' }));
         }
-      } else error(response.msg)
+      } else error(response.msg);
     },
 
     *loginWithUserId({ payload }, { call, put }) {
@@ -111,15 +96,14 @@ export default {
       }
     },
     *changerUser({ payload, success, error }, { call, put }) {
-      const response = yield call(changerUser, payload)
+      const response = yield call(changerUser, payload);
       if (response && response.code === 200 && response.data && response.data.webToken) {
-        if (success) success()
+        if (success) success();
         yield setToken(response.data.webToken);
         reloadAuthorized();
         yield put(routerRedux.replace({ pathname: '/' }));
-        window.location.reload(true)
-
-      } else if (error) error()
+        window.location.reload(true);
+      } else if (error) error();
     },
   },
 
@@ -143,7 +127,7 @@ export default {
       return {
         ...state,
         users: payload,
-      }
+      };
     },
   },
 };

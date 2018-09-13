@@ -300,38 +300,45 @@ class GovernmentBigPlatform extends Component {
             //   name: company.company_name,
             // }),
             // mouseleave: () => {
-            //   this.setState({ infoWindowShow: false });
+            //   this.setState({ tooltipVisible: false });
             // },
           }}
         >
-          {level === 'A' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
-              alt=""
-              style={{ display: 'block', width: '26px', height: '26px' }}
-            />
-          )}
-          {level === 'B' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
-          {level === 'C' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
-          {level === 'D' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
+          <Tooltip
+            placement="bottom"
+            title={company.company_name}
+            // visible={tooltipVisible}
+            // trigger="hover"
+          >
+            {level === 'A' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
+                alt=""
+                style={{ display: 'block', width: '26px', height: '26px' }}
+              />
+            )}
+            {level === 'B' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
+                alt=""
+                style={{ display: 'block', width: '20px', height: '20px' }}
+              />
+            )}
+            {level === 'C' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
+                alt=""
+                style={{ display: 'block', width: '20px', height: '20px' }}
+              />
+            )}
+            {level === 'D' && (
+              <img
+                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
+                alt=""
+                style={{ display: 'block', width: '20px', height: '20px' }}
+              />
+            )}
+          </Tooltip>
         </Marker>
       );
     });
@@ -1076,18 +1083,20 @@ class GovernmentBigPlatform extends Component {
                   src={item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon}
                   size="small"
                 />
-                <Ellipsis
-                  lines={1}
-                  tooltip
-                  className={styles.riskDescription}
-                  style={{
-                    flex: 1,
-                    color: item[status] === 2 ? '#ff4848' : '#fff',
-                    lineHeight: '24px',
-                  }}
-                >
-                  {item[description] || '暂无信息'}
-                </Ellipsis>
+                <Tooltip placement="bottom" title={item[description] || '暂无信息'}>
+                  <Ellipsis
+                    lines={1}
+                    // tooltip
+                    className={styles.riskDescription}
+                    style={{
+                      flex: 1,
+                      color: item[status] === 2 ? '#ff4848' : '#fff',
+                      lineHeight: '24px',
+                    }}
+                  >
+                    {item[description] || '暂无信息'}
+                  </Ellipsis>
+                </Tooltip>
               </div>
               <div style={{ display: 'flex', padding: '0 0 10px 6px' }}>
                 <div

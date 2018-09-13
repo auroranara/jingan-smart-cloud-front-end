@@ -70,19 +70,19 @@ export default class GlobalHeaderRight extends PureComponent {
     return { backgroundColor: colors[number], verticalAlign: 'middle' };
   };
 
-  handleChangeUser = (userId) => {
-    const { dispatch } = this.props
+  handleChangeUser = userId => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'login/changerUser',
       payload: { id: userId },
       success: () => {
-        message.success('切换成功！')
+        message.success('切换成功！');
       },
       error: () => {
-        message.error('切换失败！')
+        message.error('切换失败！');
       },
-    })
-  }
+    });
+  };
 
   render() {
     const { currentUser, onMenuClick, theme } = this.props;
@@ -108,13 +108,19 @@ export default class GlobalHeaderRight extends PureComponent {
     );
     const users = (
       <Menu>
-        {currentUser.moreUser && currentUser.moreUser.length > 1 && currentUser.moreUser.map(item => (
-          <Menu.Item disabled={currentUser.id === item.userId} onClick={() => this.handleChangeUser(item.userId)} key={item.userId}>
-            {item.unitName}
-          </Menu.Item>
-        ))}
+        {currentUser.moreUser &&
+          currentUser.moreUser.length > 1 &&
+          currentUser.moreUser.map(item => (
+            <Menu.Item
+              disabled={currentUser.id === item.userId}
+              onClick={() => this.handleChangeUser(item.userId)}
+              key={item.userId}
+            >
+              {item.unitName}
+            </Menu.Item>
+          ))}
       </Menu>
-    )
+    );
     // const noticeData = this.getNoticeData();
     let className = styles.right;
     if (theme === 'dark') {
@@ -122,31 +128,32 @@ export default class GlobalHeaderRight extends PureComponent {
     }
     return (
       <div className={className}>
-        {currentUser && currentUser.isMoreUser && currentUser.moreUser.length > 1 && (
-          <Dropdown overlay={users}>
-            <span
-              className={styles.action}
-            >
-              <Icon type="swap" style={{ fontSize: '18px' }} />
-              <span style={{ verticalAlign: 'middle' }}>切换企业</span>
-            </span>
-          </Dropdown>
-        )}
         {currentUser &&
-          currentUser.unitType === 3 && (
-            <Tooltip title="数据维护">
-              <span
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.action}
-                title="数据维护"
-                onClick={this.handleGoGsafe}
-              >
-                <Icon type="hdd" />
-                <span style={{ marginLeft: 8, marginRight: 8, verticalAlign: 'middle' }}>数据维护</span>
+          currentUser.isMoreUser &&
+          currentUser.moreUser.length > 1 && (
+            <Dropdown overlay={users}>
+              <span className={styles.action}>
+                <Icon type="swap" style={{ fontSize: '18px' }} />
+                <span style={{ verticalAlign: 'middle' }}>切换企业</span>
               </span>
-            </Tooltip>
+            </Dropdown>
           )}
+        {currentUser && (
+          <Tooltip title="数据维护">
+            <span
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.action}
+              title="数据维护"
+              onClick={this.handleGoGsafe}
+            >
+              <Icon type="hdd" />
+              <span style={{ marginLeft: 8, marginRight: 8, verticalAlign: 'middle' }}>
+                数据维护
+              </span>
+            </span>
+          </Tooltip>
+        )}
         {currentUser.userName ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
@@ -163,8 +170,8 @@ export default class GlobalHeaderRight extends PureComponent {
             </span>
           </Dropdown>
         ) : (
-            <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-          )}
+          <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+        )}
         {/*
         <Button
           size="small"

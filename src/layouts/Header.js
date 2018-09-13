@@ -54,9 +54,7 @@ class HeaderView extends PureComponent {
   handleMenuClick = ({ key }) => {
     const {
       dispatch,
-      user: {
-        currentUser: { userId },
-      },
+      currentUser: { userId },
     } = this.props;
     if (key === 'userCenter') {
       dispatch(routerRedux.push('/account/center'));
