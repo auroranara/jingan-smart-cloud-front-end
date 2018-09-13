@@ -1008,7 +1008,7 @@ class GovernmentBigPlatform extends Component {
   };
 
   goCompany = company_id => {
-    window.open(`/acloud_new/#/big-platform/safety/company/${company_id}`, `_blank`);
+    window.open(`${window.publicPath}#/big-platform/safety/company/${company_id}`, `_blank`);
   };
 
   handleSearchSelect = ({ latitude, longitude, id }) => {
