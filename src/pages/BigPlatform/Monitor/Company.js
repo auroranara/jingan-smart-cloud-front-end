@@ -290,8 +290,8 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          dispatch={dispatch}
-          actionType="monitor/fetchStartToPlay"
+          // dispatch={dispatch}
+          // actionType="monitor/fetchStartToPlay"
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
