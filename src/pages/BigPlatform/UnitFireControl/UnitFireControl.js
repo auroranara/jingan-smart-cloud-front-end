@@ -8,7 +8,7 @@ import FireAlarmSystem from './components/FireAlarmSystem/FireAlarmSystem';
 import StatisticsOfMaintenance from './components/StatisticsOfMaintenance/StatisticsOfMaintenance';
 import StatisticsOfHiddenDanger from './components/StatisticsOfHiddenDanger/StatisticsOfHiddenDanger';
 import StatisticsOfFireControl from './components/StatisticsOfFireControl/StatisticsOfFireControl';
-import Rotate from './components/Rotate/Rotate';
+import Rotate from 'components/Rotate';
 import VideoPlay from '../FireControl/section/VideoPlay';
 import Ellipsis from '../../../components/Ellipsis';
 import resetKeyIcon from './images/resetKey.png';

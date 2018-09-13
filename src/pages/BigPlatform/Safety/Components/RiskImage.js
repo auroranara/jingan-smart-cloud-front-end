@@ -11,8 +11,8 @@ const isNumber = (value) => {
   return Object.prototype.toString.call(value) === '[object Number]';
 };
 
-// 默认高度
-const defaultHeight = '600px';
+const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
+const defaultFourColorImg = `${iconPrefix}defaultFourColorImg.png`;
 
 export default class App extends PureComponent {
   static propTypes = {
@@ -136,7 +136,7 @@ export default class App extends PureComponent {
         {this.renderChildren(children, { skew, rotate: Number.parseFloat(rotate) })}
       </div>
     ) : (
-      <div className={wrapperClassName} style={{ textAlign: 'center', ...wrapperStyle }}>暂未上传安全四色图</div>
+      <div className={wrapperClassName} style={{ textAlign: 'center',  background: `url(${defaultFourColorImg}) no-repeat center bottom / contain`, ...wrapperStyle }}></div>
     );
   }
 }

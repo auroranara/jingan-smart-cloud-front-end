@@ -22,7 +22,37 @@ import {
   getDangerLocationCompanyData,
   getAllCamera,
   getStartToPlay,
+  getMonitorData,
 } from '../services/bigPlatform/bigPlatform.js';
+import moment from 'moment';
+
+const transformHiddenDangerFields = ({
+  id,
+  item_id,
+  desc,
+  report_user_name,
+  report_time,
+  rectify_user_name,
+  plan_rectify_time,
+  real_rectify_time,
+  review_user_name,
+  status,
+  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
+  source_type_name,
+}) => ({
+  id,
+  item_id,
+  description: desc,
+  sbr: report_user_name,
+  sbsj: moment(+report_time).format('YYYY-MM-DD'),
+  zgr: rectify_user_name,
+  plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
+  real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
+  fcr: review_user_name,
+  status,
+  background,
+  source: source_type_name,
+})
 
 export default {
   namespace: 'bigPlatform',
@@ -97,7 +127,11 @@ export default {
     // 风险点信息
     riskPointInfoList: [],
     // 隐患详情
-    riskDetailList: [],
+    riskDetailList: {
+      ycq: [],
+      wcq: [],
+      dfc: [],
+    },
     // 隐患总数
     hiddenDanger: 0,
     // 安全人员信息
@@ -115,6 +149,8 @@ export default {
     dangerLocationCompanyData: [],
     allCamera: [],
     startToPlay: '',
+    // 监控数据
+    monitorData: {},
   },
 
   effects: {
@@ -328,9 +364,22 @@ export default {
     },
     *fetchRiskDetail({ payload, success }, { call, put }) {
       const response = yield call(getRiskDetail, payload);
+      const ycq = response.hiddenDangers.filter(({ status }) => +status === 7).sort((a, b) => {
+        return +a.plan_rectify_time - b.plan_rectify_time;
+      }).map(transformHiddenDangerFields);
+      const wcq = response.hiddenDangers.filter(({ status }) => +status === 1 || +status === 2).sort((a, b) => {
+        return +a.plan_rectify_time - b.plan_rectify_time;
+      }).map(transformHiddenDangerFields);
+      const dfc = response.hiddenDangers.filter(({ status }) => +status === 3).sort((a, b) => {
+        return +a.real_rectify_time - b.real_rectify_time;
+      }).map(transformHiddenDangerFields);
       yield put({
         type: 'saveRiskDetail',
-        payload: response.hiddenDangers,
+        payload: {
+          ycq,
+          wcq,
+          dfc,
+        },
       });
       if (success) {
         success();
@@ -438,6 +487,21 @@ export default {
       if (response && response.code === 200) {
         yield put({ type: 'startToPlay', payload: { src: response.data.url } });
         if (success) success(response);
+      }
+    },
+    // 获取监控球数据
+    *fetchMonitorData({ payload, success, error }, { call, put }) {
+      const response = yield call(getMonitorData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveMonitorData',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
       }
     },
   },
@@ -577,6 +641,12 @@ export default {
     },
     startToPlay(state, action) {
       return { ...state, startToPlay: action.payload };
+    },
+    saveMonitorData(state, { payload }) {
+      return {
+        ...state,
+        monitorData: payload,
+      };
     },
   },
 };

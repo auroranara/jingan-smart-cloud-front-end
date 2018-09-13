@@ -1,22 +1,28 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col, Icon, Select } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
 import ReactEcharts from 'echarts-for-react';
+import Slide from 'components/Slide';
+import MonitorBall from 'components/MonitorBall';
 
 // import Timer from './Components/Timer';
 import RiskImage from './Components/RiskImage.js';
 import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
+import CurrentHiddenDanger from './Components/CurrentHiddenDanger';
 import Header from '../UnitFireControl/components/Header/Header';
+import VideoPlay from '../FireControl/section/VideoPlay.js';
 
 import styles from './Company.less';
 import riskStyles from './Risk.less';
 import videoPointIcon from './img/videoPoint.png';
-import unselectedVideoPointIcon from './img/unselectedVideoPoint.png';
-import VideoPlay from '../FireControl/section/VideoPlay.js';
+// import unselectedVideoPointIcon from './img/unselectedVideoPoint.png';
+import importantIcon from './img/importantCompany.png';
+
+const { Option } = Select;
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -35,7 +41,6 @@ const areaIcon = `${iconPrefix}area.png`;
 const accidentTypeIcon = `${iconPrefix}accidentType.png`;
 const riskLevelIcon = `${iconPrefix}riskLevel.png`;
 const statusIcon = `${iconPrefix}status.png`;
-const importantIcon = `${iconPrefix}important.png`;
 const checkIcon = `${iconPrefix}check-icon.png`;
 const specialIcon = `${iconPrefix}special-icon.png`;
 const peopleIcon = `${iconPrefix}people-icon.png`;
@@ -120,19 +125,6 @@ const switchImageColor = (color, isException) => {
   }
   return result;
 };
-// 获取status
-const switchStatus = status => {
-  const value = +status;
-  if (value === 1 || value === 2) {
-    return 0;
-  } else if (value === 3) {
-    return 1;
-  } else if (value === 7) {
-    return 2;
-  } else {
-    return 0;
-  }
-};
 // 获取颜色和status
 const switchCheckStatus = value => {
   switch (value) {
@@ -206,29 +198,36 @@ const timeAxis = (() => {
   return timeAxis.reverse();
 })();
 
-@connect(({ bigPlatform }) => ({
+@connect(({ bigPlatform, loading }) => ({
   bigPlatform,
+  monitorDataLoading: loading.effects['bigPlatform/fetchMonitorData'],
 }))
 class CompanyLayout extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      // 之前选中的风险点id
+      prevSelectedId: null,
+      // 当前选中的风险点id
       selectedId: null,
+      // 当前选中的风险点索引
       selectedIndex: 0,
-      pieHeight: 0,
-      barHeight: 0,
       // 当前选中的四色图对应的风险点
       points: [],
-      // 四色图切换按钮显示数量
-      pageSize: 3,
-      // 当前显示的四色图切换按钮页数
-      currentIndex: 0,
       // 当前选中的四色图的id
       selectedFourColorImgId: null,
       // 当前选中的四色图的地址
       selectedFourColorImgUrl: '',
+      // 是否显示视频播放
       videoVisible: false,
+      // 当前播放的视频id
       videoKeyId: '',
+      // 是否显示当前隐患
+      isCurrentHiddenDangerShow: false,
+      // 当前四色图的所有风险点id
+      currentFourColorImgPointIds: [],
+      // percent
+      percent: 39,
     };
     this.myTimer = null;
     this.currentPieIndex = -1;
@@ -237,6 +236,9 @@ class CompanyLayout extends PureComponent {
     this.showTipTimer = null;
   }
 
+  /**
+   * 挂载后
+   */
   componentDidMount() {
     const {
       dispatch,
@@ -253,9 +255,14 @@ class CompanyLayout extends PureComponent {
       },
       success: ({ point, fourColorImg: [{ id, webUrl } = {}] }) => {
         // model中已对point和fourColorImg进行处理，确保point必有坐标值，fourColorImg必为数组
-        // 如果id不存在，则意味着没有四色图，则不做任何操作
+        // 如果id不存在，则意味着没有四色图
         if (id) {
           this.filterPointsByFourColorImgId(point, id, webUrl);
+        }
+        else {
+          this.setState({
+            isCurrentHiddenDangerShow: true,
+          });
         }
       },
     });
@@ -340,12 +347,57 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
       },
     });
+
+    // 获取监控数据
+    dispatch({
+      type: 'bigPlatform/fetchMonitorData',
+      payload: {
+        companyId,
+      },
+    });
   }
 
+  /**
+   * 销毁前
+   */
   componentWillUnmount() {
     clearTimeout(this.myTimer);
     clearInterval(this.highLightTimer);
+    clearInterval(this.showTipTimer);
   }
+
+  timeoutCallback = () => {
+    const { selectedIndex, currentFourColorImgPointIds } = this.state;
+    if (selectedIndex === currentFourColorImgPointIds.length - 1) {
+      this.handleClick(currentFourColorImgPointIds[0], 0);
+    } else {
+      this.handleClick(currentFourColorImgPointIds[selectedIndex + 1], selectedIndex + 1);
+    }
+  }
+
+  // 添加风险点轮播定时器
+  addTimeout = () => {
+    this.myTimer = setTimeout(this.timeoutCallback, 10000);
+  };
+
+    /**
+   * 根据当前选中的四色图id筛选出对应的风险点
+   * 将id和points保存到state中
+   * 自动选中第一个point
+   */
+  filterPointsByFourColorImgId = (point, id, webUrl) => {
+    const points = point.filter(({ fixImgId }) => fixImgId === id);
+    const currentFourColorImgPointIds = points.map(({ itemId }) => itemId);
+    const [itemId] = currentFourColorImgPointIds;
+    this.setState({
+      points,
+      selectedFourColorImgId: id,
+      selectedFourColorImgUrl: webUrl,
+      isCurrentHiddenDangerShow: false, // 切换四色图时必隐藏当前隐患模块
+      currentFourColorImgPointIds, // 切换四色图时保存选中四色图对应的所有风险点id
+    });
+    this.handleClick(itemId, 0);
+  };
 
   // 显示视频弹框
   handleVideoShow = keyId => {
@@ -355,24 +407,6 @@ class CompanyLayout extends PureComponent {
   // 隐藏视频弹框
   handleVideoClose = () => {
     this.setState({ videoVisible: false, videoKeyId: undefined });
-  };
-
-  /**
-   * 根据当前选中的四色图id筛选出对应的风险点
-   * 将id和points保存到state中
-   * 自动选中第一个point
-   */
-  filterPointsByFourColorImgId = (point, id, webUrl) => {
-    const points = point.filter(({ fixImgId }) => fixImgId === id);
-    const [{ itemId } = {}] = points;
-    this.setState({
-      points,
-      selectedFourColorImgId: id,
-      selectedFourColorImgUrl: webUrl,
-      selectedId: itemId || null,
-      selectedIndex: 0,
-    });
-    this.handleClick(itemId, 0);
   };
 
   /**
@@ -456,9 +490,9 @@ class CompanyLayout extends PureComponent {
   };
 
   /**
-   * 四色图切换按钮点击事件
+   * 四色图下拉框选择事件
    */
-  handleClickTab = (id, webUrl) => {
+  handleSelectFourColorImg = (id, {props: { url }}) => {
     const {
       bigPlatform: {
         companyMessage: { point },
@@ -468,18 +502,23 @@ class CompanyLayout extends PureComponent {
     if (selectedFourColorImgId === id) {
       return;
     }
-    this.filterPointsByFourColorImgId(point, id, webUrl);
+    this.filterPointsByFourColorImgId(point, id, url);
   };
 
   /* 风险点点击事件 */
   handleClick = (id, index, flag) => {
     const { selectedId } = this.state;
     clearTimeout(this.myTimer);
+    // 如果id不存在，则取消风险点选中，并移除定时器
     if (!id) {
+      this.setState({
+        selectedId: null,
+      });
       return;
     }
     this.addTimeout();
     if (selectedId === id) {
+      // 虽然现在看来flag其实完全可以不写，但是不清楚之前写的时候是怎么考虑的，所以就留着不动
       if (flag) {
         this.setState({
           selectedId: null,
@@ -490,6 +529,7 @@ class CompanyLayout extends PureComponent {
     this.setState({
       selectedId: id,
       selectedIndex: index,
+      isCurrentHiddenDangerShow: false, // 确保有风险点选中时当前隐患模块必然隐藏
     });
   };
 
@@ -500,109 +540,125 @@ class CompanyLayout extends PureComponent {
 
   // 鼠标移出隐患详情
   handleMouseLeave = () => {
-    const { selectedId } = this.state;
-    selectedId !== null && this.addTimeout();
-  };
-
-  // 添加风险点轮播定时器
-  addTimeout = () => {
-    this.myTimer = setTimeout(() => {
-      const { selectedIndex, points } = this.state;
-      if (selectedIndex === points.length - 1) {
-        this.handleClick(points[0].itemId, 0);
-      } else {
-        this.handleClick(points[selectedIndex + 1].itemId, selectedIndex + 1);
-      }
-    }, 10000);
+    const { currentFourColorImgPointIds } = this.state;
+    currentFourColorImgPointIds.length > 0 && this.addTimeout();
   };
 
   /**
-   * 上一页
+   * 显示当前隐患
    */
-  handlePrevPage = () => {
-    this.setState(({ currentIndex }) => ({
-      currentIndex: currentIndex - 1,
+  handleShowCurrentHiddenDanger = () => {
+    // 显示当前隐患模块
+    this.setState(({ selectedId }) => ({
+      prevSelectedId: selectedId,
+      isCurrentHiddenDangerShow: true,
     }));
-  };
-
-  /**
-   * 下一页
-   */
-  handleNextPage = () => {
-    this.setState(({ currentIndex }) => ({
-      currentIndex: currentIndex + 1,
-    }));
-  };
-
-  /**
-   * 头部
-   */
-  // renderHeader() {
-  //   return (
-  //     <header className={styles.mainHeader}>
-  //       <span className={styles.mainHeaderTitle}>晶 安 智 慧 安 全 云 平 台</span>
-  //       <div className={styles.mainHeaderTime}>
-  //         <Timer />
-  //       </div>
-  //     </header>
-  //   );
-  // }
-
-  /**
-   * 主体
-   */
-  renderBody() {
-    return (
-      <Row
-        gutter={24}
-        className={styles.mainBody}
-        style={{ margin: '0', padding: '16px 12px 24px', overflow: 'hidden' }}
-      >
-        <Col span={6} className={styles.column}>
-          <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-            {this.renderLeftSection()}
-            {this.renderSafety()}
-            {this.renderRisk()}
-          </div>
-        </Col>
-        <Col span={12} className={styles.column}>
-          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-            {this.renderCenterSection()}
-          </div>
-        </Col>
-        <Col span={6} className={styles.column}>
-          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-            {this.renderRightSection()}
-          </div>
-        </Col>
-      </Row>
-    );
+    // 取消风险点选中并移除定时器
+    this.handleClick(null, 0);
   }
 
   /**
-   * 左边部分
+   * 隐藏当前隐患
    */
-  renderLeftSection() {
-    return (
-      <div
-        style={{ width: '100%', height: '100%', overflow: 'hidden', transition: 'opacity 0.5s' }}
-        ref={leftSection => (this.leftSection = leftSection)}
-      >
-        {this.renderLeftTopSection()}
-        {this.renderLeftBottomSection()}
-      </div>
-    );
+  handleHideCurrentHiddenDanger = () => {
+    const { selectedIndex, currentFourColorImgPointIds } = this.state;
+    // 隐藏当前隐患模块
+    this.setState({
+      isCurrentHiddenDangerShow: false,
+    });
+    // 选中之前选中的风险点并添加定时器
+    this.handleClick(currentFourColorImgPointIds[selectedIndex], selectedIndex);
   }
 
   /**
-   * 中间部分
+   * 监控球点击事件
    */
-  renderCenterSection() {
+  handleClickMonitorBall = () => {
+    const { match: { params: { companyId } } } = this.props;
+    window.open(`${window.publicPath}#/big-platform/monitor/company/${companyId}`)
+  }
+
+  /**
+   * 监控球
+   */
+  renderMonitorBall() {
+    const {
+      bigPlatform: {
+        monitorData: {
+          score=0,
+          count=0,
+          unnormal=0,
+        },
+      },
+      monitorDataLoading,
+    } = this.props;
+    // 当percent小于80或者报警时，显示异常颜色
+    const color = (+score < 80 || +unnormal > 0) ? '#ff7863' : '#00A8FF';
+    // 当percent为0时不显示监控球
+    return +count !== 0 && !monitorDataLoading ? (
+      <MonitorBall
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          zIndex: '9',
+          boxShadow: `0 0 1em ${color}`,
+        }}
+        height={128}
+        color={color}
+        percent={score}
+        title="安全监测"
+        onClick={this.handleClickMonitorBall}
+      />
+    ) : null;
+  }
+
+  /**
+   * 四色图下拉框
+   */
+  renderFourColorImgSelect() {
+    const {
+      bigPlatform: {
+        companyMessage: { fourColorImg = [] },
+      },
+    } = this.props;
+    const { selectedFourColorImgId } = this.state;
+    return fourColorImg.length > 0 ? (
+      <Select
+        value={selectedFourColorImgId}
+        onSelect={this.handleSelectFourColorImg}
+        className={riskStyles.fourColorImgSelect}
+        style={{
+          position: "absolute",
+          top: '16px',
+          left: 0,
+          width: 150,
+        }}
+        dropdownClassName={riskStyles.fourColorImgSelectDropDown}
+      >
+        {fourColorImg.map(({ id, fileName='未命名', webUrl }) => {
+          const isSelected = selectedFourColorImgId === id;
+          const i = fileName.indexOf('.');
+          return (
+            <Option key={id} value={id} url={webUrl} style={{ backgroundColor: isSelected && '#0967D3', color: isSelected && '#fff' }}>{i === -1 ? fileName : fileName.slice(0, i)}</Option>
+          );
+        })}
+      </Select>
+    ) : null;
+  }
+
+  /**
+   * 当前隐患
+   */
+  renderCurrentHiddenDanger() {
+    const { bigPlatform: { riskDetailList: { ycq=[], wcq=[], dfc=[] } } } = this.props;
     return (
-      <div style={{ width: '100%', height: '100%' }}>
-        {this.renderCenterTopSection()}
-        {this.renderCenterBottomSection()}
-      </div>
+      <CurrentHiddenDanger
+        ycq={ycq}
+        wcq={wcq}
+        dfc={dfc}
+        onClose={this.handleHideCurrentHiddenDanger}
+      />
     );
   }
 
@@ -612,46 +668,37 @@ class CompanyLayout extends PureComponent {
    */
   renderRightSection() {
     const {
-      bigPlatform: { riskDetailList },
+      bigPlatform: { riskDetailList: { ycq=[], wcq=[], dfc=[] } },
     } = this.props;
-    const { selectedId } = this.state;
-    let data =
+    const { prevSelectedId, selectedId, isCurrentHiddenDangerShow, selectedFourColorImgId, currentFourColorImgPointIds } = this.state;
+    const riskDetailList = ycq.concat(wcq, dfc);
+    let data = isCurrentHiddenDangerShow ? (prevSelectedId === null ? riskDetailList.filter(({ item_id }) => currentFourColorImgPointIds.includes(item_id))
+    : riskDetailList.filter(({ item_id }) => item_id === prevSelectedId)) : (
       selectedId === null
-        ? []
-        : riskDetailList.filter(({ item_id, status }) => item_id === selectedId && +status !== 4);
-    data = data.map(
-      ({
-        id,
-        desc: description,
-        report_user_name: sbr,
-        report_time: sbsj,
-        rectify_user_name: zgr,
-        plan_rectify_time: zgsj,
-        review_user_name: fcr,
-        status,
-        hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
-      }) => ({
-        id,
-        description,
-        sbr,
-        sbsj: moment(+sbsj).format('YYYY-MM-DD'),
-        zgr,
-        zgsj: moment(+zgsj).format('YYYY-MM-DD'),
-        fcr,
-        status: switchStatus(status),
-        background,
-      })
-    );
+        ? riskDetailList.filter(({ item_id }) => currentFourColorImgPointIds.includes(item_id))
+        : riskDetailList.filter(({ item_id }) => item_id === selectedId));
 
-    return (
-      <RiskDetail
-        style={{
-          height: '100%',
-        }}
-        data={data}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-      />
+    // 当没有四色图时，默认显示当前隐患，否则显示选中的风险点对应的隐患详情
+    return !selectedFourColorImgId ? this.renderCurrentHiddenDanger(riskDetailList) : (
+      <Slide
+        // offset={{
+        //   left: 12,
+        // }}
+        direction="left"
+        showExtra={isCurrentHiddenDangerShow}
+        extra={(
+          this.renderCurrentHiddenDanger(riskDetailList)
+        )}
+      >
+        <RiskDetail
+          style={{
+            height: '100%',
+          }}
+          data={data}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+        />
+      </Slide>
     );
   }
 
@@ -753,9 +800,13 @@ class CompanyLayout extends PureComponent {
                 <div className={styles.summaryNum}>{specialEquipment}</div>
               </div>
 
-              <div className={styles.summaryHalf} style={{ backgroundImage: `url(${hdIcon})` }}>
+              <div
+                className={`${styles.summaryHalf} ${styles.hoverable}`}
+                style={{ backgroundImage: `url(${hdIcon})`, cursor: 'pointer' }}
+                onClick={this.handleShowCurrentHiddenDanger}
+              >
                 <div className={styles.summaryText}>
-                  <span className={styles.fieldName}>隐患数量</span>
+                  <span className={styles.fieldName}>当前隐患</span>
                 </div>
                 <div className={styles.summaryNum}>{hiddenDanger}</div>
               </div>
@@ -893,30 +944,20 @@ class CompanyLayout extends PureComponent {
   renderCenterTopSection() {
     const {
       bigPlatform: {
-        companyMessage: { fourColorImg = [] },
         riskPointInfoList,
         allCamera = [],
       },
     } = this.props;
     const {
       selectedId,
-      pageSize,
-      currentIndex,
       selectedFourColorImgId,
       selectedFourColorImgUrl,
       points,
     } = this.state;
-    // 页数
-    const pageCount = Math.max(Math.ceil(fourColorImg.length / pageSize), 1);
-    // 是否为第一页
-    const isFirst = currentIndex === 0;
-    // 是否为最后一页
-    const isLast = currentIndex === pageCount - 1;
-    // 当前页的第一个元素
-    const currentFirstIndex = currentIndex * pageSize;
 
     return (
       <div className={riskStyles.fourColorImgContainer}>
+        {this.renderMonitorBall()}
         <div className={riskStyles.fourColorImgTitle}>安全风险四色图</div>
         <RiskImage
           src={selectedFourColorImgUrl}
@@ -1033,70 +1074,7 @@ class CompanyLayout extends PureComponent {
                 </Fragment>
               );
             })}
-          <div className={riskStyles.fourColorImgPaginationContainer}>
-            <div className={riskStyles.tabList}>
-              {fourColorImg.map(({ id, webUrl, fileName = '未命名' }, index) => {
-                if (index < currentFirstIndex || index >= currentFirstIndex + pageSize) {
-                  return null;
-                }
-                const backgroundColor = selectedFourColorImgId === id ? '#0967D3' : undefined;
-                const i = fileName.indexOf('.');
-                return (
-                  <div className={riskStyles.tabWrapper} key={id}>
-                    <div
-                      className={riskStyles.tab}
-                      style={{
-                        backgroundColor,
-                        transform: selectedFourColorImgId === id ? 'translateX(0)' : undefined,
-                      }}
-                      onClick={() => {
-                        this.handleClickTab(id, webUrl);
-                      }}
-                    >
-                      {i === -1 ? fileName : fileName.slice(0, i)}
-                      <div
-                        className={riskStyles.tabRight}
-                        style={{ borderLeftColor: backgroundColor }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            {pageCount > 1 && (
-              <div className={riskStyles.paginationWrapper}>
-                <div className={riskStyles.paginationWrapperRight} />
-                <div className={riskStyles.paginationList}>
-                  <div className={riskStyles.paginationItem}>
-                    <Icon
-                      type="caret-up"
-                      style={{
-                        fontSize: 14,
-                        color: isFirst ? '#00438a' : '#0967D3',
-                        cursor: isFirst ? 'not-allowed' : 'pointer',
-                      }}
-                      onClick={() => {
-                        !isFirst && this.handlePrevPage();
-                      }}
-                    />
-                  </div>
-                  <div className={riskStyles.paginationItem}>
-                    <Icon
-                      type="caret-down"
-                      style={{
-                        fontSize: 14,
-                        color: isLast ? '#00438a' : '#0967D3',
-                        cursor: isLast ? 'not-allowed' : 'pointer',
-                      }}
-                      onClick={() => {
-                        !isLast && this.handleNextPage();
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          {this.renderFourColorImgSelect()}
         </RiskImage>
         <div className={riskStyles.fourColorImgLabelContainer}>
           <div className={riskStyles.fourColorImgLabel}>
@@ -1672,7 +1650,38 @@ class CompanyLayout extends PureComponent {
     return (
       <div className={styles.main}>
         <Header title="晶安智慧安全云平台" />
-        {this.renderBody() /* 主体 */}
+        <Row
+          gutter={24}
+          className={styles.mainBody}
+          style={{ margin: '0', padding: '16px 12px 24px', overflow: 'hidden' }}
+        >
+          <Col span={6} className={styles.column}>
+            <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+              <div
+                style={{ width: '100%', height: '100%', overflow: 'hidden', transition: 'opacity 0.5s' }}
+                ref={leftSection => (this.leftSection = leftSection)}
+              >
+                {this.renderLeftTopSection()}
+                {this.renderLeftBottomSection()}
+              </div>
+              {this.renderSafety()}
+              {this.renderRisk()}
+            </div>
+          </Col>
+          <Col span={12} className={styles.column}>
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <div style={{ width: '100%', height: '100%' }}>
+                {this.renderCenterTopSection()}
+                {this.renderCenterBottomSection()}
+              </div>
+            </div>
+          </Col>
+          <Col span={6} className={styles.column}>
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              {this.renderRightSection()}
+            </div>
+          </Col>
+        </Row>
         <VideoPlay
           dispatch={dispatch}
           style={{ zIndex: 99999999 }}

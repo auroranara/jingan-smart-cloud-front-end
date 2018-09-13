@@ -122,3 +122,10 @@ export async function getAllCamera(params) {
 export async function getStartToPlay(params) {
   return request(`/acloud_new/dai/startToPlay?${stringify(params)}`);
 }
+
+/**
+ * 获取监控球相关数据
+ */
+export async function getMonitorData(params) {
+  return request(`/acloud_new/v2/monitor/countStatus.json?${stringify(params)}`);
+}

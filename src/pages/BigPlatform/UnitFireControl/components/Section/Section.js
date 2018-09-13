@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import ReactDOM from 'react-dom';
+import { Icon } from 'antd';
 import styles from './Section.less';
 
 /**
@@ -235,7 +235,7 @@ export default class App extends PureComponent {
    * 渲染函数
    */
   render() {
-    const { isScroll, isCarousel, title, fixedContent, children, className, style, contentStyle } = this.props;
+    const { isScroll, isCarousel, closable, title, fixedContent, children, className, style, contentStyle, onClose } = this.props;
     const { isScrollShow, isPlaceHolderShow, isPaddingRightChange, currentIndex } = this.state;
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
     let overflowY = undefined;
@@ -269,6 +269,19 @@ export default class App extends PureComponent {
             <div className={styles.title}>
               <div className={styles.titleIcon}></div>
               {title}
+              {closable && (
+                <Icon
+                  type="close"
+                  style={{
+                    position: 'absolute',
+                    top: '0',
+                    right: '0',
+                    fontSize: '20px',
+                    cursor: 'pointer',
+                  }}
+                  onClick={onClose}
+                />
+              )}
             </div>
           )}
           {fixedContent && (

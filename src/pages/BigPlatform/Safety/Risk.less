@@ -113,6 +113,48 @@
     }
   }
 }
+/* 四色图下拉框 */
+div.fourColorImgSelect {
+  color: #fff;
+
+  :global {
+    .ant-select-selection {
+      background-color: #0967D3;
+      border-radius: 32px;
+      border-color: #0967D3;
+    }
+    .ant-select-selection__rendered {
+      margin-left: 15px;
+      margin-right: 15px;
+    }
+    .ant-select-arrow {
+      color: #fff;
+    }
+    .ant-select-selection-selected-value {
+      padding-right: 8px;
+    }
+  }
+}
+div.fourColorImgSelectDropDown {
+  padding: 4px 0;
+  background-color: #022d5b;
+
+  :global {
+    .ant-select-dropdown-menu-item {
+      padding-left: 16px;
+      padding-right: 24px;
+      color: #4f6793;
+      font-weight: normal;
+      border-radius: 0;
+      background-color: #022d5b;
+
+      &:hover {
+        color: #fff;
+        background-color: #022d5b;
+      }
+    }
+  }
+}
 
 /* 中等大小 */
 @media screen and (min-width: 1200px) and (max-width: 1599px) {
