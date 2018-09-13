@@ -35,11 +35,24 @@ const PendingInfoItem = ({ data }) => {
   const { id, t, install_address, component_region, component_no, label, pendingInfoType } = data;
   const isFire = pendingInfoType === '火警';
   return (
-    <div key={id} className={styles.pendingInfoItem} style={{ color: isFire?'#FF6464':'#00ADFF' }}>
-      <div style={{ backgroundImage: `url(${isFire?fireIcon:faultIcon})` }}>{pendingInfoType}<div className={styles.pendingInfoItemTime}>{t}</div></div>
-      <div>{component_region}回路{component_no}号</div>
+    <div
+      key={id}
+      className={styles.pendingInfoItem}
+      style={{ color: isFire ? '#FF6464' : '#00ADFF' }}
+    >
+      <div style={{ backgroundImage: `url(${isFire ? fireIcon : faultIcon})` }}>
+        {pendingInfoType}
+        <div className={styles.pendingInfoItemTime}>{t}</div>
+      </div>
+      <div>
+        {component_region}
+        回路
+        {component_no}号
+      </div>
       <div>{label}</div>
-      <div style={{ backgroundImage: `url(${isFire?positionRedIcon:positionBlueIcon})` }}>{install_address}</div>
+      <div style={{ backgroundImage: `url(${isFire ? positionRedIcon : positionBlueIcon})` }}>
+        {install_address}
+      </div>
     </div>
   );
 };
@@ -48,42 +61,109 @@ const PendingInfoItem = ({ data }) => {
  * 隐患巡查记录项
  */
 const HiddenDangerRecord = ({ data }) => {
-  const { id, status, desc, report_user_name, report_time, rectify_user_name, plan_rectify_time, review_user_name, hiddenDangerRecordDto } = data;
-  const [{ fileWebUrl="" }={}] = hiddenDangerRecordDto || [];
+  const {
+    id,
+    status,
+    desc,
+    report_user_name,
+    report_time,
+    rectify_user_name,
+    plan_rectify_time,
+    review_user_name,
+    hiddenDangerRecordDto,
+  } = data;
+  const [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
   const { badge, icon, color } = getIconByStatus(status);
   return (
     <div className={styles.hiddenDangerRecord} key={id}>
-      <div className={styles.hiddenDangerRecordBadge} style={{ backgroundImage: badge && `url(${badge})` }}></div>
+      <div
+        className={styles.hiddenDangerRecordBadge}
+        style={{ backgroundImage: badge && `url(${badge})` }}
+      />
       <div style={{ backgroundImage: `url(${noPhotoIcon})` }}>
         <div style={{ position: 'relative', width: '100%', textAlign: 'center' }}>
-          <img src={fileWebUrl} alt="" style={{ display: 'block', width: '100%', margin: '0 auto' }} />
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0, 168, 255, 0.3)' }} />
+          <img
+            src={fileWebUrl}
+            alt=""
+            style={{ display: 'block', width: '100%', margin: '0 auto' }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              backgroundColor: 'rgba(0, 168, 255, 0.3)',
+            }}
+          />
         </div>
       </div>
       <div>
-        <div style={{ backgroundImage: `url(${icon})`, color }}><Ellipsis lines={2} tooltip>{desc || <span style={{ color: '#fff' }}>暂无隐患描述</span>}</Ellipsis></div>
-        <div><span>上报：</span><Ellipsis lines={1}><span style={{ marginRight: '16px' }}>{report_user_name}</span>{moment(+report_time).format('YYYY-MM-DD')}</Ellipsis></div>
-        <div><span>整改：</span><Ellipsis lines={1}><span style={{ marginRight: '16px' }}>{rectify_user_name}</span><span style={{ color: '#FF6464' }}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Ellipsis></div>
-        {+status === 3 && <div><span>复查：</span><Ellipsis lines={1}><span>{review_user_name}</span></Ellipsis></div>}
+        <div style={{ backgroundImage: `url(${icon})`, color }}>
+          <Ellipsis lines={2} tooltip>
+            {desc || <span style={{ color: '#fff' }}>暂无隐患描述</span>}
+          </Ellipsis>
+        </div>
+        <div>
+          <span>上报：</span>
+          <Ellipsis lines={1}>
+            <span style={{ marginRight: '16px' }}>{report_user_name}</span>
+            {moment(+report_time).format('YYYY-MM-DD')}
+          </Ellipsis>
+        </div>
+        <div>
+          <span>整改：</span>
+          <Ellipsis lines={1}>
+            <span style={{ marginRight: '16px' }}>{rectify_user_name}</span>
+            <span style={{ color: '#FF6464' }}>
+              {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+            </span>
+          </Ellipsis>
+        </div>
+        {+status === 3 && (
+          <div>
+            <span>复查：</span>
+            <Ellipsis lines={1}>
+              <span>{review_user_name}</span>
+            </Ellipsis>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
 
 /**
  * 复位主机
  */
 const Host = ({ data, onClick }) => {
   const { id, deviceCode, installLocation, isReset, isFire } = data;
-  const hostInfoItemClassName = +isFire? `${styles.hostInfoItem} ${styles.fireHostInfoItem}` : styles.hostInfoItem;
+  const hostInfoItemClassName = +isFire
+    ? `${styles.hostInfoItem} ${styles.fireHostInfoItem}`
+    : styles.hostInfoItem;
   return (
     <div className={styles.hostContainer} key={id}>
-      <div className={styles.hostIconContainer}><img src={+isFire?fireHostIcon:hostIcon} alt=""/></div>
-      <div className={styles.hostInfoContainer}>
-        <div className={hostInfoItemClassName}><span>主机编号：</span><span>{deviceCode}</span></div>
-        <div className={hostInfoItemClassName}><span>安装位置：</span><span>{installLocation}</span></div>
+      <div className={styles.hostIconContainer}>
+        <img src={+isFire ? fireHostIcon : hostIcon} alt="" />
       </div>
-      <div className={styles.hostResetButton} style={{ cursor: isReset?'not-allowed':'pointer' }} onClick={isReset?undefined:onClick}><img src={isReset ? resetKeyPressIcon : resetKeyIcon} alt=""/></div>
+      <div className={styles.hostInfoContainer}>
+        <div className={hostInfoItemClassName}>
+          <span>主机编号：</span>
+          <span>{deviceCode}</span>
+        </div>
+        <div className={hostInfoItemClassName}>
+          <span>安装位置：</span>
+          <span>{installLocation}</span>
+        </div>
+      </div>
+      <div
+        className={styles.hostResetButton}
+        style={{ cursor: isReset ? 'not-allowed' : 'pointer' }}
+        onClick={isReset ? undefined : onClick}
+      >
+        <img src={isReset ? resetKeyPressIcon : resetKeyIcon} alt="" />
+      </div>
     </div>
   );
 };
@@ -91,56 +171,60 @@ const Host = ({ data, onClick }) => {
 /**
  * 根据status获取对应的标记
  */
-const getIconByStatus = (status) => {
-  switch(+status) {
+const getIconByStatus = status => {
+  switch (+status) {
     case 3:
-    return {
-      color: '#00ADFF',
-      badge: dfcIcon,
-      icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
-    };
+      return {
+        color: '#00ADFF',
+        badge: dfcIcon,
+        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
+      };
     case 1:
     case 2:
-    return {
-      color: '#00ADFF',
-      badge: wcqIcon,
-      icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
-    };
+      return {
+        color: '#00ADFF',
+        badge: wcqIcon,
+        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
+      };
     case 7:
-    return {
-      color: '#FF6464',
-      badge: ycqIcon,
-      icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_red.png',
-    };
+      return {
+        color: '#FF6464',
+        badge: ycqIcon,
+        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_red.png',
+      };
     default:
-    return {
-      color: '#00ADFF',
-      icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
-    };
+      return {
+        color: '#00ADFF',
+        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
+      };
   }
-}
+};
 
 /**
  * 获取待处理信息的类型
  */
-const getPendingInfoType = ({ fire_state, fault_state, main_elec_state, prepare_elec_state, start_state, supervise_state, shield_state, feedback_state }) => {
+const getPendingInfoType = ({
+  fire_state,
+  fault_state,
+  main_elec_state,
+  prepare_elec_state,
+  start_state,
+  supervise_state,
+  shield_state,
+  feedback_state,
+}) => {
   let type = '';
   if (+fire_state === 1) {
     type = '火警';
-  }
-  else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
+  } else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
     type = '故障';
-  }
-  else if (+start_state === 1) {
+  } else if (+start_state === 1) {
     type = '联动';
-  }
-  else if (+supervise_state === 1) {
+  } else if (+supervise_state === 1) {
     type = '监管';
-  }
-  else if (+shield_state === 1) {
+  } else if (+shield_state === 1) {
     type = '屏蔽';
-  }
-  else if (+feedback_state === 1) {
+  } else if (+feedback_state === 1) {
     type = '反馈';
   }
   return type;
@@ -177,7 +261,12 @@ export default class App extends PureComponent {
    * 挂载后声明周期函数
    */
   componentDidMount() {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     // 立即执行轮询
     this.polling();
 
@@ -221,7 +310,12 @@ export default class App extends PureComponent {
    * 轮询回调
    */
   polling = () => {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     const { fireControlType, maintenanceType } = this.state;
     // 获取待处理信息
     dispatch({
@@ -288,13 +382,18 @@ export default class App extends PureComponent {
         type: maintenanceType,
       },
     });
-  }
+  };
 
   /**
    * 消防数据统计tab切换事件
    */
-  handleSwitchFireControlType = (fireControlType) => {
-    const { dispatch, match: { params: { unitId: companyId } }  } = this.props;
+  handleSwitchFireControlType = fireControlType => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     this.setState({
       fireControlType,
     });
@@ -306,13 +405,18 @@ export default class App extends PureComponent {
         t: fireControlType,
       },
     });
-  }
+  };
 
   /**
    * 隐患巡查统计tab切换事件
    */
-  handleSwitchHiddenDangerType = (hiddenDangerType) => {
-    const { dispatch, match: { params: { unitId: companyId } }  } = this.props;
+  handleSwitchHiddenDangerType = hiddenDangerType => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     this.setState({
       hiddenDangerType,
     });
@@ -324,13 +428,18 @@ export default class App extends PureComponent {
         month: moment({ month: hiddenDangerType }).format('YYYY-MM'),
       },
     });
-  }
+  };
 
   /**
    * 维保情况统计tab切换事件
    */
-  handleSwitchMaintenanceType = (maintenanceType) => {
-    const { dispatch, match: { params: { unitId: companyId } }  } = this.props;
+  handleSwitchMaintenanceType = maintenanceType => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     this.setState({
       maintenanceType,
     });
@@ -342,13 +451,18 @@ export default class App extends PureComponent {
         type: maintenanceType,
       },
     });
-  }
+  };
 
   /**
    * 显示一键复位模块
    */
   handleShowResetSection = () => {
-    const { dispatch, match: { params: { unitId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId },
+      },
+    } = this.props;
     // 获取主机列表
     dispatch({
       type: 'unitFireControl/fetchHosts',
@@ -360,7 +474,7 @@ export default class App extends PureComponent {
     this.setState({
       frontIndex: 1,
     });
-  }
+  };
 
   /**
    * 隐藏一键复位模块
@@ -372,12 +486,12 @@ export default class App extends PureComponent {
     this.setState({
       frontIndex: 0,
     });
-  }
+  };
 
   /**
    * 复位单个主机
    */
-  handleResetSingleHost = (id) => {
+  handleResetSingleHost = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'unitFireControl/changeSingleHost',
@@ -385,13 +499,18 @@ export default class App extends PureComponent {
         id,
       },
     });
-  }
+  };
 
   /**
    * 复位所有主机
    */
   handleResetAllHosts = () => {
-    const { dispatch, match: { params: { unitId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId },
+      },
+    } = this.props;
     // 获取主机列表
     dispatch({
       type: 'unitFireControl/changeAllHosts',
@@ -399,14 +518,14 @@ export default class App extends PureComponent {
         companyId: unitId,
       },
     });
-  }
+  };
 
   /**
    * 打开视频播放
    */
   handleVideoOpen = () => {
     this.setState({ videoVisible: true });
-  }
+  };
 
   /**
    * 关闭视频播放
@@ -415,25 +534,22 @@ export default class App extends PureComponent {
     this.setState({ videoVisible: false });
   };
 
-
   /**
    * 渲染所有统计信息块
    */
   renderAllCountSection() {
     const {
       // 待处理火警数量
-      pendingFireNumber=0,
+      pendingFireNumber = 0,
       // 待处理故障数量
-      pendingFaultNumber=0,
+      pendingFaultNumber = 0,
       // 超期未整改隐患数量
-      outOfDateNumber=0,
+      outOfDateNumber = 0,
       // 待整改隐患数量
-      toBeRectifiedNumber=0,
+      toBeRectifiedNumber = 0,
       // 待巡查任务数量
-      toBeInspectedNumber=0,
-      maintenanceCount: {
-        needRepairNum=0,
-      }={},
+      toBeInspectedNumber = 0,
+      maintenanceCount: { needRepairNum = 0 } = {},
     } = this.props.unitFireControl;
 
     return (
@@ -441,7 +557,9 @@ export default class App extends PureComponent {
         <div className={styles.countContainer}>
           <Row className={styles.countContainerRow}>
             <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue} style={{ color: '#FF6464' }}>{pendingFireNumber}</div>
+              <div className={styles.countValue} style={{ color: '#FF6464' }}>
+                {pendingFireNumber}
+              </div>
               <div className={styles.countName}>待处理火警</div>
             </Col>
             <Col span={8} className={styles.countContainerColumn}>
@@ -454,7 +572,7 @@ export default class App extends PureComponent {
             </Col>
           </Row>
           <Row className={styles.countContainerRow}>
-          <Col span={8} className={styles.countContainerColumn}>
+            <Col span={8} className={styles.countContainerColumn}>
               <div className={styles.countValue}>{toBeRectifiedNumber}</div>
               <div className={styles.countName}>待整改隐患</div>
             </Col>
@@ -467,17 +585,19 @@ export default class App extends PureComponent {
               <div className={styles.countName}>待巡查任务</div>
             </Col>
           </Row>
-          <div className={styles.firstVerticalLine}><img src={splitIcon} alt=""/></div>
-          <div className={styles.secondVerticalLine}><img src={splitIcon} alt=""/></div>
-          <div className={styles.horizontalLine}><img src={splitHIcon} alt=""/></div>
+          <div className={styles.firstVerticalLine}>
+            <img src={splitIcon} alt="" />
+          </div>
+          <div className={styles.secondVerticalLine}>
+            <img src={splitIcon} alt="" />
+          </div>
+          <div className={styles.horizontalLine}>
+            <img src={splitHIcon} alt="" />
+          </div>
         </div>
       </Section>
     );
   }
-
-
-
-
 
   /**
    * 火灾警报系统
@@ -486,17 +606,17 @@ export default class App extends PureComponent {
     // 从props中获取数据
     const {
       fireAlarmSystem: {
-        fire_state=0,
-        fault_state=0,
-        start_state=0,
-        supervise_state=0,
-        shield_state=0,
-        feedback_state=0,
+        fire_state = 0,
+        fault_state = 0,
+        start_state = 0,
+        supervise_state = 0,
+        shield_state = 0,
+        feedback_state = 0,
       },
       hosts,
     } = this.props.unitFireControl;
     const { frontIndex } = this.state;
-    const isResetAll = hosts.filter(({isReset}) => isReset).length === hosts.length;
+    const isResetAll = hosts.filter(({ isReset }) => isReset).length === hosts.length;
     return (
       <Rotate frontIndex={frontIndex}>
         <FireAlarmSystem
@@ -506,27 +626,66 @@ export default class App extends PureComponent {
           linkage={start_state}
           supervise={supervise_state}
           feedback={feedback_state}
-          fixedContent={(
+          fixedContent={
             <div className={styles.resetButton} onClick={this.handleShowResetSection}>
               <img src={resetKeyIcon} alt="" />
               一键复位
             </div>
-          )}
+          }
           onClick={this.handleVideoOpen}
         />
-        <Section title="一键复位" isScroll contentStyle={{ borderTop: '2px solid #0967D3', paddingLeft: '16px', marginLeft: '-16px', paddingBottom: '48px' }} fixedContent={(
-          <Fragment>
-            <div className={styles.backButton} onClick={this.handleHideResetSection}><img src={backIcon} alt="" /></div>
-            <div className={styles.hostSectionBottom}>
-              <div className={styles.hostNumber}><span>主机数量：</span><span>{hosts.length}</span></div>
-              <div className={styles.resetAllHostsButton} style={{ cursor: isResetAll?'not-allowed':undefined, backgroundColor: isResetAll?'#0D3473':undefined, color: isResetAll?'#0967d3':undefined }} onClick={isResetAll?undefined:this.handleResetAllHosts}>全部复位</div>
+        <Section
+          title="一键复位"
+          isScroll
+          contentStyle={{
+            borderTop: '2px solid #0967D3',
+            paddingLeft: '16px',
+            marginLeft: '-16px',
+            paddingBottom: '48px',
+          }}
+          fixedContent={
+            <Fragment>
+              <div className={styles.backButton} onClick={this.handleHideResetSection}>
+                <img src={backIcon} alt="" />
+              </div>
+              <div className={styles.hostSectionBottom}>
+                <div className={styles.hostNumber}>
+                  <span>主机数量：</span>
+                  <span>{hosts.length}</span>
+                </div>
+                <div
+                  className={styles.resetAllHostsButton}
+                  style={{
+                    cursor: isResetAll ? 'not-allowed' : undefined,
+                    backgroundColor: isResetAll ? '#0D3473' : undefined,
+                    color: isResetAll ? '#0967d3' : undefined,
+                  }}
+                  onClick={isResetAll ? undefined : this.handleResetAllHosts}
+                >
+                  全部复位
+                </div>
+              </div>
+            </Fragment>
+          }
+        >
+          {hosts.length !== 0 ? (
+            hosts.map(item => {
+              const { id } = item;
+              return (
+                <Host
+                  key={id}
+                  data={item}
+                  onClick={() => {
+                    this.handleResetSingleHost(id);
+                  }}
+                />
+              );
+            })
+          ) : (
+            <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
+              暂无主机
             </div>
-          </Fragment>
-        )}>
-          {hosts.length !== 0 ? hosts.map(item => {
-            const { id } = item;
-            return <Host key={id} data={item} onClick={() => {this.handleResetSingleHost(id);}} />
-          }) : <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>暂无主机</div>}
+          )}
         </Section>
       </Rotate>
     );
@@ -538,14 +697,14 @@ export default class App extends PureComponent {
   renderStatisticsOfFireControl() {
     const {
       fireControlCount: {
-        warnTrue=0,
-        warnFalse=0,
-        fire_state=0,
-        fault_state=0,
-        start_state=0,
-        shield_state=0,
-        feedback_state=0,
-        supervise_state=0,
+        warnTrue = 0,
+        warnFalse = 0,
+        fire_state = 0,
+        fault_state = 0,
+        start_state = 0,
+        shield_state = 0,
+        feedback_state = 0,
+        supervise_state = 0,
       },
     } = this.props.unitFireControl;
     const { fireControlType } = this.state;
@@ -555,7 +714,7 @@ export default class App extends PureComponent {
         type={fireControlType}
         real={warnTrue}
         misinformation={warnFalse}
-        pending={fire_state-warnTrue-warnFalse}
+        pending={fire_state - warnTrue - warnFalse}
         fault={fault_state}
         shield={shield_state}
         linkage={start_state}
@@ -572,21 +731,23 @@ export default class App extends PureComponent {
   renderStatisticsOfHiddenDanger() {
     const {
       hiddenDangerCount: {
-        dangerType: [{
-          // 随手拍
-          random_photo=0,
-          // 风险点
-          from_self_check_point=0,
-        } = {} ] = [],
+        dangerType: [
+          {
+            // 随手拍
+            random_photo = 0,
+            // 风险点
+            from_self_check_point = 0,
+          } = {},
+        ] = [],
         dangerDto: {
           // 已超期
-          over_rectify_num=0,
+          over_rectify_num = 0,
           // 待复查
-          rectify_num=0,
+          rectify_num = 0,
           // 待整改
-          total_num=0,
+          total_num = 0,
           // 已关闭
-          count_closed_danger=0,
+          count_closed_danger = 0,
         } = {},
       },
     } = this.props.unitFireControl;
@@ -612,18 +773,18 @@ export default class App extends PureComponent {
   renderStatisticsOfMaintenance() {
     const {
       maintenanceCount: {
-        selfAllNum=0,
-        selfNoNum=0,
-        selfDoingNum=0,
-        selfFinishNum=0,
-        assignAllNum=0,
-        assignNoNum=0,
-        assignDoingNum=0,
-        assignFinishNum=0,
-        avgSelfTime= '',
-        selfRate= "100%",
-        avgAssignTime= '',
-        assignRate= "100%",
+        selfAllNum = 0,
+        selfNoNum = 0,
+        selfDoingNum = 0,
+        selfFinishNum = 0,
+        assignAllNum = 0,
+        assignNoNum = 0,
+        assignDoingNum = 0,
+        assignFinishNum = 0,
+        avgSelfTime = '',
+        selfRate = '100%',
+        avgAssignTime = '',
+        assignRate = '100%',
       },
     } = this.props.unitFireControl;
     const { maintenanceType } = this.state;
@@ -633,7 +794,7 @@ export default class App extends PureComponent {
         type={maintenanceType}
         onSwitch={this.handleSwitchMaintenanceType}
         maintenance={{
-          name: "维保单位",
+          name: '维保单位',
           total: assignAllNum,
           repaired: assignFinishNum,
           unrepaired: assignNoNum,
@@ -680,7 +841,7 @@ export default class App extends PureComponent {
         ...item,
         pendingInfoType: getPendingInfoType(item),
       };
-    })
+    });
 
     return (
       <div className={styles.main}>
@@ -689,12 +850,17 @@ export default class App extends PureComponent {
           <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
             <Col span={6} style={{ height: '100%' }}>
               <Section isScroll isCarousel>
-                {pendingInfoList.length !== 0 ? [...(pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType === '火警')), ...(pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType !== '火警'))].map((item, index) => {
-                  const { id } = item;
-                  return (
-                    <PendingInfoItem key={id || index} data={item} />
-                  );
-                }) : <div style={{ textAlign: 'center' }}>暂无待处理信息</div>}
+                {pendingInfoList.length !== 0 ? (
+                  [
+                    ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType === '火警'),
+                    ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType !== '火警'),
+                  ].map((item, index) => {
+                    const { id } = item;
+                    return <PendingInfoItem key={id || index} data={item} />;
+                  })
+                ) : (
+                  <div style={{ textAlign: 'center' }}>暂无待处理信息</div>
+                )}
               </Section>
             </Col>
             <Col span={12} style={{ height: '100%' }}>
@@ -707,15 +873,14 @@ export default class App extends PureComponent {
           <Row gutter={16} style={{ height: '51.08%' }}>
             <Col span={6} style={{ height: '100%' }}>
               <Section isScroll isCarousel title="隐患巡查记录">
-                {hiddenDangerRecords.length !== 0 ? hiddenDangerRecords.map((item) => {
-                  const { id } = item;
-                  return (
-                    <HiddenDangerRecord
-                      key={id}
-                      data={item}
-                    />
-                  );
-                }) : <div style={{ textAlign: 'center' }}>暂无隐患巡查记录</div>}
+                {hiddenDangerRecords.length !== 0 ? (
+                  hiddenDangerRecords.map(item => {
+                    const { id } = item;
+                    return <HiddenDangerRecord key={id} data={item} />;
+                  })
+                ) : (
+                  <div style={{ textAlign: 'center' }}>暂无隐患巡查记录</div>
+                )}
               </Section>
             </Col>
             <Col span={6} style={{ height: '100%' }}>
@@ -730,6 +895,7 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
+          showList={false}
           dispatch={dispatch}
           videoList={videoList}
           visible={videoVisible}

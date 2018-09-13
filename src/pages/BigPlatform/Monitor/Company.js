@@ -343,6 +343,7 @@ export default class App extends PureComponent {
         <VideoPlay
           // dispatch={dispatch}
           // actionType="monitor/fetchStartToPlay"
+          showList={false}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
