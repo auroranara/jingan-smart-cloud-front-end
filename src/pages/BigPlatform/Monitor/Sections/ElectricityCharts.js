@@ -177,27 +177,27 @@ class ElectricityCharts extends PureComponent {
           ],
         };
         if (pieces && pieces.length > 0) {
-          const markLine = pieces.filter(d => d.lte).map(item => {
-            return {
-              yAxis: item.lte,
-            };
-          });
-          option = {
-            ...option,
-            visualMap: {
-              show: false,
-              pieces: pieces,
-            },
-            series: [
-              {
-                ...option.series[0],
-                markLine: {
-                  silent: true,
-                  data: markLine,
-                },
-              },
-            ],
-          };
+          // const markLine = pieces.filter(d => d.lte).map(item => {
+          //   return {
+          //     yAxis: item.lte,
+          //   };
+          // });
+          // option = {
+          //   ...option,
+          //   visualMap: {
+          //     show: false,
+          //     pieces: pieces,
+          //   },
+          //   series: [
+          //     {
+          //       ...option.series[0],
+          //       markLine: {
+          //         silent: true,
+          //         data: markLine,
+          //       },
+          //     },
+          //   ],
+          // };
         }
         if (v1.length === 0) {
           option = {
