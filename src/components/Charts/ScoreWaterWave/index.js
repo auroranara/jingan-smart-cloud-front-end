@@ -95,7 +95,7 @@ class NewWaterWave extends PureComponent {
     }
 
     const cStartPoint = arcStack.shift();
-    ctx.strokeStyle = '#82b4de54';
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
     ctx.moveTo(cStartPoint[0], cStartPoint[1]);
 
     function drawSin() {
