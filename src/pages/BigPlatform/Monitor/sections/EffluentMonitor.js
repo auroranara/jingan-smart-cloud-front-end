@@ -19,7 +19,7 @@ function getDayTime(t) {
 }
 
 function getTime(t) {
-  return moment(t).format('hh:mm:ss');
+  return moment(t).format('HH:mm:ss');
 }
 
 export default function EffluentMonitor(props) {
