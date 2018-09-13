@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd'
 import WaterWave from 'components/Charts/ScoreWaterWave';
 import styles from './TopCenter.less'
-// import classNames from 'classnames';
+import classNames from 'classnames';
 
 import abnormalDevice from '../../../../assets/abnormal-device.png'
 import deviceTotalNumber from '../../../../assets/device-total-number.png'
@@ -35,7 +35,7 @@ export default class TopCenter extends PureComponent {
       </div>
     )
   }
-  renderSection = (title, src, number = 0) => {
+  renderSection = (title, src, number = 0, color) => {
     return (
       <div className={styles.sectionMain}>
         <div className={styles.shadowIn}>
@@ -48,7 +48,7 @@ export default class TopCenter extends PureComponent {
               backgroundSize: '100% 100%',
             }}></div>
             <div className={styles.rightNumber}>
-              <span className={styles.text}>{number}</span>
+              <span className={classNames(styles.text, styles[color])}>{number}</span>
             </div>
           </div>
         </div>
@@ -63,11 +63,11 @@ export default class TopCenter extends PureComponent {
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
         <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
           <Col span={12} style={{ height: '100%' }}>{this.renderCurrentState()}</Col>
-          <Col span={12} style={{ height: '100%' }}>{this.renderSection('设备总数', deviceTotalNumber, count)}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderSection('设备总数', deviceTotalNumber, count, 'blue')}</Col>
         </Row>
         <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
-          <Col span={12} style={{ height: '100%' }}>{this.renderSection('失联设备', missingDevice, outContact)}</Col>
-          <Col span={12} style={{ height: '100%' }}>{this.renderSection('报警设备', abnormalDevice, unnormal)}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderSection('失联设备', missingDevice, outContact, 'yellow')}</Col>
+          <Col span={12} style={{ height: '100%' }}>{this.renderSection('报警设备', abnormalDevice, unnormal, 'red')}</Col>
         </Row>
       </Col>
     )
