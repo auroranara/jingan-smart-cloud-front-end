@@ -44,10 +44,10 @@ export default class App extends PureComponent {
       match: {
         params: { companyId },
       },
-    } =  this.props;
+    } = this.props;
 
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
-    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 }});
+    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
     // 根据传感器类型获取企业传感器列表 1 电 2 表示可燃有毒气体 3 水质 4 废气
@@ -92,12 +92,6 @@ export default class App extends PureComponent {
       type: 'monitor/fetchRealTimeAlarm',
       payload: { companyId, overFlag: 0 },
     })
-    this.alarmTimer = setInterval(() => {
-      dispatch({
-        type: 'monitor/fetchRealTimeAlarm',
-        payload: { companyId, overFlag: 0 },
-      })
-    }, 5000);
 
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
@@ -105,12 +99,10 @@ export default class App extends PureComponent {
   }
 
   componentWillUnmount() {
-    clearInterval(this.alarmTimer);
     clearInterval(this.pollTimer);
     clearInterval(this.chartPollTimer);
   }
 
-  alarmTimer = null;
   pollTimer = null;
   chartPollTimer = null;
 
@@ -120,18 +112,19 @@ export default class App extends PureComponent {
       match: {
         params: { companyId },
       },
-    } =  this.props;
+    } = this.props;
 
     const { waterSelectVal } = this.state;
-
-    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 }});
+    dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0 } })
+    dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } })
+    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
     waterSelectVal && dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
   };
 
   chartPolling = () => {
-    const { dispatch } =  this.props;
+    const { dispatch } = this.props;
     const { chartSelectVal } = this.state;
 
     if (!chartSelectVal)
@@ -255,7 +248,7 @@ export default class App extends PureComponent {
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts
-                      data={{chartDeviceList, gsmsHstData, electricityPieces}}
+                      data={{ chartDeviceList, gsmsHstData, electricityPieces }}
                       selectVal={chartSelectVal}
                       handleSelect={this.handleChartSelect}
                     />
@@ -269,7 +262,7 @@ export default class App extends PureComponent {
                     <GasBackSection
                       dispatch={dispatch}
                       status={gasStatus}
-                      data={{gasCount, gasList}}
+                      data={{ gasCount, gasList }}
                       handleLabelClick={this.handleGasLabelClick}
                       handleBack={this.handleGasBack}
                     />
