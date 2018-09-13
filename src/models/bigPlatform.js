@@ -340,9 +340,42 @@ export default {
     *fetchCountDangerLocationForCompany({ payload, success, error }, { call, put }) {
       const response = yield call(getCountDangerLocationForCompany, payload);
       // if (response.code === 200) {
+      const {countDangerLocation,redDangerResult,orangeDangerResult,yellowDangerResult,blueDangerResult,unvaluedDangerResult=[] } = response;
       yield put({
         type: 'countDangerLocationForCompany',
-        payload: response,
+        payload: {
+          countDangerLocation,
+          redDangerResult: {
+            normal: redDangerResult.filter(({ status }) => +status === 1),
+            checking: redDangerResult.filter(({ status }) => +status === 3),
+            abnormal: redDangerResult.filter(({ status }) => +status === 2),
+            over: redDangerResult.filter(({ status }) => +status === 4),
+          },
+          orangeDangerResult: {
+            normal: orangeDangerResult.filter(({ status }) => +status === 1),
+            checking: orangeDangerResult.filter(({ status }) => +status === 3),
+            abnormal: orangeDangerResult.filter(({ status }) => +status === 2),
+            over: orangeDangerResult.filter(({ status }) => +status === 4),
+          },
+          yellowDangerResult: {
+            normal: yellowDangerResult.filter(({ status }) => +status === 1),
+            checking: yellowDangerResult.filter(({ status }) => +status === 3),
+            abnormal: yellowDangerResult.filter(({ status }) => +status === 2),
+            over: yellowDangerResult.filter(({ status }) => +status === 4),
+          },
+          blueDangerResult: {
+            normal: blueDangerResult.filter(({ status }) => +status === 1),
+            checking: blueDangerResult.filter(({ status }) => +status === 3),
+            abnormal: blueDangerResult.filter(({ status }) => +status === 2),
+            over: blueDangerResult.filter(({ status }) => +status === 4),
+          },
+          unvaluedDangerResult: {
+            normal: unvaluedDangerResult.filter(({ status }) => +status === 1),
+            checking: unvaluedDangerResult.filter(({ status }) => +status === 3),
+            abnormal: unvaluedDangerResult.filter(({ status }) => +status === 2),
+            over: unvaluedDangerResult.filter(({ status }) => +status === 4),
+          },
+        },
       });
       if (success) {
         success();
