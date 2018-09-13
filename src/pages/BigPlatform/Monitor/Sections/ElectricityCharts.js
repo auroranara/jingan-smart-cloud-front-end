@@ -365,7 +365,7 @@ class ElectricityCharts extends PureComponent {
     return (
       <div className={styles.ElectricityCharts} style={{ height: '100%', width: '100%' }}>
         <div className={styles.selectIcon}>
-          <Select style={{ width: 140 }} value={selectVal} onSelect={handleSelect}>
+          <Select value={selectVal} onSelect={handleSelect} dropdownClassName={styles.selectDropDown}>
             {list.map(({ deviceId, area, location }) => (
               <Option key={deviceId}>{`${area}：${location}`}</Option>
             ))}

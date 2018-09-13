@@ -57,7 +57,7 @@ export default function ExhaustMonitor() {
     <ExSection title="废气监测">
       <section className={styles.container}>
         <span className={styles.selectIcon}>
-          <Select defaultValue="厂区：一车间" style={{ width: 140 }}>
+          <Select defaultValue="厂区：一车间" dropdownClassName={styles.selectDropDown}>
             <Option value="one">厂区：一车间</Option>
           </Select>
         </span>
