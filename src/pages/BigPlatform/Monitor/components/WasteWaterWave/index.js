@@ -25,8 +25,8 @@ class WasteWaterWave extends PureComponent {
   }
 
   componentDidUpdate(props) {
-    const { percent } = this.props;
-    if (props.percent !== percent) {
+    const { percent, color } = this.props;
+    if (props.percent !== percent || props.color !== color) {
       // 不加这个会造成绘制缓慢
       this.renderChart('update');
     }
@@ -51,7 +51,8 @@ class WasteWaterWave extends PureComponent {
   };
 
   renderChart(type) {
-    const { percent, color = 'rgb(9,103,211)' } = this.props;
+    const { percent, color } = this.props;
+    console.log('colorcolorcolor', color);
     const data = percent / 100;
     const self = this;
     cancelAnimationFrame(this.timer);

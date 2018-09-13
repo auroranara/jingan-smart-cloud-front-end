@@ -11,7 +11,8 @@ import waterBg from '../imgs/waterBg.png';
 
 const Option = Select.Option;
 
-const COLOR = 'rgb(200, 70, 70)';
+const warningColor = 'rgb(200, 70, 70)';
+const defaultColor = 'rgb(9,103,211)';
 
 function getDayTime(t) {
   return moment(t).format('YYYY-MM-DD');
@@ -80,14 +81,16 @@ export default function EffluentMonitor(props) {
                     const { id, desc, unit, value, isBeyond } = item;
                     return (
                       <Col key={id} style={{ height: '100%' }} span={8}>
-                        <WasteWaterWave
-                          height={110}
-                          percent={34}
-                          title={desc}
-                          num={value}
-                          unit={unit}
-                          color={isBeyond ? COLOR : undefined}
-                        />
+                        {value && (
+                          <WasteWaterWave
+                            height={110}
+                            percent={34}
+                            title={desc}
+                            num={value}
+                            unit={unit}
+                            color={isBeyond ? warningColor : defaultColor}
+                          />
+                        )}
                       </Col>
                     );
                   } else return null;
