@@ -341,8 +341,6 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          // dispatch={dispatch}
-          // actionType="monitor/fetchStartToPlay"
           showList={false}
           videoList={allCamera}
           visible={videoVisible}

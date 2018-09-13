@@ -83,7 +83,7 @@ const HiddenDangerRecord = ({ data }) => {
       <div style={{ backgroundImage: `url(${noPhotoIcon})` }}>
         <div style={{ position: 'relative', width: '100%', textAlign: 'center' }}>
           <img
-            src={fileWebUrl}
+            src={fileWebUrl && fileWebUrl.split(',')[0]}
             alt=""
             style={{ display: 'block', width: '100%', margin: '0 auto' }}
           />

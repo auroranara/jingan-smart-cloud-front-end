@@ -1060,7 +1060,7 @@ class GovernmentBigPlatform extends Component {
               zgsj: moment(+zgsj).format('YYYY-MM-DD'),
               fcr,
               status: this.switchStatus(status),
-              background,
+              background: background.split(',')[0],
             })
           )
         : [];
