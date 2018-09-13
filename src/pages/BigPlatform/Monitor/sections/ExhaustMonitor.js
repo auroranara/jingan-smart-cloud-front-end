@@ -8,12 +8,12 @@ import ExSection from './ExSection';
 
 import timeIcon from '../imgs/timeIcon.png';
 
-function getDayTime(t) {
-  return moment(t).format('YYYY-MM-DD');
+function getDayTime(now) {
+  return moment(now).format('YYYY-MM-DD');
 }
 
-function getTime(t) {
-  return moment(t).format('HH:MM:SS');
+function getTime(now) {
+  return moment(now).format('HH:MM:SS');
 }
 
 export default function ExhaustMonitor() {
@@ -66,8 +66,8 @@ export default function ExhaustMonitor() {
           <Col span={24} style={{ height: '100%' }}>
             <div className={styles.timeSection}>
               <span className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
-              <span className={styles.day}>{getDayTime()}</span>
-              <span className={styles.min}>{getTime()}</span>
+              <span className={styles.day}>{getDayTime(Date.now())}</span>
+              <span className={styles.min}>{getTime(Date.now())}</span>
             </div>
           </Col>
         </Row>
