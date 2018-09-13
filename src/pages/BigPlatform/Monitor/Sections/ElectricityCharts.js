@@ -64,7 +64,6 @@ class ElectricityCharts extends PureComponent {
     } = this.props;
     const { activeTab } = this.state;
     let option = {};
-    // console.log(gsmsHstData, electricityPieces);
     if (!gsmsHstData.today) return option;
     const {
       timeList: xData,
@@ -194,7 +193,7 @@ class ElectricityCharts extends PureComponent {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['温度1', '温度2', '温度3', '温度4'],
+            data: ['温度1', '温度2', '温度3', '环境温度'],
           },
           series: [
             {
@@ -217,7 +216,7 @@ class ElectricityCharts extends PureComponent {
             },
             {
               type: 'line',
-              name: '温度4',
+              name: '环境温度',
               smooth: true,
               data: v5List,
             },
@@ -229,24 +228,24 @@ class ElectricityCharts extends PureComponent {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['电流1', '电流2', '电流3'],
+            data: ['A相电流', 'B相电流', 'C相电流'],
           },
           series: [
             {
               type: 'line',
-              name: '电流1',
+              name: 'A相电流',
               smooth: true,
               data: iaList,
             },
             {
               type: 'line',
-              name: '电流2',
+              name: 'B相电流',
               smooth: true,
               data: ibList,
             },
             {
               type: 'line',
-              name: '电流3',
+              name: 'C相电流',
               smooth: true,
               data: icList,
             },
@@ -258,24 +257,24 @@ class ElectricityCharts extends PureComponent {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['电压1', '电压2', '电压3'],
+            data: ['A相电压', 'B相电压', 'C相电压'],
           },
           series: [
             {
               type: 'line',
-              name: '电压1',
+              name: 'A相电压',
               smooth: true,
               data: uaList,
             },
             {
               type: 'line',
-              name: '电压2',
+              name: 'B相电压',
               smooth: true,
               data: ubList,
             },
             {
               type: 'line',
-              name: '电压3',
+              name: 'C相电压',
               smooth: true,
               data: ucList,
             },
@@ -292,13 +291,10 @@ class ElectricityCharts extends PureComponent {
   };
 
   onChartReadyCallback = chart => {
-    const {
-      data: { gsmsHstData },
-    } = this.props;
-    if (!gsmsHstData.today) return;
-    if (!chart) return;
     this.currentIndex = -1;
     const chartAnimate = () => {
+      if (!chart) return;
+      if (!chart.getOption().series[0]) return;
       const dataLen = chart.getOption().series[0].data.length;
       // 取消之前高亮的图形
       chart.dispatchAction({
@@ -359,13 +355,18 @@ class ElectricityCharts extends PureComponent {
   };
 
   render() {
-    const { selectVal, handleSelect, data: { chartDeviceList: { list=[] } } } = this.props;
-    // console.log(list);
+    const {
+      selectVal,
+      handleSelect,
+      data: {
+        chartDeviceList: { list = [] },
+      },
+    } = this.props;
 
     return (
       <div className={styles.ElectricityCharts} style={{ height: '100%', width: '100%' }}>
         <div className={styles.selectIcon}>
-          <Select value={selectVal} onSelect={handleSelect} dropdownClassName={styles.selectDropDown}>
+          <Select style={{ width: 140 }} value={selectVal} onSelect={handleSelect}>
             {list.map(({ deviceId, area, location }) => (
               <Option key={deviceId}>{`${area}：${location}`}</Option>
             ))}
