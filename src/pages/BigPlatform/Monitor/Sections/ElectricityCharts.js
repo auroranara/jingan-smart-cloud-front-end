@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Select } from 'antd';
-import { connect } from 'dva';
+// import { connect } from 'dva';
 import classNames from 'classnames';
 import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
@@ -63,8 +63,19 @@ class ElectricityCharts extends PureComponent {
       data: { gsmsHstData, electricityPieces },
     } = this.props;
     const { activeTab } = this.state;
+    const noData = {
+      title: {
+        show: true,
+        text: '暂未接入',
+        top: '30%',
+        left: 'center',
+        textStyle: {
+          color: '#fff',
+        },
+      },
+    };
     let option = {};
-    if (!gsmsHstData.today) return option;
+    if (!gsmsHstData.today) return { ...option, ...noData };
     const {
       timeList: xData,
       iaList,
@@ -145,17 +156,6 @@ class ElectricityCharts extends PureComponent {
         },
       },
       series: [],
-    };
-    const noData = {
-      title: {
-        show: true,
-        text: '暂未接入',
-        top: '30%',
-        left: 'center',
-        textStyle: {
-          color: '#fff',
-        },
-      },
     };
     switch (tabList[activeTab].code) {
       case 'v1':
