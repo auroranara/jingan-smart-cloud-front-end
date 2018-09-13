@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import styles from './RealTimeAlarm.less'
 import classNames from 'classnames';
 import { Row, Col, Icon } from 'antd'
+import Ellipsis from '@/components/Ellipsis';
 
 import iconLight from '../../../../assets/icon-light.png' // 电
 import iconFire from '../../../../assets/icon-fire.png' // 可燃气体
@@ -19,7 +20,7 @@ export default class RealTimeAlarm extends PureComponent {
     return realTimeAlarm.map((item, i) => (
       <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
         <div className={styles.innerItem}>
-          <div className={styles.icon} style={{
+          {/* <div className={styles.icon} style={{
             backgroundImage: `url(${iconList[Number(item.deviceType) - 1]})`,
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center center',
@@ -36,6 +37,29 @@ export default class RealTimeAlarm extends PureComponent {
               </span>
               <span>{item.warningTime}</span>
             </div>
+          </div> */}
+          <div className={styles.alarmTitle}>
+            <div className={styles.title}>
+              <div className={styles.icon} style={{
+                backgroundImage: `url(${iconList[Number(item.deviceType) - 1]})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: '80% 80%',
+              }}></div>
+              <div className={styles.remarks}>{item.remarks}</div>
+            </div>
+            <span style={{ textAlign: 'right', color: '#516895' }}>{item.warningTime}</span>
+          </div>
+          <div className={styles.alarmDetail}>
+            <Ellipsis lines={1} tooltip>
+              <span>{item.messageContent}</span>
+            </Ellipsis>
+          </div>
+          <div className={styles.location}>
+            <span>
+              <Icon type="environment" theme="outlined" />
+              {item.area}：{item.location}
+            </span>
           </div>
         </div>
       </Col>
@@ -51,8 +75,8 @@ export default class RealTimeAlarm extends PureComponent {
             <div className={styles.sectionTitleIcon} />
             实时报警
             <div className={styles.count}>共计 <span style={{ color: '#FF5256' }}>
-              {(realTimeAlarm&&realTimeAlarm.length)?realTimeAlarm.length: 0 } 
-             </span> 条</div>
+              {(realTimeAlarm && realTimeAlarm.length) ? realTimeAlarm.length : 0}
+            </span> 条</div>
             {/* <div className={styles.history}>历史纪录>></div> */}
           </div>
           {realTimeAlarm && realTimeAlarm.length ? (

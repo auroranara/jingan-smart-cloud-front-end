@@ -20,19 +20,37 @@
       border: none;
       border-radius: 20px;
     }
-    .ant-select-selection__rendered {
-      margin-left: 25px;
+    .ant-select-selection-selected-value {
+      padding-right: 10px;
     }
-    .anticon {
-      padding-right: 8px;
+    .ant-select-selection__rendered {
+      margin: 0 18px;
     }
     .ant-select-dropdown-menu {
       color: #fff !important;
       background-color: rgb(2, 45, 91) !important;
     }
-    // .ant-select-dropdown-menu-item-selected, .ant-select-dropdown-menu-item-selected:hover{
-    //   background-color: rgb(2, 45, 91);
-    // }
+  }
+}
+
+.selectDropDown {
+  padding: 4px 0;
+  background-color: #022d5b;
+
+  :global {
+    .ant-select-dropdown-menu-item {
+      padding-left: 16px;
+      padding-right: 24px;
+      color: #4f6793;
+      font-size: 12px;
+      border-radius: 0;
+      background-color: #022d5b;
+
+      &:hover {
+        color: #fff;
+        background-color: #022d5b;
+      }
+    }
   }
 }
 
@@ -63,14 +81,4 @@
 
 .oneCards {
   height: 25%;
-}
-
-.twoCards {
-  height: 25%;
-  margin-top: 5px;
-}
-
-.threeCards {
-  height: 25%;
-  margin-top: 5px;
 }

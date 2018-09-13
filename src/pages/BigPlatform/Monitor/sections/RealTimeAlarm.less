@@ -61,43 +61,92 @@
       overflow-y: scroll;
       overflow-x: hidden;
       .alarmItem {
-        height: 80px;
-        padding: 15px;
-        background: #011539;
+        height: 100px;
+        padding: 10px 25px 10px 0; // background: #011539;
+        background: #032150;
         .innerItem {
           width: 100%;
-          height: 100%;
-          display: flex;
-          .icon {
-            width: 50px;
-            height: 50px;
-            flex: none;
-          }
-          .content {
-            width: calc(100% - 62px);
-            height: 50px;
-            flex: 1;
+          height: 100%; // .icon {
+          //   width: 50px;
+          //   height: 50px;
+          //   flex: none;
+          // }
+          // .content {
+          //   width: calc(100% - 62px);
+          //   height: 50px;
+          //   flex: 1;
+          //   position: relative;
+          //   padding-left: 12px;
+          //   .top {
+          //     width: 100%;
+          //     height: 25px;
+          //     line-height: 25px;
+          //     position: relative;
+          //     word-wrap: nowrap;
+          //     overflow: hidden;
+          //   }
+          //   .bottom {
+          //     width: 100%;
+          //     height: 25px;
+          //     line-height: 25px;
+          //     position: relative;
+          //     color: #516895;
+          //     display: flex;
+          //     justify-content: space-between;
+          //     word-wrap: nowrap;
+          //     overflow: hidden;
+          //   }
+          // }
+          .alarmTitle {
+            padding-left: 18px;
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
             position: relative;
-            padding-left: 12px;
-            .top {
-              width: 100%;
-              height: 25px;
-              line-height: 25px;
+            display: flex;
+            justify-content: space-between;
+            color: #B15660;
+            .title {
+              width: 55%;
+              height: 30px;
               position: relative;
-              word-wrap: nowrap;
-              overflow: hidden;
-            }
-            .bottom {
-              width: 100%;
-              height: 25px;
-              line-height: 25px;
-              position: relative;
-              color: #516895;
               display: flex;
-              justify-content: space-between;
-              word-wrap: nowrap;
-              overflow: hidden;
+              .icon {
+                width: 30px;
+                height: 30px;
+                display: inline-block;
+                flex: none;
+              }
+              .remarks {
+                font-size: 18px;
+                height: 30px;
+                line-height: 30px;
+                display: inline-block;
+                flex: 1;
+                overflow: hidden;
+              }
             }
+          }
+          .alarmDetail {
+            padding-left: 25px;
+            width: 100%;
+            height: 25px;
+            line-height: 25px;
+            position: relative;
+            word-wrap: nowrap;
+            overflow: hidden;
+            color: #D2D7DE;
+          }
+          .location {
+            padding-left: 25px;
+            width: 100%;
+            height: 25px;
+            line-height: 25px;
+            position: relative;
+            color: #516895; // display: flex;
+            // justify-content: space-between;
+            word-wrap: nowrap;
+            overflow: hidden;
           }
         }
       }

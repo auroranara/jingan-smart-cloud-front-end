@@ -3,7 +3,7 @@ import {
   getDeviceConfig,
   getRealTimeData,
   getAllCamera,
-  getStartToPlay,
+  // getStartToPlay,
   getGasCount,
   getGasList,
   fetchCountAndExponent,
@@ -40,13 +40,13 @@ export default {
       if (response && response.list)
         yield put({ type: 'saveAllCamera', payload: response.list });
     },
-    *fetchStartToPlay({ payload, success }, { call, put }) {
-      const response = yield call(getStartToPlay, payload);
-      if (response && response.code === 200) {
-        // yield put({ type: 'startToPlay', payload: { src: response.data.url } });
-        if (success) success(response);
-      }
-    },
+    // *fetchStartToPlay({ payload, success }, { call, put }) {
+    //   const response = yield call(getStartToPlay, payload);
+    //   if (response && response.code === 200) {
+    //     // yield put({ type: 'startToPlay', payload: { src: response.data.url } });
+    //     if (success) success(response);
+    //   }
+    // },
     *fetchGasCount({ payload }, { call, put }) {
       let response = yield call(getGasCount, payload);
       response = response || EMPTY_OBJECT;

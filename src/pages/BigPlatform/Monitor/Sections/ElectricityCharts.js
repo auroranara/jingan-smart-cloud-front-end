@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Select } from 'antd';
-import { connect } from 'dva';
+// import { connect } from 'dva';
 import classNames from 'classnames';
 import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
@@ -63,9 +63,19 @@ class ElectricityCharts extends PureComponent {
       data: { gsmsHstData, electricityPieces },
     } = this.props;
     const { activeTab } = this.state;
+    const noData = {
+      title: {
+        show: true,
+        text: '暂未接入',
+        top: '30%',
+        left: 'center',
+        textStyle: {
+          color: '#fff',
+        },
+      },
+    };
     let option = {};
-    // console.log(gsmsHstData, electricityPieces);
-    if (!gsmsHstData.today) return option;
+    if (!gsmsHstData.today) return { ...option, ...noData };
     const {
       timeList: xData,
       iaList,
@@ -150,6 +160,7 @@ class ElectricityCharts extends PureComponent {
     switch (tabList[activeTab].code) {
       case 'v1':
         const pieces = electricityPieces['v1'];
+        const v1 = v1List.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
@@ -166,35 +177,45 @@ class ElectricityCharts extends PureComponent {
           ],
         };
         if (pieces && pieces.length > 0) {
-          const markLine = pieces.filter(d => d.lte).map(item => {
-            return {
-              yAxis: item.lte,
-            };
-          });
+          // const markLine = pieces.filter(d => d.lte).map(item => {
+          //   return {
+          //     yAxis: item.lte,
+          //   };
+          // });
+          // option = {
+          //   ...option,
+          //   visualMap: {
+          //     show: false,
+          //     pieces: pieces,
+          //   },
+          //   series: [
+          //     {
+          //       ...option.series[0],
+          //       markLine: {
+          //         silent: true,
+          //         data: markLine,
+          //       },
+          //     },
+          //   ],
+          // };
+        }
+        if (v1.length === 0) {
           option = {
             ...option,
-            visualMap: {
-              show: false,
-              pieces: pieces,
-            },
-            series: [
-              {
-                ...option.series[0],
-                markLine: {
-                  silent: true,
-                  data: markLine,
-                },
-              },
-            ],
+            ...noData,
           };
         }
         break;
       case 'temp':
+        const t1 = v2List.filter(a => a !== '-');
+        const t2 = v3List.filter(a => a !== '-');
+        const t3 = v4List.filter(a => a !== '-');
+        const t4 = v5List.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['温度1', '温度2', '温度3', '温度4'],
+            data: ['温度1', '温度2', '温度3', '环境温度'],
           },
           series: [
             {
@@ -217,70 +238,94 @@ class ElectricityCharts extends PureComponent {
             },
             {
               type: 'line',
-              name: '温度4',
+              name: '环境温度',
               smooth: true,
               data: v5List,
             },
           ],
         };
+        if (t1.length === 0 && t2.length === 0 && t3.length === 0 && t4.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       case 'ampere':
+        const ia = iaList.filter(a => a !== '-');
+        const ib = ibList.filter(a => a !== '-');
+        const ic = icList.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['电流1', '电流2', '电流3'],
+            data: ['A相电流', 'B相电流', 'C相电流'],
           },
           series: [
             {
               type: 'line',
-              name: '电流1',
+              name: 'A相电流',
               smooth: true,
               data: iaList,
             },
             {
               type: 'line',
-              name: '电流2',
+              name: 'B相电流',
               smooth: true,
               data: ibList,
             },
             {
               type: 'line',
-              name: '电流3',
+              name: 'C相电流',
               smooth: true,
               data: icList,
             },
           ],
         };
+        if (ia.length === 0 && ib.length === 0 && ic.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       case 'volte':
+        const ua = uaList.filter(a => a !== '-');
+        const ub = ubList.filter(a => a !== '-');
+        const uc = ucList.filter(a => a !== '-');
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['电压1', '电压2', '电压3'],
+            data: ['A相电压', 'B相电压', 'C相电压'],
           },
           series: [
             {
               type: 'line',
-              name: '电压1',
+              name: 'A相电压',
               smooth: true,
               data: uaList,
             },
             {
               type: 'line',
-              name: '电压2',
+              name: 'B相电压',
               smooth: true,
               data: ubList,
             },
             {
               type: 'line',
-              name: '电压3',
+              name: 'C相电压',
               smooth: true,
               data: ucList,
             },
           ],
         };
+        if (ua.length === 0 && ub.length === 0 && uc.length === 0) {
+          option = {
+            ...option,
+            ...noData,
+          };
+        }
         break;
       default:
         option = {
@@ -292,13 +337,10 @@ class ElectricityCharts extends PureComponent {
   };
 
   onChartReadyCallback = chart => {
-    const {
-      data: { gsmsHstData },
-    } = this.props;
-    if (!gsmsHstData.today) return;
-    if (!chart) return;
     this.currentIndex = -1;
     const chartAnimate = () => {
+      if (!chart) return;
+      if (!chart.getOption().series[0]) return;
       const dataLen = chart.getOption().series[0].data.length;
       // 取消之前高亮的图形
       chart.dispatchAction({
@@ -359,8 +401,13 @@ class ElectricityCharts extends PureComponent {
   };
 
   render() {
-    const { selectVal, handleSelect, data: { chartDeviceList: { list=[] } } } = this.props;
-    // console.log(list);
+    const {
+      selectVal,
+      handleSelect,
+      data: {
+        chartDeviceList: { list = [] },
+      },
+    } = this.props;
 
     return (
       <div className={styles.ElectricityCharts} style={{ height: '100%', width: '100%' }}>

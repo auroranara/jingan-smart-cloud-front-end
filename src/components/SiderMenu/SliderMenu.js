@@ -91,7 +91,9 @@ export default class SiderMenu extends PureComponent {
     const { openKeys } = this.state;
     // const defaultProps = collapsed ? {} : { openKeys };
     // 若openKeys为空数组，则更新一下它的值(当然第一次render返回还是空数组，当menuData不为空数组时，更新后为新的值)，若不是空数组即用原来的值
-    const defaultProps = collapsed ? {} : { openKeys: openKeys.length ? openKeys : getDefaultCollapsedSubMenus(this.props) };
+    const defaultProps = collapsed
+      ? {}
+      : { openKeys: openKeys.length ? openKeys : getDefaultCollapsedSubMenus(this.props) };
 
     const siderClassName = classNames(styles.sider, {
       [styles.fixSiderbar]: fixSiderbar,
@@ -112,7 +114,7 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} id="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>Ant Design Pro</h1>
+            <h1>晶安智慧云</h1>
           </Link>
         </div>
         <BaseMenu

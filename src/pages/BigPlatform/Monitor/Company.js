@@ -14,12 +14,13 @@ import ExhaustMonitor from './sections/ExhaustMonitor';
 import EffluentMonitor from './sections/EffluentMonitor';
 
 // 实时报警
-import RealTimeAlarm from './sections/RealTimeAlarm.js'
-import TopCenter from './sections/TopCenter.js'
+import RealTimeAlarm from './sections/RealTimeAlarm.js';
+import TopCenter from './sections/TopCenter.js';
 
 import ElectricityCharts from './Sections/ElectricityCharts';
 
 const DELAY = 5 * 1000;
+const WATER_DELAY = 5 * 60 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
 
 /**
@@ -44,10 +45,10 @@ export default class App extends PureComponent {
       match: {
         params: { companyId },
       },
-    } =  this.props;
+    } = this.props;
 
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
-    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 }});
+    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
     // 根据传感器类型获取企业传感器列表 1 电 2 表示可燃有毒气体 3 水质 4 废气
@@ -86,32 +87,27 @@ export default class App extends PureComponent {
     dispatch({
       type: 'monitor/fetchCountAndExponent',
       payload: { companyId },
-    })
+    });
     // 获取实时警报信息
     dispatch({
       type: 'monitor/fetchRealTimeAlarm',
       payload: { companyId, overFlag: 0 },
-    })
-    this.alarmTimer = setInterval(() => {
-      dispatch({
-        type: 'monitor/fetchRealTimeAlarm',
-        payload: { companyId, overFlag: 0 },
-      })
-    }, 5000);
+    });
 
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
+    // this.waterTimer = setInterval(this.waterPolling, WATER_DELAY);
     this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
   }
 
   componentWillUnmount() {
-    clearInterval(this.alarmTimer);
     clearInterval(this.pollTimer);
     clearInterval(this.chartPollTimer);
+    // clearInterval(this.waterTimer);
   }
 
-  alarmTimer = null;
   pollTimer = null;
+  waterTimer = null;
   chartPollTimer = null;
 
   polling = () => {
@@ -120,22 +116,31 @@ export default class App extends PureComponent {
       match: {
         params: { companyId },
       },
-    } =  this.props;
-
+    } = this.props;
     const { waterSelectVal } = this.state;
 
-    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 }});
+    dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0 } });
+    dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
+    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
-    waterSelectVal && dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+    waterSelectVal &&
+      dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
   };
 
+  // waterPolling = () => {
+  //   const { dispatch } = this.props;
+  //   const { waterSelectVal } = this.state;
+
+  //   waterSelectVal &&
+  //     dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+  // };
+
   chartPolling = () => {
-    const { dispatch } =  this.props;
+    const { dispatch } = this.props;
     const { chartSelectVal } = this.state;
 
-    if (!chartSelectVal)
-      return;
+    if (!chartSelectVal) return;
 
     dispatch({
       type: 'monitor/fetchGsmsHstData',
@@ -147,11 +152,11 @@ export default class App extends PureComponent {
     });
   };
 
-  handleGasNumClick = (status) => {
+  handleGasNumClick = status => {
     this.setState({ gasRotated: true, gasStatus: status });
   };
 
-  handleGasLabelClick = (status) => {
+  handleGasLabelClick = status => {
     this.setState({ gasStatus: status });
   };
 
@@ -223,7 +228,8 @@ export default class App extends PureComponent {
       chartSelectVal,
     } = this.state;
 
-    const companyName = '无锡晶安智慧';
+    let companyName = '暂无信息';
+    if (allCamera.length) companyName = allCamera[0].company_name;
 
     return (
       <div className={styles.main}>
@@ -232,9 +238,7 @@ export default class App extends PureComponent {
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
               <div className={styles.realTimeAlarmContainer}>
-                <RealTimeAlarm
-                  realTimeAlarm={realTimeAlarm}
-                />
+                <RealTimeAlarm realTimeAlarm={realTimeAlarm} />
               </div>
               <div className={styles.videoMonitorContainer}>
                 <VideoSection
@@ -248,14 +252,11 @@ export default class App extends PureComponent {
             </Col>
             <Col span={18} style={{ height: '100%' }}>
               <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-                <TopCenter
-                  countAndExponent={countAndExponent}
-                  realTimeAlarm={realTimeAlarm}
-                />
+                <TopCenter countAndExponent={countAndExponent} realTimeAlarm={realTimeAlarm} />
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts
-                      data={{chartDeviceList, gsmsHstData, electricityPieces}}
+                      data={{ chartDeviceList, gsmsHstData, electricityPieces }}
                       selectVal={chartSelectVal}
                       handleSelect={this.handleChartSelect}
                     />
@@ -269,7 +270,7 @@ export default class App extends PureComponent {
                     <GasBackSection
                       dispatch={dispatch}
                       status={gasStatus}
-                      data={{gasCount, gasList}}
+                      data={{ gasCount, gasList }}
                       handleLabelClick={this.handleGasLabelClick}
                       handleBack={this.handleGasBack}
                     />
@@ -290,8 +291,8 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          dispatch={dispatch}
-          actionType="monitor/fetchStartToPlay"
+          // dispatch={dispatch}
+          // actionType="monitor/fetchStartToPlay"
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
