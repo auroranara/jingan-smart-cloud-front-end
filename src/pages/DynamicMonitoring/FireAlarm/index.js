@@ -162,7 +162,7 @@ export default class FireAlarm extends PureComponent {
     const { company, address, scrollLoading, hasMore } = this.state;
 
     return (
-      <PageHeaderLayout title="企业列表" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title="单位列表" breadcrumbList={breadcrumbList}>
         <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>
