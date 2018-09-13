@@ -272,7 +272,7 @@ class ElectricityCharts extends PureComponent {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['温度1', '温度2', '温度3', '环境温度'],
+            data: ['A相温度', 'B相温度', 'C相温度', '环境温度'],
           },
           tooltip: {
             ...defaultOption.tooltip,
@@ -287,21 +287,21 @@ class ElectricityCharts extends PureComponent {
           series: [
             {
               type: 'line',
-              name: '温度1',
+              name: 'A相温度',
               smooth: true,
               symbolSize: 5,
               data: v2ListNew,
             },
             {
               type: 'line',
-              name: '温度2',
+              name: 'B相温度',
               smooth: true,
               symbolSize: 5,
               data: v3ListNew,
             },
             {
               type: 'line',
-              name: '温度3',
+              name: 'C相温度',
               smooth: true,
               symbolSize: 5,
               data: v4ListNew,
