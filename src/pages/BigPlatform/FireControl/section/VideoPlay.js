@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon } from 'antd';
-// import { connect } from 'dva';
+import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '../components/HLSSource.js';
 import 'video-react/dist/video-react.css';
@@ -9,15 +9,17 @@ import styles from './VideoPlay.less';
 import animate from '../../Safety/Animate.less';
 import Draggable from 'react-draggable';
 
-// @connect(({ bigFireControl }) => ({
-//   bigFireControl,
-// }))
+@connect(({ videoPlay }) => ({ videoPlay }))
 class VideoPlay extends Component {
   state = {
     videoSrc: '',
     activeIndex: 0,
   };
-  componentDidMount() {}
+  // componentDidMount() {}
+
+  // componentWillUnmount() {
+  //   console.log('video unmount');
+  // }
 
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
@@ -39,9 +41,12 @@ class VideoPlay extends Component {
     const { dispatch, actionType, videoList, keyId } = this.props;
     const firstKeyId = videoList[0] && videoList[0].key_id;
 
+    // 清空视频链接
+    this.setState({ videoSrc: '' });
+
     dispatch({
-      // type: 'bigFireControl/fetchStartToPlay',
-      type: actionType,
+      type: 'videoPlay/fetchStartToPlay',
+      // type: actionType,
       payload: {
         key_id: keyId || firstKeyId,
       },
@@ -96,8 +101,8 @@ class VideoPlay extends Component {
   handleItemClick = (index, keyId) => {
     const { dispatch, actionType } = this.props;
     dispatch({
-      // type: 'bigFireControl/fetchStartToPlay',
-      type: actionType,
+      type: 'videoPlay/fetchStartToPlay',
+      // type: actionType,
       payload: {
         key_id: keyId,
       },
@@ -132,9 +137,7 @@ class VideoPlay extends Component {
           <Icon
             type="close"
             className={styles.iconClose}
-            onClick={() => {
-              this.handleClose();
-            }}
+            onClick={this.handleClose}
           />
         </div>
         <div className={styles.videoMain}>

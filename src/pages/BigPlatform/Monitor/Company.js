@@ -146,13 +146,14 @@ export default class App extends PureComponent {
 
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
-    this.waterTimer = setInterval(this.waterPolling, WATER_DELAY);
+    // this.waterTimer = setInterval(this.waterPolling, WATER_DELAY);
     this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
   }
 
   componentWillUnmount() {
     clearInterval(this.pollTimer);
     clearInterval(this.chartPollTimer);
+    // clearInterval(this.waterTimer);
   }
 
   pollTimer = null;
@@ -166,22 +167,24 @@ export default class App extends PureComponent {
         params: { companyId },
       },
     } = this.props;
+    const { waterSelectVal } = this.state;
 
     dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0 } });
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
-    // waterSelectVal && dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
-  };
-
-  waterPolling = () => {
-    const { dispatch } = this.props;
-    const { waterSelectVal } = this.state;
-
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
   };
+
+  // waterPolling = () => {
+  //   const { dispatch } = this.props;
+  //   const { waterSelectVal } = this.state;
+
+  //   waterSelectVal &&
+  //     dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+  // };
 
   chartPolling = () => {
     const { dispatch } = this.props;
@@ -338,8 +341,8 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          dispatch={dispatch}
-          actionType="monitor/fetchStartToPlay"
+          // dispatch={dispatch}
+          // actionType="monitor/fetchStartToPlay"
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
