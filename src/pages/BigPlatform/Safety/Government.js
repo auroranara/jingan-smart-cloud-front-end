@@ -1038,29 +1038,32 @@ class GovernmentBigPlatform extends Component {
     const {
       bigPlatform: { riskDetailList },
     } = this.props;
-    const riskDetailData = riskDetailList.map(
-      ({
-        id,
-        desc: description,
-        report_user_name: sbr,
-        report_time: sbsj,
-        rectify_user_name: zgr,
-        plan_rectify_time: zgsj,
-        review_user_name: fcr,
-        status,
-        hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
-      }) => ({
-        id,
-        description,
-        sbr,
-        sbsj: moment(+sbsj).format('YYYY-MM-DD'),
-        zgr,
-        zgsj: moment(+zgsj).format('YYYY-MM-DD'),
-        fcr,
-        status: this.switchStatus(status),
-        background,
-      })
-    );
+    const riskDetailData =
+      riskDetailData && riskDetailData.length
+        ? riskDetailList.map(
+            ({
+              id,
+              desc: description,
+              report_user_name: sbr,
+              report_time: sbsj,
+              rectify_user_name: zgr,
+              plan_rectify_time: zgsj,
+              review_user_name: fcr,
+              status,
+              hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
+            }) => ({
+              id,
+              description,
+              sbr,
+              sbsj: moment(+sbsj).format('YYYY-MM-DD'),
+              zgr,
+              zgsj: moment(+zgsj).format('YYYY-MM-DD'),
+              fcr,
+              status: this.switchStatus(status),
+              background,
+            })
+          )
+        : [];
     const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = defaultFieldNames;
     return (
       <div>

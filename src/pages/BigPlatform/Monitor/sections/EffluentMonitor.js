@@ -7,6 +7,7 @@ import ExSection from './ExSection';
 import WasteWaterWave from '../components/WasteWaterWave/index';
 
 import timeIcon from '../imgs/timeIcon.png';
+import waterBg from '../imgs/waterBg.png';
 
 const Option = Select.Option;
 
@@ -21,7 +22,6 @@ function getTime(t) {
 }
 
 export default function EffluentMonitor(props) {
-  // const noCards = <div className={styles.noCards} />;
   const {
     selectVal,
     handleSelect,
@@ -49,50 +49,64 @@ export default function EffluentMonitor(props) {
 
   return (
     <ExSection title="废水监测" style={sectionStyle}>
-      <section className={styles.container}>
-        <div className={styles.selectIcon}>
-          <Select value={selectVal} onSelect={handleSelect} dropdownClassName={styles.selectDropDown}>
-            {list.map(({ deviceId, area, location }) => (
-              <Option key={deviceId}>{`${area}：${location}`}</Option>
-            ))}
-          </Select>
-        </div>
-        <Row span={24} style={{ height: '12%' }}>
-          <Col span={24} style={{ height: '100%' }}>
-            <div className={styles.timeSection}>
-              <span className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
-              <span className={styles.day}>{getDayTime(updateTime)}</span>
-              <span className={styles.min}>{getTime(updateTime)}</span>
-            </div>
-          </Col>
-        </Row>
-        {[0, 1].map(i => (
-          <div key={i} className={styles.oneCards}>
-            <Row gutter={24} style={{ margin: 0, height: '100%' }}>
-              {[0, 1, 2].map(index => {
-                let item = handledParams[3 * i + index];
-                if (item) {
-                  const { id, desc, unit, value, isBeyond } = item;
-                  return (
-                    <Col key={id} style={{ height: '100%' }} span={8}>
-                      <WasteWaterWave
-                        height={110}
-                        percent={34}
-                        title={desc}
-                        num={value}
-                        unit={unit}
-                        color={isBeyond ? COLOR : undefined}
-                      />
-                    </Col>
-                  );
-                }
-                else
-                  return null;
-              })}
-            </Row>
+      {list && list.length ? (
+        <section className={styles.container}>
+          <div className={styles.selectIcon}>
+            <Select
+              value={selectVal}
+              onSelect={handleSelect}
+              dropdownClassName={styles.selectDropDown}
+            >
+              {list.map(({ deviceId, area, location }) => (
+                <Option key={deviceId}>{`${area}：${location}`}</Option>
+              ))}
+            </Select>
           </div>
-        ))}
-      </section>
+          <Row span={24} style={{ height: '12%' }}>
+            <Col span={24} style={{ height: '100%' }}>
+              <div className={styles.timeSection}>
+                <span className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
+                <span className={styles.day}>{getDayTime(updateTime)}</span>
+                <span className={styles.min}>{getTime(updateTime)}</span>
+              </div>
+            </Col>
+          </Row>
+          {[0, 1].map(i => (
+            <div key={i} className={styles.cards}>
+              <Row gutter={24} style={{ margin: 0, height: '100%' }}>
+                {[0, 1, 2].map(index => {
+                  let item = handledParams[3 * i + index];
+                  if (item) {
+                    const { id, desc, unit, value, isBeyond } = item;
+                    return (
+                      <Col key={id} style={{ height: '100%' }} span={8}>
+                        <WasteWaterWave
+                          height={110}
+                          percent={34}
+                          title={desc}
+                          num={value}
+                          unit={unit}
+                          color={isBeyond ? COLOR : undefined}
+                        />
+                      </Col>
+                    );
+                  } else return null;
+                })}
+              </Row>
+            </div>
+          ))}
+        </section>
+      ) : (
+        <div
+          className={styles.noCards}
+          style={{
+            background: `url(${waterBg})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center center',
+            backgroundSize: '40% 55%',
+          }}
+        />
+      )}
     </ExSection>
   );
 }
