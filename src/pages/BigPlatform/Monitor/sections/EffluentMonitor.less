@@ -20,15 +20,39 @@
       border: none;
       border-radius: 20px;
     }
+    .ant-select-selection-selected-value {
+      padding-right: 10px;
+    }
     .ant-select-selection__rendered {
-      margin-left: 25px;
+      margin: 0 18px;
     }
     .anticon {
-      padding-right: 8px;
+      // padding-right: 8px;
     }
     .ant-select-dropdown-menu {
       color: #fff !important;
       background-color: rgb(2, 45, 91) !important;
+    }
+  }
+}
+
+.selectDropDown {
+  padding: 4px 0;
+  background-color: #022d5b;
+
+  :global {
+    .ant-select-dropdown-menu-item {
+      padding-left: 16px;
+      padding-right: 24px;
+      color: #4f6793;
+      font-size: 12px;
+      border-radius: 0;
+      background-color: #022d5b;
+
+      &:hover {
+        color: #fff;
+        background-color: #022d5b;
+      }
     }
   }
 }

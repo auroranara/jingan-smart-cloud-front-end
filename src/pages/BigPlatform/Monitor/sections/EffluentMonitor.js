@@ -51,7 +51,7 @@ export default function EffluentMonitor(props) {
     <ExSection title="废水监测" style={sectionStyle}>
       <section className={styles.container}>
         <div className={styles.selectIcon}>
-          <Select style={{ width: 140 }} value={selectVal} onSelect={handleSelect}>
+          <Select value={selectVal} onSelect={handleSelect} dropdownClassName={styles.selectDropDown}>
             {list.map(({ deviceId, area, location }) => (
               <Option key={deviceId}>{`${area}：${location}`}</Option>
             ))}
