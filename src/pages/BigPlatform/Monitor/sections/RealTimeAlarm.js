@@ -40,8 +40,13 @@ export default class RealTimeAlarm extends PureComponent {
           </div> */}
           <div className={styles.alarmTitle}>
             <div className={styles.title}>
-              <div className={styles.icon}></div>
-              <span>{item.remarks}</span>
+              <div className={styles.icon} style={{
+                backgroundImage: `url(${iconList[Number(item.deviceType) - 1]})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: '80% 80%',
+              }}></div>
+              <div className={styles.remarks}>{item.remarks}</div>
             </div>
             <span style={{ textAlign: 'right', color: '#516895' }}>{item.warningTime}</span>
           </div>
