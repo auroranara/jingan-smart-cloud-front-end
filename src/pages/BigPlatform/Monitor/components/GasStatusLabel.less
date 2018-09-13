@@ -1,0 +1,28 @@
+@color: rgb(9, 103, 211);
+
+.label {
+  width: 110px;
+  height: 36px;
+  color: @color;
+  border-radius: 18px;
+  border: 2px solid @color;
+  line-height: 32px;
+  text-align: center;
+  margin: 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.labelSelected:extend(.label) {
+  color: #FFF;
+  background-color: @color;
+}
+
+.status {
+  margin-right: 5px;
+}
+
+.num {
+  // font-weight: bold;
+  padding: 1px;
+}

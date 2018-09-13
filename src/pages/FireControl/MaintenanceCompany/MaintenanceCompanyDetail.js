@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card } from 'antd';
-import FooterToolbar from 'components/FooterToolbar';
+import FooterToolbar from '@/components/FooterToolbar';
 import { routerRedux } from 'dva/router';
-import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import codesMap from 'utils/codes';
-import { AuthButton } from 'utils/customAuth';
+import DescriptionList from '@/components/DescriptionList';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import codesMap from '@/utils/codes';
+import { AuthButton } from '@/utils/customAuth';
 
 const { Description } = DescriptionList;
 

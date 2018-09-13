@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import { Form, Card, Table, Upload, Button, Icon, Popover, Spin } from 'antd';
 import { connect } from 'dva';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './ImportPointPosition.less';
-import Result from '../../../components/Result';
-import { getToken } from 'utils/authority';
+import Result from '@/components/Result';
+import { getToken } from '@/utils/authority';
 
 @connect(({ pointPosition, loading }) => ({
   pointPosition,

@@ -2,11 +2,11 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card, Spin, Tree, Button } from 'antd';
 import { routerRedux } from 'dva/router';
-import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { hasAuthority } from '../../../utils/customAuth';
-import urls from '../../../utils/urls';
-import codes from '../../../utils/codes';
+import DescriptionList from '@/components/DescriptionList';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
 
 const { Description } = DescriptionList;
 const { TreeNode } = Tree;

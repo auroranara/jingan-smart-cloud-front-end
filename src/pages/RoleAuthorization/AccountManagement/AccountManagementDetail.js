@@ -3,14 +3,14 @@ import { connect } from 'dva';
 import { Form, Card, Modal, Input, message, Badge } from 'antd';
 import { routerRedux } from 'dva/router';
 
-import DescriptionList from 'components/DescriptionList';
-import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import DescriptionList from '@/components/DescriptionList';
+import FooterToolbar from '@/components/FooterToolbar';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './AccountManagementEdit.less';
-import { aesEncrypt } from '../../../utils/utils';
-import { AuthButton } from 'utils/customAuth';
-import codesMap from 'utils/codes';
+import { aesEncrypt } from '@/utils/utils';
+import { AuthButton } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
 
 const { Description } = DescriptionList;
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Card, Table, Divider, Button, Badge } from 'antd';
-import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import DescriptionList from '@/components/DescriptionList';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './VideoDetail.less';
 
 const { Description } = DescriptionList;

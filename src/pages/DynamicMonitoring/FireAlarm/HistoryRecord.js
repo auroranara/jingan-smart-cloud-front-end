@@ -2,10 +2,10 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment'
 import { connect } from 'dva';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Button, Card, Table, Select, Form, Input, DatePicker, Pagination, Modal, Tooltip } from 'antd';
-import styles from './HistoryRecord.less'
-import Ellipsis from 'components/Ellipsis';
+// import styles from './HistoryRecord.less';
+import Ellipsis from '@/components/Ellipsis';
 
 const FormItem = Form.Item;
 const Option = Select.Option

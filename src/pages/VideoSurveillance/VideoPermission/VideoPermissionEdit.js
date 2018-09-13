@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Card, Select, Button, Row, Col, Table, message, Spin } from 'antd'
 import { connect } from 'dva';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import AsyncTreeModal from 'components/AsyncTreeModal'
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import AsyncTreeModal from '@/components/AsyncTreeModal'
 import styles from './VideoPermissionList.less'
 import debounce from 'lodash/debounce';
 import _ from 'lodash';

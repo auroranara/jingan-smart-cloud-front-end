@@ -2,8 +2,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Button, Card, Switch, message } from 'antd';
 import { routerRedux } from 'dva/router';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
-import { phoneReg } from 'utils/validate';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import { phoneReg } from '@/utils/validate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import styles from './MaintenanceCompany.less';
 

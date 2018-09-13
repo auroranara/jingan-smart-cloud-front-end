@@ -2,14 +2,14 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'react-router-dom';
 import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
-import Ellipsis from 'components/Ellipsis';
+import Ellipsis from '@/components/Ellipsis';
 
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import VisibilitySensor from 'react-visibility-sensor';
 import styles from './UserTransmissionDevice.less';
-import { AuthLink, ERROR_MSG } from '../../../utils/customAuth';
-import buttonCodes from '../../../utils/codes';
+import { AuthLink, ERROR_MSG } from '@/utils/customAuth';
+import buttonCodes from '@/utils/codes';
 
 const PAGE_SIZE = 18;
 // const CODE = 'fireControl.userTransmissionDevice.view';

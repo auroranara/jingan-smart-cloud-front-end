@@ -2,8 +2,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card } from 'antd';
 import { routerRedux } from 'dva/router';
-import DescriptionList from 'components/DescriptionList';
-import PageHeaderLayout from '../layouts/PageHeaderLayout';
+import DescriptionList from '@/components/DescriptionList';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 // import Center from './Center/Projects';
 
 const { Description } = DescriptionList;

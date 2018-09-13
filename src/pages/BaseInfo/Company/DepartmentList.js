@@ -12,10 +12,10 @@ import {
   message,
 } from 'antd';
 import { connect } from 'dva';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
-import { arrayify } from 'tslint/lib/utils';
-import { AuthButton, AuthA } from 'utils/customAuth'
-import codes from '../../../utils/codes';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+// import { arrayify } from 'tslint/lib/utils';
+import { AuthButton, AuthA } from '@/utils/customAuth'
+import codes from '@/utils/codes';
 
 const { TreeNode } = TreeSelect;
 const FormItem = Form.Item;

@@ -65,6 +65,13 @@ export default {
   namespace: 'company',
 
   state: {
+    data: {
+      pagination: {
+        total: 0,
+        pageSize: 24,
+        pageNum: 1,
+      },
+    },
     list: [],
     // 行业类别
     industryCategories: [],
@@ -362,19 +369,15 @@ export default {
   },
 
   reducers: {
-    query(
-      state,
-      {
-        payload: {
-          list,
-          pagination: { pageNum, pageSize, total },
-        },
-      }
-    ) {
+    query(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
       return {
         ...state,
         list,
-        pageNum: 1,
+        data: payload,
         isLast: pageNum * pageSize >= total,
       };
     },

@@ -91,9 +91,9 @@ export function generateAuthFn(codes, codeMap, pathArray) {
     // exception页面无需拦截
     if (pathname.toLowerCase().includes('exception')) return true;
 
-    // 为了防止出现 codeMap[undefined]的情况，所以要判断下path是否存在，不存在则是pathname对应页面不存在，直接返回false
+    // 为了防止出现 codeMap[undefined]的情况，所以要判断下path是否存在，不存在则是pathname对应页面不存在，直接返回true，umi会自己判断页面是否存在，并渲染对应的404页面
     const path = getPath(pathname, pathArray);
-    if (!path) return false;
+    if (!path) return true;
 
     const hasPath = codes.includes(codeMap[path]);
     // console.log('codes', codes);

@@ -1,12 +1,9 @@
 import React from 'react';
 import { connect } from 'dva';
 import _ from 'lodash';
-// import { Spin } from 'antd';
-// import styles from '../../index.less';
 
 import config from '../../../config/config';
-import { formatter, getCodeMap, filterMenus, generateAuthFn } from '../../utils/customAuth';
-// import codeMap from './codeMap';
+import { formatter, getCodeMap, filterMenus, generateAuthFn } from '@/utils/customAuth';
 
 const menuData = config['routes'];
 const MenuData = formatter(_.last(menuData).routes);
@@ -66,7 +63,7 @@ export default function AppMenu(WrappedComponent) {
       }
 
       const menuData = this.menuData;
-      // console.log(menuData);
+      // console.log('AppMenu', menuData);
 
       // if (!codes) {
       //   return <Spin size="large" className={styles.globalSpin} />;
@@ -77,7 +74,7 @@ export default function AppMenu(WrappedComponent) {
       return (
         <WrappedComponent
           {...rest}
-          menuData={menuData}
+          menuData={menuData} // 也可放在basic layout中处理
           authorityFn={generateAuthFn(codes, codeMap, pathArray)}
           currentUserLoaded={currentUserLoaded}
         />

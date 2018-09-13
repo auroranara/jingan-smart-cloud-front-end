@@ -281,7 +281,8 @@ export default class FireControlMap extends PureComponent {
     });
   };
 
-  handleInputChange = (value, { props: { label } }) => {
+  // handleInputChange = (value, { props: { label } }) => {
+  handleInputChange = (value) => {
     // console.log('change', value);
     this.debouncedFetchData(value);
     this.setState({

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon } from 'antd';
-import { connect } from 'dva';
+// import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '../components/HLSSource.js';
 import 'video-react/dist/video-react.css';
@@ -9,9 +9,9 @@ import styles from './VideoPlay.less';
 import animate from '../../Safety/Animate.less';
 import Draggable from 'react-draggable';
 
-@connect(({ bigFireControl }) => ({
-  bigFireControl,
-}))
+// @connect(({ bigFireControl }) => ({
+//   bigFireControl,
+// }))
 class VideoPlay extends Component {
   state = {
     videoSrc: '',
@@ -36,11 +36,12 @@ class VideoPlay extends Component {
   }
 
   handleInit = () => {
-    const { dispatch, videoList, keyId } = this.props;
+    const { dispatch, actionType, videoList, keyId } = this.props;
     const firstKeyId = videoList[0] && videoList[0].key_id;
 
     dispatch({
-      type: 'bigFireControl/fetchStartToPlay',
+      // type: 'bigFireControl/fetchStartToPlay',
+      type: actionType,
       payload: {
         key_id: keyId || firstKeyId,
       },
@@ -93,9 +94,10 @@ class VideoPlay extends Component {
   };
 
   handleItemClick = (index, keyId) => {
-    const { dispatch } = this.props;
+    const { dispatch, actionType } = this.props;
     dispatch({
-      type: 'bigFireControl/fetchStartToPlay',
+      // type: 'bigFireControl/fetchStartToPlay',
+      type: actionType,
       payload: {
         key_id: keyId,
       },

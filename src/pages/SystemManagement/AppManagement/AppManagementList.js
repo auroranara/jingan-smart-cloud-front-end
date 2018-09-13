@@ -12,11 +12,11 @@ import {
   Upload,
   message,
 } from 'antd';
-import StandardTable from 'components/StandardTable';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import StandardTable from '@/components/StandardTable';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './AppManagementList.less';
-import { getToken } from 'utils/authority';
+import { getToken } from '@/utils/authority';
 
 const FormItem = Form.Item;
 const { Option } = Select;

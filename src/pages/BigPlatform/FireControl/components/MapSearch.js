@@ -21,8 +21,14 @@ class MapSearch extends PureComponent {
   //   handleSelect(item);
   // };
 
+  handleChange = (value, option) => {
+    const { handleChange } = this.props;
+    handleChange(value, option);
+  };
+
   render() {
-    const { selectList, value, style, handleChange } = this.props;
+    const { selectList, value, style } = this.props;
+    // const { selectList, value, style, handleChange } = this.props;
     // const { selectedItem: { id, name } } = this.state;
     const options = selectList.map(item => {
       const { name } = item;
@@ -65,7 +71,7 @@ class MapSearch extends PureComponent {
             getInputElement={() => <Input />}
             showArrow={false}
             notFoundContent=""
-            onChange={handleChange}
+            onChange={this.handleChange}
             onSelect={this.onSelect}
             filterOption={false}
           >

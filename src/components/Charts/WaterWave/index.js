@@ -7,7 +7,7 @@ import styles from './index.less';
 // riddle: https://riddle.alibaba-inc.com/riddles/2d9a4b90
 
 @autoHeight()
-export default class WaterWave extends PureComponent {
+class WaterWave extends PureComponent {
   state = {
     radio: 1,
   };
@@ -22,6 +22,14 @@ export default class WaterWave extends PureComponent {
       },
       { passive: true }
     );
+  }
+
+  componentDidUpdate(props) {
+    const { percent } = this.props;
+    if (props.percent !== percent) {
+      // 不加这个会造成绘制缓慢
+      this.renderChart('update');
+    }
   }
 
   componentWillUnmount() {
@@ -42,10 +50,11 @@ export default class WaterWave extends PureComponent {
     }
   };
 
-  renderChart() {
+  renderChart(type) {
     const { percent, color = '#1890FF' } = this.props;
     const data = percent / 100;
     const self = this;
+    cancelAnimationFrame(this.timer);
 
     if (!this.node || (data !== 0 && !data)) {
       return;
@@ -53,7 +62,6 @@ export default class WaterWave extends PureComponent {
 
     const canvas = this.node;
     const ctx = canvas.getContext('2d');
-
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
     const radius = canvasWidth / 2;
@@ -108,7 +116,7 @@ export default class WaterWave extends PureComponent {
 
       const gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
       gradient.addColorStop(0, '#ffffff');
-      gradient.addColorStop(1, '#1890FF');
+      gradient.addColorStop(1, color);
       ctx.fillStyle = gradient;
       ctx.fill();
       ctx.restore();
@@ -116,7 +124,7 @@ export default class WaterWave extends PureComponent {
 
     function render() {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      if (circleLock) {
+      if (circleLock && type !== 'update') {
         if (arcStack.length) {
           const temp = arcStack.shift();
           ctx.lineTo(temp[0], temp[1]);
@@ -138,7 +146,7 @@ export default class WaterWave extends PureComponent {
 
           ctx.restore();
           ctx.clip();
-          ctx.fillStyle = '#1890FF';
+          ctx.fillStyle = color;
         }
       } else {
         if (data >= 0.85) {
@@ -173,7 +181,6 @@ export default class WaterWave extends PureComponent {
       }
       self.timer = requestAnimationFrame(render);
     }
-
     render();
   }
 
@@ -196,12 +203,11 @@ export default class WaterWave extends PureComponent {
         </div>
         <div className={styles.text} style={{ width: height }}>
           {title && <span>{title}</span>}
-          <h4>
-            {percent}
-            %
-          </h4>
+          <h4>{percent}%</h4>
         </div>
       </div>
     );
   }
 }
+
+export default WaterWave;

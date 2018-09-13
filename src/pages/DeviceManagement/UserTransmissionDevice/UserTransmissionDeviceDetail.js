@@ -2,15 +2,15 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { Button, Spin, message } from 'antd';
 // import { Button, Modal, Spin, message } from 'antd';
-import DescriptionList from 'components/DescriptionList';
+import DescriptionList from '@/components/DescriptionList';
 
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './UserTransmissionDeviceDetail.less';
 
 import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
-import { AuthButton } from '../../../utils/customAuth';
-import buttonCodes from '../../../utils/codes';
+import { AuthButton } from '@/utils/customAuth';
+import buttonCodes from '@/utils/codes';
 
 const { Description } = DescriptionList;
 // const { confirm } = Modal;

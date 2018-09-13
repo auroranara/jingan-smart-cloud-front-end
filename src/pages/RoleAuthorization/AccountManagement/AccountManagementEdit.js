@@ -18,8 +18,8 @@ import {
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
-import FooterToolbar from 'components/FooterToolbar';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout.js';
+import FooterToolbar from '@/components/FooterToolbar';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;

@@ -23,13 +23,13 @@ import {
   Bar,
   Pie,
   TimelineChart,
-} from 'components/Charts';
-import Trend from 'components/Trend';
-import NumberInfo from 'components/NumberInfo';
+} from '@/components/Charts';
+import Trend from '@/components/Trend';
+import NumberInfo from '@/components/NumberInfo';
 import numeral from 'numeral';
-import GridContent from '../layouts/GridContent';
-import Yuan from '../../utils/Yuan';
-import { getTimeDistance } from '../../utils/utils';
+import GridContent from '@/layouts/GridContent';
+import Yuan from '@/utils/Yuan';
+import { getTimeDistance } from '@/utils/utils';
 
 import styles from './Analysis.less';
 

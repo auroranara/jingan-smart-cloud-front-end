@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Card, Button, Switch, message } from 'antd';
 import { routerRedux } from 'dva/router';
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-import { phoneReg } from 'utils/validate';
+import { phoneReg } from '@/utils/validate';
 
 const FormItem = Form.Item;
 

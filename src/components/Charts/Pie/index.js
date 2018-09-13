@@ -11,8 +11,9 @@ import autoHeight from '../autoHeight';
 import styles from './index.less';
 
 /* eslint react/no-danger:0 */
+export default
 @autoHeight()
-export default class Pie extends Component {
+class Pie extends Component {
   state = {
     legendData: [],
     legendBlock: false,
@@ -172,9 +173,8 @@ export default class Pie extends Component {
       formatColor = value => {
         if (value === '占比') {
           return color || 'rgba(24, 144, 255, 0.85)';
-        } else {
-          return '#F0F2F5';
         }
+        return '#F0F2F5';
       };
 
       data = [
@@ -257,7 +257,7 @@ export default class Pie extends Component {
                 <span className={styles.legendTitle}>{item.x}</span>
                 <Divider type="vertical" />
                 <span className={styles.percent}>
-                  {`${(isNaN(item.percent) ? 0 : item.percent * 100).toFixed(2)}%`}
+                  {`${(Number.isNaN(item.percent) ? 0 : item.percent * 100).toFixed(2)}%`}
                 </span>
                 <span className={styles.value}>{valueFormat ? valueFormat(item.y) : item.y}</span>
               </li>

@@ -3,12 +3,12 @@ import { connect } from 'dva';
 import { Link } from 'react-router-dom';
 import { Button, Card, Modal, Tabs, Table, Icon } from 'antd';
 // import Ellipsis from 'components/Ellipsis';
-import DescriptionList from 'components/DescriptionList';
+import DescriptionList from '@/components/DescriptionList';
 
-import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyDetail.less';
-import { AuthButton } from 'utils/customAuth';
-import codesMap from 'utils/codes';
+import { AuthButton } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
 
 const { TabPane } = Tabs;
 const { Description } = DescriptionList;
