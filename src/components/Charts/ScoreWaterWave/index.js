@@ -26,9 +26,14 @@ class NewWaterWave extends PureComponent {
 
   componentDidUpdate(props) {
     const { percent, color } = this.props;
-    if (props.percent !== percent || props.color !== color) {
+    if (props.percent !== percent) {
       // 不加这个会造成绘制缓慢
-      this.renderChart('update');
+      this.renderChart();
+      if (props.color !== color) {
+        this.renderChart();
+      } else {
+        this.renderChart('update');
+      }
     }
   }
 
@@ -90,7 +95,7 @@ class NewWaterWave extends PureComponent {
     }
 
     const cStartPoint = arcStack.shift();
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
     ctx.moveTo(cStartPoint[0], cStartPoint[1]);
 
     function drawSin() {
@@ -202,7 +207,12 @@ class NewWaterWave extends PureComponent {
           />
         </div>
         <div className={styles.text} style={{ fontSize: percentFontSize }}>
-          {percent && <span style={{ color: percentColor, verticalAlign: 'center' }}>{percent}{!isNumber && '%'}</span>}
+          {percent && (
+            <span style={{ color: percentColor, verticalAlign: 'center' }}>
+              {percent}
+              {!isNumber && '%'}
+            </span>
+          )}
         </div>
       </div>
     );

@@ -35,15 +35,15 @@ export async function getCompanyFireInfo() {
   return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
 }
 
-// 视频
+// 视频列表
 export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
-// 视频
-export async function getStartToPlay(params) {
-  return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
-}
+// 视频播放，已转移到services[videoPlay]
+// export async function getStartToPlay(params) {
+//   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
+// }
 
 export async function queryAlarmHandle({ id }) {
   // console.log('fetch handleAlarm');

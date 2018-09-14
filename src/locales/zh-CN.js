@@ -35,7 +35,7 @@ export default {
   'menu.dynamicMonitoring.fireAlarm.fireAlarm': '火灾自动报警系统',
   'menu.dynamicMonitoring.fireAlarm.index': '企业列表',
   'menu.dynamicMonitoring.fireAlarm.companyDetail': '单位页面',
-  'menu.dynamicMonitoring.fireAlarm.historyRecord': '历史纪录',
+  'menu.dynamicMonitoring.fireAlarm.historyRecord': '历史记录',
   'menu.deviceManagement': '设备管理',
   'menu.deviceManagement.userTransmissionDevice': '用户传输装置',
   'menu.deviceManagement.userTransmissionDevice.userTransmissionDevice': '用户传输装置',

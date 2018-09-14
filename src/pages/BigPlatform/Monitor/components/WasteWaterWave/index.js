@@ -25,8 +25,8 @@ class WasteWaterWave extends PureComponent {
   }
 
   componentDidUpdate(props) {
-    const { percent } = this.props;
-    if (props.percent !== percent) {
+    const { percent, color } = this.props;
+    if (props.percent !== percent || props.color !== color) {
       // 不加这个会造成绘制缓慢
       this.renderChart('update');
     }
@@ -90,7 +90,7 @@ class WasteWaterWave extends PureComponent {
     }
 
     const cStartPoint = arcStack.shift();
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
     ctx.moveTo(cStartPoint[0], cStartPoint[1]);
 
     function drawSin() {

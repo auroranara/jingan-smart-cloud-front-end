@@ -13,7 +13,7 @@ import {
   queryOffGuard,
   postLookingUp,
   getAllCamera,
-  getStartToPlay,
+  // getStartToPlay,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -105,7 +105,7 @@ export default {
     countdown: {},
     offGuard: {},
     allCamera: [],
-    startToPlay: '',
+    // startToPlay: '',
   },
 
   effects: {
@@ -224,18 +224,13 @@ export default {
       const { list } = response;
       yield put({ type: 'saveAllCamera', payload: list });
     },
-    *fetchStartToPlay({ payload, success }, { call, put }) {
-      const response = yield call(getStartToPlay, payload);
-      // if (payload.key_id === 'zhutongdao') {
-      //   response = { src: 'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8' };
-      // } else if (payload.key_id === 'erdaomenchukou') {
-      //   response = { src: 'http://218.90.184.178:23389/hls/dangkou/test.m3u8' };
-      // }
-      if (response && response.code === 200) {
-        yield put({ type: 'startToPlay', payload: { src: response.data.url } });
-        if (success) success(response);
-      }
-    },
+    // *fetchStartToPlay({ payload, success }, { call, put }) {
+    //   const response = yield call(getStartToPlay, payload);
+    //   if (response && response.code === 200) {
+    //     yield put({ type: 'startToPlay', payload: { src: response.data.url } });
+    //     if (success) success(response);
+    //   }
+    // },
   },
 
   reducers: {
@@ -271,9 +266,9 @@ export default {
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
     },
-    startToPlay(state, action) {
-      return { ...state, startToPlay: action.payload };
-    },
+    // startToPlay(state, action) {
+    //   return { ...state, startToPlay: action.payload };
+    // },
     saveGridDanger(state, action) {
       return { ...state, gridDanger: action.payload };
     },

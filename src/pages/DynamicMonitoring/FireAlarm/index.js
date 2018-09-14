@@ -212,38 +212,61 @@ export default class FireAlarm extends PureComponent {
             loading={loading}
             grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
             dataSource={list}
-            renderItem={item => (
-              <List.Item key={item.id}>
-                <AuthLink
-                  code={codesMap.dynamicMonitoring.comanyDetailView}
-                  to={`/dynamic-monitoring/fire-alarm/company/${item.id}`}
-                  errMsg={ERROR_MSG}
-                >
-                  <Card hoverable className={styles.card} title={item.name}>
-                    <Ellipsis className={styles.ellipsis} lines={1}>
-                      地址：
-                      {item.searchArea ? item.searchArea : '暂无信息'}
-                    </Ellipsis>
-                    <p>
-                      安全负责人：
-                      {item.safetyName ? item.safetyName : '暂无信息'}
-                    </p>
-                    <p>
-                      联系电话：
-                      {item.safetyPhone ? item.safetyPhone : '暂无信息'}
-                    </p>
-                    <p>
-                      火警主机数量：
-                      {item.hostCount}
-                    </p>
-                    <div className={styles.quantityContainer}>
-                      <div className={styles.quantity}>{item.alertCount}</div>
-                      <p className={styles.quantityDescrip}>警情数量</p>
-                    </div>
-                  </Card>
-                </AuthLink>
-              </List.Item>
-            )}
+            renderItem={item => {
+              const {
+                id,
+                name,
+                hostCount,
+                alertCount,
+                safetyName,
+                safetyPhone,
+                practicalProvinceLabel,
+                practicalCityLabel,
+                practicalDistrictLabel,
+                practicalTownLabel,
+                practicalAddress,
+              } = item;
+
+              const practicalAddressLabel =
+                (practicalProvinceLabel || '') +
+                (practicalCityLabel || '') +
+                (practicalDistrictLabel || '') +
+                (practicalTownLabel || '') +
+                (practicalAddress || '');
+
+              return (
+                <List.Item key={id}>
+                  <AuthLink
+                    code={codesMap.dynamicMonitoring.comanyDetailView}
+                    to={`/dynamic-monitoring/fire-alarm/company/${id}`}
+                    errMsg={ERROR_MSG}
+                  >
+                    <Card hoverable className={styles.card} title={name}>
+                      <Ellipsis tooltip className={styles.ellipsis} lines={1}>
+                        地址：
+                        {practicalAddressLabel ? practicalAddressLabel : '暂无信息'}
+                      </Ellipsis>
+                      <p>
+                        安全负责人：
+                        {safetyName ? safetyName : '暂无信息'}
+                      </p>
+                      <p>
+                        联系电话：
+                        {safetyPhone ? safetyPhone : '暂无信息'}
+                      </p>
+                      <p>
+                        火警主机数量：
+                        {hostCount}
+                      </p>
+                      <div className={styles.quantityContainer}>
+                        <div className={styles.quantity}>{alertCount}</div>
+                        <p className={styles.quantityDescrip}>警情数量</p>
+                      </div>
+                    </Card>
+                  </AuthLink>
+                </List.Item>
+              );
+            }}
           />
         </div>
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} />}

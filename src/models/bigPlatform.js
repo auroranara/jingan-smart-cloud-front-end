@@ -50,9 +50,9 @@ const transformHiddenDangerFields = ({
   real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
   fcr: review_user_name,
   status,
-  background,
+  background: background.split(',')[0],
   source: source_type_name,
-})
+});
 
 export default {
   namespace: 'bigPlatform',
@@ -364,15 +364,24 @@ export default {
     },
     *fetchRiskDetail({ payload, success }, { call, put }) {
       const response = yield call(getRiskDetail, payload);
-      const ycq = response.hiddenDangers.filter(({ status }) => +status === 7).sort((a, b) => {
-        return +a.plan_rectify_time - b.plan_rectify_time;
-      }).map(transformHiddenDangerFields);
-      const wcq = response.hiddenDangers.filter(({ status }) => +status === 1 || +status === 2).sort((a, b) => {
-        return +a.plan_rectify_time - b.plan_rectify_time;
-      }).map(transformHiddenDangerFields);
-      const dfc = response.hiddenDangers.filter(({ status }) => +status === 3).sort((a, b) => {
-        return +a.real_rectify_time - b.real_rectify_time;
-      }).map(transformHiddenDangerFields);
+      const ycq = response.hiddenDangers
+        .filter(({ status }) => +status === 7)
+        .sort((a, b) => {
+          return +a.plan_rectify_time - b.plan_rectify_time;
+        })
+        .map(transformHiddenDangerFields);
+      const wcq = response.hiddenDangers
+        .filter(({ status }) => +status === 1 || +status === 2)
+        .sort((a, b) => {
+          return +a.plan_rectify_time - b.plan_rectify_time;
+        })
+        .map(transformHiddenDangerFields);
+      const dfc = response.hiddenDangers
+        .filter(({ status }) => +status === 3)
+        .sort((a, b) => {
+          return +a.real_rectify_time - b.real_rectify_time;
+        })
+        .map(transformHiddenDangerFields);
       yield put({
         type: 'saveRiskDetail',
         payload: {

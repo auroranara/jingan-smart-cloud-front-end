@@ -80,6 +80,56 @@ export default class App extends PureComponent {
           type: 'monitor/fetchPieces',
           payload: { deviceId: firstDeviceId, code: 'v1' },
         });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v2' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v3' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v4' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v5' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ia' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ib' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ic' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ua' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ub' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'uc' },
+        });
       },
     });
 
@@ -96,13 +146,14 @@ export default class App extends PureComponent {
 
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
-    this.waterTimer = setInterval(this.waterPolling, WATER_DELAY);
+    // this.waterTimer = setInterval(this.waterPolling, WATER_DELAY);
     this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
   }
 
   componentWillUnmount() {
     clearInterval(this.pollTimer);
     clearInterval(this.chartPollTimer);
+    // clearInterval(this.waterTimer);
   }
 
   pollTimer = null;
@@ -116,22 +167,24 @@ export default class App extends PureComponent {
         params: { companyId },
       },
     } = this.props;
+    const { waterSelectVal } = this.state;
 
     dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0 } });
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
 
-    // waterSelectVal && dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
-  };
-
-  waterPolling = () => {
-    const { dispatch } = this.props;
-    const { waterSelectVal } = this.state;
-
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
   };
+
+  // waterPolling = () => {
+  //   const { dispatch } = this.props;
+  //   const { waterSelectVal } = this.state;
+
+  //   waterSelectVal &&
+  //     dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+  // };
 
   chartPolling = () => {
     const { dispatch } = this.props;
@@ -143,10 +196,10 @@ export default class App extends PureComponent {
       type: 'monitor/fetchGsmsHstData',
       payload: { deviceId: chartSelectVal },
     });
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: chartSelectVal, code: 'v1' },
-    });
+    // dispatch({
+    //   type: 'monitor/fetchPieces',
+    //   payload: { deviceId: chartSelectVal, code: 'v1' },
+    // });
   };
 
   handleGasNumClick = status => {
@@ -288,8 +341,7 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          dispatch={dispatch}
-          actionType="monitor/fetchStartToPlay"
+          showList={false}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId

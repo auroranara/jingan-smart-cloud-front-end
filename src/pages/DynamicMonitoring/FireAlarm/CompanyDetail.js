@@ -197,7 +197,7 @@ export default class CompanyDetail extends PureComponent {
     const action = (
       <Link to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}>
         <AuthButton code={codesMap.dynamicMonitoring.historyRecordView}>
-          历史纪录
+          历史记录
           <Icon type="double-right" />
         </AuthButton>
       </Link>
