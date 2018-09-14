@@ -58,8 +58,8 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie9'],
-        dynamicImport: true,
+        polyfills: ['ie10'],
+        // dynamicImport: true,
         dll: {
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
           exclude: ['@babel/runtime'],
