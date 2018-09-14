@@ -18,8 +18,9 @@ import {
   Divider,
   Popconfirm,
   message,
+  TreeSelect,
 } from 'antd';
-import { routerRedux } from 'dva/router';
+// import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -50,6 +51,8 @@ const breadcrumbList = [
 ];
 
 const FormItem = Form.Item;
+
+const TreeNode = TreeSelect.TreeNode;
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -84,6 +87,21 @@ const unitTypeList = {
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
+const generateUnitsTree = data => {
+  console.log(data);
+
+  return data.map(item => {
+    if (item.child && item.child.length) {
+      return (
+        <TreeNode title={item.name} key={item.id} value={item.id}>
+          {generateUnitsTree(item.child)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.name} key={item.id} value={item.id} />;
+  });
 };
 
 @connect(
@@ -147,6 +165,10 @@ export default class accountManagementList extends PureComponent {
     };
   }
 
+  state = {
+    unitTypeChecked: false,
+  };
+
   // 生命周期函数
   componentDidMount() {
     const { fetch, fetchOptions, fetchUnitsFuzzy } = this.props;
@@ -184,6 +206,8 @@ export default class accountManagementList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
+    console.log(data);
+
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
@@ -243,12 +267,24 @@ export default class accountManagementList extends PureComponent {
       fetchUnitsFuzzy,
       form: { setFieldsValue },
     } = this.props;
+    this.setState({ unitTypeChecked: value });
     setFieldsValue({ unitId: undefined });
-    fetchUnitsFuzzy({
-      payload: {
-        unitType: value,
-      },
-    });
+    // 根据当前选中的单位类型获取对应的所属单位列表
+    if (value === 2) {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: value,
+        },
+      });
+    } else {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: value,
+          pageNum: 1,
+          pageSize: defaultPageSize,
+        },
+      });
+    }
   };
 
   // 所属单位下拉框输入
@@ -326,6 +362,8 @@ export default class accountManagementList extends PureComponent {
       loading,
     } = this.props;
 
+    const { unitTypeChecked } = this.state;
+
     const { Option } = Select;
 
     return (
@@ -338,7 +376,9 @@ export default class accountManagementList extends PureComponent {
               })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
             </FormItem>
             <FormItem label="单位类型">
-              {getFieldDecorator('unitType')(
+              {getFieldDecorator('unitType', {
+                initialValue: unitTypes.length === 0 ? undefined : 4,
+              })(
                 <Select
                   placeholder="请选择单位类型"
                   onSelect={this.handleUnitTypeSelect}
@@ -352,32 +392,50 @@ export default class accountManagementList extends PureComponent {
                 </Select>
               )}
             </FormItem>
-            <FormItem label="所属单位">
-              {getFieldDecorator('unitId', {
-                rules: [
-                  {
-                    whitespace: true,
-                    message: '请选择所属单位',
-                  },
-                ],
-              })(
-                <AutoComplete
-                  mode="combobox"
-                  optionLabelProp="children"
-                  placeholder="请选择所属单位"
-                  notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                  onSearch={this.handleUnitIdChange}
-                  filterOption={false}
-                  style={{ width: 230 }}
-                >
-                  {unitIdes.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </AutoComplete>
-              )}
-            </FormItem>
+
+            {unitTypeChecked !== 2 && (
+              <FormItem label="所属单位">
+                {getFieldDecorator('unitId', {
+                  rules: [
+                    {
+                      whitespace: true,
+                      message: '请选择所属单位',
+                    },
+                  ],
+                })(
+                  <AutoComplete
+                    mode="combobox"
+                    optionLabelProp="children"
+                    placeholder="请选择所属单位"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleUnitIdChange}
+                    filterOption={false}
+                    style={{ width: 230 }}
+                  >
+                    {unitIdes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
+              </FormItem>
+            )}
+
+            {unitTypeChecked === 2 && (
+              <FormItem label="所属单位">
+                {getFieldDecorator('unitId')(
+                  <TreeSelect
+                    allowClear
+                    placeholder="请选择所属单位"
+                    // labelInValue
+                    style={{ width: 230 }}
+                  >
+                    {generateUnitsTree(unitIdes)}
+                  </TreeSelect>
+                )}
+              </FormItem>
+            )}
           </Col>
 
           {/* 按钮 */}

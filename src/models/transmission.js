@@ -17,6 +17,7 @@ export default {
 
   state: {
     data: {
+      list: [],
       pagination: {
         total: 0,
         pageSize: 24,
@@ -34,8 +35,7 @@ export default {
       const {
         code,
         data: {
-          list,
-          pagination: { pageNum, total },
+          pagination: { total },
         },
       } = response;
 
