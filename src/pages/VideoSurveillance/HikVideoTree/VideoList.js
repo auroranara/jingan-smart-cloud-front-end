@@ -1,7 +1,20 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'dva/router';
-import { Row, Col, Card, Form, Input, Button, Table, Badge, Checkbox, Divider, Modal, Select } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Table,
+  Badge,
+  Checkbox,
+  Divider,
+  Modal,
+  // Select,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import FolderTree from './FolderTree';
 
@@ -34,16 +47,14 @@ function traverse(list, handle) {
   list.forEach(item => {
     handle(item);
     const { children } = item;
-    if (children)
-      traverse(children, handle);
+    if (children) traverse(children, handle);
   });
 }
-
 
 // 防抖函数,不然每次计算,网页太卡
 function debounce(fn, ms) {
   let timer = null;
-  return function (...args) {
+  return function(...args) {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), ms);
   };
@@ -76,7 +87,8 @@ export default class VideoList extends PureComponent {
 
     this.state = {
       folderId: ssFolderId || '',
-      formValues: ssFormValues && isObjectStr(ssFormValues) ? JSON.parse(ssFormValues) : { isShowAll: true },
+      formValues:
+        ssFormValues && isObjectStr(ssFormValues) ? JSON.parse(ssFormValues) : { isShowAll: true },
       filteredInfo: ssFilteredInfo && isObjectStr(ssFilteredInfo) ? JSON.parse(ssFilteredInfo) : {},
       sValue: ssSValue || '',
       searchValue: ssSValue || '',
@@ -113,8 +125,7 @@ export default class VideoList extends PureComponent {
     const state = this.state;
     Object.entries(state).forEach(([key, val]) => {
       // console.log(key);
-      if (key === 'autoExpandParent' || key === 'searchValue')
-        return;
+      if (key === 'autoExpandParent' || key === 'searchValue') return;
 
       sessionStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
     });
@@ -131,7 +142,7 @@ export default class VideoList extends PureComponent {
     this.setState({ expandedKeys, searchValue: value, autoExpandParent: true });
   }, 800);
 
-  handleFormReset = (folderId) => {
+  handleFormReset = folderId => {
     const { dispatch, form } = this.props;
     form.resetFields();
     this.clearFilters();
@@ -146,9 +157,13 @@ export default class VideoList extends PureComponent {
     });
   };
 
-  handleTreeSearch = (e) => {
-    const { target: { value } } = e;
-    const { video: { folderList } } = this.props;
+  handleTreeSearch = e => {
+    const {
+      target: { value },
+    } = e;
+    const {
+      video: { folderList },
+    } = this.props;
     const expandedKeys = [];
     this.setState({ sValue: value });
     // console.log('folderList', folderList);
@@ -160,7 +175,7 @@ export default class VideoList extends PureComponent {
     this.setState({ expandedKeys, autoExpandParent });
   };
 
-  handleSelect = (selectedKeys) => {
+  handleSelect = selectedKeys => {
     // console.log('handleSelect', selectedKeys);
     this.setState({ selectedKeys });
     this.handleFormReset(selectedKeys[0]);
@@ -198,7 +213,7 @@ export default class VideoList extends PureComponent {
     this.setState({ filteredInfo: {} });
   };
 
-  handleSearch = (e) => {
+  handleSearch = e => {
     e.preventDefault();
     e.persist();
 
@@ -223,7 +238,7 @@ export default class VideoList extends PureComponent {
     });
   };
 
-  handlePlayButtonClick = (id) => {
+  handlePlayButtonClick = id => {
     if (this.timer !== null) {
       return;
     }
@@ -237,14 +252,17 @@ export default class VideoList extends PureComponent {
         this.timer = setTimeout(() => {
           Modal.warning({
             title: '请安装播放器！',
-            content: (<a href={url} style={{ textDecoration: 'none' }}>点击下载</a>),
+            content: (
+              <a href={url} style={{ textDecoration: 'none' }}>
+                点击下载
+              </a>
+            ),
             okText: '关闭',
           });
         }, 1000);
       },
     });
     console.log('click end');
-
   };
 
   /* 播放按钮失焦事件 */
@@ -286,10 +304,9 @@ export default class VideoList extends PureComponent {
           </Col> */}
           <Col span={6}>
             <FormItem>
-              {getFieldDecorator('isShowAll',
-                { valuePropName: 'checked', initialValue: true })(
-                  <Checkbox>显示所有下级视频</Checkbox>
-                )}
+              {getFieldDecorator('isShowAll', { valuePropName: 'checked', initialValue: true })(
+                <Checkbox>显示所有下级视频</Checkbox>
+              )}
             </FormItem>
           </Col>
           {/* <Col span={5}> */}
@@ -369,7 +386,12 @@ export default class VideoList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {/* <Link to={`/video/${record.id}/detail`}>查看</Link> */}
-            <AuthLink code={buttonMap.videoSurveillance.hikVideoTree.detail} to={`/video-surveillance/hik-video-tree/video-detail/${record.id}`}>查看</AuthLink>
+            <AuthLink
+              code={buttonMap.videoSurveillance.hikVideoTree.detail}
+              to={`/video-surveillance/hik-video-tree/video-detail/${record.id}`}
+            >
+              查看
+            </AuthLink>
             <Divider type="vertical" />
             {/* <button
               code={buttonMap.videoSurveillance.hikVideoTree.play}
@@ -409,14 +431,36 @@ export default class VideoList extends PureComponent {
   }
 
   render() {
-    const { video: { videoUrl } } = this.props;
+    const {
+      video: {
+        videoUrl,
+        data: {
+          pagination: { total },
+        },
+      },
+    } = this.props;
     const { sValue, searchValue, expandedKeys, autoExpandParent, selectedKeys } = this.state;
     return (
-      <PageHeaderLayout title="视频管理" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title="视频管理"
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            视频总数：
+            {total}
+            {''}
+          </div>
+        }
+      >
         <Row gutter={16}>
           <Col span={6}>
             <Card title="视频组目录" id="folder-list">
-              <Search style={{ marginBottom: 8 }} placeholder="请输入视频组或视频名称" value={sValue} onChange={this.handleTreeSearch} />
+              <Search
+                style={{ marginBottom: 8 }}
+                placeholder="请输入视频组或视频名称"
+                value={sValue}
+                onChange={this.handleTreeSearch}
+              />
               <FolderTree
                 searchValue={searchValue}
                 expandedKeys={expandedKeys}
@@ -424,13 +468,20 @@ export default class VideoList extends PureComponent {
                 selectedKeys={selectedKeys}
                 handleExpand={this.handleExpand}
                 handleSelect={this.handleSelect}
-              // handleFormReset={folderId => this.handleFormReset(folderId)}
+                // handleFormReset={folderId => this.handleFormReset(folderId)}
               />
             </Card>
           </Col>
           <Col span={18}>{this.renderRightTable()}</Col>
         </Row>
-        <iframe src={videoUrl} title="视频播放" style={{ display: 'none' }} frameBorder="0" width="0" height="0" />
+        <iframe
+          src={videoUrl}
+          title="视频播放"
+          style={{ display: 'none' }}
+          frameBorder="0"
+          width="0"
+          height="0"
+        />
       </PageHeaderLayout>
     );
   }
