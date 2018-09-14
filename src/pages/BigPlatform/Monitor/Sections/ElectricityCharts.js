@@ -105,6 +105,7 @@ class ElectricityCharts extends PureComponent {
   legendFormatter = arr => {
     let val = null;
     arr.forEach(pieces => {
+      if (!pieces || pieces.length === 0) return;
       pieces.forEach(p => {
         if (p.condition === '1') val = val < p.limitValue && val ? val : p.limitValue;
       });
