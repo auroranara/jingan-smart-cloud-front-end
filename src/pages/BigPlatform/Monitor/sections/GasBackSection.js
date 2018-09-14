@@ -17,10 +17,12 @@ const tempList = [
 //将原始数据的状态修正， 0 失联 1 正常 2 异常 => 0 正常 1 异常 2 失联
 const STATUS_FIX = [2, 0, 1];
 
-function handleGasList(list=[], status=ALL, searchVal='') {
+function handleGasList(list=[], status=ALL, value='') {
   if (!list.length)
     return [];
 
+  // 将字符串用空格符切割为字符串数组并过滤掉空字符
+  const searchVals = value.trim().split(/\s+/).filter(s => s);
   const newList = list.map(item => {
     const { deviceId, area, location, realTimeData: { updateTime, status, realTimeData }, deviceParams} = item;
     const fixedStatus = STATUS_FIX[status];
@@ -30,7 +32,7 @@ function handleGasList(list=[], status=ALL, searchVal='') {
   });
 
   const statusFilteredList = status === ALL ? newList : newList.filter(item => item.status === status);
-  return searchVal ? statusFilteredList.filter(item => item.location.includes(searchVal)) : statusFilteredList;
+  return value.trim() ? searchVals.reduce((prev, next) => prev.filter(item => item.location.includes(next)), statusFilteredList): statusFilteredList;
 }
 
 export default class GasSection extends PureComponent {
@@ -57,9 +59,12 @@ export default class GasSection extends PureComponent {
 
     return (
       <FcSection title="可燃/有毒气体监测" className={styles.gas} style={{ position: 'relative', padding: '0 15px 10px' }} isBack>
-        <div className={styles.inputContainer}>
+        {/* <div className={styles.inputContainer}>
           <input value={inputVal} onChange={this.handleInputChange} className={styles.input} placeholder="区域位置" />
           <button className={styles.check}>查询</button>
+        </div> */}
+        <div className={styles.inputContainer}>
+          <input value={inputVal} onChange={this.handleInputChange} className={styles.input} placeholder="请输入搜索关键字，多关键字以空格分隔" />
         </div>
         <div className={styles.labelContainer}>
           {nums.map((n, i) => <GasStatusLabel key={i} num={n} status={i} selected={status === i} onClick={() => handleLabelClick(i)} />)}
