@@ -79,4 +79,20 @@ export default {
       zoom: 13,
     },
   },
+  xuexiao: {
+    region: '无锡市',
+    logo: '',
+    mail: 'jazh@jingan-china.cn',
+    mainWeb: 'https://www.jingan-china.cn',
+    projectKey: 'v2_test',
+    projectName: '校园智慧安全平台',
+    servicePhone: '400-928-5656',
+    serviceSupport: '无锡晶安智慧科技有限公司',
+    safetyGovernmentTitle: '校园智慧安全平台',
+    location: {
+      x: 120.401163,
+      y: 31.560116,
+      zoom: 13,
+    },
+  },
 };
