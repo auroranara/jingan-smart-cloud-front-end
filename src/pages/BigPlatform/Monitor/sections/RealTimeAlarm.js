@@ -13,12 +13,12 @@ import noAlarm from '../../../../assets/no-alarm.png'
 export default class RealTimeAlarm extends PureComponent {
 
   renderAlarmList = () => {
-    const { realTimeAlarm } = this.props
+    const { realTimeAlarm, handleClick } = this.props
     const iconList = [
       iconLight, iconFire, iconWater, iconGas,
     ]
     return realTimeAlarm.map((item, i) => (
-      <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
+      <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} style={{ cursor: 'pointer' }} onClick={handleClick} >
         <div className={styles.innerItem}>
           {/* <div className={styles.icon} style={{
             backgroundImage: `url(${iconList[Number(item.deviceType) - 1]})`,

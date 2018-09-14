@@ -20,7 +20,7 @@ import TopCenter from './sections/TopCenter.js';
 import ElectricityCharts from './Sections/ElectricityCharts';
 
 const DELAY = 5 * 1000;
-const WATER_DELAY = 5 * 60 * 1000;
+// const WATER_DELAY = 5 * 60 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
 
 /**
@@ -202,6 +202,10 @@ export default class App extends PureComponent {
     // });
   };
 
+  handleAlarmCardClick = () => {
+    this.setState({ videoVisible: true, videoKeyId: undefined });
+  };
+
   handleGasNumClick = status => {
     this.setState({ gasRotated: true, gasStatus: status });
   };
@@ -288,7 +292,7 @@ export default class App extends PureComponent {
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
               <div className={styles.realTimeAlarmContainer}>
-                <RealTimeAlarm realTimeAlarm={realTimeAlarm} />
+                <RealTimeAlarm realTimeAlarm={realTimeAlarm} handleClick={this.handleAlarmCardClick} />
               </div>
               <div className={styles.videoMonitorContainer}>
                 <VideoSection
