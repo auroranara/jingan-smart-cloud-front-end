@@ -18,12 +18,13 @@ const hosts = {
   gj: '192.168.10.9', //高进
   tw: '192.168.10.5', // 田伟
   cfm: '192.168.10.6', // 崔富民
+  jiangxi: '58.215.178.100:12083',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.jiangxi}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -33,7 +34,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.jiangxi}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
