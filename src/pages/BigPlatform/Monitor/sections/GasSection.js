@@ -18,9 +18,9 @@ export default function GasSection(props) {
   const { count: total=0, normal=0, unnormal: abnormal=0, outContact: loss=0 } = data;
 
   const sts = [
-    { status: '正常', num: normal, percent: handlePercent(normal, total), strokeColor: 'rgb(0, 161, 129)', handleClick: () => handleClick(NORMAL) },
-    { status: '异常', num: abnormal, percent: handlePercent(abnormal, total), strokeColor: 'rgb(232, 103, 103)', handleClick: () => handleClick(ABNORMAL) },
-    { status: '失联', num: loss, percent: handlePercent(loss, total), strokeColor: 'rgb(198, 193, 129)', handleClick: () => handleClick(LOSS) },
+    { status: 0, num: normal, percent: handlePercent(normal, total), handleClick: () => handleClick(NORMAL) },
+    { status: 1, num: abnormal, percent: handlePercent(abnormal, total), handleClick: () => handleClick(ABNORMAL) },
+    { status: 2, num: loss, percent: handlePercent(loss, total), handleClick: () => handleClick(LOSS) },
   ];
 
   return (
