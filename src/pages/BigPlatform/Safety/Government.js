@@ -39,13 +39,16 @@ const defaultFieldNames = {
 };
 // 获取图章
 const getSeal = status => {
-  switch (status) {
+  switch (+status) {
     case 1:
-      return dfcIcon;
     case 2:
+      return wcqIcon;
+    case 3:
+      return dfcIcon;
+    case 7:
       return ycqIcon;
     default:
-      return wcqIcon;
+      return '';
   }
 };
 
@@ -581,7 +584,7 @@ class GovernmentBigPlatform extends Component {
         },
         axisLabel: {
           formatter: function(value, index) {
-            if (parseInt(value, 10) != value) return '';
+            if (parseInt(value, 10) !== value) return '';
             return parseInt(value, 10);
           },
         },
@@ -1036,39 +1039,42 @@ class GovernmentBigPlatform extends Component {
 
   renderComRisk = () => {
     const {
-      bigPlatform: { riskDetailList },
+      bigPlatform: {
+        riskDetailList: { ycq = [], wcq = [], dfc = [] },
+      },
     } = this.props;
-    const riskDetailData =
-      riskDetailData && riskDetailData.length
-        ? riskDetailList.map(
-            ({
-              id,
-              desc: description,
-              report_user_name: sbr,
-              report_time: sbsj,
-              rectify_user_name: zgr,
-              plan_rectify_time: zgsj,
-              review_user_name: fcr,
-              status,
-              hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
-            }) => ({
-              id,
-              description,
-              sbr,
-              sbsj: moment(+sbsj).format('YYYY-MM-DD'),
-              zgr,
-              zgsj: moment(+zgsj).format('YYYY-MM-DD'),
-              fcr,
-              status: this.switchStatus(status),
-              background: background.split(',')[0],
-            })
-          )
-        : [];
+    // const riskDetailData =
+    //   riskDetailData && riskDetailData.length
+    //     ? riskDetailList.map(
+    //         ({
+    //           id,
+    //           desc: description,
+    //           report_user_name: sbr,
+    //           report_time: sbsj,
+    //           rectify_user_name: zgr,
+    //           plan_rectify_time: zgsj,
+    //           review_user_name: fcr,
+    //           status,
+    //           hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
+    //         }) => ({
+    //           id,
+    //           description,
+    //           sbr,
+    //           sbsj: moment(+sbsj).format('YYYY-MM-DD'),
+    //           zgr,
+    //           zgsj: moment(+zgsj).format('YYYY-MM-DD'),
+    //           fcr,
+    //           status: this.switchStatus(status),
+    //           background: background.split(',')[0],
+    //         })
+    //       )
+    //     : [];
     const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = defaultFieldNames;
+    const newList = [...ycq, ...wcq, ...dfc];
     return (
       <div>
-        {riskDetailData.length !== 0 ? (
-          riskDetailData.map(item => (
+        {newList.length !== 0 ? (
+          newList.map(item => (
             <div
               key={item[id]}
               style={{
@@ -1083,7 +1089,7 @@ class GovernmentBigPlatform extends Component {
               <div style={{ display: 'flex', padding: '12px 0' }}>
                 <Avatar
                   style={{ margin: '0 10px' }}
-                  src={item[status] === 2 ? descriptionRedIcon : descriptionBlueIcon}
+                  src={+item[status] === 7 ? descriptionRedIcon : descriptionBlueIcon}
                   size="small"
                 />
                 <Tooltip placement="bottom" title={item[description] || '暂无信息'}>
@@ -1093,7 +1099,7 @@ class GovernmentBigPlatform extends Component {
                     className={styles.riskDescription}
                     style={{
                       flex: 1,
-                      color: item[status] === 2 ? '#ff4848' : '#fff',
+                      color: +item[status] === 7 ? '#ff4848' : '#fff',
                       lineHeight: '24px',
                     }}
                   >
@@ -1163,7 +1169,7 @@ class GovernmentBigPlatform extends Component {
                       {item[zgsj]}
                     </Ellipsis>
                   </div>
-                  {item[status] === 1 && (
+                  {+item[status] === 3 && (
                     <div
                       className={styles.riskMsg}
                       style={{
