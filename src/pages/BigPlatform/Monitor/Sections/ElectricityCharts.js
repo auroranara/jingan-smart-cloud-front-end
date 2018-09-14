@@ -102,7 +102,7 @@ class ElectricityCharts extends PureComponent {
     }
   };
 
-  legendFormatter = arr => {
+  legendFormatter = (arr, unit) => {
     let val = null;
     arr.forEach(pieces => {
       if (!pieces || pieces.length === 0) return;
@@ -110,7 +110,7 @@ class ElectricityCharts extends PureComponent {
         if (p.condition === '1') val = val < p.limitValue && val ? val : p.limitValue;
       });
     });
-    return val ? `报警值：≥${val}` : null;
+    return val ? `报警值：≥${val}${unit}` : null;
   };
 
   getOptions = () => {
@@ -227,7 +227,7 @@ class ElectricityCharts extends PureComponent {
         option = {
           ...defaultOption,
           title: {
-            text: this.legendFormatter([v1Pieces]),
+            text: this.legendFormatter([v1Pieces], 'mA'),
             textStyle: {
               fontSize: 12,
               color: '#fff',
@@ -296,7 +296,7 @@ class ElectricityCharts extends PureComponent {
             data: ['A相温度', 'B相温度', 'C相温度', '零线温度'],
           },
           title: {
-            text: this.legendFormatter([v2Pieces, v3Pieces, v4Pieces, v5Pieces]),
+            text: this.legendFormatter([v2Pieces, v3Pieces, v4Pieces, v5Pieces], '℃'),
             textStyle: {
               fontSize: 12,
               color: '#fff',
@@ -377,7 +377,7 @@ class ElectricityCharts extends PureComponent {
             data: ['A相电流', 'B相电流', 'C相电流'],
           },
           title: {
-            text: this.legendFormatter([iaPieces, ibPieces, icPieces]),
+            text: this.legendFormatter([iaPieces, ibPieces, icPieces], 'A'),
             textStyle: {
               fontSize: 12,
               color: '#fff',
@@ -451,7 +451,7 @@ class ElectricityCharts extends PureComponent {
             data: ['A相电压', 'B相电压', 'C相电压'],
           },
           title: {
-            text: this.legendFormatter([uaPieces, ubPieces, ucPieces]),
+            text: this.legendFormatter([uaPieces, ubPieces, ucPieces], 'V'),
             textStyle: {
               fontSize: 12,
               color: '#fff',
