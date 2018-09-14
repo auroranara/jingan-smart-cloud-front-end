@@ -141,13 +141,13 @@ const HiddenDangerRecord = ({ data }) => {
  */
 const Host = ({ data, onClick }) => {
   const { id, deviceCode, installLocation, isReset, isFire } = data;
-  const hostInfoItemClassName = +isFire
+  const hostInfoItemClassName = +isFire && !isReset
     ? `${styles.hostInfoItem} ${styles.fireHostInfoItem}`
     : styles.hostInfoItem;
   return (
     <div className={styles.hostContainer} key={id}>
       <div className={styles.hostIconContainer}>
-        <img src={+isFire ? fireHostIcon : hostIcon} alt="" />
+        <img src={+isFire && !isReset ? fireHostIcon : hostIcon} alt="" />
       </div>
       <div className={styles.hostInfoContainer}>
         <div className={hostInfoItemClassName}>
