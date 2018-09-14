@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import debounce from 'lodash/debounce';
 import HiddenDanger from './HiddenDanger';
+import noHiddenDanger from '../img/noHiddenDanger.png';
 
 import styles from './RiskDetail.less';
 
@@ -174,7 +175,7 @@ export default class App extends PureComponent {
                 );
               }
               return null;
-            }) : <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>}
+            }) : <div className={styles.noHiddenDanger} style={{ backgroundImage: `url(${noHiddenDanger})` }}></div>}
           </div>
           {pageCount > 1 && (
             <div style={{ flex: 'none', lineHeight: '1' }}>

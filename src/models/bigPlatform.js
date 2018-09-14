@@ -13,7 +13,7 @@ import {
   getCountDangerLocationForCompany,
   getRiskDetail,
   getRiskPointInfo,
-  getHiddenDanger,
+  // getHiddenDanger,
   getSafetyOfficer,
   getGovFulltimeWorkerList,
   getOverRectifyCompany,
@@ -49,8 +49,8 @@ const transformHiddenDangerFields = ({
   plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
   real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
   fcr: review_user_name,
-  status,
-  background,
+  status: +status,
+  background: background.split(',')[0],
   source: source_type_name,
 })
 
@@ -133,7 +133,7 @@ export default {
       dfc: [],
     },
     // 隐患总数
-    hiddenDanger: 0,
+    // hiddenDanger: 0,
     // 安全人员信息
     safetyOfficer: {},
     govFulltimeWorkerList: {
@@ -418,16 +418,16 @@ export default {
         success();
       }
     },
-    *fetchHiddenDanger({ payload, success }, { call, put }) {
-      const response = yield call(getHiddenDanger, payload);
-      yield put({
-        type: 'hiddenDanger',
-        payload: response.total,
-      });
-      if (success) {
-        success();
-      }
-    },
+    // *fetchHiddenDanger({ payload, success }, { call, put }) {
+    //   const response = yield call(getHiddenDanger, payload);
+    //   yield put({
+    //     type: 'hiddenDanger',
+    //     payload: response.total,
+    //   });
+    //   if (success) {
+    //     success();
+    //   }
+    // },
     *fetchSafetyOfficer({ payload, success }, { call, put }) {
       const response = yield call(getSafetyOfficer, payload);
       yield put({
@@ -627,12 +627,12 @@ export default {
         riskDetailList,
       };
     },
-    hiddenDanger(state, { payload }) {
-      return {
-        ...state,
-        hiddenDanger: payload,
-      };
-    },
+    // hiddenDanger(state, { payload }) {
+    //   return {
+    //     ...state,
+    //     hiddenDanger: payload,
+    //   };
+    // },
     saveSafetyOfficer(state, { payload: safetyOfficer }) {
       return {
         ...state,

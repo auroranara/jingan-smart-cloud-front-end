@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import ReactEcharts from 'echarts-for-react';
 import Slide from 'components/Slide';
 import MonitorBall from 'components/MonitorBall';
+import Rotate from 'components/Rotate';
 
 // import Timer from './Components/Timer';
 import RiskImage from './Components/RiskImage.js';
@@ -235,6 +236,8 @@ class CompanyLayout extends PureComponent {
       percent: 39,
       // 风险点模块的筛选状态
       riskStatus: undefined,
+      // 单位巡查当前显示的模块索引
+      unitInspectionIndex: 0,
     };
     this.myTimer = null;
     this.currentPieIndex = -1;
@@ -744,11 +747,11 @@ class CompanyLayout extends PureComponent {
       },
       // 特种设备总数
       specialEquipment,
-      // 隐患总数
-      hiddenDanger,
+      riskDetailList: { ycq=[], wcq=[], dfc=[] },
     } = this.props.bigPlatform;
     const { isCurrentHiddenDangerShow } = this.state;
     const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
+    const hiddenDanger = ycq.length + wcq.length + dfc.length;
 
     const {
       match: {
@@ -1163,6 +1166,8 @@ class CompanyLayout extends PureComponent {
     const {
       companyMessage: { check_map = [], hidden_danger_map = [] },
     } = this.props.bigPlatform;
+    const { unitInspectionIndex } = this.state;
+
     const checkList = [];
     const dangerList = [];
     for (let i = 0; i < 31; i++) {
@@ -1277,33 +1282,38 @@ class CompanyLayout extends PureComponent {
     };
 
     return (
-      <section className={styles.sectionWrapper} style={{ height: '32%' }}>
-        <div className={styles.sectionMain}>
-          <div className={styles.shadowIn}>
-            <div className={styles.sectionTitle}>
-              <span className={styles.sectionTitleIcon} />
-              单位巡查
-              <div className={styles.legendList}>
-                <div className={styles.legendItem}>
-                  <span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }} />
-                  <span className={styles.legendItemName}>巡查</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <span className={styles.legendItemIcon} style={{ backgroundColor: '#F7E68A' }} />
-                  <span className={styles.legendItemName}>隐患</span>
+      <Rotate
+        axis="x"
+        frontIndex={unitInspectionIndex}
+      >
+        <section className={styles.sectionWrapper} style={{ height: '32%' }}>
+          <div className={styles.sectionMain}>
+            <div className={styles.shadowIn}>
+              <div className={styles.sectionTitle}>
+                <span className={styles.sectionTitleIcon} />
+                单位巡查
+                <div className={styles.legendList}>
+                  <div className={styles.legendItem}>
+                    <span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }} />
+                    <span className={styles.legendItemName}>巡查</span>
+                  </div>
+                  <div className={styles.legendItem}>
+                    <span className={styles.legendItemIcon} style={{ backgroundColor: '#F7E68A' }} />
+                    <span className={styles.legendItemName}>隐患</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className={styles.lineChart}>
-              <ReactEcharts
-                option={option}
-                style={{ height: '100%' }}
-                onChartReady={this.handleLineChartReady}
-              />
+              <div className={styles.lineChart}>
+                <ReactEcharts
+                  option={option}
+                  style={{ height: '100%' }}
+                  onChartReady={this.handleLineChartReady}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </Rotate>
     );
   }
 
