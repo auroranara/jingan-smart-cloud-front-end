@@ -52,7 +52,6 @@ class WasteWaterWave extends PureComponent {
 
   renderChart(type) {
     const { percent, color = 'rgb(9,103,211)' } = this.props;
-    console.log('colorcolorcolor', color);
     const data = percent / 100;
     const self = this;
     cancelAnimationFrame(this.timer);
@@ -91,7 +90,7 @@ class WasteWaterWave extends PureComponent {
     }
 
     const cStartPoint = arcStack.shift();
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
     ctx.moveTo(cStartPoint[0], cStartPoint[1]);
 
     function drawSin() {

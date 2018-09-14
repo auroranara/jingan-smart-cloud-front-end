@@ -1008,7 +1008,7 @@ class GovernmentBigPlatform extends Component {
   };
 
   goCompany = company_id => {
-    window.open(`/acloud_new/#/big-platform/safety/company/${company_id}`, `_blank`);
+    window.open(`${window.publicPath}#/big-platform/safety/company/${company_id}`, `_blank`);
   };
 
   handleSearchSelect = ({ latitude, longitude, id }) => {
@@ -1060,7 +1060,7 @@ class GovernmentBigPlatform extends Component {
               zgsj: moment(+zgsj).format('YYYY-MM-DD'),
               fcr,
               status: this.switchStatus(status),
-              background,
+              background: background.split(',')[0],
             })
           )
         : [];

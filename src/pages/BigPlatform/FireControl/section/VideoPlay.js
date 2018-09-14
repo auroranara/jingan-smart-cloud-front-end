@@ -134,11 +134,7 @@ class VideoPlay extends Component {
             监控地点：
             {videoList.length > 0 ? videoList[activeIndex].name : ''}
           </span>
-          <Icon
-            type="close"
-            className={styles.iconClose}
-            onClick={this.handleClose}
-          />
+          <Icon type="close" className={styles.iconClose} onClick={this.handleClose} />
         </div>
         <div className={styles.videoMain}>
           <div className={styles.videoContent} style={{ paddingRight: showList ? 0 : '5px' }}>

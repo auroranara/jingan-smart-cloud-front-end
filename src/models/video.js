@@ -1,8 +1,18 @@
-import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl, fetchVideoTree, bindVodeoPermission, fetchCompanyList, fetchCompanyOptions } from '../services/video';
+import {
+  queryVideoList,
+  bindVideo,
+  queryFolderTree,
+  queryVideoDetail,
+  queryVideoUrl,
+  fetchVideoTree,
+  bindVodeoPermission,
+  fetchCompanyList,
+  fetchCompanyOptions,
+} from '../services/video';
 // import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
 // import { getIdMap } from '../pages/DeviceManagement/HikVideoTree/FolderTree';
-import { queryCompany } from '../services/company/company.js'
-import { fetchDepartmentList } from '../services/company/department.js'
+import { queryCompany } from '../services/company/company.js';
+import { fetchDepartmentList } from '../services/company/department.js';
 
 export default {
   namespace: 'video',
@@ -33,6 +43,13 @@ export default {
       departmentTree: [],
       companyList: [],
       companyOptions: [],
+    },
+    companyData: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 30,
+      },
     },
   },
   effects: {
@@ -94,61 +111,61 @@ export default {
       }
     },
     *fetchVideoTree({ payload, success, error }, { call, put }) {
-      const response = yield call(fetchVideoTree, payload)
+      const response = yield call(fetchVideoTree, payload);
       if (response && response.code === 200) {
-        if (success) success(response.data.list)
-      } else error(response.msg || '请求失败')
+        if (success) success(response.data.list);
+      } else error(response.msg || '请求失败');
     },
     *bindVodeoPermission({ payload, callback }, { call }) {
-      const response = yield call(bindVodeoPermission, payload)
-      if (callback) callback(response)
+      const response = yield call(bindVodeoPermission, payload);
+      if (callback) callback(response);
     },
     *fetchCompanyDetail({ payload }, { call, put }) {
-      const response = yield call(queryCompany, payload)
+      const response = yield call(queryCompany, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveCompanyDetail',
           payload: response.data,
-        })
+        });
       }
     },
     *fetchDepartmentList({ payload, callback }, { call, put }) {
-      const response = yield call(fetchDepartmentList, payload)
+      const response = yield call(fetchDepartmentList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveDepartmentTree',
           payload: response.data.list,
-        })
+        });
       }
     },
     // 获取企业下拉列表
     *fetchCompanyOptions({ payload, callback }, { call, put }) {
-      const response = yield call(fetchCompanyOptions, payload)
+      const response = yield call(fetchCompanyOptions, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveCompanyOptions',
           payload: response.data.list,
-        })
+        });
       }
     },
     // videoPermissionList页-获取企业列表
     *fetchCompanyList({ payload, callback }, { call, put }) {
-      const response = yield call(fetchCompanyList, payload)
+      const response = yield call(fetchCompanyList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveCompanyList',
           payload: response.data,
-        })
+        });
       }
     },
     //  videoPermissionList页-获取企业列表 滚动加载
     *fetchCompanyListByScorll({ payload, callback }, { call, put }) {
-      const response = yield call(fetchCompanyList, payload)
+      const response = yield call(fetchCompanyList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveCompanyListByScroll',
           payload: response.data,
-        })
+        });
       }
     },
   },
@@ -203,7 +220,7 @@ export default {
           ...state.permission,
           companyDetail: payload,
         },
-      }
+      };
     },
     saveDepartmentTree(state, { payload }) {
       return {
@@ -212,7 +229,7 @@ export default {
           ...state.permission,
           departmentTree: payload,
         },
-      }
+      };
     },
     saveCompanyOptions(state, { payload }) {
       return {
@@ -221,9 +238,17 @@ export default {
           ...state.permission,
           companyOptions: payload,
         },
-      }
+      };
     },
-    saveCompanyList(state, { payload: { list, pagination: { pageNum, pageSize, total } } }) {
+    saveCompanyList(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       return {
         ...state,
         permission: {
@@ -232,9 +257,20 @@ export default {
           list,
           pagination: { pageNum, pageSize, total },
         },
-      }
+        companyData: {
+          pagination: { pageNum, pageSize, total },
+        },
+      };
     },
-    saveCompanyListByScroll(state, { payload: { list, pagination: { pageNum, pageSize, total } } }) {
+    saveCompanyListByScroll(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       return {
         ...state,
         permission: {
@@ -243,7 +279,7 @@ export default {
           list: [...state.list, ...list],
           pagination: { pageNum, pageSize, total },
         },
-      }
+      };
     },
   },
 };

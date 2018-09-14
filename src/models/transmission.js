@@ -16,6 +16,13 @@ export default {
   namespace: 'transmission',
 
   state: {
+    data: {
+      pagination: {
+        total: 0,
+        pageSize: 24,
+        pageNum: 1,
+      },
+    },
     list: [],
     deviceList: [],
     companyDetail: {},
@@ -46,9 +53,8 @@ export default {
 
       yield put({
         type: 'queryList',
-        payload: { pageNum, list },
+        payload: response.data,
       });
-
     },
     *fetchDetail({ payload, callback }, { call, put }) {
       // console.log('fetchDetail');
@@ -99,8 +105,7 @@ export default {
 
       const { code, msg } = response;
       // console.log(response, response.code, msg, msg === 'success');
-      if (code === 200)
-        yield put({ type: 'deleteDevice', payload: payload.transmissionId });
+      if (code === 200) yield put({ type: 'deleteDevice', payload: payload.transmissionId });
 
       if (callback) callback(code, '删除成功', '删除失败', msg);
     },
@@ -109,8 +114,7 @@ export default {
 
       const { transmissionId } = payload;
       const { code, data, msg } = response;
-      if (code === 200)
-        yield put({ type: 'addHost', payload: { transmissionId, host: data } });
+      if (code === 200) yield put({ type: 'addHost', payload: { transmissionId, host: data } });
 
       if (callback) callback(code, '添加成功', '添加失败', msg);
     },
@@ -144,7 +148,7 @@ export default {
       let nextList = list;
       if (pageNum !== 1) nextList = state.list.concat(list);
 
-      return { ...state, list: nextList };
+      return { ...state, data: action.payload, list: nextList };
     },
     queryDetail(state, action) {
       // console.log('action.payload', action.payload);

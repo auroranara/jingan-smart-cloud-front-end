@@ -20,7 +20,7 @@ import TopCenter from './sections/TopCenter.js';
 import ElectricityCharts from './Sections/ElectricityCharts';
 
 const DELAY = 5 * 1000;
-const WATER_DELAY = 5 * 60 * 1000;
+// const WATER_DELAY = 5 * 60 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
 
 /**
@@ -79,6 +79,56 @@ export default class App extends PureComponent {
         dispatch({
           type: 'monitor/fetchPieces',
           payload: { deviceId: firstDeviceId, code: 'v1' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v2' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v3' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v4' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'v5' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ia' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ib' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ic' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ua' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'ub' },
+        });
+
+        dispatch({
+          type: 'monitor/fetchPieces',
+          payload: { deviceId: firstDeviceId, code: 'uc' },
         });
       },
     });
@@ -146,10 +196,14 @@ export default class App extends PureComponent {
       type: 'monitor/fetchGsmsHstData',
       payload: { deviceId: chartSelectVal },
     });
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: chartSelectVal, code: 'v1' },
-    });
+    // dispatch({
+    //   type: 'monitor/fetchPieces',
+    //   payload: { deviceId: chartSelectVal, code: 'v1' },
+    // });
+  };
+
+  handleAlarmCardClick = () => {
+    this.setState({ videoVisible: true, videoKeyId: undefined });
   };
 
   handleGasNumClick = status => {
@@ -238,7 +292,7 @@ export default class App extends PureComponent {
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
               <div className={styles.realTimeAlarmContainer}>
-                <RealTimeAlarm realTimeAlarm={realTimeAlarm} />
+                <RealTimeAlarm realTimeAlarm={realTimeAlarm} handleClick={this.handleAlarmCardClick} />
               </div>
               <div className={styles.videoMonitorContainer}>
                 <VideoSection
@@ -291,8 +345,7 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          // dispatch={dispatch}
-          // actionType="monitor/fetchStartToPlay"
+          showList={false}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
