@@ -4,16 +4,16 @@ import { Form, List, Card, Button, Icon, Input, message, Spin, Col } from 'antd'
 import { Link, routerRedux } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from '@/components/Ellipsis';
-import styles from './VideoPermissionList.less'
+import styles from './VideoPermissionList.less';
 import VisibilitySensor from 'react-visibility-sensor';
 // import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { AuthLink } from '@/utils/customAuth';
 
-const FormItem = Form.Item
-const ListItem = List.Item
+const FormItem = Form.Item;
+const ListItem = List.Item;
 
-const title = "视频权限"
+const title = '视频权限';
 const breadcrumbList = [
   {
     title: '首页',
@@ -28,47 +28,50 @@ const breadcrumbList = [
     title,
     name: title,
   },
-]
-
+];
 
 // 获取无数据
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(
-  ({ video, loading, user }) => ({
-    video,
-    user,
-    loading: loading.models.video,
-  })
-)
-
+@connect(({ video, loading, user }) => ({
+  video,
+  user,
+  loading: loading.models.video,
+}))
 @Form.create()
 export default class VideoPermissionList extends PureComponent {
-
   componentDidMount() {
     const {
       dispatch,
-      video: { permission: { pagination: { pageSize } } },
-    } = this.props
+      video: {
+        permission: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
     dispatch({
       type: 'video/fetchCompanyList',
       payload: {
         pageNum: 1,
         pageSize,
       },
-    })
+    });
   }
 
   // 搜索企业
   handleSearch = () => {
     const {
       dispatch,
-      video: { permission: { pagination: { pageSize } } },
+      video: {
+        permission: {
+          pagination: { pageSize },
+        },
+      },
       form: { getFieldValue },
-    } = this.props
-    const name = getFieldValue('name')
+    } = this.props;
+    const name = getFieldValue('name');
     dispatch({
       type: 'video/fetchCompanyList',
       payload: {
@@ -76,31 +79,40 @@ export default class VideoPermissionList extends PureComponent {
         pageSize,
         name,
       },
-    })
-  }
+    });
+  };
 
   // 重置筛选
   handleReset = () => {
     const {
       dispatch,
-      video: { permission: { pagination: { pageSize } } },
+      video: {
+        permission: {
+          pagination: { pageSize },
+        },
+      },
       form: { resetFields },
-    } = this.props
-    resetFields()
+    } = this.props;
+    resetFields();
     dispatch({
       type: 'video/fetchCompanyList',
       payload: {
         pageNum: 1,
         pageSize,
       },
-    })
-  }
+    });
+  };
 
   // 下拉加载企业列表
   handleLoadMore = flag => {
     const {
       dispatch,
-      video: { permission: { isLast, pagination: { pageNum, pageSize } } },
+      video: {
+        permission: {
+          isLast,
+          pagination: { pageNum, pageSize },
+        },
+      },
     } = this.props;
     if (!flag || isLast) {
       return;
@@ -112,59 +124,71 @@ export default class VideoPermissionList extends PureComponent {
         pageNum: pageNum + 1,
         pageSize,
       },
-    })
-
-  }
+    });
+  };
 
   // 跳转到增加视频权限页面
   handleToAdd = () => {
-    const { dispatch } = this.props
-    dispatch(routerRedux.push('/video-surveillance/video-permission/add'))
-  }
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push('/video-surveillance/video-permission/add'));
+  };
 
   // 跳转到编辑视频权限页面
   handleToEdit = companyId => {
-    const { dispatch } = this.props
-    dispatch(routerRedux.push(`/video-surveillance/video-permission/edit/${companyId}`))
-  }
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/video-surveillance/video-permission/edit/${companyId}`));
+  };
 
-  handleDelete() { }
+  handleDelete() {}
 
   // 搜索栏
   renderQuery() {
-    const { form: { getFieldDecorator },
+    const {
+      form: { getFieldDecorator },
       user: { currentUser: { unitType } = {} },
-    } = this.props
-    return (unitType && unitType === 3) ? (
+    } = this.props;
+    return unitType && unitType === 3 ? (
       <Card>
         <Form layout="inline">
           <FormItem label="所属单位：">
             {getFieldDecorator('name', {
               getValueFromEvent: e => e.target.value.replace(/\s+/g, ''),
-            })(<Input style={{ width: '300px' }} placeholder="请输入"></Input>)}
+            })(<Input style={{ width: '300px' }} placeholder="请输入" />)}
           </FormItem>
           <FormItem>
-            <Button type="primary" onClick={this.handleSearch}>查询</Button>
+            <Button type="primary" onClick={this.handleSearch}>
+              查询
+            </Button>
           </FormItem>
           <FormItem>
             <Button onClick={this.handleReset}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <Button onClick={this.handleToAdd} type="primary">新增</Button>
+            <Button onClick={this.handleToAdd} type="primary">
+              新增
+            </Button>
           </FormItem>
-        </Form >
+        </Form>
       </Card>
-    ) : null
+    ) : null;
   }
 
   renderList() {
     const {
       loading,
-      video: { permission: { list } },
-      user: { currentUser: { permissionCodes } },
-    } = this.props
+      video: {
+        permission: { list },
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
 
-    const { videoSurveillance: { videoPermission: { edit } } } = codes
+    const {
+      videoSurveillance: {
+        videoPermission: { edit },
+      },
+    } = codes;
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -198,13 +222,14 @@ export default class VideoPermissionList extends PureComponent {
                   title={name}
                   className={styles.card}
                   actions={[
-                    (<AuthLink
+                    <AuthLink
                       code={edit}
                       to={`/video-surveillance/video-permission/edit/${item.id}`}
                     >
-                      编辑</AuthLink>),
+                      编辑
+                    </AuthLink>,
                   ]}
-                /* extra={
+                  /* extra={
                   <Button
                     onClick={() => { this.handleDelete() }}
                     shape="circle"
@@ -216,16 +241,20 @@ export default class VideoPermissionList extends PureComponent {
                 >
                   <div>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      地址：{practicalAddressLabel || getEmptyData()}
+                      地址：
+                      {practicalAddressLabel || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      行业类别：{industryCategoryLabel || getEmptyData()}
+                      行业类别：
+                      {industryCategoryLabel || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      负责人：{safetyName || getEmptyData()}
+                      负责人：
+                      {safetyName || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      联系电话：{safetyPhone || getEmptyData()}
+                      联系电话：
+                      {safetyPhone || getEmptyData()}
                     </Ellipsis>
                   </div>
                 </Card>
@@ -238,18 +267,36 @@ export default class VideoPermissionList extends PureComponent {
   }
 
   render() {
-    const { video: { permission: { list } } } = this.props
+    const {
+      video: {
+        permission: { list },
+        companyData: {
+          pagination: { total },
+        },
+      },
+    } = this.props;
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            单位总数：
+            {total}
+            {''}
+          </div>
+        }
+      >
         {this.renderQuery()}
         {this.renderList()}
-        {list && list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
+        {list &&
+          list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
         {/* {loading && (
           <div style={{ paddingTop: '50px', textAlign: 'center' }}>
             <Spin />
           </div>
         )} */}
       </PageHeaderLayout>
-    )
+    );
   }
 }
