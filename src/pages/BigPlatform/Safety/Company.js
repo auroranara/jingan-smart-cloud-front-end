@@ -14,6 +14,8 @@ import RiskPoint from './Components/RiskPoint.js';
 import RiskInfo from './Components/RiskInfo.js';
 import RiskDetail from './Components/RiskDetail.js';
 import CurrentHiddenDanger from './Components/CurrentHiddenDanger';
+import StaffList from './Components/StaffList';
+import StaffRecords from './Components/StaffRecords';
 import Header from '../UnitFireControl/components/Header/Header';
 import VideoPlay from '../FireControl/section/VideoPlay.js';
 
@@ -244,6 +246,10 @@ class CompanyLayout extends PureComponent {
     this.highLightTimer = null;
     this.currentLineIndex = -1;
     this.showTipTimer = null;
+    // 曲线图元素
+    this.lineChart = null;
+    // 曲线图元素flag
+    this.lineChartFlag = true;
   }
 
   /**
@@ -409,6 +415,23 @@ class CompanyLayout extends PureComponent {
     this.handleClick(itemId, 0);
   };
 
+  /**
+   * 显示曲线图的文字
+   */
+  showLineChartTip = () => {
+    if (!this.lineChart) {
+      return;
+    }
+    var length = this.lineChart.getOption().series[0].data.length;
+    this.currentLineIndex = (this.currentLineIndex + 1) % length;
+    // 显示 tooltip
+    this.lineChart.dispatchAction({
+      type: 'showTip',
+      seriesIndex: 0,
+      dataIndex: this.currentLineIndex,
+    });
+  };
+
   // 显示视频弹框
   handleVideoShow = keyId => {
     this.setState({ videoVisible: true, videoKeyId: keyId });
@@ -483,20 +506,13 @@ class CompanyLayout extends PureComponent {
    * 曲线图加载完毕
    */
   handleLineChartReady = (chart) => {
-    const showTip = () => {
-      var length = chart.getOption().series[0].data.length;
-      this.currentLineIndex = (this.currentLineIndex + 1) % length;
-      // 显示 tooltip
-      chart.dispatchAction({
-        type: 'showTip',
-        seriesIndex: 0,
-        dataIndex: this.currentLineIndex,
-      });
-    };
-    // 立即显示
-    showTip();
-    // 添加定时器
-    this.showTipTimer = setInterval(showTip, 2000);
+    if (this.lineChartFlag) {
+      this.lineChartFlag = false;
+      this.lineChart = chart;
+      this.showLineChartTip();
+      // 添加曲线图显示文字定时器
+      this.showTipTimer = setInterval(this.showLineChartTip, 2000);
+    }
   };
 
   /**
@@ -599,6 +615,44 @@ class CompanyLayout extends PureComponent {
     // 显示风险点模块
     this.risk.style.right = 0;
     this.leftSection.style.opacity = 0;
+  }
+
+  /**
+   * 切换单位巡查
+   */
+  handleSwitchUnitInspection = (index) => {
+    if (index !== 0) {
+      this.lineChartFlag = false;
+      clearInterval(this.showTipTimer);
+    }
+    else {
+      this.lineChartFlag = false;
+    }
+    this.setState({
+      unitInspectionIndex: index,
+    });
+  }
+
+  /**
+   * 单位巡查人员列表
+   */
+  renderStaffList() {
+    return (
+      <StaffList
+        onClick={() => {this.handleSwitchUnitInspection(0)}}
+      />
+    );
+  }
+
+  /**
+   * 单位巡查人员巡查记录
+   */
+  renderStaffRecords() {
+    return (
+      <StaffRecords
+
+      />
+    );
   }
 
   /**
@@ -934,7 +988,7 @@ class CompanyLayout extends PureComponent {
               <ReactEcharts
                 option={option}
                 style={{ height: '100%' }}
-                onChartReady={this.handlePieChartReady}
+                // onChartReady={this.handlePieChartReady}
               />
             </div>
 
@@ -1285,13 +1339,22 @@ class CompanyLayout extends PureComponent {
       <Rotate
         axis="x"
         frontIndex={unitInspectionIndex}
+        style={{ height: '32%' }}
       >
-        <section className={styles.sectionWrapper} style={{ height: '32%' }}>
+        <section className={styles.sectionWrapper} style={{ height: '100%' }}>
           <div className={styles.sectionMain}>
             <div className={styles.shadowIn}>
               <div className={styles.sectionTitle}>
                 <span className={styles.sectionTitleIcon} />
                 单位巡查
+                <div className={styles.jumpButton} onClick={() => {this.handleSwitchUnitInspection(1);}}>巡查记录>></div>
+              </div>
+              <div className={styles.lineChart} style={{ position: 'relative' }}>
+                <ReactEcharts
+                  option={option}
+                  style={{ height: '100%' }}
+                  onChartReady={this.handleLineChartReady}
+                />
                 <div className={styles.legendList}>
                   <div className={styles.legendItem}>
                     <span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }} />
@@ -1303,16 +1366,11 @@ class CompanyLayout extends PureComponent {
                   </div>
                 </div>
               </div>
-              <div className={styles.lineChart}>
-                <ReactEcharts
-                  option={option}
-                  style={{ height: '100%' }}
-                  onChartReady={this.handleLineChartReady}
-                />
-              </div>
             </div>
           </div>
         </section>
+        {this.renderStaffList()}
+        {this.renderStaffRecords()}
       </Rotate>
     );
   }
