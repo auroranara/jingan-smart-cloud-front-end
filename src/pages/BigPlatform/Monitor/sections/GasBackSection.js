@@ -64,7 +64,7 @@ export default class GasSection extends PureComponent {
           <button className={styles.check}>查询</button>
         </div> */}
         <div className={styles.inputContainer}>
-          <input value={inputVal} onChange={this.handleInputChange} className={styles.input} placeholder="请输入搜索关键字，多关键字以空格分隔" />
+          <input value={inputVal} onChange={this.handleInputChange} className={styles.input} placeholder="请搜索区域和位置" />
         </div>
         <div className={styles.labelContainer}>
           {nums.map((n, i) => <GasStatusLabel key={i} num={n} status={i} selected={status === i} onClick={() => handleLabelClick(i)} />)}
