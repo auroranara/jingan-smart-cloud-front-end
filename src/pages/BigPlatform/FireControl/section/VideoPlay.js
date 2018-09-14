@@ -134,7 +134,8 @@ class VideoPlay extends Component {
           style={{ cursor: draggable ? 'move' : 'default' }}
         >
           <span style={{ cursor: 'default' }}>
-            视频监控 // {videoList.length > 0 ? videoList[activeIndex].name : ''}
+            视频监控
+            {/*videoList.length > 0 ? videoList[activeIndex].name : ''*/}
           </span>
           <Icon type="close" className={styles.iconClose} onClick={this.handleClose} />
         </div>
