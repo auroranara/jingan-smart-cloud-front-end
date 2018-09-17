@@ -63,3 +63,8 @@ export async function fetchCompanyList(params) {
 export async function fetchCompanyOptions(params) {
   return request(`/acloud_new/v2/baseInfo/eyeCompanySelect?${stringify(params)}`);
 }
+
+// 视频列表同步左侧目录
+export async function synchronizeDirectory() {
+  return request('/acloud_new/v2/video/api/manualSync')
+}
