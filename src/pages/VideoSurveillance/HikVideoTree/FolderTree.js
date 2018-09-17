@@ -14,17 +14,20 @@ const { TreeNode } = Tree;
 // }
 
 function renderTreeNodes(data, searchValue) {
-  return data.map((item) => {
+  return data.map(item => {
     const index = item.name.indexOf(searchValue);
     const beforeStr = item.name.slice(0, index);
     const afterStr = item.name.slice(index + searchValue.length);
-    const title = index > -1 ? (
-      <span>
-        {beforeStr}
-        <span style={{ color: '#f50' }}>{searchValue}</span>
-        {afterStr}
-      </span>
-    ) : <span>{item.name}</span>;
+    const title =
+      index > -1 ? (
+        <span>
+          {beforeStr}
+          <span style={{ color: '#f50' }}>{searchValue}</span>
+          {afterStr}
+        </span>
+      ) : (
+        <span>{item.name}</span>
+      );
 
     if (item.children) {
       return (
@@ -49,7 +52,7 @@ function renderTreeNodes(data, searchValue) {
       />
     );
   });
-};
+}
 
 @connect(({ video, loading }) => ({
   video,
@@ -57,27 +60,27 @@ function renderTreeNodes(data, searchValue) {
 }))
 export default class FolderTree extends PureComponent {
   componentDidMount() {
-    const { dispatch, handleExpand } = this.props;
+    const { dispatch, handleExpand, handleSelect } = this.props;
     dispatch({
       type: 'video/fetchFolderTree',
       callback(list) {
         // 当sessionStorage中的缓存值存在，展开缓存值，不存在时默认展开第一个
         const expandedKeys = sessionStorage.getItem('expandedKeys');
+        const selectedKeys = sessionStorage.getItem('selectedKeys');
         // expandedKeys存在且不为空数组
         if (expandedKeys && JSON.parse(expandedKeys).length)
           handleExpand(JSON.parse(expandedKeys), true);
-        else if (list && list.length) {
-          handleExpand([list[0].id], true);
-        }
+        else if (list && list.length) handleExpand([list[0].id], true);
+
+        if (selectedKeys && JSON.parse(selectedKeys).length) handleSelect(JSON.parse(selectedKeys));
+        else if (list && list.length) handleSelect([list[0].id]);
       },
     });
   }
 
   render() {
     const {
-      video: {
-        folderList,
-      },
+      video: { folderList },
       loading,
       searchValue,
       expandedKeys,

@@ -1,17 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Checkbox,
-  Card,
-  Form,
-  Input,
-  Icon,
-  Select,
-  Button,
-  Modal,
-  Upload,
-  message,
-} from 'antd';
+import { Checkbox, Card, Form, Input, Icon, Select, Button, Modal, Upload, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -22,9 +11,21 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
 
-const CreateForm = Form.create()((props) => {
-  const { fileList, setFileList, modalVisible, form, setdbUrl, setConfirmLoading, handleAdd, handleUpdate,
-    handleModalVisible, confirmLoading, currentRecord, dbUrl } = props;
+const CreateForm = Form.create()(props => {
+  const {
+    fileList,
+    setFileList,
+    modalVisible,
+    form,
+    setdbUrl,
+    setConfirmLoading,
+    handleAdd,
+    handleUpdate,
+    handleModalVisible,
+    confirmLoading,
+    currentRecord,
+    dbUrl,
+  } = props;
   const operationUpdate = !!currentRecord;
 
   // 点击确定（此时downloadUrl为上传成功后保存的dbUrl）
@@ -58,13 +59,13 @@ const CreateForm = Form.create()((props) => {
     },
     onChange(info) {
       console.log('info', info);
-      setFileList(info.fileList.slice(-1))
+      setFileList(info.fileList.slice(-1));
       if (info.file.status === 'uploading') {
         setConfirmLoading(true);
       } else if (info.file.status === 'done') {
         if (info.file.response && info.file.response.code && info.file.response.code === 200) {
           // 上传成功回调拿到data包含webUrl（显示所需） 和dbUrl（上传配置所需）
-          form.setFieldsValue({ downloadUrl: info.file.response.data.webUrl })
+          form.setFieldsValue({ downloadUrl: info.file.response.data.webUrl });
           // 保存dbUrl到父级
           setdbUrl(info.file.response.data.dbUrl);
           setConfirmLoading(false);
@@ -91,37 +92,46 @@ const CreateForm = Form.create()((props) => {
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="版本名称">
         {form.getFieldDecorator('versionName', {
           initialValue: operationUpdate ? currentRecord.versionName : '',
-          rules: [
-            { required: true, whitespace: true, message: '请输入版本名称' },
-          ],
+          rules: [{ required: true, whitespace: true, message: '请输入版本名称' }],
         })(<Input placeholder="请输入" />)}
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="版本编号">
         {form.getFieldDecorator('versionCode', {
           initialValue: operationUpdate ? currentRecord.versionCode : '',
-          rules: [
-            { required: true, whitespace: true, message: '请输入版本编号' },
-          ],
+          rules: [{ required: true, whitespace: true, message: '请输入版本编号' }],
         })(<Input placeholder="请输入" />)}
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="版本说明">
-        {form.getFieldDecorator('versionRemark', { initialValue: operationUpdate ? currentRecord.versionRemark : '' })(<TextArea placeholder="请输入" />)}
+        {form.getFieldDecorator('versionRemark', {
+          initialValue: operationUpdate ? currentRecord.versionRemark : '',
+        })(<TextArea placeholder="请输入" />)}
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="是否发布">
-        {form.getFieldDecorator('isPublish', { valuePropName: 'checked', initialValue: operationUpdate ? currentRecord.isPublish === '1' : false })(<Checkbox>发布</Checkbox>)}
+        {form.getFieldDecorator('isPublish', {
+          valuePropName: 'checked',
+          initialValue: operationUpdate ? currentRecord.isPublish === '1' : false,
+        })(<Checkbox>发布</Checkbox>)}
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="是否强制更新">
-        {form.getFieldDecorator('isForce', { valuePropName: 'checked', initialValue: operationUpdate ? currentRecord.isForce === '1' : false })(<Checkbox>强制更新</Checkbox>)}
+        {form.getFieldDecorator('isForce', {
+          valuePropName: 'checked',
+          initialValue: operationUpdate ? currentRecord.isForce === '1' : false,
+        })(<Checkbox>强制更新</Checkbox>)}
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="上传安装文件">
-        {form.getFieldDecorator('upload')(<Upload {...uploadProps}><Button><Icon type="upload" />上传文件</Button></Upload>)}
+        {form.getFieldDecorator('upload')(
+          <Upload {...uploadProps}>
+            <Button>
+              <Icon type="upload" />
+              上传文件
+            </Button>
+          </Upload>
+        )}
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="下载地址">
         {form.getFieldDecorator('downloadUrl', {
           initialValue: operationUpdate ? currentRecord.downloadUrl : '',
-          rules: [
-            { required: true, message: '请上传安装文件' },
-          ],
+          rules: [{ required: true, message: '请上传安装文件' }],
         })(<Input disabled={true} placeholder="上传后自动补全" />)}
       </FormItem>
     </Modal>
@@ -161,19 +171,19 @@ export default class AppManagement extends PureComponent {
     });
   }
 
-  setdbUrl = (url) => {
+  setdbUrl = url => {
     this.setState({ dbUrl: url });
   };
 
   setFileList = list => {
-    this.setState({ fileList: list || [] })
-  }
+    this.setState({ fileList: list || [] });
+  };
 
-  setConfirmLoading = (confirmLoading) => {
+  setConfirmLoading = confirmLoading => {
     this.setState({ confirmLoading });
   };
 
-  handleStandardTableChange = (pagination) => {
+  handleStandardTableChange = pagination => {
     // console.log('table', pagination);
     this.props.dispatch({
       type: 'app/fetch',
@@ -185,7 +195,7 @@ export default class AppManagement extends PureComponent {
     });
   };
 
-  handleSelectRows = (rows) => {
+  handleSelectRows = rows => {
     // console.log(rows);
     this.setState({
       selectedRows: rows,
@@ -200,10 +210,15 @@ export default class AppManagement extends PureComponent {
     });
   };
 
-  handleAdd = (fields) => {
+  handleAdd = fields => {
     // console.log(fields);
     const that = this;
-    const { dispatch, app: { data: { pagination } } } = this.props;
+    const {
+      dispatch,
+      app: {
+        data: { pagination },
+      },
+    } = this.props;
     console.log(pagination);
     // console.log(this.state.mobileSystemType, typeof (this.state.mobileSystemType));
     dispatch({
@@ -234,11 +249,19 @@ export default class AppManagement extends PureComponent {
     });
   };
 
-  handleUpdate = (fields) => {
+  handleUpdate = fields => {
     const that = this;
     // console.log('update', fields);
-    const { dispatch, app: { data: { pagination } } } = this.props;
-    const { currentRecord: { id }, mobileSystemType } = this.state;
+    const {
+      dispatch,
+      app: {
+        data: { pagination },
+      },
+    } = this.props;
+    const {
+      currentRecord: { id },
+      mobileSystemType,
+    } = this.state;
     dispatch({
       type: 'app/update',
       payload: {
@@ -268,7 +291,7 @@ export default class AppManagement extends PureComponent {
     });
   };
 
-  handleSystemChange = (system) => {
+  handleSystemChange = system => {
     // console.log(system, typeof (system)); // string
     this.props.dispatch({
       type: 'app/fetch',
@@ -286,7 +309,15 @@ export default class AppManagement extends PureComponent {
     const that = this;
     let nextCurrentPage;
     const { selectedRows } = this.state;
-    const { dispatch, app: { data: { list, pagination: { pageNum, pageSize } } } } = this.props;
+    const {
+      dispatch,
+      app: {
+        data: {
+          list,
+          pagination: { pageNum, pageSize },
+        },
+      },
+    } = this.props;
     // 当前页面的项目都删除且当前页不为1时，应该请求前一个页面，不然会显示当前页面为空，但下面的页码显示的是前一个页面的
     if (list.length === selectedRows.length && pageNum !== 1) {
       nextCurrentPage = pageNum - 1;
@@ -321,7 +352,13 @@ export default class AppManagement extends PureComponent {
   };
 
   render() {
-    const { app: { data }, loading } = this.props;
+    const {
+      app: {
+        data,
+        data: { andCount, iosCount },
+      },
+      loading,
+    } = this.props;
     // 后台返回的response.result赋值app中的data属性上，而后台返回的response.result.pagination中不包含current属性
     // standardTable中传入data.pagination，但是data.pagination只有currengPage属性，不含current属性，所以要增加一个current属性
 
@@ -333,12 +370,18 @@ export default class AppManagement extends PureComponent {
         key: li.id,
         isPublishChinese: li.isPublish === '1' ? '是' : '否',
         isForceChinese: li.isForce === '1' ? '是' : '否',
-      }
+      };
     });
-    data.list = list
-
-    const { fileList, selectedRows, modalVisible, currentRecord,
-      dbUrl, confirmLoading, mobileSystemType } = this.state;
+    data.list = list;
+    const {
+      fileList,
+      selectedRows,
+      modalVisible,
+      currentRecord,
+      dbUrl,
+      confirmLoading,
+      mobileSystemType,
+    } = this.state;
 
     const columns = [
       {
@@ -389,12 +432,33 @@ export default class AppManagement extends PureComponent {
     };
 
     return (
-      <PageHeaderLayout title="手机软件管理">
+      <PageHeaderLayout
+        title="手机软件管理"
+        content={
+          <div>
+            <span>
+              Android版本总数：
+              {andCount}
+              {''}
+            </span>
+            <span style={{ paddingLeft: 20 }}>
+              IOS版本总数：
+              {iosCount}
+              {''}
+            </span>
+          </div>
+        }
+      >
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
               <span style={{ lineHeight: '32px', marginRight: 20 }}>所属平台:</span>
-              <Select placeholder="请选择" style={{ width: 100 }} value={mobileSystemType} onChange={this.handleSystemChange}>
+              <Select
+                placeholder="请选择"
+                style={{ width: 100 }}
+                value={mobileSystemType}
+                onChange={this.handleSystemChange}
+              >
                 <Option value="1">android</Option>
                 <Option value="2">ios</Option>
               </Select>

@@ -7,6 +7,8 @@ export default {
     data: {
       list: [],
       pagination: {},
+      andCount: '',
+      iosCount: '',
     },
   },
 
