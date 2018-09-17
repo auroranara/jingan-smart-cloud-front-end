@@ -48,6 +48,7 @@ const fieldLabels = {
   userType: '用户类型',
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
+  regulatoryClassification: '监管分类',
 };
 
 // 单位类型对应的id
@@ -58,6 +59,12 @@ const fieldLabels = {
 
 // 默认的所属单位长度
 const defaultPageSize = 20;
+
+const Supervisions = [
+  { id: '1', label: '安全生产' },
+  { id: '2', label: '消防' },
+  { id: '3', label: '环保' },
+]
 
 const treeData = data => {
   return data.map(item => {
@@ -220,7 +227,7 @@ export default class AssociatedUnit extends PureComponent {
   }
 
   state = {
-    unitTypeChecked: false,
+    unitTypeChecked: 4,
     submitting: false,
   };
 
@@ -382,6 +389,7 @@ export default class AssociatedUnit extends PureComponent {
         userType,
         documentTypeId = null,
         execCertificateCode = null,
+        regulatoryClassification,
       }) => {
         if (!error) {
           this.setState({
@@ -400,6 +408,7 @@ export default class AssociatedUnit extends PureComponent {
             userType,
             documentTypeId, // 执法证种类id
             execCertificateCode,// 执法证编号
+            regulatoryClassification: regulatoryClassification && regulatoryClassification.length ? regulatoryClassification.join(',') : null,
           };
           switch (payload.unitType) { //单位类型
             // 维保企业 设置用户类型
@@ -426,6 +435,7 @@ export default class AssociatedUnit extends PureComponent {
           // 如果有userId，为编辑
           if (userId) {
             payload = { ...payload, active, id: userId, loginId }
+
             editAssociatedUnit({
               payload,
               successCallback,
@@ -455,7 +465,7 @@ export default class AssociatedUnit extends PureComponent {
         unitTypeChecked: id,
       },
       () => {
-        setFieldsValue({ userType: undefined });
+        setFieldsValue({ userType: null, regulatoryClassification: [], documentTypeId: null, execCertificateCode: null });
         // if (id === 4) {
         //   setFieldsValue({ userType: 'company_legal_person' });
         // } else {
@@ -472,8 +482,7 @@ export default class AssociatedUnit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     // 清除所属单位、所属部门
-    setFieldsValue({ unitId: undefined });
-    setFieldsValue({ departmentId: undefined });
+    setFieldsValue({ unitId: undefined, departmentId: undefined });
     // 根据当前选中的单位类型获取对应的所属单位列表
     fetchUnitsFuzzy({
       payload: {
@@ -605,6 +614,7 @@ export default class AssociatedUnit extends PureComponent {
             documentTypeId,
             execCertificateCode,
             departmentId,
+            regulatoryClassification,
           },
         },
         unitTypes,
@@ -837,14 +847,32 @@ export default class AssociatedUnit extends PureComponent {
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.regulatoryClassification}>
+                    {getFieldDecorator('regulatoryClassification', {
+                      initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
+                      rules: [
+                        { required: true, message: '请选择监管分类' },
+                      ],
+                    })(
+                      <Select
+                        mode="multiple"
+                        placeholder="请选择监管分类"
+                      >
+                        {Supervisions.map(item => (
+                          <Option value={item.id} key={item.id}>{item.label}</Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )
+            }
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === 2 && (
+                <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.documentTypeId}>
                     {getFieldDecorator('documentTypeId', {
                       initialValue: documentTypeId,
-                      rules: [
-                        {
-                          message: '请选择执法证种类',
-                        },
-                      ],
                     })(
                       <Select allowClear placeholder="请选择执法证种类">
                         {documentTypeIds.map(item => (
@@ -863,11 +891,6 @@ export default class AssociatedUnit extends PureComponent {
                   <Form.Item label={fieldLabels.execCertificateCode}>
                     {getFieldDecorator('execCertificateCode', {
                       initialValue: execCertificateCode,
-                      rules: [
-                        {
-                          message: '请输入执法证编号',
-                        },
-                      ],
                     })(<Input placeholder="请输入执法证编号" />)}
                   </Form.Item>
                 </Col>

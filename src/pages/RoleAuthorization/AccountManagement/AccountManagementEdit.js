@@ -48,6 +48,7 @@ const fieldLabels = {
   userType: '用户类型',
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
+  regulatoryClassification: '监管分类',
 };
 
 // 单位类型对应的id
@@ -58,6 +59,12 @@ const fieldLabels = {
 
 // 默认的所属单位长度
 const defaultPageSize = 20;
+
+const Supervisions = [
+  { id: '1', label: '安全生产' },
+  { id: '2', label: '消防' },
+  { id: '3', label: '环保' },
+]
 
 const treeData = data => {
   return data.map(item => {
@@ -220,18 +227,18 @@ export default class accountManagementEdit extends PureComponent {
     const success = id
       ? undefined
       : () => {
-          this.setState({
-            unitTypeChecked: 4,
-          });
-          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-          fetchUnitsFuzzy({
-            payload: {
-              unitType: 4,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
-        };
+        this.setState({
+          unitTypeChecked: 4,
+        });
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: 4,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
+      };
 
     // 如果id存在的话，就获取详情，即编辑状态
     if (id) {
@@ -325,6 +332,7 @@ export default class accountManagementEdit extends PureComponent {
           userType,
           documentTypeId,
           execCertificateCode,
+          regulatoryClassification,
         }
       ) => {
         if (!error) {
@@ -371,6 +379,7 @@ export default class accountManagementEdit extends PureComponent {
               userType,
               documentTypeId,
               execCertificateCode,
+              regulatoryClassification: regulatoryClassification && regulatoryClassification.length ? regulatoryClassification.join(',') : null,
             };
             switch (payload.unitType) {
               // 维保企业
@@ -622,8 +631,8 @@ export default class accountManagementEdit extends PureComponent {
                   id ? (
                     <span>{loginName}</span>
                   ) : (
-                    <Input placeholder="请输入用户名" min={1} max={20} />
-                  )
+                      <Input placeholder="请输入用户名" min={1} max={20} />
+                    )
                 )}
               </Form.Item>
             </Col>
@@ -878,17 +887,39 @@ export default class accountManagementEdit extends PureComponent {
                 </Col>
               )}
             {unitTypes.length !== 0 &&
-              unitTypeChecked === 2 &&
-              !id && (
+              unitTypeChecked === 2 && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.regulatoryClassification}>
+                    {getFieldDecorator('regulatoryClassification', {
+                      // initialValue:
+                      rules: [
+                        { required: true, message: '请选择监管分类' },
+                      ],
+                    })(
+                      <Select
+                        mode="multiple"
+                        placeholder="请选择监管分类"
+                      >
+                        {Supervisions.map(item => (
+                          <Option value={item.id} key={item.id}>{item.label}</Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )
+            }
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === 2 && !id && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.documentTypeId}>
                     {getFieldDecorator('documentTypeId', {
                       initialValue: documentTypeId,
-                      rules: [
-                        {
-                          message: '请选择执法证种类',
-                        },
-                      ],
+                      // rules: [
+                      //   {
+                      //     message: '请选择执法证种类',
+                      //   },
+                      // ],
                     })(
                       <Select allowClear placeholder="请选择执法证种类">
                         {documentTypeIds.map(item => (
