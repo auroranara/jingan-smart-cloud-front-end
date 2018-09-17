@@ -525,7 +525,12 @@ export default class FireControlBigPlatform extends PureComponent {
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
               <SystemSection data={sys} />
-              <VideoSection data={allCamera} showVideo={this.handleVideoShow} />
+              <VideoSection
+                data={allCamera}
+                showVideo={this.handleVideoShow}
+                backTitle={allCamera.length ? '更多' : ''}
+                handleBack={() => this.handleVideoShow()}
+              />
             </FcModule>
           </Col>
         </Row>

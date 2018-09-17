@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import FcSection from '../../FireControl/section/FcSection';
 import GasStatusLabel from '../components/GasStatusLabel';
 import GasCard from '../components/GasCard';
+import EmptyBg from '../components/EmptyBg';
 import backIcon from '../../FireControl/img/back.png';
 import styles from './GasBackSection.less';
 
@@ -63,7 +64,8 @@ export default class GasSection extends PureComponent {
 
   render() {
     const { handleLabelClick, status, data } = this.props;
-    const { gasCount: { count: total=0, normal=0, unnormal: abnormal=0, outContact: loss=0 }, gasList=[] } = data;
+    // const { gasCount: { count: total=0, normal=0, unnormal: abnormal=0, outContact: loss=0 }, gasList=[] } = data;
+    const { gasList=[] } = data;
     const { inputVal } = this.state;
     const gList = handleGasList(gasList);
     const searchFilteredList = filterSearch(gList, inputVal);
@@ -71,6 +73,10 @@ export default class GasSection extends PureComponent {
     const nums = [NORMAL, ABNORMAL, LOSS, ALL].map(status => getStatusLength(searchFilteredList, status));
 
     const statusFilteredList = filterStatus(searchFilteredList, status);
+
+    let cards = <EmptyBg title="暂无气体监测信息" />;
+    if (statusFilteredList.length)
+    cards = statusFilteredList.map(({ id, status, location, time, params }) => <GasCard key={id} status={status} location={location} time={time} params={params} />);
 
     return (
       <FcSection title="可燃/有毒气体监测" className={styles.gas} style={{ position: 'relative', padding: '0 15px 10px' }} isBack>
@@ -85,7 +91,7 @@ export default class GasSection extends PureComponent {
           {nums.map((n, i) => <GasStatusLabel key={i} num={n} status={i} selected={status === i} onClick={() => handleLabelClick(i)} />)}
         </div>
         <div className={styles.cardsContainer}>
-          {statusFilteredList.map(({ id, status, location, time, params }) => <GasCard key={id} status={status} location={location} time={time} params={params} />)}
+          {cards}
         </div>
         <span
           className={styles.back}

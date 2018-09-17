@@ -4,7 +4,7 @@ import FcSection from '../../FireControl/section/FcSection';
 import ProgressBar from '../components/ProgressBar';
 import styles from './GasSection.less';
 import { ALL, NORMAL, ABNORMAL, LOSS } from '../components/gasStatus';
-import gasCircle from '../imgs/gasCircle.png';
+// import gasCircle from '../imgs/gasCircle.png';
 
 function handlePercent(n=0, total=0) {
   // 分母是0，直接返回0
@@ -26,7 +26,8 @@ export default function GasSection(props) {
   return (
     <FcSection title="可燃/有毒气体监测">
       <div className={styles.container}>
-        <div className={styles.circle} style={{ backgroundImage: `url(${gasCircle})` }}>
+        {/* <div className={styles.circle} style={{ backgroundImage: `url(${gasCircle})` }}> */}
+        <div className={styles.circle}>
           <span className={styles.pointNum} onClick={() => handleClick(ALL)}>{total}</span>
           <span className={styles.point}>监测点</span>
         </div>
