@@ -1,4 +1,4 @@
-import request from '../../utils/request';
+import request from '../../utils/cockpitRequest';
 import { stringify } from 'qs';
 
 const URL_PREFIX = '/acloud_new/v2';
