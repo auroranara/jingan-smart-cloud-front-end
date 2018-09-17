@@ -53,8 +53,6 @@ const breadcrumbList = [
 
 const FormItem = Form.Item;
 
-const TreeNode = TreeSelect.TreeNode;
-
 // 默认页面显示数量
 const pageSize = 18;
 
