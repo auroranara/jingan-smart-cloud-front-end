@@ -155,6 +155,7 @@ export default class UserTransmissionDevice extends PureComponent {
         data: {
           list,
           pagination: { total },
+          transmissionCount,
         },
       },
       // user: {
@@ -170,9 +171,16 @@ export default class UserTransmissionDevice extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位总数：
-            {total}
-            {''}
+            <span>
+              单位总数：
+              {total}
+              {''}
+            </span>
+            <span style={{ paddingLeft: 20 }}>
+              用户传输装置总数：
+              {transmissionCount}
+              {''}
+            </span>
           </div>
         }
       >

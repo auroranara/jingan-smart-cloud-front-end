@@ -122,15 +122,15 @@ export default class VideoList extends PureComponent {
     setFieldsValue({ ...formValues });
   }
 
-  componentWillUnmount() {
-    const state = this.state;
-    Object.entries(state).forEach(([key, val]) => {
-      // console.log(key);
-      if (key === 'autoExpandParent' || key === 'searchValue') return;
+  // componentWillUnmount() {
+  //   const state = this.state;
+  //   Object.entries(state).forEach(([key, val]) => {
+  //     // alert(key);
+  //     if (key === 'autoExpandParent' || key === 'searchValue') return;
 
-      sessionStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
-    });
-  }
+  //     sessionStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
+  //   });
+  // }
 
   timer = null;
   // 生成节流函数,以防止网页太卡
