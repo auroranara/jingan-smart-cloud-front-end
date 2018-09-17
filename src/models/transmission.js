@@ -23,6 +23,7 @@ export default {
         pageSize: 24,
         pageNum: 1,
       },
+      transmissionCount: '',
     },
     list: [],
     deviceList: [],
