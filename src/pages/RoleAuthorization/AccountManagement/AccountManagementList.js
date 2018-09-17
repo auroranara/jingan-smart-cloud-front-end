@@ -32,6 +32,7 @@ import styles from './AccountManagementList.less';
 import { AuthLink, AuthButton, AuthSpan } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 
+const { TreeNode } = TreeSelect
 // 标题
 const title = '账号管理';
 // 面包屑
@@ -51,8 +52,6 @@ const breadcrumbList = [
 ];
 
 const FormItem = Form.Item;
-
-const TreeNode = TreeSelect.TreeNode;
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -354,6 +353,19 @@ export default class accountManagementList extends PureComponent {
     });
   };
 
+  generateTressNode = data => {
+    return data.map(item => {
+      if (item.child && item.child.length) {
+        return (
+          <TreeNode title={item.name} key={item.id} value={item.id}>
+            {this.generateTressNode(item.child)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode title={item.name} key={item.id} value={item.id} />;
+    });
+  };
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -392,50 +404,49 @@ export default class accountManagementList extends PureComponent {
                 </Select>
               )}
             </FormItem>
-
-            {unitTypeChecked !== 2 && (
-              <FormItem label="所属单位">
-                {getFieldDecorator('unitId', {
-                  rules: [
-                    {
-                      whitespace: true,
-                      message: '请选择所属单位',
-                    },
-                  ],
-                })(
-                  <AutoComplete
-                    mode="combobox"
-                    optionLabelProp="children"
-                    placeholder="请选择所属单位"
-                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    onSearch={this.handleUnitIdChange}
-                    filterOption={false}
-                    style={{ width: 230 }}
-                  >
-                    {unitIdes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.name}
-                      </Option>
-                    ))}
-                  </AutoComplete>
-                )}
-              </FormItem>
-            )}
-
-            {unitTypeChecked === 2 && (
-              <FormItem label="所属单位">
-                {getFieldDecorator('unitId')(
-                  <TreeSelect
-                    allowClear
-                    placeholder="请选择所属单位"
-                    // labelInValue
-                    style={{ width: 230 }}
-                  >
-                    {generateUnitsTree(unitIdes)}
-                  </TreeSelect>
-                )}
-              </FormItem>
-            )}
+            <FormItem label="所属单位">
+              {/* {getFieldDecorator('unitId', {
+                rules: [
+                  {
+                    whitespace: true,
+                    message: '请选择所属单位',
+                  },
+                ],
+              })(
+                <AutoComplete
+                  mode="combobox"
+                  optionLabelProp="children"
+                  placeholder="请选择所属单位"
+                  notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                  onSearch={this.handleUnitIdChange}
+                  filterOption={false}
+                  style={{ width: 230 }}
+                >
+                  {unitIdes.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Option>
+                  ))}
+                </AutoComplete>
+              )} */}
+              {getFieldDecorator('unitId', {
+                rules: [
+                  {
+                    whitespace: true,
+                    message: '请选择所属单位',
+                  },
+                ],
+              })(
+                <TreeSelect
+                  style={{ width: 230 }}
+                  allowClear
+                  placeholder="请选择所属单位"
+                  onSearch={this.handleUnitIdChange}
+                >
+                  {this.generateTressNode(unitIdes)}
+                </TreeSelect>
+              )}
+            </FormItem>
           </Col>
 
           {/* 按钮 */}
@@ -499,22 +510,22 @@ export default class accountManagementList extends PureComponent {
                       code={codesMap.account.addAssociatedUnit}
                       to={`/role-authorization/account-management/associated-unit/add/${
                         item.loginId
-                      }`}
+                        }`}
                     >
                       关联单位
                     </AuthLink>,
                   ]}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <div>
                     <Col span={12}>
@@ -547,7 +558,7 @@ export default class accountManagementList extends PureComponent {
                           <Popconfirm
                             title={`确定要${
                               !!item.users[0].accountStatus ? '解绑' : '开启'
-                            }关联企业吗？`}
+                              }关联企业吗？`}
                             onConfirm={() =>
                               this.handleAccountStatus({
                                 accountStatus: Number(!item.users[0].accountStatus),
@@ -564,15 +575,15 @@ export default class accountManagementList extends PureComponent {
                               {!!item.users[0].accountStatus ? (
                                 <Icon type="link" />
                               ) : (
-                                <Icon style={{ color: 'red' }} type="disconnect" />
-                              )}
+                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                )}
                             </AuthSpan>
                           </Popconfirm>
                         </Col>
                       </Row>
                     ) : (
-                      <p>{getEmptyData()}</p>
-                    )}
+                        <p>{getEmptyData()}</p>
+                      )}
                     <p
                       onClick={() => this.handleViewMore(item.users, item.loginId)}
                       style={{
@@ -608,10 +619,10 @@ export default class accountManagementList extends PureComponent {
               <span>{val}</span>
             </Fragment>
           ) : (
-            <Fragment>
-              <span>运营企业</span>
-            </Fragment>
-          );
+              <Fragment>
+                <span>运营企业</span>
+              </Fragment>
+            );
         },
       },
       {
@@ -645,8 +656,8 @@ export default class accountManagementList extends PureComponent {
                   {!!row.accountStatus ? (
                     <Icon type="link" />
                   ) : (
-                    <Icon style={{ color: 'red' }} type="disconnect" />
-                  )}
+                      <Icon style={{ color: 'red' }} type="disconnect" />
+                    )}
                 </AuthSpan>
               </Popconfirm>
             </Fragment>
