@@ -8,6 +8,7 @@ import {
   bindVodeoPermission,
   fetchCompanyList,
   fetchCompanyOptions,
+  synchronizeDirectory,
 } from '../services/video';
 // import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
 // import { getIdMap } from '../pages/DeviceManagement/HikVideoTree/FolderTree';
@@ -167,6 +168,13 @@ export default {
           payload: response.data,
         });
       }
+    },
+    // 视频列表同步目录
+    *synchronizeDirectory({ success, error }, { call }) {
+      const response = yield call(synchronizeDirectory)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error()
     },
   },
 

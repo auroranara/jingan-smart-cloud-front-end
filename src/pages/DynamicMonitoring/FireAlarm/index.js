@@ -154,8 +154,9 @@ export default class FireAlarm extends PureComponent {
   render() {
     const {
       fireAlarm: {
-        list,
+        // list,
         data: {
+          list,
           pagination: { total },
         },
       },
