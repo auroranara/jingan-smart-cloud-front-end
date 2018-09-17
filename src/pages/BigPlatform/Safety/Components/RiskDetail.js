@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import debounce from 'lodash/debounce';
 import HiddenDanger from './HiddenDanger';
+import noHiddenDanger from '../img/noHiddenDanger.png';
 
 import styles from './RiskDetail.less';
 
@@ -61,8 +62,10 @@ export default class App extends PureComponent {
    * 组件更新
    */
   componentDidUpdate({ data: prevData }) {
+    const { data, flag } = this.props;
+    const isEqual = prevData.every((item, index) => item === data[index]);
     // 如果源数据更新，则重新返回到第一页
-    if (prevData !== this.props.data) {
+    if (!isEqual || flag) {
       this.setState({
         currentIndex: 0,
       });
@@ -174,7 +177,7 @@ export default class App extends PureComponent {
                 );
               }
               return null;
-            }) : <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>}
+            }) : <div className={styles.noHiddenDanger} style={{ backgroundImage: `url(${noHiddenDanger})` }}></div>}
           </div>
           {pageCount > 1 && (
             <div style={{ flex: 'none', lineHeight: '1' }}>

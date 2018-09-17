@@ -9,7 +9,7 @@ export default class App extends PureComponent {
     // 当前显示的是否是正面
     isFront: true,
     // 背面的元素索引
-    backIndex: 0,
+    backIndex: 1,
   }
 
   componentDidUpdate({ frontIndex: prevFrontIndex }) {
