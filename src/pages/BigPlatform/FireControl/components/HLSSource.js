@@ -28,6 +28,12 @@ export default class HLSSource extends Component {
     }
   }
 
+  handelDestroy() {
+    if (this.hls) {
+      this.hls.destroy();
+    }
+  }
+
   handleInit = () => {
     // `src` is the property get from this component
     // `video` is the property insert from `Video` component

@@ -18,6 +18,7 @@ const hosts = {
   gj: '192.168.10.9', //高进
   tw: '192.168.10.5', // 田伟
   cfm: '192.168.10.6', // 崔富民
+  jiangxi: '58.215.178.100:12083',
 };
 
 export default {
@@ -33,7 +34,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.dev}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -57,8 +58,8 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie9'],
-        dynamicImport: true,
+        polyfills: ['ie10'],
+        // dynamicImport: true,
         dll: {
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
           exclude: ['@babel/runtime'],

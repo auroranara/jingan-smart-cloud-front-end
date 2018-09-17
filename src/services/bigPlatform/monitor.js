@@ -3,15 +3,15 @@ import { stringify } from 'qs';
 
 const URL_PREFIX = '/acloud_new/v2';
 
-// 视频
+// 视频列表
 export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
-// 视频
-export async function getStartToPlay(params) {
-  return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
-}
+// 视频播放
+// export async function getStartToPlay(params) {
+//   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
+// }
 
 export async function getGasCount(params) {
   return request(`${URL_PREFIX}/monitor/countStatus.json?${stringify(params)}`);
