@@ -20,7 +20,7 @@ import TopCenter from './sections/TopCenter.js';
 import ElectricityCharts from './Sections/ElectricityCharts';
 
 const DELAY = 5 * 1000;
-const WATER_DELAY = 5 * 60 * 1000;
+// const WATER_DELAY = 5 * 60 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
 
 /**
@@ -76,60 +76,7 @@ export default class App extends PureComponent {
           payload: { deviceId: firstDeviceId },
         });
         // 获取上下线的区块
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'v1' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'v2' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'v3' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'v4' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'v5' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'ia' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'ib' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'ic' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'ua' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'ub' },
-        });
-
-        dispatch({
-          type: 'monitor/fetchPieces',
-          payload: { deviceId: firstDeviceId, code: 'uc' },
-        });
+        this.fetchPieces(firstDeviceId);
       },
     });
 
@@ -155,6 +102,64 @@ export default class App extends PureComponent {
     clearInterval(this.chartPollTimer);
     // clearInterval(this.waterTimer);
   }
+
+  fetchPieces = firstDeviceId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'v1' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'v2' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'v3' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'v4' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'v5' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'ia' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'ib' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'ic' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'ua' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'ub' },
+    });
+
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: firstDeviceId, code: 'uc' },
+    });
+  };
 
   pollTimer = null;
   waterTimer = null;
@@ -202,6 +207,10 @@ export default class App extends PureComponent {
     // });
   };
 
+  handleAlarmCardClick = () => {
+    this.setState({ videoVisible: true, videoKeyId: undefined });
+  };
+
   handleGasNumClick = status => {
     this.setState({ gasRotated: true, gasStatus: status });
   };
@@ -244,10 +253,7 @@ export default class App extends PureComponent {
       },
     });
     // 获取上下线的区块
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: value, code: 'v1' },
-    });
+    this.fetchPieces(value);
   };
 
   render() {
@@ -288,7 +294,10 @@ export default class App extends PureComponent {
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
               <div className={styles.realTimeAlarmContainer}>
-                <RealTimeAlarm realTimeAlarm={realTimeAlarm} />
+                <RealTimeAlarm
+                  realTimeAlarm={realTimeAlarm}
+                  handleClick={this.handleAlarmCardClick}
+                />
               </div>
               <div className={styles.videoMonitorContainer}>
                 <VideoSection

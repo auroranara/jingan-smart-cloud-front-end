@@ -725,9 +725,11 @@ class CompanyLayout extends PureComponent {
       // 特种设备总数
       specialEquipment,
       // 隐患总数
-      hiddenDanger,
+      // hiddenDanger,
+      riskDetailList: { ycq=[], wcq=[], dfc=[] },
     } = this.props.bigPlatform;
     const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
+    const hiddenDanger = ycq.length + wcq.length + dfc.length;
 
     const {
       match: {

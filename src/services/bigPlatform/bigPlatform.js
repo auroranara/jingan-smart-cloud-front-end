@@ -1,4 +1,4 @@
-import request from '../../utils/request';
+import request from '../../utils/cockpitRequest';
 import { stringify } from 'qs';
 
 // 政府大屏

@@ -16,6 +16,7 @@ import resetKeyPressIcon from './images/resetKeyPress.png';
 import hostIcon from './images/hostIcon.png';
 import fireHostIcon from './images/fireHostIcon.png';
 import noPhotoIcon from './images/noPhoto.png';
+import noPendingInfo from './images/noPendingInfo.png';
 import backIcon from '../FireControl/img/back.png';
 
 import styles from './UnitFireControl.less';
@@ -31,14 +32,15 @@ const ycqIcon = `${prefix}fire_ycq.png`;
 const splitIcon = `${prefix}split.png`;
 const splitHIcon = `${prefix}split_h.png`;
 /* 待处理信息项 */
-const PendingInfoItem = ({ data }) => {
+const PendingInfoItem = ({ data, onClick }) => {
   const { id, t, install_address, component_region, component_no, label, pendingInfoType } = data;
   const isFire = pendingInfoType === '火警';
   return (
     <div
       key={id}
       className={styles.pendingInfoItem}
-      style={{ color: isFire ? '#FF6464' : '#00ADFF' }}
+      style={{ color: isFire ? '#FF6464' : '#00ADFF', cursor: onClick && 'pointer' }}
+      onClick={onClick}
     >
       <div style={{ backgroundImage: `url(${isFire ? fireIcon : faultIcon})` }}>
         {pendingInfoType}
@@ -139,13 +141,13 @@ const HiddenDangerRecord = ({ data }) => {
  */
 const Host = ({ data, onClick }) => {
   const { id, deviceCode, installLocation, isReset, isFire } = data;
-  const hostInfoItemClassName = +isFire
+  const hostInfoItemClassName = +isFire && !isReset
     ? `${styles.hostInfoItem} ${styles.fireHostInfoItem}`
     : styles.hostInfoItem;
   return (
     <div className={styles.hostContainer} key={id}>
       <div className={styles.hostIconContainer}>
-        <img src={+isFire ? fireHostIcon : hostIcon} alt="" />
+        <img src={+isFire && !isReset ? fireHostIcon : hostIcon} alt="" />
       </div>
       <div className={styles.hostInfoContainer}>
         <div className={hostInfoItemClassName}>
@@ -632,7 +634,7 @@ export default class App extends PureComponent {
               一键复位
             </div>
           }
-          onClick={this.handleVideoOpen}
+          // onClick={this.handleVideoOpen}
         />
         <Section
           title="一键复位"
@@ -833,7 +835,6 @@ export default class App extends PureComponent {
         // 视频列表
         videoList,
       },
-      dispatch,
     } = this.props;
     const { videoVisible } = this.state;
     const pendingInfoList = pendingInfo.map(item => {
@@ -856,10 +857,10 @@ export default class App extends PureComponent {
                     ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType !== '火警'),
                   ].map((item, index) => {
                     const { id } = item;
-                    return <PendingInfoItem key={id || index} data={item} />;
+                    return <PendingInfoItem key={id || index} data={item} onClick={this.handleVideoOpen} />;
                   })
                 ) : (
-                  <div style={{ textAlign: 'center' }}>暂无待处理信息</div>
+                  <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noPendingInfo})` }}></div>
                 )}
               </Section>
             </Col>
@@ -896,7 +897,6 @@ export default class App extends PureComponent {
         </div>
         <VideoPlay
           showList={false}
-          dispatch={dispatch}
           videoList={videoList}
           visible={videoVisible}
           handleVideoClose={this.handleVideoClose}

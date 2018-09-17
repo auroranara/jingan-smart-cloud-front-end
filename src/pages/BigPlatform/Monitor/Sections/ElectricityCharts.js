@@ -12,7 +12,7 @@ const { Option } = Select;
 
 const tabList = [
   {
-    desc: '剩余电流',
+    desc: '漏电电流',
     code: 'v1',
   },
   {
@@ -102,6 +102,17 @@ class ElectricityCharts extends PureComponent {
     }
   };
 
+  legendFormatter = (arr, unit) => {
+    let val = null;
+    arr.forEach(pieces => {
+      if (!pieces || pieces.length === 0) return;
+      pieces.forEach(p => {
+        if (p.condition === '1') val = val < p.limitValue && val ? val : p.limitValue;
+      });
+    });
+    return val ? `报警值：≥${val}${unit}` : null;
+  };
+
   getOptions = () => {
     const {
       data: { gsmsHstData, electricityPieces },
@@ -146,7 +157,7 @@ class ElectricityCharts extends PureComponent {
         containLabel: true,
       },
       legend: {
-        left: 'center',
+        left: 20,
         bottom: 5,
         icon: 'circle',
         data: [],
@@ -215,9 +226,19 @@ class ElectricityCharts extends PureComponent {
         });
         option = {
           ...defaultOption,
+          title: {
+            text: this.legendFormatter([v1Pieces], 'mA'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
+          },
           legend: {
             ...defaultOption.legend,
-            data: ['剩余电流'],
+            data: ['漏电电流'],
           },
           tooltip: {
             ...defaultOption.tooltip,
@@ -232,7 +253,7 @@ class ElectricityCharts extends PureComponent {
           series: [
             {
               type: 'line',
-              name: '剩余电流',
+              name: '漏电电流',
               smooth: true,
               symbolSize: 5,
               data: v1ListNew,
@@ -272,7 +293,17 @@ class ElectricityCharts extends PureComponent {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['A相温度', 'B相温度', 'C相温度', '环境温度'],
+            data: ['A相温度', 'B相温度', 'C相温度', '零线温度'],
+          },
+          title: {
+            text: this.legendFormatter([v2Pieces, v3Pieces, v4Pieces, v5Pieces], '℃'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
           },
           tooltip: {
             ...defaultOption.tooltip,
@@ -308,7 +339,7 @@ class ElectricityCharts extends PureComponent {
             },
             {
               type: 'line',
-              name: '环境温度',
+              name: '零线温度',
               smooth: true,
               symbolSize: 5,
               data: v5ListNew,
@@ -344,6 +375,16 @@ class ElectricityCharts extends PureComponent {
           legend: {
             ...defaultOption.legend,
             data: ['A相电流', 'B相电流', 'C相电流'],
+          },
+          title: {
+            text: this.legendFormatter([iaPieces, ibPieces, icPieces], 'A'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
           },
           tooltip: {
             ...defaultOption.tooltip,
@@ -408,6 +449,16 @@ class ElectricityCharts extends PureComponent {
           legend: {
             ...defaultOption.legend,
             data: ['A相电压', 'B相电压', 'C相电压'],
+          },
+          title: {
+            text: this.legendFormatter([uaPieces, ubPieces, ucPieces], 'V'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
           },
           tooltip: {
             ...defaultOption.tooltip,

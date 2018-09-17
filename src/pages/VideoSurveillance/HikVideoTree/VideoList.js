@@ -13,6 +13,7 @@ import {
   Checkbox,
   Divider,
   Modal,
+  message,
   // Select,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -54,7 +55,7 @@ function traverse(list, handle) {
 // 防抖函数,不然每次计算,网页太卡
 function debounce(fn, ms) {
   let timer = null;
-  return function(...args) {
+  return function (...args) {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), ms);
   };
@@ -212,6 +213,21 @@ export default class VideoList extends PureComponent {
   clearFilters = () => {
     this.setState({ filteredInfo: {} });
   };
+
+  // 同步目录
+  handleSynchronizeMenu = () => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'video/synchronizeDirectory',
+      success: () => {
+        dispatch({
+          type: 'video/fetchFolderTree',
+        })
+        message.success('同步成功！')
+      },
+      error: () => { message.error('同步失败！') },
+    })
+  }
 
   handleSearch = e => {
     e.preventDefault();
@@ -454,7 +470,11 @@ export default class VideoList extends PureComponent {
       >
         <Row gutter={16}>
           <Col span={6}>
-            <Card title="视频组目录" id="folder-list">
+            <Card
+              title="视频组目录"
+              id="folder-list"
+              // extra={<Button type="primary" size="small" onClick={() => this.handleSynchronizeMenu()}>同步目录</Button>}
+            >
               <Search
                 style={{ marginBottom: 8 }}
                 placeholder="请输入视频组或视频名称"
@@ -468,7 +488,7 @@ export default class VideoList extends PureComponent {
                 selectedKeys={selectedKeys}
                 handleExpand={this.handleExpand}
                 handleSelect={this.handleSelect}
-                // handleFormReset={folderId => this.handleFormReset(folderId)}
+              // handleFormReset={folderId => this.handleFormReset(folderId)}
               />
             </Card>
           </Col>

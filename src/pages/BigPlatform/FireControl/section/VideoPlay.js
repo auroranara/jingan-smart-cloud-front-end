@@ -116,7 +116,10 @@ class VideoPlay extends Component {
   };
 
   handleClose = () => {
+    this.refs.source.handelDestroy();
+    //销毁hls
     this.props.handleVideoClose();
+    // console.log('source', this.refs.source);
   };
 
   renderPan = () => {
@@ -131,15 +134,15 @@ class VideoPlay extends Component {
           style={{ cursor: draggable ? 'move' : 'default' }}
         >
           <span style={{ cursor: 'default' }}>
-            监控地点：
-            {videoList.length > 0 ? videoList[activeIndex].name : ''}
+            视频监控
+            {/*videoList.length > 0 ? videoList[activeIndex].name : ''*/}
           </span>
           <Icon type="close" className={styles.iconClose} onClick={this.handleClose} />
         </div>
         <div className={styles.videoMain}>
           <div className={styles.videoContent} style={{ paddingRight: showList ? 0 : '5px' }}>
             <Player>
-              <HLSSource isVideoChild src={videoSrc} />
+              <HLSSource isVideoChild src={videoSrc} ref="source" />
             </Player>
           </div>
           {showList && (
