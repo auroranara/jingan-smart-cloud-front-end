@@ -1,8 +1,8 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 
 export default function ProgressBar(props) {
   const { width, height, progress } = props;
-  let progressWidth = typeof width === 'number' ? progress * width / 100 : `${Number.parseInt(width) * progress / 100}%`;
+  let progressWidth = typeof width === 'number' ? progress * width / 100 : `${progress}%`;
 
   return (
     <div style={{ width, height, background: '#FFF', position: 'relative', borderRadius: height / 2, overflow: 'hidden' }}>
