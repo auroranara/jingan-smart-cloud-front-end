@@ -62,8 +62,10 @@ export default class App extends PureComponent {
    * 组件更新
    */
   componentDidUpdate({ data: prevData }) {
+    const { data, flag } = this.props;
+    const isEqual = prevData.every((item, index) => item === data[index]);
     // 如果源数据更新，则重新返回到第一页
-    if (prevData !== this.props.data) {
+    if (!isEqual || flag) {
       this.setState({
         currentIndex: 0,
       });

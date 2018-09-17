@@ -248,8 +248,6 @@ class CompanyLayout extends PureComponent {
     this.showTipTimer = null;
     // 曲线图元素
     this.lineChart = null;
-    // 曲线图元素flag
-    this.lineChartFlag = true;
   }
 
   /**
@@ -371,6 +369,10 @@ class CompanyLayout extends PureComponent {
         companyId,
       },
     });
+
+
+    // 添加曲线图显示文字定时器
+    this.showTipTimer = setInterval(this.showLineChartTip, 2000);
   }
 
   /**
@@ -419,7 +421,8 @@ class CompanyLayout extends PureComponent {
    * 显示曲线图的文字
    */
   showLineChartTip = () => {
-    if (!this.lineChart) {
+    const { unitInspectionIndex } = this.state;
+    if (!this.lineChart || unitInspectionIndex !== 0) {
       return;
     }
     var length = this.lineChart.getOption().series[0].data.length;
@@ -506,12 +509,8 @@ class CompanyLayout extends PureComponent {
    * 曲线图加载完毕
    */
   handleLineChartReady = (chart) => {
-    if (this.lineChartFlag) {
-      this.lineChartFlag = false;
+    if (document.querySelector('.domLineChart').getAttribute('_echarts_instance_') === chart.id) {
       this.lineChart = chart;
-      this.showLineChartTip();
-      // 添加曲线图显示文字定时器
-      this.showTipTimer = setInterval(this.showLineChartTip, 2000);
     }
   };
 
@@ -621,15 +620,33 @@ class CompanyLayout extends PureComponent {
    * 切换单位巡查
    */
   handleSwitchUnitInspection = (index) => {
-    if (index !== 0) {
-      this.lineChartFlag = false;
-      clearInterval(this.showTipTimer);
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    const { unitInspectionIndex } = this.state;
+    // 每次翻转重新获取源数据
+    if (index === 1 && unitInspectionIndex === 0) {
+      this.handleSelectStaffList(moment().format('YYYY-MM'));
     }
-    else {
-      this.lineChartFlag = false;
+    else if (index === 2) {
+
     }
+    // this.lineChart = null;
+    // clearInterval(this.showTipTimer);
     this.setState({
       unitInspectionIndex: index,
+    });
+  }
+
+  /**
+   * 根据月份获取人员列表
+   */
+  handleSelectStaffList = (month) => {
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    dispatch({
+      type: 'bigPlatform/fetchStaffList',
+      payload: {
+        company_id: companyId,
+        month,
+      },
     });
   }
 
@@ -637,9 +654,16 @@ class CompanyLayout extends PureComponent {
    * 单位巡查人员列表
    */
   renderStaffList() {
+    // 从props中获取人员列表
+    const { bigPlatform: { staffList } } = this.props;
+
     return (
       <StaffList
-        onClick={() => {this.handleSwitchUnitInspection(0)}}
+        data={staffList}
+        fieldNames={{ person: 'user_name', total: 'totalCheck', abnormal: 'abnormal' }}
+        onBack={() => {this.handleSwitchUnitInspection(0)}}
+        onClick={() => {this.handleSwitchUnitInspection(2)}}
+        onSelect={this.handleSelectStaffList}
       />
     );
   }
@@ -648,9 +672,13 @@ class CompanyLayout extends PureComponent {
    * 单位巡查人员巡查记录
    */
   renderStaffRecords() {
+    // 从props中获取人员记录
+    // const {} = this.props;
+
     return (
       <StaffRecords
-
+        onBack={() => {this.handleSwitchUnitInspection(1)}}
+        // onSelect={this.handleSelectStaffList}
       />
     );
   }
@@ -727,13 +755,14 @@ class CompanyLayout extends PureComponent {
   /**
    * 当前隐患
    */
-  renderCurrentHiddenDanger() {
+  renderCurrentHiddenDanger(closable) {
     const { bigPlatform: { riskDetailList: { ycq=[], wcq=[], dfc=[] } } } = this.props;
     return (
       <CurrentHiddenDanger
         ycq={ycq}
         wcq={wcq}
         dfc={dfc}
+        closable={closable}
         onClose={this.handleHideCurrentHiddenDanger}
       />
     );
@@ -756,7 +785,7 @@ class CompanyLayout extends PureComponent {
         : riskDetailList.filter(({ item_id }) => item_id === selectedId));
 
     // 当没有四色图时，默认显示当前隐患，否则显示选中的风险点对应的隐患详情
-    return !selectedFourColorImgId ? this.renderCurrentHiddenDanger(riskDetailList) : (
+    return !selectedFourColorImgId ? this.renderCurrentHiddenDanger(false) : (
       <Slide
         // offset={{
         //   left: 12,
@@ -764,7 +793,7 @@ class CompanyLayout extends PureComponent {
         direction="left"
         showExtra={isCurrentHiddenDangerShow}
         extra={(
-          this.renderCurrentHiddenDanger(riskDetailList)
+          this.renderCurrentHiddenDanger(true)
         )}
       >
         <RiskDetail
@@ -772,6 +801,7 @@ class CompanyLayout extends PureComponent {
             height: '100%',
           }}
           data={data}
+          flag={!isCurrentHiddenDangerShow && selectedId === null}
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
         />
@@ -908,7 +938,7 @@ class CompanyLayout extends PureComponent {
     const {
       coItemList: { status1, status2, status3, status4 },
       countDangerLocationForCompany: {
-        countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0, unvalued=0 } = {}] = [{}],
+        countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0, not_rated: unvalued=0 } = {}] = [{}],
       },
     } = this.props.bigPlatform;
     const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
@@ -1281,10 +1311,10 @@ class CompanyLayout extends PureComponent {
         },
       },
       grid: {
-        top: 20,
+        top: 30,
         left: 20,
         right: 20,
-        bottom: 20,
+        bottom: 10,
         containLabel: true,
       },
       tooltip: {
@@ -1354,6 +1384,7 @@ class CompanyLayout extends PureComponent {
                   option={option}
                   style={{ height: '100%' }}
                   onChartReady={this.handleLineChartReady}
+                  className="domLineChart"
                 />
                 <div className={styles.legendList}>
                   <div className={styles.legendItem}>

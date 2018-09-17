@@ -11,6 +11,7 @@ import styles from './index.less';
 export default class App extends PureComponent {
   render() {
     const {
+      closable,
       onClose,
       ycq=[],
       wcq=[],
@@ -20,7 +21,7 @@ export default class App extends PureComponent {
     return (
       <Section
         title="当前隐患"
-        closable
+        closable={closable}
         isScroll
         onClose={onClose}
         contentStyle={{ position: 'relative' }}

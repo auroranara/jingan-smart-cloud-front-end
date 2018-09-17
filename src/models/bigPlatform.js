@@ -23,6 +23,7 @@ import {
   getAllCamera,
   getStartToPlay,
   getMonitorData,
+  getStaffList,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -151,6 +152,8 @@ export default {
     startToPlay: '',
     // 监控数据
     monitorData: {},
+    // 人员巡查记录
+    staffList: [],
   },
 
   effects: {
@@ -340,7 +343,7 @@ export default {
     *fetchCountDangerLocationForCompany({ payload, success, error }, { call, put }) {
       const response = yield call(getCountDangerLocationForCompany, payload);
       // if (response.code === 200) {
-      const {countDangerLocation,redDangerResult,orangeDangerResult,yellowDangerResult,blueDangerResult,unvaluedDangerResult=[] } = response;
+      const {countDangerLocation,redDangerResult,orangeDangerResult,yellowDangerResult,blueDangerResult,notRatedDangerResult=[] } = response;
       yield put({
         type: 'countDangerLocationForCompany',
         payload: {
@@ -370,10 +373,10 @@ export default {
             over: blueDangerResult.filter(({ status }) => +status === 4),
           },
           unvaluedDangerResult: {
-            normal: unvaluedDangerResult.filter(({ status }) => +status === 1),
-            checking: unvaluedDangerResult.filter(({ status }) => +status === 3),
-            abnormal: unvaluedDangerResult.filter(({ status }) => +status === 2),
-            over: unvaluedDangerResult.filter(({ status }) => +status === 4),
+            normal: notRatedDangerResult.filter(({ status }) => +status === 1),
+            checking: notRatedDangerResult.filter(({ status }) => +status === 3),
+            abnormal: notRatedDangerResult.filter(({ status }) => +status === 2),
+            over: notRatedDangerResult.filter(({ status }) => +status === 4),
           },
         },
       });
@@ -546,6 +549,17 @@ export default {
         error();
       }
     },
+    // 巡查人员列表
+    *fetchStaffList({ payload, success, error }, { call, put }) {
+      const response = yield call(getStaffList, payload);
+      yield put({
+        type: 'saveStaffList',
+        payload: response.personCheck,
+      });
+      if (success) {
+        success(response.personCheck);
+      }
+    },
   },
 
   reducers: {
@@ -688,6 +702,12 @@ export default {
       return {
         ...state,
         monitorData: payload,
+      };
+    },
+    saveStaffList(state, { payload: staffList }) {
+      return {
+        ...state,
+        staffList,
       };
     },
   },
