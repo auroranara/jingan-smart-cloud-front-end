@@ -152,8 +152,8 @@ export default class UserTransmissionDevice extends PureComponent {
   render() {
     const {
       transmission: {
-        list,
         data: {
+          list,
           pagination: { total },
         },
       },
@@ -264,7 +264,7 @@ export default class UserTransmissionDevice extends PureComponent {
                   </AuthLink>
                 </List.Item>
               );
-          }}
+            }}
           />
         </div>
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} />}

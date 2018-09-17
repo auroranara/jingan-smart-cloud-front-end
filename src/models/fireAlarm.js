@@ -55,8 +55,7 @@ export default {
       const {
         code,
         data: {
-          list,
-          pagination: { pageNum, total },
+          pagination: { total },
         },
       } = response;
 
@@ -70,6 +69,7 @@ export default {
         payload: response.data,
       });
     },
+
     *fetchAlarmData({ payload, callback }, { call, put }) {
       const response = yield call(queryAlarmData, payload);
       const { code, data } = response;
