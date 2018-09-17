@@ -13,7 +13,7 @@ import {
   getCountDangerLocationForCompany,
   getRiskDetail,
   getRiskPointInfo,
-  getHiddenDanger,
+  // getHiddenDanger,
   getSafetyOfficer,
   getGovFulltimeWorkerList,
   getOverRectifyCompany,
@@ -23,6 +23,7 @@ import {
   getAllCamera,
   getStartToPlay,
   getMonitorData,
+  getStaffList,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -49,7 +50,7 @@ const transformHiddenDangerFields = ({
   plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
   real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
   fcr: review_user_name,
-  status,
+  status: +status,
   background: background.split(',')[0],
   source: source_type_name,
 });
@@ -133,7 +134,7 @@ export default {
       dfc: [],
     },
     // 隐患总数
-    hiddenDanger: 0,
+    // hiddenDanger: 0,
     // 安全人员信息
     safetyOfficer: {},
     govFulltimeWorkerList: {
@@ -151,6 +152,8 @@ export default {
     startToPlay: '',
     // 监控数据
     monitorData: {},
+    // 人员巡查记录
+    staffList: [],
   },
 
   effects: {
@@ -340,9 +343,42 @@ export default {
     *fetchCountDangerLocationForCompany({ payload, success, error }, { call, put }) {
       const response = yield call(getCountDangerLocationForCompany, payload);
       // if (response.code === 200) {
+      const {countDangerLocation,redDangerResult,orangeDangerResult,yellowDangerResult,blueDangerResult,notRatedDangerResult=[] } = response;
       yield put({
         type: 'countDangerLocationForCompany',
-        payload: response,
+        payload: {
+          countDangerLocation,
+          redDangerResult: {
+            normal: redDangerResult.filter(({ status }) => +status === 1),
+            checking: redDangerResult.filter(({ status }) => +status === 3),
+            abnormal: redDangerResult.filter(({ status }) => +status === 2),
+            over: redDangerResult.filter(({ status }) => +status === 4),
+          },
+          orangeDangerResult: {
+            normal: orangeDangerResult.filter(({ status }) => +status === 1),
+            checking: orangeDangerResult.filter(({ status }) => +status === 3),
+            abnormal: orangeDangerResult.filter(({ status }) => +status === 2),
+            over: orangeDangerResult.filter(({ status }) => +status === 4),
+          },
+          yellowDangerResult: {
+            normal: yellowDangerResult.filter(({ status }) => +status === 1),
+            checking: yellowDangerResult.filter(({ status }) => +status === 3),
+            abnormal: yellowDangerResult.filter(({ status }) => +status === 2),
+            over: yellowDangerResult.filter(({ status }) => +status === 4),
+          },
+          blueDangerResult: {
+            normal: blueDangerResult.filter(({ status }) => +status === 1),
+            checking: blueDangerResult.filter(({ status }) => +status === 3),
+            abnormal: blueDangerResult.filter(({ status }) => +status === 2),
+            over: blueDangerResult.filter(({ status }) => +status === 4),
+          },
+          unvaluedDangerResult: {
+            normal: notRatedDangerResult.filter(({ status }) => +status === 1),
+            checking: notRatedDangerResult.filter(({ status }) => +status === 3),
+            abnormal: notRatedDangerResult.filter(({ status }) => +status === 2),
+            over: notRatedDangerResult.filter(({ status }) => +status === 4),
+          },
+        },
       });
       if (success) {
         success();
@@ -394,16 +430,16 @@ export default {
         success();
       }
     },
-    *fetchHiddenDanger({ payload, success }, { call, put }) {
-      const response = yield call(getHiddenDanger, payload);
-      yield put({
-        type: 'hiddenDanger',
-        payload: response.total,
-      });
-      if (success) {
-        success();
-      }
-    },
+    // *fetchHiddenDanger({ payload, success }, { call, put }) {
+    //   const response = yield call(getHiddenDanger, payload);
+    //   yield put({
+    //     type: 'hiddenDanger',
+    //     payload: response.total,
+    //   });
+    //   if (success) {
+    //     success();
+    //   }
+    // },
     *fetchSafetyOfficer({ payload, success }, { call, put }) {
       const response = yield call(getSafetyOfficer, payload);
       yield put({
@@ -513,6 +549,17 @@ export default {
         error();
       }
     },
+    // 巡查人员列表
+    *fetchStaffList({ payload, success, error }, { call, put }) {
+      const response = yield call(getStaffList, payload);
+      yield put({
+        type: 'saveStaffList',
+        payload: response.personCheck,
+      });
+      if (success) {
+        success(response.personCheck);
+      }
+    },
   },
 
   reducers: {
@@ -603,12 +650,12 @@ export default {
         riskDetailList,
       };
     },
-    hiddenDanger(state, { payload }) {
-      return {
-        ...state,
-        hiddenDanger: payload,
-      };
-    },
+    // hiddenDanger(state, { payload }) {
+    //   return {
+    //     ...state,
+    //     hiddenDanger: payload,
+    //   };
+    // },
     saveSafetyOfficer(state, { payload: safetyOfficer }) {
       return {
         ...state,
@@ -655,6 +702,12 @@ export default {
       return {
         ...state,
         monitorData: payload,
+      };
+    },
+    saveStaffList(state, { payload: staffList }) {
+      return {
+        ...state,
+        staffList,
       };
     },
   },
