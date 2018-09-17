@@ -53,7 +53,7 @@ const getSeal = status => {
 };
 
 const { location: locationDefault } = global.PROJECT_CONFIG;
-const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点'];
+const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点', '未评级风险点'];
 @connect(({ bigPlatform, bigPlatformSafetyCompany }) => ({
   bigPlatform,
   bigPlatformSafetyCompany,
@@ -506,11 +506,12 @@ class GovernmentBigPlatform extends Component {
           blue,
           blue_abnormal,
           blue_company,
+          not_rated,
+          not_rated_abnormal,
+          not_rated_company,
         },
       },
     } = this.props;
-    const colorList = ['#e81c02', '#ea760a', '#e9e517', '#1a52d9'];
-    const comMap = [red_company, orange_company, yellow_company, blue_company];
     const lightGray = {
       type: 'linear',
       x: 0,
@@ -529,6 +530,98 @@ class GovernmentBigPlatform extends Component {
       ],
       globalCoord: false, // 缺省为 false
     };
+    const gradientsRed = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#e81c02', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#7e1001', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsOrange = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#ea760a', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#793d05', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsYel = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#e9e517', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#7e7c0d', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsBlue = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#1a52d9', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#0f307f', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsGray = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#4f6793', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#28344a', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const colorList = [gradientsRed, gradientsOrange, gradientsYel, gradientsBlue, gradientsGray];
+    const comMap = [red_company, orange_company, yellow_company, blue_company, not_rated_company];
     const option = {
       legend: {
         show: false,
@@ -604,7 +697,7 @@ class GovernmentBigPlatform extends Component {
             color: '#fff',
             fontSize: 14,
           },
-          data: ['红', '橙', '黄', '蓝'],
+          data: ['红', '橙', '黄', '蓝', '未评级'],
         },
         {
           type: 'category',
@@ -613,7 +706,7 @@ class GovernmentBigPlatform extends Component {
           axisLabel: { show: false },
           splitArea: { show: false },
           splitLine: { show: false },
-          data: ['红', '橙', '黄', '蓝'],
+          data: ['红', '橙', '黄', '蓝', '未评级'],
         },
       ],
       series: [
@@ -635,7 +728,7 @@ class GovernmentBigPlatform extends Component {
           barGap: '0%',
           barWidth: '36%',
           barCategoryGap: '50%',
-          data: [red, orange, yellow, blue],
+          data: [red, orange, yellow, blue, not_rated],
         },
         {
           name: '异常',
@@ -652,7 +745,7 @@ class GovernmentBigPlatform extends Component {
           barGap: '0%',
           barWidth: '25%',
           barCategoryGap: '50%',
-          data: [red_abnormal, orange_abnormal, yellow_abnormal, blue_abnormal],
+          data: [red_abnormal, orange_abnormal, yellow_abnormal, blue_abnormal, not_rated_abnormal],
         },
       ],
     };
@@ -706,6 +799,9 @@ class GovernmentBigPlatform extends Component {
             blue,
             blue_abnormal,
             blue_company,
+            not_rated,
+            not_rated_abnormal,
+            not_rated_company,
           },
         },
       } = this.props;
@@ -729,6 +825,11 @@ class GovernmentBigPlatform extends Component {
           risk: blue,
           abnormal: blue_abnormal,
           company: blue_company,
+        },
+        {
+          risk: not_rated,
+          abnormal: not_rated_abnormal,
+          company: not_rated_company,
         },
       ];
       dispatch({
@@ -1258,7 +1359,7 @@ class GovernmentBigPlatform extends Component {
         govFulltimeWorkerList: { total: fulltimeWorker, list: fulltimeWorkerList },
         overRectifyCompany,
         searchAllCompany: { dataImportant, dataUnimportantCompany },
-        riskDetailList,
+        riskDetailList: { ycq = [], wcq = [], dfc = [] },
         dangerLocationCompanyData,
       },
       bigPlatformSafetyCompany: { selectList },
@@ -1583,14 +1684,22 @@ class GovernmentBigPlatform extends Component {
                           </div>
                         </Tooltip>
                       </div>
-                      <Tooltip placement="bottom" title={'截止当前所有已整改隐患数'}>
-                        <div className={styles.topItem}>
-                          <div className={styles.topName}>已整改隐患</div>
-                          <div className={styles.topNum} style={{ color: '#fff' }}>
-                            {overCheck}
+
+                      <div className={styles.topItem}>
+                        <Tooltip placement="bottom" title={'本月监督检查的数量'}>
+                          <div
+                            className={styles.itemActive}
+                            onClick={() => {
+                              this.goComponent('overHd');
+                            }}
+                          >
+                            <div className={styles.topName}>本月监督检查</div>
+                            <div className={styles.topNum} style={{ color: '#fff' }}>
+                              {overCheck}
+                            </div>
                           </div>
-                        </div>
-                      </Tooltip>
+                        </Tooltip>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1849,19 +1958,23 @@ class GovernmentBigPlatform extends Component {
                         <table className={styles.scrollTable}>
                           <thead>
                             <tr>
-                              <th style={{ width: '54%' }}>姓名</th>
-                              <th>电话</th>
+                              <th />
+                              <th style={{ width: '26%' }}>姓名</th>
+                              <th style={{ width: '35%' }}>电话</th>
+                              <th>管辖社区</th>
                             </tr>
                           </thead>
                           <tbody>
                             {fulltimeWorkerList.map((item, index) => {
                               return (
                                 <tr key={item.phone_number}>
+                                  <td>{index + 1}</td>
                                   <td>
-                                    <span className={styles.tableOrder}>{index + 1}</span>
+                                    {/* <span className={styles.tableOrder}>{index + 1}</span> */}
                                     {item.user_name}
                                   </td>
                                   <td>{item.phone_number}</td>
+                                  <td>{item.grid_name || ''}</td>
                                 </tr>
                               );
                             })}
@@ -2183,7 +2296,7 @@ class GovernmentBigPlatform extends Component {
                       <div className={styles.tableTitleWrapper} style={{ borderBottom: 'none' }}>
                         <span className={styles.tableTitle}>
                           风险点隐患（
-                          {riskDetailList.length}）
+                          {ycq.length + wcq.length + dfc.length}）
                         </span>
                       </div>
 
