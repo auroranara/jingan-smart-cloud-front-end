@@ -988,7 +988,7 @@ export default class accountManagementEdit extends PureComponent {
                 })(
                   <Transfer
                     dataSource={roleList}
-                    titles={['所选角色', '角色列表']}
+                    titles={['可选角色', '已选角色']}
                     render={item => item.title}
                   />
                 )}
