@@ -11,9 +11,11 @@ import MapSearch from '../FireControl/components/MapSearch';
 import debounce from 'lodash/debounce';
 import Ellipsis from '../../../components/Ellipsis';
 
-import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
+import { Map as GDMap, Marker, InfoWindow, Markers } from 'react-amap';
 import ReactEcharts from 'echarts-for-react';
-import MapTypeBar from './Components/MapTypeBar';
+import MapSection from './Components/MapSection';
+
+// import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -280,6 +282,67 @@ class GovernmentBigPlatform extends Component {
     } else {
       scroll.scrollTop++;
     }
+  };
+
+  renderMarkers = () => {
+    const { location } = this.props.bigPlatform;
+    const markers = location.map((item, index) => {
+      return {
+        ...item,
+        position: this.analysisPointData(item.location),
+        id: item.company_id,
+        index,
+      };
+    });
+    return (
+      <Markers
+        markers={markers}
+        events={{
+          click: (e, marker) => {
+            const extData = marker.getExtData();
+            const index = extData.index;
+            this.handleIconClick({ id: extData.id, ...extData.position });
+          },
+        }}
+        render={this.renderMarkerLayout}
+      />
+    );
+  };
+
+  renderMarkerLayout = extData => {
+    const { level } = extData;
+    return (
+      <div>
+        {level === 'A' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
+            alt=""
+            style={{ display: 'block', width: '26px', height: '26px' }}
+          />
+        )}
+        {level === 'B' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+        {level === 'C' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+        {level === 'D' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+      </div>
+    );
   };
 
   renderCompanyMarker() {
@@ -1493,6 +1556,7 @@ class GovernmentBigPlatform extends Component {
         searchAllCompany: { dataImportant, dataUnimportantCompany },
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
         dangerLocationCompanyData,
+        location,
       },
       bigPlatformSafetyCompany: { selectList },
     } = this.props;
@@ -1852,7 +1916,15 @@ class GovernmentBigPlatform extends Component {
               <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
                 <div className={styles.sectionWrapperIn}>
                   <div className={styles.sectionMain} style={{ border: 'none' }}>
-                    <div className={styles.mapContainer}>
+                    <MapSection
+                      dispatch={dispatch}
+                      locData={location}
+                      zoom={zoom}
+                      center={center}
+                      handleIconClick={this.handleIconClick}
+                      // events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
+                    />
+                    {/* <div className={styles.mapContainer}>
                       <GDMap
                         amapkey="665bd904a802559d49a33335f1e4aa0d"
                         plugins={[
@@ -1868,7 +1940,7 @@ class GovernmentBigPlatform extends Component {
                         zoom={zoom}
                         events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
                       >
-                        {this.renderCompanyMarker()}
+                        {this.renderMarkers()}
                         {this.renderInfoWindow()}
                         <MapTypeBar />
                         <div
@@ -1894,12 +1966,6 @@ class GovernmentBigPlatform extends Component {
                           重置
                         </div>
                       </GDMap>
-
-                      {/* <MapSearch
-                        style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-                        handleSelect={this.handleSearchSelect}
-                        ref="mapSearch"
-                      /> */}
                       <MapSearch
                         style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
                         // list={newList}
@@ -1934,7 +2000,7 @@ class GovernmentBigPlatform extends Component {
                           );
                         })}
                       </Row>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </section>
@@ -2111,7 +2177,7 @@ class GovernmentBigPlatform extends Component {
                           <tbody>
                             {fulltimeWorkerList.map((item, index) => {
                               return (
-                                <tr key={item.phone_number}>
+                                <tr key={index}>
                                   <td>{index + 1}</td>
                                   <td>
                                     {/* <span className={styles.tableOrder}>{index + 1}</span> */}
