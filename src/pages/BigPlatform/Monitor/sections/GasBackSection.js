@@ -70,7 +70,7 @@ export default class GasSection extends PureComponent {
     const gList = handleGasList(gasList);
     const searchFilteredList = filterSearch(gList, inputVal);
     // const nums = [normal, abnormal, loss, total];
-    const nums = [NORMAL, ABNORMAL, LOSS, ALL].map(status => getStatusLength(searchFilteredList, status));
+    const nums = [ALL, NORMAL, ABNORMAL, LOSS].map(status => [status, getStatusLength(searchFilteredList, status)]);
 
     const statusFilteredList = filterStatus(searchFilteredList, status);
 
@@ -88,7 +88,7 @@ export default class GasSection extends PureComponent {
           <input value={inputVal} onChange={this.handleInputChange} className={styles.input} placeholder="可搜索区域和位置" />
         </div>
         <div className={styles.labelContainer}>
-          {nums.map((n, i) => <GasStatusLabel key={i} num={n} status={i} selected={status === i} onClick={() => handleLabelClick(i)} />)}
+          {nums.map(([s, n]) => <GasStatusLabel key={s} num={n} status={s} selected={status === s} onClick={() => handleLabelClick(s)} />)}
         </div>
         <div className={styles.cardsContainer}>
           {cards}
