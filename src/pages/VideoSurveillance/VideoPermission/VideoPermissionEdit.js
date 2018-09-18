@@ -13,6 +13,7 @@ const Option = Select.Option
   video,
   user,
   optionsLoading: loading.effects['video/fetchCompanyOptions'],
+  treeLoading: loading.effects['video/fetchVideoTree'],
 }))
 export default class VideoPermissionEdit extends PureComponent {
   constructor(props) {
@@ -71,21 +72,16 @@ export default class VideoPermissionEdit extends PureComponent {
     const { selectedCompanyId } = this.state
     const buttonPermission = this.checkButtonPermission('company')
 
-    const success = (list) => {
-      const temp = list.map(item => {
-        return { ...item, parentIds: '0' }
-      })
-      // checkedStatus 0不选 1半选 2选中
-      const checked = [...list].filter(item => item.checkedStatus === 2).map(item => item.id)
-      const halfChecked = [...list].filter(item => item.checkedStatus === 1).map(item => item.id)
+    const success = ({ list, checked, halfChecked }) => {
       this.setState({
-        tree: temp,
+        tree: list,
         visible: true,
         checkedKeys: { checked, halfChecked },
         type: 'company',
         departmentId: null,
         expandedKeys: halfChecked,
         buttonPermission,
+        expandedId: '',
       })
     }
     const error = (msg) => {
@@ -95,7 +91,7 @@ export default class VideoPermissionEdit extends PureComponent {
       // 编辑企业权限
       dispatch({
         type: 'video/fetchVideoTree',
-        payload: { cId: companyId },
+        payload: { data: { cId: companyId }, dataRef: {} },
         success,
         error,
       })
@@ -103,7 +99,7 @@ export default class VideoPermissionEdit extends PureComponent {
       // 新增企业权限
       dispatch({
         type: 'video/fetchVideoTree',
-        payload: { cId: selectedCompanyId },
+        payload: { data: { cId: selectedCompanyId }, dataRef: {} },
         success,
         error,
       })
@@ -119,22 +115,17 @@ export default class VideoPermissionEdit extends PureComponent {
     const buttonPermission = this.checkButtonPermission('department')
     dispatch({
       type: 'video/fetchVideoTree',
-      payload: { dId: departmentId, cId: companyId || selectedCompanyId },
-      success: (list) => {
-        const temp = list.map(item => {
-          return { ...item, parentIds: '0' }
-        })
-        // checkedStatus 0不选 1半选 2选中
-        const checked = [...list].filter(item => item.checkedStatus === 2).map(item => item.id)
-        const halfChecked = [...list].filter(item => item.checkedStatus === 1).map(item => item.id)
+      payload: { data: { dId: departmentId, cId: companyId || selectedCompanyId }, dataRef: {} },
+      success: ({ list, checked, halfChecked }) => {
         this.setState({
-          tree: temp,
+          tree: list,
           visible: true,
           checkedKeys: { checked, halfChecked },
           type: 'department',
           departmentId,
           expandedKeys: halfChecked,
           buttonPermission,
+          expandedId: '',
         })
       },
       error: (msg) => {
@@ -247,37 +238,26 @@ export default class VideoPermissionEdit extends PureComponent {
   }
 
   // 点击树节点加载子节点
-  handleLoadData = (data, callback) => {
+  handleLoadData = (treeNode, callback) => {
     const { dispatch, match: { params: { companyId } } } = this.props
-    const { id } = data;
+    const { props: { dataRef, dataRef: { id } } } = treeNode
     const { departmentId, checkedKeys, selectedCompanyId, expandedId, expandedKeys } = this.state
 
-    this.setState({
-      loading: true,
-    });
     // 调用接口获取当前节点的子元素
     dispatch({
       type: 'video/fetchVideoTree',
-      payload: { parentId: id, cId: companyId || selectedCompanyId, dId: departmentId },
-      success: list => {
-        const tempList = list.map((item) => {
-          return data.parentIds ? { ...item, parentIds: `${data.parentIds}','${id}` } : { ...item, parentIds: `${id}` }
-        });
-        const checked = tempList.filter(item => item.checkedStatus === 2).map(item => item.id)
-        const halfChecked = tempList.filter(item => item.checkedStatus === 1).map(item => item.id)
+      payload: { data: { parentId: id, cId: companyId || selectedCompanyId, dId: departmentId }, dataRef },
+      success: ({ list, checked, halfChecked }) => {
         // callback必须调用
-        callback(tempList);
-        data.children = tempList; // eslint-disable-line
-        // const expand = tempList.filter(item => item.checkedStatus === 2 && !item.isVideo).map(item => item.id)
+        callback(list);
+        dataRef.children = list;
         this.setState({
           tree: [...this.state.tree],
-          loading: false,
           checkedKeys: {
-            checked: [...new Set([...checkedKeys.checked, ...checked])],
-            halfChecked: [...new Set([...checkedKeys.halfChecked, ...halfChecked])],
+            checked: [...new Set([...this.state.checkedKeys.checked, ...checked])],
+            halfChecked: treeNode.props.halfChecked ? [...new Set([...this.state.checkedKeys.halfChecked, ...halfChecked])] : this.state.checkedKeys.halfChecked,
           },
-          expandedKeys: expandedId ? [...new Set([...expandedKeys, expandedId])] : [...expandedKeys, ...halfChecked],
-          // expandedKeys: [...checkedKeys.halfChecked, ...halfChecked],
+          expandedKeys: treeNode.props.checked ? this.state.expandedKeys : (expandedId ? [...new Set([...this.state.expandedKeys, expandedId])] : [...this.state.expandedKeys, ...halfChecked]),
           expandedId: '',
         });
       },
@@ -369,8 +349,8 @@ export default class VideoPermissionEdit extends PureComponent {
   }
 
   render() {
-    const { match: { params: { companyId } } } = this.props
-    const { visible, confirmLoading, tree, checkedKeys, expandedKeys, buttonPermission, autoExpandParent } = this.state
+    const { match: { params: { companyId } }, treeLoading } = this.props
+    const { visible, confirmLoading, tree, checkedKeys, expandedKeys, buttonPermission, autoExpandParent, expandedId } = this.state
 
     const title = companyId ? "编辑视频权限" : "新增视频权限"
 
@@ -402,13 +382,14 @@ export default class VideoPermissionEdit extends PureComponent {
         <AsyncTreeModal
           visible={visible}
           confirmLoading={confirmLoading}
-          // loading={loading}
+          loading={treeLoading}
           title="设置视频权限"
           onCancel={this.handleClose}
           onOk={this.doSavePermission}
           buttonPermission={buttonPermission}
           saveParentStates={this.saveParentStates}
           autoExpandParent={autoExpandParent}
+          expandedId={expandedId}
           tree={{
             dataSource: tree,
             checkable: true,

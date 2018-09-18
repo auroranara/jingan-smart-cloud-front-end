@@ -24,7 +24,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.jb}`,
+      target: `http://${hosts.dev}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
