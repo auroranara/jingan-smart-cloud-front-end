@@ -662,7 +662,7 @@ class CompanyLayout extends PureComponent {
         data={staffList}
         fieldNames={{ person: 'user_name', total: 'totalCheck', abnormal: 'abnormal' }}
         onBack={() => {this.handleSwitchUnitInspection(0)}}
-        onClick={() => {this.handleSwitchUnitInspection(2)}}
+        // onClick={() => {this.handleSwitchUnitInspection(2)}}
         onSelect={this.handleSelectStaffList}
       />
     );
