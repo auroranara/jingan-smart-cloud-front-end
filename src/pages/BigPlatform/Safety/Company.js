@@ -1018,7 +1018,7 @@ class CompanyLayout extends PureComponent {
               <ReactEcharts
                 option={option}
                 style={{ height: '100%' }}
-                // onChartReady={this.handlePieChartReady}
+                onChartReady={this.handlePieChartReady}
               />
             </div>
 
@@ -1623,6 +1623,9 @@ class CompanyLayout extends PureComponent {
     // 滚动类名
     const scrollClassName = classNames(styles.innerBox, styles.riskScroll);
 
+    // 是否全部未评级
+    const isAllUnvalued = (red+orange+yellow+blue) === 0;
+
     return (
       <section
         className={className}
@@ -1656,7 +1659,7 @@ class CompanyLayout extends PureComponent {
                 }}
               />
             </div>
-            {(red+orange+yellow+blue) !== 0 ? (<div className={styles.riskLevelList}>
+            {!isAllUnvalued ? (<div className={styles.riskLevelList}>
                 <div className={styles.riskLevelItem}>
                   <div className={styles.riskLevelItemValue}>{red}</div>
                   <div className={styles.riskLevelItemName} style={{ color: '#FF4848' }}>
@@ -1880,12 +1883,14 @@ class CompanyLayout extends PureComponent {
                     const { content, color } = switchCheckStatus(+status);
                     return (
                       <div className={styles.riskPointItem} key={id}>
-                        <div
-                          className={styles.riskPointItemLabel}
-                          style={switchColorAndBgColor('未评级')}
-                        >
-                          未评级
-                        </div>
+                        {!isAllUnvalued && (
+                          <div
+                            className={styles.riskPointItemLabel}
+                            style={switchColorAndBgColor('未评级')}
+                          >
+                            未评级
+                          </div>
+                        )}
                         <div className={styles.riskPointItemNameWrapper}>
                           <div className={styles.riskPointItemName}>风险点</div>
                           <div className={styles.riskPointItemValue}>{name}</div>
