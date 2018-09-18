@@ -728,7 +728,7 @@ class CompanyLayout extends PureComponent {
       },
     } = this.props;
     const { selectedFourColorImgId } = this.state;
-    return fourColorImg.length > 0 ? (
+    return fourColorImg.length > 1 ? (
       <Select
         value={selectedFourColorImgId}
         onSelect={this.handleSelectFourColorImg}
