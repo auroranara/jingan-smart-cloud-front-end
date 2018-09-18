@@ -67,6 +67,26 @@ export async function getDangerLocationCompanyData(params) {
   return request(`/acloud_new/v2/sfg/dangerLocationCompanyData.json?${stringify(params)}`);
 }
 
+// 隐患单位数量以及具体信息
+export async function getHiddenDangerCompany(params) {
+  return request(`/acloud_new/v2/sfg/hiddenDangerCompany.json?${stringify(params)}`);
+}
+
+// 专职人员检查信息
+export async function getCheckInfo(params) {
+  return request(`/acloud_new/v2/sfg/checkInfo.json?${stringify(params)}`);
+}
+
+// 已超时单位信息
+export async function getHiddenDangerOverTime(params) {
+  return request(`/acloud_new/v2/sfg/hiddenDangerOverTime.json?${stringify(params)}`);
+}
+
+// 根据时间查询隐患列表
+export async function getHiddenDangerListByDate(params) {
+  return request(`/acloud_new/v2/sfg/hiddenDangerListByDate.json?${stringify(params)}`);
+}
+
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
 export async function getCoItemList(params) {

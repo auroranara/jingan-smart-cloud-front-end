@@ -93,6 +93,7 @@ class GovernmentBigPlatform extends Component {
       riskColors: false, // 风险点
       hdDetail: false, // 已超期隐患详情
       hiddenDanger: false, // 隐患详情
+      checks: false, // 监督检查
       companyId: '',
       riskTitle: '红色风险点',
       riskSummary: {
@@ -186,6 +187,14 @@ class GovernmentBigPlatform extends Component {
     // 查找重点和非重点单位
     dispatch({
       type: 'bigPlatform/fetchSearchAllCompany',
+    });
+
+    // 专职人员检查信息
+    dispatch({
+      type: 'bigPlatform/fetchCheckInfo',
+      payload: {
+        date: '2018-09',
+      },
     });
 
     // requestAnimationFrame(this.resolveAnimationFrame);
@@ -947,6 +956,7 @@ class GovernmentBigPlatform extends Component {
       this.setState({
         infoWindowShow: false,
       });
+      return;
     }
     this.setState({
       comIn: false, // 接入单位统计
@@ -956,6 +966,9 @@ class GovernmentBigPlatform extends Component {
       hdCom: false, // 隐患单位统计
       comInfo: false, // 企业信息
       riskColors: false, // 风险点
+      hdDetail: false, // 已超期隐患详情
+      hiddenDanger: false, // 隐患详情
+      checks: false, // 监督检查
     });
     setTimeout(() => {
       this.setState({
@@ -1003,6 +1016,7 @@ class GovernmentBigPlatform extends Component {
       riskColors: false,
       hdDetail: false,
       hiddenDanger: false,
+      checks: false,
     });
     setTimeout(() => {
       this.setState(obj);
@@ -1318,6 +1332,123 @@ class GovernmentBigPlatform extends Component {
     });
   };
 
+  // 监督检查
+  renderCheckInfo = () => {
+    const {
+      bigPlatform: { checkInfo },
+    } = this.props;
+    const { checks } = this.state;
+    const stylesChecks = classNames(styles.sectionWrapper, rotate.flip, {
+      [rotate.in]: checks,
+      [rotate.out]: !checks,
+    });
+    return (
+      <section
+        className={stylesChecks}
+        style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
+      >
+        <div className={styles.sectionWrapperIn}>
+          <div className={styles.sectionTitle}>
+            <span className={styles.titleBlock} />
+            监督检查
+          </div>
+          <div
+            className={styles.backBtn}
+            onClick={() => {
+              this.goBack();
+            }}
+          />
+          <div className={styles.sectionMain}>
+            <div className={styles.sectionContent}>
+              <Row style={{ borderBottom: '2px solid #0967d3', padding: '6px 0' }}>
+                <Col span={12}>
+                  <div className={styles.checksContent}>
+                    <span className={styles.iconCom1} />
+                    <div className={styles.checksWrapper}>
+                      已检查单位
+                      <div className={styles.checksNum}>{0}</div>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className={styles.checksContent}>
+                    <span className={styles.iconCom2} />
+                    <div className={styles.checksWrapper}>
+                      隐患单位
+                      <span style={{ opacity: 0 }}>啊</span>
+                      <div className={styles.checksNum}>{0}</div>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className={styles.checksContent}>
+                    <span className={styles.iconCom3} />
+                    <div className={styles.checksWrapper}>
+                      未检查单位
+                      <div className={styles.checksNum}>{0}</div>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className={styles.checksContentActive}>
+                    <span className={styles.iconCom4} />
+                    <div className={styles.checksWrapper}>
+                      已超时单位
+                      <div className={styles.checksNum}>{0}</div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <div className={styles.tableTitleWrapper}>
+                <span className={styles.tableTitle}>
+                  {' '}
+                  专职人员检查（
+                  {checkInfo.length}）
+                </span>
+              </div>
+              <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
+                <table className={styles.scrollTable}>
+                  <thead>
+                    <tr>
+                      <th style={{ width: '25%' }}>姓名</th>
+                      <th style={{ width: '25%' }}>监管单位</th>
+                      <th style={{ width: '25%' }}>已巡查单位</th>
+                      <th style={{ width: '25%' }}>隐患单位</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {checkInfo.map((item, index) => {
+                      return (
+                        <tr key={item.id}>
+                          <td>{item.user_name}</td>
+                          <td>{item.companyNum}</td>
+                          <td>{item.fireCheckCompanyCount}</td>
+                          <td
+                            style={{
+                              color: item.hiddenCompanyNum
+                                ? 'rgba(232, 103, 103, 0.8)'
+                                : 'rgba(255, 255, 255, 0.7)',
+                              cursor: item.hiddenCompanyNum ? 'pointer' : 'text',
+                            }}
+                            onClick={() => {
+                              console.log(111);
+                            }}
+                          >
+                            {item.hiddenCompanyNum}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  };
+
   render() {
     const {
       scrollNodeTop,
@@ -1339,6 +1470,7 @@ class GovernmentBigPlatform extends Component {
       legendActive,
       hiddenDanger,
       searchValue,
+      checks,
     } = this.state;
     const {
       dispatch,
@@ -1508,6 +1640,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#fc1f02' }}
                         />
                         红色风险点
+                        <span style={{ opacity: 0 }}>点</span>
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1516,6 +1649,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#ed7e12' }}
                         />
                         橙色风险点
+                        <span style={{ opacity: 0 }}>点</span>
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1524,6 +1658,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#fbf719' }}
                         />
                         黄色风险点
+                        <span style={{ opacity: 0 }}>点</span>
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1532,6 +1667,15 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#1e60ff' }}
                         />
                         蓝色风险点
+                        <span style={{ opacity: 0 }}>点</span>
+                      </div>
+
+                      <div className={styles.legendItem}>
+                        <span
+                          className={styles.legendIcon}
+                          style={{ backgroundColor: '#4f6793' }}
+                        />
+                        未评级风险点
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1540,7 +1684,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#bfbfbf' }}
                         />
                         异常状态
-                        <span style={{ opacity: 0 }}>点</span>
+                        <span style={{ opacity: 0 }}>点点</span>
                       </div>
                     </div>
                   </div>
@@ -1690,7 +1834,7 @@ class GovernmentBigPlatform extends Component {
                           <div
                             className={styles.itemActive}
                             onClick={() => {
-                              this.goComponent('overHd');
+                              this.goComponent('checks');
                             }}
                           >
                             <div className={styles.topName}>本月监督检查</div>
@@ -2447,6 +2591,8 @@ class GovernmentBigPlatform extends Component {
                   </div>
                 </div>
               </section>
+
+              {this.renderCheckInfo()}
             </Col>
           </Row>
         </article>
