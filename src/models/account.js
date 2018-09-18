@@ -67,13 +67,18 @@ export default {
 
   effects: {
     // 账号列表
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, success, error }, { call, put }) {
       const response = yield call(queryAccountList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveAccountList',
           payload: response.data,
         });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 

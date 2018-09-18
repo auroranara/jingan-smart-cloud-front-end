@@ -20,7 +20,7 @@ import {
   message,
   TreeSelect,
 } from 'antd';
-// import { routerRedux } from 'dva/router';
+import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -134,6 +134,10 @@ const getEmptyData = () => {
         ...action,
       });
     },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
   })
 )
 @Form.create()
@@ -190,8 +194,6 @@ export default class accountManagementList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    console.log(data);
-
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
@@ -208,6 +210,9 @@ export default class accountManagementList extends PureComponent {
   handleClickToReset = () => {
     const {
       fetch,
+      fetchUnitsFuzzy,
+      goToException,
+      fetchOptions,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -219,6 +224,21 @@ export default class accountManagementList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+      },
+    });
+    fetchOptions({
+      success: ({ unitType }) => {
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: unitType[0].id,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
+      },
+      error: () => {
+        goToException();
       },
     });
   };
@@ -281,6 +301,8 @@ export default class accountManagementList extends PureComponent {
       payload: {
         unitType: getFieldValue('unitType'),
         unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: defaultPageSize,
       },
     });
   };
@@ -378,6 +400,7 @@ export default class accountManagementList extends PureComponent {
               })(
                 <Select
                   placeholder="请选择单位类型"
+                  allowClear
                   onSelect={this.handleUnitTypeSelect}
                   style={{ width: 180 }}
                 >
@@ -401,6 +424,7 @@ export default class accountManagementList extends PureComponent {
                   ],
                 })(
                   <AutoComplete
+                    allowClear
                     mode="combobox"
                     optionLabelProp="children"
                     placeholder="请选择所属单位"
