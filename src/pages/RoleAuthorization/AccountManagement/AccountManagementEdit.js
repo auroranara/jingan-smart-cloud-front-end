@@ -727,7 +727,7 @@ export default class accountManagementEdit extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.unitType}>
                   {getFieldDecorator('unitType', {
-                    initialValue: id ? unitType : unitTypes.length === 0 ? undefined : 4,
+                    initialValue: id ? unitType : unitTypes.length === 0 ? undefined : '企事业主体',
                     rules: [
                       {
                         required: true,
