@@ -1019,7 +1019,7 @@ class GovernmentBigPlatform extends Component {
       this.setState({
         infoWindowShow: false,
       });
-      return;
+      // return;
     }
     this.setState({
       comIn: false, // 接入单位统计
@@ -1534,6 +1534,7 @@ class GovernmentBigPlatform extends Component {
       hiddenDanger,
       searchValue,
       checks,
+      infoWindow,
     } = this.state;
     const {
       dispatch,
@@ -1689,7 +1690,6 @@ class GovernmentBigPlatform extends Component {
                     style={{ display: 'flex', flexDirection: 'column' }}
                   >
                     <div className={styles.hdArea} id="hdArea">
-                      {/* <Bar data={salesData} height={areaHeight} /> */}
                       <ReactEcharts
                         option={this.getHdBarOption()}
                         style={{ height: '100%', width: '100%' }}
@@ -1922,6 +1922,7 @@ class GovernmentBigPlatform extends Component {
                       zoom={zoom}
                       center={center}
                       handleIconClick={this.handleIconClick}
+                      infoWindow={infoWindow}
                       // events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
                     />
                     {/* <div className={styles.mapContainer}>
@@ -2073,13 +2074,14 @@ class GovernmentBigPlatform extends Component {
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              <Ellipsis
+                              {item.name}
+                              {/* <Ellipsis
                                 lines={1}
                                 style={{ maxWidth: '72%', margin: '0 auto' }}
                                 tooltip
                               >
                                 {item.name}
-                              </Ellipsis>
+                              </Ellipsis> */}
                             </div>
                           );
                         })}
@@ -2397,7 +2399,6 @@ class GovernmentBigPlatform extends Component {
                           option={this.getRankBarOption()}
                           style={{ height: '100%', width: '100%' }}
                           className="echarts-for-echarts"
-                          // onChartReady={this.onHdAreaReadyCallback}
                         />
                       </div>
 
