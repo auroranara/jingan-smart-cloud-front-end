@@ -157,9 +157,9 @@ class ElectricityCharts extends PureComponent {
       grid: {
         top: 35,
         right: 30,
-        bottom: 40,
-        left: 20,
-        containLabel: true,
+        bottom: 60,
+        left: 60,
+        // containLabel: true,
       },
       legend: {
         left: 20,
