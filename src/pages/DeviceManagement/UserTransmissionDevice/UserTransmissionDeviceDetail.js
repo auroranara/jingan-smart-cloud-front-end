@@ -115,6 +115,7 @@ const hostModalFormItems = [
     options: { rules: [{ required: true, whitespace: true, message: '请输入消防主机安装位置' }] },
   },
   { label: '生产日期', type: 'date-picker', placehoder: '请选择日期', name: 'productionDate' },
+  { type: 'checkbox', name: 'reset', placeholder: '接收不到复位信息', labelCol: { span: 0 }, wrapperCol: { span: 15, offset: 5 }, options: { valuePropName: 'checked' } },
 ];
 
 const hostModalFormItemsUpdate = hostModalFormItems;

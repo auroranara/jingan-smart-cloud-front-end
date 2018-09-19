@@ -7,6 +7,7 @@ import FcSection from './FcSection';
 import styles from './UnitLookUp.less';
 
 import btnBg from '../img/btnBg.png';
+import hilightBtn from '../img/btnHover.png';
 import circle from '../img/circle.png';
 import leavelJobIcon from '../img/leavelJobIcon.png';
 import onJobIcon from '../img/onJobIcon.png';
@@ -22,6 +23,12 @@ function formatTime(t) {
 }
 
 export default class UnitLookUp extends Component {
+  state = { hover: false };
+
+  handleHover = () => {
+    this.setState(({ hover }) => ({ hover: !hover }));
+  };
+
   getOption = (r) => {
     const rate = Number.parseInt(r, 10);
 
@@ -76,6 +83,7 @@ export default class UnitLookUp extends Component {
 
   render() {
     const { data, handleClickLookUp, handleClickOffGuard } = this.props;
+    const { hover } = this.state;
     const { lastTime='暂无信息', fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
     const [day, time] = lastTime.split(' ');
 
@@ -89,11 +97,13 @@ export default class UnitLookUp extends Component {
                 <Button
                   className={styles.circlrLookUp}
                   onClick={e => handleClickLookUp()}
+                  onMouseEnter={this.handleHover}
+                  onMouseLeave={this.handleHover}
                   style={{
                     border: 'none',
                     color: '#FFF',
                     outline: 'none',
-                    backgroundImage: `url(${btnBg})`,
+                    backgroundImage: `url(${hover ? hilightBtn : btnBg})`,
                   }}
                 >
                   查岗
