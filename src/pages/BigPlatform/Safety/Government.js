@@ -11,9 +11,11 @@ import MapSearch from '../FireControl/components/MapSearch';
 import debounce from 'lodash/debounce';
 import Ellipsis from '../../../components/Ellipsis';
 
-import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
+import { Map as GDMap, Marker, InfoWindow, Markers } from 'react-amap';
 import ReactEcharts from 'echarts-for-react';
-import MapTypeBar from './Components/MapTypeBar';
+import MapSection from './Components/MapSection';
+import MyTooltip from '../FireControl/section/Tooltip';
+// import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -104,6 +106,9 @@ class GovernmentBigPlatform extends Component {
       filter: 'All',
       legendActive: null,
       searchValue: '',
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
     };
   }
 
@@ -282,6 +287,67 @@ class GovernmentBigPlatform extends Component {
     }
   };
 
+  renderMarkers = () => {
+    const { location } = this.props.bigPlatform;
+    const markers = location.map((item, index) => {
+      return {
+        ...item,
+        position: this.analysisPointData(item.location),
+        id: item.company_id,
+        index,
+      };
+    });
+    return (
+      <Markers
+        markers={markers}
+        events={{
+          click: (e, marker) => {
+            const extData = marker.getExtData();
+            const index = extData.index;
+            this.handleIconClick({ id: extData.id, ...extData.position });
+          },
+        }}
+        render={this.renderMarkerLayout}
+      />
+    );
+  };
+
+  renderMarkerLayout = extData => {
+    const { level } = extData;
+    return (
+      <div>
+        {level === 'A' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
+            alt=""
+            style={{ display: 'block', width: '26px', height: '26px' }}
+          />
+        )}
+        {level === 'B' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+        {level === 'C' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+        {level === 'D' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+      </div>
+    );
+  };
+
   renderCompanyMarker() {
     const { location } = this.props.bigPlatform;
     const { filter } = this.state;
@@ -410,6 +476,8 @@ class GovernmentBigPlatform extends Component {
   };
 
   handleIconClick = company => {
+    console.log(company);
+
     const { dispatch } = this.props;
     const { companyId, infoWindowShow, comInfo } = this.state;
     const { id } = company;
@@ -956,7 +1024,7 @@ class GovernmentBigPlatform extends Component {
       this.setState({
         infoWindowShow: false,
       });
-      return;
+      // return;
     }
     this.setState({
       comIn: false, // 接入单位统计
@@ -1152,6 +1220,23 @@ class GovernmentBigPlatform extends Component {
     }
   };
 
+  showTooltip = (e, name) => {
+    const offset = e.target.getBoundingClientRect();
+    this.setState({
+      tooltipName: name,
+      tooltipVisible: true,
+      tooltipPosition: [offset.left, offset.top],
+    });
+  };
+
+  hideTooltip = () => {
+    this.setState({
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
+    });
+  };
+
   renderComRisk = () => {
     const {
       bigPlatform: {
@@ -1184,7 +1269,7 @@ class GovernmentBigPlatform extends Component {
     //         })
     //       )
     //     : [];
-    const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = defaultFieldNames;
+    const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
     const newList = [...ycq, ...wcq, ...dfc];
     return (
       <div>
@@ -1281,7 +1366,7 @@ class GovernmentBigPlatform extends Component {
                     <span style={{ color: '#00A8FF' }}>整改：</span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
-                      {item[zgsj]}
+                      {item.status === '3' ? item.real_zgsj : item.plan_zgsj}
                     </Ellipsis>
                   </div>
                   {+item[status] === 3 && (
@@ -1471,6 +1556,11 @@ class GovernmentBigPlatform extends Component {
       hiddenDanger,
       searchValue,
       checks,
+      infoWindow,
+      tooltipVisible,
+      tooltipName,
+      tooltipPosition,
+      infoWindowShow,
     } = this.state;
     const {
       dispatch,
@@ -1493,6 +1583,7 @@ class GovernmentBigPlatform extends Component {
         searchAllCompany: { dataImportant, dataUnimportantCompany },
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
         dangerLocationCompanyData,
+        location,
       },
       bigPlatformSafetyCompany: { selectList },
     } = this.props;
@@ -1625,7 +1716,6 @@ class GovernmentBigPlatform extends Component {
                     style={{ display: 'flex', flexDirection: 'column' }}
                   >
                     <div className={styles.hdArea} id="hdArea">
-                      {/* <Bar data={salesData} height={areaHeight} /> */}
                       <ReactEcharts
                         option={this.getHdBarOption()}
                         style={{ height: '100%', width: '100%' }}
@@ -1852,7 +1942,23 @@ class GovernmentBigPlatform extends Component {
               <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
                 <div className={styles.sectionWrapperIn}>
                   <div className={styles.sectionMain} style={{ border: 'none' }}>
-                    <div className={styles.mapContainer}>
+                    <MapSection
+                      dispatch={dispatch}
+                      locData={location}
+                      zoom={zoom}
+                      center={center}
+                      handleIconClick={this.handleIconClick}
+                      infoWindow={infoWindow}
+                      infoWindowShow={infoWindowShow}
+                      companyLevelDto={companyLevelDto}
+                      goBack={this.goBack}
+                      comInfo={comInfo}
+                      showTooltip={this.showTooltip}
+                      hideTooltip={this.hideTooltip}
+                      handleHideInfoWindow={this.handleHideInfoWindow}
+                      // events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
+                    />
+                    {/* <div className={styles.mapContainer}>
                       <GDMap
                         amapkey="665bd904a802559d49a33335f1e4aa0d"
                         plugins={[
@@ -1868,7 +1974,7 @@ class GovernmentBigPlatform extends Component {
                         zoom={zoom}
                         events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
                       >
-                        {this.renderCompanyMarker()}
+                        {this.renderMarkers()}
                         {this.renderInfoWindow()}
                         <MapTypeBar />
                         <div
@@ -1894,12 +2000,6 @@ class GovernmentBigPlatform extends Component {
                           重置
                         </div>
                       </GDMap>
-
-                      {/* <MapSearch
-                        style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-                        handleSelect={this.handleSearchSelect}
-                        ref="mapSearch"
-                      /> */}
                       <MapSearch
                         style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
                         // list={newList}
@@ -1934,7 +2034,7 @@ class GovernmentBigPlatform extends Component {
                           );
                         })}
                       </Row>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </section>
@@ -2007,13 +2107,14 @@ class GovernmentBigPlatform extends Component {
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              <Ellipsis
+                              {item.name}
+                              {/* <Ellipsis
                                 lines={1}
                                 style={{ maxWidth: '72%', margin: '0 auto' }}
                                 tooltip
                               >
                                 {item.name}
-                              </Ellipsis>
+                              </Ellipsis> */}
                             </div>
                           );
                         })}
@@ -2111,7 +2212,7 @@ class GovernmentBigPlatform extends Component {
                           <tbody>
                             {fulltimeWorkerList.map((item, index) => {
                               return (
-                                <tr key={item.phone_number}>
+                                <tr key={index}>
                                   <td>{index + 1}</td>
                                   <td>
                                     {/* <span className={styles.tableOrder}>{index + 1}</span> */}
@@ -2331,7 +2432,6 @@ class GovernmentBigPlatform extends Component {
                           option={this.getRankBarOption()}
                           style={{ height: '100%', width: '100%' }}
                           className="echarts-for-echarts"
-                          // onChartReady={this.onHdAreaReadyCallback}
                         />
                       </div>
 
@@ -2596,6 +2696,12 @@ class GovernmentBigPlatform extends Component {
             </Col>
           </Row>
         </article>
+        <MyTooltip
+          visible={tooltipVisible}
+          title={tooltipName}
+          position={tooltipPosition}
+          offset={[10, 30]}
+        />
       </div>
     );
   }
