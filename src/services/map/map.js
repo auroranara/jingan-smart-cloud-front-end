@@ -32,3 +32,16 @@ export async function queryVideoUrl(params) {
     method: 'GET',
   });
 }
+
+// 获取网格点区域
+export async function fetchGridPoints(params) {
+  return request(`/acloud_new/v2/gridInfo/getMapLocation?${stringify(params)}`)
+}
+
+// 添加/编辑网格点
+export async function updateGridPoints(params) {
+  return request('/acloud_new/v2/gridInfo/updateMapLocation', {
+    method: 'POST',
+    body: params,
+  })
+}

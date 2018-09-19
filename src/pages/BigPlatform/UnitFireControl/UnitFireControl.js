@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Header from './components/Header/Header';
@@ -635,10 +635,12 @@ export default class App extends PureComponent {
           supervise={supervise_state}
           feedback={feedback_state}
           fixedContent={
-            <div className={styles.resetButton} onClick={this.handleShowResetSection}>
-              <img src={resetKeyIcon} alt="" />
-              一键复位
-            </div>
+            <Tooltip overlayClassName={styles.tooltip} title="一键复位功能只对平台数据进行复位，并不能控制主机复位。如需复位火警等，需到消防主机进行复位">
+              <div className={styles.resetButton} onClick={this.handleShowResetSection}>
+                <img src={resetKeyIcon} alt="" />
+                一键复位
+              </div>
+            </Tooltip>
           }
           // onClick={this.handleVideoOpen}
         />
