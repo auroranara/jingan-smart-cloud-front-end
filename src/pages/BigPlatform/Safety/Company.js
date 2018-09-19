@@ -286,38 +286,38 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
       },
     });
-    // 获取正常风险点总数（左下角对应数据）
-    dispatch({
-      type: 'bigPlatform/fetchCoItemList',
-      payload: {
-        company_id: companyId,
-        status: '1',
-      },
-    });
-    // 获取异常风险点总数（左下角对应数据）
-    dispatch({
-      type: 'bigPlatform/fetchCoItemList',
-      payload: {
-        company_id: companyId,
-        status: '2',
-      },
-    });
-    // 获取待检查风险点总数（左下角对应数据）
-    dispatch({
-      type: 'bigPlatform/fetchCoItemList',
-      payload: {
-        company_id: companyId,
-        status: '3',
-      },
-    });
-    // 获取已超时风险点总数（左下角对应数据）
-    dispatch({
-      type: 'bigPlatform/fetchCoItemList',
-      payload: {
-        company_id: companyId,
-        status: '4',
-      },
-    });
+    // // 获取正常风险点总数（左下角对应数据）
+    // dispatch({
+    //   type: 'bigPlatform/fetchCoItemList',
+    //   payload: {
+    //     company_id: companyId,
+    //     status: '1',
+    //   },
+    // });
+    // // 获取异常风险点总数（左下角对应数据）
+    // dispatch({
+    //   type: 'bigPlatform/fetchCoItemList',
+    //   payload: {
+    //     company_id: companyId,
+    //     status: '2',
+    //   },
+    // });
+    // // 获取待检查风险点总数（左下角对应数据）
+    // dispatch({
+    //   type: 'bigPlatform/fetchCoItemList',
+    //   payload: {
+    //     company_id: companyId,
+    //     status: '3',
+    //   },
+    // });
+    // // 获取已超时风险点总数（左下角对应数据）
+    // dispatch({
+    //   type: 'bigPlatform/fetchCoItemList',
+    //   payload: {
+    //     company_id: companyId,
+    //     status: '4',
+    //   },
+    // });
     // 获取企业大屏四色风险点数量（左下角环形图源数据）
     dispatch({
       type: 'bigPlatform/fetchCountDangerLocationForCompany',
@@ -339,13 +339,13 @@ class CompanyLayout extends PureComponent {
         company_id: companyId,
       },
     });
-    // 获取隐患数量（左上角隐患数源数据）
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDanger',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    // // 获取隐患数量（左上角隐患数源数据）
+    // dispatch({
+    //   type: 'bigPlatform/fetchHiddenDanger',
+    //   payload: {
+    //     company_id: companyId,
+    //   },
+    // });
     // 获取安全人员信息（安全人员信息卡片源数据）
     dispatch({
       type: 'bigPlatform/fetchSafetyOfficer',

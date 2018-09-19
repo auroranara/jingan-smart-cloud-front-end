@@ -390,6 +390,14 @@ export default class App extends PureComponent {
         type: maintenanceType,
       },
     });
+
+    // 获取主机列表
+    dispatch({
+      type: 'unitFireControl/fetchHosts',
+      payload: {
+        companyId,
+      },
+    });
   };
 
   /**
@@ -634,14 +642,14 @@ export default class App extends PureComponent {
           linkage={start_state}
           supervise={supervise_state}
           feedback={feedback_state}
-          fixedContent={
+          fixedContent={hosts.length > 0 && (
             <Tooltip overlayClassName={styles.tooltip} title="一键复位功能只对平台数据进行复位，并不能控制主机复位。如需复位火警等，需到消防主机进行复位">
               <div className={styles.resetButton} onClick={this.handleShowResetSection}>
                 <img src={resetKeyIcon} alt="" />
                 一键复位
               </div>
             </Tooltip>
-          }
+          )}
           // onClick={this.handleVideoOpen}
         />
         <Section
