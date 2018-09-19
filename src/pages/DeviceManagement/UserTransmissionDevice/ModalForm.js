@@ -21,7 +21,7 @@ function ModalForm(props) {
     items, // 传入的formItem配置数组
     operation = 'add', // 当前操作类型，这关系到modal上title的显示，是新增还是编辑
     title = '', // 当前modal的title显示的一部分
-    colSpan = [6, 15], // formItem的col配置
+    // colSpan = [6, 15], // formItem的col配置
     initialValues = {}, // 每个formItem的初始值，也可以在items中传入，当需要改变form中的值时，在这里传入对应的对象
     ...restProps
   } = props;
@@ -42,21 +42,21 @@ function ModalForm(props) {
     });
   };
 
-  const formItems = items.map(item => {
+  const formItems = items.map((item, index) => {
     // 每个formItem都是个对象，需要设置label(标签),name(字段名),options(初始配置),type(formItem中的组件类型，当前只有Input和Checkbox，默认Input)
     // disabled默认是false，即可修改的，手动设为true(或其他真值)，则为只读
-    const { type = 'input', disabled, placeholder = '', label, name, options } = item;
+    const { type = 'input', disabled, placeholder = '', label, name, labelCol={ span: 6 }, wrapperCol={ span: 15 }, options } = item;
     // console.log('disabled in ModalForm-columns-item', disabled);
     let initialValue = initVals[name];
 
-    // 将数字都转化为字符串，需要数字时，再注掉这行代码
-    if (typeof initialValue === 'number')
-      initialValue = initialValue.toString();
+    // 若是checkbox等需要接收布尔值的组件，则将初始值转为布尔值
+    if (type === 'checkbox')
+      initialValue = !!+initialValue;
 
     // 由于都提交的时候设置了whitespace=true来判断是否是空格，所以默认field value都是字符串，当初始值时数字时，提交时也是数字会校验错误
     // 所以把所有数字都转为字符串，当然也可以校验时把type设为number，这里是为了防止传过来的值变成了字符串而不是数字
-    // if (typeof initialValue === 'number')
-    //   initialValue = initialValue.toString();
+    if (typeof initialValue === 'number')
+      initialValue = initialValue.toString();
     if (isDateProp(name) && initialValue !== undefined && initialValue !== null)
       initialValue = moment(initialValue, DATE_FORMAT);
     let newOptions = options;
@@ -64,10 +64,10 @@ function ModalForm(props) {
       newOptions = { ...options, initialValue };
     return (
       <FormItem
-        key={label}
+        key={index}
         label={label}
-        labelCol={{ span: colSpan[0] }}
-        wrapperCol={{ span: colSpan[1] }}
+        labelCol={labelCol}
+        wrapperCol={wrapperCol}
       >
         {form.getFieldDecorator(name, newOptions)(getComByType(type, !!disabled, placeholder))}
       </FormItem>
@@ -93,7 +93,7 @@ function getComByType(type='input', disabled=false, placeholder='') {
   // const inputType = type.slice(6, -1) || 'text'; // input的类型
   switch(type) {
     case 'checkbox':
-      return <Checkbox disabled={disabled} />;
+      return <Checkbox disabled={disabled}>{placeholder}</Checkbox>;
     case 'switch':
       return <Switch disabled={disabled} />;
     case 'date-picker':
@@ -122,6 +122,8 @@ function handleFieldsValue(fieldsValue) {
     const val = fieldsValue[k];
     if (typeof val === 'string')
       values[k] = val.trim();
+    if (typeof val === 'boolean')
+      values[k] = val ? 1 : 0;
     if (isDateProp(k) && val !== undefined && val !== null && val.format)
       values[k] = val.format(DATE_FORMAT);
   }
