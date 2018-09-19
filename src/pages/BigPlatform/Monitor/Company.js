@@ -304,7 +304,7 @@ export default class App extends PureComponent {
                   data={allCamera}
                   showVideo={this.handleVideoShow}
                   style={{ transform: 'none' }}
-                  backTitle="更多"
+                  backTitle={allCamera.length ? '更多' : ''}
                   handleBack={() => this.handleVideoShow()}
                 />
               </div>

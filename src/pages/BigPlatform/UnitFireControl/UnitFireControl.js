@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Header from './components/Header/Header';
@@ -17,6 +17,10 @@ import hostIcon from './images/hostIcon.png';
 import fireHostIcon from './images/fireHostIcon.png';
 import noPhotoIcon from './images/noPhoto.png';
 import noPendingInfo from './images/noPendingInfo.png';
+import noHiddenDangerRecords from './images/noHiddenDangerRecords.png';
+import dfcIcon from './images/dfc.png';
+import wcqIcon from './images/wcq.png';
+import ycqIcon from './images/ycq.png';
 import backIcon from '../FireControl/img/back.png';
 
 import styles from './UnitFireControl.less';
@@ -26,9 +30,6 @@ const fireIcon = `${prefix}fire_hj.png`;
 const faultIcon = `${prefix}fire_gz.png`;
 const positionBlueIcon = `${prefix}fire_position_blue.png`;
 const positionRedIcon = `${prefix}fire_position_red.png`;
-const dfcIcon = `${prefix}fire_dfc.png`;
-const wcqIcon = `${prefix}fire_wcq.png`;
-const ycqIcon = `${prefix}fire_ycq.png`;
 const splitIcon = `${prefix}split.png`;
 const splitHIcon = `${prefix}split_h.png`;
 /* 待处理信息项 */
@@ -71,11 +72,16 @@ const HiddenDangerRecord = ({ data }) => {
     report_time,
     rectify_user_name,
     plan_rectify_time,
+    real_rectify_time,
     review_user_name,
     hiddenDangerRecordDto,
   } = data;
-  const [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
+  let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
+  fileWebUrl = fileWebUrl ? fileWebUrl.split(',')[0] : '';
   const { badge, icon, color } = getIconByStatus(status);
+  const isYCQ = +status === 7;
+  const isDFC = +status === 3;
+  const rectify_time = isDFC ? real_rectify_time : plan_rectify_time;
   return (
     <div className={styles.hiddenDangerRecord} key={id}>
       <div
@@ -108,25 +114,25 @@ const HiddenDangerRecord = ({ data }) => {
           </Ellipsis>
         </div>
         <div>
-          <span>上报：</span>
-          <Ellipsis lines={1}>
+          <span>上<span style={{ opacity: '0' }}>隐藏</span>报：</span>
+          <Ellipsis lines={1} tooltip>
             <span style={{ marginRight: '16px' }}>{report_user_name}</span>
             {moment(+report_time).format('YYYY-MM-DD')}
           </Ellipsis>
         </div>
         <div>
-          <span>整改：</span>
-          <Ellipsis lines={1}>
+          <span>{isDFC?'实际整改：':'计划整改：'}</span>
+          <Ellipsis lines={1} tooltip>
             <span style={{ marginRight: '16px' }}>{rectify_user_name}</span>
-            <span style={{ color: '#FF6464' }}>
-              {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+            <span style={{ color: isYCQ?'#FF6464':undefined }}>
+              {moment(+rectify_time).format('YYYY-MM-DD')}
             </span>
           </Ellipsis>
         </div>
-        {+status === 3 && (
+        {isDFC && (
           <div>
-            <span>复查：</span>
-            <Ellipsis lines={1}>
+            <span>复<span style={{ opacity: '0' }}>隐藏</span>查：</span>
+            <Ellipsis lines={1} tooltip>
               <span>{review_user_name}</span>
             </Ellipsis>
           </div>
@@ -629,10 +635,12 @@ export default class App extends PureComponent {
           supervise={supervise_state}
           feedback={feedback_state}
           fixedContent={
-            <div className={styles.resetButton} onClick={this.handleShowResetSection}>
-              <img src={resetKeyIcon} alt="" />
-              一键复位
-            </div>
+            <Tooltip overlayClassName={styles.tooltip} title="一键复位功能只对平台数据进行复位，并不能控制主机复位。如需复位火警等，需到消防主机进行复位">
+              <div className={styles.resetButton} onClick={this.handleShowResetSection}>
+                <img src={resetKeyIcon} alt="" />
+                一键复位
+              </div>
+            </Tooltip>
           }
           // onClick={this.handleVideoOpen}
         />
@@ -850,7 +858,7 @@ export default class App extends PureComponent {
         <div className={styles.mainBody}>
           <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
             <Col span={6} style={{ height: '100%' }}>
-              <Section isScroll isCarousel>
+              <Section isScroll isCarousel splitHeight={48}>
                 {pendingInfoList.length !== 0 ? (
                   [
                     ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType === '火警'),
@@ -858,7 +866,7 @@ export default class App extends PureComponent {
                   ].map((item, index) => {
                     const { id } = item;
                     return <PendingInfoItem key={id || index} data={item} onClick={this.handleVideoOpen} />;
-                  })
+                  }).concat(<div key="split" className={styles.splitText}>——已经到底了，您即将看到第一条信息——</div>)
                 ) : (
                   <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noPendingInfo})` }}></div>
                 )}
@@ -880,7 +888,7 @@ export default class App extends PureComponent {
                     return <HiddenDangerRecord key={id} data={item} />;
                   })
                 ) : (
-                  <div style={{ textAlign: 'center' }}>暂无隐患巡查记录</div>
+                  <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noHiddenDangerRecords})` }}></div>
                 )}
               </Section>
             </Col>

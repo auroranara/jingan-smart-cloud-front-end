@@ -480,21 +480,21 @@ export default class FireControlBigPlatform extends PureComponent {
                   front={
                     <DangerSection
                       title="监督巡查/隐患"
-                      backTitle="辖区巡查/隐患"
+                      backTitle="单位巡查/隐患"
                       data={gridDanger}
                       handleRotate={this.handleDangerRotate}
                     />
                   }
                   back={
                     <DangerSection
-                      title="辖区巡查/隐患"
+                      isBack
+                      title="单位巡查/隐患"
                       backTitle="监督巡查/隐患"
                       data={danger}
                       handleRotate={this.handleDangerRotate}
-                      isBack
                     />
                   }
-                  reverse={<DangerSection title="单位巡查/隐患" data={companyDanger} isBack />}
+                  reverse={<DangerSection title="该单位巡查/隐患" data={companyDanger} isBack />}
                 />
               </Col>
             </Row>
@@ -525,7 +525,12 @@ export default class FireControlBigPlatform extends PureComponent {
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
               <SystemSection data={sys} />
-              <VideoSection data={allCamera} showVideo={this.handleVideoShow} />
+              <VideoSection
+                data={allCamera}
+                showVideo={this.handleVideoShow}
+                backTitle={allCamera.length ? '更多' : ''}
+                handleBack={() => this.handleVideoShow()}
+              />
             </FcModule>
           </Col>
         </Row>

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import Section from '../../../UnitFireControl/components/Section/Section';
 import HiddenDanger from '../HiddenDanger';
+import noHiddenDanger from '../../img/noHiddenDanger.png';
 
 import styles from './index.less';
 
@@ -10,6 +11,7 @@ import styles from './index.less';
 export default class App extends PureComponent {
   render() {
     const {
+      closable,
       onClose,
       ycq=[],
       wcq=[],
@@ -19,9 +21,10 @@ export default class App extends PureComponent {
     return (
       <Section
         title="当前隐患"
-        closable
+        closable={closable}
         isScroll
         onClose={onClose}
+        contentStyle={{ position: 'relative' }}
         fixedContent={(
           <div className={styles.countList}>
             <div className={styles.countItem}>
@@ -39,6 +42,11 @@ export default class App extends PureComponent {
           </div>
         )}
       >
+        {/* 隐患缺省图 */
+          (ycq.length+wcq.length+dfc.length) === 0 && (
+            <div className={styles.noHiddenDanger} style={{ backgroundImage: `url(${noHiddenDanger})` }}></div>
+          )
+        }
         {/* 已超期列表 */
           ycq.map(item => {
             const { id } = item;

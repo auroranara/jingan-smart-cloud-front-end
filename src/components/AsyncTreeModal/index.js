@@ -160,6 +160,7 @@ export default class AsyncTreeModal extends PureComponent {
     buttonPermission: PropTypes.bool.isRequired,// 确定按钮的权限 true:可点击
     saveParentStates: PropTypes.func.isRequired,
     autoExpandParent: PropTypes.bool,
+    expandedId: PropTypes.string,
     tree: PropTypes.shape({
       dataSource: PropTypes.array.isRequired,
       showIcon: PropTypes.bool,
@@ -214,6 +215,7 @@ export default class AsyncTreeModal extends PureComponent {
 
   /* 异步加载数据 */
   handleLoadData = (treeNode) => {
+    const { expandedId = null } = this.props
     return new Promise((resolve) => {
       const { props: { dataRef, children, checked: isChecked } } = treeNode;
       if (children) {
@@ -221,16 +223,18 @@ export default class AsyncTreeModal extends PureComponent {
         return;
       }
       const { tree: { loadData, fieldNames, checkedKeys } } = this.props;
-      loadData(dataRef, (list) => {
-        checkChildren({
-          list,
-          checkedKeys,
-          isChecked,
-          fieldNames: {
-            ...defaultFieldNames,
-            ...fieldNames,
-          },
-        });
+      loadData(treeNode, (list) => {
+        if (expandedId) {
+          checkChildren({
+            list,
+            checkedKeys,
+            isChecked,
+            fieldNames: {
+              ...defaultFieldNames,
+              ...fieldNames,
+            },
+          });
+        }
         resolve();
       });
     });
@@ -349,6 +353,7 @@ export default class AsyncTreeModal extends PureComponent {
             loadData={this.handleLoadData}
             onExpand={this.handleExpand}
             onCheck={this.handleCheck}
+          // onLoad={(loadedKeys, { event, node }) => {}}
           >
             {renderTreeNodes({
               data: dataSource,

@@ -1,4 +1,4 @@
-import { queryMapCount, queryAroundUsers, queryAroundVideos, queryVideoUrl } from '../services/map/map.js';
+import { queryMapCount, queryAroundUsers, queryAroundVideos, queryVideoUrl, fetchGridPoints, updateGridPoints } from '../services/map/map.js';
 
 export default {
   namespace: 'map',
@@ -29,7 +29,7 @@ export default {
         error();
       }
     },
-    *fetchUsers({ payload, success, error}, { call, put }) {
+    *fetchUsers({ payload, success, error }, { call, put }) {
       const response = yield call(queryAroundUsers, payload);
       if (response.code === 200) {
         yield put({
@@ -73,6 +73,18 @@ export default {
       else if (error) {
         error();
       }
+    },
+    *fetchGridPoints({ payload, callback }, { call, put }) {
+      const response = yield call(fetchGridPoints, payload)
+      if (response && response.code === 200) {
+        if (callback) callback(response.data || [])
+      }
+    },
+    *updateGridPoints({ payload, success, error }, { call }) {
+      const response = yield call(updateGridPoints, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error()
     },
   },
 
