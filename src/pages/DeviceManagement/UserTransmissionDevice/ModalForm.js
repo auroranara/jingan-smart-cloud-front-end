@@ -122,6 +122,8 @@ function handleFieldsValue(fieldsValue) {
     const val = fieldsValue[k];
     if (typeof val === 'string')
       values[k] = val.trim();
+    if (typeof val === 'boolean')
+      values[k] = val ? 1 : 0;
     if (isDateProp(k) && val !== undefined && val !== null && val.format)
       values[k] = val.format(DATE_FORMAT);
   }
