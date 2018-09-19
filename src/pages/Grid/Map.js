@@ -39,7 +39,7 @@ export default class GridMap extends PureComponent {
       },
     };
     this.mapPlugins = ['ToolBar'];
-    this.mapCenter = { longitude: 120, latitude: 35 };
+    this.mapCenter = { longitude: 100, latitude: 35 };
   }
 
   componentDidMount() {
@@ -167,6 +167,9 @@ export default class GridMap extends PureComponent {
     const center = path && path.length ? path.reduce((res, item) => {
       return { longitude: (res.longitude + item.lng) / 2, latitude: (res.latitude + item.lat) / 2 }
     }, { longitude: path[0].lng, latitude: path[0].lat }) : this.mapCenter
+    if (path && path.length) {
+      this.mapCenter = center
+    }
 
     return (
       <div>
