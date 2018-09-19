@@ -120,7 +120,6 @@ export default {
       status2: 0,
       status3: 0,
       status4: 0,
-      statusAll: 0,
     },
     specialEquipment: 0,
     // 风险点统计及信息
@@ -633,9 +632,16 @@ export default {
       };
     },
     countDangerLocationForCompany(state, { payload }) {
+      const { redDangerResult,orangeDangerResult,yellowDangerResult,blueDangerResult,unvaluedDangerResult } = payload;
       return {
         ...state,
         countDangerLocationForCompany: payload,
+        coItemList: {
+          status1: redDangerResult.normal.length+orangeDangerResult.normal.length+yellowDangerResult.normal.length+blueDangerResult.normal.length+unvaluedDangerResult.normal.length,
+          status2: redDangerResult.abnormal.length+orangeDangerResult.abnormal.length+yellowDangerResult.abnormal.length+blueDangerResult.abnormal.length+unvaluedDangerResult.abnormal.length,
+          status3: redDangerResult.checking.length+orangeDangerResult.checking.length+yellowDangerResult.checking.length+blueDangerResult.checking.length+unvaluedDangerResult.checking.length,
+          status4: redDangerResult.over.length+orangeDangerResult.over.length+yellowDangerResult.over.length+blueDangerResult.over.length+unvaluedDangerResult.over.length,
+        },
       };
     },
     saveRiskPointInfo(state, { payload: riskPointInfoList }) {
