@@ -105,59 +105,18 @@ export default class App extends PureComponent {
 
   fetchPieces = firstDeviceId => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'v1' },
+    const codes = ['v1', 'v2', 'v3', 'v4', 'v5', 'ia', 'ib', 'ic', 'ua', 'ub', 'uc'];
+    codes.forEach(code => {
+      dispatch({
+        type: 'monitor/fetchPieces',
+        payload: { deviceId: firstDeviceId, code },
+      });
     });
 
+    // 获取参数
     dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'v2' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'v3' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'v4' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'v5' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'ia' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'ib' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'ic' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'ua' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'ub' },
-    });
-
-    dispatch({
-      type: 'monitor/fetchPieces',
-      payload: { deviceId: firstDeviceId, code: 'uc' },
+      type: 'monitor/fetchChartParams',
+      payload: { deviceId: firstDeviceId },
     });
   };
 
@@ -271,6 +230,7 @@ export default class App extends PureComponent {
         chartDeviceList,
         gsmsHstData,
         electricityPieces,
+        chartParams,
       },
       dispatch,
     } = this.props;
@@ -315,7 +275,7 @@ export default class App extends PureComponent {
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts
-                      data={{ chartDeviceList, gsmsHstData, electricityPieces }}
+                      data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams }}
                       selectVal={chartSelectVal}
                       handleSelect={this.handleChartSelect}
                     />

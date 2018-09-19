@@ -115,9 +115,14 @@ class ElectricityCharts extends PureComponent {
 
   getOptions = () => {
     const {
-      data: { gsmsHstData, electricityPieces },
+      data: { gsmsHstData, electricityPieces, chartParams: { list=[] } },
     } = this.props;
     const { activeTab } = this.state;
+    const paramsMap = list.reduce((prev, next) => {
+      const { code, desc } = next;
+      prev[code] = desc;
+      return prev;
+    }, {});
     const noData = {
       title: {
         show: true,
@@ -161,6 +166,7 @@ class ElectricityCharts extends PureComponent {
         bottom: 5,
         icon: 'circle',
         data: [],
+        selectedMode: false,
         textStyle: {
           color: '#ccd6e9',
         },
@@ -238,7 +244,7 @@ class ElectricityCharts extends PureComponent {
           },
           legend: {
             ...defaultOption.legend,
-            data: ['漏电电流'],
+            data: [paramsMap.v1 || '漏电电流'],
           },
           tooltip: {
             ...defaultOption.tooltip,
@@ -268,32 +274,34 @@ class ElectricityCharts extends PureComponent {
         }
         break;
       case 'temp':
-        const t1 = v2List.filter(a => a !== '-');
-        const t2 = v3List.filter(a => a !== '-');
-        const t3 = v4List.filter(a => a !== '-');
-        const t4 = v5List.filter(a => a !== '-');
+        const [t1, t2, t3, t4] = [v2List, v3List, v4List, v5List].map(list => list.filter(a => a !== '-'));
 
-        const v2Pieces = electricityPieces['v2'];
-        const v2ListNew = v2List.map(item => {
-          return this.calcItemColor(item, v2Pieces);
-        });
-        const v3Pieces = electricityPieces['v3'];
-        const v3ListNew = v3List.map(item => {
-          return this.calcItemColor(item, v3Pieces);
-        });
-        const v4Pieces = electricityPieces['v4'];
-        const v4ListNew = v4List.map(item => {
-          return this.calcItemColor(item, v4Pieces);
-        });
-        const v5Pieces = electricityPieces['v5'];
-        const v5ListNew = v5List.map(item => {
-          return this.calcItemColor(item, v5Pieces);
-        });
+        const [v2Pieces, v3Pieces, v4Pieces, v5Pieces] = ['v2', 'v3', 'v4', 'v5'].map(k => electricityPieces[k]);
+        const [v2ListNew, v3ListNew, v4ListNew, v5ListNew] = [[v2List, v2Pieces], [v3List, v3Pieces], [v4List, v4Pieces], [v5List, v5Pieces]]
+          .map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
+
+        // const v2Pieces = electricityPieces['v2'];
+        // const v2ListNew = v2List.map(item => {
+        //   return this.calcItemColor(item, v2Pieces);
+        // });
+        // const v3Pieces = electricityPieces['v3'];
+        // const v3ListNew = v3List.map(item => {
+        //   return this.calcItemColor(item, v3Pieces);
+        // });
+        // const v4Pieces = electricityPieces['v4'];
+        // const v4ListNew = v4List.map(item => {
+        //   return this.calcItemColor(item, v4Pieces);
+        // });
+        // const v5Pieces = electricityPieces['v5'];
+        // const v5ListNew = v5List.map(item => {
+        //   return this.calcItemColor(item, v5Pieces);
+        // });
+
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['A相温度', 'B相温度', 'C相温度', '零线温度'],
+            data: [paramsMap.v2 || 'A相温度', paramsMap.v3 || 'B相温度', paramsMap.v4 || 'C相温度', paramsMap.v5 || '零线温度'],
           },
           title: {
             text: this.legendFormatter([v2Pieces, v3Pieces, v4Pieces, v5Pieces], '℃'),
@@ -318,28 +326,28 @@ class ElectricityCharts extends PureComponent {
           series: [
             {
               type: 'line',
-              name: 'A相温度',
+              name: paramsMap.v2 || 'A相温度',
               smooth: true,
               symbolSize: 5,
               data: v2ListNew,
             },
             {
               type: 'line',
-              name: 'B相温度',
+              name: paramsMap.v3 || 'B相温度',
               smooth: true,
               symbolSize: 5,
               data: v3ListNew,
             },
             {
               type: 'line',
-              name: 'C相温度',
+              name: paramsMap.v4 || 'C相温度',
               smooth: true,
               symbolSize: 5,
               data: v4ListNew,
             },
             {
               type: 'line',
-              name: '零线温度',
+              name: paramsMap.v5 || '零线温度',
               smooth: true,
               symbolSize: 5,
               data: v5ListNew,
@@ -354,27 +362,31 @@ class ElectricityCharts extends PureComponent {
         }
         break;
       case 'ampere':
-        const ia = iaList.filter(a => a !== '-');
-        const ib = ibList.filter(a => a !== '-');
-        const ic = icList.filter(a => a !== '-');
+        const [ia, ib, ic] = [iaList, ibList, icList].map(list => list.filter(a => a !== '-'));
+        // const ib = ibList.filter(a => a !== '-');
+        // const ic = icList.filter(a => a !== '-');
 
-        const iaPieces = electricityPieces['ia'];
-        const iaListNew = iaList.map(item => {
-          return this.calcItemColor(item, iaPieces);
-        });
-        const ibPieces = electricityPieces['ib'];
-        const ibListNew = ibList.map(item => {
-          return this.calcItemColor(item, ibPieces);
-        });
-        const icPieces = electricityPieces['ic'];
-        const icListNew = icList.map(item => {
-          return this.calcItemColor(item, icPieces);
-        });
+        const [iaPieces, ibPieces, icPieces] = ['ia', 'ib', 'ic'].map(k => electricityPieces[k]);
+        const [iaListNew, ibListNew, icListNew] = [[iaList, iaPieces], [ibList, ibPieces], [icList, icPieces]].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
+
+        // const iaPieces = electricityPieces['ia'];
+        // const iaListNew = iaList.map(item => {
+        //   return this.calcItemColor(item, iaPieces);
+        // });
+        // const ibPieces = electricityPieces['ib'];
+        // const ibListNew = ibList.map(item => {
+        //   return this.calcItemColor(item, ibPieces);
+        // });
+        // const icPieces = electricityPieces['ic'];
+        // const icListNew = icList.map(item => {
+        //   return this.calcItemColor(item, icPieces);
+        // });
+
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['A相电流', 'B相电流', 'C相电流'],
+            data: [paramsMap.ia || 'A相电流', paramsMap.ib || 'B相电流', paramsMap.ic || 'C相电流'],
           },
           title: {
             text: this.legendFormatter([iaPieces, ibPieces, icPieces], 'A'),
@@ -399,21 +411,21 @@ class ElectricityCharts extends PureComponent {
           series: [
             {
               type: 'line',
-              name: 'A相电流',
+              name: paramsMap.ia || 'A相电流',
               smooth: true,
               symbolSize: 5,
               data: iaListNew,
             },
             {
               type: 'line',
-              name: 'B相电流',
+              name: paramsMap.ib || 'B相电流',
               smooth: true,
               symbolSize: 5,
               data: ibListNew,
             },
             {
               type: 'line',
-              name: 'C相电流',
+              name: paramsMap.ic || 'C相电流',
               smooth: true,
               symbolSize: 5,
               data: icListNew,
@@ -428,27 +440,31 @@ class ElectricityCharts extends PureComponent {
         }
         break;
       case 'volte':
-        const ua = uaList.filter(a => a !== '-');
-        const ub = ubList.filter(a => a !== '-');
-        const uc = ucList.filter(a => a !== '-');
+        const [ua, ub, uc] = [uaList, ubList, ucList].map(list => list.filter(a => a !== '-'));
+        // const ub = ubList.filter(a => a !== '-');
+        // const uc = ucList.filter(a => a !== '-');
 
-        const uaPieces = electricityPieces['ua'];
-        const uaListNew = uaList.map(item => {
-          return this.calcItemColor(item, uaPieces);
-        });
-        const ubPieces = electricityPieces['ub'];
-        const ubListNew = ubList.map(item => {
-          return this.calcItemColor(item, ubPieces);
-        });
-        const ucPieces = electricityPieces['uc'];
-        const ucListNew = ucList.map(item => {
-          return this.calcItemColor(item, ucPieces);
-        });
+        const [uaPieces, ubPieces, ucPieces] = ['ua', 'ub', 'uc'].map(k => electricityPieces[k]);
+        const [uaListNew, ubListNew, ucListNew] = [[uaList, uaPieces], [ubList, ubPieces], [ucList, ucPieces]].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
+
+        // const uaPieces = electricityPieces['ua'];
+        // const uaListNew = uaList.map(item => {
+        //   return this.calcItemColor(item, uaPieces);
+        // });
+        // const ubPieces = electricityPieces['ub'];
+        // const ubListNew = ubList.map(item => {
+        //   return this.calcItemColor(item, ubPieces);
+        // });
+        // const ucPieces = electricityPieces['uc'];
+        // const ucListNew = ucList.map(item => {
+        //   return this.calcItemColor(item, ucPieces);
+        // });
+
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['A相电压', 'B相电压', 'C相电压'],
+            data: [paramsMap.ua || 'A相电压', paramsMap.ub || 'B相电压', paramsMap.uc || 'C相电压'],
           },
           title: {
             text: this.legendFormatter([uaPieces, ubPieces, ucPieces], 'V'),
@@ -473,21 +489,21 @@ class ElectricityCharts extends PureComponent {
           series: [
             {
               type: 'line',
-              name: 'A相电压',
+              name: paramsMap.ua || 'A相电压',
               smooth: true,
               symbolSize: 5,
               data: uaListNew,
             },
             {
               type: 'line',
-              name: 'B相电压',
+              name: paramsMap.ub || 'B相电压',
               smooth: true,
               symbolSize: 5,
               data: ubListNew,
             },
             {
               type: 'line',
-              name: 'C相电压',
+              name: paramsMap.uc || 'C相电压',
               smooth: true,
               symbolSize: 5,
               data: ucListNew,
