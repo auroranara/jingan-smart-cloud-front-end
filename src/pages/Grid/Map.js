@@ -171,10 +171,10 @@ export default class GridMap extends PureComponent {
     return (
       <div>
         <div style={{ width: '100%', height: 720 }}>
-          <Map plugins={this.mapPlugins} center={center} events={this.mapEvents} zoom={13}>
+          <Map plugins={this.mapPlugins} center={center} events={this.mapEvents} zoom={12}>
             <MouseTool events={this.toolEvents} />
             <div style={layerStyle}>{what}</div>
-            {path && path.length && <Polygon path={path} />}
+            {path && path.length && <Polygon path={path} style={{ strokeOpacity: 0.5, fillOpacity: 0.5 }} />}
           </Map>
         </div>
         <Button
