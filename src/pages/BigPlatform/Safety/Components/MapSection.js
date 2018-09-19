@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
-import { Tooltip, Icon } from 'antd';
-import { Map as GDMap, Marker, InfoWindow, Markers } from 'react-amap';
+import { Icon, Row, Col } from 'antd';
+import { Map as GDMap, InfoWindow, Markers } from 'react-amap';
+import classNames from 'classnames';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
 import styles from './MapSection.less';
 import MapSearch from '../../FireControl/components/MapSearch';
 import MapTypeBar from './MapTypeBar';
 
-const NO_DATA = '暂无信息';
 const { location: locationDefault } = global.PROJECT_CONFIG;
 @connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSection extends PureComponent {
@@ -17,6 +17,8 @@ class MapSection extends PureComponent {
     this.state = {
       searchValue: '',
       selectList: [],
+      legendActive: null,
+      filter: 'All',
       infoWindowShow: false,
       infoWindow: {
         companyId: '',
@@ -26,18 +28,17 @@ class MapSection extends PureComponent {
         longitude: 120.366011,
         latitude: 31.544389,
       },
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
     };
   }
-
-  newList = [];
 
   back = isFire => {
     const { handleBack } = this.props;
     handleBack(isFire);
 
     this.setState({
-      // zoom: location.zoom,
-      // selected: undefined,
       searchValue: '',
     });
   };
@@ -45,11 +46,11 @@ class MapSection extends PureComponent {
   // 搜索之后跳转
   handleSearchSelect = ({ latitude, longitude, id }) => {
     this.setState({
-      center: [longitude, latitude],
       infoWindowShow: true,
     });
     if (this.mapInstance) {
       this.mapInstance.setZoom(18);
+      this.mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     }
     this.props.handleIconClick({ latitude, longitude, id });
   };
@@ -74,9 +75,10 @@ class MapSection extends PureComponent {
 
   renderMarkers = lvl => {
     const { locData } = this.props;
-    console.log(locData);
+    const { filter } = this.state;
+    const loactions = locData.filter(d => filter === 'All' || d.level === filter);
 
-    const markers = locData.map((item, index) => {
+    const markers = loactions.map((item, index) => {
       // const markers = locData.filter(d => d.level === lvl).map((item, index) => {
       return {
         ...item,
@@ -88,6 +90,7 @@ class MapSection extends PureComponent {
     return (
       <Markers
         markers={markers}
+        offset={[-10, 5]}
         events={{
           click: (e, marker) => {
             const extData = marker.getExtData();
@@ -115,37 +118,40 @@ class MapSection extends PureComponent {
   renderMarkerLayout = extData => {
     const { level, company_name } = extData;
     return (
-      <div>
-        <Tooltip placement="bottom" title={company_name} mouseLeaveDelay={0}>
-          {level === 'A' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
-              alt=""
-              style={{ display: 'block', width: '26px', height: '26px' }}
-            />
-          )}
-          {level === 'B' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
-          {level === 'C' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
-          {level === 'D' && (
-            <img
-              src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
-              alt=""
-              style={{ display: 'block', width: '20px', height: '20px' }}
-            />
-          )}
-        </Tooltip>
+      <div
+        onMouseEnter={e => this.props.showTooltip(e, company_name)}
+        onMouseLeave={this.props.hideTooltip}
+      >
+        {/* <Tooltip placement="bottom" title={company_name} mouseLeaveDelay={0}> */}
+        {level === 'A' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
+            alt=""
+            style={{ display: 'block', width: '26px', height: '26px' }}
+          />
+        )}
+        {level === 'B' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+        {level === 'C' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+        {level === 'D' && (
+          <img
+            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
+            alt=""
+            style={{ display: 'block', width: '20px', height: '20px' }}
+          />
+        )}
+        {/* </Tooltip> */}
       </div>
     );
   };
@@ -153,16 +159,13 @@ class MapSection extends PureComponent {
   // 弹窗渲染
   renderInfoWindow = () => {
     const {
-      infoWindowShow,
-      // infoWindow: { longitude, latitude, companyName },
-    } = this.state;
-    const {
       infoWindow: { longitude, latitude, companyName },
+      infoWindowShow,
     } = this.props;
     return (
       <InfoWindow
         position={{ longitude, latitude }}
-        offset={[-7, 10]}
+        offset={[-15, 5]}
         isCustom={false}
         autoMove={false}
         visible={infoWindowShow}
@@ -176,22 +179,8 @@ class MapSection extends PureComponent {
   };
 
   handleHideInfoWindow = () => {
-    this.setState({
-      infoWindowShow: false,
-    });
+    this.props.handleHideInfoWindow();
   };
-
-  // searchFetchData = value => {
-  //   // console.log('fetchData', value);
-  //   // const { list } = this.props;
-  //   const list = this.newList;
-  //   const selectList = value ? list.filter(item => item.name.includes(value)) : [];
-  //   // console.log('fetchData selectList', selectList);
-  //   this.setState({
-  //     searchValue: value,
-  //     selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
-  //   });
-  // };
 
   searchFetchData = value => {
     this.props.dispatch({
@@ -214,16 +203,82 @@ class MapSection extends PureComponent {
     });
   };
 
+  // 按level筛选地图企业
+  filterPoint = filter => {
+    this.setState({
+      filter,
+    });
+  };
+
+  renderMapLegend = () => {
+    const { companyLevelDto } = this.props;
+    const { legendActive } = this.state;
+    let Anum = 0,
+      Bnum = 0,
+      Cnum = 0,
+      Dnum = 0;
+    companyLevelDto.forEach(item => {
+      if (item.level === 'A') Anum = item.num;
+      if (item.level === 'B') Bnum = item.num;
+      if (item.level === 'C') Cnum = item.num;
+      if (item.level === 'D') Dnum = item.num;
+    });
+
+    const mapLegends = [
+      {
+        level: 'A',
+        icon: styles.dotRed,
+        number: Anum,
+      },
+      {
+        level: 'B',
+        icon: styles.dotOrange,
+        number: Bnum,
+      },
+      {
+        level: 'C',
+        icon: styles.dotYel,
+        number: Cnum,
+      },
+      {
+        level: 'D',
+        icon: styles.dotBlue,
+        number: Dnum,
+      },
+    ];
+    return (
+      <Row className={styles.mapLegend}>
+        {mapLegends.map((item, index) => {
+          const { level, icon, number } = item;
+          const legendStyles = classNames(styles.legendItem, {
+            [styles.notActive]: legendActive !== index && legendActive !== null,
+          });
+          return (
+            <Col span={6} key={level}>
+              <span
+                className={legendStyles}
+                onClick={() => {
+                  this.filterPoint(level);
+                  this.setState({
+                    legendActive: index,
+                  });
+                }}
+              >
+                <span className={icon} />
+                {level}
+                类单位 （{number}）
+              </span>
+            </Col>
+          );
+        })}
+      </Row>
+    );
+  };
+
   render() {
     const { searchValue } = this.state;
     const {
-      zoom,
-      center,
       bigPlatformSafetyCompany: { selectList },
-      // selected,
-      // alarm: { list = [] },
-      // map: { companyBasicInfoList = [], totalNum },
-      // setMapItemList,
     } = this.props;
 
     return (
@@ -239,28 +294,30 @@ class MapSection extends PureComponent {
           }}
           useAMapUI
           mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
-          center={center}
-          zoom={zoom}
+          center={[locationDefault.x, locationDefault.y]}
+          zoom={locationDefault.zoom}
           events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
         >
+          {this.renderInfoWindow()}
           {this.renderMarkers()}
-          {/* {this.renderInfoWindow()} */}
           <MapTypeBar />
           <div
             className={styles.allPoint}
             onClick={() => {
               this.filterPoint('All');
               this.setState({
-                center: [locationDefault.x, locationDefault.y],
                 infoWindowShow: false,
                 legendActive: null,
                 searchValue: '',
               });
               if (this.mapInstance) {
-                this.mapInstance.setZoom(locationDefault.zoom);
+                this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
+                  locationDefault.x,
+                  locationDefault.y,
+                ]);
               }
-              if (this.state.comInfo) {
-                this.goBack();
+              if (this.props.comInfo) {
+                this.props.goBack();
               }
             }}
           >
@@ -270,12 +327,12 @@ class MapSection extends PureComponent {
         </GDMap>
         <MapSearch
           style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-          // list={newList}
           selectList={selectList}
           value={searchValue}
           handleChange={this.handleInputChange}
           handleSelect={this.handleSearchSelect}
         />
+        {this.renderMapLegend()}
       </div>
     );
   }

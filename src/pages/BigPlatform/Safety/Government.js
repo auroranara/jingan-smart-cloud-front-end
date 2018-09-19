@@ -14,7 +14,7 @@ import Ellipsis from '../../../components/Ellipsis';
 import { Map as GDMap, Marker, InfoWindow, Markers } from 'react-amap';
 import ReactEcharts from 'echarts-for-react';
 import MapSection from './Components/MapSection';
-
+import MyTooltip from '../FireControl/section/Tooltip';
 // import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
@@ -106,6 +106,9 @@ class GovernmentBigPlatform extends Component {
       filter: 'All',
       legendActive: null,
       searchValue: '',
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
     };
   }
 
@@ -473,6 +476,8 @@ class GovernmentBigPlatform extends Component {
   };
 
   handleIconClick = company => {
+    console.log(company);
+
     const { dispatch } = this.props;
     const { companyId, infoWindowShow, comInfo } = this.state;
     const { id } = company;
@@ -1215,6 +1220,23 @@ class GovernmentBigPlatform extends Component {
     }
   };
 
+  showTooltip = (e, name) => {
+    const offset = e.target.getBoundingClientRect();
+    this.setState({
+      tooltipName: name,
+      tooltipVisible: true,
+      tooltipPosition: [offset.left, offset.top],
+    });
+  };
+
+  hideTooltip = () => {
+    this.setState({
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
+    });
+  };
+
   renderComRisk = () => {
     const {
       bigPlatform: {
@@ -1247,7 +1269,7 @@ class GovernmentBigPlatform extends Component {
     //         })
     //       )
     //     : [];
-    const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = defaultFieldNames;
+    const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
     const newList = [...ycq, ...wcq, ...dfc];
     return (
       <div>
@@ -1344,7 +1366,7 @@ class GovernmentBigPlatform extends Component {
                     <span style={{ color: '#00A8FF' }}>整改：</span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
-                      {item[zgsj]}
+                      {item.status === '3' ? item.real_zgsj : item.plan_zgsj}
                     </Ellipsis>
                   </div>
                   {+item[status] === 3 && (
@@ -1535,6 +1557,10 @@ class GovernmentBigPlatform extends Component {
       searchValue,
       checks,
       infoWindow,
+      tooltipVisible,
+      tooltipName,
+      tooltipPosition,
+      infoWindowShow,
     } = this.state;
     const {
       dispatch,
@@ -1923,6 +1949,13 @@ class GovernmentBigPlatform extends Component {
                       center={center}
                       handleIconClick={this.handleIconClick}
                       infoWindow={infoWindow}
+                      infoWindowShow={infoWindowShow}
+                      companyLevelDto={companyLevelDto}
+                      goBack={this.goBack}
+                      comInfo={comInfo}
+                      showTooltip={this.showTooltip}
+                      hideTooltip={this.hideTooltip}
+                      handleHideInfoWindow={this.handleHideInfoWindow}
                       // events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
                     />
                     {/* <div className={styles.mapContainer}>
@@ -2663,6 +2696,12 @@ class GovernmentBigPlatform extends Component {
             </Col>
           </Row>
         </article>
+        <MyTooltip
+          visible={tooltipVisible}
+          title={tooltipName}
+          position={tooltipPosition}
+          offset={[10, 30]}
+        />
       </div>
     );
   }
