@@ -801,7 +801,7 @@ class CompanyLayout extends PureComponent {
             height: '100%',
           }}
           data={data}
-          flag={!isCurrentHiddenDangerShow && selectedId === null}
+          // flag={!isCurrentHiddenDangerShow && selectedId === null}
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
         />

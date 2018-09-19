@@ -268,12 +268,12 @@ export default class App extends PureComponent {
    * 渲染函数
    */
   render() {
-    const { isScroll, isCarousel, closable, title, fixedContent, children, className, style, contentStyle, onClose } = this.props;
+    const { isScroll, isCarousel, closable, title, fixedContent, children, className, style, contentStyle, onClose, splitHeight=0 } = this.props;
     const { isScrollShow, isPlaceHolderShow, isPaddingRightChange, currentIndex, isSplitShow } = this.state;
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
     let overflowY = undefined;
     let paddingRight = undefined;
-    let arr = isArray(children) ? (isSplitShow ? children : children.slice(0, -1)) : [children];
+    let arr = isArray(children) ? (!isSplitShow && splitHeight !== 0 ? children.slice(0, -1) : children) : [children];
     if (isScroll) {
       if (isCarousel) {
         if (isScrollShow) {

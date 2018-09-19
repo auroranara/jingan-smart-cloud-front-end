@@ -38,7 +38,7 @@ const transformHiddenDangerFields = ({
   real_rectify_time,
   review_user_name,
   status,
-  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
+  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
   source_type_name,
 }) => ({
   id,
@@ -51,7 +51,7 @@ const transformHiddenDangerFields = ({
   real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
   fcr: review_user_name,
   status: +status,
-  background: background.split(',')[0],
+  background: background?background.split(',')[0]:'',
   source: source_type_name,
 });
 
