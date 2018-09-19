@@ -123,6 +123,7 @@ class ElectricityCharts extends PureComponent {
       prev[code] = desc;
       return prev;
     }, {});
+    console.log(paramsMap.v1);
     const noData = {
       title: {
         show: true,
@@ -259,7 +260,7 @@ class ElectricityCharts extends PureComponent {
           series: [
             {
               type: 'line',
-              name: '漏电电流',
+              name: paramsMap.v1 || '漏电电流',
               smooth: true,
               symbolSize: 5,
               data: v1ListNew,
