@@ -211,8 +211,8 @@ export default class accountManagementList extends PureComponent {
     const {
       fetch,
       fetchUnitsFuzzy,
-      goToException,
-      fetchOptions,
+      // goToException,
+      // fetchOptions,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -226,20 +226,14 @@ export default class accountManagementList extends PureComponent {
         pageNum: 1,
       },
     });
-    fetchOptions({
-      success: ({ unitType }) => {
-        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        fetchUnitsFuzzy({
-          payload: {
-            unitType: unitType[0].id,
-            pageNum: 1,
-            pageSize: defaultPageSize,
-          },
-        });
-      },
-      error: () => {
-        goToException();
-      },
+    this.setState({ unitTypeChecked: 4 }, () => {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: 4,
+          pageNum: 1,
+          pageSize: defaultPageSize,
+        },
+      });
     });
   };
 
@@ -382,7 +376,7 @@ export default class accountManagementList extends PureComponent {
     } = this.props;
 
     const { unitTypeChecked } = this.state;
-
+    console.log('unitTypeChecked', unitTypeChecked);
     const { Option } = Select;
 
     return (
