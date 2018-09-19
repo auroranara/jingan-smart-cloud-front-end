@@ -235,13 +235,24 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState(({ isDangerRotated }) => ({ isDangerRotated: !isDangerRotated }));
   };
 
-  handleMapBack = (isAlarmRotatedInit=false, isFire=false) => {
+  handleMapBack = (isAlarmRotatedInit = false, isFire = false) => {
     // 需要重置警情模块，即地图中返回时(且是从有火警的地图中返回，点击无火警的公司由于不需要翻页，返回时无需处理)，警情模块初始化为实时警情
     if (isAlarmRotatedInit && isFire)
-      this.setState({ showReverse: false, isAlarmRotated: false, mapZoom: location.zoom, mapCenter: [location.x, location.y], mapSelected: undefined });
+      this.setState({
+        showReverse: false,
+        isAlarmRotated: false,
+        mapZoom: location.zoom,
+        mapCenter: [location.x, location.y],
+        mapSelected: undefined,
+      });
     // 警情详情中返回时，原来的状态保持不变
     else
-      this.setState({ showReverse: false, mapZoom: location.zoom, mapCenter: [location.x, location.y], mapSelected: undefined });
+      this.setState({
+        showReverse: false,
+        mapZoom: location.zoom,
+        mapCenter: [location.x, location.y],
+        mapSelected: undefined,
+      });
   };
 
   handleMapSelected = (item, alarmDetail) => {
@@ -327,7 +338,11 @@ export default class FireControlBigPlatform extends PureComponent {
 
   showTooltip = (e, name) => {
     const offset = e.target.getBoundingClientRect();
-    this.setState({ tooltipName: name, tooltipVisible: true, tooltipPosition: [offset.left, offset.top] });
+    this.setState({
+      tooltipName: name,
+      tooltipVisible: true,
+      tooltipPosition: [offset.left, offset.top],
+    });
   };
 
   hideTooltip = () => {
@@ -424,7 +439,10 @@ export default class FireControlBigPlatform extends PureComponent {
                 />
               }
               reverse={
-                <AlarmDetailSection detail={alarmDetail} handleReverse={() => this.handleMapBack()} />
+                <AlarmDetailSection
+                  detail={alarmDetail}
+                  handleReverse={() => this.handleMapBack()}
+                />
               }
             />
           </Col>
@@ -462,21 +480,21 @@ export default class FireControlBigPlatform extends PureComponent {
                   front={
                     <DangerSection
                       title="监督巡查/隐患"
-                      backTitle="辖区巡查/隐患"
+                      backTitle="单位巡查/隐患"
                       data={gridDanger}
                       handleRotate={this.handleDangerRotate}
                     />
                   }
                   back={
                     <DangerSection
-                      title="辖区巡查/隐患"
+                      isBack
+                      title="单位巡查/隐患"
                       backTitle="监督巡查/隐患"
                       data={danger}
                       handleRotate={this.handleDangerRotate}
-                      isBack
                     />
                   }
-                  reverse={<DangerSection title="单位巡查/隐患" data={companyDanger} isBack />}
+                  reverse={<DangerSection title="该单位巡查/隐患" data={companyDanger} isBack />}
                 />
               </Col>
             </Row>
@@ -507,7 +525,12 @@ export default class FireControlBigPlatform extends PureComponent {
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
               <SystemSection data={sys} />
-              <VideoSection data={allCamera} showVideo={this.handleVideoShow} />
+              <VideoSection
+                data={allCamera}
+                showVideo={this.handleVideoShow}
+                backTitle={allCamera.length ? '更多' : ''}
+                handleBack={() => this.handleVideoShow()}
+              />
             </FcModule>
           </Col>
         </Row>
@@ -515,12 +538,18 @@ export default class FireControlBigPlatform extends PureComponent {
         <VideoPlay
           // dispatch={dispatch}
           // actionType="bigFireControl/fetchStartToPlay"
+          showList={false}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
         />
-        <Tooltip visible={tooltipVisible} title={tooltipName} position={tooltipPosition} offset={[23, -38]} />
+        <Tooltip
+          visible={tooltipVisible}
+          title={tooltipName}
+          position={tooltipPosition}
+          offset={[23, -38]}
+        />
       </div>
     );
   }

@@ -65,6 +65,14 @@
           background-color: #0967D3;
           vertical-align: top;
         }
+
+        .jumpButton {
+          float: right;
+          height: 100%;
+          color: #00A8FF;
+          font-weight: normal;
+          cursor: pointer;
+        }
       }
 
       /* 为容器添加外阴影 */
@@ -125,13 +133,13 @@
             line-height: 1;
             border-radius: 3px;
 
-            &.hoverable:hover {
-              background-color: rgba(9, 103, 211, 0.2);
-              box-shadow: 0 0 1em rgba(9, 103, 211, 1) inset;
-            }
+            &.hoverable {
+              cursor: pointer;
 
-            &.hoverable:hover {
-              background-color: #02244D;
+              &:hover {
+                background-color: rgba(9, 103, 211, 0.2);
+                box-shadow: 0 0 1em rgba(9, 103, 211, 1) inset;
+              }
             }
 
             .summaryText {
@@ -263,11 +271,29 @@
 /* 风险点卡片 */
 .risk {
   .riskLevelList {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 32px 0;
 
     .riskLevelItem {
+      flex: 1;
       text-align: center;
       line-height: 1;
+
+      &.unvaluedItem {
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        justify-content: center;
+        margin-top: -1em;
+        margin-bottom: -1em;
+        width: 5em;
+        height: 5em;
+        border-radius: 50%;
+        border: 2px solid #00A8FF;
+      }
 
       .riskLevelItemValue {
         margin-bottom: 8px;
@@ -288,11 +314,12 @@
       top: 0;
       right: 20px;
       width: 30px;
-      height: 36px;
-      line-height: 32px;
+      padding-top: 10px;
+      padding-bottom: 15px;
+      line-height: 1;
       text-align: center;
-      border-bottom-left-radius: 50%;
-      border-bottom-right-radius: 50%;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
     }
 
     .riskPointItemNameWrapper {
@@ -314,7 +341,7 @@
 
 .legendList {
   position: absolute;
-  top: 0;
+  top: 10px;
   right: 0;
   height: 20px;
   line-height: 20px;
@@ -504,10 +531,14 @@
       padding: 3px 0 3px 14px;
 
       .riskPointItemLabel {
+        padding-top: 9px;
+        padding-bottom: 13px;
         right: 16px;
         width: 26px;
-        height: 32px;
-        line-height: 28px;
+        border-bottom-left-radius: 13px;
+        border-bottom-right-radius: 13px;
+        // height: 32px;
+        // line-height: 28px;
       }
 
       .riskPointItemNameWrapper {
@@ -656,10 +687,14 @@
       padding: 3px 0 3px 12px;
 
       .riskPointItemLabel {
+        padding-top: 8px;
+        padding-bottom: 11px;
         right: 14px;
         width: 22px;
-        height: 28px;
-        line-height: 24px;
+        border-bottom-left-radius: 11px;
+        border-bottom-right-radius: 11px;
+        // height: 28px;
+        // line-height: 24px;
       }
 
       .riskPointItemNameWrapper {

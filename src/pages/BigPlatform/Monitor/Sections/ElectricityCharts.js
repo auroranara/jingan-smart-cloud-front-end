@@ -6,12 +6,13 @@ import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
+import waterBg from '../imgs/waterBg.png';
 
 const { Option } = Select;
 
 const tabList = [
   {
-    desc: '剩余电流',
+    desc: '漏电电流',
     code: 'v1',
   },
   {
@@ -58,6 +59,60 @@ class ElectricityCharts extends PureComponent {
     clearInterval(this.echartAnimate);
   }
 
+  calcItemColor = (value, pieces) => {
+    let item = {
+      value,
+    };
+    if (!pieces || pieces.length <= 0) return item;
+    pieces.forEach(p => {
+      if (
+        (p.condition === '1' && value >= p.limitValue) ||
+        (p.condition === '2' && value <= p.limitValue)
+      ) {
+        item = {
+          ...item,
+          itemStyle: {
+            color: '#e01919',
+          },
+        };
+      }
+    });
+    return item;
+  };
+
+  tootipFormatter = params => {
+    if (Array.isArray(params)) {
+      return (
+        `${params[0].name}<br/>` +
+        params
+          .map(item => {
+            return `${item.marker}<span style="color: ${
+              item.color === '#e01919' ? '#e01919' : '#fff'
+            }">${item.seriesName}：${item.value}</span>`;
+          })
+          .join('<br/>')
+      );
+    } else {
+      return (
+        `${params.name}<br/>` +
+        `${params.marker}<span style="color: ${params.color === '#e01919' ? '#e01919' : '#fff'}">${
+          params.seriesName
+        }：${params.value}</span><br/>`
+      );
+    }
+  };
+
+  legendFormatter = (arr, unit) => {
+    let val = null;
+    arr.forEach(pieces => {
+      if (!pieces || pieces.length === 0) return;
+      pieces.forEach(p => {
+        if (p.condition === '1') val = val < p.limitValue && val ? val : p.limitValue;
+      });
+    });
+    return val ? `报警值：≥${val}${unit}` : null;
+  };
+
   getOptions = () => {
     const {
       data: { gsmsHstData, electricityPieces },
@@ -66,11 +121,13 @@ class ElectricityCharts extends PureComponent {
     const noData = {
       title: {
         show: true,
-        text: '暂未接入',
+        text: '暂无数据',
         top: '30%',
         left: 'center',
         textStyle: {
           color: '#fff',
+          fontWeight: 200,
+          fontSize: 18,
         },
       },
     };
@@ -100,7 +157,7 @@ class ElectricityCharts extends PureComponent {
         containLabel: true,
       },
       legend: {
-        left: 'center',
+        left: 20,
         bottom: 5,
         icon: 'circle',
         data: [],
@@ -136,6 +193,9 @@ class ElectricityCharts extends PureComponent {
       },
       yAxis: {
         scale: true,
+        nameTextStyle: {
+          color: '#fff',
+        },
         axisLabel: {
           color: '#fff',
           fontSize: 14,
@@ -159,46 +219,47 @@ class ElectricityCharts extends PureComponent {
     };
     switch (tabList[activeTab].code) {
       case 'v1':
-        const pieces = electricityPieces['v1'];
+        const v1Pieces = electricityPieces['v1'];
         const v1 = v1List.filter(a => a !== '-');
+        const v1ListNew = v1List.map(item => {
+          return this.calcItemColor(item, v1Pieces);
+        });
         option = {
           ...defaultOption,
+          title: {
+            text: this.legendFormatter([v1Pieces], 'mA'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
+          },
           legend: {
             ...defaultOption.legend,
-            data: ['剩余电流'],
+            data: ['漏电电流'],
+          },
+          tooltip: {
+            ...defaultOption.tooltip,
+            formatter: params => {
+              return this.tootipFormatter(params);
+            },
+          },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(mA)',
           },
           series: [
             {
               type: 'line',
-              name: '剩余电流',
+              name: '漏电电流',
               smooth: true,
-              data: v1List,
+              symbolSize: 5,
+              data: v1ListNew,
             },
           ],
         };
-        if (pieces && pieces.length > 0) {
-          // const markLine = pieces.filter(d => d.lte).map(item => {
-          //   return {
-          //     yAxis: item.lte,
-          //   };
-          // });
-          // option = {
-          //   ...option,
-          //   visualMap: {
-          //     show: false,
-          //     pieces: pieces,
-          //   },
-          //   series: [
-          //     {
-          //       ...option.series[0],
-          //       markLine: {
-          //         silent: true,
-          //         data: markLine,
-          //       },
-          //     },
-          //   ],
-          // };
-        }
         if (v1.length === 0) {
           option = {
             ...option,
@@ -211,36 +272,77 @@ class ElectricityCharts extends PureComponent {
         const t2 = v3List.filter(a => a !== '-');
         const t3 = v4List.filter(a => a !== '-');
         const t4 = v5List.filter(a => a !== '-');
+
+        const v2Pieces = electricityPieces['v2'];
+        const v2ListNew = v2List.map(item => {
+          return this.calcItemColor(item, v2Pieces);
+        });
+        const v3Pieces = electricityPieces['v3'];
+        const v3ListNew = v3List.map(item => {
+          return this.calcItemColor(item, v3Pieces);
+        });
+        const v4Pieces = electricityPieces['v4'];
+        const v4ListNew = v4List.map(item => {
+          return this.calcItemColor(item, v4Pieces);
+        });
+        const v5Pieces = electricityPieces['v5'];
+        const v5ListNew = v5List.map(item => {
+          return this.calcItemColor(item, v5Pieces);
+        });
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: ['温度1', '温度2', '温度3', '环境温度'],
+            data: ['A相温度', 'B相温度', 'C相温度', '零线温度'],
+          },
+          title: {
+            text: this.legendFormatter([v2Pieces, v3Pieces, v4Pieces, v5Pieces], '℃'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
+          },
+          tooltip: {
+            ...defaultOption.tooltip,
+            formatter: params => {
+              return this.tootipFormatter(params);
+            },
+          },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(℃)',
           },
           series: [
             {
               type: 'line',
-              name: '温度1',
+              name: 'A相温度',
               smooth: true,
-              data: v2List,
+              symbolSize: 5,
+              data: v2ListNew,
             },
             {
               type: 'line',
-              name: '温度2',
+              name: 'B相温度',
               smooth: true,
-              data: v3List,
+              symbolSize: 5,
+              data: v3ListNew,
             },
             {
               type: 'line',
-              name: '温度3',
+              name: 'C相温度',
               smooth: true,
-              data: v4List,
+              symbolSize: 5,
+              data: v4ListNew,
             },
             {
               type: 'line',
-              name: '环境温度',
+              name: '零线温度',
               smooth: true,
-              data: v5List,
+              symbolSize: 5,
+              data: v5ListNew,
             },
           ],
         };
@@ -255,30 +357,66 @@ class ElectricityCharts extends PureComponent {
         const ia = iaList.filter(a => a !== '-');
         const ib = ibList.filter(a => a !== '-');
         const ic = icList.filter(a => a !== '-');
+
+        const iaPieces = electricityPieces['ia'];
+        const iaListNew = iaList.map(item => {
+          return this.calcItemColor(item, iaPieces);
+        });
+        const ibPieces = electricityPieces['ib'];
+        const ibListNew = ibList.map(item => {
+          return this.calcItemColor(item, ibPieces);
+        });
+        const icPieces = electricityPieces['ic'];
+        const icListNew = icList.map(item => {
+          return this.calcItemColor(item, icPieces);
+        });
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
             data: ['A相电流', 'B相电流', 'C相电流'],
           },
+          title: {
+            text: this.legendFormatter([iaPieces, ibPieces, icPieces], 'A'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
+          },
+          tooltip: {
+            ...defaultOption.tooltip,
+            formatter: params => {
+              return this.tootipFormatter(params);
+            },
+          },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(A)',
+          },
           series: [
             {
               type: 'line',
               name: 'A相电流',
               smooth: true,
-              data: iaList,
+              symbolSize: 5,
+              data: iaListNew,
             },
             {
               type: 'line',
               name: 'B相电流',
               smooth: true,
-              data: ibList,
+              symbolSize: 5,
+              data: ibListNew,
             },
             {
               type: 'line',
               name: 'C相电流',
               smooth: true,
-              data: icList,
+              symbolSize: 5,
+              data: icListNew,
             },
           ],
         };
@@ -293,30 +431,66 @@ class ElectricityCharts extends PureComponent {
         const ua = uaList.filter(a => a !== '-');
         const ub = ubList.filter(a => a !== '-');
         const uc = ucList.filter(a => a !== '-');
+
+        const uaPieces = electricityPieces['ua'];
+        const uaListNew = uaList.map(item => {
+          return this.calcItemColor(item, uaPieces);
+        });
+        const ubPieces = electricityPieces['ub'];
+        const ubListNew = ubList.map(item => {
+          return this.calcItemColor(item, ubPieces);
+        });
+        const ucPieces = electricityPieces['uc'];
+        const ucListNew = ucList.map(item => {
+          return this.calcItemColor(item, ucPieces);
+        });
         option = {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
             data: ['A相电压', 'B相电压', 'C相电压'],
           },
+          title: {
+            text: this.legendFormatter([uaPieces, ubPieces, ucPieces], 'V'),
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+              fontWeight: 200,
+            },
+            right: 25,
+            bottom: 5,
+          },
+          tooltip: {
+            ...defaultOption.tooltip,
+            formatter: params => {
+              return this.tootipFormatter(params);
+            },
+          },
+          yAxis: {
+            ...defaultOption.yAxis,
+            name: '单位(V)',
+          },
           series: [
             {
               type: 'line',
               name: 'A相电压',
               smooth: true,
-              data: uaList,
+              symbolSize: 5,
+              data: uaListNew,
             },
             {
               type: 'line',
               name: 'B相电压',
               smooth: true,
-              data: ubList,
+              symbolSize: 5,
+              data: ubListNew,
             },
             {
               type: 'line',
               name: 'C相电压',
               smooth: true,
-              data: ucList,
+              symbolSize: 5,
+              data: ucListNew,
             },
           ],
         };
@@ -340,8 +514,9 @@ class ElectricityCharts extends PureComponent {
     this.currentIndex = -1;
     const chartAnimate = () => {
       if (!chart) return;
-      if (!chart.getOption().series[0]) return;
-      const dataLen = chart.getOption().series[0].data.length;
+      const chartSeries = chart.getOption().series;
+      if (!chartSeries[0]) return;
+      const dataLen = chartSeries[0].data.length;
       // 取消之前高亮的图形
       chart.dispatchAction({
         type: 'downplay',
@@ -350,8 +525,11 @@ class ElectricityCharts extends PureComponent {
       });
       for (let i = 0; i < dataLen; i++) {
         this.currentIndex = (this.currentIndex + 1) % dataLen;
-        if (chart.getOption().series[0].data[this.currentIndex] !== '-') break;
+        if (chartSeries[0].data[this.currentIndex] !== '-') break;
       }
+      chartSeries.forEach(series => {
+        if (series.data[series.data.length - 1].itemStyle) this.currentIndex = dataLen - 1;
+      });
       // 高亮当前图形
       chart.dispatchAction({
         type: 'highlight',
@@ -365,7 +543,7 @@ class ElectricityCharts extends PureComponent {
         dataIndex: this.currentIndex,
       });
     };
-    // chartAnimate();
+    chartAnimate();
     this.echartAnimate = setInterval(() => {
       chartAnimate();
     }, 5000);
@@ -411,22 +589,40 @@ class ElectricityCharts extends PureComponent {
 
     return (
       <div className={styles.ElectricityCharts} style={{ height: '100%', width: '100%' }}>
-        <div className={styles.selectIcon}>
-          <Select style={{ width: 140 }} value={selectVal} onSelect={handleSelect}>
-            {list.map(({ deviceId, area, location }) => (
-              <Option key={deviceId}>{`${area}：${location}`}</Option>
-            ))}
-          </Select>
-        </div>
+        {list && list.length ? (
+          <div className={styles.selectIcon}>
+            <Select
+              value={selectVal}
+              onSelect={handleSelect}
+              dropdownClassName={styles.selectDropDown}
+            >
+              {list.map(({ deviceId, area, location }) => (
+                <Option key={deviceId}>{`${area}：${location}`}</Option>
+              ))}
+            </Select>
+          </div>
+        ) : null}
         <SectionWrapper title="用电安全监测">
           {this.renderTabs()}
-          <ReactEcharts
-            option={this.getOptions()}
-            style={{ flex: 1, width: '100%' }}
-            className="echarts-for-echarts"
-            notMerge={true}
-            onChartReady={this.onChartReadyCallback}
-          />
+          {list && list.length ? (
+            <ReactEcharts
+              option={this.getOptions()}
+              style={{ flex: 1, width: '100%' }}
+              className="echarts-for-echarts"
+              notMerge={true}
+              onChartReady={this.onChartReadyCallback}
+            />
+          ) : (
+            <div
+              className={styles.noCards}
+              style={{
+                background: `url(${waterBg})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: 'auto 55%',
+              }}
+            />
+          )}
         </SectionWrapper>
       </div>
     );

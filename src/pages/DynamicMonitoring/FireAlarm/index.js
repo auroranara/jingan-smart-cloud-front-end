@@ -153,7 +153,13 @@ export default class FireAlarm extends PureComponent {
 
   render() {
     const {
-      fireAlarm: { list },
+      fireAlarm: {
+        // list,
+        data: {
+          list,
+          pagination: { total },
+        },
+      },
       loading,
       // user: {
       //   currentUser: { permissionCodes: codes },
@@ -162,7 +168,17 @@ export default class FireAlarm extends PureComponent {
     const { company, address, scrollLoading, hasMore } = this.state;
 
     return (
-      <PageHeaderLayout title="单位列表" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title="单位列表"
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            单位总数：
+            {total}
+            {''}
+          </div>
+        }
+      >
         <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>

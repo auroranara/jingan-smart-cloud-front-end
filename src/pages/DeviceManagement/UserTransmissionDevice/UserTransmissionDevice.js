@@ -151,7 +151,13 @@ export default class UserTransmissionDevice extends PureComponent {
 
   render() {
     const {
-      transmission: { list },
+      transmission: {
+        data: {
+          list,
+          pagination: { total },
+          transmissionCount,
+        },
+      },
       // user: {
       //   currentUser: { permissionCodes: codes },
       // },
@@ -160,7 +166,24 @@ export default class UserTransmissionDevice extends PureComponent {
     const { company, address, scrollLoading, hasMore } = this.state;
 
     return (
-      <PageHeaderLayout title="用户传输装置" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title="用户传输装置"
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            <span>
+              单位总数：
+              {total}
+              {''}
+            </span>
+            <span style={{ paddingLeft: 20 }}>
+              用户传输装置总数：
+              {transmissionCount}
+              {''}
+            </span>
+          </div>
+        }
+      >
         <Card className={styles.check}>
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col span={6}>
@@ -249,7 +272,7 @@ export default class UserTransmissionDevice extends PureComponent {
                   </AuthLink>
                 </List.Item>
               );
-          }}
+            }}
           />
         </div>
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} />}

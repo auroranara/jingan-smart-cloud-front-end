@@ -60,6 +60,11 @@ export default class TrendSection extends PureComponent {
     this.count = (count + 1) % this.length;
   };
 
+  // handleChartReady = (chart) => {
+  //   if (!this.chart)
+  //     this.chart = chart;
+  // }
+
   // handleMouseenter = () => {
   //   console.log('enter');
   //   clearInterval(this.timer);
@@ -158,6 +163,7 @@ export default class TrendSection extends PureComponent {
           option={option}
           style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
           onChartReady={chart => { this.chart = chart; }}
+          // onChartReady={this.handleChartReady}
         />
       </FcSection>
     )

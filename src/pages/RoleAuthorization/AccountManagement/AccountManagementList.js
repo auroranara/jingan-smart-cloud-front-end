@@ -18,6 +18,7 @@ import {
   Divider,
   Popconfirm,
   message,
+  TreeSelect,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
@@ -31,6 +32,7 @@ import styles from './AccountManagementList.less';
 import { AuthLink, AuthButton, AuthSpan } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 
+const { TreeNode } = TreeSelect;
 // 标题
 const title = '账号管理';
 // 面包屑
@@ -132,6 +134,10 @@ const getEmptyData = () => {
         ...action,
       });
     },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
   })
 )
 @Form.create()
@@ -146,6 +152,10 @@ export default class accountManagementList extends PureComponent {
       currentLoginId: null,
     };
   }
+
+  state = {
+    unitTypeChecked: false,
+  };
 
   // 生命周期函数
   componentDidMount() {
@@ -200,6 +210,9 @@ export default class accountManagementList extends PureComponent {
   handleClickToReset = () => {
     const {
       fetch,
+      fetchUnitsFuzzy,
+      goToException,
+      fetchOptions,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -211,6 +224,21 @@ export default class accountManagementList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+      },
+    });
+    fetchOptions({
+      success: ({ unitType }) => {
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: unitType[0].id,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
+      },
+      error: () => {
+        goToException();
       },
     });
   };
@@ -243,12 +271,24 @@ export default class accountManagementList extends PureComponent {
       fetchUnitsFuzzy,
       form: { setFieldsValue },
     } = this.props;
+    this.setState({ unitTypeChecked: value });
     setFieldsValue({ unitId: undefined });
-    fetchUnitsFuzzy({
-      payload: {
-        unitType: value,
-      },
-    });
+    // 根据当前选中的单位类型获取对应的所属单位列表
+    if (value === 2) {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: value,
+        },
+      });
+    } else {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: value,
+          pageNum: 1,
+          pageSize: defaultPageSize,
+        },
+      });
+    }
   };
 
   // 所属单位下拉框输入
@@ -261,6 +301,8 @@ export default class accountManagementList extends PureComponent {
       payload: {
         unitType: getFieldValue('unitType'),
         unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: defaultPageSize,
       },
     });
   };
@@ -318,6 +360,19 @@ export default class accountManagementList extends PureComponent {
     });
   };
 
+  generateTressNode = data => {
+    return data.map(item => {
+      if (item.child && item.child.length) {
+        return (
+          <TreeNode title={item.name} key={item.id} value={item.id}>
+            {this.generateTressNode(item.child)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode title={item.name} key={item.id} value={item.id} />;
+    });
+  };
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -325,6 +380,8 @@ export default class accountManagementList extends PureComponent {
       form: { getFieldDecorator },
       loading,
     } = this.props;
+
+    const { unitTypeChecked } = this.state;
 
     const { Option } = Select;
 
@@ -338,9 +395,12 @@ export default class accountManagementList extends PureComponent {
               })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
             </FormItem>
             <FormItem label="单位类型">
-              {getFieldDecorator('unitType')(
+              {getFieldDecorator('unitType', {
+                initialValue: unitTypes.length === 0 ? undefined : unitTypes[0].id,
+              })(
                 <Select
                   placeholder="请选择单位类型"
+                  allowClear
                   onSelect={this.handleUnitTypeSelect}
                   style={{ width: 180 }}
                 >
@@ -352,32 +412,51 @@ export default class accountManagementList extends PureComponent {
                 </Select>
               )}
             </FormItem>
-            <FormItem label="所属单位">
-              {getFieldDecorator('unitId', {
-                rules: [
-                  {
-                    whitespace: true,
-                    message: '请选择所属单位',
-                  },
-                ],
-              })(
-                <AutoComplete
-                  mode="combobox"
-                  optionLabelProp="children"
-                  placeholder="请选择所属单位"
-                  notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                  onSearch={this.handleUnitIdChange}
-                  filterOption={false}
-                  style={{ width: 230 }}
-                >
-                  {unitIdes.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </AutoComplete>
-              )}
-            </FormItem>
+
+            {unitTypeChecked !== 2 && (
+              <FormItem label="所属单位">
+                {getFieldDecorator('unitId', {
+                  rules: [
+                    {
+                      whitespace: true,
+                      message: '请选择所属单位',
+                    },
+                  ],
+                })(
+                  <AutoComplete
+                    allowClear
+                    mode="combobox"
+                    optionLabelProp="children"
+                    placeholder="请选择所属单位"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleUnitIdChange}
+                    filterOption={false}
+                    style={{ width: 230 }}
+                  >
+                    {unitIdes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
+              </FormItem>
+            )}
+
+            {unitTypeChecked === 2 && (
+              <FormItem label="所属单位">
+                {getFieldDecorator('unitId')(
+                  <TreeSelect
+                    allowClear
+                    placeholder="请选择所属单位"
+                    // labelInValue
+                    style={{ width: 230 }}
+                  >
+                    {this.generateTressNode(unitIdes)}
+                  </TreeSelect>
+                )}
+              </FormItem>
+            )}
           </Col>
 
           {/* 按钮 */}

@@ -24,6 +24,8 @@ export default class App extends PureComponent {
       isPaddingRightChange: false,
       // 当前截取的索引
       currentIndex: 0,
+      // 是否显示间隔
+      isSplitShow: false,
     };
     // 轮播定时器
     this.carouselTimer = null;
@@ -131,11 +133,13 @@ export default class App extends PureComponent {
     if (this.container.offsetHeight < this.container.scrollHeight) {
       this.setState({
         isPlaceHolderShow: true,
+        isSplitShow: true,
       });
     }
     else {
       this.setState({
         isPlaceHolderShow: false,
+        isSplitShow: false,
       });
     }
   }
@@ -166,26 +170,55 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 列表从当前位置过渡到目标位置
+   * 列表从当前位置过渡到目标位置（默认间隔高度小于子元素高度，其他情况以后考虑）
    */
   transition = () => {
-    // 子元素的高度
-    const height = this.list.scrollHeight / this.list.childNodes.length;
-    // 当前的scrollTop
+    // 从props中获取间隔元素的高度，（假装children为数组）
+    const { splitHeight = 0, children } = this.props;
+    // 从state中获取当前列表的首个元素在源数组中的索引
+    const { currentIndex, isSplitShow } = this.state;
+    // 如果isSplitShow为false，则意味着元素只有一页，不需要滚动
+    if (!isSplitShow) {
+      return;
+    }
+    // 计算子元素的高度
+    const height = splitHeight !== 0 ? (this.list.scrollHeight / 2 - splitHeight) / (children.length - 1) : this.list.scrollHeight / this.list.childNodes.length;
+    // 计算当前列表的首个元素到源数组结尾的剩余数量
+    const currentLength = children.length - currentIndex;
+    // 获取当前的scrollTop
     const start = this.container.scrollTop;
-    // 计算要滚动的距离
-    const target = height - start % height;
+    // 计算已经滚过的子元素的数量
+    let count = Math.floor(start / height);
+    // 计算出去已经滚动的子元素数量剩余的高度
+    const restHeight = start % height;
+    // 计算滚动距离
+    let target;
+    // 如果滚过数量不等于剩余数量，或者间隔不存在时，则目标滚动参考距离为子元素高度
+    if (splitHeight === 0 || count !== currentLength-1) {
+      target = height - restHeight;
+      count += 1;
+    }
+    // 如果滚过数量等于剩余数量，并且剩余高度小于间隔高度，则目标滚动参考距离为间隔高度
+    else if (restHeight < splitHeight) {
+      target = splitHeight - restHeight;
+      count += 1;
+    }
+    // 如果滚过数量等于剩余数量，并且剩余高度大于等于间隔高度，则目标滚动参考距离为间隔高度加子元素高度
+    else {
+      target = height - restHeight + splitHeight;
+      count += 2;
+    }
+    // 滚动时长
     const duration = 600;
     const callback = (timestamp) => {
       if (!this.startTransitionTimestamp) {
         this.startTransitionTimestamp = timestamp;
       }
       const progress = timestamp - this.startTransitionTimestamp;
-      const scrollTop = start + Math.min(progress/duration*target, target)
-      this.container.scrollTop = scrollTop;
+      this.container.scrollTop = start + Math.min(progress/duration*target, target)
       if (progress >= duration) {
         this.startTransitionTimestamp = null;
-        this.handleTransitionEnd(Math.round(scrollTop / height));
+        this.handleTransitionEnd(count);
       }
       else {
         this.transitionTimer = window.requestAnimationFrame(callback);
@@ -236,11 +269,11 @@ export default class App extends PureComponent {
    */
   render() {
     const { isScroll, isCarousel, closable, title, fixedContent, children, className, style, contentStyle, onClose } = this.props;
-    const { isScrollShow, isPlaceHolderShow, isPaddingRightChange, currentIndex } = this.state;
+    const { isScrollShow, isPlaceHolderShow, isPaddingRightChange, currentIndex, isSplitShow } = this.state;
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
     let overflowY = undefined;
     let paddingRight = undefined;
-    let arr = isArray(children) ? children : [children];
+    let arr = isArray(children) ? (isSplitShow ? children : children.slice(0, -1)) : [children];
     if (isScroll) {
       if (isCarousel) {
         if (isScrollShow) {

@@ -1,4 +1,4 @@
-import request from '../../utils/request';
+import request from '../../utils/cockpitRequest';
 import { stringify } from 'qs';
 
 // 政府大屏
@@ -129,3 +129,11 @@ export async function getStartToPlay(params) {
 export async function getMonitorData(params) {
   return request(`/acloud_new/v2/monitor/countStatus.json?${stringify(params)}`);
 }
+
+/**
+ * 获取巡查人员列表
+ */
+export async function getStaffList(params) {
+  return request(`/acloud_new/v2/sfc/companyCheckByPerson.json?${stringify(params)}`);
+}
+
