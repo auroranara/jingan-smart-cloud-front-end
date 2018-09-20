@@ -97,6 +97,15 @@ export default class App extends PureComponent {
    * 过渡动画
    */
   transition = () => {
+    // 从props中获取间隔元素的高度，（假装children为数组）
+    const { splitHeight = 0, children } = this.props;
+    // 获取容器的scrollHeight
+    const scrollHeight = this.list.scrollHeight;
+    // 获取容器的scrollTop
+    const scrollTop = this.container.scrollTop;
+    // 获取子元素高度
+    // const itemHeight = splitHeight !== 0 ? ( / 2 - splitHeight) / children.length : this.list.scrollHeight / this.list.childNodes.length;
+    // 获取当前scrollTop
 
   }
 
