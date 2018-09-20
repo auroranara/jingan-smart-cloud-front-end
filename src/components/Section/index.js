@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import debounce from 'lodash/debounce';
 import { Icon } from 'antd';
 import isArray from '@/utils/utils.js';
 import styles from './Section.less';
@@ -27,6 +28,8 @@ export default class App extends PureComponent {
       // 鼠标移入时，数组截取的开始索引
       startIndex: 0,
     };
+    // resize添加去抖
+    this.resize = debounce(this.resize, 300, { leading: true, trailing: false });
     // 轮播定时器（当开启轮播且内容超出时添加）
     this.carouselTimer = null;
     // 过渡动画定时器
@@ -66,24 +69,35 @@ export default class App extends PureComponent {
    * 判断是否内容超出容器高度
    */
   resize = () => {
+    // 判断是否内容超出容器高度
+    const isOverflow = this.container.scrollHeight > this.container.offsetHeight;
+    // 修改state
+    this.setState({
+      isOverflow,
+    });
+    // 重置轮播定时器
+    this.resetCarousel(isOverflow);
+  }
+
+  /**
+   * 重置轮播定时器（注：只有在开启轮播且内容超出时有效，否则会清除定时器）
+   */
+  resetCarousel = (isOverflow=this.state.isOverflow) => {
+    // 由于每次在添加定时器时需要先检测是否开启轮播及内容超出，所以将检测放到这里
     const { isCarousel } = this.props;
     // 清除轮播定时器
     clearTimeout(this.carouselTimer);
-    // 如果内容超出，则修改state，并添加轮播定时器
-    if (this.container.scrollHeight > this.container.offsetHeight) {
-      // 如果内容超出则添加定时器
-      if (isCarousel) {
+    // 当开启轮播且内容超出时添加定时器
+    if (isCarousel && isOverflow) {
+      this.carouselTimer = setTimeout(this.transition, 5000);
+    }
+  }
 
-      }
-      this.setState({
-        isOverflow: true,
-      });
-    }
-    else {
-      this.setState({
-        isOverflow: false,
-      });
-    }
+  /**
+   * 过渡动画
+   */
+  transition = () => {
+
   }
 
   /**
@@ -143,10 +157,12 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 开启轮播时鼠标移入
+   * 开启轮播时鼠标移入（注：只在开启轮播时有效）
    */
   handleMouseEnter = () => {
     // 当鼠标移入时获取当前的scrollTop计算需要截取的索引，并重置scrollTop
+    // 清除轮播定时器
+    clearTimeout(this.carouselTimer);
     // 修改state变量
     this.setState({
       isMouseEnter: true,
@@ -154,9 +170,11 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 开启轮播时鼠标移出
+   * 开启轮播时鼠标移出（注：只在开启轮播时有效）
    */
   handleMouseLeave = () => {
+    // 重置轮播定时器
+    this.resetCarousel();
     // 修改state变量
     this.setState({
       isMouseEnter: false,
