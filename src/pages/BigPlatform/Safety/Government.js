@@ -198,7 +198,49 @@ class GovernmentBigPlatform extends Component {
     dispatch({
       type: 'bigPlatform/fetchCheckInfo',
       payload: {
-        date: '2018-09',
+        date: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 隐患单位数量以及具体信息
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerCompany',
+      payload: {
+        date: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 已超时单位信息
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerOverTime',
+      payload: {
+        date: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 监督检查已查
+    dispatch({
+      type: 'bigPlatform/fetchCheckedCompanyInfo',
+      payload: {
+        date: moment().format('YYYY-MM'),
+        isChecked: '1',
+        isNormal: '1',
+        isOvertime: '1',
+        pageNum: 1,
+        pageSize: 1,
+      },
+    });
+
+    // 监督检查未查
+    dispatch({
+      type: 'bigPlatform/fetchCheckedCompanyInfo',
+      payload: {
+        date: moment().format('YYYY-MM'),
+        isChecked: '0',
+        isNormal: '1',
+        isOvertime: '1',
+        pageNum: 1,
+        pageSize: 1,
       },
     });
 
@@ -476,8 +518,6 @@ class GovernmentBigPlatform extends Component {
   };
 
   handleIconClick = company => {
-    console.log(company);
-
     const { dispatch } = this.props;
     const { companyId, infoWindowShow, comInfo } = this.state;
     const { id } = company;
@@ -532,7 +572,7 @@ class GovernmentBigPlatform extends Component {
       },
     });
 
-    // 风险点隐患
+    // 已超期隐患
     dispatch({
       type: 'bigPlatform/fetchHiddenDanger',
       payload: {
@@ -1243,32 +1283,6 @@ class GovernmentBigPlatform extends Component {
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
       },
     } = this.props;
-    // const riskDetailData =
-    //   riskDetailData && riskDetailData.length
-    //     ? riskDetailList.map(
-    //         ({
-    //           id,
-    //           desc: description,
-    //           report_user_name: sbr,
-    //           report_time: sbsj,
-    //           rectify_user_name: zgr,
-    //           plan_rectify_time: zgsj,
-    //           review_user_name: fcr,
-    //           status,
-    //           hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
-    //         }) => ({
-    //           id,
-    //           description,
-    //           sbr,
-    //           sbsj: moment(+sbsj).format('YYYY-MM-DD'),
-    //           zgr,
-    //           zgsj: moment(+zgsj).format('YYYY-MM-DD'),
-    //           fcr,
-    //           status: this.switchStatus(status),
-    //           background: background.split(',')[0],
-    //         })
-    //       )
-    //     : [];
     const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
     const newList = [...ycq, ...wcq, ...dfc];
     return (
@@ -1348,7 +1362,10 @@ class GovernmentBigPlatform extends Component {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>上报：</span>
+                    <span style={{ color: '#00A8FF' }}>
+                      上<span style={{ opacity: 0 }}>啊啊</span>
+                      报：
+                    </span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[sbr]}</span>
                       {item[sbsj]}
@@ -1363,10 +1380,15 @@ class GovernmentBigPlatform extends Component {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>整改：</span>
+                    <span style={{ color: '#00A8FF' }}>
+                      {item.status === '3' ? '实际' : '计划'}
+                      整改：
+                    </span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
-                      {item.status === '3' ? item.real_zgsj : item.plan_zgsj}
+                      <span style={{ color: item.status === '7' ? 'rgb(255, 72, 72)' : '#fff' }}>
+                        {item.status === '3' ? item.real_zgsj : item.plan_zgsj}
+                      </span>
                     </Ellipsis>
                   </div>
                   {+item[status] === 3 && (
@@ -1379,7 +1401,10 @@ class GovernmentBigPlatform extends Component {
                         lineHeight: '24px',
                       }}
                     >
-                      <span style={{ color: '#00A8FF' }}>复查：</span>
+                      <span style={{ color: '#00A8FF' }}>
+                        复<span style={{ opacity: 0 }}>啊啊</span>
+                        查：
+                      </span>
                       <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                         <span style={{ marginRight: '20px' }}>{item[fcr]}</span>
                       </Ellipsis>
@@ -1420,7 +1445,7 @@ class GovernmentBigPlatform extends Component {
   // 监督检查
   renderCheckInfo = () => {
     const {
-      bigPlatform: { checkInfo },
+      bigPlatform: { checkInfo, hiddenDangerCompany, hiddenDangerOverTime, checkedCompanyInfo },
     } = this.props;
     const { checks } = this.state;
     const stylesChecks = classNames(styles.sectionWrapper, rotate.flip, {
@@ -1451,17 +1476,18 @@ class GovernmentBigPlatform extends Component {
                     <span className={styles.iconCom1} />
                     <div className={styles.checksWrapper}>
                       已检查单位
-                      <div className={styles.checksNum}>{0}</div>
+                      <div className={styles.checksNum}>{checkedCompanyInfo.checked}</div>
                     </div>
                   </div>
                 </Col>
                 <Col span={12}>
+                  {/* <div className={styles.checksContentActive}> */}
                   <div className={styles.checksContent}>
                     <span className={styles.iconCom2} />
                     <div className={styles.checksWrapper}>
                       隐患单位
                       <span style={{ opacity: 0 }}>啊</span>
-                      <div className={styles.checksNum}>{0}</div>
+                      <div className={styles.checksNum}>{hiddenDangerCompany.length}</div>
                     </div>
                   </div>
                 </Col>
@@ -1470,16 +1496,17 @@ class GovernmentBigPlatform extends Component {
                     <span className={styles.iconCom3} />
                     <div className={styles.checksWrapper}>
                       未检查单位
-                      <div className={styles.checksNum}>{0}</div>
+                      <div className={styles.checksNum}>{checkedCompanyInfo.noChecked}</div>
                     </div>
                   </div>
                 </Col>
                 <Col span={12}>
-                  <div className={styles.checksContentActive}>
+                  {/* <div className={styles.checksContentActive}> */}
+                  <div className={styles.checksContent}>
                     <span className={styles.iconCom4} />
                     <div className={styles.checksWrapper}>
                       已超时单位
-                      <div className={styles.checksNum}>{0}</div>
+                      <div className={styles.checksNum}>{hiddenDangerOverTime.length}</div>
                     </div>
                   </div>
                 </Col>
@@ -1584,8 +1611,8 @@ class GovernmentBigPlatform extends Component {
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
         dangerLocationCompanyData,
         location,
+        checkedCompanyInfo,
       },
-      bigPlatformSafetyCompany: { selectList },
     } = this.props;
     let Anum = 0,
       Bnum = 0,
@@ -1666,8 +1693,8 @@ class GovernmentBigPlatform extends Component {
       },
       // 特种设备总数
       specialEquipment,
-      // 隐患总数
-      hiddenDanger: hiddenDangerNum,
+      // 已超期隐患总数
+      hiddenDanger: hiddenDangerOver,
     } = this.props.bigPlatform;
 
     const mapLegends = [
@@ -1929,7 +1956,7 @@ class GovernmentBigPlatform extends Component {
                           >
                             <div className={styles.topName}>本月监督检查</div>
                             <div className={styles.topNum} style={{ color: '#fff' }}>
-                              {overCheck}
+                              {checkedCompanyInfo.checked}
                             </div>
                           </div>
                         </Tooltip>
@@ -2076,13 +2103,14 @@ class GovernmentBigPlatform extends Component {
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              <Ellipsis
+                              {item.name}
+                              {/* <Ellipsis
                                 lines={1}
                                 style={{ maxWidth: '72%', margin: '0 auto' }}
                                 tooltip
                               >
                                 {item.name}
-                              </Ellipsis>
+                              </Ellipsis> */}
                             </div>
                           );
                         })}
@@ -2108,13 +2136,19 @@ class GovernmentBigPlatform extends Component {
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
                               {item.name}
-                              {/* <Ellipsis
-                                lines={1}
-                                style={{ maxWidth: '72%', margin: '0 auto' }}
-                                tooltip
+                              {/* <Tooltip
+                                placement="bottom"
+                                style={{
+                                  maxWidth: '72%',
+                                  margin: '0 auto',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                                title={item.name}
                               >
                                 {item.name}
-                              </Ellipsis> */}
+                              </Tooltip> */}
                             </div>
                           );
                         })}
@@ -2532,7 +2566,7 @@ class GovernmentBigPlatform extends Component {
                             <div className={styles.summaryText}>
                               <span className={styles.fieldName}>已超期隐患</span>
                             </div>
-                            <div className={styles.summaryNum}>{hiddenDangerNum}</div>
+                            <div className={styles.summaryNum}>{hiddenDangerOver}</div>
                           </Col>
                         </Row>
                       </div>

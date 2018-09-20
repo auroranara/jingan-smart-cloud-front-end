@@ -27,6 +27,7 @@ import {
   getCheckInfo,
   getHiddenDangerOverTime,
   getHiddenDangerListByDate,
+  getCheckedCompanyInfo,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -156,6 +157,12 @@ export default {
     // 监控数据
     monitorData: {},
     checkInfo: [],
+    hiddenDangerCompany: [],
+    hiddenDangerOverTime: [],
+    checkedCompanyInfo: {
+      checked: 0,
+      noChecked: 0,
+    },
   },
 
   effects: {
@@ -524,10 +531,10 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'hiddenDangerCompany',
-          payload: response.data,
+          payload: response.data.dangerCompany || [],
         });
         if (success) {
-          success(response.data);
+          success(response);
         }
       } else if (error) {
         error();
@@ -539,7 +546,7 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'checkInfo',
-          payload: response.data.list,
+          payload: response.data.list || [],
         });
         if (success) {
           success(response.data.list);
@@ -554,7 +561,7 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'hiddenDangerOverTime',
-          payload: response.data,
+          payload: response.data.list || [],
         });
         if (success) {
           success(response.data);
@@ -570,6 +577,21 @@ export default {
         yield put({
           type: 'hiddenDangerListByDate',
           payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 根据时间查询隐患列表
+    *fetchCheckedCompanyInfo({ payload, success, error }, { call, put }) {
+      const response = yield call(getCheckedCompanyInfo, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'checkedCompanyInfo',
+          payload: { number: response.data.allTotal || 0, isChecked: payload.isChecked },
         });
         if (success) {
           success(response.data);
@@ -744,6 +766,18 @@ export default {
       return {
         ...state,
         hiddenDangerListByDate: payload,
+      };
+    },
+    checkedCompanyInfo(state, { payload }) {
+      let obj = {};
+      if (payload.isChecked === '0') obj = { noChecked: payload.number };
+      if (payload.isChecked === '1') obj = { checked: payload.number };
+      return {
+        ...state,
+        checkedCompanyInfo: {
+          ...state.checkedCompanyInfo,
+          ...obj,
+        },
       };
     },
   },

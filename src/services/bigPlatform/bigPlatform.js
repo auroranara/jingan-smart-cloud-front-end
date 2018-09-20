@@ -87,6 +87,11 @@ export async function getHiddenDangerListByDate(params) {
   return request(`/acloud_new/v2/sfg/hiddenDangerListByDate.json?${stringify(params)}`);
 }
 
+// 监督检查已查/未查企业信息
+export async function getCheckedCompanyInfo(params) {
+  return request(`/acloud_new/v2/sfm/getCheckedCompanyInfo.json?${stringify(params)}`);
+}
+
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
 export async function getCoItemList(params) {

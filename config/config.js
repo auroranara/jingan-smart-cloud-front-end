@@ -13,6 +13,7 @@ const hosts = {
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18081', // 开发
   test: '192.168.10.68:18082', // 测试
+  pro: '192.168.10.68:18083', // 测试
   mock: '118.126.110.115:3001/mock/28',
   jb: '192.168.10.3', // 杰宝
   gj: '192.168.10.9', //高进
@@ -24,7 +25,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.jb}`,
+      target: `http://${hosts.dev}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -34,7 +35,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.dev}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

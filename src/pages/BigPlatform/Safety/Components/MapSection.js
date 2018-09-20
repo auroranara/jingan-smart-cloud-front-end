@@ -8,6 +8,8 @@ import styles from './MapSection.less';
 import MapSearch from '../../FireControl/components/MapSearch';
 import MapTypeBar from './MapTypeBar';
 
+import govdotRed from '../img/govdot-red.png';
+
 const { location: locationDefault } = global.PROJECT_CONFIG;
 @connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSection extends PureComponent {
@@ -49,7 +51,7 @@ class MapSection extends PureComponent {
       infoWindowShow: true,
     });
     if (this.mapInstance) {
-      this.mapInstance.setZoom(18);
+      // this.mapInstance.setZoom(18);
       this.mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     }
     this.props.handleIconClick({ latitude, longitude, id });
@@ -99,11 +101,50 @@ class MapSection extends PureComponent {
               infoWindowShow: true,
             });
             this.props.handleIconClick({ id: extData.id, ...extData.position });
+            // this.handleIconClick({ id: extData.id, ...extData.position });
           },
         }}
         render={this.renderMarkerLayout}
       />
     );
+  };
+
+  handleIconClick = company => {
+    const { dispatch } = this.props;
+    const { id } = company;
+    // 企业信息
+    dispatch({
+      type: 'bigPlatform/fetchCompanyMessage',
+      payload: {
+        company_id: id,
+        month: '2018-09',
+      },
+      success: response => {},
+    });
+    // 特种设备
+    dispatch({
+      type: 'bigPlatform/fetchSpecialEquipment',
+      payload: {
+        company_id: id,
+      },
+    });
+    // 风险点隐患
+    dispatch({
+      type: 'bigPlatform/fetchRiskDetail',
+      payload: {
+        company_id: id,
+        source_type: '3',
+      },
+    });
+
+    // 风险点隐患
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDanger',
+      payload: {
+        company_id: id,
+        status: '7',
+      },
+    });
   };
 
   renderCluserMarker = lvl => {
@@ -124,11 +165,7 @@ class MapSection extends PureComponent {
       >
         {/* <Tooltip placement="bottom" title={company_name} mouseLeaveDelay={0}> */}
         {level === 'A' && (
-          <img
-            src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
-            alt=""
-            style={{ display: 'block', width: '26px', height: '26px' }}
-          />
+          <img src={govdotRed} alt="" style={{ display: 'block', width: '20px', height: '20px' }} />
         )}
         {level === 'B' && (
           <img
@@ -279,6 +316,8 @@ class MapSection extends PureComponent {
     const { searchValue } = this.state;
     const {
       bigPlatformSafetyCompany: { selectList },
+      center,
+      zoom,
     } = this.props;
 
     return (
@@ -294,8 +333,8 @@ class MapSection extends PureComponent {
           }}
           useAMapUI
           mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
-          center={[locationDefault.x, locationDefault.y]}
-          zoom={locationDefault.zoom}
+          center={center}
+          zoom={zoom}
           events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
         >
           {this.renderInfoWindow()}
