@@ -52,7 +52,7 @@ const transformHiddenDangerFields = ({
   fcr: review_user_name,
   status: +status,
   background: background?background.split(',')[0]:'',
-  source: source_type_name,
+  source: (source_type_name === '网格点上报' && '监督点') || (source_type_name === '风险点上报' && '风险点') || source_type_name,
 });
 
 export default {

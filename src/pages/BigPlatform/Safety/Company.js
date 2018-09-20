@@ -1537,6 +1537,8 @@ class CompanyLayout extends PureComponent {
     const {
       bigPlatform: {
         countDangerLocationForCompany: {
+          // 未评级总数
+          countDangerLocation: [{ red: r, orange: o, yellow: y, blue: b, not_rated=0 } = {}] = [{}],
           redDangerResult: {
             normal: redNormal=[],
             checking: redChecking=[],
@@ -1571,6 +1573,9 @@ class CompanyLayout extends PureComponent {
       },
     } = this.props;
     const { riskStatus } = this.state;
+    // 是否全部未评级
+    const isAllUnvalued = (r+o+y+b) === 0;
+    // 获取对应状态的风险点
     let redDangerResult, orangeDangerResult, yellowDangerResult, blueDangerResult, unvaluedDangerResult;
     if (riskStatus === 1) {
       redDangerResult = redNormal;
@@ -1607,6 +1612,7 @@ class CompanyLayout extends PureComponent {
       blueDangerResult = [...blueAbnormal, ...blueOver, ...blueChecking, ...blueNormal];
       unvaluedDangerResult = [...unvaluedAbnormal, ...unvaluedOver, ...unvaluedChecking, ...unvaluedNormal];
     }
+    // 获取对应状态的评级数量统计
     const red = redDangerResult.length;
     const orange = orangeDangerResult.length;
     const yellow = yellowDangerResult.length;
@@ -1622,9 +1628,6 @@ class CompanyLayout extends PureComponent {
     const className = classNames(styles.sectionWrapper, styles.risk);
     // 滚动类名
     const scrollClassName = classNames(styles.innerBox, styles.riskScroll);
-
-    // 是否全部未评级
-    const isAllUnvalued = (red+orange+yellow+blue) === 0;
 
     return (
       <section
@@ -1688,7 +1691,7 @@ class CompanyLayout extends PureComponent {
                   </div>
                 </div>
 
-                {unvalued !== 0 && (
+                {not_rated !== 0 && (
                   <div className={styles.riskLevelItem}>
                     <div className={styles.riskLevelItemValue}>{unvalued}</div>
                     <div className={styles.riskLevelItemName} style={{ color: '#4F6793' }}>

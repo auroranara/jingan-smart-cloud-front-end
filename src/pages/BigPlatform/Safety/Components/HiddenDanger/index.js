@@ -70,7 +70,7 @@ export default class App extends PureComponent {
           </div>
           <div style={{ flex: 1  }}>
             <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>上<span style={{ opacity: 0 }}>隐藏</span>报：</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[sbr]}</span>{data[sbsj]}</Ellipsis></div>
-            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>{isDFC?'实际整改：':'计划整改：'}</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} ><span className={styles.riskDetailItemTextFirstChild}>{data[zgr]}</span>{isDFC?data[real_zgsj]:data[plan_zgsj]}</Ellipsis></div>
+            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>{isDFC?'实际整改：':'计划整改：'}</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} ><span className={styles.riskDetailItemTextFirstChild}>{data[zgr]}</span><span style={{ color: isYCQ?'#ff4848':undefined }}>{isDFC?data[real_zgsj]:data[plan_zgsj]}</span></Ellipsis></div>
             {isDFC && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>复<span style={{ opacity: 0 }}>隐藏</span>查：</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[fcr]}</span></Ellipsis></div>}
             {isSourceShow && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>来<span style={{ opacity: 0 }}>隐藏</span>源：</span><Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[source]}</span></Ellipsis></div>}
           </div>
