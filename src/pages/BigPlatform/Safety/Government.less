@@ -1,7 +1,6 @@
 @imgUrl: 'http://data.jingan-china.cn/v2/big-platform/safety/gov';
 @comImgUrl2: 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 @govImgUrl2: 'http://data.jingan-china.cn/v2/big-platform/safety/gov/';
-@safetyLoc: './Img/';
 .main {
   width: 100%;
   height: 100vh;
@@ -73,6 +72,7 @@
       height: 30px;
       display: inline-block;
       padding-left: 10px;
+      font-weight: bold;
       .titleBlock {
         display: inline-block;
         width: 18px;
@@ -235,6 +235,56 @@
               font-size: 18px;
             }
           }
+        }
+        .checksContent {
+          line-height: 27px;
+          text-align: center;
+          width: 155px;
+          padding: 5px 0;
+          margin: 0 auto;
+          border-radius: 5px;
+          .checksIcon {
+            display: inline-block;
+            position: relative;
+            margin-right: 12px;
+            height: 40px;
+            width: 40px; // top: 4px;
+          }
+          .iconCom1 {
+            .checksIcon;
+            background: url('@{govImgUrl2}icon-company1.png') no-repeat center center;
+            background-size: 100% 100%;
+          }
+          .iconCom2 {
+            .checksIcon;
+            background: url('@{govImgUrl2}icon-company2.png') no-repeat center center;
+            background-size: 100% 100%;
+          }
+          .iconCom3 {
+            .checksIcon;
+            background: url('@{govImgUrl2}icon-company3.png') no-repeat center center;
+            background-size: 100% 100%;
+          }
+          .iconCom4 {
+            .checksIcon;
+            background: url('@{govImgUrl2}icon-company4.png') no-repeat center center;
+            background-size: 100% 100%;
+          }
+          .checksWrapper {
+            display: inline-block;
+            text-align: left;
+            .checksNum {
+              font-size: 18px;
+            }
+          }
+        }
+        .checksContentActive {
+          .checksContent;
+          cursor: pointer;
+        }
+        .checksContentActive:hover {
+          background-color: rgba(9, 103, 211, 0.2);
+          box-shadow: 0 0 1em rgba(0, 168, 255, 0.5) inset;
         }
         .scrollContainer {
           flex: 1;
