@@ -138,22 +138,23 @@ export default class GlobalHeaderRight extends PureComponent {
               </span>
             </Dropdown>
           )}
-        {currentUser && (
-          <Tooltip title="数据维护">
-            <span
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.action}
-              title="数据维护"
-              onClick={this.handleGoGsafe}
-            >
-              <Icon type="hdd" />
-              <span style={{ marginLeft: 8, marginRight: 8, verticalAlign: 'middle' }}>
-                数据维护
+        {currentUser &&
+          currentUser.unitType === 3 && (
+            <Tooltip title="数据维护">
+              <span
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.action}
+                title="数据维护"
+                onClick={this.handleGoGsafe}
+              >
+                <Icon type="hdd" />
+                <span style={{ marginLeft: 8, marginRight: 8, verticalAlign: 'middle' }}>
+                  数据维护
+                </span>
               </span>
-            </span>
-          </Tooltip>
-        )}
+            </Tooltip>
+          )}
         {currentUser.userName ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
