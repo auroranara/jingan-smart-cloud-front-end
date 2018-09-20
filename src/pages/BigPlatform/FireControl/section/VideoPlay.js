@@ -15,11 +15,6 @@ class VideoPlay extends Component {
     videoSrc: '',
     activeIndex: 0,
   };
-  // componentDidMount() {}
-
-  // componentWillUnmount() {
-  //   console.log('video unmount');
-  // }
 
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
@@ -38,9 +33,8 @@ class VideoPlay extends Component {
   }
 
   handleInit = () => {
-    const { dispatch, actionType, videoList, keyId } = this.props;
-    const firstKeyId = videoList[0] && videoList[0].key_id;
-
+    const { dispatch, videoList, keyId } = this.props;
+    if (!keyId) return;
     // 清空视频链接
     this.setState({ videoSrc: '' });
 
@@ -48,7 +42,7 @@ class VideoPlay extends Component {
       type: 'videoPlay/fetchStartToPlay',
       // type: actionType,
       payload: {
-        key_id: keyId || firstKeyId,
+        key_id: keyId,
       },
       success: response => {
         this.setState({
@@ -116,10 +110,14 @@ class VideoPlay extends Component {
   };
 
   handleClose = () => {
-    this.refs.source.handelDestroy();
-    //销毁hls
-    this.props.handleVideoClose();
-    // console.log('source', this.refs.source);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'videoPlay/clearVideo',
+      callback: () => {
+        this.props.handleVideoClose();
+        this.refs.source.handelDestroy();
+      },
+    });
   };
 
   renderPan = () => {
