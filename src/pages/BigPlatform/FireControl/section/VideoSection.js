@@ -10,7 +10,7 @@ const GUTTER = 12;
 const ROW_STYLE = { height: '50%', paddingBottom: 6 };
 const COL_STYLE = { height: '100%', paddingTop: 6 };
 
-const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/monitor/com/waterBg.png';
+const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/monitor/com/waterBg1.png';
 
 // const PLAY_STYLE = {
 //   left: '50%',
@@ -24,7 +24,7 @@ const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/monitor/com/water
 export default class VideoSection extends PureComponent {
   state = { chosen: -1 };
 
-  setIndex = (index) => {
+  setIndex = index => {
     this.setState({ chosen: index });
   };
 
@@ -71,14 +71,20 @@ export default class VideoSection extends PureComponent {
       </div>
     ));
 
-    let videoItems = <img src={emptyIcon} alt="空图片" width="200" height="200" className={styles.emptyIcon} />;
+    let videoItems = (
+      <img src={emptyIcon} alt="空图片" width="170" height="170" className={styles.emptyIcon} />
+    );
     if (srcList.length)
-        videoItems = [...Array(2).keys()].map(i => (
-          <Row key={i} gutter={GUTTER} style={ROW_STYLE}>
-            <Col span={12} style={COL_STYLE}>{videos[2 * i]}</Col>
-            <Col span={12} style={COL_STYLE}>{videos[2 * i + 1]}</Col>
-          </Row>
-        ));
+      videoItems = [...Array(2).keys()].map(i => (
+        <Row key={i} gutter={GUTTER} style={ROW_STYLE}>
+          <Col span={12} style={COL_STYLE}>
+            {videos[2 * i]}
+          </Col>
+          <Col span={12} style={COL_STYLE}>
+            {videos[2 * i + 1]}
+          </Col>
+        </Row>
+      ));
 
     return (
       <FcSection title="视频监控" isBack {...restProps}>
