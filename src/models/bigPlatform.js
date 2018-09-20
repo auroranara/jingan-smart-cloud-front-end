@@ -32,6 +32,20 @@ import {
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
+const getColorByRiskLevel = function(level) {
+  switch(+level) {
+    case 1:
+    return '红色';
+    case 2:
+    return '橙色';
+    case 3:
+    return '黄色';
+    case 4:
+    return '蓝色';
+    default:
+    return '';
+  }
+}
 const transformHiddenDangerFields = ({
   id,
   item_id,
@@ -45,7 +59,10 @@ const transformHiddenDangerFields = ({
   status,
   hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
   source_type_name,
-}) => ({
+  companyBuildingItem,
+}) => {
+  const { object_title, risk_level } = companyBuildingItem || {};
+  return ({
   id,
   item_id,
   description: desc,
@@ -57,8 +74,8 @@ const transformHiddenDangerFields = ({
   fcr: review_user_name,
   status: +status,
   background: background?background.split(',')[0]:'',
-  source: (source_type_name === '网格点上报' && '监督点') || (source_type_name === '风险点上报' && '风险点') || source_type_name,
-});
+  source: (source_type_name === '网格点上报' && '监督点') || (source_type_name === '风险点上报' && `${getColorByRiskLevel(risk_level)}风险点${object_title?`（${object_title}）`:''}`) || source_type_name,
+})};
 
 export default {
   namespace: 'bigPlatform',
