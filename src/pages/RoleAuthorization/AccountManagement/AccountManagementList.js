@@ -23,7 +23,7 @@ import {
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
-import VisibilitySensor from 'react-visibility-sensor';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -238,11 +238,11 @@ export default class accountManagementList extends PureComponent {
   };
 
   /* 滚动加载 */
-  handleLoadMore = flag => {
+  handleLoadMore = () => {
     const {
       account: { isLast },
     } = this.props;
-    if (!flag || isLast) {
+    if (isLast) {
       return;
     }
     const {
@@ -514,22 +514,22 @@ export default class accountManagementList extends PureComponent {
                       code={codesMap.account.addAssociatedUnit}
                       to={`/role-authorization/account-management/associated-unit/add/${
                         item.loginId
-                      }`}
+                        }`}
                     >
                       关联单位
                     </AuthLink>,
                   ]}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <div>
                     <Col span={12}>
@@ -562,7 +562,7 @@ export default class accountManagementList extends PureComponent {
                           <Popconfirm
                             title={`确定要${
                               !!item.users[0].accountStatus ? '解绑' : '开启'
-                            }关联企业吗？`}
+                              }关联企业吗？`}
                             onConfirm={() =>
                               this.handleAccountStatus({
                                 accountStatus: Number(!item.users[0].accountStatus),
@@ -579,15 +579,15 @@ export default class accountManagementList extends PureComponent {
                               {!!item.users[0].accountStatus ? (
                                 <Icon type="link" />
                               ) : (
-                                <Icon style={{ color: 'red' }} type="disconnect" />
-                              )}
+                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                )}
                             </AuthSpan>
                           </Popconfirm>
                         </Col>
                       </Row>
                     ) : (
-                      <p>{getEmptyData()}</p>
-                    )}
+                        <p>{getEmptyData()}</p>
+                      )}
                     <p
                       onClick={() => this.handleViewMore(item.users, item.loginId)}
                       style={{
@@ -623,10 +623,10 @@ export default class accountManagementList extends PureComponent {
               <span>{val}</span>
             </Fragment>
           ) : (
-            <Fragment>
-              <span>运营企业</span>
-            </Fragment>
-          );
+              <Fragment>
+                <span>运营企业</span>
+              </Fragment>
+            );
         },
       },
       {
@@ -660,8 +660,8 @@ export default class accountManagementList extends PureComponent {
                   {!!row.accountStatus ? (
                     <Icon type="link" />
                   ) : (
-                    <Icon style={{ color: 'red' }} type="disconnect" />
-                  )}
+                      <Icon style={{ color: 'red' }} type="disconnect" />
+                    )}
                 </AuthSpan>
               </Popconfirm>
             </Fragment>
@@ -720,15 +720,26 @@ export default class accountManagementList extends PureComponent {
       <PageHeaderLayout title="账号管理" breadcrumbList={breadcrumbList} content={content}>
         <BackTop />
         {this.renderForm()}
-        {this.renderList()}
-        {this.renderModal()}
-        {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
             </div>
-          )}
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
+        {this.renderModal()}
       </PageHeaderLayout>
     );
   }

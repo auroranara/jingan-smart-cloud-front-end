@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Card, Button, Spin, List, Modal, message, TreeSelect } from 'antd';
 import { Link, routerRedux } from 'dva/router';
-import VisibilitySensor from 'react-visibility-sensor';
+import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -148,8 +148,11 @@ export default class RoleList extends PureComponent {
   }
 
   /* 滚动加载 */
-  handleLoadMore = flag => {
-    if (!flag) {
+  handleLoadMore = () => {
+    const {
+      role: { isLast },
+    } = this.props;
+    if (isLast) {
       return;
     }
     const {
@@ -372,24 +375,24 @@ export default class RoleList extends PureComponent {
                       编辑
                     </Link>,
                   ]}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <div
                     onClick={
                       hasDetailAuthority
                         ? () => {
-                            goToDetail(id);
-                          }
+                          goToDetail(id);
+                        }
                         : null
                     }
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
@@ -431,14 +434,25 @@ export default class RoleList extends PureComponent {
         }
       >
         {this.renderForm()}
-        {this.renderList()}
-        {isInit && !isLast && <VisibilitySensor onChange={this.handleLoadMore} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
             </div>
-          )}
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
       </PageHeaderLayout>
     );
   }
