@@ -36,16 +36,16 @@
     }
   },
   "dependencies": {
-    "@antv/data-set": "^0.9.0",
+    "@antv/data-set": "^0.9.6",
     "@commitlint/cli": "^7.0.0",
     "@commitlint/config-conventional": "^7.0.1",
-    "antd": "^3.9.0",
-    "bizcharts": "^3.1.10",
+    "antd": "^3.9.2",
+    "bizcharts": "^3.2.2",
     "bizcharts-plugin-slider": "^2.0.3",
     "classnames": "^2.2.6",
     "coordtransform": "^2.1.2",
     "crypto-js": "^3.1.9-1",
-    "dva": "^2.3.1",
+    "dva": "^2.4.0",
     "dva-loading": "^2.0.3",
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.14",
@@ -60,9 +60,11 @@
     "path-to-regexp": "^2.2.1",
     "prop-types": "^15.6.2",
     "qs": "^6.5.2",
+    "rc-animate": "^2.4.4",
+    "react": "^16.5.1",
+    "react-dom": "^16.5.1",
     "rc-select": "^8.2.0",
     "react-amap": "^1.2.7",
-    "react-bmap": "^1.0.78",
     "react-container-query": "^0.11.0",
     "react-copy-to-clipboard": "^5.0.1",
     "react-document-title": "^2.0.3",
@@ -72,7 +74,8 @@
     "rollbar": "^2.4.2",
     "setprototypeof": "^1.1.0",
     "url-polyfill": "^1.0.13",
-    "video-react": "^0.13.0"
+    "video-react": "^0.13.0",
+    "react-visibility-sensor": "^3.11.0"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.0.0-beta.53",
@@ -105,14 +108,13 @@
     "mockjs": "^1.0.1-beta3",
     "prettier": "1.14.2",
     "pro-download": "^1.0.1",
-    "react-visibility-sensor": "^4.1.0",
     "redbox-react": "^1.5.0",
     "regenerator-runtime": "^0.12.0",
     "stylelint": "^9.4.0",
     "stylelint-config-prettier": "^4.0.0",
     "stylelint-config-standard": "^18.0.0",
-    "umi": "^2.0.0",
-    "umi-plugin-react": "^1.0.0"
+    "umi": "^2.0.1",
+    "umi-plugin-react": "^1.0.1"
   },
   "optionalDependencies": {
     "puppeteer": "^1.6.0"
