@@ -2,9 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Icon, Input, Modal, message, Spin, Popconfirm } from 'antd';
 import { Link, routerRedux } from 'dva/router';
-import VisibilitySensor from 'react-visibility-sensor';
 import InfiniteScroll from 'react-infinite-scroller';
-import debounce from 'lodash/debounce';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
@@ -523,7 +521,8 @@ export default class CompanyList extends PureComponent {
 
         <InfiniteScroll
           pageStart={0}
-          loadMore={pageNum => {
+          loadMore={() => {
+            // 防止多次加载
             !loading && this.handleLoadMore();
           }}
           hasMore={!isLast}
