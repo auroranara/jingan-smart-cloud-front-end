@@ -26,6 +26,8 @@ export default {
       transmissionCount: '',
     },
     list: [],
+    pageNum: 1,
+    isLast: false,
     deviceList: [],
     companyDetail: {},
   },
@@ -145,11 +147,25 @@ export default {
 
   reducers: {
     queryList(state, action) {
-      const { pageNum, list } = action.payload;
+      const {
+        list,
+        pagination,
+        pagination: { pageNum, pageSize, total },
+        transmissionCount,
+      } = action.payload;
       let nextList = list;
       if (pageNum !== 1) nextList = state.list.concat(list);
-
-      return { ...state, data: action.payload, list: nextList };
+      return {
+        ...state,
+        data: {
+          list: nextList,
+          pagination,
+          transmissionCount,
+        },
+        pageNum,
+        list: nextList,
+        isLast: pageNum * pageSize >= total,
+      };
     },
     queryDetail(state, action) {
       // console.log('action.payload', action.payload);
