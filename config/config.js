@@ -13,6 +13,7 @@ const hosts = {
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18081', // 开发
   test: '192.168.10.68:18082', // 测试
+  pro: '192.168.10.68:18083', // 测试
   mock: '118.126.110.115:3001/mock/28',
   jb: '192.168.10.3', // 杰宝
   gj: '192.168.10.9', //高进
@@ -24,7 +25,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.sqz}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -34,7 +35,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.sqz}`,
+      target: `http://${hosts.dev}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -58,8 +59,8 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie10'],
-        // dynamicImport: true,
+        polyfills: ['ie9'],
+        dynamicImport: true,
         dll: {
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
           exclude: ['@babel/runtime'],

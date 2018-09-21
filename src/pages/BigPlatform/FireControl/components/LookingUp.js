@@ -71,7 +71,7 @@ export default class LookingUp extends Component {
               },
             },
             {
-              value: 100.0 - n,
+              value: 100.0 - p,
               itemStyle: { opacity: 0.6 },
               label: { show: false },
             },

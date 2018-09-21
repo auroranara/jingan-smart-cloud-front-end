@@ -11,9 +11,11 @@ import MapSearch from '../FireControl/components/MapSearch';
 import debounce from 'lodash/debounce';
 import Ellipsis from '../../../components/Ellipsis';
 
-import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
+import { Map as GDMap, Marker, InfoWindow, Markers } from 'react-amap';
 import ReactEcharts from 'echarts-for-react';
-import MapTypeBar from './Components/MapTypeBar';
+import MapSection from './Components/MapSection';
+import MyTooltip from '../FireControl/section/Tooltip';
+// import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -53,7 +55,7 @@ const getSeal = status => {
 };
 
 const { location: locationDefault } = global.PROJECT_CONFIG;
-const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点'];
+const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点', '未评级风险点'];
 @connect(({ bigPlatform, bigPlatformSafetyCompany }) => ({
   bigPlatform,
   bigPlatformSafetyCompany,
@@ -93,6 +95,7 @@ class GovernmentBigPlatform extends Component {
       riskColors: false, // 风险点
       hdDetail: false, // 已超期隐患详情
       hiddenDanger: false, // 隐患详情
+      checks: false, // 监督检查
       companyId: '',
       riskTitle: '红色风险点',
       riskSummary: {
@@ -103,6 +106,9 @@ class GovernmentBigPlatform extends Component {
       filter: 'All',
       legendActive: null,
       searchValue: '',
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
     };
   }
 
@@ -186,6 +192,56 @@ class GovernmentBigPlatform extends Component {
     // 查找重点和非重点单位
     dispatch({
       type: 'bigPlatform/fetchSearchAllCompany',
+    });
+
+    // 专职人员检查信息
+    dispatch({
+      type: 'bigPlatform/fetchCheckInfo',
+      payload: {
+        date: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 隐患单位数量以及具体信息
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerCompany',
+      payload: {
+        date: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 已超时单位信息
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerOverTime',
+      payload: {
+        date: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 监督检查已查
+    dispatch({
+      type: 'bigPlatform/fetchCheckedCompanyInfo',
+      payload: {
+        date: moment().format('YYYY-MM'),
+        isChecked: '1',
+        isNormal: '1',
+        isOvertime: '1',
+        pageNum: 1,
+        pageSize: 1,
+      },
+    });
+
+    // 监督检查未查
+    dispatch({
+      type: 'bigPlatform/fetchCheckedCompanyInfo',
+      payload: {
+        date: moment().format('YYYY-MM'),
+        isChecked: '0',
+        isNormal: '1',
+        isOvertime: '1',
+        pageNum: 1,
+        pageSize: 1,
+      },
     });
 
     // requestAnimationFrame(this.resolveAnimationFrame);
@@ -273,120 +329,6 @@ class GovernmentBigPlatform extends Component {
     }
   };
 
-  renderCompanyMarker() {
-    const { location } = this.props.bigPlatform;
-    const { filter } = this.state;
-    return location.map(company => {
-      const position = this.analysisPointData(company.location);
-      const level = company.level;
-      if (filter !== level && filter !== 'All') return null;
-      let offset = [-1, 17];
-      if (level === 'A') {
-        offset = [-5, 14];
-      }
-
-      return (
-        <Marker
-          position={{ longitude: position.longitude, latitude: position.latitude }}
-          key={company.company_id}
-          offset={offset}
-          events={{
-            click: this.handleIconClick.bind(this, {
-              longitude: position.longitude,
-              latitude: position.latitude,
-              id: company.company_id,
-            }),
-            // mouseover: this.handleIconEnter.bind(this, {
-            //   longitude: position.longitude,
-            //   latitude: position.latitude,
-            //   id: company.company_id,
-            //   name: company.company_name,
-            // }),
-            // mouseleave: () => {
-            //   this.setState({ tooltipVisible: false });
-            // },
-          }}
-        >
-          <Tooltip
-            placement="bottom"
-            title={company.company_name}
-            // visible={tooltipVisible}
-            // trigger="hover"
-          >
-            {level === 'A' && (
-              <img
-                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-red.svg"
-                alt=""
-                style={{ display: 'block', width: '26px', height: '26px' }}
-              />
-            )}
-            {level === 'B' && (
-              <img
-                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-orange2.png"
-                alt=""
-                style={{ display: 'block', width: '20px', height: '20px' }}
-              />
-            )}
-            {level === 'C' && (
-              <img
-                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-yel2.png"
-                alt=""
-                style={{ display: 'block', width: '20px', height: '20px' }}
-              />
-            )}
-            {level === 'D' && (
-              <img
-                src="http://data.jingan-china.cn/v2/big-platform/safety/govdot-blue2.png"
-                alt=""
-                style={{ display: 'block', width: '20px', height: '20px' }}
-              />
-            )}
-          </Tooltip>
-        </Marker>
-      );
-    });
-  }
-
-  // 按level筛选地图企业
-  filterPoint = filter => {
-    this.setState({
-      filter,
-    });
-  };
-
-  analysisPointData = data => {
-    // POINT ()
-    const str = data.substring(7, data.length - 1);
-    const point = str.split(' ');
-    return {
-      longitude: point[0],
-      latitude: point[1],
-    };
-  };
-
-  // 弹窗渲染
-  renderInfoWindow() {
-    const { infoWindowShow, infoWindow } = this.state;
-    const position = {
-      longitude: infoWindow.longitude,
-      latitude: infoWindow.latitude,
-    };
-    return (
-      <InfoWindow
-        position={position}
-        offset={[-7, 10]}
-        isCustom={false}
-        autoMove={false}
-        visible={infoWindowShow}
-        events={{ close: this.handleHideInfoWindow }}
-      >
-        <div style={{ padding: '0 5px 0 13px' }} className={styles.companyLabel}>
-          <div>{infoWindow.companyName}</div>
-        </div>
-      </InfoWindow>
-    );
-  }
-
   handleIconEnter = company => {
     const { id, longitude, latitude, name } = company;
     this.setState({
@@ -422,6 +364,7 @@ class GovernmentBigPlatform extends Component {
       payload: {
         company_id: id,
         month: moment().format('YYYY-MM'),
+        status: '7',
       },
       success: response => {
         this.goComponent('comInfo');
@@ -452,15 +395,6 @@ class GovernmentBigPlatform extends Component {
       payload: {
         company_id: id,
         source_type: '3',
-      },
-    });
-
-    // 风险点隐患
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDanger',
-      payload: {
-        company_id: id,
-        status: '7',
       },
     });
   };
@@ -506,11 +440,12 @@ class GovernmentBigPlatform extends Component {
           blue,
           blue_abnormal,
           blue_company,
+          not_rated,
+          not_rated_abnormal,
+          not_rated_company,
         },
       },
     } = this.props;
-    const colorList = ['#e81c02', '#ea760a', '#e9e517', '#1a52d9'];
-    const comMap = [red_company, orange_company, yellow_company, blue_company];
     const lightGray = {
       type: 'linear',
       x: 0,
@@ -529,6 +464,98 @@ class GovernmentBigPlatform extends Component {
       ],
       globalCoord: false, // 缺省为 false
     };
+    const gradientsRed = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#e81c02', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#7e1001', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsOrange = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#ea760a', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#793d05', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsYel = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#e9e517', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#7e7c0d', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsBlue = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#1a52d9', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#0f307f', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const gradientsGray = {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 0,
+      y2: 1,
+      colorStops: [
+        {
+          offset: 0,
+          color: '#4f6793', // 0% 处的颜色
+        },
+        {
+          offset: 1,
+          color: '#28344a', // 100% 处的颜色
+        },
+      ],
+      globalCoord: false, // 缺省为 false
+    };
+    const colorList = [gradientsRed, gradientsOrange, gradientsYel, gradientsBlue, gradientsGray];
+    const comMap = [red_company, orange_company, yellow_company, blue_company, not_rated_company];
     const option = {
       legend: {
         show: false,
@@ -604,7 +631,7 @@ class GovernmentBigPlatform extends Component {
             color: '#fff',
             fontSize: 14,
           },
-          data: ['红', '橙', '黄', '蓝'],
+          data: ['红', '橙', '黄', '蓝', '未评级'],
         },
         {
           type: 'category',
@@ -613,7 +640,7 @@ class GovernmentBigPlatform extends Component {
           axisLabel: { show: false },
           splitArea: { show: false },
           splitLine: { show: false },
-          data: ['红', '橙', '黄', '蓝'],
+          data: ['红', '橙', '黄', '蓝', '未评级'],
         },
       ],
       series: [
@@ -635,7 +662,7 @@ class GovernmentBigPlatform extends Component {
           barGap: '0%',
           barWidth: '36%',
           barCategoryGap: '50%',
-          data: [red, orange, yellow, blue],
+          data: [red, orange, yellow, blue, not_rated],
         },
         {
           name: '异常',
@@ -652,7 +679,7 @@ class GovernmentBigPlatform extends Component {
           barGap: '0%',
           barWidth: '25%',
           barCategoryGap: '50%',
-          data: [red_abnormal, orange_abnormal, yellow_abnormal, blue_abnormal],
+          data: [red_abnormal, orange_abnormal, yellow_abnormal, blue_abnormal, not_rated_abnormal],
         },
       ],
     };
@@ -706,6 +733,9 @@ class GovernmentBigPlatform extends Component {
             blue,
             blue_abnormal,
             blue_company,
+            not_rated,
+            not_rated_abnormal,
+            not_rated_company,
           },
         },
       } = this.props;
@@ -729,6 +759,11 @@ class GovernmentBigPlatform extends Component {
           risk: blue,
           abnormal: blue_abnormal,
           company: blue_company,
+        },
+        {
+          risk: not_rated,
+          abnormal: not_rated_abnormal,
+          company: not_rated_company,
         },
       ];
       dispatch({
@@ -846,6 +881,7 @@ class GovernmentBigPlatform extends Component {
       this.setState({
         infoWindowShow: false,
       });
+      // return;
     }
     this.setState({
       comIn: false, // 接入单位统计
@@ -855,6 +891,9 @@ class GovernmentBigPlatform extends Component {
       hdCom: false, // 隐患单位统计
       comInfo: false, // 企业信息
       riskColors: false, // 风险点
+      hdDetail: false, // 已超期隐患详情
+      hiddenDanger: false, // 隐患详情
+      checks: false, // 监督检查
     });
     setTimeout(() => {
       this.setState({
@@ -902,6 +941,7 @@ class GovernmentBigPlatform extends Component {
       riskColors: false,
       hdDetail: false,
       hiddenDanger: false,
+      checks: false,
     });
     setTimeout(() => {
       this.setState(obj);
@@ -1037,40 +1077,32 @@ class GovernmentBigPlatform extends Component {
     }
   };
 
+  showTooltip = (e, name) => {
+    const offset = e.target.getBoundingClientRect();
+    this.setState({
+      tooltipName: name,
+      tooltipVisible: true,
+      tooltipPosition: [offset.left, offset.top],
+    });
+  };
+
+  hideTooltip = () => {
+    this.setState({
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
+    });
+  };
+
   renderComRisk = () => {
     const {
       bigPlatform: {
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
       },
     } = this.props;
-    // const riskDetailData =
-    //   riskDetailData && riskDetailData.length
-    //     ? riskDetailList.map(
-    //         ({
-    //           id,
-    //           desc: description,
-    //           report_user_name: sbr,
-    //           report_time: sbsj,
-    //           rectify_user_name: zgr,
-    //           plan_rectify_time: zgsj,
-    //           review_user_name: fcr,
-    //           status,
-    //           hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
-    //         }) => ({
-    //           id,
-    //           description,
-    //           sbr,
-    //           sbsj: moment(+sbsj).format('YYYY-MM-DD'),
-    //           zgr,
-    //           zgsj: moment(+zgsj).format('YYYY-MM-DD'),
-    //           fcr,
-    //           status: this.switchStatus(status),
-    //           background: background.split(',')[0],
-    //         })
-    //       )
-    //     : [];
-    const { id, description, sbr, sbsj, zgr, zgsj, fcr, status, background } = defaultFieldNames;
+    const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
     const newList = [...ycq, ...wcq, ...dfc];
+    console.log(newList);
     return (
       <div>
         {newList.length !== 0 ? (
@@ -1148,7 +1180,10 @@ class GovernmentBigPlatform extends Component {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>上报：</span>
+                    <span style={{ color: '#00A8FF' }}>
+                      上<span style={{ opacity: 0 }}>啊啊</span>
+                      报：
+                    </span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[sbr]}</span>
                       {item[sbsj]}
@@ -1163,10 +1198,15 @@ class GovernmentBigPlatform extends Component {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>整改：</span>
+                    <span style={{ color: '#00A8FF' }}>
+                      {item.status === 3 ? '实际' : '计划'}
+                      整改：
+                    </span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
-                      {item[zgsj]}
+                      <span style={{ color: item.status === 7 ? 'rgb(255, 72, 72)' : '#fff' }}>
+                        {item.status === 3 ? item.real_zgsj : item.plan_zgsj}
+                      </span>
                     </Ellipsis>
                   </div>
                   {+item[status] === 3 && (
@@ -1179,7 +1219,10 @@ class GovernmentBigPlatform extends Component {
                         lineHeight: '24px',
                       }}
                     >
-                      <span style={{ color: '#00A8FF' }}>复查：</span>
+                      <span style={{ color: '#00A8FF' }}>
+                        复<span style={{ opacity: 0 }}>啊啊</span>
+                        查：
+                      </span>
                       <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                         <span style={{ marginRight: '20px' }}>{item[fcr]}</span>
                       </Ellipsis>
@@ -1217,6 +1260,125 @@ class GovernmentBigPlatform extends Component {
     });
   };
 
+  // 监督检查
+  renderCheckInfo = () => {
+    const {
+      bigPlatform: { checkInfo, hiddenDangerCompany, hiddenDangerOverTime, checkedCompanyInfo },
+    } = this.props;
+    const { checks } = this.state;
+    const stylesChecks = classNames(styles.sectionWrapper, rotate.flip, {
+      [rotate.in]: checks,
+      [rotate.out]: !checks,
+    });
+    return (
+      <section
+        className={stylesChecks}
+        style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
+      >
+        <div className={styles.sectionWrapperIn}>
+          <div className={styles.sectionTitle}>
+            <span className={styles.titleBlock} />
+            监督检查
+          </div>
+          <div
+            className={styles.backBtn}
+            onClick={() => {
+              this.goBack();
+            }}
+          />
+          <div className={styles.sectionMain}>
+            <div className={styles.sectionContent}>
+              <Row style={{ borderBottom: '2px solid #0967d3', padding: '6px 0' }}>
+                <Col span={12}>
+                  <div className={styles.checksContent}>
+                    <span className={styles.iconCom1} />
+                    <div className={styles.checksWrapper}>
+                      已检查单位
+                      <div className={styles.checksNum}>{checkedCompanyInfo.checked}</div>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  {/* <div className={styles.checksContentActive}> */}
+                  <div className={styles.checksContent}>
+                    <span className={styles.iconCom2} />
+                    <div className={styles.checksWrapper}>
+                      隐患单位
+                      <span style={{ opacity: 0 }}>啊</span>
+                      <div className={styles.checksNum}>{hiddenDangerCompany.length}</div>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div className={styles.checksContent}>
+                    <span className={styles.iconCom3} />
+                    <div className={styles.checksWrapper}>
+                      未检查单位
+                      <div className={styles.checksNum}>{checkedCompanyInfo.noChecked}</div>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={12}>
+                  {/* <div className={styles.checksContentActive}> */}
+                  <div className={styles.checksContent}>
+                    <span className={styles.iconCom4} />
+                    <div className={styles.checksWrapper}>
+                      已超时单位
+                      <div className={styles.checksNum}>{hiddenDangerOverTime.length}</div>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              <div className={styles.tableTitleWrapper}>
+                <span className={styles.tableTitle}>
+                  {' '}
+                  专职人员检查（
+                  {checkInfo.length}）
+                </span>
+              </div>
+              <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
+                <table className={styles.scrollTable}>
+                  <thead>
+                    <tr>
+                      <th style={{ width: '25%' }}>姓名</th>
+                      <th style={{ width: '25%' }}>监管单位</th>
+                      <th style={{ width: '25%' }}>已巡查单位</th>
+                      <th style={{ width: '25%' }}>隐患单位</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {checkInfo.map((item, index) => {
+                      return (
+                        <tr key={item.id}>
+                          <td>{item.user_name}</td>
+                          <td>{item.companyNum}</td>
+                          <td>{item.fireCheckCompanyCount}</td>
+                          <td
+                            style={{
+                              color: item.hiddenCompanyNum
+                                ? 'rgba(232, 103, 103, 0.8)'
+                                : 'rgba(255, 255, 255, 0.7)',
+                              cursor: item.hiddenCompanyNum ? 'pointer' : 'text',
+                            }}
+                            onClick={() => {
+                              console.log(111);
+                            }}
+                          >
+                            {item.hiddenCompanyNum}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  };
+
   render() {
     const {
       scrollNodeTop,
@@ -1235,9 +1397,12 @@ class GovernmentBigPlatform extends Component {
       center,
       zoom,
       companyId,
-      legendActive,
       hiddenDanger,
-      searchValue,
+      infoWindow,
+      tooltipVisible,
+      tooltipName,
+      tooltipPosition,
+      infoWindowShow,
     } = this.state;
     const {
       dispatch,
@@ -1258,21 +1423,12 @@ class GovernmentBigPlatform extends Component {
         govFulltimeWorkerList: { total: fulltimeWorker, list: fulltimeWorkerList },
         overRectifyCompany,
         searchAllCompany: { dataImportant, dataUnimportantCompany },
-        riskDetailList,
+        riskDetailList: { ycq = [], wcq = [], dfc = [] },
         dangerLocationCompanyData,
+        location,
+        checkedCompanyInfo,
       },
-      bigPlatformSafetyCompany: { selectList },
     } = this.props;
-    let Anum = 0,
-      Bnum = 0,
-      Cnum = 0,
-      Dnum = 0;
-    companyLevelDto.forEach(item => {
-      if (item.level === 'A') Anum = item.num;
-      if (item.level === 'B') Bnum = item.num;
-      if (item.level === 'C') Cnum = item.num;
-      if (item.level === 'D') Dnum = item.num;
-    });
 
     // communityCom: true, // 社区接入单位数
     // comIn: false, // 接入单位统计
@@ -1337,37 +1493,17 @@ class GovernmentBigPlatform extends Component {
           // 风险点总数
           countCheckItem,
           // 安全人员总数
+
+          hiddenDangers: riskDetailList2,
         },
         isImportant,
+        total: hiddenDangerOver,
       },
       // 特种设备总数
       specialEquipment,
-      // 隐患总数
-      hiddenDanger: hiddenDangerNum,
+      // 已超期隐患总数
+      // hiddenDanger: hiddenDangerOver,
     } = this.props.bigPlatform;
-
-    const mapLegends = [
-      {
-        level: 'A',
-        icon: styles.dotRed,
-        number: Anum,
-      },
-      {
-        level: 'B',
-        icon: styles.dotOrange,
-        number: Bnum,
-      },
-      {
-        level: 'C',
-        icon: styles.dotYel,
-        number: Cnum,
-      },
-      {
-        level: 'D',
-        icon: styles.dotBlue,
-        number: Dnum,
-      },
-    ];
 
     return (
       <div className={styles.main}>
@@ -1392,7 +1528,6 @@ class GovernmentBigPlatform extends Component {
                     style={{ display: 'flex', flexDirection: 'column' }}
                   >
                     <div className={styles.hdArea} id="hdArea">
-                      {/* <Bar data={salesData} height={areaHeight} /> */}
                       <ReactEcharts
                         option={this.getHdBarOption()}
                         style={{ height: '100%', width: '100%' }}
@@ -1407,6 +1542,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#fc1f02' }}
                         />
                         红色风险点
+                        <span style={{ opacity: 0 }}>点</span>
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1415,6 +1551,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#ed7e12' }}
                         />
                         橙色风险点
+                        <span style={{ opacity: 0 }}>点</span>
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1423,6 +1560,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#fbf719' }}
                         />
                         黄色风险点
+                        <span style={{ opacity: 0 }}>点</span>
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1431,6 +1569,15 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#1e60ff' }}
                         />
                         蓝色风险点
+                        <span style={{ opacity: 0 }}>点</span>
+                      </div>
+
+                      <div className={styles.legendItem}>
+                        <span
+                          className={styles.legendIcon}
+                          style={{ backgroundColor: '#4f6793' }}
+                        />
+                        未评级风险点
                       </div>
 
                       <div className={styles.legendItem}>
@@ -1439,7 +1586,7 @@ class GovernmentBigPlatform extends Component {
                           style={{ backgroundColor: '#bfbfbf' }}
                         />
                         异常状态
-                        <span style={{ opacity: 0 }}>点</span>
+                        <span style={{ opacity: 0 }}>点点</span>
                       </div>
                     </div>
                   </div>
@@ -1583,6 +1730,22 @@ class GovernmentBigPlatform extends Component {
                           </div>
                         </Tooltip>
                       </div>
+
+                      {/* <div className={styles.topItem}>
+                        <Tooltip placement="bottom" title={'本月监督检查的数量'}>
+                          <div
+                            className={styles.itemActive}
+                            onClick={() => {
+                              this.goComponent('checks');
+                            }}
+                          >
+                            <div className={styles.topName}>本月监督检查</div>
+                            <div className={styles.topNum} style={{ color: '#fff' }}>
+                              {checkedCompanyInfo.checked}
+                            </div>
+                          </div>
+                        </Tooltip>
+                      </div> */}
                       <Tooltip placement="bottom" title={'截止当前所有已整改隐患数'}>
                         <div className={styles.topItem}>
                           <div className={styles.topName}>已整改隐患</div>
@@ -1599,89 +1762,21 @@ class GovernmentBigPlatform extends Component {
               <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
                 <div className={styles.sectionWrapperIn}>
                   <div className={styles.sectionMain} style={{ border: 'none' }}>
-                    <div className={styles.mapContainer}>
-                      <GDMap
-                        amapkey="665bd904a802559d49a33335f1e4aa0d"
-                        plugins={[
-                          { name: 'Scale', options: { locate: false } },
-                          { name: 'ToolBar', options: { locate: false } },
-                        ]}
-                        status={{
-                          keyboardEnable: false,
-                        }}
-                        useAMapUI
-                        mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
-                        center={center}
-                        zoom={zoom}
-                        events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
-                      >
-                        {this.renderCompanyMarker()}
-                        {this.renderInfoWindow()}
-                        <MapTypeBar />
-                        <div
-                          className={styles.allPoint}
-                          onClick={() => {
-                            this.filterPoint('All');
-                            this.setState({
-                              center: [locationDefault.x, locationDefault.y],
-                              infoWindowShow: false,
-                              legendActive: null,
-                              searchValue: '',
-                            });
-                            if (this.mapInstance) {
-                              this.mapInstance.setZoom(locationDefault.zoom);
-                            }
-                            if (this.state.comInfo) {
-                              this.goBack();
-                            }
-                            // this.refs.mapSearch.handleClear();
-                          }}
-                        >
-                          <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
-                          重置
-                        </div>
-                      </GDMap>
-
-                      {/* <MapSearch
-                        style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-                        handleSelect={this.handleSearchSelect}
-                        ref="mapSearch"
-                      /> */}
-                      <MapSearch
-                        style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-                        // list={newList}
-                        selectList={selectList}
-                        value={searchValue}
-                        handleChange={this.handleInputChange}
-                        handleSelect={this.handleSearchSelect}
-                      />
-
-                      <Row className={styles.mapLegend}>
-                        {mapLegends.map((item, index) => {
-                          const { level, icon, number } = item;
-                          const legendStyles = classNames(styles.legendItem, {
-                            [styles.notActive]: legendActive !== index && legendActive !== null,
-                          });
-                          return (
-                            <Col span={6} key={level}>
-                              <span
-                                className={legendStyles}
-                                onClick={() => {
-                                  this.filterPoint(level);
-                                  this.setState({
-                                    legendActive: index,
-                                  });
-                                }}
-                              >
-                                <span className={icon} />
-                                {level}
-                                类单位 （{number}）
-                              </span>
-                            </Col>
-                          );
-                        })}
-                      </Row>
-                    </div>
+                    <MapSection
+                      dispatch={dispatch}
+                      locData={location}
+                      zoom={zoom}
+                      center={center}
+                      handleIconClick={this.handleIconClick}
+                      infoWindow={infoWindow}
+                      infoWindowShow={infoWindowShow}
+                      companyLevelDto={companyLevelDto}
+                      goBack={this.goBack}
+                      comInfo={comInfo}
+                      showTooltip={this.showTooltip}
+                      hideTooltip={this.hideTooltip}
+                      handleHideInfoWindow={this.handleHideInfoWindow}
+                    />
                   </div>
                 </div>
               </section>
@@ -1723,13 +1818,14 @@ class GovernmentBigPlatform extends Component {
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              <Ellipsis
+                              {item.name}
+                              {/* <Ellipsis
                                 lines={1}
                                 style={{ maxWidth: '72%', margin: '0 auto' }}
                                 tooltip
                               >
                                 {item.name}
-                              </Ellipsis>
+                              </Ellipsis> */}
                             </div>
                           );
                         })}
@@ -1754,13 +1850,20 @@ class GovernmentBigPlatform extends Component {
                               }}
                             >
                               <span className={styles.scrollOrder}>{index + 1}</span>
-                              <Ellipsis
-                                lines={1}
-                                style={{ maxWidth: '72%', margin: '0 auto' }}
-                                tooltip
+                              {item.name}
+                              {/* <Tooltip
+                                placement="bottom"
+                                style={{
+                                  maxWidth: '72%',
+                                  margin: '0 auto',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                                title={item.name}
                               >
                                 {item.name}
-                              </Ellipsis>
+                              </Tooltip> */}
                             </div>
                           );
                         })}
@@ -1849,19 +1952,20 @@ class GovernmentBigPlatform extends Component {
                         <table className={styles.scrollTable}>
                           <thead>
                             <tr>
-                              <th style={{ width: '54%' }}>姓名</th>
-                              <th>电话</th>
+                              <th />
+                              <th style={{ width: '26%' }}>姓名</th>
+                              <th style={{ width: '35%' }}>电话</th>
+                              <th>管辖社区</th>
                             </tr>
                           </thead>
                           <tbody>
                             {fulltimeWorkerList.map((item, index) => {
                               return (
-                                <tr key={item.phone_number}>
-                                  <td>
-                                    <span className={styles.tableOrder}>{index + 1}</span>
-                                    {item.user_name}
-                                  </td>
+                                <tr key={index}>
+                                  <td>{index + 1}</td>
+                                  <td>{item.user_name}</td>
                                   <td>{item.phone_number}</td>
+                                  <td>{item.gridName ? item.gridName.split(',').join('/') : ''}</td>
                                 </tr>
                               );
                             })}
@@ -2074,7 +2178,6 @@ class GovernmentBigPlatform extends Component {
                           option={this.getRankBarOption()}
                           style={{ height: '100%', width: '100%' }}
                           className="echarts-for-echarts"
-                          // onChartReady={this.onHdAreaReadyCallback}
                         />
                       </div>
 
@@ -2175,7 +2278,7 @@ class GovernmentBigPlatform extends Component {
                             <div className={styles.summaryText}>
                               <span className={styles.fieldName}>已超期隐患</span>
                             </div>
-                            <div className={styles.summaryNum}>{hiddenDangerNum}</div>
+                            <div className={styles.summaryNum}>{hiddenDangerOver}</div>
                           </Col>
                         </Row>
                       </div>
@@ -2183,7 +2286,7 @@ class GovernmentBigPlatform extends Component {
                       <div className={styles.tableTitleWrapper} style={{ borderBottom: 'none' }}>
                         <span className={styles.tableTitle}>
                           风险点隐患（
-                          {riskDetailList.length}）
+                          {ycq.length + wcq.length + dfc.length}）
                         </span>
                       </div>
 
@@ -2334,9 +2437,17 @@ class GovernmentBigPlatform extends Component {
                   </div>
                 </div>
               </section>
+
+              {this.renderCheckInfo()}
             </Col>
           </Row>
         </article>
+        <MyTooltip
+          visible={tooltipVisible}
+          title={tooltipName}
+          position={tooltipPosition}
+          offset={[10, 30]}
+        />
       </div>
     );
   }

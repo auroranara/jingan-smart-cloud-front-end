@@ -48,7 +48,7 @@ const fieldLabels = {
   userType: '用户类型',
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
-  regulatoryClassification: '监管分类',
+  regulatoryClassification: '业务分类',
 };
 
 // 单位类型对应的id
@@ -851,12 +851,12 @@ export default class AssociatedUnit extends PureComponent {
                     {getFieldDecorator('regulatoryClassification', {
                       initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [
-                        { required: true, message: '请选择监管分类' },
+                        { required: true, message: '请选择业务分类' },
                       ],
                     })(
                       <Select
                         mode="multiple"
-                        placeholder="请选择监管分类"
+                        placeholder="请选择业务分类"
                       >
                         {Supervisions.map(item => (
                           <Option value={item.id} key={item.id}>{item.label}</Option>
@@ -935,7 +935,7 @@ export default class AssociatedUnit extends PureComponent {
                 })(
                   <Transfer
                     dataSource={roleList}
-                    titles={['所选角色', '角色列表']}
+                    titles={['可选角色', '已选角色']}
                     render={item => item.title}
                   />
                 )}

@@ -4,7 +4,7 @@ export default {
   namespace: 'videoPlay',
 
   state: {
-    // allCamera: [],
+    videoId: '',
     startToPlay: '',
   },
 
@@ -14,26 +14,43 @@ export default {
     //   const { list } = response;
     //   yield put({ type: 'saveAllCamera', payload: list });
     // },
-    *fetchStartToPlay({ payload, success }, { call, put }) {
+
+    // 'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8'
+    // http://218.90.184.178:23389/hls/dangkou/test.m3u8
+    *fetchStartToPlay({ payload, success }, { call, put, select }) {
+      let videoId = yield select(state => state.videoPlay.videoId);
+      // console.log('开始的videoId', videoId);
+      // 只有当一开始没有视频或者请求的key与返回的key相同时候 才会播放
+      if (videoId && payload.key_id !== videoId) return;
+
       const response = yield call(getStartToPlay, payload);
-      // if (payload.key_id === 'zhutongdao') {
-      //   response = { src: 'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8' };
-      // } else if (payload.key_id === 'erdaomenchukou') {
-      //   response = { src: 'http://218.90.184.178:23389/hls/dangkou/test.m3u8' };
-      // }
       if (response && response.code === 200) {
-        yield put({ type: 'startToPlay', payload: { src: response.data.url } });
+        let videoId = yield select(state => state.videoPlay.videoId);
+        if (videoId && response.data.key_id !== videoId) return;
+        yield put({
+          type: 'saveVideo',
+          payload: { src: response.data.url, videoId: response.data.key_id },
+        });
         if (success) success(response);
       }
     },
-  },
 
+    *clearVideo({ payload, callback }, { put }) {
+      yield put({
+        type: 'saveVideo',
+        payload: { src: '', videoId: '' },
+      });
+
+      if (callback) callback();
+    },
+  },
   reducers: {
     // saveAllCamera(state, action) {
     //   return { ...state, allCamera: action.payload };
     // },
-    // startToPlay(state, action) {
-    //   return { ...state, startToPlay: action.payload };
-    // },
+    saveVideo(state, action) {
+      // console.log('saveVideo', action.payload.videoId);
+      return { ...state, startToPlay: action.payload.src, videoId: action.payload.videoId };
+    },
   },
-}
+};

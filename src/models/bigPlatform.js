@@ -23,10 +23,29 @@ import {
   getAllCamera,
   getStartToPlay,
   getMonitorData,
+  getHiddenDangerCompany,
+  getCheckInfo,
+  getHiddenDangerOverTime,
+  getHiddenDangerListByDate,
+  getCheckedCompanyInfo,
   getStaffList,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
+const getColorByRiskLevel = function(level) {
+  switch(+level) {
+    case 1:
+    return '红色';
+    case 2:
+    return '橙色';
+    case 3:
+    return '黄色';
+    case 4:
+    return '蓝色';
+    default:
+    return '';
+  }
+}
 const transformHiddenDangerFields = ({
   id,
   item_id,
@@ -40,7 +59,10 @@ const transformHiddenDangerFields = ({
   status,
   hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
   source_type_name,
-}) => ({
+  companyBuildingItem,
+}) => {
+  const { object_title, risk_level } = companyBuildingItem || {};
+  return ({
   id,
   item_id,
   description: desc,
@@ -52,8 +74,8 @@ const transformHiddenDangerFields = ({
   fcr: review_user_name,
   status: +status,
   background: background?background.split(',')[0]:'',
-  source: source_type_name,
-});
+  source: (source_type_name === '网格点上报' && '监督点') || (source_type_name === '风险点上报' && `${getColorByRiskLevel(risk_level)}风险点${object_title?`（${object_title}）`:''}`) || source_type_name,
+})};
 
 export default {
   namespace: 'bigPlatform',
@@ -151,6 +173,13 @@ export default {
     startToPlay: '',
     // 监控数据
     monitorData: {},
+    checkInfo: [],
+    hiddenDangerCompany: [],
+    hiddenDangerOverTime: [],
+    checkedCompanyInfo: {
+      checked: 0,
+      noChecked: 0,
+    },
     // 人员巡查记录
     staffList: [],
   },
@@ -548,6 +577,81 @@ export default {
         error();
       }
     },
+    // 隐患单位数量以及具体信息
+    *fetchHiddenDangerCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getHiddenDangerCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'hiddenDangerCompany',
+          payload: response.data.dangerCompany || [],
+        });
+        if (success) {
+          success(response);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 专职人员检查信息
+    *fetchCheckInfo({ payload, success, error }, { call, put }) {
+      const response = yield call(getCheckInfo, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'checkInfo',
+          payload: response.data.list || [],
+        });
+        if (success) {
+          success(response.data.list);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 已超时单位信息
+    *fetchHiddenDangerOverTime({ payload, success, error }, { call, put }) {
+      const response = yield call(getHiddenDangerOverTime, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'hiddenDangerOverTime',
+          payload: response.data.list || [],
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 根据时间查询隐患列表
+    *fetchHiddenDangerListByDate({ payload, success, error }, { call, put }) {
+      const response = yield call(getHiddenDangerListByDate, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'hiddenDangerListByDate',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 根据时间查询隐患列表
+    *fetchCheckedCompanyInfo({ payload, success, error }, { call, put }) {
+      const response = yield call(getCheckedCompanyInfo, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'checkedCompanyInfo',
+          payload: { number: response.data.allTotal || 0, isChecked: payload.isChecked },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
     // 巡查人员列表
     *fetchStaffList({ payload, success, error }, { call, put }) {
       const response = yield call(getStaffList, payload);
@@ -708,6 +812,42 @@ export default {
       return {
         ...state,
         monitorData: payload,
+      };
+    },
+    hiddenDangerCompany(state, { payload }) {
+      return {
+        ...state,
+        hiddenDangerCompany: payload,
+      };
+    },
+    checkInfo(state, { payload }) {
+      return {
+        ...state,
+        checkInfo: payload,
+      };
+    },
+    hiddenDangerOverTime(state, { payload }) {
+      return {
+        ...state,
+        hiddenDangerOverTime: payload,
+      };
+    },
+    hiddenDangerListByDate(state, { payload }) {
+      return {
+        ...state,
+        hiddenDangerListByDate: payload,
+      };
+    },
+    checkedCompanyInfo(state, { payload }) {
+      let obj = {};
+      if (payload.isChecked === '0') obj = { noChecked: payload.number };
+      if (payload.isChecked === '1') obj = { checked: payload.number };
+      return {
+        ...state,
+        checkedCompanyInfo: {
+          ...state.checkedCompanyInfo,
+          ...obj,
+        },
       };
     },
     saveStaffList(state, { payload: staffList }) {

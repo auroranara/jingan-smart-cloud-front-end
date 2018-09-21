@@ -48,7 +48,7 @@ const fieldLabels = {
   userType: '用户类型',
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
-  regulatoryClassification: '监管分类',
+  regulatoryClassification: '业务分类',
 };
 
 // 单位类型对应的id
@@ -227,18 +227,18 @@ export default class accountManagementEdit extends PureComponent {
     const success = id
       ? undefined
       : () => {
-          this.setState({
-            unitTypeChecked: 4,
-          });
-          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-          fetchUnitsFuzzy({
-            payload: {
-              unitType: 4,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
-        };
+        this.setState({
+          unitTypeChecked: 4,
+        });
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: 4,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
+      };
 
     // 如果id存在的话，就获取详情，即编辑状态
     if (id) {
@@ -634,8 +634,8 @@ export default class accountManagementEdit extends PureComponent {
                   id ? (
                     <span>{loginName}</span>
                   ) : (
-                    <Input placeholder="请输入用户名" min={1} max={20} />
-                  )
+                      <Input placeholder="请输入用户名" min={1} max={20} />
+                    )
                 )}
               </Form.Item>
             </Col>
@@ -727,7 +727,7 @@ export default class accountManagementEdit extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.unitType}>
                   {getFieldDecorator('unitType', {
-                    initialValue: id ? unitType : unitTypes.length === 0 ? undefined : '企事业主体',
+                    initialValue: id ? unitType : unitTypes.length === 0 ? undefined : 4,
                     rules: [
                       {
                         required: true,
@@ -895,9 +895,9 @@ export default class accountManagementEdit extends PureComponent {
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
                       // initialValue:
-                      rules: [{ required: true, message: '请选择监管分类' }],
+                      rules: [{ required: true, message: '请选择业务分类' }],
                     })(
-                      <Select mode="multiple" placeholder="请选择监管分类">
+                      <Select mode="multiple" placeholder="请选择业务分类">
                         {Supervisions.map(item => (
                           <Option value={item.id} key={item.id}>
                             {item.label}

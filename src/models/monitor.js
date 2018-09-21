@@ -32,6 +32,7 @@ export default {
     chartDeviceList: [],
     gsmsHstData: {},
     electricityPieces: {},
+    chartParams: {},
   },
 
   effects: {
@@ -154,6 +155,13 @@ export default {
         error();
       }
     },
+    *fetchChartParams({ payload }, { call, put }) {
+      let response = yield call(getDeviceConfig, payload);
+      response = response || EMPTY_OBJECT;
+      const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+      if (code === 200)
+        yield put({ type: 'saveChartParams', payload: data });
+    },
   },
 
   reducers: {
@@ -212,6 +220,9 @@ export default {
           ...obj,
         },
       };
+    },
+    saveChartParams(state, action) {
+      return { ...state, chartParams: action.payload };
     },
   },
 };
