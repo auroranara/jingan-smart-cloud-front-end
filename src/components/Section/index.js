@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import debounce from 'lodash/debounce';
 import { Icon } from 'antd';
-import isArray from '@/utils/utils.js';
-import styles from './Section.less';
+import { isArray } from '@/utils/utils.js';
+import styles from './index.less';
 
 /* 默认的关闭按钮内容 */
 const defaultCloseContent = (
@@ -29,13 +29,19 @@ export default class App extends PureComponent {
       startIndex: 0,
     };
     // resize添加去抖
-    this.resize = debounce(this.resize, 300, { leading: true, trailing: false });
+    this.resize = debounce(this.resize, 100, { leading: true, trailing: false });
     // 轮播定时器（当开启轮播且内容超出时添加）
     this.carouselTimer = null;
+    // 轮播定时器起始时间
+    this.startTimestamp = null;
     // 过渡动画定时器
     this.transitionTimer = null;
     // 过渡起始时间戳
     this.startTransitionTimestamp = null;
+    // 子元素高度
+    this.itemHeight = 0;
+    // 列表加上间隔的高度
+    this.listHeight = 0;
   }
 
   /**
@@ -51,8 +57,12 @@ export default class App extends PureComponent {
   /**
    * 组件更新
    */
-  componentDidUpdate() {
-
+  componentDidUpdate({ children: prevChildren }) {
+    const { children } = this.props;
+    // 比较源数据的key是否发生变化，如果发生变化就重新计算内容高度
+    if (children.length !== prevChildren.length) {
+      this.resize();
+    }
   }
 
   /**
@@ -62,21 +72,25 @@ export default class App extends PureComponent {
     // 清除事件监听
     window.removeEventListener('resize', this.resize, false);
     // 清除轮播定时器
-    clearTimeout(this.carouselTimer);
+    this.clearCarousel()
+    // 清除过渡定时器
+    this.clearTransition();
   }
 
   /**
    * 判断是否内容超出容器高度
    */
   resize = () => {
+    const { splitHeight=0 } = this.props;
+    const { isOverflow } = this.state;
     // 判断是否内容超出容器高度
-    const isOverflow = this.container.scrollHeight > this.container.offsetHeight;
+    const nextIsOverflow = isOverflow ? (this.container.scrollHeight - splitHeight) / 2 > this.container.offsetHeight  : this.container.scrollHeight > this.container.offsetHeight;
     // 修改state
     this.setState({
-      isOverflow,
+      isOverflow: nextIsOverflow,
     });
     // 重置轮播定时器
-    this.resetCarousel(isOverflow);
+    this.resetCarousel(nextIsOverflow);
   }
 
   /**
@@ -86,27 +100,109 @@ export default class App extends PureComponent {
     // 由于每次在添加定时器时需要先检测是否开启轮播及内容超出，所以将检测放到这里
     const { isCarousel } = this.props;
     // 清除轮播定时器
-    clearTimeout(this.carouselTimer);
+    this.clearCarousel();
     // 当开启轮播且内容超出时添加定时器
     if (isCarousel && isOverflow) {
-      this.carouselTimer = setTimeout(this.transition, 5000);
+      const callback = (timestamp) => {
+        if (!this.startTimestamp) {
+          this.startTimestamp = timestamp;
+        }
+        const progress = timestamp - this.startTimestamp;
+        if (progress >= 5000) {
+          this.startTimestamp = null;
+          this.transition();
+        }
+        this.carouselTimer = window.requestAnimationFrame(callback);
+      }
+      // 立即执行
+      this.carouselTimer = window.requestAnimationFrame(callback);
     }
   }
 
   /**
-   * 过渡动画
+   * 过渡动画（）
    */
   transition = () => {
+    // 从props中获取间隔元素的高度
+    const { splitHeight = 0 } = this.props;
+    let {
+      length,
+      scrollTop,
+      itemHeight,
+      count,
+      restHeight,
+    } = this.getScrollParams();
+    // 计算需要滚动的距离
+    let target;
+    // 如果滚过数量不等于剩余数量，或者间隔不存在时，则目标滚动参考距离为子元素高度
+    if (splitHeight === 0 || count !== length) {
+      target = itemHeight - restHeight;
+      count += 1;
+    }
+    // 如果滚过数量等于剩余数量，并且剩余高度小于间隔高度，则目标滚动参考距离为间隔高度
+    else if (restHeight < splitHeight) {
+      target = splitHeight - restHeight;
+      count += 1;
+    }
+    // 如果滚过数量等于剩余数量，并且剩余高度大于等于间隔高度，则目标滚动参考距离为间隔高度加子元素高度
+    else {
+      target = itemHeight - restHeight + splitHeight;
+      count += 2;
+    }
+    // 是否滚过一半列表
+    const flag = splitHeight === 0 ? (count === length) : (count === length + 1);
+    // 滚动时长
+    const duration = 600;
+    // 动画回调
+    const callback = (timestamp) => {
+      if (!this.startTransitionTimestamp) {
+        this.startTransitionTimestamp = timestamp;
+      }
+      const progress = timestamp - this.startTransitionTimestamp;
+      this.container.scrollTop = scrollTop + Math.min(progress/duration*target, target)
+      if (progress >= duration) {
+        this.startTransitionTimestamp = null;
+        // 当列表滚动正好经过间隔时
+        if (flag) {
+          this.container.scrollTop = 0;
+        }
+      }
+      else {
+        this.transitionTimer = window.requestAnimationFrame(callback);
+      }
+    };
+    // 立即执行
+    this.transitionTimer = window.requestAnimationFrame(callback);
+  }
+
+  /**
+   * 获取列表相关数据
+   */
+  getScrollParams = () => {
     // 从props中获取间隔元素的高度，（假装children为数组）
     const { splitHeight = 0, children } = this.props;
+    // 获取children长度
+    const length = children.length;
     // 获取容器的scrollHeight
     const scrollHeight = this.list.scrollHeight;
     // 获取容器的scrollTop
     const scrollTop = this.container.scrollTop;
+    // 单份children的高度
+    const listHeight = (scrollHeight - splitHeight) / 2;
     // 获取子元素高度
-    // const itemHeight = splitHeight !== 0 ? ( / 2 - splitHeight) / children.length : this.list.scrollHeight / this.list.childNodes.length;
-    // 获取当前scrollTop
-
+    const itemHeight = listHeight / length;
+    // 计算已经滚过的子元素的数量
+    let count = Math.floor(scrollTop / itemHeight);
+    // 计算除去已经滚动的子元素数量剩余的高度
+    const restHeight = scrollTop % itemHeight;
+    return {
+      length,
+      listHeight: listHeight + (+splitHeight),
+      scrollTop,
+      itemHeight,
+      count,
+      restHeight,
+    };
   }
 
   /**
@@ -153,7 +249,7 @@ export default class App extends PureComponent {
       }));
       // 鼠标移入时
       if (isMouseEnter) {
-        return children.concat(split, copyChildren).slice(startIndex, startIndex-children.length);
+        return children.slice(startIndex).concat(split, copyChildren.slice(0, startIndex));
       }
       else {
         return children.concat(split, copyChildren);
@@ -166,28 +262,74 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 开启轮播时鼠标移入（注：只在开启轮播时有效）
+   * 清除轮播定时器
    */
-  handleMouseEnter = () => {
-    // 当鼠标移入时获取当前的scrollTop计算需要截取的索引，并重置scrollTop
-    // 清除轮播定时器
-    clearTimeout(this.carouselTimer);
-    // 修改state变量
-    this.setState({
-      isMouseEnter: true,
-    });
+  clearCarousel = () => {
+    window.cancelAnimationFrame(this.carouselTimer);
+    this.startTimestamp = null;
   }
 
   /**
-   * 开启轮播时鼠标移出（注：只在开启轮播时有效）
+   * 清除过渡定时器
+   */
+  clearTransition = () => {
+    window.cancelAnimationFrame(this.transitionTimer);
+    this.startTransitionTimestamp = null;
+  }
+
+  /**
+   * 开启轮播时鼠标移入（注：只在开启轮播且内容超出时有效）
+   */
+  handleMouseEnter = () => {
+    const { isOverflow } = this.state;
+    if (isOverflow) {
+      const {
+        // 列表高度
+        listHeight,
+        // 子元素高度
+        itemHeight,
+        // 计算已经滚过的子元素数量作为起始索引
+        count,
+        // 计算剩余的高度作为新的scrollTop
+        restHeight,
+      } = this.getScrollParams();
+      // 保存子元素高度，鼠标移出时使用
+      this.itemHeight = itemHeight;
+      this.listHeight = listHeight;
+      // 停止动画
+      this.clearTransition();
+      // 清除轮播定时器
+      this.clearCarousel();
+      // 修改state变量
+      this.setState({
+        isMouseEnter: true,
+        startIndex: count,
+      }, () => {
+        // 重置scrollTop
+        this.container.scrollTop = restHeight;
+      });
+    }
+  }
+
+  /**
+   * 开启轮播时鼠标移出（注：只在开启轮播且内容超出时有效）
    */
   handleMouseLeave = () => {
-    // 重置轮播定时器
-    this.resetCarousel();
-    // 修改state变量
-    this.setState({
-      isMouseEnter: false,
-    });
+    const { startIndex, isOverflow } = this.state;
+    if (isOverflow) {
+      // 重置轮播定时器
+      this.resetCarousel();
+      // 计算目标scrollTop
+      const scrollTop = (startIndex*this.itemHeight + this.container.scrollTop) % this.listHeight;
+      // 修改state变量
+      this.setState({
+        isMouseEnter: false,
+        startIndex: 0,
+      }, () => {
+        // 重置当前的scrollTop
+        this.container.scrollTop = scrollTop;
+      });
+    }
   }
 
   render() {
