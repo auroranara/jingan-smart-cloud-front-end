@@ -2,22 +2,30 @@
   width: 100%;
   height: 100%;
   position: relative;
+
   // padding: 12px 10px;
   :global {
+    .amap-controlbar {
+      top: 45px !important;
+    }
+
     .amap-toolbar.amap-touch-toolbar {
       right: 10px !important;
       bottom: 88px !important;
+
       .amap-zoomcontrol {
         border: none;
         box-shadow: 0 0 0;
         background-color: rgba(4, 71, 134, 0.8);
         border-radius: 5px;
         width: 30px;
+
         .amap-zoom-touch-minus,
         .amap-zoom-touch-plus {
           background: none;
           height: 30px;
         }
+
         .amap-zoom-touch-minus>div,
         .amap-zoom-touch-plus>div {
           color: #a3a3a3;
@@ -25,24 +33,29 @@
         }
       }
     }
+
     .amap-touch-toolbar .amap-zoomcontrol:after {
       top: 34px;
       background-color: #00a1f6;
       opacity: 0.2;
     }
+
     .amap-scalecontrol {
       left: auto !important;
       bottom: 10px !important;
       right: 60px !important;
       color: #fff;
     }
+
     .amap-info-content.amap-info-outer {
       background-color: rgba(4, 50, 98, 0.8) !important;
       border: none;
     }
+
     .amap-info-sharp {
       display: none;
     }
+
     .amap_markers_pop_window {
       background: rgba(0, 49, 96, 0.9);
       border: none;
@@ -50,10 +63,13 @@
       transform: translate(70%, 50%);
       padding: 10px;
     }
-    .amap_markers_pop_window::before, .amap_markers_pop_window::after{
+
+    .amap_markers_pop_window::before,
+    .amap_markers_pop_window::after {
       display: none;
     }
   }
+
   .mapLegend {
     font-size: 14px;
     color: #009eff;
@@ -89,7 +105,7 @@
   height: 199px;
   background-size: 100% 100%;
   position: relative;
-  background-image: url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/redCircle.png);
+  background-image: url('http://data.jingan-china.cn/v2/big-platform/fire-control/gov/redCircle.png');
 }
 
 // .dotIcon, .redCircle {
@@ -127,11 +143,13 @@
 }
 
 .infoItem {
-  color: rgb(110,169,221);;
+  color: rgb(110, 169, 221);
+  ;
   font-size: 14px;
 }
 
-.address:extend(.infoItem), .safety:extend(.infoItem) {
+.address:extend(.infoItem),
+.safety:extend(.infoItem) {
   margin-bottom: 10px;
 }
 
@@ -140,7 +158,7 @@
 }
 
 .statusFire:extend(.infoItem) {
-  color: rgb(248,51,41);
+  color: rgb(248, 51, 41);
   margin-bottom: 0;
 }
 
