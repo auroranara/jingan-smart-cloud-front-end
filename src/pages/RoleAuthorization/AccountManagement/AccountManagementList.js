@@ -138,6 +138,18 @@ const getEmptyData = () => {
     goToException() {
       dispatch(routerRedux.push('/exception/500'));
     },
+    fetchGavUserTypes(action) {
+      dispatch({
+        type: 'account/fetchOptions',
+        ...action,
+      })
+    },
+    fetchUserType(action) {
+      dispatch({
+        type: 'account/fetchUserType',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -150,16 +162,13 @@ export default class accountManagementList extends PureComponent {
       modalVisible: false,
       associatedUnits: [],
       currentLoginId: null,
+      unitTypeChecked: 4,
     };
   }
 
-  state = {
-    unitTypeChecked: false,
-  };
-
   // 生命周期函数
   componentDidMount() {
-    const { fetch, fetchOptions, fetchUnitsFuzzy } = this.props;
+    const { fetch, fetchOptions, fetchUnitsFuzzy, fetchGavUserTypes, fetchUserType } = this.props;
 
     // 获取账号列表
     fetch({
@@ -168,7 +177,8 @@ export default class accountManagementList extends PureComponent {
         pageNum: 1,
       },
     });
-
+    fetchGavUserTypes()
+    fetchUserType()
     // 获取单位类型和账户状态
     fetchOptions({
       success: ({ unitType }) => {
@@ -370,7 +380,7 @@ export default class accountManagementList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      account: { unitTypes, unitIdes },
+      account: { unitTypes, unitIdes, userTypes, gavUserTypes },
       form: { getFieldDecorator },
       loading,
     } = this.props;
@@ -450,6 +460,30 @@ export default class accountManagementList extends PureComponent {
                 )}
               </FormItem>
             )}
+            {unitTypeChecked && unitTypeChecked === 4 && (
+              <FormItem label="用户类型">
+                {getFieldDecorator('userType')(
+                  <Select placeholder="请选择用户类型" style={{ width: 180 }}>
+                    {userTypes.map(item => (
+                      <Option value={item.value} key={item.value}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>)}
+            {unitTypeChecked && unitTypeChecked === 2 && (
+              <FormItem label="用户类型">
+                {getFieldDecorator('userType')(
+                  <Select placeholder="请选择用户类型" style={{ width: 180 }}>
+                    {gavUserTypes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>)}
           </Col>
 
           {/* 按钮 */}
