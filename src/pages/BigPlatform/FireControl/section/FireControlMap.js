@@ -328,11 +328,7 @@ export default class FireControlMap extends PureComponent {
           <GDMap
             viewMode="3D"
             amapkey="665bd904a802559d49a33335f1e4aa0d"
-            plugins={[
-              { name: 'Scale', options: { locate: false } },
-              { name: 'ToolBar', options: { locate: false } },
-              { name: 'ControlBar' },
-            ]}
+            plugins={[{ name: 'Scale', options: { locate: false } }, { name: 'ControlBar' }]}
             status={status}
             useAMapUI
             mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"

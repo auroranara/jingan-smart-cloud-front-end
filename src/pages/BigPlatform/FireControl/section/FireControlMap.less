@@ -1,3 +1,5 @@
+@luopanImage: 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ctb.png';
+
 .mapContainer {
   width: 100%;
   height: 100%;
@@ -7,7 +9,21 @@
   :global {
     .amap-controlbar {
       top: 45px !important;
+
+      .amap-luopan-bg {
+        background: url('@{luopanImage}')-44px -60px no-repeat;
+      }
+
+      .amap-compass {
+        background: url('@{luopanImage}') -462px -52px no-repeat;
+      }
+
+      .amap-controlbar-zoom {
+        background:url('@{luopanImage}') -154px -292px no-repeat;
+
+      }
     }
+
 
     .amap-toolbar.amap-touch-toolbar {
       right: 10px !important;
@@ -43,7 +59,7 @@
     .amap-scalecontrol {
       left: auto !important;
       bottom: 10px !important;
-      right: 60px !important;
+      right: 20px !important;
       color: #fff;
     }
 
