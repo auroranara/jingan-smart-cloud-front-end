@@ -68,6 +68,10 @@ export default {
   dynamicMonitoring: {
     comanyDetailView: 'dynamicMonitoring.fireAlarm.comanyDetailView',
     historyRecordView: 'dynamicMonitoring.fireAlarm.historyRecordView',
+    listView: 'dynamicMonitoring.videoMonitor.listView',
+    add: 'dynamicMonitoring.videoMonitor.add',
+    edit: 'dynamicMonitoring.videoMonitor.edit',
+    list: 'dynamicMonitoring.videoMonitor.list',
   },
   map: {
     index: 'videoSurveillance.map.view',

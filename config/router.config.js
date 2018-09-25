@@ -452,6 +452,45 @@ module.exports = [
               // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
             ],
           },
+          // 视频监控
+          {
+            path: '/dynamic-monitoring/video-monitor',
+            code: 'dynamicMonitoring.videoMonitor',
+            name: 'videoMonitor',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/dynamic-monitoring/video-monitor',
+                name: 'videoMonitor',
+                redirect: '/dynamic-monitoring/video-monitor/list',
+              },
+              {
+                path: '/dynamic-monitoring/video-monitor/list',
+                code: 'dynamicMonitoring.videoMonitor.listView',
+                name: 'listView',
+                component: './DynamicMonitoring/VideoMonitor/VideoMonitorList',
+              },
+              {
+                path: '/dynamic-monitoring/video-monitor/add',
+                code: 'dynamicMonitoring.videoMonitor.add',
+                name: 'add',
+                component: './DynamicMonitoring/VideoMonitor/VideoMonitorEdit',
+              },
+              {
+                path: '/dynamic-monitoring/video-monitor/edit/:id',
+                code: 'dynamicMonitoring.videoMonitor.edit',
+                name: 'edit',
+                component: './DynamicMonitoring/VideoMonitor/VideoMonitorEdit',
+              },
+              {
+                path: '/dynamic-monitoring/video-monitor/company-video/:companyId',
+                code: 'dynamicMonitoring.videoMonitor.list',
+                name: 'list',
+                component: './DynamicMonitoring/VideoMonitor/CompanyVideoList',
+              },
+              // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+            ],
+          },
         ],
       },
 
