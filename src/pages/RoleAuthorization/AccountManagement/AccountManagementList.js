@@ -376,7 +376,6 @@ export default class accountManagementList extends PureComponent {
     } = this.props;
 
     const { unitTypeChecked } = this.state;
-    console.log('unitTypeChecked', unitTypeChecked);
     const { Option } = Select;
 
     return (
@@ -721,6 +720,7 @@ export default class accountManagementList extends PureComponent {
         <BackTop />
         {this.renderForm()}
         <InfiniteScroll
+          initialLoad={false}
           pageStart={0}
           loadMore={() => {
             // 防止多次加载
