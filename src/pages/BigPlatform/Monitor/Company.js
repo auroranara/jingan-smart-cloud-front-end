@@ -226,6 +226,9 @@ export default class App extends PureComponent {
     this.leftSection.style.opacity = 0
     this.historyAlarm.style.right = 0
     dispatch({
+      type: 'monitor/clearHistoryAlarm',
+    })
+    dispatch({
       type: 'monitor/fetchHistoryAlarm',
       payload: {
         pageNum: 1,

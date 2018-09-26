@@ -235,6 +235,16 @@ export default {
         }
       }
     },
+    clearHistoryAlarm(state) {
+      return {
+        ...state,
+        historyAlarm: {
+          isLast: false,
+          pagination: { pageNum: 1, pageSize: 20, total: 0 },
+          list: [],
+        },
+      }
+    },
     gsmsHstData(state, action) {
       return {
         ...state,

@@ -108,27 +108,18 @@ export default class AlarmHistory extends PureComponent {
               ))}
             </Row>
             {list && list.length ? (
-              <div className={styles.historyContent} ref={historyList => { this.historyList = historyList }} onScroll={() => {
-                !loading && (this.historyList.scrollHeight - this.historyList.scrollTop - this.historyList.clientHeight) < 220 && handleLoadMore({ deviceType: selectedDeviceType })
-              }}>
-                <InfiniteScroll
-                  initialLoad={false}
-                  loadMore={() => { }}
-                  useWindow={false}
-                  pageStart={0}
-                  hasMore={!isLast}
-                  loader={
-                    <div className="loader" key={0}>
-                      {loading && (
-                        <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                          <Spin />
-                        </div>
-                      )}
-                    </div>
-                  }
-                >
-                  {this.renderAlarmHistory(list)}
-                </InfiniteScroll>
+              <div
+                className={styles.historyContent}
+                ref={historyList => { this.historyList = historyList }}
+                onScroll={() => {
+                  !loading && (this.historyList.scrollHeight - this.historyList.scrollTop - this.historyList.clientHeight) < 220 && handleLoadMore({ deviceType: selectedDeviceType })
+                }}>
+                {this.renderAlarmHistory(list)}
+                {loading && (
+                  <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                    <Spin />
+                  </div>
+                )}
               </div>
             ) : (
                 <div className={styles.noAlarmContainer}
