@@ -3,7 +3,7 @@ import { Button, Col, Icon, Input, Row } from 'antd';
 
 import styles from './VideoLookUp.less';
 
-// const list = [...Array(20).keys()].map(i => ({ id: i, name: `企业${i}` }));
+const list = [...Array(20).keys()].map(i => ({ id: i, name: `企业${i}` }));
 
 const VIDEO_LOOK_UP = 'videoLookUp';
 
@@ -26,7 +26,8 @@ export default class VideoLookUp extends PureComponent {
   };
 
   render() {
-    const { showed, data: list=[] } = this.props;
+    const { showed } = this.props;
+    // const { showed, data: list=[] } = this.props;
 
     return (
       <div style={{ display: showed ? 'block' : 'none', color: '#FFF' }} className={styles.container}>
@@ -51,12 +52,12 @@ export default class VideoLookUp extends PureComponent {
         <div className={styles.tableContainer}>
           <table className={styles.table}>
             <tbody>
-              {list.map(({ id, name, deviceAddressInfoList: list=[] }, index) => (
+              {list.map(({ id, name, deviceAddressInfoList=[] }, index) => (
                 <tr key={id}>
-                  <td>{index}</td>
+                  <td>{index + 1}</td>
                   <td>{name}</td>
                   <td>
-                    <Icon type="video-camera" onClick={() => this.handleVideoShow(list)} />
+                    <Icon type="video-camera" onClick={() => this.handleVideoShow(deviceAddressInfoList)} style={{ cursor: 'pointer' }} />
                   </td>
                 </tr>
               ))}
