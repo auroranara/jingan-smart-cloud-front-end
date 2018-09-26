@@ -417,7 +417,7 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipPosition,
     } = this.state;
 
-    // console.log(videoKeyId);
+    // console.log(videoState);
 
     return (
       <div
