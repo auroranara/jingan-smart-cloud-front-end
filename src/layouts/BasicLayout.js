@@ -19,7 +19,7 @@ import Context from './MenuContext';
 
 import Link from 'umi/link';
 import Exception from '@/components/Exception';
-import { Spin } from 'antd';
+import { Spin, BackTop } from 'antd';
 
 import AppMenu from 'components/_utils/AppMenu';
 import styles from '../index.less';
@@ -281,6 +281,7 @@ class BasicLayout extends React.PureComponent {
             ) : (
               <Spin size="large" className={styles.globalSpin} />
             )}
+            <BackTop />
           </Content>
           <Footer />
         </Layout>

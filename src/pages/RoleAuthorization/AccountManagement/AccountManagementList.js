@@ -6,7 +6,6 @@ import {
   Card,
   Button,
   Input,
-  BackTop,
   Spin,
   Row,
   Col,
@@ -513,22 +512,22 @@ export default class accountManagementList extends PureComponent {
                       code={codesMap.account.addAssociatedUnit}
                       to={`/role-authorization/account-management/associated-unit/add/${
                         item.loginId
-                        }`}
+                      }`}
                     >
                       关联单位
                     </AuthLink>,
                   ]}
-                // extra={
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // }
+                  // extra={
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // }
                 >
                   <div>
                     <Col span={12}>
@@ -561,7 +560,7 @@ export default class accountManagementList extends PureComponent {
                           <Popconfirm
                             title={`确定要${
                               !!item.users[0].accountStatus ? '解绑' : '开启'
-                              }关联企业吗？`}
+                            }关联企业吗？`}
                             onConfirm={() =>
                               this.handleAccountStatus({
                                 accountStatus: Number(!item.users[0].accountStatus),
@@ -578,15 +577,15 @@ export default class accountManagementList extends PureComponent {
                               {!!item.users[0].accountStatus ? (
                                 <Icon type="link" />
                               ) : (
-                                  <Icon style={{ color: 'red' }} type="disconnect" />
-                                )}
+                                <Icon style={{ color: 'red' }} type="disconnect" />
+                              )}
                             </AuthSpan>
                           </Popconfirm>
                         </Col>
                       </Row>
                     ) : (
-                        <p>{getEmptyData()}</p>
-                      )}
+                      <p>{getEmptyData()}</p>
+                    )}
                     <p
                       onClick={() => this.handleViewMore(item.users, item.loginId)}
                       style={{
@@ -622,10 +621,10 @@ export default class accountManagementList extends PureComponent {
               <span>{val}</span>
             </Fragment>
           ) : (
-              <Fragment>
-                <span>运营企业</span>
-              </Fragment>
-            );
+            <Fragment>
+              <span>运营企业</span>
+            </Fragment>
+          );
         },
       },
       {
@@ -659,8 +658,8 @@ export default class accountManagementList extends PureComponent {
                   {!!row.accountStatus ? (
                     <Icon type="link" />
                   ) : (
-                      <Icon style={{ color: 'red' }} type="disconnect" />
-                    )}
+                    <Icon style={{ color: 'red' }} type="disconnect" />
+                  )}
                 </AuthSpan>
               </Popconfirm>
             </Fragment>
@@ -717,7 +716,6 @@ export default class accountManagementList extends PureComponent {
 
     return (
       <PageHeaderLayout title="账号管理" breadcrumbList={breadcrumbList} content={content}>
-        <BackTop />
         {this.renderForm()}
         <InfiniteScroll
           initialLoad={false}
