@@ -46,6 +46,11 @@ export async function fetchAlarmInfo(params) {
   return request(`/acloud_new/v2/deviceInfo/deviceWarningMessageForCompany?${stringify(params)}`);
 }
 
+// 获取报警历史纪录
+export async function fetchHistoryAlarm(params){
+  return request(`/acloud_new/v2/deviceInfo//deviceWarningMessageForCompanyPage?${stringify(params)}`)
+}
+
 // 获取传感器历史
 export async function getGsmsHstData(params) {
   return request(`/acloud_new/v2/monitor/getGsmsHstData.json?${stringify(params)}`);

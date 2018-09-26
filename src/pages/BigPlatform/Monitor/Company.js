@@ -16,6 +16,7 @@ import EffluentMonitor from './sections/EffluentMonitor';
 // 实时报警
 import RealTimeAlarm from './sections/RealTimeAlarm.js';
 import TopCenter from './sections/TopCenter.js';
+import AlarmHistory from './sections/AlarmHistory.js'
 
 import ElectricityCharts from './Sections/ElectricityCharts';
 
@@ -26,8 +27,9 @@ const CHART_DELAY = 10 * 60 * 1000;
 /**
  * 动态监测
  */
-@connect(({ monitor }) => ({
+@connect(({ monitor, loading }) => ({
   monitor,
+  historyAlarmLoading: loading.effects['monitor/fetchHistoryAlarm'],
 }))
 export default class App extends PureComponent {
   state = {
@@ -142,13 +144,13 @@ export default class App extends PureComponent {
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
   };
 
-  // waterPolling = () => {
-  //   const { dispatch } = this.props;
-  //   const { waterSelectVal } = this.state;
+  waterPolling = () => {
+    const { dispatch } = this.props;
+    const { waterSelectVal } = this.state;
 
-  //   waterSelectVal &&
-  //     dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
-  // };
+    waterSelectVal &&
+      dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+  };
 
   chartPolling = () => {
     const { dispatch } = this.props;
@@ -160,10 +162,10 @@ export default class App extends PureComponent {
       type: 'monitor/fetchGsmsHstData',
       payload: { deviceId: chartSelectVal },
     });
-    // dispatch({
-    //   type: 'monitor/fetchPieces',
-    //   payload: { deviceId: chartSelectVal, code: 'v1' },
-    // });
+    dispatch({
+      type: 'monitor/fetchPieces',
+      payload: { deviceId: chartSelectVal, code: 'v1' },
+    });
   };
 
   handleAlarmCardClick = () => {
@@ -215,6 +217,52 @@ export default class App extends PureComponent {
     this.fetchPieces(value);
   };
 
+  // 查看报警历史纪录
+  handleViewHistory = () => {
+    const {
+      match: { params: { companyId } },
+      dispatch,
+    } = this.props
+    this.leftSection.style.opacity = 0
+    this.historyAlarm.style.right = 0
+    dispatch({
+      type: 'monitor/fetchHistoryAlarm',
+      payload: {
+        pageNum: 1,
+        pageSize: 20,
+        companyId,
+        overFlag: 1,
+      },
+    })
+  }
+
+  handleLoadMore = () => {
+    console.log('111');
+
+    const {
+      dispatch,
+      match: { params: { companyId } },
+      monitor: {
+        historyAlarm: {
+          isLast,
+          pagination: { pageNum },
+        },
+      },
+    } = this.props
+    if (isLast) {
+      return;
+    }
+    dispatch({
+      type: 'monitor/fetchHistoryAlarm',
+      payload: {
+        pageNum: pageNum + 1,
+        pageSize: 20,
+        companyId,
+        overFlag: 1,
+      },
+    })
+  }
+
   render() {
     // 从props中获取企业名称
     const {
@@ -227,12 +275,14 @@ export default class App extends PureComponent {
         waterRealTimeData,
         countAndExponent,
         realTimeAlarm,
+        historyAlarm,
         chartDeviceList,
         gsmsHstData,
         electricityPieces,
         chartParams,
       },
       dispatch,
+      historyAlarmLoading,
     } = this.props;
 
     const {
@@ -253,19 +303,45 @@ export default class App extends PureComponent {
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
-              <div className={styles.realTimeAlarmContainer}>
-                <RealTimeAlarm
-                  realTimeAlarm={realTimeAlarm}
-                  handleClick={this.handleAlarmCardClick}
-                />
+              <div style={{ width: '100%', height: '100%', overflow: 'hidden', transition: 'opacity 0.5s' }}
+                ref={leftSection => { this.leftSection = leftSection }}
+              >
+                <div className={styles.realTimeAlarmContainer}>
+                  <RealTimeAlarm
+                    realTimeAlarm={realTimeAlarm}
+                    handleClick={this.handleAlarmCardClick}
+                    handleViewHistory={this.handleViewHistory}
+                  />
+                </div>
+                <div className={styles.videoMonitorContainer}>
+                  <VideoSection
+                    data={allCamera}
+                    showVideo={this.handleVideoShow}
+                    style={{ transform: 'none' }}
+                    backTitle="更多"
+                    handleBack={() => this.handleVideoShow()}
+                  />
+                </div>
               </div>
-              <div className={styles.videoMonitorContainer}>
-                <VideoSection
-                  data={allCamera}
-                  showVideo={this.handleVideoShow}
-                  style={{ transform: 'none' }}
-                  backTitle={allCamera.length ? '更多' : ''}
-                  handleBack={() => this.handleVideoShow()}
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  position: 'absolute',
+                  top: 0,
+                  right: '110%',
+                  transition: 'top 0.5s, left 0.5s, right 0.5s, bottom 0.5s',
+                }}
+                ref={historyAlarm => { this.historyAlarm = historyAlarm }}
+              >
+                <AlarmHistory
+                  historyAlarm={historyAlarm}
+                  loading={historyAlarmLoading}
+                  handleLoadMore={() => this.handleLoadMore()}
+                  handleClose={() => {
+                    this.leftSection.style.opacity = 1
+                    this.historyAlarm.style.right = '110%'
+                  }}
                 />
               </div>
             </Col>
