@@ -28,6 +28,12 @@ export default {
         import: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
       },
     },
+    videoMonitor: {
+      listView: 'deviceManagement.videoMonitor.listView',
+      add: 'deviceManagement.videoMonitor.add',
+      edit: 'deviceManagement.videoMonitor.edit',
+      view: 'deviceManagement.videoMonitor.view',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {
@@ -68,10 +74,6 @@ export default {
   dynamicMonitoring: {
     comanyDetailView: 'dynamicMonitoring.fireAlarm.comanyDetailView',
     historyRecordView: 'dynamicMonitoring.fireAlarm.historyRecordView',
-    listView: 'dynamicMonitoring.videoMonitor.listView',
-    add: 'dynamicMonitoring.videoMonitor.add',
-    edit: 'dynamicMonitoring.videoMonitor.edit',
-    list: 'dynamicMonitoring.videoMonitor.list',
   },
   map: {
     index: 'videoSurveillance.map.view',

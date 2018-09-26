@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva';
+import { connect, Link } from 'dva';
 import {
   Form,
   List,
@@ -23,7 +23,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './VideoMonitorList.less';
 import codesMap from '@/utils/codes';
-import { AuthLink, AuthButton, hasAuthority } from '@/utils/customAuth';
+import { AuthLink, AuthButton } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 
@@ -35,12 +35,13 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '动态监测',
-    name: '动态监测',
+    title: '设备管理',
+    name: '设备管理',
   },
   {
     title: '视频监控',
     name: '视频监控',
+    href: '/device-management/video-monitor/list',
   },
   {
     title: '视频监控列表',
@@ -160,7 +161,7 @@ export default class VideoMonitorList extends PureComponent {
             {getFieldDecorator('name', {
               initialValue: defaultFormData.name,
               getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入单位名称" />)}
+            })(<Input placeholder="请输入视频所属区域" />)}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
@@ -172,10 +173,10 @@ export default class VideoMonitorList extends PureComponent {
           </FormItem>
           <FormItem style={{ float: 'right' }}>
             <AuthButton
-              code={codesMap.dynamicMonitoring.add}
+              code={codesMap.deviceManagement.videoMonitor.add}
               codes={codes}
               type="primary"
-              href="#/dynamic-monitoring/video-monitor/add"
+              href="#/device-management/video-monitor/add"
             >
               新增视频
             </AuthButton>
@@ -189,7 +190,7 @@ export default class VideoMonitorList extends PureComponent {
   renderList() {
     const {
       videoMonitor: { list },
-      goToService,
+      goToCamera,
       user: {
         currentUser: { permissionCodes: codes },
       },
@@ -207,17 +208,11 @@ export default class VideoMonitorList extends PureComponent {
                 title={item.name}
                 className={styles.card}
                 actions={[
+                  <Link to={`/device-management/video-monitor/detail/${item.id}`}>查看</Link>,
                   <AuthLink
-                  // code={codesMap.videoMonitor.detail}
-                  // codes={codes}
-                  // to={`/fire-control/maintenance-company/detail/${item.id}`}
-                  >
-                    查看
-                  </AuthLink>,
-                  <AuthLink
-                    code={codesMap.videoMonitor.edit}
+                    code={codesMap.deviceManagement.deviceManagementvideoMonitor.edit}
                     codes={codes}
-                    to={`/dynamic-monitoring/video-monitor/edit/${item.id}`}
+                    to={`/device-management/video-monitor/edit/${item.id}`}
                   >
                     编辑
                   </AuthLink>,
@@ -227,11 +222,11 @@ export default class VideoMonitorList extends PureComponent {
                   <Col span={16} style={{ cursor: 'pointer' }}>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       设备ID:
-                      {item.practicalAddress || getEmptyData()}
+                      {item || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       摄像头ID：
-                      {item.principalName || getEmptyData()}
+                      {item || getEmptyData()}
                     </Ellipsis>
                     <p>
                       是否用于查岗：
@@ -241,13 +236,11 @@ export default class VideoMonitorList extends PureComponent {
                   <Col
                     span={8}
                     onClick={() => {
-                      if (hasAuthority(codesMap.videoMonitor.serviceDetail, codes))
-                        goToService(`/fire-control/maintenance-company/serviceList/${item.id}`);
-                      else message.warn('您没有权限访问对应页面');
+                      goToCamera(``);
                     }}
                     style={{ cursor: 'pointer' }}
                   >
-                    <span className={styles.quantity}>{item.serviceCompanyCount}</span>
+                    <span className={styles.quantity} />
                   </Col>
                 </Row>
               </Card>
@@ -271,7 +264,7 @@ export default class VideoMonitorList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="视频监控"
+        title="常熟市鑫博伟针纺织有限公司"
         breadcrumbList={breadcrumbList}
         content={
           <div>

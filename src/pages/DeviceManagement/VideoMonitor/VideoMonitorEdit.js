@@ -22,13 +22,13 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '动态监测',
-    name: '动态监测',
+    title: '设备管理',
+    name: '设备管理',
   },
   {
     title: '视频监控',
     name: '视频监控',
-    href: '/dynamic-monitoring/video-monitor/list',
+    href: '/device-management/video-monitor/list',
   },
   {
     title: '新增视频设备信息',
@@ -56,11 +56,23 @@ const defaultPagination = {
   pageSize: 10,
 };
 
-@connect(({ videoMonitor, company, loading }) => ({
-  videoMonitor,
-  company,
-  loading: loading.effects['videoMonitor/addMaintenanceCompanyAsync'],
-}))
+@connect(
+  ({ videoMonitor, maintenanceCompany, loading }) => ({
+    videoMonitor,
+    maintenanceCompany,
+    loading: loading.models.videoMonitor,
+  }),
+  dispatch => ({
+    // 获取企业
+    fetchCompanyList(action) {
+      dispatch({
+        type: 'maintenanceCompany/fetchCompanyList',
+        ...action,
+      });
+    },
+    dispatch,
+  })
+)
 @Form.create()
 export default class VideoMonitorEdit extends PureComponent {
   state = {
@@ -68,34 +80,119 @@ export default class VideoMonitorEdit extends PureComponent {
       visible: false,
       loading: false,
     },
+    isInspection: false,
   };
 
   // 返回到视频监控列表页面
   goBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/dynamic-monitoring/video-monitor/list`));
+    dispatch(routerRedux.push(`/device-management/video-monitor/list`));
   };
 
   /* 点击提交按钮验证表单信息 */
-  handleClickValidate = () => {};
+  // handleClickValidate = () => {
+  //   const {
+  //     form: { validateFieldsAndScroll },
+  //     match: {
+  //       params: { id },
+  //     },
+  //     dispatch,
+  //   } = this.props;
+  //   validateFieldsAndScroll(
+  //     (
+  //       error,
+  //       {
+  //         deviceId,
+  //         keyId,
+  //         name,
+  //         status,
+  //         companyId,
+  //         rtsAddress,
+  //         photoAddress,
+  //         xNum,
+  //         yNum,
+  //         isInspection,
+  //       }
+  //     ) => {
+  //       if (!error) {
+  //         this.setState({
+  //           submitting: true,
+  //         });
+
+  //         const success = () => {
+  //           const msg = id ? '编辑成功！' : '新增成功！';
+  //           message.success(msg, 1, this.goBack());
+  //         };
+  //         const error = err => {
+  //           message.error(err, 1);
+  //           this.setState({
+  //             submitting: false,
+  //           });
+  //         };
+  //         // 如果id存在的话，为编辑
+  //         if (id) {
+  //           dispatch({
+  //             type: 'videoMonitor/updateVideoDevice',
+  //             payload: {
+  //               id,
+  //               deviceId,
+  //               keyId,
+  //               name,
+  //               status,
+  //               companyId,
+  //               rtsAddress,
+  //               photoAddress,
+  //               xNum,
+  //               yNum,
+  //               isInspection,
+  //             },
+  //             success,
+  //             error,
+  //           });
+  //         } else {
+  //           const payload = {
+  //             id,
+  //             deviceId,
+  //             keyId,
+  //             name,
+  //             status,
+  //             companyId,
+  //             rtsAddress,
+  //             photoAddress,
+  //             xNum,
+  //             yNum,
+  //             isInspection,
+  //           };
+  //           dispatch({
+  //             type: 'videoMonitor/fetchVideoDevice',
+  //             payload,
+  //             success,
+  //             error,
+  //           });
+  //         }
+  //       }
+  //     }
+  //   );
+  // };
 
   /* 显示选择企业模态框 */
   handleShowCompanyModal = () => {
+    const { fetchCompanyList } = this.props;
     const { companyModal } = this.state;
     // 显示模态框
     this.setState({
       companyModal: {
-        // type: 'videoMonitor/fetchCompanyList',
+        type: 'maintenanceCompany/fetchCompanyList',
         ...companyModal,
         visible: true,
       },
     });
     // 初始化表格数据
-    // fetchCompanyList({
-    //   payload: {
-    //     ...defaultPagination,
-    //   },
-    // });
+    fetchCompanyList({
+      payload: {
+        ...defaultPagination,
+      },
+    });
   };
 
   /* 隐藏企业模态框 */
@@ -129,8 +226,8 @@ export default class VideoMonitorEdit extends PureComponent {
       companyModal: { loading, visible },
     } = this.state;
     const {
-      videoMonitor: { modal },
-      // fetchCompanyList,
+      maintenanceCompany: { modal },
+      fetchCompanyList,
     } = this.props;
     const modalProps = {
       // 模态框是否显示
@@ -142,7 +239,7 @@ export default class VideoMonitorEdit extends PureComponent {
         this.CompanyIdInput.blur();
       },
       modal,
-      // fetch: fetchCompanyList,
+      fetch: fetchCompanyList,
       // 选择回调
       onSelect: this.handleSelectCompany,
       // 表格是否正在加载
@@ -152,6 +249,12 @@ export default class VideoMonitorEdit extends PureComponent {
     return <CompanyModal {...modalProps} />;
   }
 
+  // 处理开关--是否用于查岗
+  switchOnChange = checked => {
+    this.setState({
+      isInspection: checked,
+    });
+  };
   // 渲染视频设备信息
   renderVideoInfo() {
     const {
@@ -230,7 +333,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.equipmentID}>
-            {getFieldDecorator('equipmentID', {
+            {getFieldDecorator('deviceId', {
               rules: [
                 {
                   required: true,
@@ -241,7 +344,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.cameraID}>
-            {getFieldDecorator('cameraID', {
+            {getFieldDecorator('keyId', {
               rules: [
                 {
                   required: true,
@@ -252,7 +355,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.videoArea}>
-            {getFieldDecorator('videoArea', {
+            {getFieldDecorator('name', {
               rules: [
                 {
                   required: true,
@@ -263,7 +366,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.videoStatus}>
-            {getFieldDecorator('videoStatus', {
+            {getFieldDecorator('status', {
               rules: [
                 {
                   required: true,
@@ -274,7 +377,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.videoURL}>
-            {getFieldDecorator('videoURL', {
+            {getFieldDecorator('rtsAddress', {
               rules: [
                 {
                   required: true,
@@ -285,7 +388,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.picAddress}>
-            {getFieldDecorator('picAddress', {
+            {getFieldDecorator('photoAddress', {
               rules: [
                 {
                   required: true,
@@ -296,8 +399,8 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.inspectSentries}>
-            {getFieldDecorator('inspectSentries', {})(
-              <Switch checkedChildren="是" unCheckedChildren="否" />
+            {getFieldDecorator('isInspection', {})(
+              <Switch checkedChildren="是" unCheckedChildren="否" onChange={this.switchOnChange} />
             )}
           </FormItem>
         </Form>
@@ -308,14 +411,14 @@ export default class VideoMonitorEdit extends PureComponent {
               <Row gutter={12}>
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureX}>
-                    {getFieldDecorator('fourPictureX', {
+                    {getFieldDecorator('xNum', {
                       rules: [{ message: '请输入四色图坐标—X' }],
                     })(<Input placeholder="请输入四色图坐标—X" />)}
                   </Form.Item>
                 </Col>
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureY}>
-                    {getFieldDecorator('fourPictureY', {
+                    {getFieldDecorator('yNum', {
                       rules: [{ message: '请输入四色图坐标—Y' }],
                     })(<Input placeholder="请输入四色图坐标—Y" />)}
                   </Form.Item>

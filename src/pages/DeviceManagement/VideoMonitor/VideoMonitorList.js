@@ -15,7 +15,7 @@ import {
   Row,
 } from 'antd';
 import { routerRedux } from 'dva/router';
-import VisibilitySensor from 'react-visibility-sensor';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -34,8 +34,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '动态监测',
-    name: '动态监测',
+    title: '设备管理',
+    name: '设备管理',
   },
   {
     title: '视频监控',
@@ -167,10 +167,10 @@ export default class VideoMonitorList extends PureComponent {
           </FormItem>
           <FormItem style={{ float: 'right' }}>
             <AuthButton
-              code={codesMap.dynamicMonitoring.add}
+              code={codesMap.deviceManagement.videoMonitor.add}
               codes={codes}
               type="primary"
-              href="#/dynamic-monitoring/video-monitor/add"
+              href="#/device-management/video-monitor/add"
             >
               新增视频
             </AuthButton>
@@ -267,14 +267,26 @@ export default class VideoMonitorList extends PureComponent {
       >
         <BackTop />
         {this.renderForm()}
-        {this.renderList()}
-        {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
             </div>
-          )}
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
       </PageHeaderLayout>
     );
   }
