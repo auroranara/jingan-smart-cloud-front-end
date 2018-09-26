@@ -232,13 +232,31 @@ export default class App extends PureComponent {
         pageSize: 20,
         companyId,
         overFlag: 1,
+        deviceType: 1,
       },
     })
   }
 
-  handleLoadMore = () => {
-    console.log('111');
+  handleFilterHistory = (deviceType) => {
+    const {
+      match: { params: { companyId } },
+      dispatch,
+    } = this.props
+    if (deviceType < 5) {
+      dispatch({
+        type: 'monitor/fetchHistoryAlarm',
+        payload: {
+          pageNum: 1,
+          pageSize: 20,
+          companyId,
+          overFlag: 1,
+          deviceType,
+        },
+      })
+    }
+  }
 
+  handleLoadMore = ({ deviceType }) => {
     const {
       dispatch,
       match: { params: { companyId } },
@@ -249,6 +267,7 @@ export default class App extends PureComponent {
         },
       },
     } = this.props
+
     if (isLast) {
       return;
     }
@@ -259,6 +278,7 @@ export default class App extends PureComponent {
         pageSize: 20,
         companyId,
         overFlag: 1,
+        deviceType,
       },
     })
   }
@@ -337,7 +357,8 @@ export default class App extends PureComponent {
                 <AlarmHistory
                   historyAlarm={historyAlarm}
                   loading={historyAlarmLoading}
-                  handleLoadMore={() => this.handleLoadMore()}
+                  handleLoadMore={this.handleLoadMore}
+                  handleFilterHistory={this.handleFilterHistory}
                   handleClose={() => {
                     this.leftSection.style.opacity = 1
                     this.historyAlarm.style.right = '110%'

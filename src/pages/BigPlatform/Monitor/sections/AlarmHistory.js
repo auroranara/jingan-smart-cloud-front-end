@@ -38,9 +38,11 @@ export default class AlarmHistory extends PureComponent {
 
   // 点击筛选
   handleFilter = ({ selectedDeviceType }) => {
+    const { handleFilterHistory } = this.props
     this.setState({
       selectedDeviceType,
     })
+    handleFilterHistory(selectedDeviceType)
   }
 
   renderAlarmHistory = (list) => {
@@ -58,7 +60,7 @@ export default class AlarmHistory extends PureComponent {
                 backgroundPosition: 'center center',
                 backgroundSize: '80% 80%',
               }}></div>
-              <div className={styles.remarks}>{item.remarks}</div>
+              <div className={styles.remarks}>{item.remarks || '暂无数据'}</div>
             </div>
             <span style={{ textAlign: 'right', color: '#516895' }}>{item.warningTime}</span>
           </div>
@@ -85,7 +87,6 @@ export default class AlarmHistory extends PureComponent {
       handleLoadMore,
     } = this.props
     const { selectedDeviceType } = this.state
-    console.log('isLast', isLast);
 
 
     return (
@@ -107,14 +108,14 @@ export default class AlarmHistory extends PureComponent {
               ))}
             </Row>
             {list && list.length ? (
-              <Row className={styles.historyContent}>
+              <div className={styles.historyContent} ref={historyList => { this.historyList = historyList }} onScroll={() => {
+                !loading && (this.historyList.scrollHeight - this.historyList.scrollTop - this.historyList.clientHeight) < 220 && handleLoadMore({ deviceType: selectedDeviceType })
+              }}>
                 <InfiniteScroll
                   initialLoad={false}
+                  loadMore={() => { }}
+                  useWindow={false}
                   pageStart={0}
-                  loadMore={() => {
-                    // 防止多次加载
-                    !loading && handleLoadMore();
-                  }}
                   hasMore={!isLast}
                   loader={
                     <div className="loader" key={0}>
@@ -128,7 +129,8 @@ export default class AlarmHistory extends PureComponent {
                 >
                   {this.renderAlarmHistory(list)}
                 </InfiniteScroll>
-              </Row>) : (
+              </div>
+            ) : (
                 <div className={styles.noAlarmContainer}
                   style={{
                     background: `url(${noAlarm})`,
