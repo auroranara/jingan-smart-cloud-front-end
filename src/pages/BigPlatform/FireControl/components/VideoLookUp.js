@@ -3,7 +3,7 @@ import { Button, Col, Icon, Input, Row } from 'antd';
 
 import styles from './VideoLookUp.less';
 
-const list = [...Array(20).keys()].map(i => ({ id: i, name: `企业${i}` }));
+// const list = [...Array(20).keys()].map(i => ({ id: i, name: `企业${i}` }));
 
 const VIDEO_LOOK_UP = 'videoLookUp';
 
@@ -26,8 +26,8 @@ export default class VideoLookUp extends PureComponent {
   };
 
   render() {
-    const { showed } = this.props;
-    // const { showed, data: list=[] } = this.props;
+    // const { showed } = this.props;
+    const { showed, data: list=[] } = this.props;
 
     return (
       <div style={{ display: showed ? 'block' : 'none', color: '#FFF' }} className={styles.container}>
