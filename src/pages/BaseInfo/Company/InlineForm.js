@@ -97,7 +97,12 @@ export default class InlineForm extends PureComponent {
               const { inputSpan=defaultInputSpan } = field;
               return (
                 <Col key={field.id} {...inputSpan}>
-                  <FormItem label={field.label} style={{ margin: '0', padding: '4px 0' }}>
+                  <FormItem
+                    label={field.label}
+                    labelCol={field.labelCol}
+                    wrapperCol={field.wrapperCol}
+                    style={{ margin: '0', padding: '4px 0' }}
+                  >
                     {getFieldDecorator(field.id, field.options)(field.render())}
                   </FormItem>
                 </Col>

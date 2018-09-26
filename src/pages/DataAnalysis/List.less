@@ -1,0 +1,42 @@
+@bottom: 8px;
+
+.cardList {
+  margin-top: 20px;
+  margin-bottom: -24px;
+
+  .card {
+    :global {
+      .ant-card-meta-title {
+        margin-bottom: 12px;
+      }
+      .ant-card-actions {
+        background: #f7f9fa;
+      }
+      position: relative;
+
+      p {
+        margin-bottom: @bottom;
+      }
+    }
+  }
+  .item {
+    height: 64px;
+  }
+
+  :global {
+    .ant-list .ant-list-item-content-single {
+      max-width: 100%;
+    }
+  }
+}
+
+.ellipsis {
+  height: 1.5em;
+  margin-bottom: @bottom;
+}
+
+.icons {
+  display: flex;
+  justify-content: space-between;
+}
+
