@@ -13,6 +13,7 @@ const months = [...Array(currentMonth+1).keys()].map(month => ({
   value: moment({ month: currentMonth-month }).format('YYYY-MM'),
 }));
 const defaultFieldNames = {
+  id: 'id',
   person: 'person',
   time: 'time',
   point: 'point',
@@ -23,7 +24,7 @@ const defaultFieldNames = {
  */
 export default class App extends PureComponent {
   state={
-    isResultShow: false,
+    hiddenDanger: null,
   }
 
   /**
@@ -39,9 +40,9 @@ export default class App extends PureComponent {
   /**
    * 表格鼠标移入事件
    */
-  handleMouseEnter = () => {
+  handleMouseEnter = (card) => {
     this.setState({
-      isResultShow: true,
+      hiddenDanger: card,
     });
   }
 
@@ -50,7 +51,7 @@ export default class App extends PureComponent {
    */
   handleMouseLeave = () => {
     this.setState({
-      isResultShow: false,
+      hiddenDanger: null,
     });
   }
 
@@ -58,13 +59,13 @@ export default class App extends PureComponent {
     const {
       onBack,
       data=[],
-      total=0,
-      abnormal=0,
       fieldNames,
       month,
     } = this.props;
-    const { isResultShow } = this.state;
-    const { person: personField, time: timeField, point: pointField, result: resultField } = {...defaultFieldNames, ...fieldNames};
+    const { hiddenDanger } = this.state;
+    const { id: idField, person: personField, time: timeField, point: pointField, result: resultField } = {...defaultFieldNames, ...fieldNames};
+    const total = data.length;
+    const abnormal = data.filter(({ resultField }) => +resultField !== 1).length;
 
     /* 表头 */
     const columns = [
@@ -88,7 +89,7 @@ export default class App extends PureComponent {
         title: '巡查结果',
         dataIndex: resultField,
         key: resultField,
-        render: (text) => <div style={{ cursor: 'pointer' }} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>{+text === 1 ? '正常':'异常'}</div>,
+        render: (text, { card }) => <div style={{ cursor: 'pointer' }} onMouseEnter={() => {this.handleMouseEnter(card);}} onMouseLeave={this.handleMouseLeave}>{+text === 1 ? '正常':'异常'}</div>,
       },
     ];
 
@@ -116,6 +117,7 @@ export default class App extends PureComponent {
             <div className={styles.jumpButton} onClick={onBack}><img src={backIcon} alt="" /></div>
           </Fragment>
         }
+        isScroll
       >
         <Table
           className={styles.table}
@@ -125,25 +127,23 @@ export default class App extends PureComponent {
           columns={columns}
           pagination={false}
           bordered={false}
-          rowKey={timeField}
+          rowKey={idField}
         />
-        {isResultShow && (
+        {hiddenDanger && (
           <div className={styles.result}>
             <HiddenDanger
-              data={{
-                id: 'id',
-                description: 'description',
-                sbr: 'sbr',
-                sbsj: 'sbsj',
-                zgr: 'zgr',
-                plan_zgsj: 'plan_zgsj',
-                real_zgsj: 'real_zgsj',
-                fcr: 'fcr',
-                status: 1,
-                background: 'background',
-                source: 'source',
+              data={hiddenDanger}
+              fieldNames={{
+                description: 'desc',
+                sbr: '_report_user_name',
+                sbsj: '_report_time',
+                zgr: '_rectify_user_name',
+                plan_zgsj: '_plan_rectify_time',
+                real_zgsj: '_real_rectify_time',
+                fcr: '_review_user_name',
+                status: 'hiddenStatus',
+                background: 'localUrl',
               }}
-              // fieldNames={}
             />
           </div>
         )}

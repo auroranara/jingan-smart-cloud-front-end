@@ -353,6 +353,8 @@ export default class App extends PureComponent {
       fixedContent,
       // 主要内容
       children,
+      // 固定内容样式
+      fixedContentStyle,
     } = this.props;
     // 外部容器类名
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
@@ -377,7 +379,7 @@ export default class App extends PureComponent {
           }
           {/* 标题栏下方的固定区域，比如统计等 */
             fixedContent && (
-              <div className={styles.fixedContent}>{fixedContent}</div>
+              <div className={styles.fixedContent} style={fixedContentStyle}>{fixedContent}</div>
             )
           }
           <div

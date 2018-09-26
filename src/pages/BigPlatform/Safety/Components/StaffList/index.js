@@ -107,7 +107,7 @@ export default class App extends PureComponent {
           columns={columns}
           pagination={false}
           bordered={false}
-          rowKey={personField}
+          rowKey={idField}
         />
       </Section>
     );

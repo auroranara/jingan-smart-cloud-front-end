@@ -669,10 +669,11 @@ class CompanyLayout extends PureComponent {
         data={staffRecords}
         month={selectedStaffRecordsMonth}
         fieldNames={{
+          id: '_id',
           person: 'user_name',
           time: 'check_date',
           point: 'object_title',
-          result: 'status',
+          result: 'fireCheckStatus',
         }}
         onBack={() => {this.handleSwitchUnitInspection(1)}}
         onSelect={this.handleSelectStaffRecords}
