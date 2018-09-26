@@ -6,15 +6,16 @@ import classNames from 'classnames';
 import styles from './Government.less';
 import rotate from './Animate.less';
 import Timer from './Components/Timer';
-// import MapSearch from './Components/MapSearch';
-import MapSearch from '../FireControl/components/MapSearch';
 import debounce from 'lodash/debounce';
 import Ellipsis from '../../../components/Ellipsis';
 
-import { Map as GDMap, Marker, InfoWindow, Markers } from 'react-amap';
 import ReactEcharts from 'echarts-for-react';
 import MapSection from './Components/MapSection';
 import MyTooltip from '../FireControl/section/Tooltip';
+
+import DangerCompany from './Sections/DangerCompany';
+import CheckInfo from './Sections/CheckInfo';
+import CompanyOver from './Sections/CompanyOver';
 // import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
@@ -96,6 +97,7 @@ class GovernmentBigPlatform extends Component {
       hdDetail: false, // 已超期隐患详情
       hiddenDanger: false, // 隐患详情
       checks: false, // 监督检查
+      companyOver: false, // 已超时单位
       companyId: '',
       riskTitle: '红色风险点',
       riskSummary: {
@@ -109,6 +111,7 @@ class GovernmentBigPlatform extends Component {
       tooltipName: '',
       tooltipVisible: false,
       tooltipPosition: [0, 0],
+      dangerCompanyData: {},
     };
   }
 
@@ -194,19 +197,39 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchSearchAllCompany',
     });
 
-    // 专职人员检查信息
-    dispatch({
-      type: 'bigPlatform/fetchCheckInfo',
-      payload: {
-        date: moment().format('YYYY-MM'),
-      },
-    });
-
     // 隐患单位数量以及具体信息
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerCompany',
       payload: {
-        date: moment().format('YYYY-MM'),
+        // date: moment().format('YYYY-MM'),
+      },
+    });
+
+    this.fetchCheckMsgs(moment().format('YYYY-MM'));
+
+    // requestAnimationFrame(this.resolveAnimationFrame);
+
+    this.handleScroll();
+
+    this.setViewport();
+  }
+
+  // 某月监督检查相关信息
+  fetchCheckMsgs = month => {
+    const { dispatch } = this.props;
+    // 专职人员检查信息
+    dispatch({
+      type: 'bigPlatform/fetchCheckInfo',
+      payload: {
+        date: month,
+      },
+    });
+
+    // 本月隐患单位数量以及具体信息
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerCompany',
+      payload: {
+        date: month,
       },
     });
 
@@ -214,7 +237,7 @@ class GovernmentBigPlatform extends Component {
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerOverTime',
       payload: {
-        date: moment().format('YYYY-MM'),
+        date: month,
       },
     });
 
@@ -222,7 +245,7 @@ class GovernmentBigPlatform extends Component {
     dispatch({
       type: 'bigPlatform/fetchCheckedCompanyInfo',
       payload: {
-        date: moment().format('YYYY-MM'),
+        date: month,
         isChecked: '1',
         isNormal: '1',
         isOvertime: '1',
@@ -235,7 +258,7 @@ class GovernmentBigPlatform extends Component {
     dispatch({
       type: 'bigPlatform/fetchCheckedCompanyInfo',
       payload: {
-        date: moment().format('YYYY-MM'),
+        date: month,
         isChecked: '0',
         isNormal: '1',
         isOvertime: '1',
@@ -243,13 +266,7 @@ class GovernmentBigPlatform extends Component {
         pageSize: 1,
       },
     });
-
-    // requestAnimationFrame(this.resolveAnimationFrame);
-
-    this.handleScroll();
-
-    this.setViewport();
-  }
+  };
 
   componentWillUnmount() {
     cancelAnimationFrame(this.reqRef);
@@ -894,6 +911,7 @@ class GovernmentBigPlatform extends Component {
       hdDetail: false, // 已超期隐患详情
       hiddenDanger: false, // 隐患详情
       checks: false, // 监督检查
+      companyOver: false,
     });
     setTimeout(() => {
       this.setState({
@@ -942,9 +960,12 @@ class GovernmentBigPlatform extends Component {
       hdDetail: false,
       hiddenDanger: false,
       checks: false,
+      companyOver: false,
     });
     setTimeout(() => {
-      this.setState(obj);
+      this.setState({
+        ...obj,
+      });
     }, 225);
   };
 
@@ -1102,7 +1123,6 @@ class GovernmentBigPlatform extends Component {
     } = this.props;
     const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
     const newList = [...ycq, ...wcq, ...dfc];
-    console.log(newList);
     return (
       <div>
         {newList.length !== 0 ? (
@@ -1260,125 +1280,6 @@ class GovernmentBigPlatform extends Component {
     });
   };
 
-  // 监督检查
-  renderCheckInfo = () => {
-    const {
-      bigPlatform: { checkInfo, hiddenDangerCompany, hiddenDangerOverTime, checkedCompanyInfo },
-    } = this.props;
-    const { checks } = this.state;
-    const stylesChecks = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: checks,
-      [rotate.out]: !checks,
-    });
-    return (
-      <section
-        className={stylesChecks}
-        style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-      >
-        <div className={styles.sectionWrapperIn}>
-          <div className={styles.sectionTitle}>
-            <span className={styles.titleBlock} />
-            监督检查
-          </div>
-          <div
-            className={styles.backBtn}
-            onClick={() => {
-              this.goBack();
-            }}
-          />
-          <div className={styles.sectionMain}>
-            <div className={styles.sectionContent}>
-              <Row style={{ borderBottom: '2px solid #0967d3', padding: '6px 0' }}>
-                <Col span={12}>
-                  <div className={styles.checksContent}>
-                    <span className={styles.iconCom1} />
-                    <div className={styles.checksWrapper}>
-                      已检查单位
-                      <div className={styles.checksNum}>{checkedCompanyInfo.checked}</div>
-                    </div>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  {/* <div className={styles.checksContentActive}> */}
-                  <div className={styles.checksContent}>
-                    <span className={styles.iconCom2} />
-                    <div className={styles.checksWrapper}>
-                      隐患单位
-                      <span style={{ opacity: 0 }}>啊</span>
-                      <div className={styles.checksNum}>{hiddenDangerCompany.length}</div>
-                    </div>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className={styles.checksContent}>
-                    <span className={styles.iconCom3} />
-                    <div className={styles.checksWrapper}>
-                      未检查单位
-                      <div className={styles.checksNum}>{checkedCompanyInfo.noChecked}</div>
-                    </div>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  {/* <div className={styles.checksContentActive}> */}
-                  <div className={styles.checksContent}>
-                    <span className={styles.iconCom4} />
-                    <div className={styles.checksWrapper}>
-                      已超时单位
-                      <div className={styles.checksNum}>{hiddenDangerOverTime.length}</div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-              <div className={styles.tableTitleWrapper}>
-                <span className={styles.tableTitle}>
-                  {' '}
-                  专职人员检查（
-                  {checkInfo.length}）
-                </span>
-              </div>
-              <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
-                <table className={styles.scrollTable}>
-                  <thead>
-                    <tr>
-                      <th style={{ width: '25%' }}>姓名</th>
-                      <th style={{ width: '25%' }}>监管单位</th>
-                      <th style={{ width: '25%' }}>已巡查单位</th>
-                      <th style={{ width: '25%' }}>隐患单位</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {checkInfo.map((item, index) => {
-                      return (
-                        <tr key={item.id}>
-                          <td>{item.user_name}</td>
-                          <td>{item.companyNum}</td>
-                          <td>{item.fireCheckCompanyCount}</td>
-                          <td
-                            style={{
-                              color: item.hiddenCompanyNum
-                                ? 'rgba(232, 103, 103, 0.8)'
-                                : 'rgba(255, 255, 255, 0.7)',
-                              cursor: item.hiddenCompanyNum ? 'pointer' : 'text',
-                            }}
-                            onClick={() => {
-                              console.log(111);
-                            }}
-                          >
-                            {item.hiddenCompanyNum}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  };
-
   render() {
     const {
       scrollNodeTop,
@@ -1403,6 +1304,9 @@ class GovernmentBigPlatform extends Component {
       tooltipName,
       tooltipPosition,
       infoWindowShow,
+      checks,
+      companyOver,
+      dangerCompanyData,
     } = this.state;
     const {
       dispatch,
@@ -1426,6 +1330,11 @@ class GovernmentBigPlatform extends Component {
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
         dangerLocationCompanyData,
         location,
+        checkInfo,
+        hiddenDangerCompanyAll,
+        hiddenDangerCompanyMonth,
+        hiddenDangerCompanyUser,
+        hiddenDangerOverTime,
         checkedCompanyInfo,
       },
     } = this.props;
@@ -1457,10 +1366,7 @@ class GovernmentBigPlatform extends Component {
       [rotate.in]: overHd,
       [rotate.out]: !overHd,
     });
-    const stylesHdCom = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: hdCom,
-      [rotate.out]: !hdCom,
-    });
+
     const stylesComInfo = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: comInfo,
       [rotate.out]: !comInfo,
@@ -1605,12 +1511,18 @@ class GovernmentBigPlatform extends Component {
                   <div
                     className={styles.hdCompany}
                     onClick={() => {
+                      dispatch({
+                        type: 'bigPlatform/fetchHiddenDangerCompany',
+                      });
+                      this.setState({
+                        dangerCompanyData: hiddenDangerCompanyAll,
+                      });
                       this.goComponent('hdCom');
                     }}
                   >
                     隐患单位
                     <span className={styles.hdCompanyNum} style={{ color: '#00baff' }}>
-                      {dangerCompany.length}
+                      {hiddenDangerCompanyAll.dangerCompanyNum || 0}
                     </span>
                   </div>
                   <div
@@ -1675,15 +1587,15 @@ class GovernmentBigPlatform extends Component {
                             }}
                           >
                             {/* <div className={styles.itemActive}> */}
-                            <div className={styles.topName}>接入单位</div>
+                            <div className={styles.topName}>重点/所有单位</div>
                             <div className={styles.topNum} style={{ color: '#00baff' }}>
-                              {company_num_with_item}
+                              {dataImportant.length}/{company_num_with_item}
                             </div>
                           </div>
                         </Tooltip>
                       </div>
 
-                      <div className={styles.topItem}>
+                      {/* <div className={styles.topItem}>
                         <Tooltip placement="bottom" title={'接入平台中重点单位数量'}>
                           <div
                             className={styles.itemActive}
@@ -1697,7 +1609,7 @@ class GovernmentBigPlatform extends Component {
                             </div>
                           </div>
                         </Tooltip>
-                      </div>
+                      </div> */}
 
                       <div className={styles.topItem}>
                         <Tooltip placement="bottom" title={'网格员、政府监管员'}>
@@ -1731,7 +1643,23 @@ class GovernmentBigPlatform extends Component {
                         </Tooltip>
                       </div>
 
-                      {/* <div className={styles.topItem}>
+                      <div className={styles.topItem}>
+                        <Tooltip placement="bottom" title={'已超时风险点数量'}>
+                          <div
+                            className={styles.itemActive}
+                            onClick={() => {
+                              this.goComponent('overHd');
+                            }}
+                          >
+                            <div className={styles.topName}>已超时风险点</div>
+                            <div className={styles.topNum} style={{ color: '#e86767' }}>
+                              {overRectifyNum}
+                            </div>
+                          </div>
+                        </Tooltip>
+                      </div>
+
+                      <div className={styles.topItem}>
                         <Tooltip placement="bottom" title={'本月监督检查的数量'}>
                           <div
                             className={styles.itemActive}
@@ -1745,15 +1673,7 @@ class GovernmentBigPlatform extends Component {
                             </div>
                           </div>
                         </Tooltip>
-                      </div> */}
-                      <Tooltip placement="bottom" title={'截止当前所有已整改隐患数'}>
-                        <div className={styles.topItem}>
-                          <div className={styles.topName}>已整改隐患</div>
-                          <div className={styles.topNum} style={{ color: '#fff' }}>
-                            {overCheck}
-                          </div>
-                        </div>
-                      </Tooltip>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2044,94 +1964,6 @@ class GovernmentBigPlatform extends Component {
                                       }}
                                     >
                                       {item.hiddenDangerCount}
-                                    </span>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section
-                className={stylesHdCom}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    隐患单位统计
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBack();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <div className={styles.summaryWrapper}>
-                        <div className={styles.summaryItem}>
-                          <span className={styles.summaryIconCom} />
-                          单位数量
-                          <span className={styles.summaryNum}>{dangerCompany.length}</span>
-                        </div>
-                        <div className={styles.summaryItem}>
-                          <span className={styles.summaryIconHd} />
-                          隐患数量
-                          <span className={styles.summaryNum}>{riskTotal}</span>
-                        </div>
-                      </div>
-
-                      <div className={styles.scrollContainer}>
-                        <table className={styles.scrollTable}>
-                          <thead>
-                            <tr>
-                              <th style={{ width: '40px' }} />
-                              <th style={{ width: '74%' }}>单位</th>
-                              <th>隐患数</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {dangerCompany.map(item => {
-                              return (
-                                <tr key={item.id}>
-                                  <td>
-                                    {item.company_type === '1' && (
-                                      <span className={styles.keyComMark} />
-                                    )}
-                                  </td>
-                                  <td>
-                                    <span
-                                      style={{ cursor: 'pointer' }}
-                                      onClick={() => {
-                                        this.goCompany(item.id);
-                                      }}
-                                    >
-                                      {item.name}
-                                    </span>
-                                  </td>
-                                  <td>
-                                    <span
-                                      style={{ cursor: 'pointer' }}
-                                      onClick={() => {
-                                        dispatch({
-                                          type: 'bigPlatform/fetchRiskDetail',
-                                          payload: {
-                                            company_id: item.id,
-                                          },
-                                        });
-                                        this.goComponent('hiddenDanger');
-                                        if (document.querySelector('#hiddenDanger')) {
-                                          document.querySelector('#hiddenDanger').scrollTop = 0;
-                                        }
-                                      }}
-                                    >
-                                      {item.total_danger}
                                     </span>
                                   </td>
                                 </tr>
@@ -2438,7 +2270,41 @@ class GovernmentBigPlatform extends Component {
                 </div>
               </section>
 
-              {this.renderCheckInfo()}
+              {/* 隐患单位统计 */}
+              <DangerCompany
+                data={dangerCompanyData}
+                visible={hdCom}
+                dispatch={dispatch}
+                goBack={this.goBack}
+                goComponent={this.goComponent}
+                monthSelecter={false}
+                // monthSelecter={hdComMonth}
+              />
+
+              {/* 监督检查 */}
+              <CheckInfo
+                dispatch={dispatch}
+                visible={checks}
+                listData={checkInfo}
+                checkedCompanyInfo={checkedCompanyInfo}
+                dangerCompany={hiddenDangerCompanyMonth}
+                dangerCompanyOver={hiddenDangerOverTime}
+                goBack={this.goBack}
+                goComponent={this.goComponent}
+                handleParentChange={newState => {
+                  this.setState(newState);
+                }}
+                fetchCheckMsgs={this.fetchCheckMsgs}
+              />
+
+              {/* 已超时单位 */}
+              <CompanyOver
+                visible={companyOver}
+                listData={hiddenDangerOverTime}
+                goBack={this.goBack}
+                goComponent={this.goComponent}
+                goCompany={this.goCompany}
+              />
             </Col>
           </Row>
         </article>
