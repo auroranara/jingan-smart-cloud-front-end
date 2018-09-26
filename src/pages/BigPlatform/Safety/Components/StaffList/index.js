@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Table, Select } from 'antd'
 import moment from 'moment';
-import Section from '../../../UnitFireControl/components/Section/Section';
+import Section from '@/components/Section';
 
 import styles from './index.less';
 const { Option } = Select;
@@ -11,6 +11,7 @@ const months = [...Array(currentMonth+1).keys()].map(month => ({
   value: moment({ month: currentMonth-month }).format('YYYY-MM'),
 }));
 const defaultFieldNames = {
+  id: 'id',
   person: 'person',
   total: 'total',
   abnormal: 'abnormal',
@@ -19,60 +20,28 @@ const defaultFieldNames = {
  * 单位巡查人员列表
  */
 export default class App extends PureComponent {
-  state={
-    // 当前选中的月份
-    selectedMonth: months[0].value,
-    // 是否是通过下拉框修改的源数据
-    isChangedBySelect: false,
-  }
-
-  componentDidUpdate({ data: prevData }) {
-    const { data } = this.props;
-    const { isChangedBySelect } = this.state;
-    // 当源数据发生变化且是从单位巡查切换过来时，修改当前选择的月份为当前月份
-    if (data !== prevData) {
-      if (isChangedBySelect) {
-        this.setState({
-          isChangedBySelect: false,
-        });
-      }
-      else {
-        this.setState({
-          selectedMonth: months[0].value,
-        });
-      }
-    }
-  }
-
   handleSelect = (value) => {
     const { onSelect } = this.props;
-    this.setState({
-      selectedMonth: value,
-      isChangedBySelect: true,
-    });
     if (onSelect) {
       onSelect(value);
     }
   }
 
+  handleClick = (id) => {
+    const { onClick } = this.props;
+    if (onClick) {
+      onClick(id);
+    }
+  }
+
   render() {
     const {
-      onClick,
       onBack,
-      // data=[{
-      //   person: 1,
-      //   total: 5,
-      //   abnormal: 3,
-      // },{
-      //   person: 2,
-      //   total: 6,
-      //   abnormal: 2,
-      // }],
       data=[],
       fieldNames,
+      month,
     } = this.props;
-    const { selectedMonth } = this.state;
-    const { person: personField, total: totalField, abnormal: abnormalField } = {...defaultFieldNames, ...fieldNames};
+    const { id: idField, person: personField, total: totalField, abnormal: abnormalField } = {...defaultFieldNames, ...fieldNames};
     let total = 0;
     let abnormal = 0;
     // 获取总巡查次数和总异常次数
@@ -87,7 +56,7 @@ export default class App extends PureComponent {
         title: '巡查人',
         dataIndex: personField,
         key: personField,
-        render: (text) => <div style={{ color: '#00baff', cursor: onClick?'pointer':undefined }} onClick={onClick}>{text}</div>,
+        render: (text, { idField }) => <div style={{ color: '#00baff', cursor: 'pointer' }} onClick={() => {this.handleClick(idField);}}>{text}</div>,
       },
       {
         title: '巡查次数',
@@ -113,13 +82,13 @@ export default class App extends PureComponent {
             <span className={styles.splitLine} />
             <Select
               size="small"
-              value={selectedMonth}
+              value={month}
               onSelect={this.handleSelect}
               className={styles.select}
               dropdownClassName={styles.dropDown}
             >
               {months.map(({ value }) => {
-                const isSelected = selectedMonth === value;
+                const isSelected = month === value;
                 return (
                   <Option key={value} value={value} style={{ backgroundColor: isSelected && '#00A9FF', color: isSelected && '#fff' }}>{value}</Option>
                 );

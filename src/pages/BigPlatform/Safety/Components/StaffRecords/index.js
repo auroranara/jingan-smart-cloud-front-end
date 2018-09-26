@@ -2,7 +2,8 @@ import React, { PureComponent, Fragment } from 'react';
 import { Table, Select } from 'antd'
 import moment from 'moment';
 import backIcon from 'assets/back.png';
-import Section from '../../../UnitFireControl/components/Section/Section';
+import Section from '@/components/Section';
+import HiddenDanger from '../HiddenDanger';
 
 import styles from './index.less';
 const { Option } = Select;
@@ -22,65 +23,47 @@ const defaultFieldNames = {
  */
 export default class App extends PureComponent {
   state={
-    // 当前选中的月份
-    selectedMonth: months[0].value,
-    // 是否是通过下拉框修改的源数据
-    isChangedBySelect: false,
+    isResultShow: false,
   }
 
-  componentDidUpdate({ data: prevData }) {
-    const { data } = this.props;
-    const { isChangedBySelect } = this.state;
-    // 当源数据发生变化时，修改当前选择的月份为当前月份
-    if (data !== prevData) {
-      if (isChangedBySelect) {
-        this.setState({
-          isChangedBySelect: false,
-        });
-      }
-      else {
-        this.setState({
-          selectedMonth: months[0].value,
-        });
-      }
-    }
-  }
-
+  /**
+   * 下拉框选择事件
+   */
   handleSelect = (value) => {
     const { onSelect } = this.props;
-    this.setState({
-      selectedMonth: value,
-      isChangedBySelect: true,
-    });
     if (onSelect) {
       onSelect(value);
     }
   }
 
+  /**
+   * 表格鼠标移入事件
+   */
+  handleMouseEnter = () => {
+    this.setState({
+      isResultShow: true,
+    });
+  }
+
+  /**
+   * 表格鼠标移出事件
+   */
+  handleMouseLeave = () => {
+    this.setState({
+      isResultShow: false,
+    });
+  }
+
   render() {
     const {
-      onMouseEnter,
-      onMouseLeave,
       onBack,
-      data=[
-        {
-          person: '1',
-          time: '1',
-          point: '1',
-          result: 1,
-        },
-        {
-          person: '2',
-          time: '2',
-          point: '2',
-          result: 0,
-        },
-      ],
+      data=[],
       total=0,
       abnormal=0,
       fieldNames,
+      month,
     } = this.props;
-    const { selectedMonth } = this.state;
+    const { isResultShow } = this.state;
     const { person: personField, time: timeField, point: pointField, result: resultField } = {...defaultFieldNames, ...fieldNames};
 
     /* 表头 */
@@ -94,6 +77,7 @@ export default class App extends PureComponent {
         title: '巡查时间',
         dataIndex: timeField,
         key: timeField,
+        render: (text) => <span>{moment(+text).format('YYYY-MM-DD')}</span>,
       },
       {
         title: '巡查点位',
@@ -104,7 +88,7 @@ export default class App extends PureComponent {
         title: '巡查结果',
         dataIndex: resultField,
         key: resultField,
-        render: (text) => <div style={{ cursor: 'pointer' }} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>{text ? '异常':'正常'}</div>,
+        render: (text) => <div style={{ cursor: 'pointer' }} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>{+text === 1 ? '正常':'异常'}</div>,
       },
     ];
 
@@ -116,13 +100,13 @@ export default class App extends PureComponent {
             <span className={styles.splitLine} />
             <Select
               size="small"
-              value={selectedMonth}
+              value={month}
               onSelect={this.handleSelect}
               className={styles.select}
               dropdownClassName={styles.dropDown}
             >
               {months.map(({ value }) => {
-                const isSelected = selectedMonth === value;
+                const isSelected = month === value;
                 return (
                   <Option key={value} value={value} style={{ backgroundColor: isSelected && '#00A9FF', color: isSelected && '#fff' }}>{value}</Option>
                 );
@@ -135,14 +119,34 @@ export default class App extends PureComponent {
       >
         <Table
           className={styles.table}
-          rowClassName={({ result }) => result ? styles.abnormal : '' }
+          rowClassName={({ resultField }) => +resultField === 1 ? '' : styles.abnormal }
           size="small"
           dataSource={data}
           columns={columns}
           pagination={false}
           bordered={false}
-          rowKey={personField}
+          rowKey={timeField}
         />
+        {isResultShow && (
+          <div className={styles.result}>
+            <HiddenDanger
+              data={{
+                id: 'id',
+                description: 'description',
+                sbr: 'sbr',
+                sbsj: 'sbsj',
+                zgr: 'zgr',
+                plan_zgsj: 'plan_zgsj',
+                real_zgsj: 'real_zgsj',
+                fcr: 'fcr',
+                status: 1,
+                background: 'background',
+                source: 'source',
+              }}
+              // fieldNames={}
+            />
+          </div>
+        )}
       </Section>
     );
   }
