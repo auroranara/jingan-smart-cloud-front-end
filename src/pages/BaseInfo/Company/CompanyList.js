@@ -16,9 +16,7 @@ import fireGray from '../../../assets/fire-gray.png';
 
 import styles from './CompanyList.less';
 
-// console.log(VisibilitySensor);
 const FormItem = Form.Item;
-// const { Option } = Select;
 
 // 获取title
 const {
@@ -500,7 +498,6 @@ export default class CompanyList extends PureComponent {
         data: {
           pagination: { total },
         },
-        list,
         isLast,
       },
       loading,
@@ -513,7 +510,7 @@ export default class CompanyList extends PureComponent {
         content={
           <div>
             单位总数：
-            {total}{' '}
+            {total}
           </div>
         }
       >
