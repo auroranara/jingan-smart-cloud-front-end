@@ -14,6 +14,7 @@ import onJobIcon from '../img/onJobIcon.png';
 import rabbit from '../img/rabbit.png';
 import snail from '../img/snail.png';
 import timeIcon from '../img/time.png';
+import cameraIcon from '../img/videoCamera.png';
 
 
 function formatTime(t) {
@@ -88,7 +89,7 @@ export default class UnitLookUp extends Component {
     const [day, time] = lastTime.split(' ');
 
     return (
-      <FcSection title="单位查岗" id="unitLookUp" backTitle="视频查岗" handleBack={handleClickVideoLookUp}>
+      <FcSection title="单位查岗" id="unitLookUp" style={{ position: 'relative' }}>
         <section className={styles.main}>
           <div className={styles.top}>
             <Col span={8}>
@@ -190,6 +191,10 @@ export default class UnitLookUp extends Component {
             </Col>
           </div>
         </section>
+        <div className={styles.video} onClick={handleClickVideoLookUp}>
+          <span className={styles.camera} style={{ backgroundImage: `url(${cameraIcon})` }} />
+          视频查岗
+        </div>
       </FcSection>
     );
   }
