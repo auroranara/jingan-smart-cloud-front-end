@@ -4,7 +4,8 @@ import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
-import VisibilitySensor from 'react-visibility-sensor';
+import InfiniteScroll from 'react-infinite-scroller';
+// import VisibilitySensor from 'react-visibility-sensor';
 import { AuthLink, ERROR_MSG } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 
@@ -144,28 +145,147 @@ export default class FireAlarm extends PureComponent {
     });
   };
 
-  handleLoadMore = flag => {
-    // flag=true 能看到组件 flag=false 不能看到组件
-    const { scrollLoading, hasMore } = this.state;
-    // flag=true表示能看到组件，即已经到底，且请求还未返回且数据库还有数据
-    if (flag && !scrollLoading && hasMore) this.handleLazyload();
+  /* 滚动加载 */
+  handleLoadMore = () => {
+    const {
+      fireAlarm: { isLast },
+    } = this.props;
+    if (isLast) {
+      return;
+    }
+    const {
+      fireAlarm: { pageNum },
+    } = this.props;
+    // 请求数据
+    this.props.dispatch({
+      type: 'fireAlarm/fetch',
+      payload: {
+        pageSize: PAGE_SIZE,
+        pageNum: pageNum + 1,
+        ...this.formData,
+      },
+    });
   };
+
+  renderForm() {
+    const { company, address } = this.state;
+    return (
+      <Card className={styles.check}>
+        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+          <Col span={6}>
+            <Input
+              placeholder="请输入单位名称"
+              onChange={this.handleCompanyChange}
+              onPressEnter={this.handleCheck}
+              value={company}
+            />
+          </Col>
+          <Col span={6}>
+            <Input
+              placeholder="请输入单位地址"
+              onChange={this.handleAddressChange}
+              onPressEnter={this.handleCheck}
+              value={address}
+            />
+          </Col>
+          <Col span={2}>
+            <Button type="primary" onClick={this.handleCheck}>
+              查询
+            </Button>
+          </Col>
+          <Col span={2}>
+            <Button onClick={this.handleReset}>重置</Button>
+          </Col>
+        </Row>
+      </Card>
+    );
+  }
+
+  renderList() {
+    const {
+      fireAlarm: {
+        data: { list },
+      },
+      // loading,
+    } = this.props;
+
+    return (
+      <div className={styles.cardList}>
+        <List
+          rowKey="id"
+          // loading={loading}
+          grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
+          dataSource={list}
+          renderItem={item => {
+            const {
+              id,
+              name,
+              hostCount,
+              alertCount,
+              safetyName,
+              safetyPhone,
+              practicalProvinceLabel,
+              practicalCityLabel,
+              practicalDistrictLabel,
+              practicalTownLabel,
+              practicalAddress,
+            } = item;
+
+            const practicalAddressLabel =
+              (practicalProvinceLabel || '') +
+              (practicalCityLabel || '') +
+              (practicalDistrictLabel || '') +
+              (practicalTownLabel || '') +
+              (practicalAddress || '');
+
+            return (
+              <List.Item key={id}>
+                <AuthLink
+                  code={codesMap.dynamicMonitoring.comanyDetailView}
+                  to={`/dynamic-monitoring/fire-alarm/company/${id}`}
+                  errMsg={ERROR_MSG}
+                >
+                  <Card hoverable className={styles.card} title={name}>
+                    <Ellipsis tooltip className={styles.ellipsis} lines={1}>
+                      地址：
+                      {practicalAddressLabel ? practicalAddressLabel : '暂无信息'}
+                    </Ellipsis>
+                    <p>
+                      安全负责人：
+                      {safetyName ? safetyName : '暂无信息'}
+                    </p>
+                    <p>
+                      联系电话：
+                      {safetyPhone ? safetyPhone : '暂无信息'}
+                    </p>
+                    <p>
+                      火警主机数量：
+                      {hostCount}
+                    </p>
+                    <div className={styles.quantityContainer}>
+                      <div className={styles.quantity}>{alertCount}</div>
+                      <p className={styles.quantityDescrip}>警情数量</p>
+                    </div>
+                  </Card>
+                </AuthLink>
+              </List.Item>
+            );
+          }}
+        />
+      </div>
+    );
+  }
 
   render() {
     const {
       fireAlarm: {
-        // list,
         data: {
-          list,
           pagination: { total },
         },
+        isLast,
       },
       loading,
-      // user: {
-      //   currentUser: { permissionCodes: codes },
-      // },
     } = this.props;
-    const { company, address, scrollLoading, hasMore } = this.state;
 
     return (
       <PageHeaderLayout
@@ -179,101 +299,28 @@ export default class FireAlarm extends PureComponent {
           </div>
         }
       >
-        <Card className={styles.check}>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-            <Col span={6}>
-              <Input
-                placeholder="请输入单位名称"
-                onChange={this.handleCompanyChange}
-                onPressEnter={this.handleCheck}
-                value={company}
-              />
-            </Col>
-            <Col span={6}>
-              <Input
-                placeholder="请输入单位地址"
-                onChange={this.handleAddressChange}
-                onPressEnter={this.handleCheck}
-                value={address}
-              />
-            </Col>
-            <Col span={2}>
-              <Button type="primary" onClick={this.handleCheck}>
-                查询
-              </Button>
-            </Col>
-            <Col span={2}>
-              <Button onClick={this.handleReset}>重置</Button>
-            </Col>
-          </Row>
-        </Card>
-        <div className={styles.cardList}>
-          <List
-            rowKey="id"
-            loading={loading}
-            grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-            dataSource={list}
-            renderItem={item => {
-              const {
-                id,
-                name,
-                hostCount,
-                alertCount,
-                safetyName,
-                safetyPhone,
-                practicalProvinceLabel,
-                practicalCityLabel,
-                practicalDistrictLabel,
-                practicalTownLabel,
-                practicalAddress,
-              } = item;
+        {this.renderForm()}
 
-              const practicalAddressLabel =
-                (practicalProvinceLabel || '') +
-                (practicalCityLabel || '') +
-                (practicalDistrictLabel || '') +
-                (practicalTownLabel || '') +
-                (practicalAddress || '');
-
-              return (
-                <List.Item key={id}>
-                  <AuthLink
-                    code={codesMap.dynamicMonitoring.comanyDetailView}
-                    to={`/dynamic-monitoring/fire-alarm/company/${id}`}
-                    errMsg={ERROR_MSG}
-                  >
-                    <Card hoverable className={styles.card} title={name}>
-                      <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                        地址：
-                        {practicalAddressLabel ? practicalAddressLabel : '暂无信息'}
-                      </Ellipsis>
-                      <p>
-                        安全负责人：
-                        {safetyName ? safetyName : '暂无信息'}
-                      </p>
-                      <p>
-                        联系电话：
-                        {safetyPhone ? safetyPhone : '暂无信息'}
-                      </p>
-                      <p>
-                        火警主机数量：
-                        {hostCount}
-                      </p>
-                      <div className={styles.quantityContainer}>
-                        <div className={styles.quantity}>{alertCount}</div>
-                        <p className={styles.quantityDescrip}>警情数量</p>
-                      </div>
-                    </Card>
-                  </AuthLink>
-                </List.Item>
-              );
-            }}
-          />
-        </div>
-        {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} />}
-        <div className={scrollLoading && hasMore ? styles.spinContainer : styles.none}>
-          <Spin />
-        </div>
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
+            </div>
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
       </PageHeaderLayout>
     );
   }

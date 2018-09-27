@@ -32,6 +32,8 @@ const AUTO_LOOKUP_ROTATE = 2;
 const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
+const VIDEO_LOOK_UP = 'videoLookUp';
+const VIDEO_ALARM = 'videoAlarm';
 
 const DELAY = 2000;
 const LOOKING_UP_DELAY = 5000;
@@ -60,6 +62,8 @@ export default class FireControlBigPlatform extends PureComponent {
     mapShowInfo: false,
     videoVisible: false,
     videoKeyId: undefined,
+    showVideoList: false,
+    videoState: VIDEO_ALARM,
     tooltipName: '',
     tooltipVisible: false,
     tooltipPosition: [0, 0],
@@ -104,6 +108,8 @@ export default class FireControlBigPlatform extends PureComponent {
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
       },
     });
+
+    this.fetchLookUpVideo();
   };
 
   polling = () => {
@@ -219,6 +225,22 @@ export default class FireControlBigPlatform extends PureComponent {
     }
   };
 
+  handleClickVideoLookUp = () => {
+    this.setState({ isLookUpRotated: true, lookUpShow: VIDEO_LOOK_UP });
+  };
+
+  handleVideoLookUpRotate = () => {
+    this.setState({ isLookUpRotated: false });
+  };
+
+  fetchLookUpVideo = (value='') => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigFireControl/fetchVideoLookUp',
+      payload: { searchName: value },
+    });
+  };
+
   handleAlarmRotate = () => {
     this.setState(({ isAlarmRotated }) => ({ isAlarmRotated: !isAlarmRotated }));
   };
@@ -318,8 +340,8 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
-  handleVideoShow = keyId => {
-    this.setState({ videoVisible: true, videoKeyId: keyId });
+  handleVideoShow = (keyId, showList=false, videoState=VIDEO_ALARM) => {
+    this.setState({ videoVisible: true, videoKeyId: keyId, showVideoList: showList, videoState });
   };
 
   handleVideoClose = () => {
@@ -368,6 +390,8 @@ export default class FireControlBigPlatform extends PureComponent {
         offGuard,
         alarmProcess,
         allCamera,
+        videoLookUp,
+        lookUpCamera,
       },
       dispatch,
     } = this.props;
@@ -386,12 +410,14 @@ export default class FireControlBigPlatform extends PureComponent {
       showReverse,
       videoVisible,
       videoKeyId,
+      showVideoList,
+      videoState,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
     } = this.state;
 
-    // console.log(videoKeyId);
+    // console.log(videoState);
 
     return (
       <div
@@ -509,15 +535,19 @@ export default class FireControlBigPlatform extends PureComponent {
                   data={lookUp}
                   handleClickLookUp={this.handleClickLookUp}
                   handleClickOffGuard={this.handleClickOffGuard}
+                  handleClickVideoLookUp={this.handleClickVideoLookUp}
                 />
               }
               back={
                 <UnitLookUpBack
                   dispatch={dispatch}
-                  data={{ lookUp, countdown, offGuard }}
+                  data={{ lookUp, countdown, offGuard, videoLookUp }}
                   lookUpShow={lookUpShow}
                   startLookUp={startLookUp}
+                  fetchLookUpVideo={this.fetchLookUpVideo}
+                  handleVideoShow={this.handleVideoShow}
                   handleRotateBack={this.handleLookUpRotateBack}
+                  handleVideoLookUpRotate={this.handleVideoLookUpRotate}
                 />
               }
               reverse={<AlarmHandle data={alarmProcess} />}
@@ -538,8 +568,8 @@ export default class FireControlBigPlatform extends PureComponent {
         <VideoPlay
           // dispatch={dispatch}
           // actionType="bigFireControl/fetchStartToPlay"
-          showList={false}
-          videoList={allCamera}
+          showList={showVideoList}
+          videoList={videoState === VIDEO_LOOK_UP ? lookUpCamera : allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}

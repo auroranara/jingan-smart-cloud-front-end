@@ -171,3 +171,10 @@ export async function getMonitorData(params) {
 export async function getStaffList(params) {
   return request(`/acloud_new/v2/sfc/companyCheckByPerson.json?${stringify(params)}`);
 }
+
+/**
+ * 获取巡查人员记录
+ */
+export async function getStaffRecords(params) {
+  return request(`/acloud_new/v2/sfc/companyCheckDataByPerson.json?${stringify(params)}`);
+}

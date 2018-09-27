@@ -69,7 +69,7 @@ export default {
       pagination: {
         total: 0,
         pageSize: 24,
-        pageNum: 1,
+        pageNum: 0,
       },
     },
     list: [],
@@ -91,7 +91,7 @@ export default {
     companyNatures: [],
     // 单位类型
     companyTypes: [],
-    pageNum: 1,
+    pageNum: 0,
     isLast: false,
     detail: {
       data: {
@@ -374,6 +374,7 @@ export default {
         list,
         pagination: { pageNum, pageSize, total },
       } = payload;
+      console.log('payload', payload);
       return {
         ...state,
         list,
@@ -381,18 +382,15 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    appendList(
-      state,
-      {
-        payload: {
-          list,
-          pagination: { pageNum, pageSize, total },
-        },
-      }
-    ) {
+    appendList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
       return {
         ...state,
         list: [...state.list, ...list],
+        data: payload,
         pageNum,
         isLast: pageNum * pageSize >= total,
       };

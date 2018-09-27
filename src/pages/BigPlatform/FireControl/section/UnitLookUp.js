@@ -82,13 +82,13 @@ export default class UnitLookUp extends Component {
   };
 
   render() {
-    const { data, handleClickLookUp, handleClickOffGuard } = this.props;
+    const { data, handleClickLookUp, handleClickOffGuard, handleClickVideoLookUp } = this.props;
     const { hover } = this.state;
     const { lastTime='暂无信息', fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
     const [day, time] = lastTime.split(' ');
 
     return (
-      <FcSection title="单位查岗" id="unitLookUp">
+      <FcSection title="单位查岗" id="unitLookUp" backTitle="视频查岗" handleBack={handleClickVideoLookUp}>
         <section className={styles.main}>
           <div className={styles.top}>
             <Col span={8}>

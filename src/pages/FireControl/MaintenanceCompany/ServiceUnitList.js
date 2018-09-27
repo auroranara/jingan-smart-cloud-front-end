@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin } from 'antd';
+import { Form, List, Card, Button, Input, Spin } from 'antd';
 import { routerRedux } from 'dva/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -217,13 +217,21 @@ export default class ServiceUnitList extends PureComponent {
                     style={{ cursor: 'pointer' }}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      地址：{searchArea || getEmptyData()}
+                      地址：
+                      {searchArea || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      行业类别：{industryCategoryLabel || getEmptyData()}
+                      行业类别：
+                      {industryCategoryLabel || getEmptyData()}
                     </Ellipsis>
-                    <p>安全负责人：{safetyName || getEmptyData()}</p>
-                    <p>联系电话：{safetyPhone || getEmptyData()}</p>
+                    <p>
+                      安全负责人：
+                      {safetyName || getEmptyData()}
+                    </p>
+                    <p>
+                      联系电话：
+                      {safetyPhone || getEmptyData()}
+                    </p>
                   </div>
                 </Card>
               </List.Item>
@@ -241,7 +249,6 @@ export default class ServiceUnitList extends PureComponent {
 
     return (
       <PageHeaderLayout title="服务单位列表" breadcrumbList={breadcrumbList}>
-        <BackTop />
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
