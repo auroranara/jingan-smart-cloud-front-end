@@ -525,10 +525,10 @@ module.exports = [
                 component: './DeviceManagement/VideoMonitor/VideoMonitorEdit',
               },
               {
-                path: '/device-management/video-monitor/company-video/:companyId',
+                path: '/device-management/video-monitor/video-equipment/:companyId',
                 code: 'deviceManagement.videoMonitor.view',
                 name: 'view',
-                component: './DeviceManagement/VideoMonitor/CompanyVideoList',
+                component: './DeviceManagement/VideoMonitor/VideoEquipmentList',
               },
               {
                 path: '/device-management/video-monitor/detail/:id',

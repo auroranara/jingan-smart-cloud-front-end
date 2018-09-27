@@ -22,8 +22,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './VideoMonitorList.less';
 import codesMap from '@/utils/codes';
-import { AuthButton, hasAuthority } from '@/utils/customAuth';
-
+import { hasAuthority, AuthButton } from '@/utils/customAuth';
 const FormItem = Form.Item;
 
 //面包屑
@@ -69,39 +68,45 @@ export default class VideoMonitorList extends PureComponent {
   }
   // 生命周期函数
   componentDidMount() {
-    // const { fetch } = this.props;
-    // // 获取视频单位列表
-    // fetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    const { dispatch } = this.props;
+    // 获取视频单位列表
+    dispatch({
+      type: 'videoMonitor/fetchCompanyList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
   }
+
+  // 跳转到视频设备列表
+  goToEquipmentList = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/device-management/video-monitor/video-equipment/${id}`));
+  };
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
     const {
-      // fetch,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
-    // fetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //     ...data,
-    //   },
-    // });
+    this.props.dispatch({
+      type: 'videoMonitor/fetchCompanyList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+        ...data,
+      },
+    });
   };
 
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
     const {
-      // fetch,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -109,34 +114,35 @@ export default class VideoMonitorList extends PureComponent {
     // 修改表单数据
     this.formData = defaultFormData;
     // 重新请求数据
-    // fetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    this.props.dispatch({
+      type: 'videoMonitor/fetchCompanyList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
   };
 
   /* 滚动加载 */
-  handleLoadMore = flag => {
+  handleLoadMore = () => {
     const {
       videoMonitor: { isLast },
     } = this.props;
-    if (!flag || isLast) {
+    if (isLast) {
       return;
     }
-    // const {
-    //   appendFetch,
-    //   videoMonitor: { pageNum },
-    // } = this.props;
-    // // 请求数据
-    // appendFetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: pageNum + 1,
-    //     ...this.formData,
-    //   },
-    // });
+    const {
+      videoMonitor: { pageNum },
+    } = this.props;
+    // 请求数据
+    this.props.dispatch({
+      type: 'videoMonitor/fetchCompanyList',
+      payload: {
+        pageSize,
+        pageNum: pageNum + 1,
+        ...this.formData,
+      },
+    });
   };
 
   /* 渲染form表单 */
@@ -184,7 +190,6 @@ export default class VideoMonitorList extends PureComponent {
   renderList() {
     const {
       videoMonitor: { list },
-      goToService,
       user: {
         currentUser: { permissionCodes: codes },
       },
@@ -196,39 +201,42 @@ export default class VideoMonitorList extends PureComponent {
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card title={item.name} className={styles.card}>
-                <Row>
-                  <Col span={16} style={{ cursor: 'pointer' }}>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      地址：
-                      {item.practicalAddress || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      主要负责人：
-                      {item.principalName || getEmptyData()}
-                    </Ellipsis>
-                    <p>
-                      联系电话：
-                      {item.principalPhone || getEmptyData()}
-                    </p>
-                  </Col>
-                  <Col
-                    span={8}
-                    onClick={() => {
-                      if (hasAuthority(codesMap.videoMonitor.serviceDetail, codes))
-                        goToService(`/fire-control/maintenance-company/serviceList/${item.id}`);
-                      else message.warn('您没有权限访问对应页面');
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <span className={styles.quantity}>{item.serviceCompanyCount}</span>
-                  </Col>
-                </Row>
-              </Card>
-            </List.Item>
-          )}
+          renderItem={item => {
+            const { id, practicalAddress, safetyName, safetyPhone, vedioCount } = item;
+            return (
+              <List.Item key={id}>
+                <Card title={item.name} className={styles.card}>
+                  <Row>
+                    <Col span={16}>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        地址：
+                        {practicalAddress || getEmptyData()}
+                      </Ellipsis>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        主要负责人：
+                        {safetyName || getEmptyData()}
+                      </Ellipsis>
+                      <p>
+                        联系电话：
+                        {safetyPhone || getEmptyData()}
+                      </p>
+                    </Col>
+                    <Col
+                      span={8}
+                      onClick={() => {
+                        if (hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes))
+                          this.goToEquipmentList(id);
+                        else message.warn('您没有权限访问对应页面');
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className={styles.quantity}>{vedioCount}</span>
+                    </Col>
+                  </Row>
+                </Card>
+              </List.Item>
+            );
+          }}
         />
       </div>
     );
@@ -240,8 +248,8 @@ export default class VideoMonitorList extends PureComponent {
       videoMonitor: {
         data: {
           pagination: { total },
+          vedioCount,
         },
-        list,
         isLast,
       },
     } = this.props;
@@ -259,7 +267,7 @@ export default class VideoMonitorList extends PureComponent {
             </span>
             <span style={{ paddingLeft: 20 }}>
               视频总数：
-              {total}
+              {vedioCount}
               {''}
             </span>
           </div>

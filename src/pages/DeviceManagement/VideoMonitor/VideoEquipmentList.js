@@ -21,10 +21,9 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
-import styles from './VideoMonitorList.less';
+import styles from './VideoEquipmentList.less';
 import codesMap from '@/utils/codes';
-import { AuthLink, AuthButton } from '@/utils/customAuth';
-
+import { hasAuthority, AuthButton, AuthLink } from '@/utils/customAuth';
 const FormItem = Form.Item;
 
 //面包屑
@@ -54,7 +53,6 @@ const pageSize = 18;
 // 默认表单值
 const defaultFormData = {
   name: undefined,
-  practicalAddress: undefined,
 };
 
 /* 获取无数据 */
@@ -68,46 +66,53 @@ const getEmptyData = () => {
   loading: loading.models.videoMonitor,
 }))
 @Form.create()
-export default class VideoMonitorList extends PureComponent {
+export default class VideoEquipmentList extends PureComponent {
   constructor(props) {
     super(props);
     this.formData = defaultFormData;
   }
   // 生命周期函数
   componentDidMount() {
-    // const { fetch } = this.props;
-    // // 获取视频单位列表
-    // fetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+
+    // 获取视频设备列表
+    dispatch({
+      type: 'videoMonitor/fetchEquipmentList',
+      payload: {
+        companyId,
+        pageSize,
+        pageNum: 1,
+      },
+    });
   }
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
     const {
-      // fetch,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
-    // fetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //     ...data,
-    //   },
-    // });
+    this.props.dispatch({
+      type: 'videoMonitor/fetchEquipmentList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+        ...data,
+      },
+    });
   };
 
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
     const {
-      // fetch,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -115,34 +120,35 @@ export default class VideoMonitorList extends PureComponent {
     // 修改表单数据
     this.formData = defaultFormData;
     // 重新请求数据
-    // fetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    this.props.dispatch({
+      type: 'videoMonitor/fetchEquipmentList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
   };
 
   /* 滚动加载 */
-  handleLoadMore = flag => {
+  handleLoadMore = () => {
     const {
       videoMonitor: { isLast },
     } = this.props;
-    if (!flag || isLast) {
+    if (isLast) {
       return;
     }
-    // const {
-    //   appendFetch,
-    //   videoMonitor: { pageNum },
-    // } = this.props;
-    // // 请求数据
-    // appendFetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: pageNum + 1,
-    //     ...this.formData,
-    //   },
-    // });
+    const {
+      videoMonitor: { pageNum },
+    } = this.props;
+    // 请求数据
+    this.props.dispatch({
+      type: 'videoMonitor/fetchEquipmentList',
+      payload: {
+        pageSize,
+        pageNum: pageNum + 1,
+        ...this.formData,
+      },
+    });
   };
 
   /* 渲染form表单 */
@@ -189,8 +195,9 @@ export default class VideoMonitorList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      videoMonitor: { list },
-      goToCamera,
+      videoMonitor: {
+        videoData: { list },
+      },
       user: {
         currentUser: { permissionCodes: codes },
       },
@@ -202,50 +209,55 @@ export default class VideoMonitorList extends PureComponent {
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card
-                title={item.name}
-                className={styles.card}
-                actions={[
-                  <Link to={`/device-management/video-monitor/detail/${item.id}`}>查看</Link>,
-                  <AuthLink
-                    code={codesMap.deviceManagement.deviceManagementvideoMonitor.edit}
-                    codes={codes}
-                    to={`/device-management/video-monitor/edit/${item.id}`}
-                  >
-                    编辑
-                  </AuthLink>,
-                ]}
-              >
-                <Row>
-                  <Col span={16} style={{ cursor: 'pointer' }}>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      设备ID:
-                      {item || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      摄像头ID：
-                      {item || getEmptyData()}
-                    </Ellipsis>
-                    <p>
-                      是否用于查岗：
-                      <Switch checkedChildren="是" unCheckedChildren="否" />
-                    </p>
-                  </Col>
-                  <Col
-                    span={8}
-                    onClick={() => {
-                      goToCamera(``);
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <span className={styles.quantity} />
-                  </Col>
-                </Row>
-              </Card>
-            </List.Item>
-          )}
+          renderItem={item => {
+            const { id, deviceId, keyId, isInfiniteScroll } = item;
+            return (
+              <List.Item key={id}>
+                <Card
+                  title={item.name}
+                  className={styles.card}
+                  // actions={[
+                  //   <Link to={`/device-management/video-monitor/detail/${item.id}`}>查看</Link>,
+                  //   <AuthLink
+                  //     code={codesMap.deviceManagement.videoMonitor.edit}
+                  //     codes={codes}
+                  //     to={`/device-management/video-monitor/edit/${item.id}`}
+                  //   >
+                  //     编辑
+                  //   </AuthLink>,
+                  // ]}
+                >
+                  <Row>
+                    <Col span={16}>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        设备ID:
+                        {deviceId || getEmptyData()}
+                      </Ellipsis>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        摄像头ID：
+                        {keyId || getEmptyData()}
+                      </Ellipsis>
+                      <p>
+                        是否用于查岗：
+                        <Switch checkedChildren="是" unCheckedChildren="否" />
+                      </p>
+                    </Col>
+                    <Col
+                      span={8}
+                      onClick={() => {
+                        if (hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes))
+                          this.goToEquipmentList(id);
+                        else message.warn('您没有权限访问对应页面');
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className={styles.quantity} />
+                    </Col>
+                  </Row>
+                </Card>
+              </List.Item>
+            );
+          }}
         />
       </div>
     );
@@ -255,8 +267,8 @@ export default class VideoMonitorList extends PureComponent {
     const {
       loading,
       videoMonitor: {
-        data: {
-          pagination: { total },
+        videoData: {
+          list: { companyName },
         },
         isLast,
       },
@@ -264,13 +276,13 @@ export default class VideoMonitorList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="常熟市鑫博伟针纺织有限公司"
+        title={companyName}
         breadcrumbList={breadcrumbList}
         content={
           <div>
             <span>
               视频总数：
-              {total}
+              {/* {vedioCount} */}
               {''}
             </span>
           </div>

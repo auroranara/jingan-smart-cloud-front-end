@@ -48,7 +48,7 @@ export default {
   'menu.deviceManagement.videoMonitor.add': '新增视频设备信息',
   'menu.deviceManagement.videoMonitor.edit': '编辑视频设备信息',
   'menu.deviceManagement.videoMonitor.view': '企业视频监控列表',
-  'menu.deviceManagement.videoMonitor.detail': '企业视频监控列表',
+  'menu.deviceManagement.videoMonitor.detail': '视频设备监控列表',
   'menu.fireControl': '消防维保',
   'menu.fireControl.maintenanceCompany': '维保单位',
   'menu.fireControl.maintenanceCompany.maintenanceCompany': '维保单位',

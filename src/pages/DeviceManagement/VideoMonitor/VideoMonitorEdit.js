@@ -80,6 +80,7 @@ export default class VideoMonitorEdit extends PureComponent {
       visible: false,
       loading: false,
     },
+    companyId: undefined,
     isInspection: false,
   };
 
@@ -90,90 +91,92 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   /* 点击提交按钮验证表单信息 */
-  // handleClickValidate = () => {
-  //   const {
-  //     form: { validateFieldsAndScroll },
-  //     match: {
-  //       params: { id },
-  //     },
-  //     dispatch,
-  //   } = this.props;
-  //   validateFieldsAndScroll(
-  //     (
-  //       error,
-  //       {
-  //         deviceId,
-  //         keyId,
-  //         name,
-  //         status,
-  //         companyId,
-  //         rtsAddress,
-  //         photoAddress,
-  //         xNum,
-  //         yNum,
-  //         isInspection,
-  //       }
-  //     ) => {
-  //       if (!error) {
-  //         this.setState({
-  //           submitting: true,
-  //         });
+  handleClickValidate = () => {
+    const {
+      form: { validateFieldsAndScroll },
+      match: {
+        params: { id },
+      },
+      dispatch,
+    } = this.props;
 
-  //         const success = () => {
-  //           const msg = id ? '编辑成功！' : '新增成功！';
-  //           message.success(msg, 1, this.goBack());
-  //         };
-  //         const error = err => {
-  //           message.error(err, 1);
-  //           this.setState({
-  //             submitting: false,
-  //           });
-  //         };
-  //         // 如果id存在的话，为编辑
-  //         if (id) {
-  //           dispatch({
-  //             type: 'videoMonitor/updateVideoDevice',
-  //             payload: {
-  //               id,
-  //               deviceId,
-  //               keyId,
-  //               name,
-  //               status,
-  //               companyId,
-  //               rtsAddress,
-  //               photoAddress,
-  //               xNum,
-  //               yNum,
-  //               isInspection,
-  //             },
-  //             success,
-  //             error,
-  //           });
-  //         } else {
-  //           const payload = {
-  //             id,
-  //             deviceId,
-  //             keyId,
-  //             name,
-  //             status,
-  //             companyId,
-  //             rtsAddress,
-  //             photoAddress,
-  //             xNum,
-  //             yNum,
-  //             isInspection,
-  //           };
-  //           dispatch({
-  //             type: 'videoMonitor/fetchVideoDevice',
-  //             payload,
-  //             success,
-  //             error,
-  //           });
-  //         }
-  //       }
-  //     }
-  //   );
-  // };
+    validateFieldsAndScroll((error, values) => {
+      if (!error) {
+        this.setState({
+          submitting: true,
+        });
+
+        const {
+          deviceId,
+          keyId,
+          name,
+          status,
+          rtsAddress,
+          photoAddress,
+          xNum,
+          yNum,
+          isInspection,
+        } = values;
+
+        const { companyId } = this.state;
+        console.log(values);
+
+        const success = () => {
+          const msg = id ? '编辑成功' : '新增成功';
+          message.success(msg, 1, this.goBack());
+        };
+
+        const error = () => {
+          const msg = id ? '编辑失败' : '新增失败';
+          message.error(msg, 1);
+          this.setState({
+            submitting: false,
+          });
+        };
+        // 如果id存在的话，为编辑
+        if (id) {
+          dispatch({
+            type: 'videoMonitor/updateVideoDevice',
+            payload: {
+              id,
+              deviceId,
+              keyId,
+              name,
+              status,
+              companyId,
+              rtsAddress,
+              photoAddress,
+              xNum,
+              yNum,
+              isInspection: +isInspection,
+            },
+            success,
+            error,
+          });
+        }
+        // 不存在id,则为新增
+        else {
+          dispatch({
+            type: 'videoMonitor/fetchVideoDevice',
+            payload: {
+              deviceId,
+              keyId,
+              name,
+              status,
+              companyId,
+              rtsAddress,
+              photoAddress,
+              xNum,
+              yNum,
+              isInspection: +isInspection,
+            },
+            success,
+            error,
+          });
+        }
+      }
+    });
+  };
 
   /* 显示选择企业模态框 */
   handleShowCompanyModal = () => {
@@ -255,6 +258,7 @@ export default class VideoMonitorEdit extends PureComponent {
       isInspection: checked,
     });
   };
+
   // 渲染视频设备信息
   renderVideoInfo() {
     const {

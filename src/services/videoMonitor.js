@@ -1,20 +1,31 @@
 import request from '../utils/request';
+import { stringify } from 'qs';
 
 // const URL_PREFIX = '/mock/28/acloud_new/v2/baseInfo';
 const URL_PREFIX = '/acloud_new/v2';
 
 // 新增视频设备信息
-export async function addVideoDevice({ companyId }) {
-  return request(`${URL_PREFIX}/fireControl/company/${companyId}/vedioDevice`, {
+export async function addVideoDevice({ companyId, ...params }) {
+  return request(`${URL_PREFIX}/vedioDevice/company/${companyId}/vedioDevice`, {
     method: 'POST',
-    body: { companyId },
+    body: { companyId, ...params },
   });
 }
 
 // 修改视频设备信息
-export async function updateVideoDevice({ companyId, vedioId, params }) {
-  return request(`${URL_PREFIX}/fireControl/company/${companyId}/vedioDevice/${vedioId}`, {
+export async function updateVideoDevice({ companyId, vedioId, ...params }) {
+  return request(`${URL_PREFIX}/vedioDevice/company/${companyId}/vedioDevice/${vedioId}`, {
     method: 'POST',
-    body: params,
+    body: { companyId, vedioId, ...params },
   });
+}
+
+// 视频企业列表
+export async function queryVideoCompaniesList(params) {
+  return request(`${URL_PREFIX}/vedioDevice/companies?${stringify(params)}`);
+}
+
+// 视频设备列表
+export async function queryVideoList(companyId) {
+  return request(`${URL_PREFIX}/vedioDevice/company/${companyId}/vedioList`);
 }
