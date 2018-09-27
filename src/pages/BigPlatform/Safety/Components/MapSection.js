@@ -5,7 +5,8 @@ import classNames from 'classnames';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
 import styles from './MapSection.less';
-import MapSearch from '../../FireControl/components/MapSearch';
+// import MapSearch from '../../FireControl/components/MapSearch';
+import MapSearch from './MapSearch';
 import MapTypeBar from './MapTypeBar';
 
 import govdotRed from '../img/govdot-red.png';
@@ -18,7 +19,6 @@ class MapSection extends PureComponent {
     this.debouncedFetchData = debounce(this.searchFetchData, 500);
     this.state = {
       searchValue: '',
-      selectList: [],
       legendActive: null,
       filter: 'All',
       infoWindowShow: false,
@@ -76,7 +76,7 @@ class MapSection extends PureComponent {
   };
 
   renderMarkers = lvl => {
-    const { locData } = this.props;
+    const { locData = [] } = this.props;
     const { filter } = this.state;
     const loactions = locData.filter(d => filter === 'All' || d.level === filter);
 
@@ -364,12 +364,20 @@ class MapSection extends PureComponent {
             重置
           </div>
         </GDMap>
-        <MapSearch
+        {/* <MapSearch
           style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
           selectList={selectList}
           value={searchValue}
           handleChange={this.handleInputChange}
           handleSelect={this.handleSearchSelect}
+        /> */}
+        <MapSearch
+          style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
+          handleSelect={this.handleSearchSelect}
+          // selectList={selectList}
+          // value={searchValue}
+          // handleChange={this.handleInputChange}
+          // handleSelect={this.handleSearchSelect}
         />
         {this.renderMapLegend()}
       </div>
