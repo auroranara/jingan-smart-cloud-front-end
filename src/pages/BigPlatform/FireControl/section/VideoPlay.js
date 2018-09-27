@@ -9,7 +9,18 @@ import styles from './VideoPlay.less';
 import animate from '../../Safety/Animate.less';
 import Draggable from 'react-draggable';
 
-@connect(({ videoPlay }) => ({ videoPlay }))
+const LOADING_STYLE = {
+  color: '#FFF',
+  fontSize: 60,
+  fontWeight: 'bold',
+  position: 'absolute',
+  left: '50%',
+  top: '50%',
+  transform: 'translate(-50%, -50%)',
+};
+const LOADING_COMPONENT = <div className={styles.loadingContainer}><Icon type="loading" style={LOADING_STYLE} /></div>;
+
+@connect(({ videoPlay, loading }) => ({ videoPlay, loading: loading.effects['videoPlay/fetchStartToPlay'] }))
 class VideoPlay extends Component {
   state = {
     videoSrc: '',
@@ -50,7 +61,7 @@ class VideoPlay extends Component {
         });
         if (keyId) {
           videoList.forEach((item, index) => {
-            if (item.key_id === keyId) {
+            if (item.key_id === keyId || item.keyId === keyId) {
               this.setState({
                 activeIndex: index,
               });
@@ -71,13 +82,14 @@ class VideoPlay extends Component {
             const itemStyles = classNames(styles.videoLi, {
               [styles.itemActive]: activeIndex === index,
             });
+            const keyId = item.key_id || item.keyId;
             return (
               <li
                 className={itemStyles}
                 onClick={() => {
-                  this.handleItemClick(index, item.key_id);
+                  this.handleItemClick(index, keyId);
                 }}
-                key={item.key_id}
+                key={keyId}
               >
                 {activeIndex === index && (
                   <Icon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
@@ -115,15 +127,16 @@ class VideoPlay extends Component {
       type: 'videoPlay/clearVideo',
       callback: () => {
         this.props.handleVideoClose();
-        this.refs.source.handelDestroy();
+        this.refs.source && this.refs.source.handelDestroy();
       },
     });
   };
 
   renderPan = () => {
-    const { style = {}, videoList = [], draggable = true, showList = true } = this.props;
+    const { loading, style = {}, videoList = [], draggable = true, showList = true } = this.props;
     const { videoSrc, activeIndex } = this.state;
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
+
     return (
       <div className={wrapperStyles} style={{ ...style }}>
         <div
@@ -139,9 +152,11 @@ class VideoPlay extends Component {
         </div>
         <div className={styles.videoMain}>
           <div className={styles.videoContent} style={{ paddingRight: showList ? 0 : '5px' }}>
-            <Player>
-              <HLSSource isVideoChild src={videoSrc} ref="source" />
-            </Player>
+            {true ? LOADING_COMPONENT : (
+              <Player>
+                <HLSSource isVideoChild src={videoSrc} ref="source" />
+              </Player>
+            )}
           </div>
           {showList && (
             <div className={styles.videoList}>

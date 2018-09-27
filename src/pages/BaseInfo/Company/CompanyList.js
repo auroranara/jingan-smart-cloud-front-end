@@ -2,8 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Icon, Input, Modal, message, Spin, Popconfirm } from 'antd';
 import { Link, routerRedux } from 'dva/router';
-import VisibilitySensor from 'react-visibility-sensor';
-
+import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
@@ -18,7 +17,6 @@ import fireGray from '../../../assets/fire-gray.png';
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
-// const { Option } = Select;
 
 // 获取title
 const {
@@ -147,14 +145,14 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount() {
-    const { fetch } = this.props;
+    // const { fetch } = this.props;
     // 获取企业列表
-    fetch({
-      payload: {
-        pageSize,
-        pageNum: 1,
-      },
-    });
+    // fetch({
+    //   payload: {
+    //     pageSize,
+    //     pageNum: 1,
+    //   },
+    // });
   }
 
   // /* 显示删除确认提示框 */
@@ -220,11 +218,11 @@ export default class CompanyList extends PureComponent {
   };
 
   /* 滚动加载 */
-  handleLoadMore = flag => {
+  handleLoadMore = () => {
     const {
       company: { isLast },
     } = this.props;
-    if (!flag || isLast) {
+    if (isLast) {
       return;
     }
     const {
@@ -335,7 +333,6 @@ export default class CompanyList extends PureComponent {
       user: {
         currentUser: { permissionCodes, unitType },
       },
-      goToDetail,
     } = this.props;
     // 是否有查看权限
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
@@ -343,8 +340,6 @@ export default class CompanyList extends PureComponent {
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
     // 是否有查看部门权限
     const hasViewDepAuthority = hasAuthority(viewDepCode, permissionCodes);
-    // 是否有删除权限
-    const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -503,7 +498,6 @@ export default class CompanyList extends PureComponent {
         data: {
           pagination: { total },
         },
-        list,
         isLast,
       },
       loading,
@@ -516,19 +510,31 @@ export default class CompanyList extends PureComponent {
         content={
           <div>
             单位总数：
-            {total}{' '}
+            {total}
           </div>
         }
       >
         {this.renderForm()}
-        {this.renderList()}
-        {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
+
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
             </div>
-          )}
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
       </PageHeaderLayout>
     );
   }

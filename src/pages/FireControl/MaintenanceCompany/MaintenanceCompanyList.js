@@ -9,7 +9,6 @@ import {
   Input,
   // Modal,
   message,
-  BackTop,
   Spin,
   Col,
   Row,
@@ -365,7 +364,6 @@ export default class MaintenanceCompanyList extends PureComponent {
           </div>
         }
       >
-        <BackTop />
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}

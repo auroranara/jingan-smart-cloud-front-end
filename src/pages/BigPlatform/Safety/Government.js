@@ -170,13 +170,6 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchLocation',
     });
 
-    dispatch({
-      type: 'bigPlatform/fetchNewHomePage',
-      payload: {
-        month: moment().format('YYYY-MM'),
-      },
-    });
-
     // 政府专职人员列表
     dispatch({
       type: 'bigPlatform/fetchGovFulltimeWorkerList',
@@ -1997,7 +1990,9 @@ class GovernmentBigPlatform extends Component {
                         <div className={styles.summaryItem}>
                           <span className={styles.summaryIconCom} />
                           单位数量
-                          <span className={styles.summaryNum}>{company_num_with_item}</span>
+                          <span className={styles.summaryNum}>
+                            {(dataImportant, length + dataUnimportantCompany.length)}
+                          </span>
                         </div>
                       </div>
 

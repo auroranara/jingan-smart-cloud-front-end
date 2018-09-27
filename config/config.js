@@ -8,6 +8,7 @@ const webpackplugin = require('./plugin.config');
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
+  sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
   ct: '192.168.10.8', //陈涛
   sqz: '192.168.10.56', //孙启政
@@ -25,7 +26,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.dev}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -59,8 +60,8 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie10'],
-        // dynamicImport: true,
+        polyfills: ['ie9'],
+        dynamicImport: true,
         dll: {
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
           exclude: ['@babel/runtime'],

@@ -21,6 +21,9 @@ export default {
       },
     },
     list: [],
+    companyTypes: [],
+    pageNum: 1,
+    isLast: false,
     // alarmNums: [0, 0, 0, 0, 0, 0],
     tableLists: [],
     pagination: {},
@@ -109,11 +112,23 @@ export default {
 
   reducers: {
     saveList(state, action) {
-      const { pageNum, list } = action.payload;
+      const {
+        list,
+        pagination,
+        pagination: { pageNum, pageSize, total },
+      } = action.payload;
       let nextList = list;
       if (pageNum !== 1) nextList = state.list.concat(list);
-
-      return { ...state, data: action.payload, list: nextList };
+      return {
+        ...state,
+        data: {
+          list: nextList,
+          pagination,
+        },
+        pageNum,
+        list: nextList,
+        isLast: pageNum * pageSize >= total,
+      };
     },
     saveAlarmData(state, action) {
       return { ...state, tableLists: action.payload };

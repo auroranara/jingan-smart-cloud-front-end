@@ -14,6 +14,7 @@ import {
   postLookingUp,
   getAllCamera,
   // getStartToPlay,
+  getVideoLookUp,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -106,6 +107,8 @@ export default {
     offGuard: {},
     allCamera: [],
     // startToPlay: '',
+    videoLookUp: [],
+    lookUpCamera: [],
   },
 
   effects: {
@@ -231,6 +234,14 @@ export default {
     //     if (success) success(response);
     //   }
     // },
+    *fetchVideoLookUp({ payload, callback }, { call, put }) {
+      let response = yield call(getVideoLookUp, payload);
+      response = response || EMPTY_OBJECT;
+      const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+      callback && callback(code, data.list);
+      if (code === 200)
+        yield put({ type: 'saveVideoLookUp', payload: data.list });
+    },
   },
 
   reducers: {
@@ -289,6 +300,12 @@ export default {
     },
     saveOffGuard(state, action) {
       return { ...state, offGuard: action.payload };
+    },
+    saveVideoLookUp(state, action) {
+      return { ...state, videoLookUp: action.payload };
+    },
+    saveLookUpCamera(state, action) {
+      return { ...state, lookUpCamera: action.payload };
     },
   },
 };
