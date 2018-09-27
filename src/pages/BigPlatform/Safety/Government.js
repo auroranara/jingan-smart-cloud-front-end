@@ -16,6 +16,8 @@ import MyTooltip from '../FireControl/section/Tooltip';
 import DangerCompany from './Sections/DangerCompany';
 import CheckInfo from './Sections/CheckInfo';
 import CompanyOver from './Sections/CompanyOver';
+import CompanyRisk from './Components/CompanyRisk';
+import RiskDetail from './Sections/RiskDetail';
 // import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
@@ -57,6 +59,21 @@ const getSeal = status => {
 
 const { location: locationDefault } = global.PROJECT_CONFIG;
 const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点', '未评级风险点'];
+
+const sectionsVisible = {
+  communityCom: false, // 社区接入单位数
+  comIn: false, // 接入单位统计
+  keyCom: false, // 重点单位统计
+  fullStaff: false, // 专职人员统计
+  overHd: false, // 已超期隐患
+  hdCom: false, // 隐患单位统计
+  comInfo: false, // 企业信息
+  riskColors: false, // 风险点
+  hdDetail: false, // 已超期隐患详情
+  hiddenDanger: false, // 隐患详情
+  checks: false, // 监督检查
+  companyOver: false, // 已超时单位
+};
 @connect(({ bigPlatform, bigPlatformSafetyCompany }) => ({
   bigPlatform,
   bigPlatformSafetyCompany,
@@ -112,6 +129,7 @@ class GovernmentBigPlatform extends Component {
       tooltipVisible: false,
       tooltipPosition: [0, 0],
       dangerCompanyData: {},
+      dangerCompanyLast: '',
     };
   }
 
@@ -408,7 +426,7 @@ class GovernmentBigPlatform extends Component {
     });
     // 风险点隐患
     dispatch({
-      type: 'bigPlatform/fetchRiskDetail',
+      type: 'bigPlatform/fetchHiddenDangerListByDate',
       payload: {
         company_id: id,
         source_type: '3',
@@ -893,30 +911,26 @@ class GovernmentBigPlatform extends Component {
     }, 5000);
   }
 
-  goBack = () => {
+  goBack = section => {
+    let obj = {};
     if (this.state.comInfo) {
       this.setState({
         infoWindowShow: false,
       });
       // return;
     }
-    this.setState({
-      comIn: false, // 接入单位统计
-      keyCom: false, // 重点单位统计
-      fullStaff: false, // 专职人员统计
-      overHd: false, // 已超期隐患
-      hdCom: false, // 隐患单位统计
-      comInfo: false, // 企业信息
-      riskColors: false, // 风险点
-      hdDetail: false, // 已超期隐患详情
-      hiddenDanger: false, // 隐患详情
-      checks: false, // 监督检查
-      companyOver: false,
-    });
+    this.setState(sectionsVisible);
     setTimeout(() => {
-      this.setState({
-        communityCom: true,
-      });
+      if (section) {
+        obj[section] = true;
+        this.setState({
+          ...obj,
+        });
+      } else {
+        this.setState({
+          communityCom: true,
+        });
+      }
     }, 225);
   };
 
@@ -948,20 +962,7 @@ class GovernmentBigPlatform extends Component {
     // if (this.state[type] && type !== 'comInfo') return;
     const obj = {};
     obj[type] = true;
-    this.setState({
-      communityCom: false,
-      comIn: false,
-      keyCom: false,
-      fullStaff: false,
-      overHd: false,
-      hdCom: false,
-      comInfo: false,
-      riskColors: false,
-      hdDetail: false,
-      hiddenDanger: false,
-      checks: false,
-      companyOver: false,
-    });
+    this.setState(sectionsVisible);
     setTimeout(() => {
       this.setState({
         ...obj,
@@ -1118,7 +1119,7 @@ class GovernmentBigPlatform extends Component {
   renderComRisk = () => {
     const {
       bigPlatform: {
-        riskDetailList: { ycq = [], wcq = [], dfc = [] },
+        hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
       },
     } = this.props;
     const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
@@ -1307,12 +1308,13 @@ class GovernmentBigPlatform extends Component {
       checks,
       companyOver,
       dangerCompanyData,
+      dangerCompanyLast,
     } = this.state;
     const {
       dispatch,
       bigPlatform: {
         newHomePage: {
-          companyDto: { company_num_with_item },
+          // companyDto: { company_num_with_item },
           companyLevelDto,
           countGridCompany,
         },
@@ -1327,7 +1329,7 @@ class GovernmentBigPlatform extends Component {
         govFulltimeWorkerList: { total: fulltimeWorker, list: fulltimeWorkerList },
         overRectifyCompany,
         searchAllCompany: { dataImportant, dataUnimportantCompany },
-        riskDetailList: { ycq = [], wcq = [], dfc = [] },
+        hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
         dangerLocationCompanyData,
         location,
         checkInfo,
@@ -1336,15 +1338,10 @@ class GovernmentBigPlatform extends Component {
         hiddenDangerCompanyUser,
         hiddenDangerOverTime,
         checkedCompanyInfo,
+        hiddenDangerListByDate,
       },
     } = this.props;
 
-    // communityCom: true, // 社区接入单位数
-    // comIn: false, // 接入单位统计
-    // keyCom: false, // 重点单位统计
-    // fullStaff: false, // 专职人员统计
-    // overHd: false, // 已超期隐患
-    // hdCom: false, // 隐患单位统计
     // rotate.in 显示 , rotate.out 不显示
     const stylesCommunityCom = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: communityCom,
@@ -1516,6 +1513,7 @@ class GovernmentBigPlatform extends Component {
                       });
                       this.setState({
                         dangerCompanyData: hiddenDangerCompanyAll,
+                        dangerCompanyLast: '',
                       });
                       this.goComponent('hdCom');
                     }}
@@ -1589,7 +1587,8 @@ class GovernmentBigPlatform extends Component {
                             {/* <div className={styles.itemActive}> */}
                             <div className={styles.topName}>重点/所有单位</div>
                             <div className={styles.topNum} style={{ color: '#00baff' }}>
-                              {dataImportant.length}/{company_num_with_item}
+                              {dataImportant.length}/
+                              {dataImportant.length + dataUnimportantCompany.length}
                             </div>
                           </div>
                         </Tooltip>
@@ -1951,7 +1950,7 @@ class GovernmentBigPlatform extends Component {
                                       style={{ cursor: 'pointer' }}
                                       onClick={() => {
                                         dispatch({
-                                          type: 'bigPlatform/fetchRiskDetail',
+                                          type: 'bigPlatform/fetchHiddenDangerListByDate',
                                           payload: {
                                             company_id: item.companyId,
                                             status: '7',
@@ -1997,7 +1996,9 @@ class GovernmentBigPlatform extends Component {
                         <div className={styles.summaryItem}>
                           <span className={styles.summaryIconCom} />
                           单位数量
-                          <span className={styles.summaryNum}>{company_num_with_item}</span>
+                          <span className={styles.summaryNum}>
+                            {dataImportant.length + dataUnimportantCompany.length}
+                          </span>
                         </div>
                       </div>
 
@@ -2123,7 +2124,8 @@ class GovernmentBigPlatform extends Component {
                       </div>
 
                       <div className={styles.scrollContainer} id="companyRisk">
-                        {this.renderComRisk()}
+                        {/* {this.renderComRisk()} */}
+                        <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
                       </div>
                     </div>
                   </div>
@@ -2238,14 +2240,15 @@ class GovernmentBigPlatform extends Component {
                   <div className={styles.sectionMain}>
                     <div className={styles.sectionContent}>
                       <div className={styles.scrollContainer} id="overRisk">
-                        {this.renderComRisk()}
+                        {/* {this.renderComRisk()} */}
+                        <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
                       </div>
                     </div>
                   </div>
                 </div>
               </section>
 
-              <section
+              {/* <section
                 className={stylesHiddenDanger}
                 style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
               >
@@ -2263,12 +2266,36 @@ class GovernmentBigPlatform extends Component {
                   <div className={styles.sectionMain}>
                     <div className={styles.sectionContent}>
                       <div className={styles.scrollContainer} id="hiddenDanger">
-                        {this.renderComRisk()}
+                        <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
                       </div>
                     </div>
                   </div>
                 </div>
-              </section>
+              </section> */}
+
+              {/* const sectionsVisible = {
+                communityCom: false, // 社区接入单位数
+                comIn: false, // 接入单位统计
+                keyCom: false, // 重点单位统计
+                fullStaff: false, // 专职人员统计
+                overHd: false, // 已超期隐患
+                hdCom: false, // 隐患单位统计
+                comInfo: false, // 企业信息
+                riskColors: false, // 风险点
+                hdDetail: false, // 已超期隐患详情
+                hiddenDanger: false, // 隐患详情
+                checks: false, // 监督检查
+                companyOver: false, // 已超时单位
+              }; */}
+
+              {/* 隐患详情 */}
+              <RiskDetail
+                visible={false}
+                title={'隐患详情'}
+                goBack={this.goBack}
+                lastSection={''}
+                hiddenDangerListByDate={hiddenDangerListByDate}
+              />
 
               {/* 隐患单位统计 */}
               <DangerCompany
@@ -2278,6 +2305,7 @@ class GovernmentBigPlatform extends Component {
                 goBack={this.goBack}
                 goComponent={this.goComponent}
                 monthSelecter={false}
+                lastSection={dangerCompanyLast}
                 // monthSelecter={hdComMonth}
               />
 

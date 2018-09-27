@@ -23,7 +23,7 @@ class CompanyOver extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const { visible, listData = [], goBack, goCompany } = this.props;
+    const { visible, listData = [], goBackToChecks, goCompany } = this.props;
     const stylesCompanyOver = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
@@ -42,7 +42,7 @@ class CompanyOver extends PureComponent {
           <div
             className={styles.backBtn}
             onClick={() => {
-              goBack();
+              goBackToChecks();
             }}
           />
           <div className={styles.sectionMain}>

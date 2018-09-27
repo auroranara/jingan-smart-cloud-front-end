@@ -1,10 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Icon, Row, Col } from 'antd';
 import classNames from 'classnames';
-import moment from 'moment';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
-// import styles from './DangerCompany.less';
 
 class DangerCompany extends PureComponent {
   constructor(props) {
@@ -23,6 +20,7 @@ class DangerCompany extends PureComponent {
       data: { dangerCompanyNum = 0, dangerCompany = [], dangerCount = 0 },
       dispatch,
       goBack,
+      lastSection,
     } = this.props;
     const stylesHdCom = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
@@ -41,7 +39,7 @@ class DangerCompany extends PureComponent {
           <div
             className={styles.backBtn}
             onClick={() => {
-              goBack();
+              goBack(lastSection);
             }}
           />
           <div className={styles.sectionMain}>
@@ -90,12 +88,12 @@ class DangerCompany extends PureComponent {
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
                                 dispatch({
-                                  type: 'bigPlatform/fetchRiskDetail',
+                                  type: 'bigPlatform/fetchHiddenDangerListByDate',
                                   payload: {
                                     company_id: item.id,
                                   },
                                 });
-                                this.goComponent('hiddenDanger');
+                                this.props.goComponent('hiddenDanger');
                                 if (document.querySelector('#hiddenDanger')) {
                                   document.querySelector('#hiddenDanger').scrollTop = 0;
                                 }

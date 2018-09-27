@@ -179,6 +179,11 @@ export default {
     // 监控数据
     monitorData: {},
     checkInfo: [],
+    hiddenDangerListByDate: {
+      ycq: [],
+      wcq: [],
+      dfc: [],
+    },
     hiddenDangerCompanyAll: {},
     hiddenDangerCompanyMonth: {},
     hiddenDangerCompanyUser: {},
@@ -655,9 +660,31 @@ export default {
     *fetchHiddenDangerListByDate({ payload, success, error }, { call, put }) {
       const response = yield call(getHiddenDangerListByDate, payload);
       if (response.code === 200) {
+        const ycq = response.data.hiddenDangers
+          .filter(({ status }) => +status === 7)
+          .sort((a, b) => {
+            return +a.plan_rectify_time - b.plan_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
+        const wcq = response.data.hiddenDangers
+          .filter(({ status }) => +status === 1 || +status === 2)
+          .sort((a, b) => {
+            return +a.plan_rectify_time - b.plan_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
+        const dfc = response.data.hiddenDangers
+          .filter(({ status }) => +status === 3)
+          .sort((a, b) => {
+            return +a.real_rectify_time - b.real_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
         yield put({
           type: 'hiddenDangerListByDate',
-          payload: response.data,
+          payload: {
+            ycq,
+            wcq,
+            dfc,
+          },
         });
         if (success) {
           success(response.data);

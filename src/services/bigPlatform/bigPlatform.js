@@ -92,6 +92,16 @@ export async function getCheckedCompanyInfo(params) {
   return request(`/acloud_new/v2/sfm/getCheckedCompanyInfo.json?${stringify(params)}`);
 }
 
+// 获取已超时风险点总数
+export async function getSelectOvertimeItemNum(params) {
+  return request(`/acloud_new/v2/sfg/selectOvertimeItemNum.json?${stringify(params)}`);
+}
+
+// 安全政府-超时未查单位
+export async function getOvertimeUncheckedCompany(params) {
+  return request(`/acloud_new/v2/sfm/getOvertimeUncheckedCompany?${stringify(params)}`);
+}
+
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
 export async function getCoItemList(params) {
@@ -161,4 +171,3 @@ export async function getMonitorData(params) {
 export async function getStaffList(params) {
   return request(`/acloud_new/v2/sfc/companyCheckByPerson.json?${stringify(params)}`);
 }
-

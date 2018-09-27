@@ -33,7 +33,7 @@ class CheckInfo extends PureComponent {
   };
 
   handleGoDangerCompany = userId => {
-    const { dispatch, handleParentChange } = this.props;
+    const { dispatch, handleParentChange, goComponent } = this.props;
     const { selectedMonth } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerCompany',
@@ -44,10 +44,11 @@ class CheckInfo extends PureComponent {
       success: res => {
         handleParentChange({
           dangerCompanyData: res,
+          dangerCompanyLast: 'checks',
         });
+        goComponent('hdCom');
       },
     });
-    this.props.goComponent('hdCom');
   };
 
   handleGoDangerCompanyOver = () => {
@@ -62,6 +63,7 @@ class CheckInfo extends PureComponent {
       checkedCompanyInfo,
       dangerCompany: { dangerCompanyNum = 0 },
       dangerCompanyOver,
+      goBack,
     } = this.props;
     const stylesChecks = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
@@ -114,7 +116,7 @@ class CheckInfo extends PureComponent {
           <div
             className={styles.backBtn}
             onClick={() => {
-              this.props.goBack();
+              goBack();
             }}
           />
           <div className={styles.sectionMain}>
