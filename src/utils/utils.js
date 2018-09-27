@@ -225,3 +225,12 @@ export function aesEncrypt(password, key = 'Bar12345Bar87690', iv = 'RandomInitV
   });
   return ciphertext.toString();
 }
+
+/**
+ * 是否是数组
+ * @param {Any} value 要判断的变量
+ * @return {Boolean} true是数组，false不是数组
+ */
+export function isArray(value) {
+  return Object.prototype.toString.call(value) === '[object Array]';
+}

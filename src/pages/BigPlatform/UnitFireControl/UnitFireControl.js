@@ -659,7 +659,9 @@ export default class App extends PureComponent {
             borderTop: '2px solid #0967D3',
             paddingLeft: '16px',
             marginLeft: '-16px',
-            paddingBottom: '48px',
+          }}
+          fixedContentStyle={{
+            order: '9',
           }}
           fixedContent={
             <Fragment>
