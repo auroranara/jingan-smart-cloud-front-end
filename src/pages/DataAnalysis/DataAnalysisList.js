@@ -1,19 +1,24 @@
 import React, { PureComponent } from 'react';
-import { Button, Card, Input, List, Select } from 'antd';
+import { Card, Input, List, Select } from 'antd';
 import Link from 'umi/link';
+import { connect } from 'dva';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import styles from './List.less';
+import styles from './DataAnalysisList.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
 
 const { Option } = Select;
 
+const NO_DATA = '暂无信息';
+const PAGE_SIZE = 18;
+
 const OPTIONS = [
-  { name: '用电安全', key: 'electricity' },
-  { name: '可燃有毒气体', key: 'toxicGas' },
-  { name: '废水', key: 'wasteWater' },
-  { name: '废气', key: 'wasteGas' },
+  { name: '用电安全', key: 1 },
+  { name: '可燃有毒气体', key: 2 },
+  { name: '废水', key: 3 },
+  { name: '废气', key: 4 },
+  { name: 'opc', key: 5 },
 ];
 
 const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
@@ -26,33 +31,73 @@ const fields = [
     transform: v => v.trim(),
   },
   {
-    id: 'address',
+    id: 'practicalAddress',
     inputSpan: INPUT_SPAN,
     render: () => <Input placeholder="请输入单位地址" />,
     transform: v => v.trim(),
   },
   {
-    id: 'category',
+    id: 'type',
     inputSpan: INPUT_SPAN,
     render: () => <Select placeholder="请选择监测类型">{OPTIONS.map(({ name, key }) => <Option key={key}>{name}</Option>)}</Select>,
   },
 ];
 
-export default class DataAnalysisLayout extends PureComponent {
-  renderList() {
-    // const {
-    //   transmission: {
-    //     data: { list },
-    //   },
-    // } = this.props;
+@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.models.dataAnalysis }))
+export default class DataAnalysisList extends PureComponent {
+  state = { formVals: null };
 
-    const list = [...Array(10).keys()].map(i => ({ id: i, name: `企业${i}` }));
+  componentDidMount() {
+    this.fetchCompanies(true);
+  }
+
+  pageNum = 1;
+
+  handleSearch = (values) => {
+    this.setState({ formVals: values });
+    this.fetchCompanies(true, values);
+  };
+
+  handleReset = () => {
+    this.setState({ formVals: null });
+    this.fetchCompanies(true);
+  };
+
+  loadMore = () => {
+    const { formVals } = this.state;
+    this.fetchCompanies(false, formVals);
+  };
+
+  fetchCompanies = (initial, values) => {
+    const { dispatch } = this.props;
+    // 若是点击搜索按钮或者组件刚加载时的初始化，则传入initial=true,将pageNum置为初始值1
+    if (initial)
+      this.pageNum = 1;
+    let payload = { pageSize: PAGE_SIZE, pageNum: this.pageNum };
+    if (values)
+      payload = { ...payload, ...values };
+    dispatch({
+      type: 'dataAnalysis/fetchCompanyList',
+      payload,
+      callback: () => this.pageNum++,
+    });
+  };
+
+  renderList() {
+    const {
+      loading,
+      dataAnalysis: {
+        companies: { list=[] },
+      },
+    } = this.props;
+
+    // const list = [...Array(10).keys()].map(i => ({ id: i, name: `企业${i}` }));
 
     return (
       <div className={styles.cardList}>
         <List
           rowKey="id"
-          // loading={loading}
+          loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
@@ -61,6 +106,7 @@ export default class DataAnalysisLayout extends PureComponent {
               name,
               safetyName,
               safetyPhone,
+              industryCategoryLabel,
               practicalProvinceLabel,
               practicalCityLabel,
               practicalDistrictLabel,
@@ -80,19 +126,19 @@ export default class DataAnalysisLayout extends PureComponent {
                   <Card className={styles.card} title={name}>
                     <Ellipsis tooltip className={styles.ellipsis} lines={1}>
                       地址：
-                      {practicalAddressLabel ? practicalAddressLabel : '暂无信息'}
+                      {practicalAddressLabel ? practicalAddressLabel : NO_DATA}
                     </Ellipsis>
                     <p>
                       行业类别：
-                      暂无信息
+                      {industryCategoryLabel ? industryCategoryLabel : NO_DATA}
                     </p>
                     <p>
                       安全负责人：
-                      {safetyName ? safetyName : '暂无信息'}
+                      {safetyName ? safetyName : NO_DATA}
                     </p>
                     <p>
                       联系电话：
-                      {safetyPhone ? safetyPhone : '暂无信息'}
+                      {safetyPhone ? safetyPhone : NO_DATA}
                     </p>
                     <p className={styles.icons}>
                       <Link to={`/data-analysis/IOT-abnormal-data/toxic-gas/${id}`}>有毒有害气体</Link>

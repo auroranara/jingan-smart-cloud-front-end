@@ -476,7 +476,7 @@ module.exports = [
                 path: '/data-analysis/IOT-abnormal-data/list',
                 code: 'dataAnalysis.IOTAbnormalData.listView',
                 name: 'list',
-                component: './DataAnalysis/List',
+                component: './DataAnalysis/DataAnalysisList',
               },
               {
                 path: '/data-analysis/IOT-abnormal-data/toxic-gas/:id',

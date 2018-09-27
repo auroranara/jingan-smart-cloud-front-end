@@ -1,13 +1,18 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
+import { connect } from 'dva';
 import { Button, Card, DatePicker, Input, Select, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
+import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+
+const TYPE = 2;
+const PAGE_SIZE = 18;
 
 const LABEL_COL = { span: 4 };
 const WRAPPER_COL = { span: 18 };
@@ -16,7 +21,7 @@ const OPTIONS = [
   { name: '全部', key: 0 },
   { name: '预紧', key: 1 },
   { name: '告警', key: 2 },
-  { name: '失联', key: 3 },
+  { name: '失联', key: -1 },
 ];
 
 // const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
@@ -34,8 +39,8 @@ const COLUMNS = [
   },
   {
     title: '区域',
-    dataIndex: 'section',
-    key: 'section',
+    dataIndex: 'area',
+    key: 'area',
   },
   {
     title: '位置',
@@ -44,8 +49,8 @@ const COLUMNS = [
   },
   {
     title: '异常类别',
-    dataIndex: 'category',
-    key: 'category',
+    dataIndex: 'status',
+    key: 'status',
   },
   {
     title: '监测数值',
@@ -54,27 +59,32 @@ const COLUMNS = [
   },
   {
     title: '报警界限值',
-    dataIndex: 'limit',
-    key: 'limit',
+    dataIndex: 'limitValue',
+    key: 'limitValue',
   },
   {
     title: '报警描述',
-    dataIndex: 'desc',
-    key: 'desc',
+    dataIndex: 'condition',
+    key: 'condition',
   },
 ];
 
-function addAlign(columns, align='center') {
-  if (!columns)
-    return;
+// const data = [...Array(10).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', section: '厂区九车间', location: '氯乙烷压缩机东', category: '预警', value: 19.6, limit: '18', desc: '>=临界值' }));
 
-  return columns.map(item => ({ ...item, align }));
-}
-
-const data = [...Array(10).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', section: '厂区九车间', location: '氯乙烷压缩机东', category: '预警', value: 19.6, limit: '18', desc: '>=临界值' }));
-
+@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.models.dataAnalysis }))
 export default class ToxicGas extends PureComponent {
-  state = { moments: null };
+  state = {
+    moments: null,
+    formVals: null,
+  };
+
+  componentDidMount() {
+    const vals = { date: getThisMonth() };
+    this.setState({ formVals: vals });
+    this.fetchData(true, vals);
+  }
+
+  pageNum = 1;
 
   renderExportButton() {
     return (
@@ -83,6 +93,37 @@ export default class ToxicGas extends PureComponent {
       </Button>
     );
   }
+
+  handleSearch = (values) => {
+    // console.log(values);
+    this.setState({ formVals: values });
+    this.fetchData(true, values);
+  };
+
+  handleReset = () => {
+    const vals = { date: getThisMonth() };
+    this.setState({ formVals: vals });
+    this.fetchData(true, vals);
+  };
+
+  loadMore = () => {
+    const { formVals } = this.state;
+    this.fetchCompanies(false, formVals);
+  };
+
+  fetchData = (initial, values) => {
+    const { dispatch, match: { params: { id } } } = this.props;
+    if (initial)
+      this.pageNum = 1;
+    let payload = { pageSize: PAGE_SIZE, pageNum: this.pageNum, type: TYPE, companyId: id };
+    if (values)
+      payload = { ...payload, ...handleFormVals(values) };
+    dispatch({
+      type: 'dataAnalysis/fetchData',
+      payload,
+      callback: () => this.pageNum++,
+    });
+  };
 
   onCalendarChange = (dates, dateStrings) => {
     // console.log(dates);
@@ -101,9 +142,11 @@ export default class ToxicGas extends PureComponent {
   };
 
   render() {
+    const { dataAnalysis: { analysis: { list=[] } } } = this.props;
+
     const fields = [
       {
-        id: 'name',
+        id: 'area',
         label: '区域：',
         labelCol: LABEL_COL,
         wrapperCol: WRAPPER_COL,
@@ -112,7 +155,7 @@ export default class ToxicGas extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'address',
+        id: 'location',
         label: '位置：',
         labelCol: LABEL_COL,
         wrapperCol: WRAPPER_COL,
@@ -121,7 +164,7 @@ export default class ToxicGas extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'category',
+        id: 'status',
         label: '异常类别：',
         labelCol: { span: 6 },
         wrapperCol: WRAPPER_COL,
@@ -135,7 +178,7 @@ export default class ToxicGas extends PureComponent {
         labelCol: { span: 2 },
         wrapperCol: WRAPPER_COL,
         inputSpan: { span: 16 },
-        options: { initialValue: [moment().startOf('month'), moment().endOf('day')] },
+        options: { initialValue: getThisMonth() },
         render: () => (
           <RangePicker
             // 在Form表单中，由于被getFieldDecorator包裹了，所以只能在options中设定初始值
@@ -166,7 +209,7 @@ export default class ToxicGas extends PureComponent {
         </Card>
         <div className={styles.container}>
           <p className={styles.statistics}>查询数据统计：200</p>
-          <Table columns={addAlign(COLUMNS)} dataSource={data} rowKey="id" />
+          <Table columns={addAlign(COLUMNS)} dataSource={handleTableData(list)} rowKey="id" />
         </div>
       </PageHeaderLayout>
     );
