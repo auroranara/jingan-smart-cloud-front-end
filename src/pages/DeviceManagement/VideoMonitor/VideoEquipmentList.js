@@ -79,7 +79,6 @@ export default class VideoEquipmentList extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-
     // 获取视频设备列表
     dispatch({
       type: 'videoMonitor/fetchEquipmentList',
@@ -216,16 +215,22 @@ export default class VideoEquipmentList extends PureComponent {
                 <Card
                   title={item.name}
                   className={styles.card}
-                  // actions={[
-                  //   <Link to={`/device-management/video-monitor/detail/${item.id}`}>查看</Link>,
-                  //   <AuthLink
-                  //     code={codesMap.deviceManagement.videoMonitor.edit}
-                  //     codes={codes}
-                  //     to={`/device-management/video-monitor/edit/${item.id}`}
-                  //   >
-                  //     编辑
-                  //   </AuthLink>,
-                  // ]}
+                  actions={[
+                    <AuthLink
+                      code={codesMap.deviceManagement.videoMonitor.view}
+                      codes={codes}
+                      to={`/device-management/video-monitor/detail/${item.id}`}
+                    >
+                      查看
+                    </AuthLink>,
+                    <AuthLink
+                      code={codesMap.deviceManagement.videoMonitor.edit}
+                      codes={codes}
+                      to={`/device-management/video-monitor/edit/${item.id}`}
+                    >
+                      编辑
+                    </AuthLink>,
+                  ]}
                 >
                   <Row>
                     <Col span={16}>
@@ -244,11 +249,11 @@ export default class VideoEquipmentList extends PureComponent {
                     </Col>
                     <Col
                       span={8}
-                      onClick={() => {
-                        if (hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes))
-                          this.goToEquipmentList(id);
-                        else message.warn('您没有权限访问对应页面');
-                      }}
+                      // onClick={() => {
+                      //   if (hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes))
+                      //     this.goToEquipmentList(id);
+                      //   else message.warn('您没有权限访问对应页面');
+                      // }}
                       style={{ cursor: 'pointer' }}
                     >
                       <span className={styles.quantity} />
@@ -266,17 +271,12 @@ export default class VideoEquipmentList extends PureComponent {
   render() {
     const {
       loading,
-      videoMonitor: {
-        videoData: {
-          list: { companyName },
-        },
-        isLast,
-      },
+      videoMonitor: { videoData, isLast },
     } = this.props;
 
     return (
       <PageHeaderLayout
-        title={companyName}
+        title={videoData.companyName}
         breadcrumbList={breadcrumbList}
         content={
           <div>

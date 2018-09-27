@@ -136,7 +136,7 @@ export default class VideoMonitorList extends PureComponent {
     } = this.props;
     // 请求数据
     this.props.dispatch({
-      type: 'videoMonitor/fetchCompanyList',
+      type: 'videoMonitor/appendfetchCompanyList',
       payload: {
         pageSize,
         pageNum: pageNum + 1,

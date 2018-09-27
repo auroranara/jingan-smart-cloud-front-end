@@ -26,6 +26,11 @@ export async function queryVideoCompaniesList(params) {
 }
 
 // 视频设备列表
-export async function queryVideoList(companyId) {
-  return request(`${URL_PREFIX}/vedioDevice/company/${companyId}/vedioList`);
+export async function queryVideoList(params) {
+  return request(`${URL_PREFIX}/vedioDevice/company/${params.companyId}/vedioList`);
+}
+
+// 查詢设备詳情
+export async function queryVideoDetail(vedioId) {
+  return request(`${URL_PREFIX}/vedioDevice/company/vedioDevice/${vedioId}`);
 }

@@ -3,6 +3,7 @@ import {
   updateVideoDevice,
   queryVideoCompaniesList,
   queryVideoList,
+  queryVideoDetail,
 } from '../services/videoMonitor';
 
 export default {
@@ -42,12 +43,21 @@ export default {
       const response = yield call(queryVideoCompaniesList, payload);
       if (response.code === 200) {
         yield put({
-          type: 'queryVideoCompaniesList',
+          type: 'saveVideoCompaniesList',
           payload: response.data,
         });
       }
     },
-
+    // 查询视频企业列表
+    *appendfetchCompanyList({ payload }, { call, put }) {
+      const response = yield call(queryVideoCompaniesList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveVideoLoadMoreList',
+          payload: response.data,
+        });
+      }
+    },
     // 新增视频设备信息
     *fetchVideoDevice({ payload, success, error }, { call, put }) {
       const response = yield call(addVideoDevice, payload);
@@ -61,50 +71,75 @@ export default {
         error(response.msg);
       }
     },
-  },
 
-  // 修改视频设备信息
-  *updateVideoDevice({ payload, success, error }, { call, put }) {
-    const response = yield call(updateVideoDevice, payload);
-    if (response.code === 200) {
-      yield put({
-        type: 'updateDetail',
-        payload: response.data,
-      });
-      if (success) {
-        success();
+    // 修改视频设备信息
+    *updateVideoDevice({ payload, success, error }, { call, put }) {
+      const response = yield call(updateVideoDevice, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updateDetail',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
-    } else if (error) {
-      error(response.msg);
-    }
-  },
+    },
 
-  // 视频设备列表
-  *fetchEquipmentList({ payload }, { call, put }) {
-    console.log('11', 11);
+    // 视频设备列表
+    *fetchEquipmentList({ payload }, { call, put }) {
+      const response = yield call(queryVideoList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryVideoList',
+          payload: response.data,
+        });
+      }
+    },
 
-    const response = yield call(queryVideoList, payload);
-    if (response.code === 200) {
-      yield put({
-        type: 'queryVideoList',
-        payload: response.data,
-      });
-    }
+    //  查看视频设备信息
+    *fetchVideoDetail({ payload, callback }, { call, put }) {
+      const response = yield call(queryVideoDetail, payload.id);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveDetail',
+          payload: response.data,
+        });
+        if (callback) callback(response.data);
+      }
+    },
   },
 
   reducers: {
     // 视频企业列表
-    queryVideoCompaniesList(state, { payload }) {
+    saveVideoCompaniesList(state, { payload }) {
       const {
         list,
         pagination: { pageNum, pageSize, total },
-        vedioCount,
       } = payload;
       return {
         ...state,
-        list: [...state.list, ...list],
-        vedioCount,
+        list,
         data: payload,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+
+    // 查询视频企业列表
+    saveVideoLoadMoreList(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        list: [...state.list, ...list],
         pageNum,
         isLast: pageNum * pageSize >= total,
       };
@@ -134,15 +169,19 @@ export default {
 
     // 视频设备列表
     queryVideoList(state, { payload }) {
-      const {
-        list,
-        pagination: { pageNum, pageSize, total },
-      } = payload;
+      const { list } = payload;
       return {
         ...state,
         list,
         videoData: payload,
-        isLast: pageNum * pageSize >= total,
+      };
+    },
+
+    // 查看视频设备信息
+    saveDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: payload,
       };
     },
   },

@@ -37,9 +37,9 @@ const breadcrumbList = [
 ];
 
 /* 获取无数据 */
-// const getEmptyData = () => {
-//   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-// };
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
 
 @connect(({ videoMonitor, loading }) => ({
   videoMonitor,
@@ -51,14 +51,19 @@ export default class VideoMonitorDetail extends PureComponent {
 
   /* 生命周期函数 */
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   match: {
-    //     params: { id },
-    //   },
-    // } = this.props;
-    // // 获取视频设备信息详情
-    // dispatch({});
+    const {
+      dispatch,
+      match: {
+        params: { vedioId },
+      },
+    } = this.props;
+    // 获取视频设备信息详情
+    dispatch({
+      type: 'videoMonitor/fetchVideoDetail',
+      payload: {
+        vedioId,
+      },
+    });
   }
 
   // 跳转到编辑页面
@@ -69,22 +74,24 @@ export default class VideoMonitorDetail extends PureComponent {
 
   // 渲染单位详情
   renderUnitInfo() {
-    // const {
-    //   videoMonitor: { detail: data },
-    // } = this.props;
+    const {
+      videoMonitor: { detail: data },
+    } = this.props;
 
     return (
       <Card title="视频设备信息详情" bordered={false}>
         <DescriptionList col={3}>
-          <Description term="设备ID" />
-          <Description term="摄像头ID" />
-          <Description term="视频所属区域" />
-          <Description term="视频状态" />
-          <Description term="视频URL" />
-          <Description term="图片地址" />
-          <Description term="是否用于查岗" />
-          <Description term="四色图坐标-X" />
-          <Description term="四色图坐标-Y" />
+          <Description term="设备ID">{data.deviceId || getEmptyData()}</Description>
+          <Description term="摄像头ID">{data.keyId || getEmptyData()}</Description>
+          <Description term="视频所属区域">{data.name || getEmptyData()}</Description>
+          <Description term="视频状态">{data.status || getEmptyData()}</Description>
+          <Description term="视频URL">{data.rtspAddress || getEmptyData()}</Description>
+          <Description term="图片地址">{data.photoAddress || getEmptyData()}</Description>
+          <Description term="是否用于查岗">
+            {data.isInspection === 1 ? '是' : '否' || getEmptyData()}
+          </Description>
+          <Description term="四色图坐标-X">{data.xNum || getEmptyData()}</Description>
+          <Description term="四色图坐标-Y">{data.yNum || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
     );
@@ -114,8 +121,11 @@ export default class VideoMonitorDetail extends PureComponent {
   }
 
   render() {
+    const {
+      videoMonitor: { detail },
+    } = this.props;
     return (
-      <PageHeaderLayout title="一栋一层东南角前台" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={detail.name} breadcrumbList={breadcrumbList}>
         {this.renderUnitInfo()}
         {this.renderFooterToolbar()}
       </PageHeaderLayout>
