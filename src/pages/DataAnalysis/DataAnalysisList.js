@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Card, Input, List, Select } from 'antd';
-import Link from 'umi/link';
+// import Link from 'umi/link';
 import { connect } from 'dva';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -76,15 +76,40 @@ const fields = [
   },
 ];
 
-@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.models.dataAnalysis }))
+const documentElem = document.documentElement;
+// const body = document.body;
+const childElem = document.querySelector('#root div');
+
+@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.effects['dataAnalysis/fetchCompanyList'] }))
 export default class DataAnalysisList extends PureComponent {
-  state = { formVals: null };
+  state = {
+    formVals: null,
+    hasMore: true, // 数据库中是否还存在数据
+  };
 
   componentDidMount() {
     this.fetchCompanies(true);
+    // body.onscroll = this.handleScroll;
+    document.addEventListener('scroll', this.handleScroll, false);
+  }
+
+  componentWillUnMount() {
+    // body.onscroll = null;
+    document.removeEventListener('scroll', this.handleScroll);
   }
 
   pageNum = 1;
+
+  handleScroll = e => {
+    const { loading } = this.props;
+    const { hasMore } = this.state;
+    // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
+    // 判断页面是否滚到底部
+    const scrollToBottom = documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
+    // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
+    if (scrollToBottom && !loading && hasMore)
+      this.loadMore();
+  };
 
   handleSearch = (values) => {
     this.setState({ formVals: values });
@@ -104,15 +129,24 @@ export default class DataAnalysisList extends PureComponent {
   fetchCompanies = (initial, values) => {
     const { dispatch } = this.props;
     // 若是点击搜索按钮或者组件刚加载时的初始化，则传入initial=true,将pageNum置为初始值1
-    if (initial)
+    if (initial) {
       this.pageNum = 1;
-    let payload = { pageSize: PAGE_SIZE, pageNum: this.pageNum };
+      this.setState({ hasMore: true });
+    }
+
+    const pageNum = this.pageNum;
+    let payload = { pageSize: PAGE_SIZE, pageNum: pageNum };
     if (values)
       payload = { ...payload, ...values };
+
     dispatch({
       type: 'dataAnalysis/fetchCompanyList',
       payload,
-      callback: () => this.pageNum++,
+      callback: (total) => {
+        if (total <= pageNum * PAGE_SIZE)
+          this.setState({ hasMore: false });
+        this.pageNum++;
+      },
     });
   };
 

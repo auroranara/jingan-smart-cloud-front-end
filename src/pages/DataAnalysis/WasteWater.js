@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { stringify } from 'qs';
 import { connect } from 'dva';
 import { Button, Card, DatePicker, Input, message, Select, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

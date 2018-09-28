@@ -19,7 +19,8 @@ export default {
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200) {
         yield put({ type: 'saveCompanyList', payload: data });
-        callback && callback();
+        const total = data.pagination && data.pagination.total ? data.pagination.total : 0;
+        callback && callback(total);
       }
     },
     *fetchData({ payload, callback }, { call, put }) {
