@@ -54,14 +54,15 @@ export default class VideoMonitorDetail extends PureComponent {
     const {
       dispatch,
       match: {
-        params: { vedioId },
+        params: { id },
       },
     } = this.props;
+
     // 获取视频设备信息详情
     dispatch({
       type: 'videoMonitor/fetchVideoDetail',
       payload: {
-        vedioId,
+        id,
       },
     });
   }
@@ -75,23 +76,37 @@ export default class VideoMonitorDetail extends PureComponent {
   // 渲染单位详情
   renderUnitInfo() {
     const {
-      videoMonitor: { detail: data },
+      videoMonitor: {
+        detail: {
+          data: {
+            deviceId,
+            keyId,
+            name,
+            status,
+            rtspAddress,
+            photoAddress,
+            isInspection,
+            xNum,
+            yNum,
+          },
+        },
+      },
     } = this.props;
 
     return (
       <Card title="视频设备信息详情" bordered={false}>
         <DescriptionList col={3}>
-          <Description term="设备ID">{data.deviceId || getEmptyData()}</Description>
-          <Description term="摄像头ID">{data.keyId || getEmptyData()}</Description>
-          <Description term="视频所属区域">{data.name || getEmptyData()}</Description>
-          <Description term="视频状态">{data.status || getEmptyData()}</Description>
-          <Description term="视频URL">{data.rtspAddress || getEmptyData()}</Description>
-          <Description term="图片地址">{data.photoAddress || getEmptyData()}</Description>
+          <Description term="设备ID">{deviceId || getEmptyData()}</Description>
+          <Description term="摄像头ID">{keyId || getEmptyData()}</Description>
+          <Description term="视频所属区域">{name || getEmptyData()}</Description>
+          <Description term="视频状态">{status || getEmptyData()}</Description>
+          <Description term="视频URL">{rtspAddress || getEmptyData()}</Description>
+          <Description term="图片地址">{photoAddress || getEmptyData()}</Description>
           <Description term="是否用于查岗">
-            {data.isInspection === 1 ? '是' : '否' || getEmptyData()}
+            {isInspection === 1 ? '是' : '否' || getEmptyData()}
           </Description>
-          <Description term="四色图坐标-X">{data.xNum || getEmptyData()}</Description>
-          <Description term="四色图坐标-Y">{data.yNum || getEmptyData()}</Description>
+          <Description term="四色图坐标-X">{xNum || getEmptyData()}</Description>
+          <Description term="四色图坐标-Y">{yNum || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
     );
@@ -122,10 +137,14 @@ export default class VideoMonitorDetail extends PureComponent {
 
   render() {
     const {
-      videoMonitor: { detail },
+      videoMonitor: {
+        detail: {
+          data: { name },
+        },
+      },
     } = this.props;
     return (
-      <PageHeaderLayout title={detail.name} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={name} breadcrumbList={breadcrumbList}>
         {this.renderUnitInfo()}
         {this.renderFooterToolbar()}
       </PageHeaderLayout>

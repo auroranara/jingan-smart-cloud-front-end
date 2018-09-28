@@ -20,7 +20,19 @@ export default {
       vedioCount: 0,
     },
     list: [],
-    detail: {},
+    detail: {
+      data: {
+        deviceId: undefined,
+        keyId: undefined,
+        name: undefined,
+        status: undefined,
+        rtspAddress: undefined,
+        photoAddress: undefined,
+        isInspection: undefined,
+        xNum: undefined,
+        yNum: undefined,
+      },
+    },
     categories: [],
     pageNum: 1,
     isLast: false,
@@ -49,7 +61,7 @@ export default {
       }
     },
     // 查询视频企业列表
-    *appendfetchCompanyList({ payload }, { call, put }) {
+    *appendCompanyList({ payload }, { call, put }) {
       const response = yield call(queryVideoCompaniesList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -181,7 +193,18 @@ export default {
     saveDetail(state, { payload }) {
       return {
         ...state,
-        detail: payload,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    // 清除详情
+    clearDetail(state) {
+      return {
+        ...state,
+        detail: { data: {} },
       };
     },
   },

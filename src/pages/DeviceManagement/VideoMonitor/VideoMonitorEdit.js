@@ -84,6 +84,30 @@ export default class VideoMonitorEdit extends PureComponent {
     isInspection: false,
   };
 
+  // 挂载后
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    if (id) {
+      // 根据id获取详情
+      dispatch({
+        type: 'videoMonitor/fetchVideoDetail',
+        payload: {
+          id,
+        },
+      });
+    } else {
+      // 清空详情
+      dispatch({
+        type: 'videoMonitor/clearDetail',
+      });
+    }
+  }
+
   // 返回到视频监控列表页面
   goBack = () => {
     const { dispatch } = this.props;
@@ -119,7 +143,20 @@ export default class VideoMonitorEdit extends PureComponent {
         } = values;
 
         const { companyId } = this.state;
-        console.log(values);
+
+        const payload = {
+          id,
+          deviceId,
+          keyId,
+          name,
+          status,
+          companyId,
+          rtsAddress,
+          photoAddress,
+          xNum,
+          yNum,
+          isInspection: +isInspection,
+        };
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -137,19 +174,7 @@ export default class VideoMonitorEdit extends PureComponent {
         if (id) {
           dispatch({
             type: 'videoMonitor/updateVideoDevice',
-            payload: {
-              id,
-              deviceId,
-              keyId,
-              name,
-              status,
-              companyId,
-              rtsAddress,
-              photoAddress,
-              xNum,
-              yNum,
-              isInspection: +isInspection,
-            },
+            payload,
             success,
             error,
           });
@@ -158,18 +183,7 @@ export default class VideoMonitorEdit extends PureComponent {
         else {
           dispatch({
             type: 'videoMonitor/fetchVideoDevice',
-            payload: {
-              deviceId,
-              keyId,
-              name,
-              status,
-              companyId,
-              rtsAddress,
-              photoAddress,
-              xNum,
-              yNum,
-              isInspection: +isInspection,
-            },
+            payload,
             success,
             error,
           });
@@ -262,6 +276,22 @@ export default class VideoMonitorEdit extends PureComponent {
   // 渲染视频设备信息
   renderVideoInfo() {
     const {
+      videoMonitor: {
+        detail: {
+          data: {
+            companyName,
+            deviceId,
+            keyId,
+            name,
+            status,
+            rtspAddress,
+            photoAddress,
+            isInspection,
+            xNum,
+            yNum,
+          },
+        },
+      },
       form: { getFieldDecorator },
       match: {
         params: { id },
@@ -287,6 +317,7 @@ export default class VideoMonitorEdit extends PureComponent {
             {id ? (
               <Col span={24}>
                 {getFieldDecorator('companyId', {
+                  initialValue: companyName,
                   rules: [
                     {
                       required: true,
@@ -338,6 +369,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.equipmentID}>
             {getFieldDecorator('deviceId', {
+              initialValue: deviceId,
               rules: [
                 {
                   required: true,
@@ -349,6 +381,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.cameraID}>
             {getFieldDecorator('keyId', {
+              initialValue: keyId,
               rules: [
                 {
                   required: true,
@@ -360,6 +393,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.videoArea}>
             {getFieldDecorator('name', {
+              initialValue: name,
               rules: [
                 {
                   required: true,
@@ -371,6 +405,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.videoStatus}>
             {getFieldDecorator('status', {
+              initialValue: status,
               rules: [
                 {
                   required: true,
@@ -381,7 +416,8 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.videoURL}>
-            {getFieldDecorator('rtsAddress', {
+            {getFieldDecorator('rtspAddress', {
+              initialValue: rtspAddress,
               rules: [
                 {
                   required: true,
@@ -393,6 +429,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.picAddress}>
             {getFieldDecorator('photoAddress', {
+              initialValue: photoAddress,
               rules: [
                 {
                   required: true,
@@ -403,7 +440,9 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.inspectSentries}>
-            {getFieldDecorator('isInspection', {})(
+            {getFieldDecorator('isInspection', {
+              initialValue: isInspection,
+            })(
               <Switch checkedChildren="是" unCheckedChildren="否" onChange={this.switchOnChange} />
             )}
           </FormItem>
@@ -416,6 +455,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureX}>
                     {getFieldDecorator('xNum', {
+                      initialValue: xNum,
                       rules: [{ message: '请输入四色图坐标—X' }],
                     })(<Input placeholder="请输入四色图坐标—X" />)}
                   </Form.Item>
@@ -423,6 +463,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureY}>
                     {getFieldDecorator('yNum', {
+                      initialValue: yNum,
                       rules: [{ message: '请输入四色图坐标—Y' }],
                     })(<Input placeholder="请输入四色图坐标—Y" />)}
                   </Form.Item>

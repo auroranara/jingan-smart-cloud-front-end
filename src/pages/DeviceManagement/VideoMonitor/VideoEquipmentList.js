@@ -130,24 +130,24 @@ export default class VideoEquipmentList extends PureComponent {
 
   /* 滚动加载 */
   handleLoadMore = () => {
-    const {
-      videoMonitor: { isLast },
-    } = this.props;
-    if (isLast) {
-      return;
-    }
-    const {
-      videoMonitor: { pageNum },
-    } = this.props;
-    // 请求数据
-    this.props.dispatch({
-      type: 'videoMonitor/fetchEquipmentList',
-      payload: {
-        pageSize,
-        pageNum: pageNum + 1,
-        ...this.formData,
-      },
-    });
+    // const {
+    //   videoMonitor: { isLast },
+    // } = this.props;
+    // if (isLast) {
+    //   return;
+    // }
+    // const {
+    //   videoMonitor: { pageNum },
+    // } = this.props;
+    // // 请求数据
+    // this.props.dispatch({
+    //   type: 'videoMonitor/fetchEquipmentList',
+    //   payload: {
+    //     pageSize,
+    //     pageNum: pageNum + 1,
+    //     ...this.formData,
+    //   },
+    // });
   };
 
   /* 渲染form表单 */
@@ -271,18 +271,20 @@ export default class VideoEquipmentList extends PureComponent {
   render() {
     const {
       loading,
-      videoMonitor: { videoData, isLast },
+      videoMonitor: {
+        videoData: { list },
+        isLast,
+      },
     } = this.props;
 
     return (
       <PageHeaderLayout
-        title={videoData.companyName}
+        title={list.companyName}
         breadcrumbList={breadcrumbList}
         content={
           <div>
             <span>
               视频总数：
-              {/* {vedioCount} */}
               {''}
             </span>
           </div>
