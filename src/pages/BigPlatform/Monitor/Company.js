@@ -228,6 +228,7 @@ export default class App extends PureComponent {
     dispatch({
       type: 'monitor/clearHistoryAlarm',
     })
+    dispatch({ type: 'monitor/fetchAlarmInfoTypes' })
     dispatch({
       type: 'monitor/fetchHistoryAlarm',
       payload: {
@@ -245,18 +246,16 @@ export default class App extends PureComponent {
       match: { params: { companyId } },
       dispatch,
     } = this.props
-    if (deviceType < 5) {
-      dispatch({
-        type: 'monitor/fetchHistoryAlarm',
-        payload: {
-          pageNum: 1,
-          pageSize: 20,
-          companyId,
-          overFlag: 1,
-          deviceType,
-        },
-      })
-    }
+    dispatch({
+      type: 'monitor/fetchHistoryAlarm',
+      payload: {
+        pageNum: 1,
+        pageSize: 20,
+        companyId,
+        overFlag: 1,
+        deviceType,
+      },
+    })
   }
 
   handleLoadMore = ({ deviceType }) => {

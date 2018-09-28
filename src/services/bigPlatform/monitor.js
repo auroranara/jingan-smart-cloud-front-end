@@ -47,7 +47,7 @@ export async function fetchAlarmInfo(params) {
 }
 
 // 获取报警历史纪录
-export async function fetchHistoryAlarm(params){
+export async function fetchHistoryAlarm(params) {
   return request(`/acloud_new/v2/deviceInfo//deviceWarningMessageForCompanyPage?${stringify(params)}`)
 }
 
@@ -59,4 +59,9 @@ export async function getGsmsHstData(params) {
 // 获取上下线的区块
 export async function getPieces(params) {
   return request(`/acloud_new/v2/monitor/getPieces.json?${stringify(params)}`);
+}
+
+// 获取历史报警分类
+export async function fetchAlarmInfoTypes() {
+  return request('/acloud_new/v2/deviceInfo/messageType')
 }

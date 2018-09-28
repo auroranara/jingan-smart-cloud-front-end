@@ -11,6 +11,7 @@ import {
   fetchHistoryAlarm,
   getGsmsHstData,
   getPieces,
+  fetchAlarmInfoTypes,
 } from '../services/bigPlatform/monitor';
 
 const DEFAULT_CODE = 500;
@@ -27,6 +28,7 @@ export default {
     countAndExponent: {},
     realTimeAlarm: [],
     historyAlarm: {
+      alarmTypes: [],
       isLast: false,
       pagination: { pageNum: 1, pageSize: 20, total: 0 },
       list: [],
@@ -174,6 +176,15 @@ export default {
       if (code === 200)
         yield put({ type: 'saveChartParams', payload: data });
     },
+    *fetchAlarmInfoTypes({ payload }, { call, put }) {
+      const response = yield call(fetchAlarmInfoTypes)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveAlarmTypes',
+          payload: response.data.list,
+        })
+      }
+    },
   },
 
   reducers: {
@@ -219,6 +230,7 @@ export default {
         return {
           ...state,
           historyAlarm: {
+            ...state.historyAlarm,
             isLast: pageNum * pageSize >= total,
             pagination,
             list: [...state.historyAlarm.list, ...list],
@@ -228,6 +240,7 @@ export default {
         return {
           ...state,
           historyAlarm: {
+            ...state.historyAlarm,
             isLast: pageNum * pageSize >= total,
             pagination,
             list,
@@ -239,6 +252,7 @@ export default {
       return {
         ...state,
         historyAlarm: {
+          alarmTypes: [],
           isLast: false,
           pagination: { pageNum: 1, pageSize: 20, total: 0 },
           list: [],
@@ -264,6 +278,15 @@ export default {
     },
     saveChartParams(state, action) {
       return { ...state, chartParams: action.payload };
+    },
+    saveAlarmTypes(state, action) {
+      return {
+        ...state,
+        historyAlarm: {
+          ...state.historyAlarm,
+          alarmTypes: action.payload,
+        },
+      }
     },
   },
 };
