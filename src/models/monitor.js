@@ -8,8 +8,10 @@ import {
   getGasList,
   fetchCountAndExponent,
   fetchAlarmInfo,
+  fetchHistoryAlarm,
   getGsmsHstData,
   getPieces,
+  fetchAlarmInfoTypes,
 } from '../services/bigPlatform/monitor';
 
 const DEFAULT_CODE = 500;
@@ -25,7 +27,12 @@ export default {
     tags: [],
     countAndExponent: {},
     realTimeAlarm: [],
-    historyAlarm: {},
+    historyAlarm: {
+      alarmTypes: [],
+      isLast: false,
+      pagination: { pageNum: 1, pageSize: 20, total: 0 },
+      list: [],
+    },
     waterCompanyDevicesData: [],
     waterDeviceConfig: [],
     waterRealTimeData: [],
@@ -67,7 +74,7 @@ export default {
       const response = yield call(getCompanyDevices, payload);
       if (response.code === 200) {
         // 1 电 2 表示可燃有毒气体 3 水质 4 废气
-        switch(type) {
+        switch (type) {
           case 1:
             yield put({ type: 'saveChartDeviceList', payload: response.data });
             break;
@@ -75,7 +82,7 @@ export default {
             yield put({ type: 'saveCompanyDevices', payload: response.data });
             break;
           default:
-            // do noting;
+          // do noting;
         }
 
         const {
@@ -113,17 +120,24 @@ export default {
     // 获取实时报警
     *fetchRealTimeAlarm({ payload }, { call, put }) {
       const response = yield call(fetchAlarmInfo, payload)
-      if (response&& response.code === 200) {
+      if (response && response.code === 200) {
         yield put({
           type: 'saveRealTimeAlarm',
           payload: response.data.list,
         })
       }
     },
-    // 获取历史记录
-    // *fetchHistoryAlarm({ payload }, { call, put }) {
-    //   const response = yield call(fetchAlarmInfo, payload);
-    // },
+    // 获取报警历史记录
+    *fetchHistoryAlarm({ payload }, { call, put }) {
+      const response = yield call(fetchHistoryAlarm, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveHistoryAlarm',
+          payload: response.data,
+        })
+
+      }
+    },
     // 获取传感器历史
     *fetchGsmsHstData({ payload, success, error }, { call, put }) {
       const response = yield call(getGsmsHstData, payload);
@@ -162,6 +176,15 @@ export default {
       if (code === 200)
         yield put({ type: 'saveChartParams', payload: data });
     },
+    *fetchAlarmInfoTypes({ payload }, { call, put }) {
+      const response = yield call(fetchAlarmInfoTypes)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveAlarmTypes',
+          payload: response.data.list,
+        })
+      }
+    },
   },
 
   reducers: {
@@ -198,12 +221,44 @@ export default {
         realTimeAlarm: payload || [],
       }
     },
-    /* saveHistoryAlarm(state,{payload}){
-      return{
-        ...state,
-        historyAlarm:payload,
+    saveHistoryAlarm(state, { payload: {
+      list = [],
+      pagination,
+      pagination: { pageNum, pageSize, total },
+    } }) {
+      if (pageNum > 1) {
+        return {
+          ...state,
+          historyAlarm: {
+            ...state.historyAlarm,
+            isLast: pageNum * pageSize >= total,
+            pagination,
+            list: [...state.historyAlarm.list, ...list],
+          },
+        }
+      } else {
+        return {
+          ...state,
+          historyAlarm: {
+            ...state.historyAlarm,
+            isLast: pageNum * pageSize >= total,
+            pagination,
+            list,
+          },
+        }
       }
-    }, */
+    },
+    clearHistoryAlarm(state) {
+      return {
+        ...state,
+        historyAlarm: {
+          alarmTypes: [],
+          isLast: false,
+          pagination: { pageNum: 1, pageSize: 20, total: 0 },
+          list: [],
+        },
+      }
+    },
     gsmsHstData(state, action) {
       return {
         ...state,
@@ -223,6 +278,15 @@ export default {
     },
     saveChartParams(state, action) {
       return { ...state, chartParams: action.payload };
+    },
+    saveAlarmTypes(state, action) {
+      return {
+        ...state,
+        historyAlarm: {
+          ...state.historyAlarm,
+          alarmTypes: action.payload,
+        },
+      }
     },
   },
 };
