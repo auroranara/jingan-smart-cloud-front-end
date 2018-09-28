@@ -13,12 +13,24 @@ class DangerCompany extends PureComponent {
 
   componentWillUnmount() {}
 
+  handleClick = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerListByDate',
+      payload: {
+        company_id: id,
+      },
+    });
+    this.props.goComponent('hiddenDanger');
+    if (document.querySelector('#hiddenDanger')) {
+      document.querySelector('#hiddenDanger').scrollTop = 0;
+    }
+  };
+
   render() {
-    const {} = this.state;
     const {
       visible,
       data: { dangerCompanyNum = 0, dangerCompany = [], dangerCount = 0 },
-      dispatch,
       goBack,
       lastSection,
     } = this.props;
@@ -87,16 +99,7 @@ class DangerCompany extends PureComponent {
                             <span
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
-                                dispatch({
-                                  type: 'bigPlatform/fetchHiddenDangerListByDate',
-                                  payload: {
-                                    company_id: item.id,
-                                  },
-                                });
-                                this.props.goComponent('hiddenDanger');
-                                if (document.querySelector('#hiddenDanger')) {
-                                  document.querySelector('#hiddenDanger').scrollTop = 0;
-                                }
+                                this.handleClick(item.id);
                               }}
                             >
                               {item.total_danger}

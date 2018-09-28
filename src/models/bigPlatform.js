@@ -31,6 +31,8 @@ import {
   getStaffList,
   // 获取人员记录
   getStaffRecords,
+  getSelectOvertimeItemNum,
+  getOvertimeUncheckedCompany,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -198,6 +200,11 @@ export default {
     staffList: [],
     // 人员记录
     staffRecords: [],
+    selectOvertimeItemNum: 0,
+    overtimeUncheckedCompany: {
+      total: 0,
+      list: [],
+    },
   },
 
   effects: {
@@ -734,8 +741,33 @@ export default {
         if (success) {
           success(response.data.list);
         }
+      } else if (error) {
+        error();
       }
-      else if(error) {
+    },
+    // 获取已超时风险点总数
+    *fetchSelectOvertimeItemNum({ payload, success, error }, { call, put }) {
+      const response = yield call(getSelectOvertimeItemNum, payload);
+      yield put({
+        type: 'selectOvertimeItemNum',
+        payload: response.num,
+      });
+      if (success) {
+        success(response.num);
+      }
+    },
+    // 安全政府-超时未查单位
+    *fetchOvertimeUncheckedCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getOvertimeUncheckedCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'overtimeUncheckedCompany',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
         error();
       }
     },
@@ -974,6 +1006,18 @@ export default {
       return {
         ...state,
         staffRecords,
+      };
+    },
+    selectOvertimeItemNum(state, { payload }) {
+      return {
+        ...state,
+        selectOvertimeItemNum: payload,
+      };
+    },
+    overtimeUncheckedCompany(state, { payload }) {
+      return {
+        ...state,
+        overtimeUncheckedCompany: payload,
       };
     },
   },

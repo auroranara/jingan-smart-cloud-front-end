@@ -29,7 +29,7 @@ class RiskDetail extends PureComponent {
         <div className={styles.sectionWrapperIn}>
           <div className={styles.sectionTitle}>
             <span className={styles.titleBlock} />
-            隐患详情
+            已超期隐患详情
           </div>
           <div
             className={styles.backBtn}

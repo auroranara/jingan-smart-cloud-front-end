@@ -18,6 +18,7 @@ import CheckInfo from './Sections/CheckInfo';
 import CompanyOver from './Sections/CompanyOver';
 import CompanyRisk from './Components/CompanyRisk';
 import RiskDetail from './Sections/RiskDetail';
+import RiskDetailOver from './Sections/RiskDetailOver';
 // import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
@@ -206,14 +207,6 @@ class GovernmentBigPlatform extends Component {
     // 查找重点和非重点单位
     dispatch({
       type: 'bigPlatform/fetchSearchAllCompany',
-    });
-
-    // 隐患单位数量以及具体信息
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDangerCompany',
-      payload: {
-        // date: moment().format('YYYY-MM'),
-      },
     });
 
     // 隐患单位数量以及具体信息
@@ -2230,7 +2223,7 @@ class GovernmentBigPlatform extends Component {
                 </div>
               </section>
 
-              <section
+              {/* <section
                 className={stylesHdDetail}
                 style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
               >
@@ -2248,13 +2241,12 @@ class GovernmentBigPlatform extends Component {
                   <div className={styles.sectionMain}>
                     <div className={styles.sectionContent}>
                       <div className={styles.scrollContainer} id="overRisk">
-                        {/* {this.renderComRisk()} */}
                         <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
                       </div>
                     </div>
                   </div>
                 </div>
-              </section>
+              </section> */}
 
               {/* <section
                 className={stylesHiddenDanger}
@@ -2296,12 +2288,17 @@ class GovernmentBigPlatform extends Component {
                 companyOver: false, // 已超时单位
               }; */}
 
+              {/* 已超期隐患详情 */}
+              <RiskDetailOver
+                visible={hdDetail}
+                goBack={this.goBack}
+                hiddenDangerListByDate={hiddenDangerListByDate}
+              />
+
               {/* 隐患详情 */}
               <RiskDetail
-                visible={false}
-                title={'隐患详情'}
+                visible={hiddenDanger}
                 goBack={this.goBack}
-                lastSection={''}
                 hiddenDangerListByDate={hiddenDangerListByDate}
               />
 
