@@ -306,6 +306,7 @@ export default class UserTransmissionDevice extends PureComponent {
         {this.renderForm()}
 
         <InfiniteScroll
+          initialLoad={false}
           pageStart={0}
           loadMore={() => {
             // 防止多次加载

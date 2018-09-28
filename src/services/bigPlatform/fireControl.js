@@ -185,3 +185,7 @@ export async function resetAllHosts(params) {
 export async function getVideoList(params) {
   return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
 }
+
+export async function getVideoLookUp(params) {
+  return request(`${URL_PREFIX}/screenShowData/vedioCheckRecords?${stringify(params)}`);
+}

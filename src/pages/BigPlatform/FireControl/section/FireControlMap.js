@@ -26,9 +26,8 @@ function handleCompanyBasicInfoList(alarmList, companyList) {
   // 遍历companyList中的企业，若有火警则标记
   return companyList.map(item => {
     const { id } = item;
-    const alarmed = alarmList.find(({ companyId }) => companyId === id)
-    if (alarmed)
-      return { address: alarmed.searchArea, ...item, isFire: true };
+    const alarmed = alarmList.find(({ companyId }) => companyId === id);
+    if (alarmed) return { address: alarmed.searchArea, ...item, isFire: true };
     return { ...item, isFire: false };
   });
 }
@@ -37,8 +36,7 @@ function handleCompanyBasicInfoList(alarmList, companyList) {
 function getFireNum(list) {
   return list.reduce((prev, next) => {
     const { companyId } = next;
-    if (!prev.includes(companyId))
-      prev.push(companyId);
+    if (!prev.includes(companyId)) prev.push(companyId);
     return prev;
   }, []).length;
 }
@@ -56,6 +54,10 @@ export default class FireControlMap extends PureComponent {
       // zoom: location.zoom,
       // selected: undefined,
       // showInfo: false,
+      status: {
+        keyboardEnable: false,
+        dragEnable: true,
+      },
       searchValue: '',
       selectList: [],
     };
@@ -68,8 +70,9 @@ export default class FireControlMap extends PureComponent {
     handleBack(isFire);
 
     this.setState({
-      // zoom: location.zoom,
-      // selected: undefined,
+      status: {
+        dragEnable: true,
+      },
       searchValue: '',
     });
   };
@@ -93,11 +96,18 @@ export default class FireControlMap extends PureComponent {
   };
 
   // 点击
+  // 点击之后不可以拖拽
   handleClick = item => {
     const { hideTooltip } = this.props;
-
-    hideTooltip();
-    this.selectCompany(item);
+    this.setState(
+      {
+        status: { dragEnable: false },
+      },
+      () => {
+        hideTooltip();
+        this.selectCompany(item);
+      }
+    );
   };
 
   renderMarker = item => {
@@ -113,7 +123,7 @@ export default class FireControlMap extends PureComponent {
         className={styles.dotIcon}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={hideTooltip}
-        style={{ backgroundImage: `url(${mapAlarmDot})`}}
+        style={{ backgroundImage: `url(${mapAlarmDot})` }}
       />
     );
 
@@ -124,7 +134,7 @@ export default class FireControlMap extends PureComponent {
           className={styles.dotIcon}
           onMouseEnter={isSelected ? null : handleMouseEnter}
           onMouseLeave={isSelected ? null : hideTooltip}
-          style={{ backgroundImage: `url(${mapDot})`}}
+          style={{ backgroundImage: `url(${mapDot})` }}
         />
       );
     // 有火警，且被选中，显示红圈
@@ -282,7 +292,7 @@ export default class FireControlMap extends PureComponent {
   };
 
   // handleInputChange = (value, { props: { label } }) => {
-  handleInputChange = (value) => {
+  handleInputChange = value => {
     // console.log('change', value);
     this.debouncedFetchData(value);
     this.setState({
@@ -292,7 +302,7 @@ export default class FireControlMap extends PureComponent {
 
   render() {
     // const { center, zoom, selected, searchValue, selectList } = this.state;
-    const { searchValue, selectList } = this.state;
+    const { searchValue, selectList, status } = this.state;
     const {
       zoom,
       center,
@@ -316,14 +326,10 @@ export default class FireControlMap extends PureComponent {
       <FcSection style={{ padding: 8 }} className={styles.map}>
         <div className={styles.mapContainer}>
           <GDMap
+            viewMode="3D"
             amapkey="665bd904a802559d49a33335f1e4aa0d"
-            plugins={[
-              { name: 'Scale', options: { locate: false } },
-              { name: 'ToolBar', options: { locate: false } },
-            ]}
-            status={{
-              keyboardEnable: false,
-            }}
+            plugins={[{ name: 'Scale', options: { locate: false } }, { name: 'ControlBar' }]}
+            status={status}
             useAMapUI
             mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
             center={center}

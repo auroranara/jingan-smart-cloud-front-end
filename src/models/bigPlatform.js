@@ -29,6 +29,8 @@ import {
   getHiddenDangerListByDate,
   getCheckedCompanyInfo,
   getStaffList,
+  // 获取人员记录
+  getStaffRecords,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -180,8 +182,10 @@ export default {
       checked: 0,
       noChecked: 0,
     },
-    // 人员巡查记录
+    // 人员巡查列表
     staffList: [],
+    // 人员记录
+    staffRecords: [],
   },
 
   effects: {
@@ -663,6 +667,22 @@ export default {
         success(response.personCheck);
       }
     },
+    // 巡查人员列表
+    *fetchStaffRecords({ payload, success, error }, { call, put }) {
+      const response = yield call(getStaffRecords, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveStaffRecords',
+          payload: response.data.list,
+        });
+        if (success) {
+          success(response.data.list);
+        }
+      }
+      else if(error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -854,6 +874,12 @@ export default {
       return {
         ...state,
         staffList,
+      };
+    },
+    saveStaffRecords(state, { payload: staffRecords }) {
+      return {
+        ...state,
+        staffRecords,
       };
     },
   },

@@ -167,13 +167,6 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchLocation',
     });
 
-    dispatch({
-      type: 'bigPlatform/fetchNewHomePage',
-      payload: {
-        month: moment().format('YYYY-MM'),
-      },
-    });
-
     // 政府专职人员列表
     dispatch({
       type: 'bigPlatform/fetchGovFulltimeWorkerList',
@@ -241,6 +234,13 @@ class GovernmentBigPlatform extends Component {
         isOvertime: '1',
         pageNum: 1,
         pageSize: 1,
+      },
+    });
+
+    dispatch({
+      type: 'bigPlatform/fetchNewHomePage',
+      payload: {
+        month: moment().format('YYYY-MM'),
       },
     });
 
@@ -1677,7 +1677,7 @@ class GovernmentBigPlatform extends Component {
                             {/* <div className={styles.itemActive}> */}
                             <div className={styles.topName}>接入单位</div>
                             <div className={styles.topNum} style={{ color: '#00baff' }}>
-                              {company_num_with_item}
+                              {(dataImportant.length + dataUnimportantCompany.length)}
                             </div>
                           </div>
                         </Tooltip>
@@ -2165,7 +2165,9 @@ class GovernmentBigPlatform extends Component {
                         <div className={styles.summaryItem}>
                           <span className={styles.summaryIconCom} />
                           单位数量
-                          <span className={styles.summaryNum}>{company_num_with_item}</span>
+                          <span className={styles.summaryNum}>
+                            {(dataImportant.length + dataUnimportantCompany.length)}
+                          </span>
                         </div>
                       </div>
 
