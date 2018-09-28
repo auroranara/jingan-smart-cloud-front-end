@@ -268,7 +268,7 @@ export default class App extends PureComponent {
    * 渲染函数
    */
   render() {
-    const { isScroll, isCarousel, closable, title, fixedContent, children, className, style, contentStyle, onClose, splitHeight=0 } = this.props;
+    const { isScroll, isCarousel, closable, title, fixedContent, children, className, style, contentStyle, onClose, splitHeight=0, fixedContentStyle } = this.props;
     const { isScrollShow, isPlaceHolderShow, isPaddingRightChange, currentIndex, isSplitShow } = this.state;
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
     let overflowY = undefined;
@@ -318,7 +318,7 @@ export default class App extends PureComponent {
             </div>
           )}
           {fixedContent && (
-            <div className={styles.fixedContent}>
+            <div className={styles.fixedContent} style={fixedContentStyle}>
               {fixedContent}
             </div>
           )}

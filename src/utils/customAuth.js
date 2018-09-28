@@ -61,24 +61,28 @@ export function filterMenus(MenuData, codes = [], codeMap) {
   return menuData;
 }
 
-// 根据formatter之后的路由来生成一个path -> code, code -> path的映射对象
-export function getCodeMap(menuData, result) {
+// 根据formatter之后的路由来生成一个path -> code的映射对象及包含所有路径path的数组
+export function getCodeMap(menuData, codeMap, pathArray) {
   for (let m of menuData) {
     const { path, code, locale, children } = m;
 
-    if (path === '/' || result[path]) continue;
+    if (path === '/' || codeMap[path]) continue;
 
     if (code) {
-      result[path] = code;
-      result[code] = path;
+      codeMap[path] = code;
+      // 需要考虑不同path对应相同code时，会覆盖的问题，所以直接用一个数组接收所有path更好，因为也用不到code -> path的映射，所以这个也没啥用
+      // codeMap[code] = path;
+      pathArray.push(path);
+    // 当未设置code时，默认使用locale来替代
     } else if (locale) {
       // locle = 'menu.fuck.me',去掉 'menu.'
       const loc = locale.slice(5);
-      result[path] = loc;
-      result[loc] = path;
+      codeMap[path] = loc;
+      // codeMap[loc] = path;
+      pathArray.push(path);
     }
 
-    if (children) getCodeMap(children, result);
+    if (children) getCodeMap(children, codeMap, pathArray);
   }
 }
 

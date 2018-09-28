@@ -7,16 +7,17 @@ import { formatter, getCodeMap, filterMenus, generateAuthFn } from '@/utils/cust
 
 const menuData = config['routes'];
 const MenuData = formatter(_.last(menuData).routes);
-let codeMap = {};
-getCodeMap(MenuData, codeMap);
+const codeMap = {};
+const pathArray = []
+getCodeMap(MenuData, codeMap, pathArray);
 
 // console.log('codeMap', codeMap);
 
-// codeMap的路径键值数组，过滤了code，即路由配置中的所有路径
-const pathArray = Object.keys(codeMap).filter(path => path.includes('/'));
+// codeMap的路径键值数组，过滤了code，即路由配置中的所有路径，这种获取path路径数组的方法已废弃，因为当不同path对应相同code时，会有path被覆盖
+// const pathArray = Object.keys(codeMap).filter(path => path.includes('/'));
 // console.log('pathArray', pathArray);
 
-export { codeMap, pathArray };
+// export { codeMap, pathArray };
 
 export default function AppMenu(WrappedComponent) {
   @connect(({ user }) => ({ user }))

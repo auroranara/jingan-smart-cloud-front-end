@@ -8,6 +8,7 @@ const webpackplugin = require('./plugin.config');
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
+  sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
   ct: '192.168.10.8', //陈涛
   sqz: '192.168.10.56', //孙启政
