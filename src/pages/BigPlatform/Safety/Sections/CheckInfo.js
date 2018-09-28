@@ -25,9 +25,12 @@ class CheckInfo extends PureComponent {
   componentWillUnmount() {}
 
   handleMonthSelect = value => {
-    const { fetchCheckMsgs } = this.props;
+    const { fetchCheckMsgs, handleParentChange } = this.props;
     this.setState({
       selectedMonth: value,
+    });
+    handleParentChange({
+      checksMonth: value,
     });
     fetchCheckMsgs(value);
   };
@@ -65,13 +68,13 @@ class CheckInfo extends PureComponent {
       dangerCompanyOver,
       goBack,
     } = this.props;
-    const stylesChecks = classNames(styles.sectionWrapper, rotate.flip, {
+    const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
     });
     return (
       <section
-        className={stylesChecks}
+        className={stylesVisible}
         style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
       >
         <div className={styles.sectionWrapperIn}>

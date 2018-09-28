@@ -17,13 +17,13 @@ class RiskDetail extends PureComponent {
   render() {
     const {} = this.state;
     const { visible, goBack, hiddenDangerListByDate } = this.props;
-    const stylesRiskDetail = classNames(styles.sectionWrapper, rotate.flip, {
+    const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
     });
     return (
       <section
-        className={stylesRiskDetail}
+        className={stylesVisible}
         style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
       >
         <div className={styles.sectionWrapperIn}>

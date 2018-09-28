@@ -34,7 +34,7 @@ class RiskDetail extends PureComponent {
           <div
             className={styles.backBtn}
             onClick={() => {
-              goBack('hdCom');
+              goBack('overHd');
             }}
           />
           <div className={styles.sectionMain}>

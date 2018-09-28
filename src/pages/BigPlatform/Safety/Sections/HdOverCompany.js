@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
 
-class DangerCompany extends PureComponent {
+class RiskDetail extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
@@ -13,29 +13,16 @@ class DangerCompany extends PureComponent {
 
   componentWillUnmount() {}
 
-  handleClick = id => {
-    const { dispatch, lastSection, month } = this.props;
-    const param = lastSection === 'checks' ? { date: month } : {};
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDangerListByDate',
-      payload: {
-        company_id: id,
-        ...param,
-      },
-    });
-    this.props.goComponent('hiddenDanger');
-    if (document.querySelector('#hiddenDanger')) {
-      document.querySelector('#hiddenDanger').scrollTop = 0;
-    }
-  };
-
   render() {
+    const {} = this.state;
     const {
       visible,
-      data: { dangerCompanyNum = 0, dangerCompany = [], dangerCount = 0 },
+      dispatch,
       goBack,
-      lastSection,
       goCompany,
+      listData,
+      overRectifyNum,
+      goComponent,
     } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
@@ -49,63 +36,64 @@ class DangerCompany extends PureComponent {
         <div className={styles.sectionWrapperIn}>
           <div className={styles.sectionTitle}>
             <span className={styles.titleBlock} />
-            隐患单位统计
+            已超期隐患单位
           </div>
           <div
             className={styles.backBtn}
             onClick={() => {
-              goBack(lastSection);
+              goBack();
             }}
           />
           <div className={styles.sectionMain}>
             <div className={styles.sectionContent}>
-              <div className={styles.summaryWrapper}>
-                <div className={styles.summaryItem}>
-                  <span className={styles.summaryIconCom} />
-                  单位数量
-                  <span className={styles.summaryNum}>{dangerCompanyNum || 0}</span>
-                </div>
-                <div className={styles.summaryItem}>
-                  <span className={styles.summaryIconHd} />
-                  隐患数量
-                  <span className={styles.summaryNum}>{dangerCount || 0}</span>
-                </div>
-              </div>
-
-              <div className={styles.scrollContainer}>
+              <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
                 <table className={styles.scrollTable}>
                   <thead>
                     <tr>
-                      <th style={{ width: '40px' }} />
-                      <th style={{ width: '74%' }}>单位</th>
-                      <th>隐患数</th>
+                      <th style={{ width: '38px' }} />
+                      <th style={{ width: '74%' }}>
+                        隐患单位（
+                        {listData.length}）
+                      </th>
+                      <th>
+                        隐患数（
+                        {overRectifyNum}）
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {dangerCompany.map(item => {
+                    {listData.map((item, index) => {
                       return (
-                        <tr key={item.id}>
-                          <td>
-                            {item.company_type === '1' && <span className={styles.keyComMark} />}
-                          </td>
+                        <tr key={item.companyId}>
+                          <td style={{ textAlign: 'left', paddingLeft: '10px' }}>{index + 1}</td>
                           <td>
                             <span
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
-                                goCompany(item.id);
+                                goCompany(item.companyId);
                               }}
                             >
-                              {item.name}
+                              {item.companyName}
                             </span>
                           </td>
                           <td>
                             <span
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
-                                this.handleClick(item.id);
+                                dispatch({
+                                  type: 'bigPlatform/fetchHiddenDangerListByDate',
+                                  payload: {
+                                    company_id: item.companyId,
+                                    status: '7',
+                                  },
+                                });
+                                goComponent('hdOverDetail');
+                                if (document.querySelector('#overRisk')) {
+                                  document.querySelector('#overRisk').scrollTop = 0;
+                                }
                               }}
                             >
-                              {item.total_danger}
+                              {item.hiddenDangerCount}
                             </span>
                           </td>
                         </tr>
@@ -122,4 +110,4 @@ class DangerCompany extends PureComponent {
   }
 }
 
-export default DangerCompany;
+export default RiskDetail;

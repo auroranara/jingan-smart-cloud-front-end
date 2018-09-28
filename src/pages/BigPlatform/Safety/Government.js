@@ -19,6 +19,8 @@ import CompanyOver from './Sections/CompanyOver';
 import CompanyRisk from './Components/CompanyRisk';
 import RiskDetail from './Sections/RiskDetail';
 import RiskDetailOver from './Sections/RiskDetailOver';
+import RiskOver from './Sections/RiskOver';
+import HdOverCompany from './Sections/HdOverCompany';
 // import MapTypeBar from './Components/MapTypeBar';
 
 /* 图片地址前缀 */
@@ -70,10 +72,11 @@ const sectionsVisible = {
   hdCom: false, // 隐患单位统计
   comInfo: false, // 企业信息
   riskColors: false, // 风险点
-  hdDetail: false, // 已超期隐患详情
+  hdOverDetail: false, // 已超期隐患详情
   hiddenDanger: false, // 隐患详情
   checks: false, // 监督检查
   companyOver: false, // 已超时单位
+  riskOver: false, // 单位超时未查
 };
 @connect(({ bigPlatform, bigPlatformSafetyCompany }) => ({
   bigPlatform,
@@ -112,10 +115,11 @@ class GovernmentBigPlatform extends Component {
       hdCom: false, // 隐患单位统计
       comInfo: false, // 企业信息
       riskColors: false, // 风险点
-      hdDetail: false, // 已超期隐患详情
+      hdOverDetail: false, // 已超期隐患详情
       hiddenDanger: false, // 隐患详情
       checks: false, // 监督检查
       companyOver: false, // 已超时单位
+      riskOver: false, // 单位超时未查
       companyId: '',
       riskTitle: '红色风险点',
       riskSummary: {
@@ -131,6 +135,7 @@ class GovernmentBigPlatform extends Component {
       tooltipPosition: [0, 0],
       dangerCompanyData: {},
       dangerCompanyLast: '',
+      checksMonth: moment().format('YYYY-MM'),
     };
   }
 
@@ -221,6 +226,20 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchNewHomePage',
       payload: {
         month: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 获取已超时风险点总数
+    dispatch({
+      type: 'bigPlatform/fetchSelectOvertimeItemNum',
+    });
+
+    // 安全政府-超时未查单位
+    dispatch({
+      type: 'bigPlatform/fetchOvertimeUncheckedCompany',
+      payload: {
+        pageNum: 1,
+        pageSize: 99999,
       },
     });
 
@@ -938,7 +957,7 @@ class GovernmentBigPlatform extends Component {
   // 返回已超期隐患
   goBackToOver = () => {
     this.setState({
-      hdDetail: false,
+      hdOverDetail: false,
     });
     setTimeout(() => {
       this.setState({
@@ -1293,7 +1312,7 @@ class GovernmentBigPlatform extends Component {
       hdCom,
       comInfo,
       riskColors,
-      hdDetail,
+      hdOverDetail,
       safetyGovernmentTitle,
       riskTitle,
       riskSummary: { risk, abnormal, company },
@@ -1310,6 +1329,8 @@ class GovernmentBigPlatform extends Component {
       companyOver,
       dangerCompanyData,
       dangerCompanyLast,
+      checksMonth,
+      riskOver,
     } = this.state;
     const {
       dispatch,
@@ -1340,6 +1361,8 @@ class GovernmentBigPlatform extends Component {
         hiddenDangerOverTime,
         checkedCompanyInfo,
         hiddenDangerListByDate,
+        selectOvertimeItemNum,
+        overtimeUncheckedCompany,
       },
     } = this.props;
 
@@ -1376,8 +1399,8 @@ class GovernmentBigPlatform extends Component {
     });
 
     const stylesHdDetail = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: hdDetail,
-      [rotate.out]: !hdDetail,
+      [rotate.in]: hdOverDetail,
+      [rotate.out]: !hdOverDetail,
     });
 
     const stylesHiddenDanger = classNames(styles.sectionWrapper, rotate.flip, {
@@ -1648,12 +1671,12 @@ class GovernmentBigPlatform extends Component {
                           <div
                             className={styles.itemActive}
                             onClick={() => {
-                              this.goComponent('overHd');
+                              this.goComponent('riskOver');
                             }}
                           >
                             <div className={styles.topName}>已超时风险点</div>
                             <div className={styles.topNum} style={{ color: '#e86767' }}>
-                              {overRectifyNum}
+                              {selectOvertimeItemNum}
                             </div>
                           </div>
                         </Tooltip>
@@ -1668,7 +1691,7 @@ class GovernmentBigPlatform extends Component {
                             }}
                           >
                             <div className={styles.topName}>本月监督检查</div>
-                            <div className={styles.topNum} style={{ color: '#fff' }}>
+                            <div className={styles.topNum} style={{ color: '#e86767' }}>
                               {checkedCompanyInfo.checked}
                             </div>
                           </div>
@@ -1897,7 +1920,7 @@ class GovernmentBigPlatform extends Component {
                 </div>
               </section>
 
-              <section
+              {/* <section
                 className={stylesOverHd}
                 style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
               >
@@ -1957,7 +1980,7 @@ class GovernmentBigPlatform extends Component {
                                             status: '7',
                                           },
                                         });
-                                        this.goComponent('hdDetail');
+                                        this.goComponent('hdOverDetail');
                                         if (document.querySelector('#overRisk')) {
                                           document.querySelector('#overRisk').scrollTop = 0;
                                         }
@@ -1975,7 +1998,7 @@ class GovernmentBigPlatform extends Component {
                     </div>
                   </div>
                 </div>
-              </section>
+              </section> */}
 
               <section
                 className={stylesCommunityCom}
@@ -2223,74 +2246,44 @@ class GovernmentBigPlatform extends Component {
                 </div>
               </section>
 
-              {/* <section
-                className={stylesHdDetail}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    已超期隐患详情
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBackToOver();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <div className={styles.scrollContainer} id="overRisk">
-                        <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section> */}
-
-              {/* <section
-                className={stylesHiddenDanger}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    隐患详情
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBackToHdCom();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <div className={styles.scrollContainer} id="hiddenDanger">
-                        <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section> */}
-
               {/* const sectionsVisible = {
                 communityCom: false, // 社区接入单位数
                 comIn: false, // 接入单位统计
                 keyCom: false, // 重点单位统计
                 fullStaff: false, // 专职人员统计
-                overHd: false, // 已超期隐患
+                overHd: false, // 已超期隐患单位
                 hdCom: false, // 隐患单位统计
                 comInfo: false, // 企业信息
                 riskColors: false, // 风险点
-                hdDetail: false, // 已超期隐患详情
+                hdOverDetail: false, // 已超期隐患详情
                 hiddenDanger: false, // 隐患详情
                 checks: false, // 监督检查
                 companyOver: false, // 已超时单位
               }; */}
 
+              {/* 已超期隐患单位 */}
+              <HdOverCompany
+                visible={overHd}
+                dispatch={dispatch}
+                goBack={this.goBack}
+                goCompany={this.goCompany}
+                goComponent={this.goComponent}
+                listData={overRectifyCompany}
+                overRectifyNum={overRectifyNum}
+              />
+
+              {/* 单位超时未查 */}
+              <RiskOver
+                visible={riskOver}
+                goBack={this.goBack}
+                goCompany={this.goCompany}
+                listData={overtimeUncheckedCompany}
+                riskOverNum={selectOvertimeItemNum}
+              />
+
               {/* 已超期隐患详情 */}
               <RiskDetailOver
-                visible={hdDetail}
+                visible={hdOverDetail}
                 goBack={this.goBack}
                 hiddenDangerListByDate={hiddenDangerListByDate}
               />
@@ -2309,8 +2302,10 @@ class GovernmentBigPlatform extends Component {
                 dispatch={dispatch}
                 goBack={this.goBack}
                 goComponent={this.goComponent}
+                goCompany={this.goCompany}
                 monthSelecter={false}
                 lastSection={dangerCompanyLast}
+                month={checksMonth}
                 // monthSelecter={hdComMonth}
               />
 

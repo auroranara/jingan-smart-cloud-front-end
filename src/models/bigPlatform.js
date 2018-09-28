@@ -201,10 +201,7 @@ export default {
     // 人员记录
     staffRecords: [],
     selectOvertimeItemNum: 0,
-    overtimeUncheckedCompany: {
-      total: 0,
-      list: [],
-    },
+    overtimeUncheckedCompany: [],
   },
 
   effects: {
@@ -762,10 +759,10 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'overtimeUncheckedCompany',
-          payload: response.data,
+          payload: response.data.list,
         });
         if (success) {
-          success(response.data);
+          success(response.data.list);
         }
       } else if (error) {
         error();
