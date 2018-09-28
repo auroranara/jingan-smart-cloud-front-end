@@ -8,3 +8,4 @@
 * onClose 关闭按钮点击事件
 * title 标题栏，当不传时不显示标题栏，同时关闭按钮无效
 * fixedContent 标题栏下方的固定元素
+* length 用于children的长度不变但实际内容变化时

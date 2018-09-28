@@ -3,6 +3,7 @@ import { Table, Select } from 'antd'
 import moment from 'moment';
 import backIcon from 'assets/back.png';
 import Section from '@/components/Section';
+import Switcher from '@/components/Switcher'
 import HiddenDanger from '../HiddenDanger';
 
 import styles from './index.less';
@@ -38,20 +39,11 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 表格鼠标移入事件
+   * 修改隐患数据
    */
-  handleMouseEnter = (card) => {
+  setHiddenDanger = (hiddenDanger) => {
     this.setState({
-      hiddenDanger: card,
-    });
-  }
-
-  /**
-   * 表格鼠标移出事件
-   */
-  handleMouseLeave = () => {
-    this.setState({
-      hiddenDanger: null,
+      hiddenDanger,
     });
   }
 
@@ -65,7 +57,7 @@ export default class App extends PureComponent {
     const { hiddenDanger } = this.state;
     const { id: idField, person: personField, time: timeField, point: pointField, result: resultField } = {...defaultFieldNames, ...fieldNames};
     const total = data.length;
-    const abnormal = data.filter(({ resultField }) => +resultField !== 1).length;
+    const abnormal = data.filter(item => +item[resultField] !== 1).length;
 
     /* 表头 */
     const columns = [
@@ -89,7 +81,12 @@ export default class App extends PureComponent {
         title: '巡查结果',
         dataIndex: resultField,
         key: resultField,
-        render: (text, { card }) => <div style={{ cursor: 'pointer' }} onMouseEnter={() => {this.handleMouseEnter(card);}} onMouseLeave={this.handleMouseLeave}>{+text === 1 ? '正常':'异常'}</div>,
+        render: (text, { card }) => {
+          const isNormal = +text === 1;
+          return (
+            <div style={{ cursor: isNormal?undefined:'pointer' }} onClick={isNormal?undefined:() => this.setHiddenDanger(card)}>{isNormal ? '正常':'异常'}</div>
+          )
+        },
       },
     ];
 
@@ -117,11 +114,12 @@ export default class App extends PureComponent {
             <div className={styles.jumpButton} onClick={onBack}><img src={backIcon} alt="" /></div>
           </Fragment>
         }
+        hackHeight={38 * data.length}
         isScroll
       >
         <Table
           className={styles.table}
-          rowClassName={({ resultField }) => +resultField === 1 ? '' : styles.abnormal }
+          rowClassName={record => +record[resultField] === 1 ? '' : styles.abnormal }
           size="small"
           dataSource={data}
           columns={columns}
@@ -130,22 +128,35 @@ export default class App extends PureComponent {
           rowKey={idField}
         />
         {hiddenDanger && (
-          <div className={styles.result}>
-            <HiddenDanger
-              data={hiddenDanger}
-              fieldNames={{
-                description: 'desc',
-                sbr: '_report_user_name',
-                sbsj: '_report_time',
-                zgr: '_rectify_user_name',
-                plan_zgsj: '_plan_rectify_time',
-                real_zgsj: '_real_rectify_time',
-                fcr: '_review_user_name',
-                status: 'hiddenStatus',
-                background: 'localUrl',
-              }}
-            />
-          </div>
+          <Switcher
+            visible={true}
+            style={{
+              position: 'fixed',
+              bottom: '0',
+              left: '25%',
+              right: '25%',
+            }}
+            onClose={() => this.setHiddenDanger(null)}
+          >
+            {hiddenDanger.map(item => (
+              <HiddenDanger
+                key={item._id}
+                style={{ marginBottom: 0 }}
+                data={item}
+                fieldNames={{
+                  description: '_desc',
+                  sbr: '_report_user_name',
+                  sbsj: '_report_time',
+                  zgr: '_rectify_user_name',
+                  plan_zgsj: '_plan_rectify_time',
+                  real_zgsj: '_real_rectify_time',
+                  fcr: '_review_user_name',
+                  status: 'hiddenStatus',
+                  background: '_path',
+                }}
+              />
+            ))}
+          </Switcher>
         )}
       </Section>
     );

@@ -57,11 +57,16 @@ export default class App extends PureComponent {
   /**
    * 组件更新
    */
-  componentDidUpdate({ children: prevChildren }) {
-    const { children } = this.props;
+  componentDidUpdate({ children: prevChildren, hackHeight: prevHackHeight }) {
+    const { children, hackHeight } = this.props;
     // 比较源数据的key是否发生变化，如果发生变化就重新计算内容高度
     if (children.length !== prevChildren.length) {
       this.resize();
+    }
+    else if (hackHeight !== prevHackHeight) {
+      this.setState({
+        isOverflow: hackHeight > this.container.offsetHeight,
+      });
     }
   }
 

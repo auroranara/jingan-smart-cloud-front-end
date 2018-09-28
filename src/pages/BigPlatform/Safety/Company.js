@@ -244,8 +244,8 @@ class CompanyLayout extends PureComponent {
       selectedStaffListMonth: '2018-09',
       // 当前选中的人员记录的月份
       selectedStaffRecordsMonth: '2018-09',
-      // 选中的人员
-      selectedUserName: '',
+      // 选中的人员id
+      selectedUserId: null,
     };
     this.myTimer = null;
     this.currentPieIndex = -1;
@@ -597,6 +597,7 @@ class CompanyLayout extends PureComponent {
     }
     this.setState({
       unitInspectionIndex: index,
+      selectedUserId: checkUserId,
     });
   }
 
@@ -620,7 +621,7 @@ class CompanyLayout extends PureComponent {
   /**
    * 根据月份获取人员记录
    */
-  handleSelectStaffRecords = (month, checkUserId) => {
+  handleSelectStaffRecords = (month, checkUserId=this.state.selectedUserId) => {
     const { dispatch, match: { params: { companyId } } } = this.props;
     dispatch({
       type: 'bigPlatform/fetchStaffRecords',
@@ -669,7 +670,7 @@ class CompanyLayout extends PureComponent {
         data={staffRecords}
         month={selectedStaffRecordsMonth}
         fieldNames={{
-          id: '_id',
+          id: 'check_id',
           person: 'user_name',
           time: 'check_date',
           point: 'object_title',

@@ -56,7 +56,7 @@ export default class App extends PureComponent {
         title: '巡查人',
         dataIndex: personField,
         key: personField,
-        render: (text, { idField }) => <div style={{ color: '#00baff', cursor: 'pointer' }} onClick={() => {this.handleClick(idField);}}>{text}</div>,
+        render: (text, record) => <div style={{ color: '#00baff', cursor: 'pointer' }} onClick={() => {this.handleClick(record[idField]);}}>{text}</div>,
       },
       {
         title: '巡查次数',
@@ -98,6 +98,7 @@ export default class App extends PureComponent {
             <div className={styles.jumpButton} onClick={onBack}>单位巡查>></div>
           </Fragment>
         }
+        hackHeight={38 * data.length}
         isScroll
       >
         <Table

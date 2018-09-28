@@ -1,0 +1,79 @@
+/* 水平轮播组件，一页显示一个 */
+.container {
+  position: relative;
+  overflow: hidden;
+}
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 0 10px 10px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #1790FF;
+  background-color: #041A3B;
+  border-bottom-left-radius: 100%;
+  z-index: 9;
+  cursor: pointer;
+}
+.leftButton,
+.rightButton {
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+  color: #0866D3;
+  transform: translateY(-50%);
+  z-index: 9;
+  cursor: pointer;
+}
+.leftButton {
+  left: 0;
+}
+.rightButton {
+  right: 0;
+}
+.pagination {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 9;
+
+  .paginationItem {
+    flex: none;
+    padding: 6px;
+
+    div {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #052654;
+      cursor: pointer;
+    }
+  }
+}
+.list {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  // white-space: nowrap;
+  // overflow: hidden;
+  transition: left 0.5s;
+
+  & > div {
+    flex: 1;
+  }
+}

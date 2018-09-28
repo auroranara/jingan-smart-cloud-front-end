@@ -48,6 +48,7 @@ const getSeal = status => {
 export default class App extends PureComponent {
   render() {
     const {
+      style,
       data,
       fieldNames,
       isSourceShow,
@@ -58,7 +59,7 @@ export default class App extends PureComponent {
     const isDFC = +data[status] === 3;
 
     return (
-      <div className={styles.riskDetailItem}>
+      <div className={styles.riskDetailItem} style={style}>
         <div className={styles.riskDetailItemTitleWrapper}><div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${isYCQ ? descriptionRedIcon : descriptionBlueIcon})` }} /><Ellipsis lines={1} tooltip className={styles.riskDetailItemTitle} style={{ color: isYCQ ? '#ff4848' : '#fff' }} >{data[description] || '暂无隐患描述'}</Ellipsis></div>
         <div className={styles.riskDetailItemSealWrapper}><img alt="" src={getSeal(data[status])} /></div>
         <div className={styles.riskDetailItemContentWrapper}>
