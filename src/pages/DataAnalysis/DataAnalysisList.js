@@ -7,12 +7,46 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './DataAnalysisList.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
+import { AuthIcon } from '@/utils/customAuth';
+import CODES from '@/utils/codes';
+
+import electricityIcon from './imgs/electricity.png';
+import electricityDarkIcon from './imgs/electricity-d.png';
+import toxicGasIcon from './imgs/toxic-gas.png';
+import toxicGasDarkIcon from './imgs/toxic-gas-d.png';
+import wasteWaterIcon from './imgs/waste-water.png';
+import wasteWaterDarkIcon from './imgs/waste-water-d.png';
+import wasteGasIcon from './imgs/waste-gas.png';
+import wasteGasDardIcon from './imgs/waste-gas-d.png';
 
 const { Option } = Select;
 
+const breadcrumbList = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '数据分析', name: '数据分析' },
+  { title: 'IOT异常数据分析', name: 'IOT异常数据分析' },
+];
+
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
-
+const ICONS = ['electricity', 'toxic-gas', 'waste-water', 'waste-gas'];
+const ICONS_URL = {
+  electricity: electricityIcon,
+  'electricity-d': electricityDarkIcon,
+  'toxic-gas': toxicGasIcon,
+  'toxic-gas-d': toxicGasDarkIcon,
+  'waste-water': wasteWaterIcon,
+  'waste-water-d': wasteWaterDarkIcon,
+  'waste-gas': wasteGasIcon,
+  'waste-gas-d': wasteGasDardIcon,
+};
+const ICONS_CN = {
+  electricity: '用电安全异常数据分析',
+  'toxic-gas': '可燃有毒气体异常数据分析',
+  'waste-water': '废水异常数据分析',
+  'waste-gas': '废气异常数据分析',
+  'opc': 'opc异常数据分析',
+};
 const OPTIONS = [
   { name: '用电安全', key: 1 },
   { name: '可燃有毒气体', key: 2 },
@@ -20,7 +54,6 @@ const OPTIONS = [
   { name: '废气', key: 4 },
   { name: 'opc', key: 5 },
 ];
-
 const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 
 const fields = [
@@ -106,6 +139,11 @@ export default class DataAnalysisList extends PureComponent {
               name,
               safetyName,
               safetyPhone,
+              elecNum,
+              gasNum,
+              pollutionWaterNum,
+              pollutionGasNum,
+              opcNum,
               industryCategoryLabel,
               practicalProvinceLabel,
               practicalCityLabel,
@@ -120,6 +158,14 @@ export default class DataAnalysisList extends PureComponent {
               (practicalDistrictLabel || '') +
               (practicalTownLabel || '') +
               (practicalAddress || '');
+
+            const iconNums = {
+              electricity: elecNum,
+              'toxic-gas': gasNum,
+              'waste-water': pollutionWaterNum,
+              'waste-gas': pollutionGasNum,
+              'opc': opcNum,
+            };
 
             return (
               <List.Item key={id}>
@@ -141,10 +187,21 @@ export default class DataAnalysisList extends PureComponent {
                       {safetyPhone ? safetyPhone : NO_DATA}
                     </p>
                     <p className={styles.icons}>
-                      <Link to={`/data-analysis/IOT-abnormal-data/toxic-gas/${id}`}>有毒有害气体</Link>
-                      <Link to={`/data-analysis/IOT-abnormal-data/electricity/${id}`}>用电安全</Link>
-                      <Link to={`/data-analysis/IOT-abnormal-data/waste-water/${id}`}>废水</Link>
-                      <Link to={`/data-analysis/IOT-abnormal-data/waste-gas/${id}`}>废气</Link>
+                      {ICONS.filter(icon => iconNums[icon]).map(icon => (
+                        <AuthIcon
+                          key={icon}
+                          title={ICONS_CN[icon]}
+                          url={ICONS_URL[icon]}
+                          darkUrl={ICONS_URL[`${icon}-d`]}
+                          code={CODES.dataAnalysis.IOTAbnormalData[icon]}
+                          // to={{
+                          //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
+                          //   num: iconNums[icon],
+                          // }}
+                          to={`/data-analysis/IOT-abnormal-data/${icon}/${id}/count/${iconNums[icon]}`}
+                          style={{ width: 30, height: 30, marginRight: 15, backgroundSize: '100% 100%' }}
+                        />
+                      ))}
                     </p>
                   </Card>
               </List.Item>
@@ -156,13 +213,15 @@ export default class DataAnalysisList extends PureComponent {
   }
 
   render() {
+    const { dataAnalysis: { companies: { list=[] } } } = this.props;
+
     return (
       <PageHeaderLayout
         title="IOT异常数据分析"
-        // breadcrumbList={breadcrumbList}
+        breadcrumbList={breadcrumbList}
         content={
-          <div>
-            监测企业总数：1
+          <div className={styles.total}>
+            监测企业总数：{list.length}
           </div>
         }
       >

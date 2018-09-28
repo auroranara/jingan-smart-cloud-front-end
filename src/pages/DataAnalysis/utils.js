@@ -1,9 +1,9 @@
 import moment from 'moment';
 
-export const DATE_FORMAT = 'YYYY/MM/DD';
+export const DATE_FORMAT = 'YYYY/M/D';
 export const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
 export const STATUS_COLOR_MAP = { '-1': 'rgba(0,0,0,0.65)', 1: 'orange', 2: 'red' };
-export const CONDITION_MAP = { 1: '>=', 2: '<=' };
+export const CONDITION_MAP = { 1: '≥', 2: '≤' };
 
 export function addAlign(columns, align='center') {
   if (!columns)
@@ -38,6 +38,7 @@ export function handleTableData(list=[]) {
   return list.map((item, index) => {
     const { id, realtime, area, location, status, realtimeData, unit, limitValue, condition, desc } = item;
     const sts = Number.parseInt(status, 10);
+    const u = unit ? unit : '';
     return {
       id,
       index: index + 1,
@@ -45,10 +46,34 @@ export function handleTableData(list=[]) {
       area: area || '-',
       location: location || '-',
       status: sts,
-      value: sts === -1 || realtimeData === null ? '-' : `${realtimeData}${unit}`,
+      value: sts === -1 || realtimeData === null ? '-' : `${realtimeData}${u}`,
       limitValue: limitValue || '-',
       condition: sts === -1 ? '设备失联' : `${CONDITION_MAP[condition]}界限值`,
       parameter: sts === -1 || desc === null ? '-' : desc,
     };
   });
+}
+
+export function handleChemicalFormula(param='') {
+  if (param.length <= 1)
+    return param;
+
+  param = param.toUpperCase();
+
+  if (param === 'NOX')
+    return <span>NO<sub>x</sub></span>;
+
+  const ms = param.match(/(\d+|\D+)/g);
+
+  if (!ms)
+    return param;
+
+  const children = ms.map(c => {
+    const n = Number.parseInt(c, 10);
+    if (n)
+      return <sub>{n}</sub>;
+    return c;
+  });
+
+  return <span>{children}</span>;
 }

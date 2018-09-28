@@ -12,3 +12,9 @@ export async function queryCompanies(params) {
 export async function queryData(params) {
   return request(`${URL_PREFIX}/iotInfoForPage?${stringify(params)}`);
 }
+
+// 导出
+export async function queryExport(params) {
+  console.log('fetch export...');
+  return request(`${URL_PREFIX}/export?${stringify(params)}`);
+}

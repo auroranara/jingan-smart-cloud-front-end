@@ -1,18 +1,25 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Button, Card, DatePicker, Input, Select, Table } from 'antd';
+import { Button, Card, DatePicker, Input, message, Select, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
+import { STATUS_MAP, STATUS_COLOR_MAP, addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
+const breadcrumbList = [
+  { title: '首页', name: '首页', href: '/' },
+  { title: '数据分析', name: '数据分析' },
+  { title: 'IOT异常数据分析', name: 'IOT异常数据分析', href: '/data-analysis/IOT-abnormal-data/list' },
+  { title: '可燃有毒气体异常数据分析', name: '可燃有毒气体异常数据分析' },
+];
+
 const TYPE = 2;
-const PAGE_SIZE = 18;
+const PAGE_SIZE = 10;
 
 const LABEL_COL = { span: 4 };
 const WRAPPER_COL = { span: 18 };
@@ -51,6 +58,7 @@ const COLUMNS = [
     title: '异常类别',
     dataIndex: 'status',
     key: 'status',
+    render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
   },
   {
     title: '监测数值',
@@ -71,20 +79,19 @@ const COLUMNS = [
 
 // const data = [...Array(10).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', section: '厂区九车间', location: '氯乙烷压缩机东', category: '预警', value: 19.6, limit: '18', desc: '>=临界值' }));
 
-@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.models.dataAnalysis }))
+@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.effects['dataAnalysis/fetchData'] }))
 export default class ToxicGas extends PureComponent {
   state = {
     moments: null,
     formVals: null,
+    currentPage: 1,
   };
 
   componentDidMount() {
     const vals = { date: getThisMonth() };
     this.setState({ formVals: vals });
-    this.fetchData(true, vals);
+    this.fetchData(1, vals);
   }
-
-  pageNum = 1;
 
   renderExportButton() {
     return (
@@ -95,34 +102,40 @@ export default class ToxicGas extends PureComponent {
   }
 
   handleSearch = (values) => {
-    // console.log(values);
     this.setState({ formVals: values });
-    this.fetchData(true, values);
+    this.fetchData(1, values, (code, msg) => this.setPage(code, 1, msg));
   };
 
   handleReset = () => {
     const vals = { date: getThisMonth() };
     this.setState({ formVals: vals });
-    this.fetchData(true, vals);
+    this.fetchData(1, vals, (code, msg) => this.setPage(code, 1, msg));
   };
 
-  loadMore = () => {
-    const { formVals } = this.state;
-    this.fetchCompanies(false, formVals);
-  };
-
-  fetchData = (initial, values) => {
+  fetchData = (pageNum, values, callback) => {
     const { dispatch, match: { params: { id } } } = this.props;
-    if (initial)
-      this.pageNum = 1;
-    let payload = { pageSize: PAGE_SIZE, pageNum: this.pageNum, type: TYPE, companyId: id };
+    let payload = { pageSize: PAGE_SIZE, pageNum, type: TYPE, companyId: id };
     if (values)
       payload = { ...payload, ...handleFormVals(values) };
     dispatch({
       type: 'dataAnalysis/fetchData',
       payload,
-      callback: () => this.pageNum++,
+      callback,
     });
+  };
+
+  setPage = (code, current, msg) => {
+    if (code === 200)
+      this.setState({ currentPage: current });
+    else if (msg)
+      message.error(msg);
+  };
+
+  onTableChange = (pagination, filters, sorter) => {
+    // console.log(pagination);
+    const { current } = pagination;
+    const { formVals } = this.state;
+    this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
 
   onCalendarChange = (dates, dateStrings) => {
@@ -142,7 +155,20 @@ export default class ToxicGas extends PureComponent {
   };
 
   render() {
-    const { dataAnalysis: { analysis: { list=[] } } } = this.props;
+    const {
+      loading,
+      match: { params: { count } },
+      dataAnalysis: {
+        analysis: {
+          list=[],
+          pagination: {
+            total,
+          }={ total: 0 },
+        },
+      },
+    } = this.props;
+
+    const { currentPage } = this.state;
 
     const fields = [
       {
@@ -196,7 +222,8 @@ export default class ToxicGas extends PureComponent {
     return (
       <PageHeaderLayout
         title="可燃有毒气体异常数据分析"
-        content={<div>监测点：6</div>}
+        breadcrumbList={breadcrumbList}
+        content={<div className={styles.count}>监测点：{count}</div>}
       >
         <Card className={styles.search}>
           <InlineForm
@@ -208,8 +235,15 @@ export default class ToxicGas extends PureComponent {
           />
         </Card>
         <div className={styles.container}>
-          <p className={styles.statistics}>查询数据统计：200</p>
-          <Table columns={addAlign(COLUMNS)} dataSource={handleTableData(list)} rowKey="id" />
+          <p className={styles.statistics}>查询数据统计：{total}</p>
+          <Table
+            rowKey="id"
+            loading={loading}
+            columns={addAlign(COLUMNS)}
+            dataSource={handleTableData(list)}
+            onChange={this.onTableChange}
+            pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
+          />
         </div>
       </PageHeaderLayout>
     );

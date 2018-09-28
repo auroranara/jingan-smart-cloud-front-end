@@ -17,6 +17,10 @@
       p {
         margin-bottom: @bottom;
       }
+
+      p:last-child {
+        margin-bottom: 0;
+      }
     }
   }
   .item {
@@ -30,13 +34,26 @@
   }
 }
 
+.icons {
+  display: flex;
+  // width: 50%;
+  height: 30px;
+  margin-top: 15px;
+  // justify-content: space-between;
+}
+
 .ellipsis {
   height: 1.5em;
   margin-bottom: @bottom;
 }
 
-.icons {
-  display: flex;
-  justify-content: space-between;
+.total {
+  font-size: 16px;
 }
+
+// .icon {
+//   width: 25px;
+//   height: 25px;
+//   background-size: 100% 100%;
+// }
 
