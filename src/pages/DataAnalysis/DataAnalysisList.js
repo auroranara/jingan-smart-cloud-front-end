@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Card, Input, List, Select } from 'antd';
-import Link from 'umi/link';
+// import Link from 'umi/link';
 import { connect } from 'dva';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
