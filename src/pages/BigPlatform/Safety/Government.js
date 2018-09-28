@@ -1677,7 +1677,7 @@ class GovernmentBigPlatform extends Component {
                             {/* <div className={styles.itemActive}> */}
                             <div className={styles.topName}>接入单位</div>
                             <div className={styles.topNum} style={{ color: '#00baff' }}>
-                              {(dataImportant, length + dataUnimportantCompany.length)}
+                              {(dataImportant.length + dataUnimportantCompany.length)}
                             </div>
                           </div>
                         </Tooltip>
@@ -2166,7 +2166,7 @@ class GovernmentBigPlatform extends Component {
                           <span className={styles.summaryIconCom} />
                           单位数量
                           <span className={styles.summaryNum}>
-                            {(dataImportant, length + dataUnimportantCompany.length)}
+                            {(dataImportant.length + dataUnimportantCompany.length)}
                           </span>
                         </div>
                       </div>
