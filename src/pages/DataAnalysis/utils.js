@@ -34,11 +34,12 @@ export function handleFormVals(vals) {
   return newVals;
 }
 
-export function handleTableData(list=[]) {
+export function handleTableData(list=[], divider='|') {
   return list.map((item, index) => {
     const { id, realtime, area, location, status, realtimeData, unit, limitValue, condition, desc } = item;
     const sts = Number.parseInt(status, 10);
-    const u = unit ? unit : '';
+    // 单位存在时，已divider(默认为|)分隔
+    const u = unit ? `${divider}${unit}` : '';
     return {
       id,
       index: index + 1,
@@ -58,10 +59,10 @@ export function handleChemicalFormula(param='') {
   if (param.length <= 1)
     return param;
 
-  param = param.toUpperCase();
-
   if (param === 'NOX')
     return <span>NO<sub>x</sub></span>;
+
+  param = param.toUpperCase();
 
   const ms = param.match(/(\d+|\D+)/g);
 
@@ -74,6 +75,30 @@ export function handleChemicalFormula(param='') {
       return <sub>{n}</sub>;
     return c;
   });
+
+  return <span>{children}</span>;
+}
+
+// value值为val|unit，分开值及单位，然后单独处理单位
+export function handleUnit(value, divider='|') {
+  if (!value || !value.includes(divider) || value.length <= 1)
+    return value;
+
+  const [val, unit] = value.split('|');
+
+  const ms = unit.match(/(\d+|\D+)/g);
+
+  if (!ms)
+    return val + unit;
+
+  const children = ms.map(c => {
+    const n = Number.parseInt(c, 10);
+    if (n)
+      return <sup>{n}</sup>;
+    return c;
+  });
+
+  children.unshift(val);
 
   return <span>{children}</span>;
 }

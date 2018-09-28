@@ -6,7 +6,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { STATUS_MAP, STATUS_COLOR_MAP, addAlign, getThisMonth, handleFormVals, handleTableData, handleChemicalFormula } from './utils';
+import { STATUS_MAP, STATUS_COLOR_MAP, addAlign, getThisMonth, handleFormVals, handleTableData, handleChemicalFormula, handleUnit } from './utils';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -78,6 +78,7 @@ const COLUMNS = [
     title: '监测数值',
     dataIndex: 'value',
     key: 'value',
+    render: value => handleUnit(value),
   },
   {
     title: '报警界限值',
@@ -91,7 +92,7 @@ const COLUMNS = [
   },
 ];
 
-// const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: 19.6, limitValue: '18', condition: 1 }));
+// const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: '19.6|mg/m3', limitValue: '18', condition: 1 }));
 // const total = list.length;
 
 @connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.effects['dataAnalysis/fetchData'] }))
@@ -242,7 +243,7 @@ export default class ToxicGas extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="用电安全异常数据分析"
+        title="废水异常数据分析"
         breadcrumbList={breadcrumbList}
         content={<div className={styles.count}>监测点：{count}</div>}
       >
