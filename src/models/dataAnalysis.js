@@ -1,8 +1,5 @@
-import {
-  queryCompanies,
-  queryData,
-  queryExport,
-} from '../services/dataAnalysis';
+import { queryCompanies, queryData, queryExport } from '../services/dataAnalysis';
+import fileDownload from 'js-file-download';
 
 const DEFAULT_CODE = 500;
 const EMPTY_OBJECT = {};
@@ -30,11 +27,11 @@ export default {
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT, msg } = response;
       callback && callback(code, msg);
-      if (code === 200)
-        yield put({ type: 'saveData', payload: data });
+      if (code === 200) yield put({ type: 'saveData', payload: data });
     },
     *fetchExport({ payload }, { call, put }) {
-      let response = yield call(queryExport, payload);
+      const blob = yield call(queryExport, payload);
+      fileDownload(blob, `${new Date().getTime()}.xls`);
       // response = response || EMPTY_OBJECT;
       // const { code = DEFAULT_CODE, data = EMPTY_OBJECT, msg } = response;
       // callback && callback(code, msg);
