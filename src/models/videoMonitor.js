@@ -22,6 +22,7 @@ export default {
     list: [],
     detail: {
       data: {
+        companyName: undefined,
         deviceId: undefined,
         keyId: undefined,
         name: undefined,
@@ -86,6 +87,8 @@ export default {
 
     // 修改视频设备信息
     *updateVideoDevice({ payload, success, error }, { call, put }) {
+      console.log(JSON.stringify(payload));
+
       const response = yield call(updateVideoDevice, payload);
       if (response.code === 200) {
         yield put({
@@ -101,9 +104,10 @@ export default {
     },
 
     // 视频设备列表
-    *fetchEquipmentList({ payload }, { call, put }) {
+    *fetchEquipmentList({ payload, callback }, { call, put }) {
       const response = yield call(queryVideoList, payload);
       if (response.code === 200) {
+        if (callback) callback([...response.data.list]);
         yield put({
           type: 'queryVideoList',
           payload: response.data,

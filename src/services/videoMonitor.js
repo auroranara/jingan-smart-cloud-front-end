@@ -15,7 +15,7 @@ export async function addVideoDevice({ companyId, ...params }) {
 // 修改视频设备信息
 export async function updateVideoDevice({ companyId, vedioId, ...params }) {
   return request(`${URL_PREFIX}/vedioDevice/company/${companyId}/vedioDevice/${vedioId}`, {
-    method: 'POST',
+    method: 'PUT',
     body: { companyId, vedioId, ...params },
   });
 }

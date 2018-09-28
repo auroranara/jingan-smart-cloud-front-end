@@ -1,29 +1,21 @@
 import React, { PureComponent } from 'react';
-import { connect, Link } from 'dva';
-import {
-  Form,
-  List,
-  Card,
-  Button,
-  // Icon,
-  Input,
-  // Modal,
-  message,
-  BackTop,
-  Spin,
-  Col,
-  Row,
-  Switch,
-} from 'antd';
-import { routerRedux } from 'dva/router';
+import { connect } from 'dva';
+import { Form, List, Card, Button, Input, BackTop, Spin, Col, Row, Switch } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
-
 import Ellipsis from '@/components/Ellipsis';
+import codesMap from '@/utils/codes';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import {
+  // hasAuthority,
+  AuthButton,
+  AuthLink,
+} from '@/utils/customAuth';
 
 import styles from './VideoEquipmentList.less';
-import codesMap from '@/utils/codes';
-import { hasAuthority, AuthButton, AuthLink } from '@/utils/customAuth';
+import VideoPlay from '../../BigPlatform/FireControl/section/VideoPlay';
+
+import videoIcon from './videoIcon.png';
+
 const FormItem = Form.Item;
 
 //面包屑
@@ -71,6 +63,13 @@ export default class VideoEquipmentList extends PureComponent {
     super(props);
     this.formData = defaultFormData;
   }
+
+  state = {
+    total: 0,
+    videoVisible: false,
+    keyId: undefined,
+  };
+
   // 生命周期函数
   componentDidMount() {
     const {
@@ -87,9 +86,25 @@ export default class VideoEquipmentList extends PureComponent {
         pageSize,
         pageNum: 1,
       },
+      callback: list => {
+        if (list.length === 0) return;
+        let total = 0;
+        const generateTotal = arr => {
+          for (const list of arr) {
+            total++;
+            if (Array.isArray(list)) generateTotal(list);
+          }
+        };
+        generateTotal(list);
+        this.setState({ total });
+      },
     });
   }
 
+  //
+  switchOnChange = checked => {
+    this.setState({});
+  };
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
     const {
@@ -150,6 +165,16 @@ export default class VideoEquipmentList extends PureComponent {
     // });
   };
 
+  // 显示视频模态框
+  videoOnClick = keyId => {
+    this.setState({ videoVisible: true, keyId: keyId });
+  };
+
+  // 关闭视频模态框
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false, keyId: undefined });
+  };
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -193,6 +218,7 @@ export default class VideoEquipmentList extends PureComponent {
 
   /* 渲染列表 */
   renderList() {
+    // const {popconfirmVisible}
     const {
       videoMonitor: {
         videoData: { list },
@@ -209,7 +235,7 @@ export default class VideoEquipmentList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, deviceId, keyId, isInfiniteScroll } = item;
+            const { id, deviceId, keyId, isInspection } = item;
             return (
               <List.Item key={id}>
                 <Card
@@ -244,19 +270,22 @@ export default class VideoEquipmentList extends PureComponent {
                       </Ellipsis>
                       <p>
                         是否用于查岗：
-                        <Switch checkedChildren="是" unCheckedChildren="否" />
+                        <Switch
+                          checked={isInspection === 1}
+                          checkedChildren="是"
+                          unCheckedChildren="否"
+                          onChange={this.switchOnChange}
+                        />
                       </p>
                     </Col>
-                    <Col
-                      span={8}
-                      // onClick={() => {
-                      //   if (hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes))
-                      //     this.goToEquipmentList(id);
-                      //   else message.warn('您没有权限访问对应页面');
-                      // }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <span className={styles.quantity} />
+                    <Col span={8} style={{ cursor: 'pointer' }}>
+                      <span
+                        onClick={() => {
+                          this.videoOnClick(keyId);
+                        }}
+                        className={styles.quantity}
+                        style={{ backgroundImage: `url(${videoIcon})` }}
+                      />
                     </Col>
                   </Row>
                 </Card>
@@ -276,20 +305,20 @@ export default class VideoEquipmentList extends PureComponent {
         isLast,
       },
     } = this.props;
+    const { total, videoVisible, keyId } = this.state;
+
+    const content =
+      list && list.length ? (
+        <span>
+          视频总数：
+          {total}
+        </span>
+      ) : (
+        <span>视频总数：0</span>
+      );
 
     return (
-      <PageHeaderLayout
-        title={list.companyName}
-        breadcrumbList={breadcrumbList}
-        content={
-          <div>
-            <span>
-              视频总数：
-              {''}
-            </span>
-          </div>
-        }
-      >
+      <PageHeaderLayout title={list.companyName} breadcrumbList={breadcrumbList} content={content}>
         <BackTop />
         {this.renderForm()}
         <InfiniteScroll
@@ -312,6 +341,13 @@ export default class VideoEquipmentList extends PureComponent {
         >
           {this.renderList()}
         </InfiniteScroll>
+        <VideoPlay
+          visible={videoVisible}
+          showList={false}
+          videoList={[]}
+          keyId={keyId}
+          handleVideoClose={this.handleVideoClose}
+        />
       </PageHeaderLayout>
     );
   }

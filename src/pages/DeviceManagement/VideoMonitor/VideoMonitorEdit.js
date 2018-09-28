@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import { Form, Input, Button, Card, Col, Row, Switch, Icon, Popover, message } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
-import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+
+import Coordinate from '@/components/Coordinate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import styles from './VideoMonitorEdit.less';
 
@@ -57,9 +59,10 @@ const defaultPagination = {
 };
 
 @connect(
-  ({ videoMonitor, maintenanceCompany, loading }) => ({
+  ({ videoMonitor, maintenanceCompany, safety, loading }) => ({
     videoMonitor,
     maintenanceCompany,
+    safety,
     loading: loading.models.videoMonitor,
   }),
   dispatch => ({
@@ -82,6 +85,9 @@ export default class VideoMonitorEdit extends PureComponent {
     },
     companyId: undefined,
     isInspection: false,
+    coordinate: {
+      visible: false,
+    },
   };
 
   // 挂载后
@@ -121,6 +127,11 @@ export default class VideoMonitorEdit extends PureComponent {
       match: {
         params: { id },
       },
+      videoMonitor: {
+        detail: {
+          data: { companyId: companyIdVideo },
+        },
+      },
       dispatch,
     } = this.props;
 
@@ -135,7 +146,7 @@ export default class VideoMonitorEdit extends PureComponent {
           keyId,
           name,
           status,
-          rtsAddress,
+          rtspAddress,
           photoAddress,
           xNum,
           yNum,
@@ -147,11 +158,12 @@ export default class VideoMonitorEdit extends PureComponent {
         const payload = {
           id,
           deviceId,
+          vedioId: id,
           keyId,
           name,
           status,
           companyId,
-          rtsAddress,
+          rtspAddress,
           photoAddress,
           xNum,
           yNum,
@@ -174,7 +186,10 @@ export default class VideoMonitorEdit extends PureComponent {
         if (id) {
           dispatch({
             type: 'videoMonitor/updateVideoDevice',
-            payload,
+            payload: {
+              ...payload,
+              companyId: companyIdVideo,
+            },
             success,
             error,
           });
@@ -227,12 +242,19 @@ export default class VideoMonitorEdit extends PureComponent {
   handleSelectCompany = value => {
     const {
       form: { setFieldsValue },
+      dispatch,
     } = this.props;
     setFieldsValue({
       companyId: value.name,
     });
     this.setState({
       companyId: value.id,
+    });
+    dispatch({
+      type: 'safety/fetch',
+      payload: {
+        companyId: value.id,
+      },
     });
     this.handleHideCompanyModal();
   };
@@ -266,10 +288,28 @@ export default class VideoMonitorEdit extends PureComponent {
     return <CompanyModal {...modalProps} />;
   }
 
-  // 处理开关--是否用于查岗
-  switchOnChange = checked => {
+  // 显示定位模态框
+  showModalCoordinate = () => {
     this.setState({
-      isInspection: checked,
+      coordinate: {
+        visible: true,
+      },
+    });
+  };
+
+  // 定位模态框确定按钮点击事件
+  handleOk = value => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      xNum: value.x.toFixed(3),
+      yNum: value.y.toFixed(3),
+    });
+    this.setState({
+      coordinate: {
+        visible: false,
+      },
     });
   };
 
@@ -296,7 +336,14 @@ export default class VideoMonitorEdit extends PureComponent {
       match: {
         params: { id },
       },
+      safety: {
+        detail: { safetyFourPicture },
+      },
     } = this.props;
+
+    const {
+      coordinate: { visible },
+    } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -309,6 +356,7 @@ export default class VideoMonitorEdit extends PureComponent {
         md: { span: 10 },
       },
     };
+    const fourColorImgs = safetyFourPicture ? JSON.parse(safetyFourPicture) : [];
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -441,10 +489,9 @@ export default class VideoMonitorEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.inspectSentries}>
             {getFieldDecorator('isInspection', {
-              initialValue: isInspection,
-            })(
-              <Switch checkedChildren="是" unCheckedChildren="否" onChange={this.switchOnChange} />
-            )}
+              valuePropName: 'checked',
+              initialValue: !!isInspection,
+            })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
           </FormItem>
         </Form>
 
@@ -469,7 +516,19 @@ export default class VideoMonitorEdit extends PureComponent {
                   </Form.Item>
                 </Col>
                 <Col span={8} style={{ position: 'relative', marginTop: '3%' }}>
-                  <Button>定位</Button>
+                  <Button onClick={this.showModalCoordinate}>定位</Button>
+                  <Coordinate
+                    visible={visible}
+                    urls={fourColorImgs}
+                    onOk={this.handleOk}
+                    onCancel={() => {
+                      this.setState({
+                        coordinate: {
+                          visible: false,
+                        },
+                      });
+                    }}
+                  />
                 </Col>
               </Row>
             </Col>
