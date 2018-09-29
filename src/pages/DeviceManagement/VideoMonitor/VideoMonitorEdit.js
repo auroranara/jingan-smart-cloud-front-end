@@ -5,6 +5,7 @@ import { Form, Input, Button, Card, Col, Row, Switch, Icon, Popover, message } f
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
+import { numReg } from '@/utils/validate';
 import Coordinate from '@/components/Coordinate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import styles from './VideoMonitorEdit.less';
@@ -256,6 +257,8 @@ export default class VideoMonitorEdit extends PureComponent {
         companyId: value.id,
       },
     });
+    setFieldsValue({ xNum: undefined });
+    setFieldsValue({ yNum: undefined });
     this.handleHideCompanyModal();
   };
 
@@ -290,6 +293,16 @@ export default class VideoMonitorEdit extends PureComponent {
 
   // 显示定位模态框
   showModalCoordinate = () => {
+    const {
+      safety: {
+        detail: { safetyFourPicture },
+      },
+    } = this.props;
+    const fourColorImgs = safetyFourPicture ? JSON.parse(safetyFourPicture) : [];
+    if (fourColorImgs.length === 0) {
+      message.error('该企业暂无四色图！');
+      return;
+    }
     this.setState({
       coordinate: {
         visible: true,
@@ -423,6 +436,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   required: true,
                   message: '请输入设备ID',
                 },
+                { pattern: numReg, message: '设备ID格式不正确' },
               ],
             })(<Input placeholder="请输入设备ID" />)}
           </FormItem>
@@ -435,6 +449,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   required: true,
                   message: '请输入摄像头ID',
                 },
+                { pattern: numReg, message: '摄像头ID格式不正确' },
               ],
             })(<Input placeholder="请输入摄像头ID" />)}
           </FormItem>

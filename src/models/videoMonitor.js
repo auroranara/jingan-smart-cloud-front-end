@@ -86,21 +86,17 @@ export default {
     },
 
     // 修改视频设备信息
-    *updateVideoDevice({ payload, success, error }, { call, put }) {
-      console.log(JSON.stringify(payload));
-
+    *updateVideoDevice({ payload, success, error, callback }, { call, put }) {
       const response = yield call(updateVideoDevice, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'updateDetail',
-          payload: response.data,
-        });
+        yield put({ type: 'updateDetail', payload: response.data });
         if (success) {
           success();
         }
       } else if (error) {
         error(response.msg);
       }
+      callback && callback(response.code);
     },
 
     // 视频设备列表

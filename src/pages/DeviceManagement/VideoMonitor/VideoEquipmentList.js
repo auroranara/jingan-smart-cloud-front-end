@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Col, Row, Switch } from 'antd';
+import { Form, List, Card, Button, Input, BackTop, Spin, Col, Row, Switch, message } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import codesMap from '@/utils/codes';
@@ -68,6 +68,8 @@ export default class VideoEquipmentList extends PureComponent {
     total: 0,
     videoVisible: false,
     keyId: undefined,
+    checkedArray: [],
+    loadingArray: [],
   };
 
   // 生命周期函数
@@ -88,23 +90,37 @@ export default class VideoEquipmentList extends PureComponent {
       },
       callback: list => {
         if (list.length === 0) return;
-        let total = 0;
-        const generateTotal = arr => {
-          for (const list of arr) {
-            total++;
-            if (Array.isArray(list)) generateTotal(list);
-          }
-        };
-        generateTotal(list);
-        this.setState({ total });
+        const checkedArray = list.reduce((prev, next) => {
+          const { isInspection } = next;
+          prev.push(!!isInspection);
+          return prev;
+        }, []);
+        this.setState({
+          total: list.length,
+          checkedArray,
+          loadingArray: Array(list.length).fill(false),
+        });
       },
     });
   }
 
-  //
-  switchOnChange = checked => {
-    this.setState({});
+  // 查岗按钮开关点击事件
+  switchOnChange = (index, checked) => {
+    this.handleChangeStateArray(index, 'checkedArray', 'loadingArray');
   };
+
+  handleChangeStateArray = (index, ...keys) => {
+    this.setState(state =>
+      keys.reduce((prev, next) => {
+        const oldArray = state[next];
+        const newArray = Array.from(oldArray);
+        newArray[index] = !oldArray[index];
+        prev[next] = newArray;
+        return prev;
+      }, {})
+    );
+  };
+
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
     const {
@@ -141,28 +157,6 @@ export default class VideoEquipmentList extends PureComponent {
         pageNum: 1,
       },
     });
-  };
-
-  /* 滚动加载 */
-  handleLoadMore = () => {
-    // const {
-    //   videoMonitor: { isLast },
-    // } = this.props;
-    // if (isLast) {
-    //   return;
-    // }
-    // const {
-    //   videoMonitor: { pageNum },
-    // } = this.props;
-    // // 请求数据
-    // this.props.dispatch({
-    //   type: 'videoMonitor/fetchEquipmentList',
-    //   payload: {
-    //     pageSize,
-    //     pageNum: pageNum + 1,
-    //     ...this.formData,
-    //   },
-    // });
   };
 
   // 显示视频模态框
@@ -218,7 +212,6 @@ export default class VideoEquipmentList extends PureComponent {
 
   /* 渲染列表 */
   renderList() {
-    // const {popconfirmVisible}
     const {
       videoMonitor: {
         videoData: { list },
@@ -226,7 +219,10 @@ export default class VideoEquipmentList extends PureComponent {
       user: {
         currentUser: { permissionCodes: codes },
       },
+      dispatch,
     } = this.props;
+
+    const { checkedArray, loadingArray } = this.state;
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -234,8 +230,9 @@ export default class VideoEquipmentList extends PureComponent {
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
-          renderItem={item => {
-            const { id, deviceId, keyId, isInspection } = item;
+          renderItem={(item, index) => {
+            const { id, companyId, deviceId, keyId } = item;
+
             return (
               <List.Item key={id}>
                 <Card
@@ -271,10 +268,35 @@ export default class VideoEquipmentList extends PureComponent {
                       <p>
                         是否用于查岗：
                         <Switch
-                          checked={isInspection === 1}
+                          loading={loadingArray[index]}
+                          checked={checkedArray[index]}
                           checkedChildren="是"
                           unCheckedChildren="否"
-                          onChange={this.switchOnChange}
+                          onChange={checked => {
+                            // 修改本地状态，并显示为正在加载
+                            this.switchOnChange(index, checked);
+                            dispatch({
+                              type: 'videoMonitor/updateVideoDevice',
+                              payload: {
+                                companyId,
+                                vedioId: id,
+                                // keyId,
+                                isInspection: checkedArray[index] ? 0 : 1,
+                              },
+                              callback: code => {
+                                if (code === 200)
+                                  this.handleChangeStateArray(index, 'loadingArray');
+                                else {
+                                  message.error('修改失败');
+                                  this.handleChangeStateArray(
+                                    index,
+                                    'checkedArray',
+                                    'loadingArray'
+                                  );
+                                }
+                              },
+                            });
+                          }}
                         />
                       </p>
                     </Col>
@@ -299,10 +321,8 @@ export default class VideoEquipmentList extends PureComponent {
 
   render() {
     const {
-      loading,
       videoMonitor: {
         videoData: { list },
-        isLast,
       },
     } = this.props;
     const { total, videoVisible, keyId } = this.state;
@@ -321,26 +341,7 @@ export default class VideoEquipmentList extends PureComponent {
       <PageHeaderLayout title={list.companyName} breadcrumbList={breadcrumbList} content={content}>
         <BackTop />
         {this.renderForm()}
-        <InfiniteScroll
-          initialLoad={false}
-          pageStart={0}
-          loadMore={() => {
-            // 防止多次加载
-            !loading && this.handleLoadMore();
-          }}
-          hasMore={!isLast}
-          loader={
-            <div className="loader" key={0}>
-              {loading && (
-                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                  <Spin />
-                </div>
-              )}
-            </div>
-          }
-        >
-          {this.renderList()}
-        </InfiniteScroll>
+        {this.renderList()}
         <VideoPlay
           visible={videoVisible}
           showList={false}

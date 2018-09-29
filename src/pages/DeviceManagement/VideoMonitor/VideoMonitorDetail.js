@@ -5,36 +5,8 @@ import FooterToolbar from '@/components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import codesMap from '@/utils/codes';
-import { AuthButton } from '@/utils/customAuth';
 
 const { Description } = DescriptionList;
-
-//面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '设备管理',
-    name: '设备管理',
-  },
-  {
-    title: '视频监控',
-    name: '视频监控',
-  },
-  {
-    title: '视频监控列表',
-    name: '视频监控列表',
-    href: '/device-management/video-monitor/company-video/:companyId',
-  },
-  {
-    title: '视频设备详情',
-    name: '视频设备详情',
-  },
-];
 
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -139,10 +111,37 @@ export default class VideoMonitorDetail extends PureComponent {
     const {
       videoMonitor: {
         detail: {
-          data: { name },
+          data: { name, companyId },
         },
       },
     } = this.props;
+    //面包屑
+
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+      {
+        title: '设备管理',
+        name: '设备管理',
+      },
+      {
+        title: '视频监控',
+        name: '视频监控',
+        href: '/device-management/video-monitor/list',
+      },
+      {
+        title: '视频监控列表',
+        name: '视频监控列表',
+        href: `/device-management/video-monitor/video-equipment/${companyId}`,
+      },
+      {
+        title: '视频设备详情',
+        name: '视频设备详情',
+      },
+    ];
     return (
       <PageHeaderLayout title={name} breadcrumbList={breadcrumbList}>
         {this.renderUnitInfo()}
