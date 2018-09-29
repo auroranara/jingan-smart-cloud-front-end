@@ -16,9 +16,9 @@ class TopData extends PureComponent {
     const {
       goComponent,
       searchAllCompany: { dataUnimportantCompany = [], dataImportant = [] },
-      fulltimeWorker,
-      overRectifyNum,
-      selectOvertimeItemNum,
+      fulltimeWorker = 0,
+      overRectifyNum = 0,
+      selectOvertimeItemNum = 0,
       checkedCompanyInfo,
     } = this.props;
 

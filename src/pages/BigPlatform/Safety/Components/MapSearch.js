@@ -23,7 +23,6 @@ class MapSearch extends PureComponent {
 
   onKeyDown = e => {
     if (e.keyCode === 13) {
-      console.log('onEnter', this.state.value);
       this.jump(this.state.value);
     }
   };
@@ -33,7 +32,6 @@ class MapSearch extends PureComponent {
   };
 
   jump = item => {
-    console.log('jump ', item);
     this.props.handleSelect(item);
   };
 
@@ -59,8 +57,6 @@ class MapSearch extends PureComponent {
   };
 
   handleClear = () => {
-    console.log(111111111111);
-
     this.setState({ value: '' });
   };
 
@@ -69,10 +65,24 @@ class MapSearch extends PureComponent {
       bigPlatformSafetyCompany: { selectList },
       style,
     } = this.props;
+    const { value } = this.state;
     const options = selectList.map(item => {
+      const { name } = item;
+      let children = name;
+      // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
+      if (name.includes(value)) {
+        const [front, end] = name.split(value);
+        children = [
+          front,
+          <span key={value} className={styles.dropHighlight}>
+            {value}
+          </span>,
+          end,
+        ];
+      }
       return (
         <Option key={item.id} label={item}>
-          {item.name}
+          {children}
         </Option>
       );
     });
@@ -83,7 +93,7 @@ class MapSearch extends PureComponent {
             style={{ width: 300, ...style }}
             combobox
             optionLabelProp="children"
-            value={this.state.value}
+            value={value}
             placeholder="单位名称"
             defaultActiveFirstOption={false}
             getInputElement={() => <Input />}
