@@ -4,7 +4,7 @@ import rotate from '../Animate.less';
 import styles from '../Government.less';
 import CompanyRisk from '../Components/CompanyRisk';
 
-class RiskDetail extends PureComponent {
+class RiskDetailOver extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
@@ -50,4 +50,4 @@ class RiskDetail extends PureComponent {
   }
 }
 
-export default RiskDetail;
+export default RiskDetailOver;

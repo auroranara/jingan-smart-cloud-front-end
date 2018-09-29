@@ -1,5 +1,5 @@
 import React, { Fragment, Component } from 'react';
-import { Row, Col, Avatar, Tooltip, Icon } from 'antd';
+import { Row, Col, Avatar, Tooltip, Icon, Switch } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
@@ -21,52 +21,20 @@ import RiskDetail from './Sections/RiskDetail';
 import RiskDetailOver from './Sections/RiskDetailOver';
 import RiskOver from './Sections/RiskOver';
 import HdOverCompany from './Sections/HdOverCompany';
-// import MapTypeBar from './Components/MapTypeBar';
+import RiskColors from './Sections/RiskColors';
+import FullStaff from './Sections/FullStaff';
+import CompanyIn from './Sections/CompanyIn';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
-const descriptionBlueIcon = `${iconPrefix}description_blue.png`;
-const descriptionRedIcon = `${iconPrefix}description_red.png`;
-const ycqIcon = `${iconPrefix}ycq.png`;
-const wcqIcon = `${iconPrefix}wcq.png`;
-const dfcIcon = `${iconPrefix}dfc.png`;
 const importantIcon = `${iconPrefix}important.png`;
-
-// const statuses = ['未超期', '待复查', '已超期'];
-// 字段名
-const defaultFieldNames = {
-  id: 'id',
-  description: 'description',
-  sbr: 'sbr',
-  sbsj: 'sbsj',
-  zgr: 'zgr',
-  zgsj: 'zgsj',
-  fcr: 'fcr',
-  status: 'status',
-  background: 'background',
-};
-// 获取图章
-const getSeal = status => {
-  switch (+status) {
-    case 1:
-    case 2:
-      return wcqIcon;
-    case 3:
-      return dfcIcon;
-    case 7:
-      return ycqIcon;
-    default:
-      return '';
-  }
-};
 
 const { location: locationDefault } = global.PROJECT_CONFIG;
 const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点', '未评级风险点'];
 
 const sectionsVisible = {
   communityCom: false, // 社区接入单位数
-  comIn: false, // 接入单位统计
-  keyCom: false, // 重点单位统计
+  companyIn: false, // 接入单位统计
   fullStaff: false, // 专职人员统计
   overHd: false, // 已超期隐患
   hdCom: false, // 隐患单位统计
@@ -108,8 +76,7 @@ class GovernmentBigPlatform extends Component {
       zoom: locationDefault.zoom,
       // 右侧显示
       communityCom: true, // 社区接入单位数
-      comIn: false, // 接入单位统计
-      keyCom: false, // 重点单位统计
+      companyIn: false, // 接入单位统计
       fullStaff: false, // 专职人员统计
       overHd: false, // 已超期隐患
       hdCom: false, // 隐患单位统计
@@ -121,8 +88,9 @@ class GovernmentBigPlatform extends Component {
       companyOver: false, // 已超时单位
       riskOver: false, // 单位超时未查
       companyId: '',
-      riskTitle: '红色风险点',
-      riskSummary: {
+      // riskColorTitle: '红色风险点',
+      riskColorSummary: {
+        riskColorTitle: '',
         risk: 0,
         abnormal: 0,
         company: 0,
@@ -829,8 +797,9 @@ class GovernmentBigPlatform extends Component {
       });
       this.goComponent('riskColors');
       this.setState({
-        riskTitle: riskTitles[params.dataIndex],
-        riskSummary: {
+        // riskColorTitle: riskTitles[params.dataIndex],
+        riskColorSummary: {
+          riskColorTitle: riskTitles[params.dataIndex],
           risk: risks[params.dataIndex].risk,
           abnormal: risks[params.dataIndex].abnormal,
           company: risks[params.dataIndex].company,
@@ -1136,150 +1105,6 @@ class GovernmentBigPlatform extends Component {
     });
   };
 
-  renderComRisk = () => {
-    const {
-      bigPlatform: {
-        hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
-      },
-    } = this.props;
-    const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
-    const newList = [...ycq, ...wcq, ...dfc];
-    return (
-      <div>
-        {newList.length !== 0 ? (
-          newList.map(item => (
-            <div
-              key={item[id]}
-              style={{
-                position: 'relative',
-                marginBottom: '12px',
-                boxShadow: '3px 3px 3px #000',
-                background: `rgba(1, 21, 57, 0.9) url(${getSeal(
-                  item[status]
-                )}) no-repeat right bottom / 120px`,
-              }}
-            >
-              <div style={{ display: 'flex', padding: '12px 0' }}>
-                <Avatar
-                  style={{ margin: '0 10px' }}
-                  src={+item[status] === 7 ? descriptionRedIcon : descriptionBlueIcon}
-                  size="small"
-                />
-                <Tooltip placement="bottom" title={item[description] || '暂无信息'}>
-                  <Ellipsis
-                    lines={1}
-                    // tooltip
-                    className={styles.riskDescription}
-                    style={{
-                      flex: 1,
-                      color: +item[status] === 7 ? '#ff4848' : '#fff',
-                      lineHeight: '24px',
-                    }}
-                  >
-                    {item[description] || '暂无信息'}
-                  </Ellipsis>
-                </Tooltip>
-              </div>
-              <div style={{ display: 'flex', padding: '0 0 10px 6px' }}>
-                <div
-                  className={styles.riskImg}
-                  style={{
-                    flex: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '180px',
-                    backgroundColor: '#021C42',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div style={{ position: 'relative', width: '100%' }}>
-                    <img
-                      src={item[background]}
-                      alt=""
-                      style={{ display: 'block', width: '100%' }}
-                    />
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                        backgroundColor: 'rgba(0, 168, 255, 0.3)',
-                      }}
-                    />
-                  </div>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div
-                    className={styles.riskMsg}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      lineHeight: '24px',
-                    }}
-                  >
-                    <span style={{ color: '#00A8FF' }}>
-                      上<span style={{ opacity: 0 }}>啊啊</span>
-                      报：
-                    </span>
-                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
-                      <span style={{ marginRight: '20px' }}>{item[sbr]}</span>
-                      {item[sbsj]}
-                    </Ellipsis>
-                  </div>
-                  <div
-                    className={styles.riskMsg}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      lineHeight: '24px',
-                    }}
-                  >
-                    <span style={{ color: '#00A8FF' }}>
-                      {item.status === 3 ? '实际' : '计划'}
-                      整改：
-                    </span>
-                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
-                      <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
-                      <span style={{ color: item.status === 7 ? 'rgb(255, 72, 72)' : '#fff' }}>
-                        {item.status === 3 ? item.real_zgsj : item.plan_zgsj}
-                      </span>
-                    </Ellipsis>
-                  </div>
-                  {+item[status] === 3 && (
-                    <div
-                      className={styles.riskMsg}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        lineHeight: '24px',
-                      }}
-                    >
-                      <span style={{ color: '#00A8FF' }}>
-                        复<span style={{ opacity: 0 }}>啊啊</span>
-                        查：
-                      </span>
-                      <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
-                        <span style={{ marginRight: '20px' }}>{item[fcr]}</span>
-                      </Ellipsis>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>
-        )}
-      </div>
-    );
-  };
-
   handleInputChange = (value, { props: { label } }) => {
     this.debouncedFetchData(value);
     this.setState({
@@ -1305,8 +1130,7 @@ class GovernmentBigPlatform extends Component {
     const {
       scrollNodeTop,
       communityCom,
-      comIn,
-      keyCom,
+      companyIn,
       fullStaff,
       overHd,
       hdCom,
@@ -1314,8 +1138,7 @@ class GovernmentBigPlatform extends Component {
       riskColors,
       hdOverDetail,
       safetyGovernmentTitle,
-      riskTitle,
-      riskSummary: { risk, abnormal, company },
+      riskColorSummary,
       center,
       zoom,
       companyId,
@@ -1372,40 +1195,13 @@ class GovernmentBigPlatform extends Component {
       [rotate.out]: !communityCom,
     });
     const stylesComIn = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: comIn,
-      [rotate.out]: !comIn,
-    });
-    const stylesKeyCom = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: keyCom,
-      [rotate.out]: !keyCom,
-    });
-    const stylesFullStaff = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: fullStaff,
-      [rotate.out]: !fullStaff,
-    });
-    const stylesOverHd = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: overHd,
-      [rotate.out]: !overHd,
+      [rotate.in]: companyIn,
+      [rotate.out]: !companyIn,
     });
 
     const stylesComInfo = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: comInfo,
       [rotate.out]: !comInfo,
-    });
-
-    const stylesRiskColors = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: riskColors,
-      [rotate.out]: !riskColors,
-    });
-
-    const stylesHdDetail = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: hdOverDetail,
-      [rotate.out]: !hdOverDetail,
-    });
-
-    const stylesHiddenDanger = classNames(styles.sectionWrapper, rotate.flip, {
-      [rotate.in]: hiddenDanger,
-      [rotate.out]: !hiddenDanger,
     });
 
     const {
@@ -1605,7 +1401,7 @@ class GovernmentBigPlatform extends Component {
                           <div
                             className={styles.itemActive}
                             onClick={() => {
-                              this.goComponent('comIn');
+                              this.goComponent('companyIn');
                             }}
                           >
                             {/* <div className={styles.itemActive}> */}
@@ -1617,22 +1413,6 @@ class GovernmentBigPlatform extends Component {
                           </div>
                         </Tooltip>
                       </div>
-
-                      {/* <div className={styles.topItem}>
-                        <Tooltip placement="bottom" title={'接入平台中重点单位数量'}>
-                          <div
-                            className={styles.itemActive}
-                            onClick={() => {
-                              this.goComponent('keyCom');
-                            }}
-                          >
-                            <div className={styles.topName}>重点单位</div>
-                            <div className={styles.topNum} style={{ color: '#00baff' }}>
-                              {dataImportant.length}
-                            </div>
-                          </div>
-                        </Tooltip>
-                      </div> */}
 
                       <div className={styles.topItem}>
                         <Tooltip placement="bottom" title={'网格员、政府监管员'}>
@@ -1726,280 +1506,6 @@ class GovernmentBigPlatform extends Component {
             </Col>
 
             <Col span={6} className={styles.heightFull} style={{ position: 'relative' }}>
-              <section
-                className={stylesComIn}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    接入单位统计
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBack();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent} style={{ height: '50%' }}>
-                      <div className={styles.tableTitleWrapper}>
-                        <span className={styles.tableTitle}>
-                          {' '}
-                          重点单位（
-                          {dataImportant.length}）
-                        </span>
-                      </div>
-                      <div className={styles.scrollContainer}>
-                        {dataImportant.map((item, index) => {
-                          return (
-                            <div
-                              className={styles.scrollCol1}
-                              key={item.id}
-                              onClick={() => {
-                                this.goCompany(item.id);
-                              }}
-                            >
-                              <span className={styles.scrollOrder}>{index + 1}</span>
-                              {item.name}
-                              {/* <Ellipsis
-                                lines={1}
-                                style={{ maxWidth: '72%', margin: '0 auto' }}
-                                tooltip
-                              >
-                                {item.name}
-                              </Ellipsis> */}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                    <div className={styles.sectionContent} style={{ height: '50%' }}>
-                      <div className={styles.tableTitleWrapper}>
-                        <span className={styles.tableTitle}>
-                          {' '}
-                          非重点单位（
-                          {dataUnimportantCompany.length}）
-                        </span>
-                      </div>
-                      <div className={styles.scrollContainer}>
-                        {dataUnimportantCompany.map((item, index) => {
-                          return (
-                            <div
-                              className={styles.scrollCol1}
-                              key={item.id}
-                              onClick={() => {
-                                this.goCompany(item.id);
-                              }}
-                            >
-                              <span className={styles.scrollOrder}>{index + 1}</span>
-                              {item.name}
-                              {/* <Tooltip
-                                placement="bottom"
-                                style={{
-                                  maxWidth: '72%',
-                                  margin: '0 auto',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                }}
-                                title={item.name}
-                              >
-                                {item.name}
-                              </Tooltip> */}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section
-                className={stylesKeyCom}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    重点单位统计
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBack();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <div className={styles.tableTitleWrapper}>
-                        <span className={styles.tableTitle}>
-                          {' '}
-                          重点单位（
-                          {dataImportant.length}）
-                        </span>
-                      </div>
-                      <div className={styles.scrollContainer}>
-                        {dataImportant.map((item, index) => {
-                          return (
-                            <div
-                              className={styles.scrollCol1}
-                              key={item.id}
-                              onClick={() => {
-                                this.goCompany(item.id);
-                              }}
-                            >
-                              <span className={styles.scrollOrder}>{index + 1}</span>
-                              <Ellipsis
-                                lines={1}
-                                style={{ maxWidth: '72%', margin: '0 auto' }}
-                                tooltip
-                              >
-                                {item.name}
-                              </Ellipsis>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section
-                className={stylesFullStaff}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    专职人员
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBack();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <div className={styles.tableTitleWrapper}>
-                        <span className={styles.tableTitle}>
-                          {' '}
-                          专职人员（
-                          {fulltimeWorker}）
-                        </span>
-                      </div>
-                      <div className={styles.scrollContainer}>
-                        <table className={styles.scrollTable}>
-                          <thead>
-                            <tr>
-                              <th />
-                              <th style={{ width: '26%' }}>姓名</th>
-                              <th style={{ width: '35%' }}>电话</th>
-                              <th>管辖社区</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {fulltimeWorkerList.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  <td>{index + 1}</td>
-                                  <td>{item.user_name}</td>
-                                  <td>{item.phone_number}</td>
-                                  <td>{item.gridName ? item.gridName.split(',').join('/') : ''}</td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* <section
-                className={stylesOverHd}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    已超期隐患单位
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBack();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
-                        <table className={styles.scrollTable}>
-                          <thead>
-                            <tr>
-                              <th style={{ width: '38px' }} />
-                              <th style={{ width: '74%' }}>
-                                隐患单位（
-                                {overRectifyCompany.length}）
-                              </th>
-                              <th>
-                                隐患数（
-                                {overRectifyNum}）
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {overRectifyCompany.map((item, index) => {
-                              return (
-                                <tr key={item.companyId}>
-                                  <td style={{ textAlign: 'left', paddingLeft: '10px' }}>
-                                    {index + 1}
-                                  </td>
-                                  <td>
-                                    <span
-                                      style={{ cursor: 'pointer' }}
-                                      onClick={() => {
-                                        this.goCompany(item.companyId);
-                                      }}
-                                    >
-                                      {item.companyName}
-                                    </span>
-                                  </td>
-                                  <td>
-                                    <span
-                                      style={{ cursor: 'pointer' }}
-                                      onClick={() => {
-                                        dispatch({
-                                          type: 'bigPlatform/fetchHiddenDangerListByDate',
-                                          payload: {
-                                            company_id: item.companyId,
-                                            status: '7',
-                                          },
-                                        });
-                                        this.goComponent('hdOverDetail');
-                                        if (document.querySelector('#overRisk')) {
-                                          document.querySelector('#overRisk').scrollTop = 0;
-                                        }
-                                      }}
-                                    >
-                                      {item.hiddenDangerCount}
-                                    </span>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section> */}
-
               <section
                 className={stylesCommunityCom}
                 style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
@@ -2148,98 +1654,7 @@ class GovernmentBigPlatform extends Component {
                       </div>
 
                       <div className={styles.scrollContainer} id="companyRisk">
-                        {/* {this.renderComRisk()} */}
                         <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section
-                className={stylesRiskColors}
-                style={{ position: 'absolute', top: 0, left: '6px', width: 'calc(100% - 12px)' }}
-              >
-                <div className={styles.sectionWrapperIn}>
-                  <div className={styles.sectionTitle}>
-                    <span className={styles.titleBlock} />
-                    {riskTitle}
-                  </div>
-                  <div
-                    className={styles.backBtn}
-                    onClick={() => {
-                      this.goBack();
-                    }}
-                  />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <Row style={{ borderBottom: '2px solid #0967d3', padding: '6px 0' }}>
-                        <Col span={8}>
-                          <div className={styles.riskContent}>
-                            <span className={styles.iconCom} />
-                            <div className={styles.riskWrapper}>
-                              单位数量
-                              <div className={styles.riskNum}>{company}</div>
-                            </div>
-                          </div>
-                        </Col>
-                        <Col span={8}>
-                          <div className={styles.riskContent}>
-                            <span className={styles.iconRisk} />
-                            <div className={styles.riskWrapper}>
-                              风险点
-                              <div className={styles.riskNum}>{risk}</div>
-                            </div>
-                          </div>
-                        </Col>
-                        <Col span={8}>
-                          <div className={styles.riskContent}>
-                            <span className={styles.iconDanger} />
-                            <div className={styles.riskWrapper}>
-                              异常
-                              <div className={styles.riskNum}>{abnormal}</div>
-                            </div>
-                          </div>
-                        </Col>
-                      </Row>
-                      <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
-                        <table className={styles.scrollTable}>
-                          <thead>
-                            <tr>
-                              <th style={{ width: '70%' }}>单位</th>
-                              <th style={{ width: '18%' }}>风险点</th>
-                              <th style={{ color: 'rgba(232, 103, 103, 0.8)' }}>异常</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {dangerLocationCompanyData.map((item, index) => {
-                              return (
-                                <tr key={item.company_id}>
-                                  <td>
-                                    <span
-                                      style={{ cursor: 'pointer' }}
-                                      onClick={() => {
-                                        this.goCompany(item.company_id);
-                                      }}
-                                    >
-                                      {item.company_name}
-                                    </span>
-                                  </td>
-                                  <td>{item.fxd}</td>
-                                  <td
-                                    style={{
-                                      color: item.ycd
-                                        ? 'rgba(232, 103, 103, 0.8)'
-                                        : 'rgba(255, 255, 255, 0.7)',
-                                    }}
-                                  >
-                                    {item.ycd}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
                       </div>
                     </div>
                   </div>
@@ -2248,8 +1663,7 @@ class GovernmentBigPlatform extends Component {
 
               {/* const sectionsVisible = {
                 communityCom: false, // 社区接入单位数
-                comIn: false, // 接入单位统计
-                keyCom: false, // 重点单位统计
+                companyIn: false, // 接入单位统计
                 fullStaff: false, // 专职人员统计
                 overHd: false, // 已超期隐患单位
                 hdCom: false, // 隐患单位统计
@@ -2260,6 +1674,37 @@ class GovernmentBigPlatform extends Component {
                 checks: false, // 监督检查
                 companyOver: false, // 已超时单位
               }; */}
+
+              {/* 单位统计 */}
+              <CompanyIn
+                visible={companyIn}
+                dispatch={dispatch}
+                goBack={this.goBack}
+                goCompany={this.goCompany}
+                dataImportant={dataImportant}
+                dataUnimportantCompany={dataUnimportantCompany}
+              />
+
+              {/* 风险点 */}
+              <FullStaff
+                visible={fullStaff}
+                dispatch={dispatch}
+                goBack={this.goBack}
+                goComponent={this.goComponent}
+                listData={fulltimeWorkerList}
+                fulltimeWorker={fulltimeWorker}
+              />
+
+              {/* 风险点 */}
+              <RiskColors
+                visible={riskColors}
+                dispatch={dispatch}
+                goBack={this.goBack}
+                goCompany={this.goCompany}
+                goComponent={this.goComponent}
+                listData={dangerLocationCompanyData}
+                riskColorSummary={riskColorSummary}
+              />
 
               {/* 已超期隐患单位 */}
               <HdOverCompany

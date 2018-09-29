@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
 
-class RiskDetail extends PureComponent {
+class HdOverCompany extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
@@ -110,4 +110,4 @@ class RiskDetail extends PureComponent {
   }
 }
 
-export default RiskDetail;
+export default HdOverCompany;

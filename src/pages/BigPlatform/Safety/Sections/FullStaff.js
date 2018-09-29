@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
 
-class RiskOver extends PureComponent {
+class FullStaff extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
@@ -14,7 +14,7 @@ class RiskOver extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const { visible, goBack, listData, goCompany, riskOverNum } = this.props;
+    const { visible, goBack, fulltimeWorker, listData } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
@@ -27,7 +27,7 @@ class RiskOver extends PureComponent {
         <div className={styles.sectionWrapperIn}>
           <div className={styles.sectionTitle}>
             <span className={styles.titleBlock} />
-            单位超时未查
+            专职人员
           </div>
           <div
             className={styles.backBtn}
@@ -37,38 +37,31 @@ class RiskOver extends PureComponent {
           />
           <div className={styles.sectionMain}>
             <div className={styles.sectionContent}>
-              <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
+              <div className={styles.tableTitleWrapper}>
+                <span className={styles.tableTitle}>
+                  {' '}
+                  专职人员（
+                  {fulltimeWorker}）
+                </span>
+              </div>
+              <div className={styles.scrollContainer}>
                 <table className={styles.scrollTable}>
                   <thead>
                     <tr>
-                      <th style={{ width: '45%' }}>
-                        超时单位（
-                        {listData.length}）
-                      </th>
-                      <th style={{ width: '35%' }}>所属网格</th>
-                      <th>
-                        超时风险点（
-                        {riskOverNum}）
-                      </th>
+                      <th />
+                      <th style={{ width: '26%' }}>姓名</th>
+                      <th style={{ width: '35%' }}>电话</th>
+                      <th>管辖社区</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {listData.map(item => {
-                      const { company_id, company_name, grid_name, total } = item;
+                    {listData.map((item, index) => {
                       return (
-                        <tr key={company_id}>
-                          <td>
-                            <span
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => {
-                                goCompany(company_id);
-                              }}
-                            >
-                              {company_name}
-                            </span>
-                          </td>
-                          <td>{grid_name}</td>
-                          <td>{total}</td>
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{item.user_name}</td>
+                          <td>{item.phone_number}</td>
+                          <td>{item.gridName ? item.gridName.split(',').join('/') : ''}</td>
                         </tr>
                       );
                     })}
@@ -83,4 +76,4 @@ class RiskOver extends PureComponent {
   }
 }
 
-export default RiskOver;
+export default FullStaff;
