@@ -132,9 +132,14 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchProjectName',
     });
 
+    // 大屏隐患点位总数据
     dispatch({
-      type: 'bigPlatform/fetchListForMap',
+      type: 'bigPlatform/fetchListForMapForOptimize',
     });
+
+    // dispatch({
+    //   type: 'bigPlatform/fetchListForMap',
+    // });
 
     dispatch({
       type: 'bigPlatform/fetchCountDangerLocation',
@@ -452,8 +457,8 @@ class GovernmentBigPlatform extends Component {
           countGridCompany,
         },
         countDangerLocation,
-        listForMap = {},
-        listForMap: { overRectifyNum },
+        listForMapForOptimize = {},
+        listForMapForOptimize: { overRectifyNum },
         govFulltimeWorkerList: { total: fulltimeWorker = 0, list: fulltimeWorkerList = [] },
         overRectifyCompany,
         searchAllCompany,
@@ -497,7 +502,7 @@ class GovernmentBigPlatform extends Component {
                 dispatch={dispatch}
                 goComponent={this.goComponent}
                 hiddenDangerCompanyAll={hiddenDangerCompanyAll}
-                listForMap={listForMap}
+                listForMap={listForMapForOptimize}
                 handleParentChange={newState => {
                   this.setState(newState);
                 }}

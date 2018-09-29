@@ -33,6 +33,7 @@ import {
   getStaffRecords,
   getSelectOvertimeItemNum,
   getOvertimeUncheckedCompany,
+  getListForMapForOptimize,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -116,6 +117,13 @@ export default {
       total: 0,
       dangerCompany: [],
       overCheck: 0,
+    },
+    listForMapForOptimize: {
+      overRectifyNum: 0,
+      rectifyNum: 0,
+      reviewNum: 0,
+      total: 0,
+      dangerCompany: [],
     },
     newHomePage: {
       companyDto: {
@@ -768,6 +776,17 @@ export default {
         error();
       }
     },
+    // 大屏隐患点位总数据
+    *fetchListForMapForOptimize({ payload, success, error }, { call, put }) {
+      const response = yield call(getListForMapForOptimize, payload);
+      yield put({
+        type: 'listForMapForOptimize',
+        payload: response,
+      });
+      if (success) {
+        success(response);
+      }
+    },
   },
 
   reducers: {
@@ -1015,6 +1034,12 @@ export default {
       return {
         ...state,
         overtimeUncheckedCompany: payload,
+      };
+    },
+    listForMapForOptimize(state, { payload }) {
+      return {
+        ...state,
+        listForMapForOptimize: payload,
       };
     },
   },

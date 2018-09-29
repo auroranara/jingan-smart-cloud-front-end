@@ -102,6 +102,11 @@ export async function getOvertimeUncheckedCompany(params) {
   return request(`/acloud_new/v2/sfm/getOvertimeUncheckedCompany?${stringify(params)}`);
 }
 
+// 大屏隐患点位总数据
+export async function getListForMapForOptimize(params) {
+  return request(`/acloud_new/v2/sfg/listForMapForOptimize.json?${stringify(params)}`);
+}
+
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
 export async function getCoItemList(params) {
