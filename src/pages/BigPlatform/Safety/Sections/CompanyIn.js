@@ -14,7 +14,12 @@ class CompanyIn extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const { visible, goBack, goCompany, dataUnimportantCompany, dataImportant } = this.props;
+    const {
+      visible,
+      goBack,
+      goCompany,
+      searchAllCompany: { dataUnimportantCompany = [], dataImportant = [] },
+    } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,

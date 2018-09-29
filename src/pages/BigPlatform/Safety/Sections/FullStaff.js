@@ -14,7 +14,7 @@ class FullStaff extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const { visible, goBack, fulltimeWorker, listData } = this.props;
+    const { visible, goBack, fulltimeWorker, listData = [] } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
