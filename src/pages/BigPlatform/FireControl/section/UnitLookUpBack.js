@@ -21,6 +21,7 @@ const titleMap = {
 export default function(props) {
   const {
     dispatch,
+    videoVisible,
     lookUpShow,
     startLookUp,
     data: { lookUp: { createTime }, countdown, offGuard, videoLookUp },
@@ -47,6 +48,7 @@ export default function(props) {
       <VideoLookUp
         dispatch={dispatch}
         data={videoLookUp}
+        videoVisible={videoVisible}
         showed={lookUpShow === VIDEO_LOOK_UP}
         handleVideoShow={handleVideoShow}
         fetchLookUpVideo={fetchLookUpVideo}

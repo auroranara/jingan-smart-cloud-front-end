@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Button, Col, Icon, Input, Row, Tooltip } from 'antd';
+import { Button, Col, Icon, Input, message, Row, Tooltip } from 'antd';
 
 import styles from './VideoLookUp.less';
 import cameraIcon from '../img/videoCamera.png';
@@ -36,6 +36,8 @@ function TableCell(props) {
 }
 
 export default class VideoLookUp extends PureComponent {
+  state = { currentIndex: -1 };
+
   node = null;
 
   handleSearch = () => {
@@ -43,19 +45,22 @@ export default class VideoLookUp extends PureComponent {
     fetchLookUpVideo && fetchLookUpVideo(this.node.input.value.trim());
   };
 
-  handleVideoShow = (list) => {
+  handleVideoShow = (index, list) => {
     const { handleVideoShow, dispatch } = this.props;
 
-    if (!list.length)
+    if (!list.length) {
+      message.warn('当前企业没有可播放的视频');
       return;
+    }
 
+    this.setState({ currentIndex: index });
     dispatch({ type: 'bigFireControl/saveLookUpCamera', payload: list});
     handleVideoShow(list[0].keyId, true, VIDEO_LOOK_UP);
   };
 
   render() {
-    // const { showed } = this.props;
-    const { showed, data: list=[] } = this.props;
+    const { showed, videoVisible, data: list=[] } = this.props;
+    const { currentIndex } = this.state;
 
     return (
       <div style={{ display: showed ? 'block' : 'none', color: '#FFF' }} className={styles.container}>
@@ -95,10 +100,10 @@ export default class VideoLookUp extends PureComponent {
             <TableCell
               key={id}
               name={name}
-              isDark={!deviceAddressInfoList || !deviceAddressInfoList.length}
+              isDark={videoVisible && index === currentIndex ? true : false}
               // isDark={Math.random() > 0.5 ? true : false}
               index={index + 1}
-              onClick={() => this.handleVideoShow(deviceAddressInfoList)}
+              onClick={() => this.handleVideoShow(index, deviceAddressInfoList)}
             />
             ))}
         </div>

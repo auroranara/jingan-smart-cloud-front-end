@@ -541,6 +541,7 @@ export default class FireControlBigPlatform extends PureComponent {
               back={
                 <UnitLookUpBack
                   dispatch={dispatch}
+                  videoVisible={videoVisible}
                   data={{ lookUp, countdown, offGuard, videoLookUp }}
                   lookUpShow={lookUpShow}
                   startLookUp={startLookUp}
