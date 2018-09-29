@@ -7,8 +7,10 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './DataAnalysisList.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { AuthIcon } from '@/utils/customAuth';
 import CODES from '@/utils/codes';
+import { AuthIcon } from '@/utils/customAuth';
+import { INPUT_SPAN, LABEL_COL_6, WRAPPER_COL } from './constant';
+import { handleListFormVals } from './utils';
 
 import electricityIcon from './imgs/electricity.png';
 import electricityDarkIcon from './imgs/electricity-d.png';
@@ -48,30 +50,41 @@ const ICONS_CN = {
   'opc': 'opc异常数据分析',
 };
 const OPTIONS = [
+  { name: '全部', key: 0 },
   { name: '用电安全', key: 1 },
   { name: '可燃有毒气体', key: 2 },
   { name: '废水', key: 3 },
   { name: '废气', key: 4 },
   { name: 'opc', key: 5 },
 ];
-const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
+// const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 
 const fields = [
   {
     id: 'name',
+    label: '单位名称：',
+    labelCol: LABEL_COL_6,
+    wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
     render: () => <Input placeholder="请输入单位名称" />,
     transform: v => v.trim(),
   },
   {
     id: 'practicalAddress',
+    label: '单位地址：',
+    labelCol: LABEL_COL_6,
+    wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
     render: () => <Input placeholder="请输入单位地址" />,
     transform: v => v.trim(),
   },
   {
     id: 'type',
+    label: '异常类别：',
+    labelCol: LABEL_COL_6,
+    wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
+    options: { initialValue: '0' },
     render: () => <Select placeholder="请选择监测类型">{OPTIONS.map(({ name, key }) => <Option key={key}>{name}</Option>)}</Select>,
   },
 ];
@@ -137,7 +150,7 @@ export default class DataAnalysisList extends PureComponent {
     const pageNum = this.pageNum;
     let payload = { pageSize: PAGE_SIZE, pageNum: pageNum };
     if (values)
-      payload = { ...payload, ...values };
+      payload = { ...payload, ...handleListFormVals(values) };
 
     dispatch({
       type: 'dataAnalysis/fetchCompanyList',
@@ -259,7 +272,7 @@ export default class DataAnalysisList extends PureComponent {
           </div>
         }
       >
-        <Card>
+        <Card className={styles.search}>
           <InlineForm
             fields={fields}
             buttonSpan={{ xl: 6, md: 12, sm: 24 }}
