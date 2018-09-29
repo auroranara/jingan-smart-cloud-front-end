@@ -39,6 +39,7 @@ export default class App extends PureComponent {
     videoKeyId: undefined,
     waterSelectVal: '',
     chartSelectVal: '',
+    selectedDeviceType: 1,
   };
 
   componentDidMount() {
@@ -225,6 +226,9 @@ export default class App extends PureComponent {
     } = this.props
     this.leftSection.style.opacity = 0
     this.historyAlarm.style.right = 0
+    this.setState({
+      selectedDeviceType: 1,
+    })
     dispatch({
       type: 'monitor/clearHistoryAlarm',
     })
@@ -246,6 +250,9 @@ export default class App extends PureComponent {
       match: { params: { companyId } },
       dispatch,
     } = this.props
+    this.setState({
+      selectedDeviceType: deviceType,
+    })
     dispatch({
       type: 'monitor/fetchHistoryAlarm',
       payload: {
@@ -314,6 +321,7 @@ export default class App extends PureComponent {
       videoKeyId,
       waterSelectVal,
       chartSelectVal,
+      selectedDeviceType,
     } = this.state;
 
     let companyName = '暂无信息';
@@ -361,6 +369,7 @@ export default class App extends PureComponent {
                   loading={historyAlarmLoading}
                   handleLoadMore={this.handleLoadMore}
                   handleFilterHistory={this.handleFilterHistory}
+                  selectedDeviceType={selectedDeviceType}
                   handleClose={() => {
                     this.leftSection.style.opacity = 1
                     this.historyAlarm.style.right = '110%'

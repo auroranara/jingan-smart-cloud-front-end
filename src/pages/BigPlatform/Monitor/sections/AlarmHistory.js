@@ -3,6 +3,7 @@ import styles from './AlarmHistory.less';
 import { Icon, Row, Col, Spin } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 // import iconLight from '../../../../assets/icon-light.png' // 电
 // import iconFire from '../../../../assets/icon-fire.png' // 可燃气体
@@ -12,16 +13,19 @@ import noAlarm from '../../../../assets/no-alarm.png'
 
 export default class AlarmHistory extends PureComponent {
 
-  state = {
+  static PropTypes = {
+    selectedDeviceType: PropTypes.number,
+  }
+
+  static defaultProps = {
     selectedDeviceType: 1,
   }
+
+
 
   // 点击筛选
   handleFilter = ({ selectedDeviceType }) => {
     const { handleFilterHistory } = this.props
-    this.setState({
-      selectedDeviceType,
-    })
     handleFilterHistory(selectedDeviceType)
   }
 
@@ -62,9 +66,8 @@ export default class AlarmHistory extends PureComponent {
       handleClose,
       loading,
       handleLoadMore,
+      selectedDeviceType,
     } = this.props
-    const { selectedDeviceType } = this.state
-
 
     return (
       <div className={styles.AlarmHistory}>
