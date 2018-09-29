@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import pathToRegexp from 'path-to-regexp';
 import { Link } from 'react-router-dom';
 import { message, Button } from 'antd';
 import { connect } from 'dva';
+
+// import styles from './customAuth.less';
 
 // import styles from './customAutho.less';
 
@@ -181,6 +183,41 @@ export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
   const perCodes = codes || permissionCodes;
   return <Button {...restProps} disabled={getDisabled(code, perCodes)} />;
 });
+
+// 图标
+@connect(({ user }) => ({ user }))
+export class AuthIcon extends PureComponent {
+  render() {
+    const {
+      dispatch, // 单独拎出来过滤掉，不然传入Link会报warning
+      to,
+      url,
+      darkUrl,
+      code,
+      codes,
+      style,
+      onClick,
+      user: { currentUser: { permissionCodes } },
+      ...restProps
+    } = this.props;
+    const perCodes = codes || permissionCodes;
+    const authorized = hasAuthority(code, perCodes);
+    // const authorized = true;
+    // console.log(darkUrl);
+    return (
+      <Link
+        to={ authorized ? to : ''}
+        style={{
+          ...style,
+          backgroundImage: `url(${authorized ? url : darkUrl})`,
+          cursor: authorized ? 'pointer' : 'auto',
+        }}
+        onClick={ authorized ? onClick : ev => ev.preventDefault() }
+        {...restProps}
+      />
+    );
+  }
+}
 
 /* 六种传参方式
  * f(code, codes)

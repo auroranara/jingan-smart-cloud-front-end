@@ -393,26 +393,24 @@ module.exports = [
           },
         ],
       },
-
-      // dynamic monitoring
-      {
-        name: 'exception',
-        icon: 'warning',
-        path: '/exception',
-        hideInMenu: true,
-        routes: [
-          // exception
-          { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
-          { path: '/exception/404', name: 'not-find', component: './Exception/404' },
-          { path: '/exception/500', name: 'server-error', component: './Exception/500' },
-          {
-            path: '/exception/trigger',
-            name: 'trigger',
-            hideInMenu: true,
-            component: './Exception/triggerException',
-          },
-        ],
-      },
+      // exception
+      // {
+      //   name: 'exception',
+      //   icon: 'warning',
+      //   path: '/exception',
+      //   hideInMenu: true,
+      //   routes: [
+      //     { path: '/exception/403', name: 'not-permission', component: './Exception/403' },
+      //     { path: '/exception/404', name: 'not-find', component: './Exception/404' },
+      //     { path: '/exception/500', name: 'server-error', component: './Exception/500' },
+      //     {
+      //       path: '/exception/trigger',
+      //       name: 'trigger',
+      //       hideInMenu: true,
+      //       component: './Exception/triggerException',
+      //     },
+      //   ],
+      // },
       // dynamicMonitoring
       {
         path: '/dynamic-monitoring',
@@ -450,6 +448,60 @@ module.exports = [
                 component: './DynamicMonitoring/FireAlarm/HistoryRecord',
               },
               // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+            ],
+          },
+        ],
+      },
+
+      // data analysis
+      {
+        path: '/data-analysis',
+        code: 'dataAnalysis',
+        name: 'dataAnalysis',
+        icon: 'experiment',
+        // component: './DataAnalysis/DataAnalysisLayout',
+        routes: [
+          {
+            path: '/data-analysis/IOT-abnormal-data',
+            code: 'dataAnalysis.IOTAbnormalData',
+            name: 'IOTAbnormalData',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/IOT-abnormal-data',
+                name: 'IOTAbnormalData',
+                redirect: '/data-analysis/IOT-abnormal-data/list',
+              },
+              {
+                path: '/data-analysis/IOT-abnormal-data/list',
+                code: 'dataAnalysis.IOTAbnormalData.listView',
+                name: 'list',
+                component: './DataAnalysis/DataAnalysisList',
+              },
+              {
+                path: '/data-analysis/IOT-abnormal-data/electricity/:id/count/:count',
+                code: 'dataAnalysis.IOTAbnormalData.electricity',
+                name: 'electricity',
+                component: './DataAnalysis/Electricity',
+              },
+              {
+                path: '/data-analysis/IOT-abnormal-data/toxic-gas/:id/count/:count',
+                code: 'dataAnalysis.IOTAbnormalData.toxicGas',
+                name: 'toxicGas',
+                component: './DataAnalysis/ToxicGas',
+              },
+              {
+                path: '/data-analysis/IOT-abnormal-data/waste-water/:id/count/:count',
+                code: 'dataAnalysis.IOTAbnormalData.wasteWater',
+                name: 'wasteWater',
+                component: './DataAnalysis/WasteWater',
+              },
+              {
+                path: '/data-analysis/IOT-abnormal-data/waste-gas/:id/count/:count',
+                code: 'dataAnalysis.IOTAbnormalData.wasteGas',
+                name: 'wasteGas',
+                component: './DataAnalysis/WasteGas',
+              },
             ],
           },
         ],

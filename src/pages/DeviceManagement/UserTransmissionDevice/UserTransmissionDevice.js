@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'react-router-dom';
 import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
-import InfiniteScroll from 'react-infinite-scroller';
+// import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
 
@@ -24,22 +24,28 @@ const breadcrumbList = [
 // div[id="root"]下的唯一子元素相对于定高的root滚动
 // const rootElement = document.getElementById('root');
 
+const documentElem = document.documentElement;
+// const body = document.body;
+const childElem = document.querySelector('#root div');
+
 @connect(({ transmission, user, loading }) => ({
   transmission,
   user,
-  loading: loading.models.transmission,
+  loading: loading.effects['transmission/fetch'],
 }))
 export default class UserTransmissionDevice extends PureComponent {
   state = {
     company: '',
     address: '',
-    scrollLoading: false, // 下拉加载，当前是否正在请求数据
+    // scrollLoading: false, // 下拉加载，当前是否正在请求数据
     hasMore: true, // 数据库中是否还存在数据
   };
 
   componentDidMount() {
     const that = this;
-    // rootElement.addEventListener('scroll', this.handleScroll, false);
+    document.addEventListener('scroll', this.handleScroll, false);
+    // 给body用addEventListener加并没有用，用onscroll却是可以的，不知为何，而用addEventListener加在document上是可以的
+    // body.onscroll = this.handleScroll;
 
     this.props.dispatch({
       type: 'transmission/fetch',
@@ -55,26 +61,36 @@ export default class UserTransmissionDevice extends PureComponent {
   }
 
   componentWillUnmount() {
-    // rootElement.removeEventListener('scroll', this.handleScroll);
+    document.removeEventListener('scroll', this.handleScroll);
+    // body.onscroll = null;
   }
 
   currentpageNum = 2;
 
-  // handleScroll = e => {
-  //   // console.log('scroll');
-  //   const rootDOM = e.target;
-  //   // console.log('rootDOM', rootDOM.scrollTop);
-  //   const childDOM = rootDOM.firstElementChild;
-  //   // console.log('child', childDOM);
-  //   // console.log(rootDOM.scrollTop, rootDOM.offsetHeight, childDOM.offsetHeight);
+  handleScroll = e => {
+    // console.log('scroll');
+    // const rootDOM = e.target;
+    // console.log('rootDOM', rootDOM.scrollTop);
+    // const childDOM = rootDOM.firstElementChild;
+    // console.log('child', childDOM);
+    // console.log(rootDOM.scrollTop, rootDOM.offsetHeight, childDOM.offsetHeight);
 
-  //   const { scrollLoading, hasMore } = this.state;
-  //   // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
-  //   // 判断页面是否滚到底部
-  //   const scrollToBottom = rootDOM.scrollTop + rootDOM.offsetHeight >= childDOM.offsetHeight;
-  //   // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
-  //   if (scrollToBottom && !scrollLoading && hasMore) this.handleLazyload();
-  // };
+    const { loading } = this.props;
+    const { hasMore } = this.state;
+    // const { scrollLoading, hasMore } = this.state;
+    // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
+    // 判断页面是否滚到底部
+    // const scrollToBottom = rootDOM.scrollTop + rootDOM.offsetHeight >= childDOM.offsetHeight;
+
+    // 这里的页面结构是，html和body和div.#root是一样高的，而div.#root下的唯一子元素是高度比较大的
+    // 发现向上滚动时，整个html都在往上滚，所以要获取document.documentElement元素，才能正确获取到scollTop，body及div.#root获取到的scrollTop都为0
+    const scrollToBottom = documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
+    // console.log(documentElem.scrollTop + documentElem.offsetHeight, childElem.offsetHeight);
+    // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
+    if (scrollToBottom && !loading && hasMore)
+      this.handleLazyload();
+    // if (scrollToBottom && !scrollLoading && hasMore) this.handleLazyload();
+  };
 
   handleCheck = () => {
     const that = this;
@@ -123,8 +139,9 @@ export default class UserTransmissionDevice extends PureComponent {
 
   handleLazyload = () => {
     const that = this;
+    // const { loading } = this.props;
     const { company, address } = this.state;
-    this.setState({ scrollLoading: true });
+    // this.setState({ scrollLoading: true });
 
     this.props.dispatch({
       type: 'transmission/fetch',
@@ -137,32 +154,32 @@ export default class UserTransmissionDevice extends PureComponent {
       callback(total) {
         const currentLength = that.currentpageNum * PAGE_SIZE;
         that.currentpageNum += 1;
-        that.setState({ scrollLoading: false });
+        // that.setState({ scrollLoading: false });
         if (currentLength >= total) that.setState({ hasMore: false });
       },
     });
   };
 
-  handleLoadMore = () => {
-    const {
-      transmission: { isLast },
-    } = this.props;
-    if (isLast) {
-      return;
-    }
-    const {
-      transmission: { pageNum },
-    } = this.props;
-    // 请求数据
-    this.props.dispatch({
-      type: 'transmission/fetch',
-      payload: {
-        pageSize: PAGE_SIZE,
-        pageNum: pageNum + 1,
-        ...this.formData,
-      },
-    });
-  };
+  // handleLoadMore = () => {
+  //   const {
+  //     transmission: { isLast },
+  //   } = this.props;
+  //   if (isLast) {
+  //     return;
+  //   }
+  //   const {
+  //     transmission: { pageNum },
+  //   } = this.props;
+  //   // 请求数据
+  //   this.props.dispatch({
+  //     type: 'transmission/fetch',
+  //     payload: {
+  //       pageSize: PAGE_SIZE,
+  //       pageNum: pageNum + 1,
+  //       ...this.formData,
+  //     },
+  //   });
+  // };
 
   renderForm() {
     const { company, address } = this.state;
@@ -203,14 +220,14 @@ export default class UserTransmissionDevice extends PureComponent {
       transmission: {
         data: { list },
       },
-      // loading,
+      loading,
     } = this.props;
 
     return (
       <div className={styles.cardList}>
         <List
           rowKey="id"
-          // loading={loading}
+          loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
@@ -305,8 +322,7 @@ export default class UserTransmissionDevice extends PureComponent {
       >
         {this.renderForm()}
 
-        <InfiniteScroll
-          initialLoad={false}
+        {/* <InfiniteScroll
           pageStart={0}
           loadMore={() => {
             // 防止多次加载
@@ -322,9 +338,9 @@ export default class UserTransmissionDevice extends PureComponent {
               )}
             </div>
           }
-        >
+        > */}
           {this.renderList()}
-        </InfiniteScroll>
+        {/* </InfiniteScroll> */}
       </PageHeaderLayout>
     );
   }
