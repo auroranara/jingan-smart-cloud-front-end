@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Spin, Col, Row, Switch, message } from 'antd';
-import InfiniteScroll from 'react-infinite-scroller';
+import { Form, List, Card, Button, Input, BackTop, Col, Row, Switch, message } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import codesMap from '@/utils/codes';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -125,6 +124,9 @@ export default class VideoEquipmentList extends PureComponent {
   handleClickToQuery = () => {
     const {
       form: { getFieldsValue },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
@@ -133,8 +135,7 @@ export default class VideoEquipmentList extends PureComponent {
     this.props.dispatch({
       type: 'videoMonitor/fetchEquipmentList',
       payload: {
-        pageSize,
-        pageNum: 1,
+        companyId,
         ...data,
       },
     });
@@ -144,6 +145,9 @@ export default class VideoEquipmentList extends PureComponent {
   handleClickToReset = () => {
     const {
       form: { resetFields },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -153,8 +157,7 @@ export default class VideoEquipmentList extends PureComponent {
     this.props.dispatch({
       type: 'videoMonitor/fetchEquipmentList',
       payload: {
-        pageSize,
-        pageNum: 1,
+        companyId,
       },
     });
   };
@@ -325,6 +328,7 @@ export default class VideoEquipmentList extends PureComponent {
         videoData: { list },
       },
     } = this.props;
+
     const { total, videoVisible, keyId } = this.state;
 
     const content =

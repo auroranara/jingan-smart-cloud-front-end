@@ -17,31 +17,9 @@ const editTitle = '编辑视频设备信息';
 // 添加页面标题
 const addTitle = '新增视频设备信息';
 
-// 面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '设备管理',
-    name: '设备管理',
-  },
-  {
-    title: '视频监控',
-    name: '视频监控',
-    href: '/device-management/video-monitor/list',
-  },
-  {
-    title: '新增视频设备信息',
-    name: '新增视频设备信息',
-  },
-];
-
 // 表单标签
 const fieldLabels = {
-  companyName: '企业名称',
+  companyName: '单位名称',
   equipmentID: '设备ID',
   cameraID: '摄像头ID',
   videoArea: '视频所属区域',
@@ -300,7 +278,7 @@ export default class VideoMonitorEdit extends PureComponent {
     } = this.props;
     const fourColorImgs = safetyFourPicture ? JSON.parse(safetyFourPicture) : [];
     if (fourColorImgs.length === 0) {
-      message.error('该企业暂无四色图！');
+      message.error('该单位暂无四色图！');
       return;
     }
     this.setState({
@@ -382,7 +360,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   rules: [
                     {
                       required: true,
-                      message: '请选择企业单位',
+                      message: '请选择单位',
                     },
                   ],
                 })(
@@ -391,7 +369,7 @@ export default class VideoMonitorEdit extends PureComponent {
                     ref={input => {
                       this.CompanyIdInput = input;
                     }}
-                    placeholder="请选择企业单位"
+                    placeholder="请选择单位"
                   />
                 )}
               </Col>
@@ -401,7 +379,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   rules: [
                     {
                       required: true,
-                      message: '请选择企业单位',
+                      message: '请选择单位',
                     },
                   ],
                 })(
@@ -410,7 +388,7 @@ export default class VideoMonitorEdit extends PureComponent {
                     ref={input => {
                       this.CompanyIdInput = input;
                     }}
-                    placeholder="请选择企业单位"
+                    placeholder="请选择单位"
                   />
                 )}
               </Col>
@@ -422,7 +400,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   onClick={this.handleShowCompanyModal}
                   style={{ marginLeft: '10%' }}
                 >
-                  选择企业
+                  选择单位
                 </Button>
               </Col>
             )}
@@ -436,7 +414,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   required: true,
                   message: '请输入设备ID',
                 },
-                { pattern: numReg, message: '设备ID格式不正确' },
+                { pattern: numReg, message: '设备ID格式不正确，输入数字，下划线，小写字母' },
               ],
             })(<Input placeholder="请输入设备ID" />)}
           </FormItem>
@@ -449,7 +427,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   required: true,
                   message: '请输入摄像头ID',
                 },
-                { pattern: numReg, message: '摄像头ID格式不正确' },
+                { pattern: numReg, message: '摄像头ID格式不正确，输入数字，下划线，小写字母' },
               ],
             })(<Input placeholder="请输入摄像头ID" />)}
           </FormItem>
@@ -495,7 +473,6 @@ export default class VideoMonitorEdit extends PureComponent {
               initialValue: photoAddress,
               rules: [
                 {
-                  required: true,
                   message: '请输入图片地址',
                 },
               ],
@@ -625,6 +602,29 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     } = this.props;
     const title = id ? editTitle : addTitle;
+
+    // 面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+      {
+        title: '设备管理',
+        name: '设备管理',
+      },
+      {
+        title: '视频监控',
+        name: '视频监控',
+        href: '/device-management/video-monitor/list',
+      },
+      {
+        title,
+        name: title,
+      },
+    ];
+
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderVideoInfo()}

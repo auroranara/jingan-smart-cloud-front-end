@@ -7,7 +7,7 @@ const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{
 /* 验证用户名（不能纯数字） */
 const loginNameReg = /^.*[^\d].*$/;
 
-/* 验证数字 */
-const numReg = /^[0-9]*$/;
+/* 验证keyId和deviceId */
+const numReg = /^([0-9]+[_]+[a-z]+[0-9]*)|([a-z]+[_]+[a-z0-9]+)$/;
 
 export { phoneReg, emailReg, loginNameReg, numReg };

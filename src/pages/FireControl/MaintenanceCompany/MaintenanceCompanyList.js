@@ -14,7 +14,7 @@ import {
   Row,
 } from 'antd';
 import { routerRedux } from 'dva/router';
-import VisibilitySensor from 'react-visibility-sensor';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -175,11 +175,11 @@ export default class MaintenanceCompanyList extends PureComponent {
   };
 
   /* 滚动加载 */
-  handleLoadMore = flag => {
+  handleLoadMore = () => {
     const {
       maintenanceCompany: { isLast },
     } = this.props;
-    if (!flag || isLast) {
+    if (isLast) {
       return;
     }
     const {
@@ -365,14 +365,26 @@ export default class MaintenanceCompanyList extends PureComponent {
         }
       >
         {this.renderForm()}
-        {this.renderList()}
-        {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
             </div>
-          )}
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
       </PageHeaderLayout>
     );
   }

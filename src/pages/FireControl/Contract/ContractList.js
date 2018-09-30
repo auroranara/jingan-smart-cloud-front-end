@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Input, Button, Select, Spin, DatePicker } from 'antd';
 import { Link, routerRedux } from 'dva/router';
-import VisibilitySensor from 'react-visibility-sensor';
+import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 
@@ -135,8 +135,11 @@ export default class ContractList extends PureComponent {
   }
 
   /* 滚动加载 */
-  handleLoadMore = flag => {
-    if (!flag) {
+  handleLoadMore = () => {
+    const {
+      contract: { isLast },
+    } = this.props;
+    if (isLast) {
       return;
     }
     const {
@@ -463,14 +466,26 @@ export default class ContractList extends PureComponent {
         }
       >
         {this.renderForm()}
-        {this.renderList()}
-        {isInit && !isLast && <VisibilitySensor onChange={this.handleLoadMore} />}
-        {loading &&
-          !isLast && (
-            <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-              <Spin />
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
             </div>
-          )}
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
       </PageHeaderLayout>
     );
   }
