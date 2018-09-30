@@ -123,7 +123,7 @@ class ElectricityCharts extends PureComponent {
       prev[code] = desc;
       return prev;
     }, {});
-    console.log(paramsMap.v1);
+    // console.log(paramsMap.v1);
     const noData = {
       title: {
         show: true,

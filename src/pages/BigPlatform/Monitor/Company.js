@@ -50,6 +50,8 @@ export default class App extends PureComponent {
       },
     } = this.props;
 
+    // console.log(companyId);
+    dispatch({ type: 'monitor/fetchCompanyInfo', payload: companyId });
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
@@ -296,6 +298,7 @@ export default class App extends PureComponent {
     // 从props中获取企业名称
     const {
       monitor: {
+        companyInfo: { name: companyName },
         allCamera = [],
         gasCount,
         gasList,
@@ -324,12 +327,12 @@ export default class App extends PureComponent {
       selectedDeviceType,
     } = this.state;
 
-    let companyName = '暂无信息';
-    if (allCamera.length) companyName = allCamera[0].company_name;
+    // let companyName = '暂无信息';
+    // if (allCamera.length) companyName = allCamera[0].company_name;
 
     return (
       <div className={styles.main}>
-        <Header title="晶安智慧安全云平台" extraContent={companyName} />
+        <Header title="晶安智慧安全云平台" extraContent={companyName ? companyName : '暂无信息' } />
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
