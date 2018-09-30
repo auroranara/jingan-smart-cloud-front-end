@@ -6,11 +6,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { TOXIC_GAS_TYPE, TOXIC_GAS_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
+import { TOXIC_GAS_TYPE as TYPE, TOXIC_GAS_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
 import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
-
-// 可燃有毒气体
-const TYPE = TOXIC_GAS_TYPE;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -132,7 +129,7 @@ export default class ToxicGas extends PureComponent {
       disabledDate: this.disabledDate,
       onCalendarChange: this.onCalendarChange,
     };
-    const fields = getFields(TOXIC_GAS_TYPE, methods);
+    const fields = getFields(TYPE, methods);
 
     return (
       <PageHeaderLayout

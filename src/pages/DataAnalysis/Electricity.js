@@ -6,11 +6,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { ELECTRICITY_TYPE, ELECTRICITY_PARAMS as PARAMS, ELECTRICITY_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
+import { ELECTRICITY_TYPE as TYPE, ELECTRICITY_PARAMS as PARAMS, ELECTRICITY_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
 import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
-
-// 用电安全
-const TYPE = ELECTRICITY_TYPE;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -135,7 +132,7 @@ export default class ToxicGas extends PureComponent {
       disabledDate: this.disabledDate,
       onCalendarChange: this.onCalendarChange,
     };
-    const fields = getFields(ELECTRICITY_TYPE, methods, PARAMS);
+    const fields = getFields(TYPE, methods, PARAMS);
 
     return (
       <PageHeaderLayout
