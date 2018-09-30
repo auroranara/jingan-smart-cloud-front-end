@@ -1,4 +1,5 @@
 import {
+  getCompanyInfo,
   getCompanyDevices,
   getDeviceConfig,
   getRealTimeData,
@@ -21,6 +22,7 @@ export default {
   namespace: 'monitor',
 
   state: {
+    companyInfo: {},
     allCamera: [],
     gasCount: {},
     gasList: [],
@@ -43,6 +45,13 @@ export default {
   },
 
   effects: {
+    *fetchCompanyInfo({ payload }, { call, put }) {
+      let response = yield call(getCompanyInfo, payload);
+      response = response || EMPTY_OBJECT;
+      const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+      if (code === 200)
+        yield put({ type: 'saveCompanyInfo', payload: data });
+    },
     *fetchAllCamera({ payload }, { call, put }) {
       const response = yield call(getAllCamera, payload);
       if (response && response.list)
@@ -188,6 +197,9 @@ export default {
   },
 
   reducers: {
+    saveCompanyInfo(state, action) {
+      return { ...state, companyInfo: action.payload };
+    },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
     },

@@ -3,6 +3,12 @@ import { stringify } from 'qs';
 
 const URL_PREFIX = '/acloud_new/v2';
 
+// 获取企业信息
+export async function getCompanyInfo(id) {
+  console.log(id);
+  return request(`${URL_PREFIX}/baseInfo/company/${id}`);
+}
+
 // 视频列表
 export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
