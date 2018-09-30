@@ -101,7 +101,7 @@ export default {
         if (success) success();
         yield setToken(response.data.webToken);
         reloadAuthorized();
-        yield put(routerRedux.replace({ pathname: '/' }));
+        // yield put(routerRedux.replace({ pathname: '/' }));
         window.location.reload(true);
       } else if (error) error();
     },
