@@ -105,7 +105,6 @@ export default class VideoMonitorDetail extends PureComponent {
           onClick={() => {
             this.goToEdit(id);
           }}
-          style={{ fontSize: 20 }}
         >
           编辑
         </Button>

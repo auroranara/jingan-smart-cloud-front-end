@@ -14,6 +14,7 @@ import styles from './VideoEquipmentList.less';
 import VideoPlay from '../../BigPlatform/FireControl/section/VideoPlay';
 
 import videoIcon from './videoIcon.png';
+import { Flex } from 'antd-mobile';
 
 const FormItem = Form.Item;
 
@@ -234,25 +235,24 @@ export default class VideoEquipmentList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={(item, index) => {
-            const { id, companyId, deviceId, keyId } = item;
-
+            const { id, name, companyId, deviceId, keyId } = item;
             return (
               <List.Item key={id}>
                 <Card
-                  title={item.name}
+                  title={name}
                   className={styles.card}
                   actions={[
                     <AuthLink
                       code={codesMap.deviceManagement.videoMonitor.view}
                       codes={codes}
-                      to={`/device-management/video-monitor/detail/${item.id}`}
+                      to={`/device-management/video-monitor/${companyId}/detail/${id}`}
                     >
                       查看
                     </AuthLink>,
                     <AuthLink
                       code={codesMap.deviceManagement.videoMonitor.edit}
                       codes={codes}
-                      to={`/device-management/video-monitor/edit/${item.id}`}
+                      to={`/device-management/video-monitor/edit/${id}`}
                     >
                       编辑
                     </AuthLink>,
@@ -325,7 +325,7 @@ export default class VideoEquipmentList extends PureComponent {
   render() {
     const {
       videoMonitor: {
-        videoData: { list },
+        videoData: { list = [] },
       },
     } = this.props;
 
@@ -342,11 +342,13 @@ export default class VideoEquipmentList extends PureComponent {
       );
 
     return (
-      <PageHeaderLayout title={list.companyName} breadcrumbList={breadcrumbList} content={content}>
+      <PageHeaderLayout title={name} breadcrumbList={breadcrumbList} content={content}>
         <BackTop />
         {this.renderForm()}
         {this.renderList()}
         <VideoPlay
+          draggable={false}
+          style={{ position: 'fixed' }}
           visible={videoVisible}
           showList={false}
           videoList={[]}

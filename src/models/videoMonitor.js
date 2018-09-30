@@ -20,6 +20,8 @@ export default {
       vedioCount: 0,
     },
     list: [],
+    pageNum: 1,
+    isLast: false,
     detail: {
       data: {
         companyName: undefined,
@@ -35,8 +37,6 @@ export default {
       },
     },
     categories: [],
-    pageNum: 1,
-    isLast: false,
     modal: {
       list: [],
       pagination: {

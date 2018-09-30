@@ -583,7 +583,7 @@ module.exports = [
                 component: './DeviceManagement/VideoMonitor/VideoEquipmentList',
               },
               {
-                path: '/device-management/video-monitor/detail/:id',
+                path: '/device-management/video-monitor/:companyId/detail/:id',
                 code: 'deviceManagement.videoMonitor.view',
                 name: 'detail',
                 component: './DeviceManagement/VideoMonitor/VideoMonitorDetail',
