@@ -546,6 +546,51 @@ module.exports = [
               },
             ],
           },
+          // 视频监控
+          {
+            path: '/device-management/video-monitor',
+            code: 'deviceManagement.videoMonitor',
+            name: 'videoMonitor',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/device-management/video-monitor',
+                name: 'videoMonitor',
+                redirect: '/device-management/video-monitor/list',
+              },
+              {
+                path: '/device-management/video-monitor/list',
+                code: 'deviceManagement.videoMonitor.listView',
+                name: 'listView',
+                component: './DeviceManagement/VideoMonitor/VideoMonitorList',
+              },
+              {
+                path: '/device-management/video-monitor/add',
+                code: 'deviceManagement.videoMonitor.add',
+                name: 'add',
+                component: './DeviceManagement/VideoMonitor/VideoMonitorEdit',
+              },
+              {
+                path: '/device-management/video-monitor/edit/:id',
+                code: 'deviceManagement.videoMonitor.edit',
+                name: 'edit',
+                component: './DeviceManagement/VideoMonitor/VideoMonitorEdit',
+              },
+              {
+                path: '/device-management/video-monitor/video-equipment/:companyId',
+                code: 'deviceManagement.videoMonitor.view',
+                name: 'view',
+                component: './DeviceManagement/VideoMonitor/VideoEquipmentList',
+              },
+              {
+                path: '/device-management/video-monitor/detail/:id',
+                code: 'deviceManagement.videoMonitor.view',
+                name: 'detail',
+                component: './DeviceManagement/VideoMonitor/VideoMonitorDetail',
+              },
+              // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+            ],
+          },
         ],
       },
 

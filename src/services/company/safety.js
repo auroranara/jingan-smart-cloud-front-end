@@ -7,7 +7,7 @@ export async function queryMenus() {
   return request(`${URL_PREFIX}/safetySelectInfo`);
 }
 
-export async function queryDetail(companyId) {
+export async function queryDetail({ companyId }) {
   return request(`${URL_PREFIX}/company/${companyId}/safetyInfo`);
 }
 

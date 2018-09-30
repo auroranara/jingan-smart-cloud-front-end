@@ -233,7 +233,7 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ isLookUpRotated: false });
   };
 
-  fetchLookUpVideo = (value='') => {
+  fetchLookUpVideo = (value = '') => {
     const { dispatch } = this.props;
     dispatch({
       type: 'bigFireControl/fetchVideoLookUp',
@@ -340,7 +340,7 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
-  handleVideoShow = (keyId, showList=false, videoState=VIDEO_ALARM) => {
+  handleVideoShow = (keyId, showList = false, videoState = VIDEO_ALARM) => {
     this.setState({ videoVisible: true, videoKeyId: keyId, showVideoList: showList, videoState });
   };
 

@@ -14,7 +14,7 @@ export default class App extends PureComponent {
       position: null,
       index: 0,
       pageNum: 1,
-    }
+    };
     this.tempState = null;
   }
 
@@ -27,8 +27,7 @@ export default class App extends PureComponent {
           index: 0,
           pageNum: 1,
         });
-      }
-      else {
+      } else {
         this.setState(this.tempState);
       }
     }
@@ -37,7 +36,7 @@ export default class App extends PureComponent {
   /**
    * 显示坐标点
    */
-  handleShowPoint = (e) => {
+  handleShowPoint = e => {
     const { clientX, clientY } = e;
     const { left, top, width, height } = e.target.getBoundingClientRect();
     this.setState({
@@ -46,26 +45,26 @@ export default class App extends PureComponent {
         y: (clientY - top) / height,
       },
     });
-  }
+  };
 
   /**
    * 缩略图切换
    */
-  handleSwitch = (index) => {
+  handleSwitch = index => {
     this.setState({
       position: null,
       index,
     });
-  }
+  };
 
   /**
    * 切换分页
    */
-  hanldePage = (pageNum) => {
+  hanldePage = pageNum => {
     this.setState({
       pageNum,
     });
-  }
+  };
 
   /**
    * 确认
@@ -78,12 +77,12 @@ export default class App extends PureComponent {
     if (onOk) {
       onOk(position, urls[index]);
     }
-  }
+  };
 
   render() {
     const {
       // 标题
-      title="四色图坐标定位",
+      title = '四色图坐标定位',
       // 弹窗是否显示
       visible,
       // 图片地址
@@ -92,43 +91,57 @@ export default class App extends PureComponent {
       // onOk,
       // 取消按钮点击事件
       onCancel,
-      ratio='75%',
+      ratio = '75%',
     } = this.props;
     const { position, index, pageNum } = this.state;
 
     return (
-      <Modal
-        title={title}
-        centered
-        // destroyOnClose
-        maskClosable={false}
-        visible={visible}
-        onOk={this.handleOk}
-        onCancel={onCancel}
-      >
-        <div className={styles.container}>
-          <div
-            className={styles.pictureContainer}
-            style={{
-              paddingBottom: ratio,
-            }}
-          >
-            <div className={styles.picture} style={{ backgroundImage: `url(${urls[index].webUrl})` }} onClick={this.handleShowPoint} />
-            {/* 坐标点 */
-              position && <div className={styles.point} style={{ left: `calc(${position.x * 100}% - 16px)`, top: `calc(${position.y * 100}% - 35px)`, backgroundImage: `url(${videoIcon})` }} />
-            }
+      urls.length > 0 && (
+        <Modal
+          title={title}
+          centered
+          // destroyOnClose
+          maskClosable={false}
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={onCancel}
+        >
+          <div className={styles.container}>
+            <div
+              className={styles.pictureContainer}
+              style={{
+                paddingBottom: ratio,
+              }}
+            >
+              <div
+                className={styles.picture}
+                style={{ backgroundImage: `url(${urls[index].webUrl})` }}
+                onClick={this.handleShowPoint}
+              />
+              {/* 坐标点 */
+              position && (
+                <div
+                  className={styles.point}
+                  style={{
+                    left: `calc(${position.x * 100}% - 16px)`,
+                    top: `calc(${position.y * 100}% - 35px)`,
+                    backgroundImage: `url(${videoIcon})`,
+                  }}
+                />
+              )}
+            </div>
+            <Thumbnail
+              ratio={ratio}
+              urls={urls}
+              onClick={this.handleSwitch}
+              onPage={this.hanldePage}
+              index={index}
+              number={4}
+              pageNum={pageNum}
+            />
           </div>
-          <Thumbnail
-            ratio={ratio}
-            urls={urls}
-            onClick={this.handleSwitch}
-            onPage={this.hanldePage}
-            index={index}
-            number={4}
-            pageNum={pageNum}
-          />
-        </div>
-      </Modal>
+        </Modal>
+      )
     );
   }
 }

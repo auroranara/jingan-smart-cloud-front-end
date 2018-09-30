@@ -28,6 +28,12 @@ export default {
         import: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
       },
     },
+    videoMonitor: {
+      listView: 'deviceManagement.videoMonitor.listView',
+      add: 'deviceManagement.videoMonitor.add',
+      edit: 'deviceManagement.videoMonitor.edit',
+      view: 'deviceManagement.videoMonitor.view',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {
