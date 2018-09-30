@@ -145,14 +145,14 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount() {
-    // const { fetch } = this.props;
+    const { fetch } = this.props;
     // 获取企业列表
-    // fetch({
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    fetch({
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
   }
 
   // /* 显示删除确认提示框 */
