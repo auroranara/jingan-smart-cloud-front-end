@@ -5,9 +5,10 @@ import classNames from 'classnames';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
 import styles from './MapSection.less';
+import styles2 from '../Government.less';
 // import MapSearch from '../../FireControl/components/MapSearch';
-import MapSearch from './MapSearch';
-import MapTypeBar from './MapTypeBar';
+import MapSearch from '../Components/MapSearch';
+import MapTypeBar from '../Components/MapTypeBar';
 
 import govdotRed from '../img/govdot-red.png';
 
@@ -321,66 +322,72 @@ class MapSection extends PureComponent {
     } = this.props;
 
     return (
-      <div className={styles.mapContainer}>
-        <GDMap
-          amapkey="665bd904a802559d49a33335f1e4aa0d"
-          plugins={[
-            { name: 'Scale', options: { locate: false } },
-            { name: 'ToolBar', options: { locate: false } },
-          ]}
-          status={{
-            keyboardEnable: false,
-          }}
-          useAMapUI
-          mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
-          center={center}
-          zoom={zoom}
-          events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
-        >
-          {this.renderInfoWindow()}
-          {this.renderMarkers()}
-          <MapTypeBar />
-          <div
-            className={styles.allPoint}
-            onClick={() => {
-              this.filterPoint('All');
-              this.setState({
-                infoWindowShow: false,
-                legendActive: null,
-                searchValue: '',
-              });
-              if (this.mapInstance) {
-                this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
-                  locationDefault.x,
-                  locationDefault.y,
-                ]);
-              }
-              if (this.props.comInfo) {
-                this.props.goBack();
-              }
-            }}
-          >
-            <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
-            重置
-          </div>
-        </GDMap>
-        {/* <MapSearch
+      <section className={styles2.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
+        <div className={styles2.sectionWrapperIn}>
+          <div className={styles2.sectionMain} style={{ border: 'none' }}>
+            <div className={styles.mapContainer}>
+              <GDMap
+                amapkey="665bd904a802559d49a33335f1e4aa0d"
+                plugins={[
+                  { name: 'Scale', options: { locate: false } },
+                  { name: 'ToolBar', options: { locate: false } },
+                ]}
+                status={{
+                  keyboardEnable: false,
+                }}
+                useAMapUI
+                mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
+                center={center}
+                zoom={zoom}
+                events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
+              >
+                {this.renderInfoWindow()}
+                {this.renderMarkers()}
+                <MapTypeBar />
+                <div
+                  className={styles.allPoint}
+                  onClick={() => {
+                    this.filterPoint('All');
+                    this.setState({
+                      infoWindowShow: false,
+                      legendActive: null,
+                      searchValue: '',
+                    });
+                    if (this.mapInstance) {
+                      this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
+                        locationDefault.x,
+                        locationDefault.y,
+                      ]);
+                    }
+                    if (this.props.comInfo) {
+                      this.props.goBack();
+                    }
+                  }}
+                >
+                  <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
+                  重置
+                </div>
+              </GDMap>
+              {/* <MapSearch
           style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
           selectList={selectList}
           value={searchValue}
           handleChange={this.handleInputChange}
           handleSelect={this.handleSearchSelect}
         /> */}
-        <MapSearch
-          style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-          handleSelect={this.handleSearchSelect}
-          // selectList={selectList}
-          // value={searchValue}
-          // handleChange={this.handleInputChange}
-          // handleSelect={this.handleSearchSelect}
-        />
-        {this.renderMapLegend()}
-      </div>
+              <MapSearch
+                style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
+                handleSelect={this.handleSearchSelect}
+                // selectList={selectList}
+                // value={searchValue}
+                // handleChange={this.handleInputChange}
+                // handleSelect={this.handleSearchSelect}
+              />
+              {this.renderMapLegend()}
+            </div>
+          </div>
+        </div>
+      </section>
     );
   }
 }

@@ -88,6 +88,15 @@
       flex: 1;
       position: relative;
       overflow: hidden;
+      .noChecks {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 150px;
+        flex: 1;
+        padding: 0;
+        overflow: hidden;
+      }
       .thFix {
         width: 100%;
         vertical-align: middle;
@@ -169,6 +178,31 @@
         .legendItem {
           float: left;
           width: 33.3%;
+          font-size: 12px;
+          .legendIcon {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            position: relative;
+            top: 2px;
+            border-radius: 50%;
+            margin-right: 5px;
+          }
+          .legendNum {
+            display: inline-block;
+            font-size: 16px;
+            margin-left: 8px;
+          }
+        }
+      }
+      .legendHdPie {
+        width: 100%;
+        height: 45px;
+        line-height: 45px;
+        text-align: center;
+        .legendItem {
+          float: left;
+          width: 50%;
           font-size: 12px;
           .legendIcon {
             display: inline-block;
@@ -342,16 +376,16 @@
           }
         }
         .scrollContainer::-webkit-scrollbar-track {
-          box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
-          background-color: #021c40;
+          box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3); // background-color: #021c40;
+          background-color: transparent;
         }
         .scrollContainer::-webkit-scrollbar {
-          width: 7px;
-          background-color: #021c40;
+          width: 8px;
+          background-color: transparent; // background-color: #021c40;
         }
         .scrollContainer::-webkit-scrollbar-thumb {
           border-radius: 10px;
-          background-color: #06428a;
+          background-color: rgba(9, 103, 211, 0.5);
         }
         .summaryWrapper {
           border-bottom: 1px solid #0967d3;
@@ -645,8 +679,8 @@
           background: none;
           height: 30px;
         }
-        .amap-zoom-touch-minus>div,
-        .amap-zoom-touch-plus>div {
+        .amap-zoom-touch-minus > div,
+        .amap-zoom-touch-plus > div {
           color: #a3a3a3;
           line-height: 30px;
         }
