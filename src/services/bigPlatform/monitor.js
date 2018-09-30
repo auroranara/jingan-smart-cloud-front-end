@@ -5,7 +5,6 @@ const URL_PREFIX = '/acloud_new/v2';
 
 // 获取企业信息
 export async function getCompanyInfo(id) {
-  console.log(id);
   return request(`${URL_PREFIX}/baseInfo/company/${id}`);
 }
 
