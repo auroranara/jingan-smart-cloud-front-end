@@ -213,7 +213,7 @@ export default class VideoMonitorList extends PureComponent {
                         {practicalAddress || getEmptyData()}
                       </Ellipsis>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                        主要负责人：
+                        安全负责人：
                         {safetyName || getEmptyData()}
                       </Ellipsis>
                       <p>

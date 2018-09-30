@@ -93,10 +93,18 @@ export default class VideoMonitorEdit extends PureComponent {
     }
   }
 
-  // 返回到视频监控列表页面
+  // 返回到视频企业列表页面
   goBack = () => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push(`/device-management/video-monitor/list`));
+  };
+
+  // 返回到视频设备列表页面
+  goequipment = companyIdVideo => {
+    const { dispatch } = this.props;
+    dispatch(
+      routerRedux.push(`/device-management/video-monitor/video-equipment/${companyIdVideo}`)
+    );
   };
 
   /* 点击提交按钮验证表单信息 */
@@ -113,6 +121,7 @@ export default class VideoMonitorEdit extends PureComponent {
       },
       dispatch,
     } = this.props;
+    console.log(companyIdVideo);
 
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -133,7 +142,6 @@ export default class VideoMonitorEdit extends PureComponent {
         } = values;
 
         const { companyId } = this.state;
-
         const payload = {
           id,
           deviceId,
@@ -151,7 +159,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, this.goBack());
+          message.success(msg, 1, id ? this.goequipment(companyIdVideo) : this.goBack());
         };
 
         const error = () => {
@@ -414,7 +422,10 @@ export default class VideoMonitorEdit extends PureComponent {
                   required: true,
                   message: '请输入设备ID',
                 },
-                { pattern: numReg, message: '设备ID格式不正确，输入数字，下划线，小写字母' },
+                {
+                  pattern: numReg,
+                  message: '设备ID格式不正确，必须含有下划线与小写字母，不能下划线开头和结尾',
+                },
               ],
             })(<Input placeholder="请输入设备ID" />)}
           </FormItem>
@@ -427,7 +438,10 @@ export default class VideoMonitorEdit extends PureComponent {
                   required: true,
                   message: '请输入摄像头ID',
                 },
-                { pattern: numReg, message: '摄像头ID格式不正确，输入数字，下划线，小写字母' },
+                {
+                  pattern: numReg,
+                  message: '摄像头ID格式不正确，必须含有小写字母与下划线，不能下划线开头和结尾',
+                },
               ],
             })(<Input placeholder="请输入摄像头ID" />)}
           </FormItem>
@@ -449,7 +463,6 @@ export default class VideoMonitorEdit extends PureComponent {
               initialValue: status,
               rules: [
                 {
-                  required: true,
                   message: '请输入视频状态',
                 },
               ],
@@ -579,15 +592,10 @@ export default class VideoMonitorEdit extends PureComponent {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button
-          type="primary"
-          size="large"
-          style={{ fontSize: 16 }}
-          onClick={this.handleClickValidate}
-        >
+        <Button type="primary" size="large" onClick={this.handleClickValidate}>
           确定
         </Button>
-        <Button type="primary" size="large" style={{ fontSize: 16 }} onClick={this.goBack}>
+        <Button type="primary" size="large" onClick={this.goBack}>
           返回
         </Button>
       </FooterToolbar>
