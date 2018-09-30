@@ -27,7 +27,7 @@ class RiskOver extends PureComponent {
         <div className={styles.sectionWrapperIn}>
           <div className={styles.sectionTitle}>
             <span className={styles.titleBlock} />
-            单位超时未查
+            已超时风险点
           </div>
           <div
             className={styles.backBtn}
@@ -41,6 +41,7 @@ class RiskOver extends PureComponent {
                 <table className={styles.scrollTable}>
                   <thead>
                     <tr>
+                      <th style={{ width: '40px' }} />
                       <th style={{ width: '45%' }}>
                         超时单位（
                         {listData.length}）
@@ -54,9 +55,10 @@ class RiskOver extends PureComponent {
                   </thead>
                   <tbody>
                     {listData.map(item => {
-                      const { company_id, company_name, grid_name, total } = item;
+                      const { company_type, company_id, company_name, grid_name, total } = item;
                       return (
                         <tr key={company_id}>
+                          <td>{company_type === '1' && <span className={styles.keyComMark} />}</td>
                           <td>
                             <span
                               style={{ cursor: 'pointer' }}

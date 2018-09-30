@@ -43,7 +43,7 @@ const sectionsVisible = {
   hiddenDanger: false, // 隐患详情
   checks: false, // 监督检查
   companyOver: false, // 已超时单位
-  riskOver: false, // 单位超时未查
+  riskOver: false, // 已超时风险点
 };
 @connect(({ bigPlatform, bigPlatformSafetyCompany }) => ({
   bigPlatform,
@@ -84,7 +84,7 @@ class GovernmentBigPlatform extends Component {
       hiddenDanger: false, // 隐患详情
       checks: false, // 监督检查
       companyOver: false, // 已超时单位
-      riskOver: false, // 单位超时未查
+      riskOver: false, // 已超时风险点
       companyId: '',
       riskColorSummary: {
         riskColorTitle: '',
@@ -192,6 +192,15 @@ class GovernmentBigPlatform extends Component {
         pageSize: 99999,
       },
     });
+
+    // 已超时单位信息
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerOverTime',
+      payload: {
+        date: moment().format('YYYY-MM'),
+      },
+    });
+
     this.checkNum = 0;
     this.fetchCheckMsgs(moment().format('YYYY-MM'));
 
@@ -214,14 +223,6 @@ class GovernmentBigPlatform extends Component {
     // 本月隐患单位数量以及具体信息
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerCompany',
-      payload: {
-        date: month,
-      },
-    });
-
-    // 已超时单位信息
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDangerOverTime',
       payload: {
         date: month,
       },
@@ -609,7 +610,7 @@ class GovernmentBigPlatform extends Component {
                 overRectifyNum={overRectifyNum}
               />
 
-              {/* 单位超时未查 */}
+              {/* 已超时风险点 */}
               <RiskOver
                 visible={riskOver}
                 goBack={this.goBack}

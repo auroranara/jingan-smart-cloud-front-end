@@ -84,7 +84,7 @@ class TopData extends PureComponent {
                     }}
                   >
                     <div className={styles.topName}>已超时风险点</div>
-                    <div className={styles.topNum} style={{ color: '#e86767' }}>
+                    <div className={styles.topNum} style={{ color: '#00baff' }}>
                       {selectOvertimeItemNum}
                     </div>
                   </div>
