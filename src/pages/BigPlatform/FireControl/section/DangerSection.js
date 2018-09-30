@@ -3,6 +3,9 @@ import ReactEcharts from 'echarts-for-react'
 
 import { myParseInt } from '../utils';
 import FcSection from './FcSection';
+import EmptyChart from '../components/EmptyChart';
+
+import emptyIcon from '../img/noDanger.png';
 
 function rand(n) {
   return Math.floor(Math.random() * n);
@@ -133,6 +136,16 @@ export default class DangerSection extends PureComponent {
       },
   };
 
+  let chartComponent = <EmptyChart url={emptyIcon} title="暂无巡查/隐患" />;
+  if (list.length)
+    chartComponent = (
+      <ReactEcharts
+        option={option}
+        style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: -1 }}
+        onChartReady={chart => { this.chart = chart; }}
+      />
+    );
+
     return (
       <FcSection
         title={title}
@@ -144,11 +157,7 @@ export default class DangerSection extends PureComponent {
         // onClick={() => console.log(1)}
         // onMouseleave={this.handleMouseleave}
       >
-          <ReactEcharts
-            option={option}
-            style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: -1 }}
-            onChartReady={chart => { this.chart = chart; }}
-          />
+        {chartComponent}
       </FcSection>
     );
   }

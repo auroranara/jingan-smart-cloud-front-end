@@ -3,6 +3,9 @@ import ReactEcharts from 'echarts-for-react'
 
 import { myParseInt } from '../utils';
 import FcSection from './FcSection';
+import EmptyChart from '../components/EmptyChart';
+
+import emptyIcon from '../img/noAlarmTrend.png';
 
 const DELAY = 2000;
 
@@ -157,14 +160,20 @@ export default class TrendSection extends PureComponent {
       },
   };
 
+  let chartComponent = <EmptyChart url={emptyIcon} title="暂无火警趋势" />;
+  if (list.length)
+    chartComponent = (
+      <ReactEcharts
+        option={option}
+        style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
+        onChartReady={chart => { this.chart = chart; }}
+        // onChartReady={this.handleChartReady}
+      />
+    );
+
     return (
       <FcSection title={title} style={{ position: 'relative' }} isBack={isBack}>
-        <ReactEcharts
-          option={option}
-          style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
-          onChartReady={chart => { this.chart = chart; }}
-          // onChartReady={this.handleChartReady}
-        />
+        {chartComponent}
       </FcSection>
     )
   }
