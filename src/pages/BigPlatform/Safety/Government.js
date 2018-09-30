@@ -192,7 +192,7 @@ class GovernmentBigPlatform extends Component {
         pageSize: 99999,
       },
     });
-
+    this.checkNum = 0;
     this.fetchCheckMsgs(moment().format('YYYY-MM'));
 
     // requestAnimationFrame(this.resolveAnimationFrame);
@@ -237,6 +237,9 @@ class GovernmentBigPlatform extends Component {
         isOvertime: '1',
         pageNum: 1,
         pageSize: 1,
+      },
+      success: num => {
+        if (month === moment().format('YYYY-MM')) this.checkNum = num;
       },
     });
 
@@ -519,7 +522,7 @@ class GovernmentBigPlatform extends Component {
                 fulltimeWorker={fulltimeWorker}
                 overRectifyNum={overRectifyNum}
                 selectOvertimeItemNum={selectOvertimeItemNum}
-                checkedCompanyInfo={checkedCompanyInfo}
+                checkedCompanyInfo={this.checkNum}
               />
 
               {/* <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>

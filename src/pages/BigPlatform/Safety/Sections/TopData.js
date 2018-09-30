@@ -101,7 +101,7 @@ class TopData extends PureComponent {
                   >
                     <div className={styles.topName}>本月监督检查</div>
                     <div className={styles.topNum} style={{ color: '#00baff' }}>
-                      {checkedCompanyInfo.checked}
+                      {checkedCompanyInfo}
                     </div>
                   </div>
                 </Tooltip>

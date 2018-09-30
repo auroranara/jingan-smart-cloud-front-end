@@ -718,7 +718,7 @@ export default {
           payload: { number: response.data.allTotal || 0, isChecked: payload.isChecked },
         });
         if (success) {
-          success(response.data);
+          success(response.data.allTotal || 0);
         }
       } else if (error) {
         error();

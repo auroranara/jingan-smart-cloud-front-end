@@ -5,6 +5,8 @@ import moment from 'moment';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
 import styles2 from './CheckInfo.less';
+import noChecks from '../img/noChecks.png';
+
 // import styles from './DangerCompany.less';
 
 const { Option } = Select;
@@ -181,41 +183,53 @@ class CheckInfo extends PureComponent {
                 </span>
               </div>
               <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
-                <table className={styles.scrollTable}>
-                  <thead>
-                    <tr>
-                      <th style={{ width: '25%' }}>姓名</th>
-                      <th style={{ width: '25%' }}>监管单位</th>
-                      <th style={{ width: '25%' }}>已巡查单位</th>
-                      <th style={{ width: '25%' }}>隐患单位</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {listData.map((item, index) => {
-                      return (
-                        <tr key={item.id}>
-                          <td>{item.user_name}</td>
-                          <td>{item.companyNum}</td>
-                          <td>{item.fireCheckCompanyCount}</td>
-                          <td
-                            style={{
-                              color: item.hiddenCompanyNum
-                                ? 'rgba(232, 103, 103, 0.8)'
-                                : 'rgba(255, 255, 255, 0.7)',
-                              cursor: item.hiddenCompanyNum ? 'pointer' : 'text',
-                            }}
-                            onClick={() => {
-                              if (!item.hiddenCompanyNum) return;
-                              this.handleGoDangerCompany(item.id);
-                            }}
-                          >
-                            {item.hiddenCompanyNum}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                {listData && listData.length ? (
+                  <table className={styles.scrollTable}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '25%' }}>姓名</th>
+                        <th style={{ width: '25%' }}>监管单位</th>
+                        <th style={{ width: '25%' }}>已巡查单位</th>
+                        <th style={{ width: '25%' }}>隐患单位</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {listData.map((item, index) => {
+                        return (
+                          <tr key={item.id}>
+                            <td>{item.user_name}</td>
+                            <td>{item.companyNum}</td>
+                            <td>{item.fireCheckCompanyCount}</td>
+                            <td
+                              style={{
+                                color: item.hiddenCompanyNum
+                                  ? 'rgba(232, 103, 103, 0.8)'
+                                  : 'rgba(255, 255, 255, 0.7)',
+                                cursor: item.hiddenCompanyNum ? 'pointer' : 'text',
+                              }}
+                              onClick={() => {
+                                if (!item.hiddenCompanyNum) return;
+                                this.handleGoDangerCompany(item.id);
+                              }}
+                            >
+                              {item.hiddenCompanyNum}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div
+                    className={styles.noChecks}
+                    style={{
+                      background: `url(${noChecks})`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center center',
+                      backgroundSize: '45% auto',
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>

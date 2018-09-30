@@ -4,9 +4,8 @@ import classNames from 'classnames';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
 import CompanyRisk from '../Components/CompanyRisk';
+import importantIcon from '../img/importantCompany.png';
 
-const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
-const importantIcon = `${iconPrefix}important.png`;
 class CompanyInfo extends PureComponent {
   constructor(props) {
     super(props);

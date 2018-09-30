@@ -114,7 +114,9 @@ const gradientsGray = {
 class RiskBar extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      barLegend: 'all', // all,colors,pie
+    };
   }
 
   componentDidMount() {}
@@ -127,18 +129,63 @@ class RiskBar extends PureComponent {
       countDangerLocation: {
         red = 0,
         red_abnormal = 0,
-        red_company = 0,
         orange = 0,
         orange_abnormal = 0,
-        orange_company = 0,
         yellow = 0,
         yellow_abnormal = 0,
-        yellow_company = 0,
         blue = 0,
         blue_abnormal = 0,
-        blue_company = 0,
         not_rated = 0,
         not_rated_abnormal = 0,
+        not_rated_company = 0,
+        ycdCount = 0,
+      },
+    } = this.props;
+    let xData,
+      dataHd,
+      dataAbnormal,
+      option = {};
+    if (not_rated === 0) {
+      // 没有未评级
+      xData = ['红', '橙', '黄', '蓝'];
+      dataHd = [red, orange, yellow, blue];
+      dataAbnormal = [red_abnormal, orange_abnormal, yellow_abnormal, blue_abnormal];
+      option = this.barOption(xData, dataHd, dataAbnormal);
+      this.setState({
+        barLegend: 'colors',
+      });
+    } else if (red + orange + yellow + blue === 0) {
+      // 都是未评级
+      option = this.pieOption(not_rated, not_rated_abnormal, not_rated_company, ycdCount);
+      this.setState({
+        barLegend: 'pie',
+      });
+    } else {
+      // 都有
+      xData = ['红', '橙', '黄', '蓝', '未评级'];
+      dataHd = [red, orange, yellow, blue, not_rated];
+      dataAbnormal = [
+        red_abnormal,
+        orange_abnormal,
+        yellow_abnormal,
+        blue_abnormal,
+        not_rated_abnormal,
+      ];
+      option = this.barOption(xData, dataHd, dataAbnormal);
+      this.setState({
+        barLegend: 'all',
+      });
+    }
+    return option;
+  }
+
+  barOption = (xData, dataHd, dataAbnormal) => {
+    const {
+      countDangerLocation: {
+        red_company = 0,
+        orange_company = 0,
+        yellow_company = 0,
+        blue_company = 0,
         not_rated_company = 0,
       },
     } = this.props;
@@ -219,7 +266,7 @@ class RiskBar extends PureComponent {
             color: '#fff',
             fontSize: 14,
           },
-          data: ['红', '橙', '黄', '蓝', '未评级'],
+          data: xData,
         },
         {
           type: 'category',
@@ -228,7 +275,7 @@ class RiskBar extends PureComponent {
           axisLabel: { show: false },
           splitArea: { show: false },
           splitLine: { show: false },
-          data: ['红', '橙', '黄', '蓝', '未评级'],
+          data: xData,
         },
       ],
       series: [
@@ -250,7 +297,7 @@ class RiskBar extends PureComponent {
           barGap: '0%',
           barWidth: '36%',
           barCategoryGap: '50%',
-          data: [red, orange, yellow, blue, not_rated],
+          data: dataHd,
         },
         {
           name: '异常',
@@ -267,12 +314,73 @@ class RiskBar extends PureComponent {
           barGap: '0%',
           barWidth: '25%',
           barCategoryGap: '50%',
-          data: [red_abnormal, orange_abnormal, yellow_abnormal, blue_abnormal, not_rated_abnormal],
+          data: dataAbnormal,
         },
       ],
     };
     return option;
-  }
+  };
+
+  pieOption = (risks, risksAbnormal, companys, companysAbnormal) => {
+    const comArr = [companys - companysAbnormal, +companysAbnormal];
+    const option = {
+      title: {
+        text: risks,
+        left: 'center',
+        top: '39%',
+        textStyle: {
+          color: '#fff',
+          fontSize: 22,
+        },
+        subtext: '总数',
+        subtextStyle: {
+          color: '#fff',
+          fontSize: 14,
+        },
+      },
+      color: ['#2a8bd5', '#e86767'],
+      series: [
+        {
+          type: 'pie',
+          radius: ['50%', '70%'],
+          avoidLabelOverlap: false,
+          // hoverAnimation: false,
+          label: {
+            normal: {
+              show: true,
+              formatter: params => {
+                return `单位数：${comArr[params.dataIndex]}\n${params.name}：${params.value}`;
+              },
+              textStyle: {
+                fontSize: 14,
+                fontWeight: 'bold',
+              },
+            },
+            emphasis: {
+              show: true,
+              textStyle: {
+                fontSize: 14,
+                fontWeight: 'bold',
+              },
+            },
+          },
+          labelLine: {
+            normal: {
+              show: true,
+            },
+            emphasis: {
+              show: true,
+            },
+          },
+          data: [
+            { value: risks - risksAbnormal, name: '正常风险点' },
+            { value: risksAbnormal, name: '异常风险点' },
+          ],
+        },
+      ],
+    };
+    return option;
+  };
 
   onHdAreaReadyCallback = chart => {
     if (!chart) return;
@@ -373,6 +481,7 @@ class RiskBar extends PureComponent {
   };
 
   render() {
+    const { barLegend } = this.state;
     return (
       <section className={styles.sectionWrapper} style={{ height: 'calc(50% - 6px)' }}>
         <div className={styles.sectionWrapperIn}>
@@ -389,42 +498,63 @@ class RiskBar extends PureComponent {
                 onChartReady={this.onHdAreaReadyCallback}
               />
             </div>
-            <div className={styles.hdBarLegend}>
-              <div className={styles.legendItem}>
-                <span className={styles.legendIcon} style={{ backgroundColor: '#fc1f02' }} />
-                红色风险点
-                <span style={{ opacity: 0 }}>点</span>
-              </div>
+            {barLegend !== 'pie' ? (
+              <div className={styles.hdBarLegend}>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendIcon} style={{ backgroundColor: '#fc1f02' }} />
+                  红色风险点
+                  <span style={{ opacity: 0 }}>点</span>
+                </div>
 
-              <div className={styles.legendItem}>
-                <span className={styles.legendIcon} style={{ backgroundColor: '#ed7e12' }} />
-                橙色风险点
-                <span style={{ opacity: 0 }}>点</span>
-              </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendIcon} style={{ backgroundColor: '#ed7e12' }} />
+                  橙色风险点
+                  <span style={{ opacity: 0 }}>点</span>
+                </div>
 
-              <div className={styles.legendItem}>
-                <span className={styles.legendIcon} style={{ backgroundColor: '#fbf719' }} />
-                黄色风险点
-                <span style={{ opacity: 0 }}>点</span>
-              </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendIcon} style={{ backgroundColor: '#fbf719' }} />
+                  黄色风险点
+                  <span style={{ opacity: 0 }}>点</span>
+                </div>
 
-              <div className={styles.legendItem}>
-                <span className={styles.legendIcon} style={{ backgroundColor: '#1e60ff' }} />
-                蓝色风险点
-                <span style={{ opacity: 0 }}>点</span>
-              </div>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendIcon} style={{ backgroundColor: '#1e60ff' }} />
+                  蓝色风险点
+                  <span style={{ opacity: 0 }}>点</span>
+                </div>
 
-              <div className={styles.legendItem}>
-                <span className={styles.legendIcon} style={{ backgroundColor: '#4f6793' }} />
-                未评级风险点
-              </div>
+                {barLegend === 'all' && (
+                  <div className={styles.legendItem}>
+                    <span className={styles.legendIcon} style={{ backgroundColor: '#4f6793' }} />
+                    未评级风险点
+                  </div>
+                )}
 
-              <div className={styles.legendItem}>
-                <span className={styles.legendIcon} style={{ backgroundColor: '#bfbfbf' }} />
-                异常状态
-                <span style={{ opacity: 0 }}>点点</span>
+                <div className={styles.legendItem}>
+                  <span className={styles.legendIcon} style={{ backgroundColor: '#bfbfbf' }} />
+                  异常状态
+                  <span style={{ opacity: 0 }}>点点</span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className={styles.legendHdPie}>
+                <div
+                  className={styles.legendItem}
+                  style={{ textAlign: 'right', paddingRight: '20px' }}
+                >
+                  <span className={styles.legendIcon} style={{ backgroundColor: '#2a8bd5' }} />
+                  正常
+                </div>
+                <div
+                  className={styles.legendItem}
+                  style={{ textAlign: 'left', paddingLeft: '20px' }}
+                >
+                  <span className={styles.legendIcon} style={{ backgroundColor: '#e86767' }} />
+                  异常
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
