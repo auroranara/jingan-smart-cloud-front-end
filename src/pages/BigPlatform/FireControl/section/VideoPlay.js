@@ -18,9 +18,16 @@ const LOADING_STYLE = {
   top: '50%',
   transform: 'translate(-50%, -50%)',
 };
-const LOADING_COMPONENT = <div className={styles.loadingContainer}><Icon type="loading" style={LOADING_STYLE} /></div>;
+const LOADING_COMPONENT = (
+  <div className={styles.loadingContainer}>
+    <Icon type="loading" style={LOADING_STYLE} />
+  </div>
+);
 
-@connect(({ videoPlay, loading }) => ({ videoPlay, loading: loading.effects['videoPlay/fetchStartToPlay'] }))
+@connect(({ videoPlay, loading }) => ({
+  videoPlay,
+  loading: loading.effects['videoPlay/fetchStartToPlay'],
+}))
 class VideoPlay extends Component {
   state = {
     videoSrc: '',
@@ -106,19 +113,35 @@ class VideoPlay extends Component {
 
   handleItemClick = (index, keyId) => {
     const { dispatch, actionType } = this.props;
-    dispatch({
-      type: 'videoPlay/fetchStartToPlay',
-      // type: actionType,
-      payload: {
-        key_id: keyId,
+    this.setState(
+      {
+        // videoSrc: response.data.url,
+        activeIndex: index,
       },
-      success: response => {
-        this.setState({
-          videoSrc: response.data.url,
-          activeIndex: index,
+      () => {
+        dispatch({
+          type: 'videoPlay/fetchStartToPlay',
+          // type: actionType,
+          payload: {
+            key_id: keyId,
+          },
+          success: response => {
+            this.setState({
+              videoSrc: response.data.url,
+            });
+          },
         });
-      },
-    });
+      }
+    );
+    // dispatch({
+    //   type: 'videoPlay/fetchStartToPlay',
+    //   // type: actionType,
+    //   payload: {
+    //     key_id: keyId,
+    //   },
+    //   success: response => {
+    //   },
+    // });
   };
 
   handleClose = () => {
@@ -152,7 +175,9 @@ class VideoPlay extends Component {
         </div>
         <div className={styles.videoMain}>
           <div className={styles.videoContent} style={{ paddingRight: showList ? 0 : '5px' }}>
-            {true ? LOADING_COMPONENT : (
+            {loading ? (
+              LOADING_COMPONENT
+            ) : (
               <Player>
                 <HLSSource isVideoChild src={videoSrc} ref="source" />
               </Player>
