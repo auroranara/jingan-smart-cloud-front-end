@@ -69,7 +69,7 @@ export default {
       pagination: {
         total: 0,
         pageSize: 24,
-        pageNum: 0,
+        pageNum: 1,
       },
     },
     list: [],
@@ -91,7 +91,7 @@ export default {
     companyNatures: [],
     // 单位类型
     companyTypes: [],
-    pageNum: 0,
+    pageNum: 1,
     isLast: false,
     detail: {
       data: {
