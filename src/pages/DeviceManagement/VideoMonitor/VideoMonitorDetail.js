@@ -5,6 +5,7 @@ import FooterToolbar from '@/components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import Ellipsis from '@/components/Ellipsis';
 
 const { Description } = DescriptionList;
 
@@ -72,7 +73,12 @@ export default class VideoMonitorDetail extends PureComponent {
           <Description term="摄像头ID">{keyId || getEmptyData()}</Description>
           <Description term="视频所属区域">{name || getEmptyData()}</Description>
           <Description term="视频状态">{status || getEmptyData()}</Description>
-          <Description term="视频URL">{rtspAddress || getEmptyData()}</Description>
+          <Description term="视频URL">
+            <Ellipsis tooltip lines={1}>
+              {rtspAddress || getEmptyData()}
+            </Ellipsis>
+          </Description>
+
           <Description term="图片地址">{photoAddress || getEmptyData()}</Description>
           <Description term="是否用于查岗">
             {isInspection === 1 ? '是' : '否' || getEmptyData()}

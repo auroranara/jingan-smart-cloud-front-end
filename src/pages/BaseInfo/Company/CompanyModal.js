@@ -175,7 +175,7 @@ export default class CompanyModal extends PureComponent {
 
     return (
       <Modal
-        title={title || '选择消防维修单位'}
+        title={title || '选择单位'}
         width={width || 900}
         visible={visible}
         onCancel={this.handleClose}
