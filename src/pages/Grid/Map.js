@@ -56,8 +56,8 @@ export default class GridMap extends PureComponent {
       payload: { gridId: id },
       callback: list => {
         this.setState({
-          path: JSON.parse(list),
-        });
+          path: list && list.length ? JSON.parse(list) : [],
+        })
       },
     });
     // console.log('AMap', window.AMap);

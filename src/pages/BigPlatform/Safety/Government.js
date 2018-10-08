@@ -29,7 +29,7 @@ import TopData from './Sections/TopData';
 import HiddenDangerPie from './Sections/HiddenDangerPie';
 import RiskBar from './Sections/RiskBar';
 
-const { location: locationDefault } = global.PROJECT_CONFIG;
+const { location: locationDefault, region } = global.PROJECT_CONFIG;
 
 const sectionsVisible = {
   communityCom: false, // 社区接入单位数
@@ -200,6 +200,16 @@ class GovernmentBigPlatform extends Component {
         date: moment().format('YYYY-MM'),
       },
     });
+
+    if (region === '江溪街道') {
+      // 获取网格区域
+      dispatch({
+        type: 'bigPlatform/fetchMapLocation',
+        payload: {
+          gridId: 'gH3B8GRpQlyP1IWIw5BTPA',
+        },
+      });
+    }
 
     this.checkNum = 0;
     this.fetchCheckMsgs(moment().format('YYYY-MM'));
@@ -478,6 +488,7 @@ class GovernmentBigPlatform extends Component {
         overtimeUncheckedCompany,
         companyMessage,
         specialEquipment,
+        mapLocation = [],
       },
     } = this.props;
 
@@ -532,6 +543,7 @@ class GovernmentBigPlatform extends Component {
               <MapSection
                 dispatch={dispatch}
                 locData={location}
+                polygon={mapLocation}
                 zoom={zoom}
                 center={center}
                 handleIconClick={this.handleIconClick}

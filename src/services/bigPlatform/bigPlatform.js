@@ -107,6 +107,11 @@ export async function getListForMapForOptimize(params) {
   return request(`/acloud_new/v2/sfg/listForMapForOptimize.json?${stringify(params)}`);
 }
 
+// 获取网格区域
+export async function getMapLocation(params) {
+  return request(`/acloud_new/v2/gridInfo/getMapLocation?${stringify(params)}`);
+}
+
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
 export async function getCoItemList(params) {
