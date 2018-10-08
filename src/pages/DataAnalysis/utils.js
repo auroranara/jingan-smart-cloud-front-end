@@ -23,6 +23,8 @@ export function handleListFormVals(vals) {
   // 若没有检测类型，或者检测类型选择的是全部，即type=0，将type属性删除，默认全部
   if (!vals.type || vals.type === '0')
     delete newVals.type;
+
+  return newVals;
 }
 
 // 将RangePicker中获取的moment数组转化成startTime及endTime属性
