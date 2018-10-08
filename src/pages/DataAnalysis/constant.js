@@ -1,15 +1,20 @@
 import { DatePicker, Input, Select } from 'antd';
 import moment from 'moment';
-import { handleChemicalFormula, handleUnit, getThisMonth } from './utils';
+import { handleChemicalFormula, getThisMonth } from './utils';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 export const ELECTRICITY_TYPE = 1;
+export const ELECTRICITY_TYPE_LABEL = '用电安全异常数据分析';
 export const TOXIC_GAS_TYPE = 2;
+export const TOXIC_GAS_TYPE_LABEL = '可燃有毒气体异常数据分析';
 export const WASTE_WATER_TYPE = 3;
+export const WASTE_WATER_TYPE_LABEL = '废水异常数据分析';
 export const WASTE_GAS_TYPE = 4;
+export const WASTE_GAS_TYPE_LABEL = '废气异常数据分析';
 export const OPC_TYPE = 5;
+export const OPC_TYPE_LABEL = 'OPC异常数据分析';
 
 export const PAGE_SIZE = 10;
 export const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
@@ -86,7 +91,7 @@ export const ELECTRICITY_COLUMNS = [
     title: '监测数值',
     dataIndex: 'value',
     key: 'value',
-    render: value => handleUnit(value),
+    // render: value => handleUnit(value),
   },
   {
     title: '报警界限值',
@@ -131,7 +136,7 @@ export const TOXIC_GAS_COLUMNS = [
     title: '监测数值',
     dataIndex: 'value',
     key: 'value',
-    render: value => handleUnit(value),
+    // render: value => handleUnit(value),
   },
   {
     title: '报警界限值',
@@ -191,7 +196,7 @@ export const WASTE_WATER_COLUMNS = [
     title: '监测数值',
     dataIndex: 'value',
     key: 'value',
-    render: value => handleUnit(value),
+    // render: value => handleUnit(value),
   },
   {
     title: '报警界限值',
@@ -250,7 +255,7 @@ export const WASTE_GAS_COLUMNS = [
     title: '监测数值',
     dataIndex: 'value',
     key: 'value',
-    render: value => handleUnit(value),
+    // render: value => handleUnit(value),
   },
   {
     title: '报警界限值',
@@ -264,11 +269,86 @@ export const WASTE_GAS_COLUMNS = [
   },
 ];
 
-export function getFields(type, methods, params) {
+export const OPC_COLUMNS = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+  },
+  {
+    title: '时间',
+    dataIndex: 'time',
+    key: 'time',
+  },
+  {
+    title: '区域',
+    dataIndex: 'area',
+    key: 'area',
+  },
+  {
+    title: '位置',
+    dataIndex: 'location',
+    key: 'location',
+  },
+  {
+    title: '异常类别',
+    dataIndex: 'status',
+    key: 'status',
+    render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
+  },
+  {
+    title: '异常参数',
+    dataIndex: 'parameter',
+    key: 'parameter',
+    // render: param => handleChemicalFormula(param),
+  },
+  {
+    title: '监测数值',
+    dataIndex: 'value',
+    key: 'value',
+  },
+  {
+    title: '报警界限值',
+    dataIndex: 'limitValue',
+    key: 'limitValue',
+  },
+  {
+    title: '报警描述',
+    dataIndex: 'condition',
+    key: 'condition',
+  },
+];
+
+export const OPC_PARAMS = [
+  { name: '全部', key: 0 },
+  { name: '液压', key: 1 },
+  { name: '水位', key: 2 },
+  { name: '温度', key: 3 },
+];
+
+function dateValidator(rule, value, callback) {
+  // console.log(value);
+  // callback();
+
+  if (value.length !== 2) {
+    callback();
+    return;
+  }
+
+  const [start, end] = value;
+  const threeMore = start.clone().add(3, 'months');
+  if (threeMore < end)
+    callback('日期范围不能超过三个月');
+  else
+    callback();
+}
+
+export function getFields(type, params, methods) {
   switch(type) {
     case ELECTRICITY_TYPE:
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
+    case OPC_TYPE:
       return [
         {
           id: 'area',
@@ -312,16 +392,20 @@ export function getFields(type, methods, params) {
           labelCol: { span: 2 },
           wrapperCol: WRAPPER_COL,
           inputSpan: { span: 18 },
-          options: { initialValue: getThisMonth() },
+          options: {
+            initialValue: getThisMonth(),
+            rules: [{ validator: dateValidator }],
+          },
           render: () => (
             <RangePicker
               // 在Form表单中，由于被getFieldDecorator包裹了，所以只能在options中设定初始值
               // defaultValue={[moment().startOf('month'), moment()]}
-              disabledDate={methods.disabledDate}
-              showTime={{ format: 'HH:mm', defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
+              // 禁用日期后有些小bug，且体验不太好
+              // disabledDate={methods.disabledDate}
+              // onCalendarChange={methods.onCalendarChange}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
-              onCalendarChange={methods.onCalendarChange}
+              showTime={{ format: 'HH:mm', defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
             />
           ),
         },
@@ -361,14 +445,17 @@ export function getFields(type, methods, params) {
           labelCol: LABEL_COL_2,
           wrapperCol: WRAPPER_COL,
           inputSpan: SPAN_16,
-          options: { initialValue: getThisMonth() },
+          options: {
+            initialValue: getThisMonth(),
+            rules: [{ validator: dateValidator }],
+          },
           render: () => (
             <RangePicker
-              disabledDate={methods.disabledDate}
-              showTime={{ format: 'HH:mm', defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
+              // disabledDate={methods.disabledDate}
+              // onCalendarChange={methods.onCalendarChange}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
-              onCalendarChange={methods.onCalendarChange}
+              showTime={{ format: 'HH:mm', defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
             />
           ),
         },

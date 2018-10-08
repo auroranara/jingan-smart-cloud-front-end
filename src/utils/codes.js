@@ -84,7 +84,7 @@ export default {
       'toxic-gas': 'dataAnalysis.IOTAbnormalData.toxicGas',
       'waste-water': 'dataAnalysis.IOTAbnormalData.wasteWater',
       'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
-      'opc': 'dataAnalysis.IOTAbnormalData.opc',
+      'OPC': 'dataAnalysis.IOTAbnormalData.OPC',
     },
   },
 };
