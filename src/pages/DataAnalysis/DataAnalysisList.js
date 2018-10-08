@@ -215,7 +215,7 @@ export default class DataAnalysisList extends PureComponent {
               'toxic-gas': gasNum,
               'waste-water': pollutionWaterNum,
               'waste-gas': pollutionGasNum,
-              'opc': opcNum,
+              OPC: opcNum,
             };
 
             return (
