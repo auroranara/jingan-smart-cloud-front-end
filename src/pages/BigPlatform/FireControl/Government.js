@@ -24,7 +24,7 @@ import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
 
-const { location } = global.PROJECT_CONFIG;
+const { location, region } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
 const AUTO_LOOKUP_ROTATE = 2;
@@ -108,6 +108,16 @@ export default class FireControlBigPlatform extends PureComponent {
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
       },
     });
+
+    if (region === '江溪街道') {
+      // 获取网格区域
+      dispatch({
+        type: 'bigFireControl/fetchMapLocation',
+        payload: {
+          gridId: 'gH3B8GRpQlyP1IWIw5BTPA',
+        },
+      });
+    }
 
     this.fetchLookUpVideo();
   };
@@ -392,6 +402,7 @@ export default class FireControlBigPlatform extends PureComponent {
         allCamera,
         videoLookUp,
         lookUpCamera,
+        mapLocation,
       },
       dispatch,
     } = this.props;
@@ -476,6 +487,7 @@ export default class FireControlBigPlatform extends PureComponent {
             <FcModule className={styles.map}>
               <FireControlMap
                 map={map}
+                polygon={mapLocation}
                 alarm={alarm}
                 zoom={mapZoom}
                 center={mapCenter}
