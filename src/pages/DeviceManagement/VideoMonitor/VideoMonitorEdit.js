@@ -23,7 +23,7 @@ const fieldLabels = {
   equipmentID: '设备ID',
   cameraID: '摄像头ID',
   videoArea: '视频所属区域',
-  videoStatus: '视频状态',
+  // videoStatus: '视频状态',
   videoURL: '视频URL',
   picAddress: '图片地址',
   inspectSentries: '是否用于查岗',
@@ -133,7 +133,7 @@ export default class VideoMonitorEdit extends PureComponent {
           deviceId,
           keyId,
           name,
-          status,
+          // status,
           rtspAddress,
           photoAddress,
           xNum,
@@ -145,10 +145,10 @@ export default class VideoMonitorEdit extends PureComponent {
         const payload = {
           id,
           deviceId,
-          vedioId: id,
+          videoId: id,
           keyId,
           name,
-          status,
+          // status,
           companyId,
           rtspAddress,
           photoAddress,
@@ -322,7 +322,7 @@ export default class VideoMonitorEdit extends PureComponent {
             deviceId,
             keyId,
             name,
-            status,
+            // status,
             rtspAddress,
             photoAddress,
             isInspection,
@@ -458,7 +458,8 @@ export default class VideoMonitorEdit extends PureComponent {
             })(<Input placeholder="请输入视频所属区域" />)}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.videoStatus}>
+          {/*
+                        <FormItem {...formItemLayout} label={fieldLabels.videoStatus}>
             {getFieldDecorator('status', {
               initialValue: status,
               rules: [
@@ -468,6 +469,7 @@ export default class VideoMonitorEdit extends PureComponent {
               ],
             })(<Input placeholder="请输入视频状态" />)}
           </FormItem>
+            */}
 
           <FormItem {...formItemLayout} label={fieldLabels.videoURL}>
             {getFieldDecorator('rtspAddress', {
