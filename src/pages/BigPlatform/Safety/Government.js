@@ -1,15 +1,10 @@
-import React, { Fragment, Component } from 'react';
-import { Row, Col, Tooltip } from 'antd';
+import React, { Component } from 'react';
+import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import styles from './Government.less';
-import rotate from './Animate.less';
 import Timer from './Components/Timer';
-import debounce from 'lodash/debounce';
-import Ellipsis from '../../../components/Ellipsis';
-
-import ReactEcharts from 'echarts-for-react';
 import MapSection from './Sections/MapSection';
 import MyTooltip from '../FireControl/section/Tooltip';
 
@@ -535,6 +530,10 @@ class GovernmentBigPlatform extends Component {
                 overRectifyNum={overRectifyNum}
                 selectOvertimeItemNum={selectOvertimeItemNum}
                 checkedCompanyInfo={this.checkNum}
+                handleParentChange={newState => {
+                  this.setState(newState);
+                }}
+                fetchCheckMsgs={this.fetchCheckMsgs}
               />
 
               {/* <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
@@ -673,6 +672,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 fetchCheckMsgs={this.fetchCheckMsgs}
+                checksMonth={checksMonth}
               />
 
               {/* 已超时单位 */}
