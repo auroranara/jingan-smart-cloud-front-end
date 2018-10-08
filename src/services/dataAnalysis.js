@@ -15,6 +15,11 @@ export async function queryData(params) {
 
 // 导出
 export async function queryExport(params) {
-  console.log('fetch export...');
+  // console.log('fetch export...');
   return request(`${URL_PREFIX}/export?${stringify(params)}`);
+}
+
+// 获取企业信息
+export async function getCompanyInfo(id) {
+  return request(`/acloud_new/v2/baseInfo/company/${id}`);
 }
