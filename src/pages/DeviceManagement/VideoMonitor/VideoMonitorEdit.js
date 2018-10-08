@@ -424,7 +424,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 },
                 {
                   pattern: numReg,
-                  message: '设备ID格式不正确，必须含有下划线与小写字母，不能下划线开头和结尾',
+                  message: '设备ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾',
                 },
               ],
             })(<Input placeholder="请输入设备ID" />)}
@@ -440,7 +440,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 },
                 {
                   pattern: numReg,
-                  message: '摄像头ID格式不正确，必须含有小写字母与下划线，不能下划线开头和结尾',
+                  message: '摄像头ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾',
                 },
               ],
             })(<Input placeholder="请输入摄像头ID" />)}
