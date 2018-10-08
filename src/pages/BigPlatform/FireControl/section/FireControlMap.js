@@ -327,7 +327,7 @@ export default class FireControlMap extends PureComponent {
       <FcSection style={{ padding: 8 }} className={styles.map}>
         <div className={styles.mapContainer}>
           <GDMap
-            // viewMode="3D"
+            viewMode="3D"
             amapkey="665bd904a802559d49a33335f1e4aa0d"
             plugins={[{ name: 'Scale', options: { locate: false } }, { name: 'ControlBar' }]}
             status={status}
