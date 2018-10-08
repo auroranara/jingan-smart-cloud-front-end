@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Tooltip } from 'antd';
+import moment from 'moment';
 import styles from '../Government.less';
 
 class TopData extends PureComponent {
@@ -20,6 +21,8 @@ class TopData extends PureComponent {
       overRectifyNum = 0,
       selectOvertimeItemNum = 0,
       checkedCompanyInfo,
+      handleParentChange,
+      fetchCheckMsgs,
     } = this.props;
 
     return (
@@ -96,6 +99,11 @@ class TopData extends PureComponent {
                   <div
                     className={styles.itemActive}
                     onClick={() => {
+                      const thisMonth = moment().format('YYYY-MM');
+                      handleParentChange({
+                        checksMonth: thisMonth,
+                      });
+                      fetchCheckMsgs(thisMonth);
                       goComponent('checks');
                     }}
                   >

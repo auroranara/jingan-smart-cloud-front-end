@@ -38,12 +38,13 @@ class CheckInfo extends PureComponent {
   };
 
   handleGoDangerCompany = userId => {
-    const { dispatch, handleParentChange, goComponent } = this.props;
+    const { dispatch, handleParentChange, goComponent, checksMonth } = this.props;
     const { selectedMonth } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerCompany',
       payload: {
-        date: selectedMonth,
+        // date: selectedMonth,
+        date: checksMonth,
         userId: userId || '',
       },
       success: res => {
@@ -69,11 +70,14 @@ class CheckInfo extends PureComponent {
       dangerCompany: { dangerCompanyNum = 0 },
       dangerCompanyOver,
       goBack,
+      checksMonth,
     } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
     });
+
+    const thisMonth = moment().format('YYYY-MM');
     return (
       <section
         className={stylesVisible}
@@ -95,14 +99,14 @@ class CheckInfo extends PureComponent {
           >
             <Select
               size="small"
-              value={selectedMonth}
+              value={checksMonth}
               onSelect={this.handleMonthSelect}
               className={styles2.monthSelect}
               dropdownClassName={styles2.monthDropDown}
               style={{ position: 'relative', top: '1px', width: '90px' }}
             >
               {months.map(({ value }) => {
-                const isSelected = selectedMonth === value;
+                const isSelected = checksMonth === value;
                 return (
                   <Option
                     key={value}
@@ -160,7 +164,7 @@ class CheckInfo extends PureComponent {
                     </div>
                   </div>
                 </Col>
-                <Col span={12}>
+                <Col span={12} style={{ display: checksMonth === thisMonth ? 'block' : 'none' }}>
                   <div
                     className={styles.checksContentActive}
                     onClick={() => {

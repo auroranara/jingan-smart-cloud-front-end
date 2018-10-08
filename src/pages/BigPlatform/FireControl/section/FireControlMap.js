@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Map as GDMap, Marker, InfoWindow } from 'react-amap';
+import { Map as GDMap, Marker, InfoWindow, Polygon } from 'react-amap';
 import { Button, Icon } from 'antd';
 // import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
@@ -310,6 +310,7 @@ export default class FireControlMap extends PureComponent {
       alarm: { list = [] },
       map: { companyBasicInfoList = [], totalNum },
       setMapItemList,
+      polygon,
     } = this.props;
 
     const mapBarStyle = selected ? { top: 11, right: 100 } : { top: 11, right: 15 };
@@ -335,6 +336,16 @@ export default class FireControlMap extends PureComponent {
             center={center}
             zoom={zoom}
           >
+            <Polygon
+              path={polygon}
+              visible={polygon.length}
+              style={{
+                strokeColor: '#5ebeff',
+                strokeOpacity: 1,
+                fillColor: '#5ebeff',
+                fillOpacity: 0.5,
+              }}
+            />
             {this.renderCompanyMarker(newList)}
             {selected && this.renderInfoWindow()}
             <MapTypeBar style={mapBarStyle} />

@@ -44,6 +44,7 @@ export default {
   'menu.dataAnalysis.IOTAbnormalData.electricity': '用电安全异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.wasteWater': '废水异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.wasteGas': '废气异常数据分析',
+  'menu.dataAnalysis.IOTAbnormalData.OPC': 'OPC异常数据分析',
   'menu.deviceManagement': '设备管理',
   'menu.deviceManagement.userTransmissionDevice': '用户传输装置',
   'menu.deviceManagement.userTransmissionDevice.userTransmissionDevice': '用户传输装置',
