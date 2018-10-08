@@ -34,6 +34,7 @@ import {
   getSelectOvertimeItemNum,
   getOvertimeUncheckedCompany,
   getListForMapForOptimize,
+  getMapLocation,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -210,6 +211,7 @@ export default {
     staffRecords: [],
     selectOvertimeItemNum: 0,
     overtimeUncheckedCompany: [],
+    mapLocation: [],
   },
 
   effects: {
@@ -787,6 +789,21 @@ export default {
         success(response);
       }
     },
+    // 获取网格区域
+    *fetchMapLocation({ payload, success, error }, { call, put }) {
+      const response = yield call(getMapLocation, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'mapLocation',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -1040,6 +1057,12 @@ export default {
       return {
         ...state,
         listForMapForOptimize: payload,
+      };
+    },
+    mapLocation(state, { payload }) {
+      return {
+        ...state,
+        mapLocation: payload ? JSON.parse(payload) : [],
       };
     },
   },

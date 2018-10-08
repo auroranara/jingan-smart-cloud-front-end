@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Icon, Row, Col } from 'antd';
-import { Map as GDMap, InfoWindow, Markers } from 'react-amap';
+import { Map as GDMap, InfoWindow, Markers, Polygon } from 'react-amap';
 import classNames from 'classnames';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
@@ -319,6 +319,7 @@ class MapSection extends PureComponent {
       bigPlatformSafetyCompany: { selectList },
       center,
       zoom,
+      polygon,
     } = this.props;
 
     return (
@@ -341,6 +342,16 @@ class MapSection extends PureComponent {
                 zoom={zoom}
                 events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
               >
+                <Polygon
+                  path={polygon}
+                  visible={polygon.length}
+                  style={{
+                    strokeColor: '#5ebeff',
+                    strokeOpacity: 1,
+                    fillColor: '#5ebeff',
+                    fillOpacity: 0.5,
+                  }}
+                />
                 {this.renderInfoWindow()}
                 {this.renderMarkers()}
                 <MapTypeBar />
