@@ -43,7 +43,16 @@ export default {
 
   reducers: {
     saveCompanyList(state, action) {
-      return { ...state, companies: action.payload };
+      const data = action.payload;
+      const { list=[], pagination={} } = data;
+      const { pageNum=1 } = pagination;
+      let newList = list;
+      // 第一页list就为获取的list，第二页就要在之前list上增加新获取的list
+      if (pageNum !== 1)
+        newList = [...state.companies.list, ...list];
+      const companies = { ...data, list: newList };
+
+      return { ...state, companies };
     },
     saveData(state, action) {
       return { ...state, analysis: action.payload };
