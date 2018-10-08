@@ -76,6 +76,8 @@ class CheckInfo extends PureComponent {
       [rotate.in]: visible,
       [rotate.out]: !visible,
     });
+
+    const thisMonth = moment().format('YYYY-MM');
     return (
       <section
         className={stylesVisible}
@@ -162,7 +164,7 @@ class CheckInfo extends PureComponent {
                     </div>
                   </div>
                 </Col>
-                <Col span={12}>
+                <Col span={12} style={{ display: checksMonth === thisMonth ? 'block' : 'none' }}>
                   <div
                     className={styles.checksContentActive}
                     onClick={() => {
