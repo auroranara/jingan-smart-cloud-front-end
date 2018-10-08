@@ -252,7 +252,6 @@ export default class VideoMonitorList extends PureComponent {
       videoMonitor: {
         data: {
           pagination: { total },
-          videoCount,
         },
         isLast,
       },
@@ -271,7 +270,7 @@ export default class VideoMonitorList extends PureComponent {
             </span>
             <span style={{ paddingLeft: 20 }}>
               视频总数：
-              {videoCount}
+              {videoTotal}
               {''}
             </span>
           </div>
