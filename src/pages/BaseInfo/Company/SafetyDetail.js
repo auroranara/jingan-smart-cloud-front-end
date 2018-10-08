@@ -123,7 +123,7 @@ function isJSONStr(str) {
 export default class SafetyDetail extends PureComponent {
   componentDidMount() {
     const { dispatch, companyId } = this.props;
-    dispatch({ type: 'safety/fetch', payload: companyId });
+    dispatch({ type: 'safety/fetch', payload: { companyId } });
     dispatch({
       type: 'safety/fetchMenus',
       callback(menus) {
