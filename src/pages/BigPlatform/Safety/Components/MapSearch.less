@@ -23,20 +23,28 @@
   }
 }
 
-// :global {
-//   .rc-select-dropdown {
-//     border: none;
-//     background-color: #003160;
-//     font-size: 13px;
-//     li.rc-select-dropdown-menu-item {
-//       background-color: #003160;
-//       width: 100%;
-//       overflow: hidden;
-//       text-overflow: ellipsis;
-//     }
-//   }
-//   .rc-select-dropdown:first-child {
-//     overflow: hidden;
-//     width: 100%;
-//   }
-// }
+:global {
+  .rc-select-dropdown {
+    border: none;
+    background-color: transparent;
+    li.rc-select-dropdown-menu-item {
+      background-color: rgba(1, 29, 67, 0.8); // background-color: #003160;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #fff;
+    }
+    li.rc-select-dropdown-menu-item-active {
+      background-color: #04498c;
+    }
+  }
+  .rc-select-dropdown:first-child {
+    overflow: hidden;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
+  }
+}
+
+.dropHighlight {
+  color: rgb(0, 186, 255);
+}

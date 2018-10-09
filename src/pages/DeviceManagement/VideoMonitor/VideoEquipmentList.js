@@ -282,7 +282,7 @@ export default class VideoEquipmentList extends PureComponent {
                               type: 'videoMonitor/updateVideoDevice',
                               payload: {
                                 companyId,
-                                vedioId: id,
+                                videoId: id,
                                 // keyId,
                                 isInspection: checkedArray[index] ? 0 : 1,
                               },

@@ -1,7 +1,7 @@
 import { Map, MouseTool, Polygon } from 'react-amap';
 import React, { PureComponent } from 'react';
-import { message, Button } from 'antd'
-import { connect } from 'dva'
+import { message, Button } from 'antd';
+import { connect } from 'dva';
 
 const layerStyle = {
   padding: '10px',
@@ -12,6 +12,8 @@ const layerStyle = {
   top: '10px',
   left: '10px',
 };
+const { location } = global.PROJECT_CONFIG;
+
 @connect(({ map }) => ({
   map,
 }))
@@ -39,23 +41,25 @@ export default class GridMap extends PureComponent {
       },
     };
     this.mapPlugins = ['ToolBar'];
-    this.mapCenter = { longitude: 100, latitude: 35 };
+    this.mapCenter = { longitude: location.x, latitude: location.y };
   }
 
   componentDidMount() {
     const {
       dispatch,
-      match: { params: { id } },
-    } = this.props
+      match: {
+        params: { id },
+      },
+    } = this.props;
     dispatch({
       type: 'map/fetchGridPoints',
       payload: { gridId: id },
-      callback: (list) => {
+      callback: list => {
         this.setState({
-          path: JSON.parse(list),
+          path: list && list.length ? JSON.parse(list) : [],
         })
       },
-    })
+    });
     // console.log('AMap', window.AMap);
     // const polygon = new window.AMap.Polygon({ path: this.polygonPath });
     // this.mapinst.add(polygon);
@@ -68,12 +72,12 @@ export default class GridMap extends PureComponent {
       // path: obj.getPath(),
     });
     this.close();
-  };
+  }
 
   // 开始绘制
   drawPolygon = () => {
-    const { path } = this.state
-    const points = this.mapinst.getAllOverlays('polygon')
+    const { path } = this.state;
+    const points = this.mapinst.getAllOverlays('polygon');
 
     if (!points || points.length === 0) {
       if (this.tool) {
@@ -84,13 +88,13 @@ export default class GridMap extends PureComponent {
           path: [],
         });
       }
-    } else message.warning('只能同时绘制一块区域！')
+    } else message.warning('只能同时绘制一块区域！');
   };
 
   // 开启/关闭绘制区域
   editPolygon = () => {
-    const { editActive } = this.state
-    const points = this.mapinst.getAllOverlays('polygon')
+    const { editActive } = this.state;
+    const points = this.mapinst.getAllOverlays('polygon');
     // console.log(this.mapinst.getAllOverlays('polygon')[0]);
     // console.log('AMap2', window.AMap);
     if (points && points.length) {
@@ -110,7 +114,6 @@ export default class GridMap extends PureComponent {
             }
           );
         });
-
       } else {
         this.setState(
           {
@@ -121,16 +124,18 @@ export default class GridMap extends PureComponent {
           }
         );
       }
-    } else message.warning('请先绘制网格点！')
+    } else message.warning('请先绘制网格点！');
   };
   // 提交网格点
   handleSubmit = () => {
-    const points = this.mapinst.getAllOverlays('polygon')
+    const points = this.mapinst.getAllOverlays('polygon');
     const {
       dispatch,
-      match: { params: { id } },
-    } = this.props
-    const { editActive } = this.state
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    const { editActive } = this.state;
     if (!editActive) {
       if (points && points.length) {
         // console.log('points[0]',points[0].getPath());
@@ -141,12 +146,16 @@ export default class GridMap extends PureComponent {
             gridId: id,
             location: JSON.stringify(points[0].getPath()),
           },
-          success: () => { message.success('操作成功！') },
-          error: () => { message.error('操作失败！') },
-        })
-      } else message.warning('请先绘制网格点！')
-    } else message.warning('请先结束编辑！')
-  }
+          success: () => {
+            message.success('操作成功！');
+          },
+          error: () => {
+            message.error('操作失败！');
+          },
+        });
+      } else message.warning('请先绘制网格点！');
+    } else message.warning('请先结束编辑！');
+  };
 
   close = () => {
     if (this.tool) {
@@ -155,29 +164,46 @@ export default class GridMap extends PureComponent {
   };
 
   handleClear = () => {
-    const { editActive } = this.state
+    const { editActive } = this.state;
     if (!editActive) {
-      this.setState({ editActive: false, path: [] })
-      this.mapinst.remove(this.mapinst.getAllOverlays('polygon'))
-    } else message.warning('请先结束编辑！')
-  }
+      this.setState({ editActive: false, path: [] });
+      this.mapinst.remove(this.mapinst.getAllOverlays('polygon'));
+    } else message.warning('请先结束编辑！');
+  };
 
   render() {
     const { editActive, what, path } = this.state;
-    const center = path && path.length ? path.reduce((res, item) => {
-      return { longitude: (res.longitude + item.lng) / 2, latitude: (res.latitude + item.lat) / 2 }
-    }, { longitude: path[0].lng, latitude: path[0].lat }) : this.mapCenter
+    const center =
+      path && path.length
+        ? path.reduce(
+            (res, item) => {
+              return {
+                longitude: (res.longitude + item.lng) / 2,
+                latitude: (res.latitude + item.lat) / 2,
+              };
+            },
+            { longitude: path[0].lng, latitude: path[0].lat }
+          )
+        : this.mapCenter;
     if (path && path.length) {
-      this.mapCenter = center
+      this.mapCenter = center;
     }
 
     return (
       <div>
         <div style={{ width: '100%', height: 720 }}>
-          <Map plugins={this.mapPlugins} center={center} events={this.mapEvents} zoom={12}>
+          <Map
+            plugins={this.mapPlugins}
+            center={center}
+            events={this.mapEvents}
+            zoom={location.zoom}
+          >
             <MouseTool events={this.toolEvents} />
             <div style={layerStyle}>{what}</div>
-            {path && path.length && <Polygon path={path} style={{ strokeOpacity: 0.5, fillOpacity: 0.5 }} />}
+            {path &&
+              path.length && (
+                <Polygon path={path} style={{ strokeOpacity: 0.5, fillOpacity: 0.5 }} />
+              )}
           </Map>
         </div>
         <Button

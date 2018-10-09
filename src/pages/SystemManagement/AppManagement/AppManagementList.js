@@ -388,11 +388,13 @@ export default class AppManagement extends PureComponent {
         title: '版本名称',
         dataIndex: 'versionName',
         key: 'versionName',
+        width: 96,
       },
       {
         title: '版本编号',
         dataIndex: 'versionCode',
         key: 'versionCode',
+        width: 96,
       },
       {
         title: '版本说明',
@@ -403,11 +405,13 @@ export default class AppManagement extends PureComponent {
         title: '是否发布',
         dataIndex: 'isPublishChinese',
         key: 'isPublishChinese',
+        width: 96,
       },
       {
         title: '强制更新',
         dataIndex: 'isForceChinese',
         key: 'isForceChinese',
+        width: 96,
       },
       {
         title: '下载地址',
@@ -419,6 +423,7 @@ export default class AppManagement extends PureComponent {
         title: '操作',
         key: '操作',
         render: (val, record) => <a onClick={() => this.handleModalVisible(true, record)}>配置</a>,
+        width: 64,
       },
     ];
 

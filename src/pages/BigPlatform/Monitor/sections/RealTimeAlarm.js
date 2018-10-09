@@ -37,7 +37,7 @@ export default class RealTimeAlarm extends PureComponent {
           <div className={styles.location}>
             <span>
               <Icon type="environment" theme="outlined" />
-              {item.area}：{item.location}
+              {item.area}{item.area && item.location && '：'}{item.location}
             </span>
           </div>
         </div>

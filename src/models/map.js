@@ -1,4 +1,11 @@
-import { queryMapCount, queryAroundUsers, queryAroundVideos, queryVideoUrl, fetchGridPoints, updateGridPoints } from '../services/map/map.js';
+import {
+  queryMapCount,
+  queryAroundUsers,
+  queryAroundVideos,
+  queryVideoUrl,
+  fetchGridPoints,
+  updateGridPoints,
+} from '../services/map/map.js';
 
 export default {
   namespace: 'map',
@@ -24,8 +31,7 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -39,8 +45,7 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -54,8 +59,7 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -69,22 +73,21 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
     *fetchGridPoints({ payload, callback }, { call, put }) {
-      const response = yield call(fetchGridPoints, payload)
-      if (response && response.code === 200) {
-        if (callback) callback(response.data || [])
+      const response = yield call(fetchGridPoints, payload);
+      if (response && response.code === 200 && response.data) {
+        if (callback) callback(response.data || []);
       }
     },
     *updateGridPoints({ payload, success, error }, { call }) {
-      const response = yield call(updateGridPoints, payload)
+      const response = yield call(updateGridPoints, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
   },
 

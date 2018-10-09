@@ -17,7 +17,7 @@ export default {
         pageSize: 24,
         pageNum: 1,
       },
-      vedioCount: 0,
+      videoCount: 0,
     },
     list: [],
     pageNum: 1,
@@ -52,13 +52,14 @@ export default {
 
   effects: {
     // 视频企业列表
-    *fetchCompanyList({ payload }, { call, put }) {
+    *fetchCompanyList({ payload, callback }, { call, put }) {
       const response = yield call(queryVideoCompaniesList, payload);
       if (response.code === 200) {
         yield put({
           type: 'saveVideoCompaniesList',
           payload: response.data,
         });
+        if (callback) callback(response.data);
       }
     },
     // 查询视频企业列表

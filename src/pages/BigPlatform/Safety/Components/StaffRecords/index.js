@@ -58,6 +58,29 @@ export default class App extends PureComponent {
     const { id: idField, person: personField, time: timeField, point: pointField, result: resultField } = {...defaultFieldNames, ...fieldNames};
     const total = data.length;
     const abnormal = data.filter(item => +item[resultField] !== 1).length;
+    const list = hiddenDanger && hiddenDanger.map(({
+      _id,
+      _desc,
+      _report_user_name,
+      _report_time,
+      _rectify_user_name,
+      _plan_rectify_time,
+      _real_rectify_time,
+      _review_user_name,
+      hiddenStatus,
+      _path,
+    }) => ({
+      id: _id,
+      description: _desc,
+      sbr: _report_user_name,
+      sbsj: moment(+_report_time).format('YYYY-MM-DD'),
+      zgr: _rectify_user_name,
+      plan_zgsj: moment(+_plan_rectify_time).format('YYYY-MM-DD'),
+      real_zgsj: moment(+_real_rectify_time).format('YYYY-MM-DD'),
+      fcr: _review_user_name,
+      status: +hiddenStatus,
+      background: _path,
+    }));
 
     /* 表头 */
     const columns = [
@@ -114,7 +137,7 @@ export default class App extends PureComponent {
             <div className={styles.jumpButton} onClick={onBack}><img src={backIcon} alt="" /></div>
           </Fragment>
         }
-        hackHeight={38 * data.length}
+        hackHeight={data.length > 0 ? (38 * data.length + 37) : 38}
         isScroll
       >
         <Table
@@ -127,7 +150,7 @@ export default class App extends PureComponent {
           bordered={false}
           rowKey={idField}
         />
-        {hiddenDanger && (
+        {list && (
           <Switcher
             visible={true}
             style={{
@@ -138,22 +161,11 @@ export default class App extends PureComponent {
             }}
             onClose={() => this.setHiddenDanger(null)}
           >
-            {hiddenDanger.map(item => (
+            {list.map(item => (
               <HiddenDanger
-                key={item._id}
+                key={item.id}
                 style={{ marginBottom: 0 }}
                 data={item}
-                fieldNames={{
-                  description: '_desc',
-                  sbr: '_report_user_name',
-                  sbsj: '_report_time',
-                  zgr: '_rectify_user_name',
-                  plan_zgsj: '_plan_rectify_time',
-                  real_zgsj: '_real_rectify_time',
-                  fcr: '_review_user_name',
-                  status: 'hiddenStatus',
-                  background: '_path',
-                }}
               />
             ))}
           </Switcher>

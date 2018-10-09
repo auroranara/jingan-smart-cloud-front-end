@@ -31,23 +31,27 @@ import {
   getStaffList,
   // 获取人员记录
   getStaffRecords,
+  getSelectOvertimeItemNum,
+  getOvertimeUncheckedCompany,
+  getListForMapForOptimize,
+  getMapLocation,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
 const getColorByRiskLevel = function(level) {
-  switch(+level) {
+  switch (+level) {
     case 1:
-    return '红色';
+      return '红色';
     case 2:
-    return '橙色';
+      return '橙色';
     case 3:
-    return '黄色';
+      return '黄色';
     case 4:
-    return '蓝色';
+      return '蓝色';
     default:
-    return '';
+      return '';
   }
-}
+};
 const transformHiddenDangerFields = ({
   id,
   item_id,
@@ -64,20 +68,25 @@ const transformHiddenDangerFields = ({
   companyBuildingItem,
 }) => {
   const { object_title, risk_level } = companyBuildingItem || {};
-  return ({
-  id,
-  item_id,
-  description: desc,
-  sbr: report_user_name,
-  sbsj: moment(+report_time).format('YYYY-MM-DD'),
-  zgr: rectify_user_name,
-  plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
-  real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
-  fcr: review_user_name,
-  status: +status,
-  background: background?background.split(',')[0]:'',
-  source: (source_type_name === '网格点上报' && '监督点') || (source_type_name === '风险点上报' && `${getColorByRiskLevel(risk_level)}风险点${object_title?`（${object_title}）`:''}`) || source_type_name,
-})};
+  return {
+    id,
+    item_id,
+    description: desc,
+    sbr: report_user_name,
+    sbsj: moment(+report_time).format('YYYY-MM-DD'),
+    zgr: rectify_user_name,
+    plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
+    real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
+    fcr: review_user_name,
+    status: +status,
+    background: background ? background.split(',')[0] : '',
+    source:
+      (source_type_name === '网格点上报' && '监督点') ||
+      (source_type_name === '风险点上报' &&
+        `${getColorByRiskLevel(risk_level)}风险点${object_title ? `（${object_title}）` : ''}`) ||
+      source_type_name,
+  };
+};
 
 export default {
   namespace: 'bigPlatform',
@@ -109,6 +118,13 @@ export default {
       total: 0,
       dangerCompany: [],
       overCheck: 0,
+    },
+    listForMapForOptimize: {
+      overRectifyNum: 0,
+      rectifyNum: 0,
+      reviewNum: 0,
+      total: 0,
+      dangerCompany: [],
     },
     newHomePage: {
       companyDto: {
@@ -176,7 +192,14 @@ export default {
     // 监控数据
     monitorData: {},
     checkInfo: [],
-    hiddenDangerCompany: [],
+    hiddenDangerListByDate: {
+      ycq: [],
+      wcq: [],
+      dfc: [],
+    },
+    hiddenDangerCompanyAll: {},
+    hiddenDangerCompanyMonth: {},
+    hiddenDangerCompanyUser: {},
     hiddenDangerOverTime: [],
     checkedCompanyInfo: {
       checked: 0,
@@ -186,6 +209,9 @@ export default {
     staffList: [],
     // 人员记录
     staffRecords: [],
+    selectOvertimeItemNum: 0,
+    overtimeUncheckedCompany: [],
+    mapLocation: [],
   },
 
   effects: {
@@ -375,7 +401,14 @@ export default {
     *fetchCountDangerLocationForCompany({ payload, success, error }, { call, put }) {
       const response = yield call(getCountDangerLocationForCompany, payload);
       // if (response.code === 200) {
-      const {countDangerLocation,redDangerResult,orangeDangerResult,yellowDangerResult,blueDangerResult,notRatedDangerResult=[] } = response;
+      const {
+        countDangerLocation,
+        redDangerResult,
+        orangeDangerResult,
+        yellowDangerResult,
+        blueDangerResult,
+        notRatedDangerResult = [],
+      } = response;
       yield put({
         type: 'countDangerLocationForCompany',
         payload: {
@@ -581,16 +614,31 @@ export default {
         error();
       }
     },
-    // 隐患单位数量以及具体信息
+    // 隐患单位数量以及具体信息 #2185
     *fetchHiddenDangerCompany({ payload, success, error }, { call, put }) {
       const response = yield call(getHiddenDangerCompany, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'hiddenDangerCompany',
-          payload: response.data.dangerCompany || [],
-        });
+        if (!payload || !payload.date) {
+          // 所有隐患单位
+          yield put({
+            type: 'hiddenDangerCompanyAll',
+            payload: response.data,
+          });
+        } else if (payload.date && !payload.userId) {
+          // 某月隐患单位
+          yield put({
+            type: 'hiddenDangerCompanyMonth',
+            payload: response.data,
+          });
+        } else {
+          // 某人隐患单位
+          yield put({
+            type: 'hiddenDangerCompanyUser',
+            payload: response.data,
+          });
+        }
         if (success) {
-          success(response);
+          success(response.data);
         }
       } else if (error) {
         error();
@@ -630,9 +678,31 @@ export default {
     *fetchHiddenDangerListByDate({ payload, success, error }, { call, put }) {
       const response = yield call(getHiddenDangerListByDate, payload);
       if (response.code === 200) {
+        const ycq = response.data.hiddenDangers
+          .filter(({ status }) => +status === 7)
+          .sort((a, b) => {
+            return +a.plan_rectify_time - b.plan_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
+        const wcq = response.data.hiddenDangers
+          .filter(({ status }) => +status === 1 || +status === 2)
+          .sort((a, b) => {
+            return +a.plan_rectify_time - b.plan_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
+        const dfc = response.data.hiddenDangers
+          .filter(({ status }) => +status === 3)
+          .sort((a, b) => {
+            return +a.real_rectify_time - b.real_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
         yield put({
           type: 'hiddenDangerListByDate',
-          payload: response.data,
+          payload: {
+            ycq,
+            wcq,
+            dfc,
+          },
         });
         if (success) {
           success(response.data);
@@ -650,7 +720,7 @@ export default {
           payload: { number: response.data.allTotal || 0, isChecked: payload.isChecked },
         });
         if (success) {
-          success(response.data);
+          success(response.data.allTotal || 0);
         }
       } else if (error) {
         error();
@@ -678,8 +748,59 @@ export default {
         if (success) {
           success(response.data.list);
         }
+      } else if (error) {
+        error();
       }
-      else if(error) {
+    },
+    // 获取已超时风险点总数
+    *fetchSelectOvertimeItemNum({ payload, success, error }, { call, put }) {
+      const response = yield call(getSelectOvertimeItemNum, payload);
+      yield put({
+        type: 'selectOvertimeItemNum',
+        payload: response.num,
+      });
+      if (success) {
+        success(response.num);
+      }
+    },
+    // 安全政府-超时未查单位
+    *fetchOvertimeUncheckedCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getOvertimeUncheckedCompany, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'overtimeUncheckedCompany',
+          payload: response.data.list,
+        });
+        if (success) {
+          success(response.data.list);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 大屏隐患点位总数据
+    *fetchListForMapForOptimize({ payload, success, error }, { call, put }) {
+      const response = yield call(getListForMapForOptimize, payload);
+      yield put({
+        type: 'listForMapForOptimize',
+        payload: response,
+      });
+      if (success) {
+        success(response);
+      }
+    },
+    // 获取网格区域
+    *fetchMapLocation({ payload, success, error }, { call, put }) {
+      const response = yield call(getMapLocation, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'mapLocation',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
         error();
       }
     },
@@ -756,15 +877,41 @@ export default {
       };
     },
     countDangerLocationForCompany(state, { payload }) {
-      const { redDangerResult,orangeDangerResult,yellowDangerResult,blueDangerResult,unvaluedDangerResult } = payload;
+      const {
+        redDangerResult,
+        orangeDangerResult,
+        yellowDangerResult,
+        blueDangerResult,
+        unvaluedDangerResult,
+      } = payload;
       return {
         ...state,
         countDangerLocationForCompany: payload,
         coItemList: {
-          status1: redDangerResult.normal.length+orangeDangerResult.normal.length+yellowDangerResult.normal.length+blueDangerResult.normal.length+unvaluedDangerResult.normal.length,
-          status2: redDangerResult.abnormal.length+orangeDangerResult.abnormal.length+yellowDangerResult.abnormal.length+blueDangerResult.abnormal.length+unvaluedDangerResult.abnormal.length,
-          status3: redDangerResult.checking.length+orangeDangerResult.checking.length+yellowDangerResult.checking.length+blueDangerResult.checking.length+unvaluedDangerResult.checking.length,
-          status4: redDangerResult.over.length+orangeDangerResult.over.length+yellowDangerResult.over.length+blueDangerResult.over.length+unvaluedDangerResult.over.length,
+          status1:
+            redDangerResult.normal.length +
+            orangeDangerResult.normal.length +
+            yellowDangerResult.normal.length +
+            blueDangerResult.normal.length +
+            unvaluedDangerResult.normal.length,
+          status2:
+            redDangerResult.abnormal.length +
+            orangeDangerResult.abnormal.length +
+            yellowDangerResult.abnormal.length +
+            blueDangerResult.abnormal.length +
+            unvaluedDangerResult.abnormal.length,
+          status3:
+            redDangerResult.checking.length +
+            orangeDangerResult.checking.length +
+            yellowDangerResult.checking.length +
+            blueDangerResult.checking.length +
+            unvaluedDangerResult.checking.length,
+          status4:
+            redDangerResult.over.length +
+            orangeDangerResult.over.length +
+            yellowDangerResult.over.length +
+            blueDangerResult.over.length +
+            unvaluedDangerResult.over.length,
         },
       };
     },
@@ -834,10 +981,22 @@ export default {
         monitorData: payload,
       };
     },
-    hiddenDangerCompany(state, { payload }) {
+    hiddenDangerCompanyAll(state, { payload }) {
       return {
         ...state,
-        hiddenDangerCompany: payload,
+        hiddenDangerCompanyAll: payload,
+      };
+    },
+    hiddenDangerCompanyMonth(state, { payload }) {
+      return {
+        ...state,
+        hiddenDangerCompanyMonth: payload,
+      };
+    },
+    hiddenDangerCompanyUser(state, { payload }) {
+      return {
+        ...state,
+        hiddenDangerCompanyUser: payload,
       };
     },
     checkInfo(state, { payload }) {
@@ -880,6 +1039,30 @@ export default {
       return {
         ...state,
         staffRecords,
+      };
+    },
+    selectOvertimeItemNum(state, { payload }) {
+      return {
+        ...state,
+        selectOvertimeItemNum: payload,
+      };
+    },
+    overtimeUncheckedCompany(state, { payload }) {
+      return {
+        ...state,
+        overtimeUncheckedCompany: payload,
+      };
+    },
+    listForMapForOptimize(state, { payload }) {
+      return {
+        ...state,
+        listForMapForOptimize: payload,
+      };
+    },
+    mapLocation(state, { payload }) {
+      return {
+        ...state,
+        mapLocation: payload ? JSON.parse(payload) : [],
       };
     },
   },

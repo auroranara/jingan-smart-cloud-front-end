@@ -19,7 +19,9 @@ import toxicGasDarkIcon from './imgs/toxic-gas-d.png';
 import wasteWaterIcon from './imgs/waste-water.png';
 import wasteWaterDarkIcon from './imgs/waste-water-d.png';
 import wasteGasIcon from './imgs/waste-gas.png';
-import wasteGasDardIcon from './imgs/waste-gas-d.png';
+import wasteGasDarkIcon from './imgs/waste-gas-d.png';
+import opcIcon from './imgs/opc.png';
+import opcDarkIcon from './imgs/opc-d.png';
 
 const { Option } = Select;
 
@@ -31,7 +33,7 @@ const breadcrumbList = [
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
-const ICONS = ['electricity', 'toxic-gas', 'waste-water', 'waste-gas'];
+const ICONS = ['electricity', 'toxic-gas', 'waste-water', 'waste-gas', 'OPC'];
 const ICONS_URL = {
   electricity: electricityIcon,
   'electricity-d': electricityDarkIcon,
@@ -40,14 +42,16 @@ const ICONS_URL = {
   'waste-water': wasteWaterIcon,
   'waste-water-d': wasteWaterDarkIcon,
   'waste-gas': wasteGasIcon,
-  'waste-gas-d': wasteGasDardIcon,
+  'waste-gas-d': wasteGasDarkIcon,
+  OPC: opcIcon,
+  'OPC-d': opcDarkIcon,
 };
 const ICONS_CN = {
   electricity: '用电安全异常数据分析',
   'toxic-gas': '可燃有毒气体异常数据分析',
   'waste-water': '废水异常数据分析',
   'waste-gas': '废气异常数据分析',
-  'opc': 'opc异常数据分析',
+  'opc': 'OPC异常数据分析',
 };
 const OPTIONS = [
   { name: '全部', key: 0 },
@@ -55,7 +59,7 @@ const OPTIONS = [
   { name: '可燃有毒气体', key: 2 },
   { name: '废水', key: 3 },
   { name: '废气', key: 4 },
-  { name: 'opc', key: 5 },
+  { name: 'OPC', key: 5 },
 ];
 // const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 
@@ -80,7 +84,7 @@ const fields = [
   },
   {
     id: 'type',
-    label: '异常类别：',
+    label: '监测类型：',
     labelCol: LABEL_COL_6,
     wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
@@ -211,7 +215,7 @@ export default class DataAnalysisList extends PureComponent {
               'toxic-gas': gasNum,
               'waste-water': pollutionWaterNum,
               'waste-gas': pollutionGasNum,
-              'opc': opcNum,
+              OPC: opcNum,
             };
 
             return (
@@ -234,6 +238,7 @@ export default class DataAnalysisList extends PureComponent {
                       {safetyPhone ? safetyPhone : NO_DATA}
                     </p>
                     <p className={styles.icons}>
+                      {/* {ICONS.map(icon => ( */}
                       {ICONS.filter(icon => iconNums[icon]).map(icon => (
                         <AuthIcon
                           key={icon}

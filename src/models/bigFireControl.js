@@ -15,6 +15,7 @@ import {
   getAllCamera,
   // getStartToPlay,
   getVideoLookUp,
+  getMapLocation,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -109,6 +110,7 @@ export default {
     // startToPlay: '',
     videoLookUp: [],
     lookUpCamera: [],
+    mapLocation: [],
   },
 
   effects: {
@@ -239,8 +241,22 @@ export default {
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       callback && callback(code, data.list);
-      if (code === 200)
-        yield put({ type: 'saveVideoLookUp', payload: data.list });
+      if (code === 200) yield put({ type: 'saveVideoLookUp', payload: data.list });
+    },
+    // 获取网格区域
+    *fetchMapLocation({ payload, success, error }, { call, put }) {
+      const response = yield call(getMapLocation, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'mapLocation',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
     },
   },
 
@@ -306,6 +322,9 @@ export default {
     },
     saveLookUpCamera(state, action) {
       return { ...state, lookUpCamera: action.payload };
+    },
+    mapLocation(state, action) {
+      return { ...state, mapLocation: action.payload ? JSON.parse(action.payload) : [] };
     },
   },
 };

@@ -66,6 +66,11 @@ export async function queryOffGuard(params) {
   return request(`${URL_PREFIX}/screenShowData/companyResponse?${stringify(params)}`);
 }
 
+// 获取网格区域
+export async function getMapLocation(params) {
+  return request(`${URL_PREFIX}/gridInfo/getMapLocation?${stringify(params)}`);
+}
+
 /************************************** 单位消防 *********************************************** */
 /**
  * 获取待处理信息
@@ -187,5 +192,5 @@ export async function getVideoList(params) {
 }
 
 export async function getVideoLookUp(params) {
-  return request(`${URL_PREFIX}/screenShowData/vedioCheckRecords?${stringify(params)}`);
+  return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
 }

@@ -502,6 +502,12 @@ module.exports = [
                 name: 'wasteGas',
                 component: './DataAnalysis/WasteGas',
               },
+              {
+                path: '/data-analysis/IOT-abnormal-data/opc/:id/count/:count',
+                code: 'dataAnalysis.IOTAbnormalData.OPC',
+                name: 'OPC',
+                component: './DataAnalysis/OPC',
+              },
             ],
           },
         ],

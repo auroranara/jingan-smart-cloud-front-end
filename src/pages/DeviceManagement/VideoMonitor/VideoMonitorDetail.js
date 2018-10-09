@@ -51,17 +51,7 @@ export default class VideoMonitorDetail extends PureComponent {
     const {
       videoMonitor: {
         detail: {
-          data: {
-            deviceId,
-            keyId,
-            name,
-            status,
-            rtspAddress,
-            photoAddress,
-            isInspection,
-            xNum,
-            yNum,
-          },
+          data: { deviceId, keyId, name, rtspAddress, photoAddress, isInspection, xNum, yNum },
         },
       },
     } = this.props;
@@ -72,7 +62,6 @@ export default class VideoMonitorDetail extends PureComponent {
           <Description term="设备ID">{deviceId || getEmptyData()}</Description>
           <Description term="摄像头ID">{keyId || getEmptyData()}</Description>
           <Description term="视频所属区域">{name || getEmptyData()}</Description>
-          <Description term="视频状态">{status || getEmptyData()}</Description>
           <Description term="视频URL">
             <Ellipsis tooltip lines={1}>
               {rtspAddress || getEmptyData()}
