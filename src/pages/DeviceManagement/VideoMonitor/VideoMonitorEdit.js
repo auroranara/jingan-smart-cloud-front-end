@@ -386,7 +386,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 )}
               </Col>
             ) : (
-              <Col span={20}>
+              <Col span={23}>
                 {getFieldDecorator('companyId', {
                   initialValue: nameCompany ? nameCompany : undefined,
                   rules: [
@@ -406,7 +406,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 )}
               </Col>
             )}
-            {id ? null : (
+            {id || nameCompany ? null : (
               <Col span={1}>
                 <Button
                   type="primary"

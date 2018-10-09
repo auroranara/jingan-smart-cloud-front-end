@@ -120,7 +120,7 @@ export default class VideoMonitorList extends PureComponent {
     this.formData = defaultFormData;
     // 重新请求数据
     this.props.dispatch({
-      type: 'videoMonitor/appendCompanyList',
+      type: 'videoMonitor/fetchCompanyList',
       payload: {
         pageSize,
         pageNum: 1,
