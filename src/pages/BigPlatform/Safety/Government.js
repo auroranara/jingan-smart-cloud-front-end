@@ -183,10 +183,6 @@ class GovernmentBigPlatform extends Component {
     // 安全政府-超时未查单位
     dispatch({
       type: 'bigPlatform/fetchOvertimeUncheckedCompany',
-      payload: {
-        pageNum: 1,
-        pageSize: 99999,
-      },
     });
 
     // 已超时单位信息
