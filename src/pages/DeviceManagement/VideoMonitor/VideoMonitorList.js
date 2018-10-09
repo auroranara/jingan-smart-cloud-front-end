@@ -54,7 +54,7 @@ const defaultFormData = {
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
-
+let companyTotal = 0;
 @connect(({ videoMonitor, user, loading }) => ({
   videoMonitor,
   user,
@@ -75,6 +75,9 @@ export default class VideoMonitorList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+      },
+      callback: response => {
+        companyTotal = response.pagination.total;
       },
     });
   }
@@ -247,7 +250,7 @@ export default class VideoMonitorList extends PureComponent {
       loading,
       videoMonitor: {
         data: {
-          pagination: { total },
+          // pagination: { total },
           videoCount,
         },
         isLast,
@@ -262,7 +265,7 @@ export default class VideoMonitorList extends PureComponent {
           <div>
             <span>
               单位总数：
-              {total}
+              {companyTotal}
               {''}
             </span>
             <span style={{ paddingLeft: 20 }}>
