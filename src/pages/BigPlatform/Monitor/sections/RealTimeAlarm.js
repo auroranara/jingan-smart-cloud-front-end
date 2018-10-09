@@ -23,7 +23,7 @@ export default class RealTimeAlarm extends PureComponent {
                 backgroundImage: `url(${item.icon})`,
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center center',
-                backgroundSize: '80% 80%',
+                backgroundSize: '65% 65%',
               }}></div>
               <div className={styles.remarks}>{item.remarks}</div>
             </div>
