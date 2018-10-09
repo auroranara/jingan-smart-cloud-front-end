@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { Link } from 'react-router-dom';
-import { Card, Button, Input, List, Row, Col, Spin } from 'antd';
+import { Card, Button, Input, List, Row, Col } from 'antd';
 // import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -84,11 +84,11 @@ export default class UserTransmissionDevice extends PureComponent {
 
     // 这里的页面结构是，html和body和div.#root是一样高的，而div.#root下的唯一子元素是高度比较大的
     // 发现向上滚动时，整个html都在往上滚，所以要获取document.documentElement元素，才能正确获取到scollTop，body及div.#root获取到的scrollTop都为0
-    const scrollToBottom = documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
+    const scrollToBottom =
+      documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
     // console.log(documentElem.scrollTop + documentElem.offsetHeight, childElem.offsetHeight);
     // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
-    if (scrollToBottom && !loading && hasMore)
-      this.handleLazyload();
+    if (scrollToBottom && !loading && hasMore) this.handleLazyload();
     // if (scrollToBottom && !scrollLoading && hasMore) this.handleLazyload();
   };
 
@@ -296,9 +296,9 @@ export default class UserTransmissionDevice extends PureComponent {
           pagination: { total },
           transmissionCount,
         },
-        isLast,
+        // isLast,
       },
-      loading,
+      // loading,
     } = this.props;
 
     return (
@@ -339,7 +339,7 @@ export default class UserTransmissionDevice extends PureComponent {
             </div>
           }
         > */}
-          {this.renderList()}
+        {this.renderList()}
         {/* </InfiniteScroll> */}
       </PageHeaderLayout>
     );
