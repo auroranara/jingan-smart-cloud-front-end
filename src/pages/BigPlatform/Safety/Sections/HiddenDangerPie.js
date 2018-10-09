@@ -129,6 +129,7 @@ class HiddenDangerPie extends PureComponent {
                   handleParentChange({
                     dangerCompanyData: hiddenDangerCompanyAll,
                     dangerCompanyLast: '',
+                    checkUserId: '',
                   });
                   goComponent('hdCom');
                 },

@@ -96,6 +96,7 @@ class GovernmentBigPlatform extends Component {
       dangerCompanyData: {},
       dangerCompanyLast: '',
       checksMonth: moment().format('YYYY-MM'),
+      checkUserId: '',
     };
   }
 
@@ -456,6 +457,7 @@ class GovernmentBigPlatform extends Component {
       dangerCompanyLast,
       checksMonth,
       riskOver,
+      checkUserId,
     } = this.state;
     const {
       dispatch,
@@ -655,6 +657,7 @@ class GovernmentBigPlatform extends Component {
                 monthSelecter={false}
                 lastSection={dangerCompanyLast}
                 month={checksMonth}
+                checkUserId={checkUserId}
                 // monthSelecter={hdComMonth}
               />
 
