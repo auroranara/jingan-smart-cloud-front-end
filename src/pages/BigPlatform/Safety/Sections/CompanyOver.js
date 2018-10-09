@@ -67,23 +67,25 @@ class CompanyOver extends PureComponent {
                         lastCheckDate,
                       } = item;
                       return (
-                        <tr key={index}>
-                          <td>{companyType === '1' && <span className={styles.keyComMark} />}</td>
-                          <td>
-                            <span
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => {
-                                goCompany(companyId);
-                              }}
-                            >
-                              {companyName}
-                            </span>
-                          </td>
-                          <td>{checkCycleCode ? checkCycleList[checkCycleCode] : ''}</td>
-                          <td>
-                            {lastCheckDate ? moment(lastCheckDate).format('YYYY-MM-DD') : '- -'}
-                          </td>
-                        </tr>
+                        checkCycleCode && (
+                          <tr key={index}>
+                            <td>{companyType === '1' && <span className={styles.keyComMark} />}</td>
+                            <td>
+                              <span
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                  goCompany(companyId);
+                                }}
+                              >
+                                {companyName}
+                              </span>
+                            </td>
+                            <td>{checkCycleCode ? checkCycleList[checkCycleCode] : ''}</td>
+                            <td>
+                              {lastCheckDate ? moment(lastCheckDate).format('YYYY-MM-DD') : '- -'}
+                            </td>
+                          </tr>
+                        )
                       );
                     })}
                   </tbody>

@@ -137,6 +137,18 @@ const getEmptyData = () => {
     goToException() {
       dispatch(routerRedux.push('/exception/500'));
     },
+    fetchGavUserTypes(action) {
+      dispatch({
+        type: 'account/fetchOptions',
+        ...action,
+      })
+    },
+    fetchUserType(action) {
+      dispatch({
+        type: 'account/fetchUserType',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -149,16 +161,13 @@ export default class accountManagementList extends PureComponent {
       modalVisible: false,
       associatedUnits: [],
       currentLoginId: null,
+      unitTypeChecked: 4,
     };
   }
 
-  state = {
-    unitTypeChecked: false,
-  };
-
   // 生命周期函数
   componentDidMount() {
-    const { fetch, fetchOptions, fetchUnitsFuzzy } = this.props;
+    const { fetch, fetchOptions, fetchUnitsFuzzy, fetchGavUserTypes, fetchUserType } = this.props;
 
     // 获取账号列表
     fetch({
@@ -167,7 +176,8 @@ export default class accountManagementList extends PureComponent {
         pageNum: 1,
       },
     });
-
+    fetchGavUserTypes()
+    fetchUserType()
     // 获取单位类型和账户状态
     fetchOptions({
       success: ({ unitType }) => {
@@ -264,8 +274,8 @@ export default class accountManagementList extends PureComponent {
       fetchUnitsFuzzy,
       form: { setFieldsValue },
     } = this.props;
+    setFieldsValue({ unitId: null, userType: [] });
     this.setState({ unitTypeChecked: value });
-    setFieldsValue({ unitId: undefined });
     // 根据当前选中的单位类型获取对应的所属单位列表
     if (value === 2) {
       fetchUnitsFuzzy({
@@ -369,7 +379,7 @@ export default class accountManagementList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      account: { unitTypes, unitIdes },
+      account: { unitTypes, unitIdes, userTypes, gavUserTypes },
       form: { getFieldDecorator },
       loading,
     } = this.props;
@@ -393,7 +403,7 @@ export default class accountManagementList extends PureComponent {
                 <Select
                   placeholder="请选择单位类型"
                   allowClear
-                  onSelect={this.handleUnitTypeSelect}
+                  onChange={this.handleUnitTypeSelect}
                   style={{ width: 180 }}
                 >
                   {unitTypes.map(item => (
@@ -449,6 +459,30 @@ export default class accountManagementList extends PureComponent {
                 )}
               </FormItem>
             )}
+            {unitTypeChecked && unitTypeChecked === 4 && (
+              <FormItem label="用户类型">
+                {getFieldDecorator('userType')(
+                  <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
+                    {userTypes.map(item => (
+                      <Option value={item.value} key={item.value}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>)}
+            {unitTypeChecked && unitTypeChecked === 2 && (
+              <FormItem label="用户类型">
+                {getFieldDecorator('userType')(
+                  <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
+                    {gavUserTypes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>)}
           </Col>
 
           {/* 按钮 */}
@@ -512,22 +546,22 @@ export default class accountManagementList extends PureComponent {
                       code={codesMap.account.addAssociatedUnit}
                       to={`/role-authorization/account-management/associated-unit/add/${
                         item.loginId
-                      }`}
+                        }`}
                     >
                       关联单位
                     </AuthLink>,
                   ]}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <div>
                     <Col span={12}>
@@ -560,7 +594,7 @@ export default class accountManagementList extends PureComponent {
                           <Popconfirm
                             title={`确定要${
                               !!item.users[0].accountStatus ? '解绑' : '开启'
-                            }关联企业吗？`}
+                              }关联企业吗？`}
                             onConfirm={() =>
                               this.handleAccountStatus({
                                 accountStatus: Number(!item.users[0].accountStatus),
@@ -577,15 +611,15 @@ export default class accountManagementList extends PureComponent {
                               {!!item.users[0].accountStatus ? (
                                 <Icon type="link" />
                               ) : (
-                                <Icon style={{ color: 'red' }} type="disconnect" />
-                              )}
+                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                )}
                             </AuthSpan>
                           </Popconfirm>
                         </Col>
                       </Row>
                     ) : (
-                      <p>{getEmptyData()}</p>
-                    )}
+                        <p>{getEmptyData()}</p>
+                      )}
                     <p
                       onClick={() => this.handleViewMore(item.users, item.loginId)}
                       style={{
@@ -621,10 +655,10 @@ export default class accountManagementList extends PureComponent {
               <span>{val}</span>
             </Fragment>
           ) : (
-            <Fragment>
-              <span>运营企业</span>
-            </Fragment>
-          );
+              <Fragment>
+                <span>运营企业</span>
+              </Fragment>
+            );
         },
       },
       {
@@ -658,8 +692,8 @@ export default class accountManagementList extends PureComponent {
                   {!!row.accountStatus ? (
                     <Icon type="link" />
                   ) : (
-                    <Icon style={{ color: 'red' }} type="disconnect" />
-                  )}
+                      <Icon style={{ color: 'red' }} type="disconnect" />
+                    )}
                 </AuthSpan>
               </Popconfirm>
             </Fragment>

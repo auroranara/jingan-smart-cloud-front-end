@@ -1,6 +1,7 @@
+@monitor-light-white: #dfdbdb;
 .topCenter {
-  padding-left: 6px;
-  padding-right: 6px;
+  // padding-left: 6px;
+  // padding-right: 6px;
   .sectionMain {
     position: relative;
     width: 100%;
@@ -22,53 +23,298 @@
         line-height: 20px;
         font-size: 16px;
         font-weight: bold;
-      }
-      .content {
-        width: 100%;
-        height: calc(100% - 20px);
-        display: block;
-        overflow: hidden;
-        text-align: center;
-        position: relative;
-        padding: 5px;
-      }
-      .sectionContent {
-        width: 100%;
-        height: calc(100% - 20px);
-        display: flex;
-        overflow: hidden;
-        text-align: center;
-        color: white;
-        padding: 5px;
-        align-items: center;
-        .leftImg {
-          width: 30%;
-          height: 70%;
+        .sectionTitleIcon {
           display: inline-block;
-          vertical-align: center;
+          margin-right: 12px;
+          width: 20px;
+          height: 20px;
+          background-color: #0967D3;
+          vertical-align: top;
         }
-        .rightNumber {
-          width: 70%;
-          height: 70%;
-          display: inline-block;
-          vertical-align: center;
+      }
+      .monitorContent {
+        width: 100%;
+        height: calc(100% - 20px);
+        overflow: hidden;
+        .waterWave {
+          width: 100%;
+          height: calc(100% - 202px);
+          text-align: center;
+          display: block;
+          overflow: hidden;
+          padding: 20px;
+        }
+        .totalNum {
+          width: 100%;
+          height: 100px;
           display: flex;
-          justify-content: flex-end;
+          overflow: hidden;
+          padding: 25px 15px;
+          justify-content: center;
           align-items: center;
-          .text {
-            vertical-align: center;
-            font-size: 48px;
+          .totalImg {
+            width: 50px;
+            height: 50px;
           }
-          .blue {
+          .title {
+            width: calc(100% - 150px);
+            height: 100%;
+            font-size: 15px;
+            text-align: left;
+            padding-left: 15px;
+            overflow: hidden;
+            .text {
+              line-height: 50px;
+            }
+          }
+          .number {
+            width: 100px;
+            height: 100%;
+            font-size: 33px;
             color: #07A4F9;
-          }
-          .yellow {
-            color: #C6C181;
-          }
-          .red {
-            color: #E46867;
+            text-align: center;
+            overflow: hidden;
+            .text {
+              line-height: 50px;
+            }
           }
         }
+        .errorDevice {
+          width: 100%;
+          height: 100px;
+          display: flex;
+          overflow: hidden;
+          justify-content: center;
+          .section {
+            width: calc(50% - 0.5px);
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            cursor: pointer;
+            .leftImg {
+              width: 44%;
+              height: 100%;
+              margin-right: 2%;
+            }
+            .rightContent {
+              width: 54%;
+              height: 100%;
+              .title {
+                width: 100%;
+                height: 25px;
+                font-size: 15px;
+                overflow: hidden;
+                white-space: nowrap;
+              }
+              .number {
+                width: 100%;
+                height: 40px;
+                font-size: 33px;
+                overflow: hidden;
+                .red {
+                  color: #E46867;
+                }
+                .yellow {
+                  color: #C6C181;
+                }
+              }
+            }
+          }
+          .missingDevice {
+            width: calc(50% - 0.5px);
+            height: 100%;
+          }
+          .divider {
+            width: 1px;
+            height: 100%;
+          }
+        }
+        .divider {
+          width: 100%;
+          height: 1px;
+          display: block;
+        }
+        .iconContainer {
+          width: 100%;
+          height: 38%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          .fireHost {
+            z-index: 1;
+            width: 16%;
+            height: 65%;
+          }
+          .span {
+            margin-top: 3%;
+            color: #07A4F9;
+            z-index: 1;
+          }
+          .anime {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .arrContainer {
+          width: 100%;
+          height: 30%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          .arrow {
+            width: 65%;
+            height: 100%;
+          }
+          .fireText {
+            position: absolute;
+            top: 35px;
+            left: 70px;
+          }
+          .errorText {
+            position: absolute;
+            top: 35px;
+            right: 70px;
+          }
+        }
+        .numberContainer {
+          padding: 0 5% 5% 5%;
+          width: 100%;
+          height: 32%;
+          display: flex;
+          justify-content: space-between;
+          .circle {
+            width: 33%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .number {
+              font-size: 25px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.modalContainer {
+  .modalTitle {
+    width: auto;
+    height: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    .sectionTitleIcon {
+      margin-right: 12px;
+      width: 20px;
+      height: 20px;
+      background-color: #0967D3; // vertical-align: top;
+    }
+    .sectionTotal {
+      border-left: 1px solid #0967D3;
+      margin-left: 10px;
+      padding-left: 9px;
+      font-size: 13px;
+      .red {
+        color: #E46867;
+        margin: auto 5px;
+      }
+      .yellow {
+        color: #C6C181;
+        margin: auto 5px;
+      }
+    }
+  }
+  .footer {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    .pagesText {
+      line-height: 32px;
+      color: @monitor-light-white;
+    }
+  }
+  :global {
+    .ant-modal-body {
+      padding: 0 24px 24px 24px;
+    }
+    .ant-modal-header {
+      background-color: rgb(6, 39, 86);
+      border-bottom-width: 0px;
+      border-top: 1px solid #0967D3;
+    }
+    .ant-modal-close {
+      color: @monitor-light-white;
+      &:focus,
+      &:hover {
+        color: #fff;
+      }
+    }
+    .ant-modal-title {
+      color: #fff;
+    }
+    .ant-modal-content {
+      background-color: rgb(6, 39, 86);
+      border-left: 1px solid #0967D3;
+      border-right: 1px solid #0967D3;
+      border-bottom: 1px solid #0967D3; // box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
+    }
+    .ant-table-thead>tr>th {
+      border-bottom-color: #0967D3;
+      background: rgb(7, 52, 111);
+      color: #07A4F9;
+      padding: 10px 10px;
+    }
+    .ant-table-tbody>tr>td {
+      border-bottom-color: #0967D3;
+      color: @monitor-light-white;
+      padding: 10px 10px;
+    }
+    .ant-table-tbody>tr:hover {
+      & td {
+        background: rgb(11, 52, 110);
+      }
+    }
+    .ant-table-placeholder {
+      background: rgb(7, 52, 111);
+      color: @monitor-light-white;
+      border-bottom-width: 0;
+    }
+    .ant-pagination-prev a,
+    .ant-pagination-next a {
+      color: #0967D3;
+      background-color: rgb(6, 39, 86);
+      border-color: #0967D3;
+    }
+    .ant-pagination-item {
+      background-color: rgb(6, 39, 86);
+      border-color: #0967D3;
+      & a {
+        color: #0967D3;
+      }
+    }
+    .ant-pagination-prev:hover,
+    .ant-pagination-next:hover,
+    .ant-pagination-item:hover,
+    .ant-pagination-item-disabled:hover {
+      & a {
+        border-color: #1890FF;
+        color: #1890FF;
+      }
+    }
+    .ant-pagination-item-active,
+    .ant-pagination-item-active:hover {
+      background-color: #0967D3;
+      & a {
+        color: @monitor-light-white;
       }
     }
   }

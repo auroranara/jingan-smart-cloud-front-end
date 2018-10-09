@@ -96,6 +96,7 @@ class GovernmentBigPlatform extends Component {
       dangerCompanyData: {},
       dangerCompanyLast: '',
       checksMonth: moment().format('YYYY-MM'),
+      checkUserId: '',
     };
   }
 
@@ -182,10 +183,6 @@ class GovernmentBigPlatform extends Component {
     // 安全政府-超时未查单位
     dispatch({
       type: 'bigPlatform/fetchOvertimeUncheckedCompany',
-      payload: {
-        pageNum: 1,
-        pageSize: 99999,
-      },
     });
 
     // 已超时单位信息
@@ -456,6 +453,7 @@ class GovernmentBigPlatform extends Component {
       dangerCompanyLast,
       checksMonth,
       riskOver,
+      checkUserId,
     } = this.state;
     const {
       dispatch,
@@ -655,6 +653,7 @@ class GovernmentBigPlatform extends Component {
                 monthSelecter={false}
                 lastSection={dangerCompanyLast}
                 month={checksMonth}
+                checkUserId={checkUserId}
                 // monthSelecter={hdComMonth}
               />
 

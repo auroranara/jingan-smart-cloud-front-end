@@ -3,6 +3,7 @@ import Ellipsis from 'components/Ellipsis';
 
 import styles from './index.less';
 import noPhotoIcon from '../../img/noPhoto.png';
+import ygbIcon from '@/assets/closed.png';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -35,6 +36,8 @@ const getSeal = status => {
       return wcqIcon;
     case 3:
       return dfcIcon;
+    case 4:
+      return ygbIcon;
     case 7:
       return ycqIcon;
     default:

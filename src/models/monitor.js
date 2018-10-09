@@ -12,6 +12,7 @@ import {
   fetchHistoryAlarm,
   getGsmsHstData,
   getPieces,
+  fetchErrorDevices,
   fetchAlarmInfoTypes,
 } from '../services/bigPlatform/monitor';
 
@@ -42,6 +43,13 @@ export default {
     gsmsHstData: {},
     electricityPieces: {},
     chartParams: {},
+    errorDevice: {
+      errorDevices: [],
+      errorDevicesByPage: [],
+      pageNum: 1,
+      pageSize: 10,
+      total: 0,
+    },
   },
 
   effects: {
@@ -185,6 +193,20 @@ export default {
       if (code === 200)
         yield put({ type: 'saveChartParams', payload: data });
     },
+    // 获取失联设备、报警设备列表
+    *fetchErrorDevices({ payload }, { call, put }) {
+      const response = yield call(fetchErrorDevices, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveErrorDevices',
+          payload: response.data.list || [],
+        })
+        yield put({
+          type: 'handleDevicesPagination',
+          payload: { pageNum: 1 },
+        })
+      }
+    },
     *fetchAlarmInfoTypes({ payload }, { call, put }) {
       const response = yield call(fetchAlarmInfoTypes)
       if (response && response.code === 200) {
@@ -290,6 +312,31 @@ export default {
     },
     saveChartParams(state, action) {
       return { ...state, chartParams: action.payload };
+    },
+    saveErrorDevices(state, { payload }) {
+      return {
+        ...state,
+        errorDevice: {
+          ...state.errorDevice,
+          errorDevices: payload || [],
+          errorDevicesByPage: [],
+          pageNum: 1,
+          total: payload && payload.length || 0,
+        },
+      }
+    },
+    handleDevicesPagination(state, { payload }) {
+      const { pageNum } = payload
+      const { errorDevice: { pageSize, errorDevices } } = state
+      const list = errorDevices.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+      return {
+        ...state,
+        errorDevice: {
+          ...state.errorDevice,
+          errorDevicesByPage: list,
+          pageNum,
+        },
+      }
     },
     saveAlarmTypes(state, action) {
       return {

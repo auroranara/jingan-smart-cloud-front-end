@@ -14,12 +14,13 @@ class DangerCompany extends PureComponent {
   componentWillUnmount() {}
 
   handleClick = id => {
-    const { dispatch, lastSection, month } = this.props;
+    const { dispatch, lastSection, month, checkUserId } = this.props;
     const param = lastSection === 'checks' ? { date: month } : {};
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListByDate',
       payload: {
         company_id: id,
+        reportUserId: checkUserId,
         ...param,
       },
     });
