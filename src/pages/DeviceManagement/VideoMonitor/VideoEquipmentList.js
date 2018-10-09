@@ -14,7 +14,6 @@ import styles from './VideoEquipmentList.less';
 import VideoPlay from '../../BigPlatform/FireControl/section/VideoPlay';
 
 import videoIcon from './videoIcon.png';
-import { Flex } from 'antd-mobile';
 
 const FormItem = Form.Item;
 
@@ -180,6 +179,9 @@ export default class VideoEquipmentList extends PureComponent {
       user: {
         currentUser: { permissionCodes: codes },
       },
+      location: {
+        query: { name },
+      },
     } = this.props;
 
     return (
@@ -204,7 +206,7 @@ export default class VideoEquipmentList extends PureComponent {
               code={codesMap.deviceManagement.videoMonitor.add}
               codes={codes}
               type="primary"
-              href="#/device-management/video-monitor/add"
+              href={`#/device-management/video-monitor/add?name=${name}`}
             >
               新增视频
             </AuthButton>
@@ -326,6 +328,9 @@ export default class VideoEquipmentList extends PureComponent {
     const {
       videoMonitor: {
         videoData: { list = [] },
+      },
+      location: {
+        query: { name },
       },
     } = this.props;
 

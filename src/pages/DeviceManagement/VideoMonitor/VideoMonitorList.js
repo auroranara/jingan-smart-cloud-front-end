@@ -77,16 +77,17 @@ export default class VideoMonitorList extends PureComponent {
         pageNum: 1,
       },
       callback: response => {
-        // console.log('res', res);
         videoTotal = response.videoCount;
       },
     });
   }
 
   // 跳转到视频设备列表
-  goToEquipmentList = id => {
+  goToEquipmentList = (id, name) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/device-management/video-monitor/video-equipment/${id}`));
+    dispatch(
+      routerRedux.push(`/device-management/video-monitor/video-equipment/${id}?name=${name}`)
+    );
   };
 
   /* 查询按钮点击事件 */
@@ -119,7 +120,7 @@ export default class VideoMonitorList extends PureComponent {
     this.formData = defaultFormData;
     // 重新请求数据
     this.props.dispatch({
-      type: 'videoMonitor/fetchCompanyList',
+      type: 'videoMonitor/appendCompanyList',
       payload: {
         pageSize,
         pageNum: 1,
@@ -229,7 +230,7 @@ export default class VideoMonitorList extends PureComponent {
                       span={8}
                       onClick={() => {
                         if (hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes))
-                          this.goToEquipmentList(id);
+                          this.goToEquipmentList(id, item.name);
                         else message.warn('您没有权限访问对应页面');
                       }}
                       style={{ cursor: 'pointer' }}

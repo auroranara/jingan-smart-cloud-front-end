@@ -135,6 +135,7 @@ export default {
       return {
         ...state,
         list,
+        pageNum: 1,
         data: payload,
         isLast: pageNum * pageSize >= total,
       };

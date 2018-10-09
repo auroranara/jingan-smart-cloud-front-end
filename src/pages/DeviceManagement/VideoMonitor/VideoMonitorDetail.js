@@ -105,7 +105,7 @@ export default class VideoMonitorDetail extends PureComponent {
     const {
       videoMonitor: {
         detail: {
-          data: { name, companyId },
+          data: { name, companyId, companyName },
         },
       },
     } = this.props;
@@ -129,7 +129,7 @@ export default class VideoMonitorDetail extends PureComponent {
       {
         title: '视频监控列表',
         name: '视频监控列表',
-        href: `/device-management/video-monitor/video-equipment/${companyId}`,
+        href: `/device-management/video-monitor/video-equipment/${companyId}?name=${companyName}`,
       },
       {
         title: '视频设备详情',
