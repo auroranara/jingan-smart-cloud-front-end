@@ -121,7 +121,6 @@ export default class VideoMonitorEdit extends PureComponent {
       },
       dispatch,
     } = this.props;
-    console.log(companyIdVideo);
 
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -142,6 +141,7 @@ export default class VideoMonitorEdit extends PureComponent {
         } = values;
 
         const { companyId } = this.state;
+
         const payload = {
           id,
           deviceId,
@@ -154,6 +154,7 @@ export default class VideoMonitorEdit extends PureComponent {
           photoAddress,
           xNum,
           yNum,
+          fixImgId: this.fixImgId,
           isInspection: +isInspection,
         };
 
@@ -297,7 +298,7 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   // 定位模态框确定按钮点击事件
-  handleOk = value => {
+  handleOk = (value, fourColorImg) => {
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -305,6 +306,7 @@ export default class VideoMonitorEdit extends PureComponent {
       xNum: value.x.toFixed(3),
       yNum: value.y.toFixed(3),
     });
+    this.fixImgId = fourColorImg.id;
     this.setState({
       coordinate: {
         visible: false,
@@ -315,6 +317,9 @@ export default class VideoMonitorEdit extends PureComponent {
   // 渲染视频设备信息
   renderVideoInfo() {
     const {
+      location: {
+        query: { name: nameCompany },
+      },
       videoMonitor: {
         detail: {
           data: {
@@ -339,7 +344,6 @@ export default class VideoMonitorEdit extends PureComponent {
         detail: { safetyFourPicture },
       },
     } = this.props;
-
     const {
       coordinate: { visible },
     } = this.state;
@@ -384,6 +388,7 @@ export default class VideoMonitorEdit extends PureComponent {
             ) : (
               <Col span={20}>
                 {getFieldDecorator('companyId', {
+                  initialValue: nameCompany ? nameCompany : undefined,
                   rules: [
                     {
                       required: true,
@@ -591,15 +596,34 @@ export default class VideoMonitorEdit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
+    const {
+      // location: {
+      //   query: { name: nameCompany },
+      // },
+      match: {
+        params: { id },
+      },
+      videoMonitor: {
+        detail: {
+          data: { companyId: companyIdVideo },
+        },
+      },
+    } = this.props;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
         <Button type="primary" size="large" onClick={this.handleClickValidate}>
           确定
         </Button>
-        <Button type="primary" size="large" onClick={this.goBack}>
-          返回
-        </Button>
+        {id ? (
+          <Button type="primary" size="large" onClick={() => this.goequipment(companyIdVideo)}>
+            返回
+          </Button>
+        ) : (
+          <Button type="primary" size="large" onClick={this.goBack}>
+            返回
+          </Button>
+        )}
       </FooterToolbar>
     );
   }
