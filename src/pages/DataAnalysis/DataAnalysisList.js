@@ -273,7 +273,7 @@ export default class DataAnalysisList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div className={styles.total}>
-            监测企业总数：{list.length}
+            监测单位总数：{list.length}
           </div>
         }
       >
