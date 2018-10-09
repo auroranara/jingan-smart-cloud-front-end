@@ -145,6 +145,8 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
+    // 获取火灾自动报警监测
+    dispatch({ type: 'unitFireControl/fetchFireAlarmSystem', payload: { companyId } });
 
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
