@@ -54,7 +54,7 @@ const defaultFormData = {
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
-
+let companyTotal = 0;
 @connect(({ videoMonitor, user, loading }) => ({
   videoMonitor,
   user,
@@ -75,6 +75,9 @@ export default class VideoMonitorList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+      },
+      callback: response => {
+        companyTotal = response.pagination.total;
       },
     });
   }
@@ -202,7 +205,7 @@ export default class VideoMonitorList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, practicalAddress, safetyName, safetyPhone, vedioCount } = item;
+            const { id, practicalAddress, safetyName, safetyPhone, videoCount } = item;
             return (
               <List.Item key={id}>
                 <Card title={item.name} className={styles.card}>
@@ -230,7 +233,7 @@ export default class VideoMonitorList extends PureComponent {
                       }}
                       style={{ cursor: 'pointer' }}
                     >
-                      <span className={styles.quantity}>{vedioCount}</span>
+                      <span className={styles.quantity}>{videoCount}</span>
                     </Col>
                   </Row>
                 </Card>
@@ -247,8 +250,8 @@ export default class VideoMonitorList extends PureComponent {
       loading,
       videoMonitor: {
         data: {
-          pagination: { total },
-          vedioCount,
+          // pagination: { total },
+          videoCount,
         },
         isLast,
       },
@@ -262,12 +265,12 @@ export default class VideoMonitorList extends PureComponent {
           <div>
             <span>
               单位总数：
-              {total}
+              {companyTotal}
               {''}
             </span>
             <span style={{ paddingLeft: 20 }}>
               视频总数：
-              {vedioCount}
+              {videoCount}
               {''}
             </span>
           </div>

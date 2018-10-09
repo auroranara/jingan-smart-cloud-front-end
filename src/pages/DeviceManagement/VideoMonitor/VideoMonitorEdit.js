@@ -23,7 +23,7 @@ const fieldLabels = {
   equipmentID: '设备ID',
   cameraID: '摄像头ID',
   videoArea: '视频所属区域',
-  videoStatus: '视频状态',
+  // videoStatus: '视频状态',
   videoURL: '视频URL',
   picAddress: '图片地址',
   inspectSentries: '是否用于查岗',
@@ -133,7 +133,7 @@ export default class VideoMonitorEdit extends PureComponent {
           deviceId,
           keyId,
           name,
-          status,
+          // status,
           rtspAddress,
           photoAddress,
           xNum,
@@ -145,10 +145,10 @@ export default class VideoMonitorEdit extends PureComponent {
         const payload = {
           id,
           deviceId,
-          vedioId: id,
+          videoId: id,
           keyId,
           name,
-          status,
+          // status,
           companyId,
           rtspAddress,
           photoAddress,
@@ -322,7 +322,7 @@ export default class VideoMonitorEdit extends PureComponent {
             deviceId,
             keyId,
             name,
-            status,
+            // status,
             rtspAddress,
             photoAddress,
             isInspection,
@@ -424,7 +424,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 },
                 {
                   pattern: numReg,
-                  message: '设备ID格式不正确，必须含有下划线与小写字母，不能下划线开头和结尾',
+                  message: '设备ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾',
                 },
               ],
             })(<Input placeholder="请输入设备ID" />)}
@@ -440,7 +440,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 },
                 {
                   pattern: numReg,
-                  message: '摄像头ID格式不正确，必须含有小写字母与下划线，不能下划线开头和结尾',
+                  message: '摄像头ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾',
                 },
               ],
             })(<Input placeholder="请输入摄像头ID" />)}
@@ -458,7 +458,8 @@ export default class VideoMonitorEdit extends PureComponent {
             })(<Input placeholder="请输入视频所属区域" />)}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.videoStatus}>
+          {/*
+                        <FormItem {...formItemLayout} label={fieldLabels.videoStatus}>
             {getFieldDecorator('status', {
               initialValue: status,
               rules: [
@@ -468,6 +469,7 @@ export default class VideoMonitorEdit extends PureComponent {
               ],
             })(<Input placeholder="请输入视频状态" />)}
           </FormItem>
+            */}
 
           <FormItem {...formItemLayout} label={fieldLabels.videoURL}>
             {getFieldDecorator('rtspAddress', {

@@ -6,8 +6,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { TOXIC_GAS_TYPE as TYPE, TOXIC_GAS_TYPE_LABEL as TYPE_LABEL, TOXIC_GAS_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
-import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
+import { OPC_TYPE as TYPE, OPC_TYPE_LABEL as TYPE_LABEL, OPC_PARAMS as PARAMS, OPC_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
+import { addAlign,getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -16,12 +16,12 @@ const breadcrumbList = [
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
 
-// const data = [...Array(10).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', section: '厂区九车间', location: '氯乙烷压缩机东', category: '预警', value: 19.6, limit: '18', desc: '>=临界值' }));
+// const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: '19.6|mg/m3', limitValue: '18', condition: 1 }));
+// const total = list.length;
 
 @connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.effects['dataAnalysis/fetchData'] }))
 export default class ToxicGas extends PureComponent {
   state = {
-    // moments: null,
     formVals: null,
     currentPage: 1,
   };
@@ -109,16 +109,6 @@ export default class ToxicGas extends PureComponent {
     this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
 
-  // onCalendarChange = (dates, dateStrings) => {
-  //   // console.log(dates);
-  //   this.setState({ moments: dates });
-  // };
-
-  // disabledDate = (current) => {
-  //   const { moments } = this.state;
-  //   return isDateDisabled(current, moments);
-  // };
-
   render() {
     const {
       loading,
@@ -139,11 +129,7 @@ export default class ToxicGas extends PureComponent {
     const { currentPage } = this.state;
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
-    // const methods = {
-    //   disabledDate: this.disabledDate,
-    //   onCalendarChange: this.onCalendarChange,
-    // };
-    const fields = getFields(TYPE);
+    const fields = getFields(TYPE, PARAMS);
 
     return (
       <PageHeaderLayout
@@ -160,7 +146,7 @@ export default class ToxicGas extends PureComponent {
           <InlineForm
             fields={fields}
             action={this.renderExportButton()}
-            buttonSpan={{ xl: 8, md: 12, sm: 24 }}
+            buttonSpan={{ xl: 6, md: 12, sm: 24 }}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
           />
@@ -171,6 +157,7 @@ export default class ToxicGas extends PureComponent {
             rowKey="id"
             loading={loading}
             columns={addAlign(COLUMNS)}
+            // dataSource={list}
             dataSource={handleTableData(list, indexBase)}
             onChange={this.onTableChange}
             pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}

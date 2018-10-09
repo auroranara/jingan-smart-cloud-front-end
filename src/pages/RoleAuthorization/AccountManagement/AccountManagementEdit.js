@@ -252,48 +252,46 @@ export default class accountManagementEdit extends PureComponent {
             unitTypeChecked: unitType,
           });
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-          fetchUnitsFuzzy({
-            payload: {
-              unitType: unitType,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
-          if (unitId) {
-            fetchDepartmentList({
-              payload: {
-                companyId: unitId,
-              },
-              error: goToException,
-            });
-          }
+          // fetchUnitsFuzzy({
+          //   payload: {
+          //     unitType: unitType,
+          //     pageNum: 1,
+          //     pageSize: defaultPageSize,
+          //   },
+          // });
+          // if (unitId) {
+          //   fetchDepartmentList({
+          //     payload: {
+          //       companyId: unitId,
+          //     },
+          //     error: goToException,
+          //   });
+          // }
         },
         error: () => {
           goToException();
         },
       });
+
     } else {
       clearDetail();
+      // 获取角色列表
+      fetchRoles({
+        error: goToException,
+      });
+      // 获取执法证件种类
+      fetchExecCertificateType({
+        error: goToException,
+      });
+      // 获取用户类型
+      fetchUserType({
+        error: goToException,
+      });
     }
 
     // 获取单位类型和账户状态
     fetchOptions({
       success,
-    });
-
-    // 获取角色列表
-    fetchRoles({
-      error: goToException,
-    });
-
-    // 获取执法证件种类
-    fetchExecCertificateType({
-      error: goToException,
-    });
-
-    // 获取用户类型
-    fetchUserType({
-      error: goToException,
     });
   }
 

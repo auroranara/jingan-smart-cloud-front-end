@@ -71,11 +71,14 @@ class CheckInfo extends PureComponent {
       dangerCompanyOver,
       goBack,
       checksMonth,
+      handleParentChange,
     } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
     });
+
+    const thisMonth = moment().format('YYYY-MM');
     return (
       <section
         className={stylesVisible}
@@ -142,6 +145,9 @@ class CheckInfo extends PureComponent {
                   <div
                     className={styles.checksContentActive}
                     onClick={() => {
+                      handleParentChange({
+                        checkUserId: '',
+                      });
                       this.handleGoDangerCompany();
                     }}
                   >
@@ -162,7 +168,7 @@ class CheckInfo extends PureComponent {
                     </div>
                   </div>
                 </Col>
-                <Col span={12}>
+                <Col span={12} style={{ display: checksMonth === thisMonth ? 'block' : 'none' }}>
                   <div
                     className={styles.checksContentActive}
                     onClick={() => {
@@ -211,6 +217,9 @@ class CheckInfo extends PureComponent {
                               }}
                               onClick={() => {
                                 if (!item.hiddenCompanyNum) return;
+                                handleParentChange({
+                                  checkUserId: item.id,
+                                });
                                 this.handleGoDangerCompany(item.id);
                               }}
                             >

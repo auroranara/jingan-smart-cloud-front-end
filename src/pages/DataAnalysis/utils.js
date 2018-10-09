@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const DATE_FORMAT = 'YYYY/M/D';
+const DATE_FORMAT = 'YYYY/M/D H:m';
 const CONDITION_MAP = { 1: '≥', 2: '≤' };
 
 export function addAlign(columns, align='center') {
@@ -50,12 +50,12 @@ export function handleFormVals(vals) {
   return newVals;
 }
 
-export function handleTableData(list=[], indexBase, divider='|') {
+export function handleTableData(list=[], indexBase) {
   return list.map((item, index) => {
     const { id, realtime, area, location, status, realtimeData, unit, limitValue, condition, desc } = item;
     const sts = Number.parseInt(status, 10);
     // 单位存在时，已divider(默认为|)分隔
-    const u = unit ? `${divider}${unit}` : '';
+    const u = handleUnit(unit);
     return {
       id,
       index: indexBase + index + 1,
@@ -63,8 +63,10 @@ export function handleTableData(list=[], indexBase, divider='|') {
       area: area || '-',
       location: location || '-',
       status: sts,
-      value: sts === -1 || realtimeData === null ? '-' : `${realtimeData}${u}`,
-      limitValue: limitValue || '-',
+      // value: sts === -1 || realtimeData === null ? '-' : `${realtimeData}${u}`,
+      value: sts === -1 || realtimeData === null ? '-' : renderVal(realtimeData, u),
+      limitValue: limitValue || limitValue === 0 ? renderVal(limitValue, u) :  '-',
+      // limitValue: <p style={{color: 'red'}}>limit</p>,
       condition: sts === -1 ? '设备失联' : `${CONDITION_MAP[condition]}界限值`,
       parameter: sts === -1 || desc === null ? '-' : desc,
     };
@@ -92,16 +94,11 @@ export function handleChemicalFormula(param='') {
   return <span>{children}</span>;
 }
 
-// value值为val|unit，分开值及单位，然后单独处理单位
-export function handleUnit(value, divider='|') {
-  if (!value || !value.includes(divider) || value.length <= 1)
-    return value;
-
-  const [val, unit] = value.split('|');
-
-  // 没有单位，直接返回数据
-  if (!unit)
-    return val;
+// 处理单位
+function handleUnit(unit) {
+  // 单位不存在，或长度为1，或其中不含数字，原样返回
+  if (!unit || unit.length === 1 || !(/\d/.test(unit)))
+    return unit;
 
   const ms = unit.match(/(\d+|\D+)/g);
 
@@ -112,17 +109,26 @@ export function handleUnit(value, divider='|') {
     return c;
   });
 
-  children.unshift(val);
+  return children;
+}
 
-  return <span>{children}</span>;
+// 将数据与单位组合在一起
+function renderVal(val, unit) {
+  if (!unit)
+    return val;
+
+  if (!Array.isArray(unit))
+    return val + unit;
+
+  return <span>{[val, ...unit]}</span>;
 }
 
 export function isDateDisabled(current, moments, months=3) {
   const today = moment();
-    if (!moments || !moments.length || moments.length === 2)
-      return current > today;
+  if (!moments || !moments.length || moments.length === 2)
+    return current > today;
 
-    const m = moments[0];
-    // 起始时间的前3个月或后3个月，今天之前都为可选
-    return current > m.clone().add(months, 'months') || current < m.clone().subtract(months, 'months') || current > today;
+  const m = moments[0];
+  // 起始时间的前3个月或后3个月，今天之前都为可选
+  return current > m.clone().add(months, 'months') || current < m.clone().subtract(months, 'months') || current > today;
 }

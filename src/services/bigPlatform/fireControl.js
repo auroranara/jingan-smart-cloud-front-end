@@ -192,5 +192,5 @@ export async function getVideoList(params) {
 }
 
 export async function getVideoLookUp(params) {
-  return request(`${URL_PREFIX}/screenShowData/vedioCheckRecords?${stringify(params)}`);
+  return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
 }

@@ -27,8 +27,9 @@ const CHART_DELAY = 10 * 60 * 1000;
 /**
  * 动态监测
  */
-@connect(({ monitor, loading }) => ({
+@connect(({ monitor, unitFireControl, loading }) => ({
   monitor,
+  unitFireControl,
   historyAlarmLoading: loading.effects['monitor/fetchHistoryAlarm'],
 }))
 export default class App extends PureComponent {
@@ -55,6 +56,8 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
+    // 获取火灾自动报警监测
+    dispatch({ type: 'unitFireControl/fetchFireAlarmSystem', payload: { companyId } });
 
     // 根据传感器类型获取企业传感器列表 1 电 2 表示可燃有毒气体 3 水质 4 废气
     dispatch({
@@ -220,6 +223,19 @@ export default class App extends PureComponent {
     this.fetchPieces(value);
   };
 
+  // 获取报警设备、失联设备列表
+  fetchErrorDevices = (status) => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props
+    dispatch({
+      type: 'monitor/fetchErrorDevices',
+      payload: { companyId, status },
+    })
+  }
   // 查看报警历史纪录
   handleViewHistory = () => {
     const {
@@ -312,6 +328,10 @@ export default class App extends PureComponent {
         gsmsHstData,
         electricityPieces,
         chartParams,
+        errorDevice,
+      },
+      unitFireControl: {
+        fireAlarmSystem,
       },
       dispatch,
       historyAlarmLoading,
@@ -332,7 +352,7 @@ export default class App extends PureComponent {
 
     return (
       <div className={styles.main}>
-        <Header title="晶安智慧安全云平台" extraContent={companyName ? companyName : '暂无信息' } />
+        <Header title="晶安智慧安全云平台" extraContent={companyName ? companyName : '暂无信息'} />
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
@@ -382,7 +402,13 @@ export default class App extends PureComponent {
             </Col>
             <Col span={18} style={{ height: '100%' }}>
               <Row gutter={12} style={{ paddingBottom: 6, height: '50%' }}>
-                <TopCenter countAndExponent={countAndExponent} realTimeAlarm={realTimeAlarm} />
+                <TopCenter
+                  countAndExponent={countAndExponent}
+                  realTimeAlarm={realTimeAlarm}
+                  fireAlarmSystem={fireAlarmSystem}
+                  fetchErrorDevices={this.fetchErrorDevices}
+                  errorDevice={errorDevice}
+                />
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts

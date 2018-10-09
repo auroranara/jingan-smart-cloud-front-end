@@ -1,5 +1,6 @@
-import { queryCompanies, queryData, queryExport } from '../services/dataAnalysis';
+import { queryCompanies, queryData, queryExport, getCompanyInfo } from '../services/dataAnalysis';
 import fileDownload from 'js-file-download';
+import moment from 'moment';
 
 const DEFAULT_CODE = 500;
 const EMPTY_OBJECT = {};
@@ -10,6 +11,7 @@ export default {
   state: {
     companies: {},
     analysis: {},
+    companyInfo: {},
   },
 
   effects: {
@@ -30,14 +32,21 @@ export default {
       callback && callback(code, msg);
       if (code === 200) yield put({ type: 'saveData', payload: data });
     },
-    *fetchExport({ payload }, { call, put }) {
+    *fetchExport({ payload, typeLabel, companyName }, { call, put }) {
       const blob = yield call(queryExport, payload);
-      fileDownload(blob, `${new Date().getTime()}.xls`);
+      fileDownload(blob, `${typeLabel}_${companyName}_${moment().format('YYYY-MM-DD')}.xls`);
       // response = response || EMPTY_OBJECT;
       // const { code = DEFAULT_CODE, data = EMPTY_OBJECT, msg } = response;
       // callback && callback(code, msg);
       // if (code === 200)
       //   yield put({ type: 'saveData', payload: data });
+    },
+    *fetchCompanyInfo({ payload }, { call, put }) {
+      let response = yield call(getCompanyInfo, payload);
+      response = response || EMPTY_OBJECT;
+      const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+      if (code === 200)
+        yield put({ type: 'saveCompanyInfo', payload: data });
     },
   },
 
@@ -56,6 +65,9 @@ export default {
     },
     saveData(state, action) {
       return { ...state, analysis: action.payload };
+    },
+    saveCompanyInfo(state, action) {
+      return { ...state, companyInfo: action.payload };
     },
   },
 };
