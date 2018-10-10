@@ -105,12 +105,18 @@ export default class VideoMonitorDetail extends PureComponent {
     const {
       videoMonitor: {
         detail: {
-          data: { name, companyId, companyName },
+          data: { name },
         },
       },
+      location: {
+        query: { name: companyName },
+      },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
-    //面包屑
 
+    //面包屑
     const breadcrumbList = [
       {
         title: '首页',
