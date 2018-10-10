@@ -494,6 +494,7 @@ class RiskBar extends PureComponent {
               <ReactEcharts
                 option={this.getHdBarOption()}
                 style={{ height: '100%', width: '100%' }}
+                notMerge={true}
                 className="echarts-for-echarts"
                 onChartReady={this.onHdAreaReadyCallback}
               />
