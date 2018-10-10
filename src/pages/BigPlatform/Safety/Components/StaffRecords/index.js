@@ -67,6 +67,7 @@ export default class App extends PureComponent {
       _plan_rectify_time,
       _real_rectify_time,
       _review_user_name,
+      _review_time,
       hiddenStatus,
       _path,
     }) => ({
@@ -78,6 +79,7 @@ export default class App extends PureComponent {
       plan_zgsj: moment(+_plan_rectify_time).format('YYYY-MM-DD'),
       real_zgsj: moment(+_real_rectify_time).format('YYYY-MM-DD'),
       fcr: _review_user_name,
+      fcsj: _review_time && moment(+_review_time).format('YYYY-MM-DD'),
       status: +hiddenStatus,
       background: _path,
     }));
