@@ -230,34 +230,45 @@ class GovernmentBigPlatform extends Component {
       },
     });
 
-    // 监督检查已查
+    // 专职人员检查信息 已检查和未检查单位数量
     dispatch({
-      type: 'bigPlatform/fetchCheckedCompanyInfo',
+      type: 'bigPlatform/fetchCompanyCheckCount',
       payload: {
         date: month,
-        isChecked: '1',
-        isNormal: '1',
-        isOvertime: '1',
-        pageNum: 1,
-        pageSize: 1,
       },
-      success: num => {
-        if (month === moment().format('YYYY-MM')) this.checkNum = num;
+      success: data => {
+        if (month === moment().format('YYYY-MM')) this.checkNum = data.fireCheckCompanyCount;
       },
     });
 
-    // 监督检查未查
-    dispatch({
-      type: 'bigPlatform/fetchCheckedCompanyInfo',
-      payload: {
-        date: month,
-        isChecked: '0',
-        isNormal: '1',
-        isOvertime: '1',
-        pageNum: 1,
-        pageSize: 1,
-      },
-    });
+    // // 监督检查已查
+    // dispatch({
+    //   type: 'bigPlatform/fetchCheckedCompanyInfo',
+    //   payload: {
+    //     date: month,
+    //     isChecked: '1',
+    //     isNormal: '1',
+    //     isOvertime: '1',
+    //     pageNum: 1,
+    //     pageSize: 1,
+    //   },
+    // success: num => {
+    //   if (month === moment().format('YYYY-MM')) this.checkNum = num;
+    // },
+    // });
+
+    // // 监督检查未查
+    // dispatch({
+    //   type: 'bigPlatform/fetchCheckedCompanyInfo',
+    //   payload: {
+    //     date: month,
+    //     isChecked: '0',
+    //     isNormal: '1',
+    //     isOvertime: '1',
+    //     pageNum: 1,
+    //     pageSize: 1,
+    //   },
+    // });
   };
 
   componentWillUnmount() {
@@ -482,6 +493,7 @@ class GovernmentBigPlatform extends Component {
         companyMessage,
         specialEquipment,
         mapLocation = [],
+        companyCheckCount,
       },
     } = this.props;
 
@@ -662,7 +674,7 @@ class GovernmentBigPlatform extends Component {
                 dispatch={dispatch}
                 visible={checks}
                 listData={checkInfo}
-                checkedCompanyInfo={checkedCompanyInfo}
+                checkedCompanyInfo={companyCheckCount}
                 dangerCompany={hiddenDangerCompanyMonth}
                 dangerCompanyOver={hiddenDangerOverTime}
                 goBack={this.goBack}

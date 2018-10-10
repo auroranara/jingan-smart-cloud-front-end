@@ -66,12 +66,13 @@ class CheckInfo extends PureComponent {
     const {
       visible,
       listData,
-      checkedCompanyInfo,
+      checkedCompanyInfo: { companyNum: companyCheckAll = 0, fireCheckCompanyCount = 0 },
       dangerCompany: { dangerCompanyNum = 0 },
       dangerCompanyOver,
       goBack,
       checksMonth,
       handleParentChange,
+      checkedCompanyInfo,
     } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
@@ -79,6 +80,7 @@ class CheckInfo extends PureComponent {
     });
 
     const thisMonth = moment().format('YYYY-MM');
+
     return (
       <section
         className={stylesVisible}
@@ -137,7 +139,7 @@ class CheckInfo extends PureComponent {
                     <span className={styles.iconCom1} />
                     <div className={styles.checksWrapper}>
                       已检查单位
-                      <div className={styles.checksNum}>{checkedCompanyInfo.checked}</div>
+                      <div className={styles.checksNum}>{fireCheckCompanyCount}</div>
                     </div>
                   </div>
                 </Col>
@@ -164,7 +166,9 @@ class CheckInfo extends PureComponent {
                     <span className={styles.iconCom3} />
                     <div className={styles.checksWrapper}>
                       未检查单位
-                      <div className={styles.checksNum}>{checkedCompanyInfo.noChecked}</div>
+                      <div className={styles.checksNum}>
+                        {companyCheckAll - fireCheckCompanyCount}
+                      </div>
                     </div>
                   </div>
                 </Col>

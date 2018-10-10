@@ -112,6 +112,11 @@ export async function getMapLocation(params) {
   return request(`/acloud_new/v2/gridInfo/getMapLocation?${stringify(params)}`);
 }
 
+// 专职人员检查信息 已检查和未检查单位数量
+export async function getCompanyCheckCount(params) {
+  return request(`/acloud_new/v2/sfg/companyCount.json?${stringify(params)}`);
+}
+
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
 export async function getCoItemList(params) {

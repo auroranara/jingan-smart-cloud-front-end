@@ -35,6 +35,7 @@ import {
   getOvertimeUncheckedCompany,
   getListForMapForOptimize,
   getMapLocation,
+  getCompanyCheckCount,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -212,6 +213,10 @@ export default {
     selectOvertimeItemNum: 0,
     overtimeUncheckedCompany: [],
     mapLocation: [],
+    companyCheckCount: {
+      companyNum: 0,
+      fireCheckCompanyCount: 0,
+    },
   },
 
   effects: {
@@ -804,6 +809,21 @@ export default {
         error();
       }
     },
+    // 专职人员检查信息 已检查和未检查单位数量
+    *fetchCompanyCheckCount({ payload, success, error }, { call, put }) {
+      const response = yield call(getCompanyCheckCount, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'companyCheckCount',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -1063,6 +1083,12 @@ export default {
       return {
         ...state,
         mapLocation: payload ? JSON.parse(payload) : [],
+      };
+    },
+    companyCheckCount(state, { payload }) {
+      return {
+        ...state,
+        companyCheckCount: payload,
       };
     },
   },
