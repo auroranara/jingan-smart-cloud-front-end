@@ -13,8 +13,8 @@ export const WASTE_WATER_TYPE = 3;
 export const WASTE_WATER_TYPE_LABEL = '废水异常数据分析';
 export const WASTE_GAS_TYPE = 4;
 export const WASTE_GAS_TYPE_LABEL = '废气异常数据分析';
-export const OPC_TYPE = 5;
-export const OPC_TYPE_LABEL = 'OPC异常数据分析';
+export const STORAGE_TANK_TYPE = 5;
+export const STORAGE_TANK_TYPE_LABEL = '储罐异常数据分析';
 
 export const PAGE_SIZE = 10;
 export const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
@@ -269,7 +269,7 @@ export const WASTE_GAS_COLUMNS = [
   },
 ];
 
-export const OPC_COLUMNS = [
+export const STORAGE_TANK_COLUMNS = [
   {
     title: '序号',
     dataIndex: 'index',
@@ -319,7 +319,7 @@ export const OPC_COLUMNS = [
   },
 ];
 
-export const OPC_PARAMS = [
+export const STORAGE_TANK_PARAMS = [
   { name: '全部', key: 0 },
   { name: '液压', key: 1 },
   { name: '水位', key: 2 },
@@ -348,7 +348,7 @@ export function getFields(type, params, methods) {
     case ELECTRICITY_TYPE:
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
-    case OPC_TYPE:
+    case STORAGE_TANK_TYPE:
       return [
         {
           id: 'area',

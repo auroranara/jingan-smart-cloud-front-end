@@ -20,8 +20,8 @@ import wasteWaterIcon from './imgs/waste-water.png';
 import wasteWaterDarkIcon from './imgs/waste-water-d.png';
 import wasteGasIcon from './imgs/waste-gas.png';
 import wasteGasDarkIcon from './imgs/waste-gas-d.png';
-import opcIcon from './imgs/opc.png';
-import opcDarkIcon from './imgs/opc-d.png';
+import storageTankIcon from './imgs/storage-tank.png';
+import storageTankDarkIcon from './imgs/storage-tank-d.png';
 
 const { Option } = Select;
 
@@ -33,7 +33,7 @@ const breadcrumbList = [
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
-const ICONS = ['electricity', 'toxic-gas', 'waste-water', 'waste-gas', 'OPC'];
+const ICONS = ['electricity', 'toxic-gas', 'waste-water', 'waste-gas', 'storage-tank'];
 const ICONS_URL = {
   electricity: electricityIcon,
   'electricity-d': electricityDarkIcon,
@@ -43,15 +43,15 @@ const ICONS_URL = {
   'waste-water-d': wasteWaterDarkIcon,
   'waste-gas': wasteGasIcon,
   'waste-gas-d': wasteGasDarkIcon,
-  OPC: opcIcon,
-  'OPC-d': opcDarkIcon,
+  'storage-tank': storageTankIcon,
+  'storage-tank-d': storageTankDarkIcon,
 };
 const ICONS_CN = {
   electricity: '用电安全异常数据分析',
   'toxic-gas': '可燃有毒气体异常数据分析',
   'waste-water': '废水异常数据分析',
   'waste-gas': '废气异常数据分析',
-  OPC: 'OPC异常数据分析',
+  'storage-tank': '储罐异常数据分析',
 };
 const OPTIONS = [
   { name: '全部', key: 0 },
@@ -59,7 +59,7 @@ const OPTIONS = [
   { name: '可燃有毒气体', key: 2 },
   { name: '废水', key: 3 },
   { name: '废气', key: 4 },
-  { name: 'OPC', key: 5 },
+  { name: '储罐', key: 5 },
 ];
 // const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 
@@ -215,7 +215,7 @@ export default class DataAnalysisList extends PureComponent {
               'toxic-gas': gasNum,
               'waste-water': pollutionWaterNum,
               'waste-gas': pollutionGasNum,
-              OPC: opcNum,
+              'storage-tank': opcNum,
             };
 
             return (
