@@ -13,7 +13,7 @@ import noAlarm from '../../../../assets/no-alarm.png'
 
 export default class AlarmHistory extends PureComponent {
 
-  static PropTypes = {
+  static propTypes = {
     selectedDeviceType: PropTypes.number,
   }
 
