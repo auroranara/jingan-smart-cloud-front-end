@@ -56,6 +56,7 @@ export default class UserTransmissionDevice extends PureComponent {
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
         if (total <= PAGE_SIZE) that.setState({ hasMore: false });
+        that.companyTotal = total;
       },
     });
   }
@@ -293,7 +294,7 @@ export default class UserTransmissionDevice extends PureComponent {
     const {
       transmission: {
         data: {
-          pagination: { total },
+          // pagination: { total },
           transmissionCount,
         },
         // isLast,
@@ -309,7 +310,7 @@ export default class UserTransmissionDevice extends PureComponent {
           <div>
             <span>
               单位总数：
-              {total}
+              {this.companyTotal}
               {''}
             </span>
             <span style={{ paddingLeft: 20 }}>
