@@ -6,7 +6,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { OPC_TYPE as TYPE, OPC_TYPE_LABEL as TYPE_LABEL, OPC_PARAMS as PARAMS, OPC_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
+import { STORAGE_TANK_TYPE as TYPE, STORAGE_TANK_TYPE_LABEL as TYPE_LABEL, STORAGE_TANK_PARAMS as PARAMS, STORAGE_TANK_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
 import { addAlign,getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const breadcrumbList = [
