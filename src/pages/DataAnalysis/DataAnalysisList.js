@@ -51,7 +51,7 @@ const ICONS_CN = {
   'toxic-gas': '可燃有毒气体异常数据分析',
   'waste-water': '废水异常数据分析',
   'waste-gas': '废气异常数据分析',
-  'opc': 'OPC异常数据分析',
+  OPC: 'OPC异常数据分析',
 };
 const OPTIONS = [
   { name: '全部', key: 0 },
