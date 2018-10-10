@@ -350,7 +350,7 @@ export default class FireControlBigPlatform extends PureComponent {
     this.mapItemList = newList;
   };
 
-  handleVideoShow = (keyId, showList = false, videoState = VIDEO_ALARM) => {
+  handleVideoShow = (keyId, showList = true, videoState = VIDEO_ALARM) => {
     this.setState({ videoVisible: true, videoKeyId: keyId, showVideoList: showList, videoState });
   };
 

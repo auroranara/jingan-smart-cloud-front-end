@@ -449,7 +449,7 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          showList={false}
+          showList={true}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId

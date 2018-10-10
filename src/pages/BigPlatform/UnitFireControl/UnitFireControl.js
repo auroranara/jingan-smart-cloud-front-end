@@ -121,10 +121,10 @@ const HiddenDangerRecord = ({ data }) => {
           </Ellipsis>
         </div>
         <div>
-          <span>{isDFC?'实际整改：':'计划整改：'}</span>
+          <span>{isDFC ? '实际整改：' : '计划整改：'}</span>
           <Ellipsis lines={1} tooltip>
             <span style={{ marginRight: '16px' }}>{rectify_user_name}</span>
-            <span style={{ color: isYCQ?'#FF6464':undefined }}>
+            <span style={{ color: isYCQ ? '#FF6464' : undefined }}>
               {moment(+rectify_time).format('YYYY-MM-DD')}
             </span>
           </Ellipsis>
@@ -650,7 +650,7 @@ export default class App extends PureComponent {
               </div>
             </Tooltip>
           )}
-          // onClick={this.handleVideoOpen}
+        // onClick={this.handleVideoOpen}
         />
         <Section
           title="一键复位"
@@ -702,10 +702,10 @@ export default class App extends PureComponent {
               );
             })
           ) : (
-            <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
-              暂无主机
+              <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
+                暂无主机
             </div>
-          )}
+            )}
         </Section>
       </Rotate>
     );
@@ -878,8 +878,8 @@ export default class App extends PureComponent {
                     return <PendingInfoItem key={id || index} data={item} onClick={this.handleVideoOpen} />;
                   }).concat(<div key="split" className={styles.splitText}>——已经到底了，您即将看到第一条信息——</div>)
                 ) : (
-                  <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noPendingInfo})` }}></div>
-                )}
+                    <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noPendingInfo})` }}></div>
+                  )}
               </Section>
             </Col>
             <Col span={12} style={{ height: '100%' }}>
@@ -898,8 +898,8 @@ export default class App extends PureComponent {
                     return <HiddenDangerRecord key={id} data={item} />;
                   })
                 ) : (
-                  <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noHiddenDangerRecords})` }}></div>
-                )}
+                    <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noHiddenDangerRecords})` }}></div>
+                  )}
               </Section>
             </Col>
             <Col span={6} style={{ height: '100%' }}>
@@ -914,7 +914,7 @@ export default class App extends PureComponent {
           </Row>
         </div>
         <VideoPlay
-          showList={false}
+          showList={true}
           videoList={videoList}
           visible={videoVisible}
           handleVideoClose={this.handleVideoClose}
