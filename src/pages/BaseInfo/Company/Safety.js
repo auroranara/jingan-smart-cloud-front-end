@@ -247,7 +247,7 @@ export default class Safety extends PureComponent {
 
         dispatch({
           type: 'safety/fetch',
-          payload: companyId,
+          payload: { companyId },
           callback(detail = {}) {
             // console.log('detail in Safety', detail);
             // 若标准化达标等级不为未评级，则先把那两个item渲染出来，再设初值
@@ -336,7 +336,7 @@ export default class Safety extends PureComponent {
     e.preventDefault();
     validateFields((err, fieldsValue) => {
       // 获取到的为Option中的value
-      console.log('formValues in Safety', fieldsValue);
+      // console.log('formValues in Safety', fieldsValue);
 
       const { operation } = this.props;
       // 在添加页面安监信息都提示要新建企业基本信息后才能添加，当新建企业基本信息成功后，会询问是否添加安监信息，选择添加，则会跳转到编辑页面

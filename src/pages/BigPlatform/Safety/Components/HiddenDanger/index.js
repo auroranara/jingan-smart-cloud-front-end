@@ -24,6 +24,7 @@ const defaultFieldNames = {
   plan_zgsj: 'plan_zgsj',
   real_zgsj: 'real_zgsj',
   fcr: 'fcr',
+  fcsj: 'fcsj',
   status: 'status',
   background: 'background',
   source: 'source',
@@ -57,9 +58,10 @@ export default class App extends PureComponent {
       isSourceShow,
     } = this.props;
 
-    const { description, sbr, sbsj, zgr, plan_zgsj, real_zgsj, fcr, status, background, source } = { ...defaultFieldNames, ...fieldNames };
+    const { description, sbr, sbsj, zgr, plan_zgsj, real_zgsj, fcr, fcsj, status, background, source } = { ...defaultFieldNames, ...fieldNames };
     const isYCQ = +data[status] === 7;
     const isDFC = +data[status] === 3;
+    const isYGB = +data[status] === 4;
 
     return (
       <div className={styles.riskDetailItem} style={style}>
@@ -74,8 +76,8 @@ export default class App extends PureComponent {
           </div>
           <div style={{ flex: 1  }}>
             <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>上<span style={{ opacity: 0 }}>隐藏</span>报：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[sbr]}</span>{data[sbsj]}</Ellipsis></div>
-            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>{isDFC?'实际整改：':'计划整改：'}</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} ><span className={styles.riskDetailItemTextFirstChild}>{data[zgr]}</span><span style={{ color: isYCQ?'#ff4848':undefined }}>{isDFC?data[real_zgsj]:data[plan_zgsj]}</span></Ellipsis></div>
-            {isDFC && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>复<span style={{ opacity: 0 }}>隐藏</span>查：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[fcr]}</span></Ellipsis></div>}
+            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>{(isDFC || isYGB)?'实际整改：':'计划整改：'}</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} ><span className={styles.riskDetailItemTextFirstChild}>{data[zgr]}</span><span style={{ color: isYCQ?'#ff4848':undefined }}>{(isDFC || isYGB)?data[real_zgsj]:data[plan_zgsj]}</span></Ellipsis></div>
+            {(isDFC || isYGB) && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>复<span style={{ opacity: 0 }}>隐藏</span>查：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[fcr]}</span>{data[fcsj]}</Ellipsis></div>}
             {isSourceShow && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>来<span style={{ opacity: 0 }}>隐藏</span>源：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[source]}</span></Ellipsis></div>}
           </div>
         </div>

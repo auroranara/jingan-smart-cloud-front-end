@@ -564,15 +564,17 @@ export default class accountManagementList extends PureComponent {
                 // }
                 >
                   <div>
-                    <Col span={12}>
-                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                        姓名：
-                        {item.userName || getEmptyData()}
-                      </Ellipsis>
-                    </Col>
-                    <Col span={12}>
-                      <p>电话: {item.phoneNumber || getEmptyData()}</p>
-                    </Col>
+                    <Row>
+                      <Col span={12}>
+                        <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                          姓名：
+                          {item.userName || getEmptyData()}
+                        </Ellipsis>
+                      </Col>
+                      <Col span={12}>
+                        <p>电话: {item.phoneNumber || getEmptyData()}</p>
+                      </Col>
+                    </Row>
                     {item.users && item.users.length ? (
                       <Row>
                         <Col span={16}>

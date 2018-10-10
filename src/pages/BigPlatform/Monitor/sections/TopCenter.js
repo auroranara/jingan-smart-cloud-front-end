@@ -49,7 +49,7 @@ const alarmColumns = [
     key: 'areaLocation',
     align: 'center',
     render: (text, record) => (
-      <span>{`${record.area}:${record.location}`}</span>
+      <span>{record.area}{record.area && record.location && '：'}{record.location}</span>
     ),
     width: 190,
   },
@@ -66,7 +66,7 @@ const missingColumns = [
     key: 'areaLocation',
     align: 'center',
     render: (text, record) => (
-      <span>{`${record.area}:${record.location}`}</span>
+      <span>{record.area}{record.area && record.location && '：'}{record.location}</span>
     ),
   },
   {
@@ -228,6 +228,7 @@ export default class TopCenter extends PureComponent {
                       percentFontSize="48px"
                       percent={score}
                       isNumber={true}
+                      height={105}
                     />)}
                 </div>
                 {this.renderDivider(hDivider)}
