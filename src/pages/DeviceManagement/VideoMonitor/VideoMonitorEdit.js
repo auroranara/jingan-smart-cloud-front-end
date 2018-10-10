@@ -100,10 +100,12 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   // 返回到视频设备列表页面
-  goequipment = companyIdVideo => {
+  goequipment = (editCompanyId, name) => {
     const { dispatch } = this.props;
     dispatch(
-      routerRedux.push(`/device-management/video-monitor/video-equipment/${companyIdVideo}`)
+      routerRedux.push(
+        `/device-management/video-monitor/video-equipment/${editCompanyId}?name=${name}`
+      )
     );
   };
 
@@ -114,13 +116,18 @@ export default class VideoMonitorEdit extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { companyId: companyIdParams, name: nameParams },
+      },
       videoMonitor: {
         detail: {
-          data: { companyId: companyIdVideo },
+          data: { companyId: detailCompanyId, companyName },
         },
       },
       dispatch,
     } = this.props;
+
+    console.log(this.props);
 
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -149,7 +156,7 @@ export default class VideoMonitorEdit extends PureComponent {
           keyId,
           name,
           // status,
-          companyId,
+          companyId: companyIdParams || companyId,
           rtspAddress,
           photoAddress,
           xNum,
@@ -158,9 +165,16 @@ export default class VideoMonitorEdit extends PureComponent {
           isInspection: +isInspection,
         };
 
+        const editCompanyId = companyIdParams || detailCompanyId;
+        const editCompanyName = companyName || nameParams;
+
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
-          message.success(msg, 1, id ? this.goequipment(companyIdVideo) : this.goBack());
+          message.success(
+            msg,
+            1,
+            id || companyIdParams ? this.goequipment(editCompanyId, editCompanyName) : this.goBack()
+          );
         };
 
         const error = () => {
@@ -176,7 +190,7 @@ export default class VideoMonitorEdit extends PureComponent {
             type: 'videoMonitor/updateVideoDevice',
             payload: {
               ...payload,
-              companyId: companyIdVideo,
+              companyId: detailCompanyId,
             },
             success,
             error,
@@ -597,26 +611,36 @@ export default class VideoMonitorEdit extends PureComponent {
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
     const {
-      // location: {
-      //   query: { name: nameCompany },
-      // },
+      location: {
+        query: { companyId: companyIdParams, name: nameParams },
+      },
       match: {
         params: { id },
       },
       videoMonitor: {
         detail: {
-          data: { companyId: companyIdVideo },
+          data: { companyId: detailCompanyId, companyName },
         },
       },
     } = this.props;
+    console.log(this.props);
+
+    const editCompanyId = companyIdParams || detailCompanyId;
+
+    const editCompanyName = companyName || nameParams;
+
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
         <Button type="primary" size="large" onClick={this.handleClickValidate}>
           确定
         </Button>
-        {id ? (
-          <Button type="primary" size="large" onClick={() => this.goequipment(companyIdVideo)}>
+        {id || companyIdParams ? (
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => this.goequipment(editCompanyId, editCompanyName)}
+          >
             返回
           </Button>
         ) : (

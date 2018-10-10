@@ -182,8 +182,12 @@ export default class VideoEquipmentList extends PureComponent {
       location: {
         query: { name },
       },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
 
+    console.log(this.props);
     return (
       <Card>
         <Form layout="inline">
@@ -206,7 +210,7 @@ export default class VideoEquipmentList extends PureComponent {
               code={codesMap.deviceManagement.videoMonitor.add}
               codes={codes}
               type="primary"
-              href={`#/device-management/video-monitor/add?name=${name}`}
+              href={`#/device-management/video-monitor/add?companyId=${companyId}&name=${name}`}
             >
               新增视频
             </AuthButton>
@@ -224,6 +228,9 @@ export default class VideoEquipmentList extends PureComponent {
       },
       user: {
         currentUser: { permissionCodes: codes },
+      },
+      location: {
+        query: { name: equipmentListName },
       },
       dispatch,
     } = this.props;
@@ -247,14 +254,14 @@ export default class VideoEquipmentList extends PureComponent {
                     <AuthLink
                       code={codesMap.deviceManagement.videoMonitor.view}
                       codes={codes}
-                      to={`/device-management/video-monitor/${companyId}/detail/${id}`}
+                      to={`/device-management/video-monitor/${companyId}/detail/${id}?name=${equipmentListName}`}
                     >
                       查看
                     </AuthLink>,
                     <AuthLink
                       code={codesMap.deviceManagement.videoMonitor.edit}
                       codes={codes}
-                      to={`/device-management/video-monitor/edit/${id}`}
+                      to={`/device-management/video-monitor/edit/${id}?name=${equipmentListName}`}
                     >
                       编辑
                     </AuthLink>,
@@ -330,7 +337,7 @@ export default class VideoEquipmentList extends PureComponent {
         videoData: { list = [] },
       },
       location: {
-        query: { name },
+        query: { name: equipmentListName },
       },
     } = this.props;
 
@@ -347,7 +354,7 @@ export default class VideoEquipmentList extends PureComponent {
       );
 
     return (
-      <PageHeaderLayout title={name} breadcrumbList={breadcrumbList} content={content}>
+      <PageHeaderLayout title={equipmentListName} breadcrumbList={breadcrumbList} content={content}>
         <BackTop />
         {this.renderForm()}
         {this.renderList()}
