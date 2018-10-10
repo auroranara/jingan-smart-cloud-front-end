@@ -1970,7 +1970,7 @@ class CompanyLayout extends PureComponent {
           style={{ zIndex: 99999999 }}
           videoList={allCamera}
           visible={videoVisible}
-          showList={false}
+          showList={true}
           actionType="bigFireControl/fetchStartToPlay"
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
