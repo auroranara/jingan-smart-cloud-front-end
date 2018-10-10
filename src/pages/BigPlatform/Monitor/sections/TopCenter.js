@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Modal, Table, Pagination } from 'antd'
+import { Col, Modal, Table, Pagination } from 'antd'
 import WaterWave from 'components/Charts/ScoreWaterWave';
 import styles from './TopCenter.less'
 import { connect } from 'dva'
@@ -75,7 +75,7 @@ const missingColumns = [
     dataIndex: 'statusTime',
     align: 'center',
     render: (text) => (
-      <span>{text ? moment(text).format('YYYY-MM-DD hh-mm') : '暂无数据'}</span>
+      <span>{text ? moment(text).format('YYYY-MM-DD hh:mm') : '暂无数据'}</span>
     ),
   },
 ]
