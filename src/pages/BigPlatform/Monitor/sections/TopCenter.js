@@ -287,7 +287,7 @@ export default class TopCenter extends PureComponent {
                     }}>
                   </div>
                   <span className={styles.fireText}>监测火警数</span>
-                  <span className={styles.errorText}>监测故障树</span>
+                  <span className={styles.errorText}>监测故障数</span>
                 </div>
                 <div className={styles.numberContainer}>
                   <div className={styles.circle}
