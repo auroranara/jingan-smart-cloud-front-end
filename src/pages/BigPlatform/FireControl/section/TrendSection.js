@@ -5,8 +5,9 @@ import { myParseInt } from '../utils';
 import FcSection from './FcSection';
 import EmptyChart from '../components/EmptyChart';
 
-import emptyIcon from '../img/noAlarmTrend.png';
+// import emptyIcon from '../img/noAlarmTrend.png';
 
+const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/noAlarmTrend.png';
 const DELAY = 2000;
 
 function rand(n) {

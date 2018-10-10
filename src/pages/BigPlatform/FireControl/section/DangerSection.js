@@ -5,7 +5,9 @@ import { myParseInt } from '../utils';
 import FcSection from './FcSection';
 import EmptyChart from '../components/EmptyChart';
 
-import emptyIcon from '../img/noDanger.png';
+// import emptyIcon from '../img/noDanger.png';
+
+const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/noDanger.png';
 
 function rand(n) {
   return Math.floor(Math.random() * n);
