@@ -9,13 +9,14 @@ import Ellipsis from '@/components/Ellipsis';
 // import iconWater from '../../../../assets/icon-water.png' // 废水
 // import iconGas from '../../../../assets/icon-gas.png'// 废气
 import noAlarm from '../../../../assets/no-alarm.png'
+import videoIcon from '@/assets/videoCamera.png';
 
 export default class RealTimeAlarm extends PureComponent {
 
   renderAlarmList = () => {
     const { realTimeAlarm, handleClick } = this.props
     return realTimeAlarm.map((item, i) => (
-      <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} style={{ cursor: 'pointer' }} onClick={handleClick} >
+      <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
         <div className={styles.innerItem}>
           <div className={styles.alarmTitle}>
             <div className={styles.title}>
@@ -41,6 +42,7 @@ export default class RealTimeAlarm extends PureComponent {
             </span>
           </div>
         </div>
+        <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt=""/></div>
       </Col>
     ))
   }
