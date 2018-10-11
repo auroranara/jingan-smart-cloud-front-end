@@ -55,25 +55,31 @@ class VideoPlay extends Component {
     if (!keyId) return;
     // 清空视频链接
     this.setState({ videoSrc: '' });
-
+    let index = videoList.findIndex(item => {
+      return item.key_id === keyId;
+    });
+    if (index > -1) {
+      this.setState({
+        activeIndex: index,
+      });
+    }
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
-      // type: actionType,
       payload: {
         key_id: keyId,
       },
       success: response => {
-        this.setState({
-          videoSrc: response.data.url,
-        });
+        console.log('response', response);
         if (keyId) {
-          videoList.forEach((item, index) => {
-            if (item.key_id === keyId || item.keyId === keyId) {
-              this.setState({
-                activeIndex: index,
-              });
-            }
+          let index = videoList.findIndex(item => {
+            return item.key_id === keyId;
           });
+          if (index > -1) {
+            this.setState({
+              activeIndex: index,
+              videoSrc: response.data.url,
+            });
+          }
         }
       },
     });

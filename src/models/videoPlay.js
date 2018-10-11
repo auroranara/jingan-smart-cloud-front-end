@@ -23,7 +23,10 @@ export default {
       // console.log('payload.key_id', payload.key_id);
       // 只有当一开始没有视频或者请求的key与返回的key相同时候 才会播放
       // if (videoId && payload.key_id !== videoId) return;
-
+      yield put({
+        type: 'saveVideoId',
+        payload: { videoId: payload.key_id },
+      });
       const response = yield call(getStartToPlay, payload);
       if (response && response.code === 200) {
         let videoId = yield select(state => state.videoPlay.videoId);
@@ -49,9 +52,23 @@ export default {
     // saveAllCamera(state, action) {
     //   return { ...state, allCamera: action.payload };
     // },
-    saveVideo(state, action) {
+    saveVideoId(
+      state,
+      {
+        payload: { src, videoId },
+      }
+    ) {
       // console.log('saveVideo', action.payload.videoId);
-      return { ...state, startToPlay: action.payload.src, videoId: action.payload.videoId };
+      return { ...state, videoId: videoId };
+    },
+    saveVideo(
+      state,
+      {
+        payload: { src, videoId },
+      }
+    ) {
+      // console.log('saveVideo', action.payload.videoId);
+      return { ...state, startToPlay: src, videoId: videoId };
     },
   },
 };
