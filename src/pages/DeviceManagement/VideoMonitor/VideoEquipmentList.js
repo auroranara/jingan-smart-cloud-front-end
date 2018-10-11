@@ -187,7 +187,6 @@ export default class VideoEquipmentList extends PureComponent {
       },
     } = this.props;
 
-    console.log(this.props);
     return (
       <Card>
         <Form layout="inline">
