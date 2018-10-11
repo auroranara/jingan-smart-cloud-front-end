@@ -328,6 +328,7 @@ class MapSection extends PureComponent {
           <div className={styles2.sectionMain} style={{ border: 'none' }}>
             <div className={styles.mapContainer}>
               <GDMap
+                version={'1.4.10'}
                 amapkey="665bd904a802559d49a33335f1e4aa0d"
                 plugins={[
                   { name: 'Scale', options: { locate: false } },
