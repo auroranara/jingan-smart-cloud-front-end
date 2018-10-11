@@ -3,7 +3,7 @@ import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Header from './components/Header/Header';
-import Section from './components/Section/Section';
+import Section from '@/components/Section';
 import FireAlarmSystem from './components/FireAlarmSystem/FireAlarmSystem';
 import StatisticsOfMaintenance from './components/StatisticsOfMaintenance/StatisticsOfMaintenance';
 import StatisticsOfHiddenDanger from './components/StatisticsOfHiddenDanger/StatisticsOfHiddenDanger';
@@ -22,6 +22,7 @@ import dfcIcon from './images/dfc.png';
 import wcqIcon from './images/wcq.png';
 import ycqIcon from './images/ycq.png';
 import backIcon from '../FireControl/img/back.png';
+import videoIcon from '@/assets/videoCamera.png';
 
 import styles from './UnitFireControl.less';
 
@@ -40,8 +41,7 @@ const PendingInfoItem = ({ data, onClick }) => {
     <div
       key={id}
       className={styles.pendingInfoItem}
-      style={{ color: isFire ? '#FF6464' : '#00ADFF', cursor: onClick && 'pointer' }}
-      onClick={onClick}
+      style={{ color: isFire ? '#FF6464' : '#00ADFF' }}
     >
       <div style={{ backgroundImage: `url(${isFire ? fireIcon : faultIcon})` }}>
         {pendingInfoType}
@@ -56,6 +56,7 @@ const PendingInfoItem = ({ data, onClick }) => {
       <div style={{ backgroundImage: `url(${isFire ? positionRedIcon : positionBlueIcon})` }}>
         {install_address}
       </div>
+      <div className={styles.videoPlayButton} onClick={onClick}><img src={videoIcon} alt=""/></div>
     </div>
   );
 };
@@ -868,7 +869,7 @@ export default class App extends PureComponent {
         <div className={styles.mainBody}>
           <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
             <Col span={6} style={{ height: '100%' }}>
-              <Section isScroll isCarousel splitHeight={48}>
+              <Section isScroll isCarousel split={<div key="split" className={styles.splitText}>——已经到底了，您即将看到第一条信息——</div>} splitHeight={48}>
                 {pendingInfoList.length !== 0 ? (
                   [
                     ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType === '火警'),
@@ -876,7 +877,7 @@ export default class App extends PureComponent {
                   ].map((item, index) => {
                     const { id } = item;
                     return <PendingInfoItem key={id || index} data={item} onClick={this.handleVideoOpen} />;
-                  }).concat(<div key="split" className={styles.splitText}>——已经到底了，您即将看到第一条信息——</div>)
+                  })
                 ) : (
                     <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noPendingInfo})` }}></div>
                   )}

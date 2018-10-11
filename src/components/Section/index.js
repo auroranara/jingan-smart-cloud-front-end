@@ -352,6 +352,8 @@ export default class App extends PureComponent {
       closeContent=defaultCloseContent,
       // 关闭按钮点击事件
       onClose,
+      // 内容样式
+      contentStyle,
       // 标题栏
       title,
       // 标题栏下方的固定区域，比如统计等
@@ -389,7 +391,10 @@ export default class App extends PureComponent {
           }
           <div
             className={styles.scroll}
-            style={scrollStyle}
+            style={{
+              ...contentStyle,
+              ...scrollStyle,
+            }}
             onMouseEnter={isCarousel?this.handleMouseEnter:undefined}
             onMouseLeave={isCarousel?this.handleMouseLeave:undefined}
             ref={container=>this.container=container}
