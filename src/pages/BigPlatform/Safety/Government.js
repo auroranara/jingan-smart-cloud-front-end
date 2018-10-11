@@ -97,6 +97,7 @@ class GovernmentBigPlatform extends Component {
       dangerCompanyLast: '',
       checksMonth: moment().format('YYYY-MM'),
       checkUserId: '',
+      checkNum: 0,
     };
   }
 
@@ -237,7 +238,8 @@ class GovernmentBigPlatform extends Component {
         date: month,
       },
       success: data => {
-        if (month === moment().format('YYYY-MM')) this.checkNum = data.fireCheckCompanyCount;
+        if (month === moment().format('YYYY-MM'))
+          this.setState({ checkNum: data.fireCheckCompanyCount });
       },
     });
 
@@ -465,6 +467,7 @@ class GovernmentBigPlatform extends Component {
       checksMonth,
       riskOver,
       checkUserId,
+      checkNum,
     } = this.state;
     const {
       dispatch,
@@ -539,7 +542,7 @@ class GovernmentBigPlatform extends Component {
                 fulltimeWorker={fulltimeWorker}
                 overRectifyNum={overRectifyNum}
                 selectOvertimeItemNum={selectOvertimeItemNum}
-                checkedCompanyInfo={this.checkNum}
+                checkedCompanyInfo={checkNum}
                 handleParentChange={newState => {
                   this.setState(newState);
                 }}
