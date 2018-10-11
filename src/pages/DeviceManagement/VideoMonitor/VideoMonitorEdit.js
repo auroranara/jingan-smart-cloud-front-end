@@ -76,6 +76,9 @@ export default class VideoMonitorEdit extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { companyId },
+      },
     } = this.props;
     if (id) {
       // 根据id获取详情
@@ -89,6 +92,15 @@ export default class VideoMonitorEdit extends PureComponent {
       // 清空详情
       dispatch({
         type: 'videoMonitor/clearDetail',
+      });
+    }
+    // 根据id获取四色图
+    if (id || companyId) {
+      dispatch({
+        type: 'safety/fetch',
+        payload: {
+          companyId: id || companyId,
+        },
       });
     }
   }
@@ -126,8 +138,6 @@ export default class VideoMonitorEdit extends PureComponent {
       },
       dispatch,
     } = this.props;
-
-    console.log(this.props);
 
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -623,7 +633,6 @@ export default class VideoMonitorEdit extends PureComponent {
         },
       },
     } = this.props;
-    console.log(this.props);
 
     const editCompanyId = companyIdParams || detailCompanyId;
 
