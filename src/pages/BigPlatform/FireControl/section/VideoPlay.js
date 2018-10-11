@@ -77,9 +77,11 @@ class VideoPlay extends Component {
           if (index > -1) {
             this.setState({
               activeIndex: index,
-              videoSrc: response.data.url,
             });
           }
+          this.setState({
+            videoSrc: response.data.url,
+          });
         }
       },
     });

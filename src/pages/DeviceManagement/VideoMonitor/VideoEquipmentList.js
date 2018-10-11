@@ -349,8 +349,8 @@ export default class VideoEquipmentList extends PureComponent {
           {total}
         </span>
       ) : (
-          <span>视频总数：0</span>
-        );
+        <span>视频总数：0</span>
+      );
 
     return (
       <PageHeaderLayout title={equipmentListName} breadcrumbList={breadcrumbList} content={content}>
@@ -361,7 +361,7 @@ export default class VideoEquipmentList extends PureComponent {
           draggable={false}
           style={{ position: 'fixed' }}
           visible={videoVisible}
-          showList={true}
+          showList={false}
           videoList={[]}
           keyId={keyId}
           handleVideoClose={this.handleVideoClose}
