@@ -16,11 +16,14 @@ class RiskDetail extends PureComponent {
 
   render() {
     const {} = this.state;
-    const { visible, goBack, hiddenDangerListByDate } = this.props;
+    const { visible, goBack, hiddenDangerListByDate, riskDetailList, lastSection } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
     });
+    let dataList = { ycq: [], wcq: [], dfc: [] };
+    if (lastSection === 'checks') dataList = hiddenDangerListByDate;
+    else dataList = riskDetailList;
     return (
       <section
         className={stylesVisible}
@@ -40,7 +43,7 @@ class RiskDetail extends PureComponent {
           <div className={styles.sectionMain}>
             <div className={styles.sectionContent}>
               <div className={styles.scrollContainer} id="hiddenDanger">
-                <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
+                <CompanyRisk hiddenDangerListByDate={dataList} />
               </div>
             </div>
           </div>

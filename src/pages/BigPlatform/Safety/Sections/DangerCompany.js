@@ -16,14 +16,24 @@ class DangerCompany extends PureComponent {
   handleClick = id => {
     const { dispatch, lastSection, month, checkUserId } = this.props;
     const param = lastSection === 'checks' ? { date: month } : {};
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDangerListByDate',
-      payload: {
-        company_id: id,
-        reportUserId: checkUserId,
-        ...param,
-      },
-    });
+    console.log(lastSection);
+    if (lastSection === 'checks') {
+      dispatch({
+        type: 'bigPlatform/fetchHiddenDangerListByDate',
+        payload: {
+          company_id: id,
+          reportUserId: checkUserId,
+          ...param,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'bigPlatform/fetchRiskDetail',
+        payload: {
+          company_id: id,
+        },
+      });
+    }
     this.props.goComponent('hiddenDanger');
     if (document.querySelector('#hiddenDanger')) {
       document.querySelector('#hiddenDanger').scrollTop = 0;

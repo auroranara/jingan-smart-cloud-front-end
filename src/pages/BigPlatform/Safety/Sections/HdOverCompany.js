@@ -81,7 +81,7 @@ class HdOverCompany extends PureComponent {
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
                                 dispatch({
-                                  type: 'bigPlatform/fetchHiddenDangerListByDate',
+                                  type: 'bigPlatform/fetchRiskDetail',
                                   payload: {
                                     company_id: item.companyId,
                                     status: '7',

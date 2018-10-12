@@ -648,7 +648,7 @@ class GovernmentBigPlatform extends Component {
               <RiskDetailOver
                 visible={hdOverDetail}
                 goBack={this.goBack}
-                hiddenDangerListByDate={hiddenDangerListByDate}
+                hiddenDangerListByDate={riskDetailList}
               />
 
               {/* 隐患详情 */}
@@ -656,6 +656,8 @@ class GovernmentBigPlatform extends Component {
                 visible={hiddenDanger}
                 goBack={this.goBack}
                 hiddenDangerListByDate={hiddenDangerListByDate}
+                riskDetailList={riskDetailList}
+                lastSection={dangerCompanyLast}
               />
 
               {/* 隐患单位统计 */}
