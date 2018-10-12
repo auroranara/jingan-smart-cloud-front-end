@@ -1,5 +1,5 @@
 import {
-  getCompanyInfo,
+  // getCompanyInfo,
   getCompanyDevices,
   getDeviceConfig,
   getRealTimeData,
@@ -53,17 +53,19 @@ export default {
   },
 
   effects: {
-    *fetchCompanyInfo({ payload }, { call, put }) {
-      let response = yield call(getCompanyInfo, payload);
-      response = response || EMPTY_OBJECT;
-      const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200)
-        yield put({ type: 'saveCompanyInfo', payload: data });
-    },
+    // *fetchCompanyInfo({ payload }, { call, put }) {
+    //   let response = yield call(getCompanyInfo, payload);
+    //   response = response || EMPTY_OBJECT;
+    //   const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+    //   if (code === 200)
+    //     yield put({ type: 'saveCompanyInfo', payload: data });
+    // },
     *fetchAllCamera({ payload }, { call, put }) {
       const response = yield call(getAllCamera, payload);
       if (response && response.list)
         yield put({ type: 'saveAllCamera', payload: response.list });
+      if (response)
+        yield put({ type: 'saveCompanyInfo', payload: { name: response.companyName } });
     },
     // *fetchStartToPlay({ payload, success }, { call, put }) {
     //   const response = yield call(getStartToPlay, payload);

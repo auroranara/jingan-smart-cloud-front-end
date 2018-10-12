@@ -52,7 +52,7 @@ export default class App extends PureComponent {
     } = this.props;
 
     // console.log(companyId);
-    dispatch({ type: 'monitor/fetchCompanyInfo', payload: companyId });
+    // dispatch({ type: 'monitor/fetchCompanyInfo', payload: companyId });
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
