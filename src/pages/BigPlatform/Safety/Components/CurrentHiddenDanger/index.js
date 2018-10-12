@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import Section from '../../../UnitFireControl/components/Section/Section';
+import Section from '@/components/Section';
 import HiddenDanger from '../HiddenDanger';
 import noHiddenDanger from '../../img/noHiddenDanger.png';
 
