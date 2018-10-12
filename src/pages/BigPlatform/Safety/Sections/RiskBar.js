@@ -342,7 +342,7 @@ class RiskBar extends PureComponent {
       series: [
         {
           type: 'pie',
-          radius: ['50%', '70%'],
+          radius: ['45%', '65%'],
           avoidLabelOverlap: false,
           // hoverAnimation: false,
           label: {
