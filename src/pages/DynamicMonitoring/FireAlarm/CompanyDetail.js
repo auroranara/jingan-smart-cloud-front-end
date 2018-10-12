@@ -236,13 +236,13 @@ export default class CompanyDetail extends PureComponent {
         </Card>
         <Modal
           title="详情信息"
-          width="36%"
+          // width="36%"
           visible={detailVisible}
           onOk={() => this.handleModalChange(false)}
           onCancel={() => this.handleModalChange(false)}
           footer={okButton}
         >
-          <DescriptionList>
+          <DescriptionList col={1}>
             {DETAIL_ITEMS.map((item, index) => (
               <Description term={DETAIL_ITEMS_CHINESE[index]} key={item}>
                 {alarmDetail[item] === null
