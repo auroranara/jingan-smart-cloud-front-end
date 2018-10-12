@@ -106,7 +106,11 @@ class HiddenDangerPie extends PureComponent {
     const {
       dispatch,
       goComponent,
-      hiddenDangerCompanyAll,
+      listForMap: {
+        dangerCompany=[],
+        total: dangerCount=0,
+        dangerCompanyNum=0,
+      },
       listForMap: { overRectifyNum = 0, rectifyNum = 0, reviewNum = 0, total: riskTotal = 0 },
       handleParentChange,
     } = this.props;
@@ -127,7 +131,7 @@ class HiddenDangerPie extends PureComponent {
                 type: 'bigPlatform/fetchHiddenDangerCompany',
                 success: () => {
                   handleParentChange({
-                    dangerCompanyData: hiddenDangerCompanyAll,
+                    dangerCompanyData: { dangerCompanyNum, dangerCompany, dangerCount },
                     dangerCompanyLast: '',
                     checkUserId: '',
                   });
@@ -138,7 +142,7 @@ class HiddenDangerPie extends PureComponent {
           >
             隐患单位
             <span className={styles.hdCompanyNum} style={{ color: '#00baff' }}>
-              {hiddenDangerCompanyAll.dangerCompanyNum || 0}
+              {dangerCompanyNum || 0}
             </span>
           </div>
           <div className={styles.sectionMain} style={{ display: 'flex', flexDirection: 'column' }}>

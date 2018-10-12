@@ -161,13 +161,13 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchSearchAllCompany',
     });
 
-    // 隐患单位数量以及具体信息
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDangerCompany',
-      payload: {
-        // date: moment().format('YYYY-MM'),
-      },
-    });
+    // // 隐患单位数量以及具体信息
+    // dispatch({
+    //   type: 'bigPlatform/fetchHiddenDangerCompany',
+    //   payload: {
+    //     // date: moment().format('YYYY-MM'),
+    //   },
+    // });
 
     dispatch({
       type: 'bigPlatform/fetchNewHomePage',
@@ -369,7 +369,7 @@ class GovernmentBigPlatform extends Component {
     });
     // 风险点隐患
     dispatch({
-      type: 'bigPlatform/fetchHiddenDangerListByDate',
+      type: 'bigPlatform/fetchRiskDetail',
       payload: {
         company_id: id,
         source_type: '3',
@@ -497,6 +497,7 @@ class GovernmentBigPlatform extends Component {
         specialEquipment,
         mapLocation = [],
         companyCheckCount,
+        riskDetailList,
       },
     } = this.props;
 
@@ -590,7 +591,7 @@ class GovernmentBigPlatform extends Component {
                 companyId={companyId}
                 companyMessage={companyMessage}
                 specialEquipment={specialEquipment}
-                hiddenDangerListByDate={hiddenDangerListByDate}
+                hiddenDangerListByDate={riskDetailList}
               />
 
               {/* 单位统计 */}

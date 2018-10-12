@@ -31,7 +31,7 @@ class TopData extends PureComponent {
           <div className={styles.sectionMain} style={{ border: 'none' }}>
             <div className={styles.topData}>
               <div className={styles.topItem}>
-                <Tooltip placement="bottom" title={'接入平台的单位总数'}>
+                <Tooltip placement="bottom" title={'接入平台的重点/所有单位数'}>
                   <div
                     className={styles.itemActive}
                     onClick={() => {
