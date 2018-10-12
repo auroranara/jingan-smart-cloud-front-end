@@ -27,6 +27,8 @@ import importantIcon from './img/importantCompany.png';
 import checkingIcon from './img/checkingIcon.png';
 import abnormalIcon from './img/abnormalIcon.png';
 import overIcon from './img/overIcon.png';
+import gray from '@/assets/gray_new.png';
+import exceptionGray from '@/assets/exception_gray.png';
 
 const { Option } = Select;
 
@@ -104,7 +106,7 @@ const switchImageColor = (color, isException) => {
         result.src = blue;
         break;
       default:
-        result.src = blue;
+        result.src = gray;
         break;
     }
   } else {
@@ -122,7 +124,7 @@ const switchImageColor = (color, isException) => {
         result.src = exceptionBlue;
         break;
       default:
-        result.src = exceptionBlue;
+        result.src = exceptionGray;
         break;
     }
   }
