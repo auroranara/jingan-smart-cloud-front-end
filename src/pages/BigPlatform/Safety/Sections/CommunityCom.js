@@ -11,11 +11,25 @@ class CommunityCom extends PureComponent {
   }
 
   componentDidMount() {
-    const { countGridCompany = [] } = this.props;
-    if (countGridCompany.length > 4) this.handleScroll();
+    this.handleInit();
   }
 
   componentWillUnmount() {}
+
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return JSON.stringify(this.props.countGridCompany) !== JSON.stringify(prevProps.countGridCompany);
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (snapshot) {
+      this.handleInit();
+    }
+  }
+
+  handleInit = () => {
+    const { countGridCompany = [] } = this.props;
+    if (countGridCompany.length > 4) this.handleScroll();
+  }
 
   handleScroll = () => {
     const speed = 50;
