@@ -11,7 +11,8 @@ class CommunityCom extends PureComponent {
   }
 
   componentDidMount() {
-    this.handleScroll();
+    const { countGridCompany = [] } = this.props;
+    if (countGridCompany.length > 4) this.handleScroll();
   }
 
   componentWillUnmount() {}
@@ -227,9 +228,11 @@ class CommunityCom extends PureComponent {
                     <tbody>{this.renderTable()}</tbody>
                   </table>
 
-                  <table className={styles.safeTable} ref={node => (this.tableNode = node)}>
-                    <tbody>{this.renderTable()}</tbody>
-                  </table>
+                  {countGridCompany.length > 4 && (
+                    <table className={styles.safeTable} ref={node => (this.tableNode = node)}>
+                      <tbody>{this.renderTable()}</tbody>
+                    </table>
+                  )}
                 </div>
               </div>
             </div>

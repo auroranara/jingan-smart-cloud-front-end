@@ -352,14 +352,14 @@ class RiskBar extends PureComponent {
                 return `单位数：${comArr[params.dataIndex]}\n${params.name}：${params.value}`;
               },
               textStyle: {
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 'bold',
               },
             },
             emphasis: {
               show: true,
               textStyle: {
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 'bold',
               },
             },
