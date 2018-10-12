@@ -35,7 +35,7 @@ class HiddenDangerPie extends PureComponent {
       series: [
         {
           type: 'pie',
-          radius: ['50%', '70%'],
+          radius: ['45%', '65%'],
           avoidLabelOverlap: false,
           label: {
             normal: {
@@ -44,7 +44,7 @@ class HiddenDangerPie extends PureComponent {
               formatter: '{b}\n{number|{c}}',
               rich: {
                 number: {
-                  fontSize: 22,
+                  fontSize: 20,
                   color: '#fff',
                   align: 'center',
                 },
@@ -53,7 +53,7 @@ class HiddenDangerPie extends PureComponent {
             emphasis: {
               show: true,
               textStyle: {
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 'bold',
               },
             },
