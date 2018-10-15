@@ -6,6 +6,8 @@ import styles from './GasSection.less';
 import { ALL, NORMAL, ABNORMAL, LOSS } from '../components/gasStatus';
 // import gasCircle from '../imgs/gasCircle.png';
 
+const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/monitor/com/waterBg1.png';
+
 function handlePercent(n=0, total=0) {
   // 分母是0，直接返回0
   if (!total)
@@ -23,17 +25,24 @@ export default function GasSection(props) {
     { status: 2, num: loss, percent: handlePercent(loss, total), handleClick: () => handleClick(LOSS) },
   ];
 
+  let emptyComponent = (
+    <img src={emptyIcon} alt="空图片" width="170" height="170" className={styles.emptyIcon} />
+  );
+
   return (
     <FcSection title="可燃/有毒气体监测">
       <div className={styles.container}>
         {/* <div className={styles.circle} style={{ backgroundImage: `url(${gasCircle})` }}> */}
-        <div className={styles.circle}>
-          <span className={styles.pointNum} onClick={() => handleClick(ALL)}>{total}</span>
-          <span className={styles.point}>监测点</span>
-        </div>
+        {total ? (
+          <div className={styles.circle}>
+            <span className={styles.pointNum} onClick={() => handleClick(ALL)}>{total}</span>
+            <span className={styles.point}>监测点</span>
+          </div>
+        ) : null}
         <div className={styles.progressContainer}>
-          {sts.map((item, index) => <ProgressBar key={index} {...item} />)}
+          {total ? sts.map((item, index) => <ProgressBar key={index} {...item} />) : null}
         </div>
+        {total ? null : emptyComponent}
       </div>
     </FcSection>
   );
