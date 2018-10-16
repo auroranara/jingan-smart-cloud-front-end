@@ -11,6 +11,7 @@ import {
   message,
   Icon,
   Popover,
+  Tree,
   TreeSelect,
   Spin,
   Transfer,
@@ -32,6 +33,61 @@ const addTitle = '新增账号';
 const href = '/role-authorization/account-management/list';
 
 const TreeNode = TreeSelect.TreeNode;
+const { TreeNode: TrNode } = Tree;
+const { Search } = Input;
+
+const TREE = [{
+  id: '0-0',
+  title: '0-0',
+  key: '0-0',
+  children: [{
+    id: '0-0-0',
+    title: '0-0-0',
+    key: '0-0-0',
+    parentId: '0-0',
+    children: [
+      { id: '0-0-0-0', title: '0-0-0-0', key: '0-0-0-0', parentId: '0-0-0' },
+      { id: '0-0-0-1', title: '0-0-0-1', key: '0-0-0-1', parentId: '0-0-0' },
+      { id: '0-0-0-2', title: '0-0-0-2', key: '0-0-0-2', parentId: '0-0-0' },
+    ],
+  }, {
+    id: '0-0-1',
+    title: '0-0-1',
+    key: '0-0-1',
+    parentId: '0-0',
+    children: [
+      { id: '0-0-1-0', title: '0-0-1-0', key: '0-0-1-0', parentId: '0-0-1' },
+      { id: '0-0-1-1', title: '0-0-1-1', key: '0-0-1-1', parentId: '0-0-1' },
+      { id: '0-0-1-2', title: '0-0-1-2', key: '0-0-1-2', parentId: '0-0-1' },
+    ],
+  }, {
+    id: '0-0-2',
+    title: '0-0-2',
+    key: '0-0-2',
+    parentId: '0-0',
+  }],
+}, {
+  id: '0-1',
+  title: '0-1',
+  key: '0-1',
+  children: [
+    {
+      id: '0-1-0',
+      title: '0-1-0',
+      key: '0-1-0',
+      parentId: '0-1',
+      children: [
+        { id: '0-1-0-0', title: '0-1-0-0', key: '0-1-0-0', parentId: '0-1-0' },
+        { id: '0-1-0-1', title: '0-1-0-1', key: '0-1-0-1', parentId: '0-1-0' },
+        { id: '0-1-0-2', title: '0-1-0-2', key: '0-1-0-2', parentId: '0-1-0' },
+      ],
+    },
+  ],
+}, {
+  id: '0-2',
+  title: '0-2',
+  key: '0-2',
+}];
 
 /* 表单标签 */
 const fieldLabels = {
@@ -91,6 +147,60 @@ const generateUnitsTree = data => {
     return <TreeNode title={item.name} key={item.id} value={item.id} />;
   });
 };
+
+// function renderTreeNodes(data) {
+//   return data.map((item) => {
+//     if (item.children) {
+//       return (
+//         <TrNode title={item.title} key={item.key} dataRef={item}>
+//           {renderTreeNodes(item.children)}
+//         </TrNode>
+//       );
+//     }
+//     return <TrNode {...item} />;
+//   });
+// }
+
+function renderSearchedTreeNodes(data, searchValue){
+  return data.map((item) => {
+    const index = item.title.indexOf(searchValue);
+    const beforeStr = item.title.substr(0, index);
+    const afterStr = item.title.substr(index + searchValue.length);
+    const title = index > -1 ? (
+      <span>
+        {beforeStr}
+        <span style={{ color: '#f50' }}>{searchValue}</span>
+        {afterStr}
+      </span>
+    ) : <span>{item.title}</span>;
+    if (item.children) {
+      return (
+        <TrNode key={item.key} title={title}>
+          {renderSearchedTreeNodes(item.children, searchValue)}
+        </TrNode>
+      );
+    }
+    return <TrNode key={item.key} title={title} />;
+  });
+}
+
+function traverse(tree, callback) {
+  tree.forEach(item => {
+    callback(item);
+    if (item.children)
+      traverse(item.children, callback);
+  });
+}
+
+function getParentKeys(tree, value) {
+  const parentIds = [];
+  traverse(tree, ({ title, parentId}) => {
+    if (title.includes(value) && !parentIds.includes(parentId))
+      parentIds.push(parentId);
+  });
+
+  return parentIds;
+}
 
 @connect(
   ({ account, loading }) => ({
@@ -205,6 +315,9 @@ export default class accountManagementEdit extends PureComponent {
   state = {
     unitTypeChecked: false,
     submitting: false,
+    expandedKeys: [],
+    searchValue: '',
+    autoExpandParent: true,
   };
 
   /* 生命周期函数 */
@@ -324,6 +437,7 @@ export default class accountManagementEdit extends PureComponent {
           unitType,
           unitId,
           treeIds,
+          maintenanceTree,
           password,
           roleIds,
           departmentId,
@@ -333,6 +447,8 @@ export default class accountManagementEdit extends PureComponent {
           regulatoryClassification,
         }
       ) => {
+        console.log(maintenanceTree);
+
         if (!error) {
           this.setState({
             submitting: true,
@@ -952,6 +1068,31 @@ export default class accountManagementEdit extends PureComponent {
     );
   }
 
+  onCheck = (checkedKeys) => {
+    const { setFieldsValue } = this.props.form;
+
+    console.log('onCheck', checkedKeys);
+    setFieldsValue({ maintenanceTree: checkedKeys });
+  };
+
+  onExpand = (expandedKeys) => {
+    this.setState({
+      expandedKeys,
+      autoExpandParent: false,
+    });
+  };
+
+  onTreeSearch = e => {
+    const value = e.target.value;
+    const expandedKeys = getParentKeys(TREE, value);
+
+    this.setState({
+      expandedKeys,
+      searchValue: value,
+      autoExpandParent: true,
+    });
+  };
+
   /* 渲染角色权限信息 */
   renderRolePermission() {
     const {
@@ -964,6 +1105,8 @@ export default class accountManagementEdit extends PureComponent {
       form: { getFieldDecorator },
       loading,
     } = this.props;
+
+    const { expandedKeys, searchValue, autoExpandParent } = this.state;
 
     const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
 
@@ -1017,6 +1160,31 @@ export default class accountManagementEdit extends PureComponent {
                   </AutoComplete>
                 )}
                 <p style={{ paddingTop: 10, fontSize: 12 }}>包括该组织下的所有数据</p>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <p className={styles.mTree}>维保权限</p>
+              <Search placeholder="请输入公司名称查询" onChange={this.onTreeSearch} />
+              <Form.Item>
+                {getFieldDecorator('maintenanceTree', {
+                  // initialValue: treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
+                  valuePropName: 'checkedKeys',
+                })(
+                  <Tree
+                    checkable
+                    onExpand={this.onExpand}
+                    expandedKeys={expandedKeys}
+                    autoExpandParent={autoExpandParent}
+                    onCheck={this.onCheck}
+                    // checkedKeys={this.state.checkedKeys}
+                    // onSelect={this.onSelect}
+                    // selectedKeys={this.state.selectedKeys}
+                  >
+                    {renderSearchedTreeNodes(TREE, searchValue)}
+                  </Tree>
+                )}
               </Form.Item>
             </Col>
           </Row>
