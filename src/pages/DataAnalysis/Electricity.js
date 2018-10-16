@@ -35,7 +35,7 @@ export default class ToxicGas extends PureComponent {
 
   fetchCompanyInfo() {
     const { dispatch, match: { params: { id } } } = this.props;
-    dispatch({ type: 'dataAnalysis/fetchCompanyInfo', payload: id });
+    dispatch({ type: 'dataAnalysis/fetchCompanyInfo', payload: { companyId: id } });
   }
 
   renderExportButton() {
@@ -53,7 +53,7 @@ export default class ToxicGas extends PureComponent {
       match: { params: { id } },
       dataAnalysis: {
         analysis: { list=[] },
-        companyInfo: { name: companyName},
+        companyInfo: { name: companyName },
       },
     } = this.props;
     const { formVals } = this.state;
