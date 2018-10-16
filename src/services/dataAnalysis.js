@@ -19,7 +19,7 @@ export async function queryExport(params) {
   return request(`${URL_PREFIX}/export?${stringify(params)}`);
 }
 
-// 获取企业信息
-export async function getCompanyInfo(id) {
-  return request(`/acloud_new/v2/baseInfo/company/${id}`);
+// 获取企业名字
+export async function getCompanyName(params) {
+  return request(`${URL_PREFIX}/getCompanyName?${stringify(params)}`);
 }

@@ -1,4 +1,4 @@
-import { queryCompanies, queryData, queryExport, getCompanyInfo } from '../services/dataAnalysis';
+import { queryCompanies, queryData, queryExport, getCompanyName } from '../services/dataAnalysis';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 
@@ -42,11 +42,11 @@ export default {
       //   yield put({ type: 'saveData', payload: data });
     },
     *fetchCompanyInfo({ payload }, { call, put }) {
-      let response = yield call(getCompanyInfo, payload);
+      let response = yield call(getCompanyName, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200)
-        yield put({ type: 'saveCompanyInfo', payload: data });
+        yield put({ type: 'saveCompanyInfo', payload: { name: data } });
     },
   },
 
