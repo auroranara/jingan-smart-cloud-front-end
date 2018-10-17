@@ -98,3 +98,8 @@ export async function chnageAccountStatus(params) {
     method: 'PUT',
   })
 }
+
+// 获取维保权限树
+export async function queryMaintenanceTree(params) {
+  return request(`acloud_new/v2/baseInfo/getMaintenanceTree?${stringify(params)}`);
+}

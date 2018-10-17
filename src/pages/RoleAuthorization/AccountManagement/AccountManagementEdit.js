@@ -194,8 +194,8 @@ function traverse(tree, callback) {
 
 function getParentKeys(tree, value) {
   const parentIds = [];
-  traverse(tree, ({ title, parentId}) => {
-    if (title.includes(value) && !parentIds.includes(parentId))
+  traverse(tree, ({ title, parentId }) => {
+    if (title.includes(value) && parentId && !parentIds.includes(parentId))
       parentIds.push(parentId);
   });
 
@@ -364,6 +364,10 @@ export default class accountManagementEdit extends PureComponent {
           this.setState({
             unitTypeChecked: unitType,
           });
+
+          // 若为维保单位，则获取维保权限树
+          unitType === 1 && this.getMaintenanceTree(unitId);
+
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           // fetchUnitsFuzzy({
           //   payload: {
@@ -407,6 +411,12 @@ export default class accountManagementEdit extends PureComponent {
       success,
     });
   }
+
+  //获取维保权限树
+  getMaintenanceTree = (companyId) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/fetchMaintenanceTree', payload: { companyId } });
+  };
 
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
@@ -521,8 +531,13 @@ export default class accountManagementEdit extends PureComponent {
     );
   };
 
-  // 选中单位类型调用
+  // 单位类型下拉框中的值发生改变时调用
   handleUnitTypesChange = id => {
+    // console.log('change');
+
+    // 非combox模式下，即单选时Select的onChange, onSelect几乎一样，只需要用一个即可，所以将下面的onSelect函数合并上来
+    // 不同的地方在于，再次选择时，若选择了和上次一样的选项，则会出发onselect，但是由于Select框的值并未发生改变，所以不会触发onchange事件
+    this.handleUnitTypeSelect(id);
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -542,6 +557,7 @@ export default class accountManagementEdit extends PureComponent {
 
   // 单位类型下拉框选择
   handleUnitTypeSelect = value => {
+    // console.log('select');
     const {
       fetchUnitsFuzzy,
       form: { setFieldsValue },
@@ -591,7 +607,7 @@ export default class accountManagementEdit extends PureComponent {
 
   // 所属单位下拉框选择
   handleDataPermissions = value => {
-    console.log('value', value);
+    // console.log('value', value);
 
     const {
       fetchDepartmentList,
@@ -606,6 +622,8 @@ export default class accountManagementEdit extends PureComponent {
         companyId: value.key,
       },
     });
+
+    this.getMaintenanceTree(value.key);
   };
 
   handleUnitSelect = ({ value, label }) => {
@@ -851,7 +869,7 @@ export default class accountManagementEdit extends PureComponent {
                   })(
                     <Select
                       placeholder="请选择单位类型"
-                      onSelect={this.handleUnitTypeSelect}
+                      // onSelect={this.handleUnitTypeSelect}
                       onChange={this.handleUnitTypesChange}
                     >
                       {unitTypes.map(item => (
@@ -1101,12 +1119,13 @@ export default class accountManagementEdit extends PureComponent {
           data: { treeNames, treeIds, roleIds },
         },
         roles,
+        maintenanceTree: { list=[] },
       },
       form: { getFieldDecorator },
       loading,
     } = this.props;
 
-    const { expandedKeys, searchValue, autoExpandParent } = this.state;
+    const { expandedKeys, searchValue, autoExpandParent, unitTypeChecked } = this.state;
 
     const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
 
@@ -1163,31 +1182,33 @@ export default class accountManagementEdit extends PureComponent {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
-              <p className={styles.mTree}>维保权限</p>
-              <Search placeholder="请输入公司名称查询" onChange={this.onTreeSearch} />
-              <Form.Item>
-                {getFieldDecorator('maintenanceTree', {
-                  // initialValue: treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
-                  valuePropName: 'checkedKeys',
-                })(
-                  <Tree
-                    checkable
-                    onExpand={this.onExpand}
-                    expandedKeys={expandedKeys}
-                    autoExpandParent={autoExpandParent}
-                    onCheck={this.onCheck}
-                    // checkedKeys={this.state.checkedKeys}
-                    // onSelect={this.onSelect}
-                    // selectedKeys={this.state.selectedKeys}
-                  >
-                    {renderSearchedTreeNodes(TREE, searchValue)}
-                  </Tree>
-                )}
-              </Form.Item>
-            </Col>
-          </Row>
+          {unitTypeChecked === 1 && list.length ? (
+            <Row gutter={{ lg: 48, md: 24 }}>
+              <Col lg={8} md={12} sm={24}>
+                <p className={styles.mTree}>维保权限</p>
+                <Search placeholder="请输入公司名称查询" onChange={this.onTreeSearch} />
+                <Form.Item>
+                  {getFieldDecorator('maintenanceTree', {
+                    // initialValue: treeIds && treeNames ? { key: treeIds, label: treeNames } : undefined,
+                    valuePropName: 'checkedKeys',
+                  })(
+                    <Tree
+                      checkable
+                      onExpand={this.onExpand}
+                      expandedKeys={expandedKeys}
+                      autoExpandParent={autoExpandParent}
+                      onCheck={this.onCheck}
+                      // checkedKeys={this.state.checkedKeys}
+                      // onSelect={this.onSelect}
+                      // selectedKeys={this.state.selectedKeys}
+                    >
+                      {renderSearchedTreeNodes(list, searchValue)}
+                    </Tree>
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
+          ): null}
         </Form>
       </Card>
     );

@@ -15,6 +15,7 @@ import {
   addAssociatedUnit,
   editAssociatedUnit,
   chnageAccountStatus,
+  queryMaintenanceTree,
 } from '../services/accountManagement.js';
 
 import { checkOldPass, changePass } from '../services/account.js';
@@ -63,6 +64,7 @@ export default {
     documentTypeIds: [],
     departments: [],
     user: {},
+    maintenanceTree: {},
   },
 
   effects: {
@@ -287,6 +289,12 @@ export default {
         error(response.msg);
       }
     },
+    // 维保权限树
+    *fetchMaintenanceTree({ payload }, { call, put }) {
+      const response = yield call(queryMaintenanceTree, payload);
+      if (response && response.code === 200)
+        yield put({ type: 'saveMaintenanceTree', payload: response.data });
+    },
   },
 
   reducers: {
@@ -435,6 +443,9 @@ export default {
         ...state,
         list: payload,
       };
+    },
+    saveMaintenanceTree(state, { payload }) {
+      return { ...state, maintenanceTree: payload };
     },
   },
 };

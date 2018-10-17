@@ -40,11 +40,12 @@ const LOOKING_UP_DELAY = 5000;
 
 message.config({
   getContainer: () => {
+    console.log(document.querySelector('#unitLookUp'));
     return document.querySelector('#unitLookUp') || document.querySelector('body');
   },
 });
 
-@connect(({ bigFireControl }) => ({ bigFireControl }))
+@connect(({ bigFireControl, user }) => ({ bigFireControl, user }))
 export default class FireControlBigPlatform extends PureComponent {
   state = {
     alarmDetail: {},
@@ -53,6 +54,7 @@ export default class FireControlBigPlatform extends PureComponent {
     isDangerRotated: false,
     isLookUpRotated: false, // 单位查岗组件翻转
     lookUpShow: LOOKING_UP,
+    // recordsId: undefined,
     startLookUp: false,
     showConfirm: false,
     confirmCount: 5,
@@ -105,6 +107,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
         // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
         // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
+        // this.setState({ recordsId });
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
       },
     });
@@ -417,6 +420,7 @@ export default class FireControlBigPlatform extends PureComponent {
       mapShowInfo,
       alarmDetail,
       lookUpShow,
+      // recordsId,
       startLookUp,
       showReverse,
       videoVisible,
@@ -428,7 +432,13 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipPosition,
     } = this.state;
 
-    // console.log(videoState);
+    // console.log(user);
+
+    const newOffGuard = {
+      unitName: overview.titleName,
+      // recordsId,
+      ...offGuard,
+    }
 
     return (
       <div
@@ -538,33 +548,35 @@ export default class FireControlBigPlatform extends PureComponent {
             </Row>
           </Col>
           <Col span={6} style={HEIGHT_PERCNET}>
-            <FcMultiRotateModule
-              className={styles.inspect}
-              isRotated={isLookUpRotated}
-              showReverse={showReverse}
-              front={
-                <UnitLookUp
-                  data={lookUp}
-                  handleClickLookUp={this.handleClickLookUp}
-                  handleClickOffGuard={this.handleClickOffGuard}
-                  handleClickVideoLookUp={this.handleClickVideoLookUp}
-                />
-              }
-              back={
-                <UnitLookUpBack
-                  dispatch={dispatch}
-                  videoVisible={videoVisible}
-                  data={{ lookUp, countdown, offGuard, videoLookUp }}
-                  lookUpShow={lookUpShow}
-                  startLookUp={startLookUp}
-                  fetchLookUpVideo={this.fetchLookUpVideo}
-                  handleVideoShow={this.handleVideoShow}
-                  handleRotateBack={this.handleLookUpRotateBack}
-                  handleVideoLookUpRotate={this.handleVideoLookUpRotate}
-                />
-              }
-              reverse={<AlarmHandle data={alarmProcess} />}
-            />
+            <div className={styles.inspect} id="unitLookUp">
+              <FcMultiRotateModule
+                className={styles.inspectInner}
+                isRotated={isLookUpRotated}
+                showReverse={showReverse}
+                front={
+                  <UnitLookUp
+                    data={lookUp}
+                    handleClickLookUp={this.handleClickLookUp}
+                    handleClickOffGuard={this.handleClickOffGuard}
+                    handleClickVideoLookUp={this.handleClickVideoLookUp}
+                  />
+                }
+                back={
+                  <UnitLookUpBack
+                    dispatch={dispatch}
+                    videoVisible={videoVisible}
+                    data={{ lookUp, countdown, offGuard: newOffGuard, videoLookUp }}
+                    lookUpShow={lookUpShow}
+                    startLookUp={startLookUp}
+                    fetchLookUpVideo={this.fetchLookUpVideo}
+                    handleVideoShow={this.handleVideoShow}
+                    handleRotateBack={this.handleLookUpRotateBack}
+                    handleVideoLookUpRotate={this.handleVideoLookUpRotate}
+                  />
+                }
+                reverse={<AlarmHandle data={alarmProcess} />}
+              />
+            </div>
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
               <SystemSection data={sys} />

@@ -89,7 +89,8 @@ export default class UnitLookUp extends Component {
     const [day, time] = lastTime.split(' ');
 
     return (
-      <FcSection title="单位查岗" id="unitLookUp" style={{ position: 'relative' }}>
+      // <FcSection title="单位查岗" id="unitLookUp" style={{ position: 'relative' }}>
+      <FcSection title="单位查岗" style={{ position: 'relative' }}>
         <section className={styles.main}>
           <div className={styles.top}>
             <Col span={8}>

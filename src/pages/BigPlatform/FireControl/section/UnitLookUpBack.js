@@ -42,6 +42,7 @@ export default function(props) {
         handleCounterStop={() => handleRotateBack(true)}
       />
       <OffGuardWarning
+        dispatch={dispatch}
         data={offGuard}
         showed={lookUpShow === OFF_GUARD}
       />
