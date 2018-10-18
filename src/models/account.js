@@ -63,6 +63,7 @@ export default {
     documentTypeIds: [],
     departments: [],
     user: {},
+    searchInfo: null,
   },
 
   effects: {
@@ -435,6 +436,12 @@ export default {
         ...state,
         list: payload,
       };
+    },
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload || null,
+      }
     },
   },
 };

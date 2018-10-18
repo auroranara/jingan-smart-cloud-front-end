@@ -149,6 +149,12 @@ const getEmptyData = () => {
         ...action,
       })
     },
+    saveSearchInfo(action) {
+      dispatch({
+        type: 'account/saveSearchInfo',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -167,15 +173,38 @@ export default class accountManagementList extends PureComponent {
 
   // 生命周期函数
   componentDidMount() {
-    const { fetch, fetchOptions, fetchUnitsFuzzy, fetchGavUserTypes, fetchUserType } = this.props;
+    const {
+      fetch,
+      fetchOptions,
+      fetchUnitsFuzzy,
+      fetchGavUserTypes,
+      fetchUserType,
+      account: {
+        searchInfo,
+      },
+      form: {
+        setFieldsValue,
+      },
+    } = this.props;
 
     // 获取账号列表
-    fetch({
-      payload: {
-        pageSize,
-        pageNum: 1,
-      },
-    });
+    if (searchInfo) {
+      setFieldsValue(searchInfo)
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+          ...searchInfo,
+        },
+      });
+    } else {
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+        },
+      });
+    }
     fetchGavUserTypes()
     fetchUserType()
     // 获取单位类型和账户状态
@@ -200,6 +229,7 @@ export default class accountManagementList extends PureComponent {
   handleClickToQuery = () => {
     const {
       fetch,
+      saveSearchInfo,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
@@ -213,6 +243,9 @@ export default class accountManagementList extends PureComponent {
         ...data,
       },
     });
+    saveSearchInfo({
+      payload: data,
+    })
   };
 
   /* 重置按钮点击事件 */
@@ -220,6 +253,7 @@ export default class accountManagementList extends PureComponent {
     const {
       fetch,
       fetchUnitsFuzzy,
+      saveSearchInfo,
       // goToException,
       // fetchOptions,
       form: { resetFields },
@@ -244,6 +278,7 @@ export default class accountManagementList extends PureComponent {
         },
       });
     });
+    saveSearchInfo()
   };
 
   /* 滚动加载 */
