@@ -52,11 +52,12 @@ class VideoPlay extends Component {
 
   handleInit = () => {
     const { dispatch, videoList, keyId } = this.props;
-    if (!keyId) return;
+    if (!(videoList && videoList.length)) return;
+    const videoId = keyId || videoList[0].key_id;
     // 清空视频链接
     this.setState({ videoSrc: '' });
     let index = videoList.findIndex(item => {
-      return item.key_id === keyId;
+      return item.key_id === videoId;
     });
     if (index > -1) {
       this.setState({
@@ -66,13 +67,13 @@ class VideoPlay extends Component {
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
       payload: {
-        key_id: keyId,
+        key_id: videoId,
       },
       success: response => {
         console.log('response', response);
-        if (keyId) {
+        if (videoId) {
           let index = videoList.findIndex(item => {
-            return item.key_id === keyId;
+            return item.key_id === videoId;
           });
           if (index > -1) {
             this.setState({
