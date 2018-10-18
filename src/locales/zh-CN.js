@@ -208,7 +208,7 @@ export default {
   'app.settings.open': '开',
   'app.settings.close': '关',
   'app.exception.back': '返回首页',
-  'app.exception.description.403': '抱歉，你无权访问该页面',
+  'app.exception.description.403': '抱歉，你权限不足，不能操作此功能',
   'app.exception.description.404': '抱歉，你访问的页面不存在',
   'app.exception.description.500': '抱歉，服务器出错了',
   'app.setting.pagestyle': '整体风格设置',
