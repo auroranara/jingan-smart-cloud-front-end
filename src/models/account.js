@@ -290,10 +290,13 @@ export default {
       }
     },
     // 维保权限树
-    *fetchMaintenanceTree({ payload }, { call, put }) {
+    *fetchMaintenanceTree({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceTree, payload);
-      if (response && response.code === 200)
+      if (response && response.code === 200) {
         yield put({ type: 'saveMaintenanceTree', payload: response.data });
+        // callback放后面，因为callback中有setFieldsValue，所以要先等上面先保存好值，先渲染好表单中的Tree，不如可能会报错，在注册组建前设置其值
+        callback && callback(response.data);
+      }
     },
   },
 
