@@ -162,7 +162,7 @@ module.exports = [
         path: '/base-info',
         code: 'baseInfo',
         name: 'baseInfo',
-        icon: 'database',
+        icon: 'file-text',
         routes: [
           {
             path: '/base-info/company',
@@ -708,6 +708,40 @@ module.exports = [
                 code: 'systemManagement.appManagement.listView',
                 name: 'list',
                 component: './SystemManagement/AppManagement/AppManagementList',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: '/database-input',
+        code: 'databaseInput',
+        name: 'databaseInput',
+        icon: 'database',
+        hideInMenu: false,
+        routes: [
+          {
+            path: '/database-input/pageAuthority',
+            code: 'databaseInput.pageAuthority',
+            name: 'pageAuthority',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/database-input/pageAuthority',
+                name: 'pageAuthority',
+                redirect: '/database-input/pageAuthority/index',
+              },
+              {
+                path: '/database-input/pageAuthority/index',
+                code: 'databaseInput.pageAuthority.edit',
+                name: 'edit',
+                component: './DatabaseInput/PageAuthority',
+              },
+              {
+                path: '/database-input/pageAuthority/add',
+                code: 'databaseInput.pageAuthority.add',
+                name: 'add',
+                component: './DatabaseInput/PageAuthorityAdd',
               },
             ],
           },

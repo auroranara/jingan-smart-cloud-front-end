@@ -66,6 +66,10 @@ export async function queryOffGuard(params) {
   return request(`${URL_PREFIX}/screenShowData/companyResponse?${stringify(params)}`);
 }
 
+export async function warnOffGuard(params) {
+  return request(`${URL_PREFIX}/screenShowData/inspectionRecordsAlert?${stringify(params)}`);
+}
+
 // 获取网格区域
 export async function getMapLocation(params) {
   return request(`${URL_PREFIX}/gridInfo/getMapLocation?${stringify(params)}`);

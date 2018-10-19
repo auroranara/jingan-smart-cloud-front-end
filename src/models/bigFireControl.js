@@ -11,6 +11,7 @@ import {
   queryLookUp,
   queryCountdown,
   queryOffGuard,
+  warnOffGuard,
   postLookingUp,
   getAllCamera,
   // getStartToPlay,
@@ -217,6 +218,12 @@ export default {
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200) yield put({ type: 'saveOffGuard', payload: data });
+    },
+    *offGuardWarn({ payload, callback }, { call, put }) {
+      let response = yield call(warnOffGuard, payload);
+      response = response || EMPTY_OBJECT;
+      const { code = DEFAULT_CODE, msg = '暂无信息', data = EMPTY_OBJECT } = response;
+      callback && callback(code, msg, data);
     },
     *fetchAlarmHandle({ payload }, { call, put }) {
       const response = yield call(queryAlarmHandle, payload);

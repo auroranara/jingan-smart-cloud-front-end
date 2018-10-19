@@ -95,7 +95,14 @@
 
 .inspect {
   height: 49%;
+  position: relative;
+  // 由于Modal和message的组件是postion:fixed，所以，这里要加个transform才有用
+  transform: translate(0, 0);
   // background: gold;
+}
+
+.inspectInner {
+  height: 100%;
 }
 
 .gutter3 {
