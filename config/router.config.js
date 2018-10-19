@@ -274,13 +274,13 @@ module.exports = [
                 path: '/fire-control/maintenance-company/add',
                 code: 'fireControl.maintenanceCompany.add',
                 name: 'add',
-                component: './FireControl/MaintenanceCompany/MaintenanceCompanyAdd',
+                component: './FireControl/MaintenanceCompany/MaintenanceCompanyHandler',
               },
               {
                 path: '/fire-control/maintenance-company/edit/:id',
                 code: 'fireControl.maintenanceCompany.edit',
                 name: 'edit',
-                component: './FireControl/MaintenanceCompany/MaintenanceCompanyEdit',
+                component: './FireControl/MaintenanceCompany/MaintenanceCompanyHandler',
               },
               {
                 path: '/fire-control/maintenance-company/detail/:id',

@@ -1,0 +1,11 @@
+# props属性介绍
+* form
+> 父组件通过Form.create()生成的参数
+* loading
+> 提交按钮是否加载中
+* onSubmit
+> 提交按钮点击事件
+* submitButtonProps
+> 提价按钮传参
+* fieldLabels
+> 父组件表单标签

@@ -11,4 +11,11 @@ export default {
     menu: '视频监控',
     index: '地图首页',
   },
+  maintenance: {
+    menu: '消防维保',
+    list: '维保单位',
+    add: '新增维保单位',
+    edit: '编辑维保单位',
+    detail: '维保单位详情',
+  },
 };

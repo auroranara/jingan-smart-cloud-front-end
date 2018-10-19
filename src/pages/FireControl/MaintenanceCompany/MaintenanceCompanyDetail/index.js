@@ -1,8 +1,8 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Spin, Modal } from 'antd';
+import { Form, Card, Button, Spin } from 'antd';
 import moment from 'moment';
-import { routerRedux } from 'dva/router';
+import router from "umi/router";
 import { Map, Marker } from 'react-amap';
 
 import DescriptionList from '@/components/DescriptionList';
@@ -14,26 +14,23 @@ import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import titles from '@/utils/titles';
 
-import styles from './Company.less';
-import SafetyDetail from './SafetyDetail';
+import styles from './index.less';
 
 const { Description } = DescriptionList;
 
-// const companyTypes = ['', '重点单位', '一般单位', '九小场所'];
 // 获取title
 const {
   home: homeTitle,
-  company: { list: listTitle, menu: menuTitle, detail: title },
+  maintenance: { list: listTitle, menu: menuTitle, detail: title },
 } = titles;
 // 获取链接地址
 const {
   home: homeUrl,
-  company: { list: backUrl, edit: editUrl },
-  exception: { 500: exceptionUrl },
+  maintenance: { list: backUrl, edit: editUrl },
 } = urls;
 // 获取code
 const {
-  company: { edit: editCode },
+  maintenanceCompany: { edit: editCode },
 } = codes;
 // 面包屑
 const breadcrumbList = [
@@ -58,19 +55,17 @@ const breadcrumbList = [
 ];
 /* 表单标签 */
 const fieldLabels = {
-  administrativeDivision: '行政区域',
+  name: '单位名称',
   businessScope: '经营范围',
   code: '社会信用代码',
   companyIchnography: '单位平面图',
   companyStatus: '单位状态',
+  companyType: '单位类型',
   createTime: '成立时间',
   economicType: '经济类型',
-  groupName: '集团公司名称',
-  companyType: '单位类型',
   industryCategory: '行业类别',
   coordinate: '经纬度',
   licenseType: '营业执照类别',
-  name: '	单位名称',
   practicalAddress: '实际经营地址',
   registerAddress: '注册地址',
   scale: '规模情况',
@@ -78,132 +73,62 @@ const fieldLabels = {
   principalPhone: '联系方式',
   principalEmail: '邮箱',
   companyNature: '单位性质',
+  isBranch: '是否为分公司',
+  parentId: '总公司',
 };
-// tab列表
-const tabList = [
-  {
-    key: '0',
-    tab: '基本信息',
-  },
-  {
-    key: '1',
-    tab: '安监信息',
-  },
-];
-// 默认选中一般企业
-const defaultCompanyNature = '一般企业';
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
 @connect(
-  ({ company, user, loading }) => ({
-    company,
+  ({ maintenanceCompany, user, loading }) => ({
+    maintenanceCompany,
     user,
-    loading: loading.models.company || loading.models.safety,
+    loading: loading.models.maintenanceCompany,
   }),
   dispatch => ({
     // 获取详情
-    fetchCompany(action) {
+    fetchDetail(action) {
       dispatch({
-        type: 'company/fetchCompany',
+        type: 'maintenanceCompany/fetchDetail',
         ...action,
       });
     },
     // 跳转到编辑页面
     goToEdit(id) {
-      dispatch(routerRedux.push(editUrl + id));
-    },
-    // 异常
-    goToException() {
-      dispatch(routerRedux.push(exceptionUrl));
+      router.push(editUrl + id);
     },
   })
 )
 @Form.create()
-export default class CompanyDetail extends PureComponent {
-  state = {
-    isCompany: true,
-    tabActiveKey: tabList[0].key,
-  };
-
+export default class App extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
-      fetchCompany,
+      fetchDetail,
       match: {
         params: { id },
       },
-      goToException,
     } = this.props;
     // 获取详情
-    fetchCompany({
+    fetchDetail({
       payload: {
         id,
       },
-      success: ({ companyNatureLabel }) => {
-        this.setState({
-          isCompany: companyNatureLabel === defaultCompanyNature,
-        });
-      },
-      error: () => {
-        goToException();
-      },
     });
-  }
-
-  handleTabChange = key => {
-    this.setState({
-      tabActiveKey: key,
-    });
-  };
-
-  /* 渲染行业类别 */
-  renderIndustryCategory() {
-    const {
-      company: {
-        detail: {
-          data: { industryCategoryLabel },
-        },
-      },
-    } = this.props;
-
-    return (
-      <Description term={fieldLabels.industryCategory}>
-        {industryCategoryLabel || getEmptyData()}
-      </Description>
-    );
-  }
-
-  /* 渲染单位状态 */
-  renderCompanyStatus() {
-    const {
-      company: {
-        detail: {
-          data: { companyStatusLabel },
-        },
-      },
-    } = this.props;
-
-    return (
-      <Description term={fieldLabels.companyStatus}>
-        {companyStatusLabel || getEmptyData()}
-      </Description>
-    );
   }
 
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      company: {
+      maintenanceCompany: {
         detail: {
-          data: {
+          companyBasicInfo: {
             name,
             code,
             longitude,
             latitude,
-            companyNatureLabel,
             companyIchnography,
             registerAddress,
             registerProvinceLabel,
@@ -215,11 +140,12 @@ export default class CompanyDetail extends PureComponent {
             practicalCityLabel,
             practicalDistrictLabel,
             practicalTownLabel,
-          },
+          }={},
+          parentUnitName,
+          isBranch,
         },
       },
     } = this.props;
-    const { isCompany } = this.state;
 
     const registerAddressLabel =
       (registerProvinceLabel || '') +
@@ -238,21 +164,29 @@ export default class CompanyDetail extends PureComponent {
     companyIchnographyList = Array.isArray(companyIchnographyList)
       ? companyIchnographyList
       : JSON.parse(companyIchnographyList.dbUrl);
-    // console.log(typeof companyIchnographyList);
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
-          <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
-          <Description term={fieldLabels.companyNature}>
-            {companyNatureLabel || getEmptyData()}
+          <Description term={fieldLabels.name}>
+            {name || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
+          <Description term={fieldLabels.code}>
+            {code || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.coordinate}>
             {longitude && latitude ? `${longitude},${latitude}` : (
               getEmptyData()
             )}
           </Description>
+          <Description term={fieldLabels.isBranch}>
+            {+isBranch ? '是' : '否'}
+          </Description>
+          {!!+isBranch && (
+            <Description term={fieldLabels.parentId}>
+              {parentUnitName || getEmptyData()}
+            </Description>
+          )}
           <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
             <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
               {registerAddressLabel || getEmptyData()}
@@ -263,8 +197,6 @@ export default class CompanyDetail extends PureComponent {
               {practicalAddressLabel || getEmptyData()}
             </Ellipsis>
           </Description>
-          {!isCompany && this.renderIndustryCategory()}
-          {!isCompany && this.renderCompanyStatus()}
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>
@@ -288,9 +220,12 @@ export default class CompanyDetail extends PureComponent {
    */
   renderMap() {
     const {
-      company: {
+      maintenanceCompany: {
         detail: {
-          data: { longitude, latitude },
+          companyBasicInfo: {
+            longitude,
+            latitude,
+          }={},
         },
       },
     } = this.props;
@@ -317,17 +252,18 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染更多信息 */
   renderMoreInfo() {
     const {
-      company: {
+      maintenanceCompany: {
         detail: {
-          data: {
+          companyBasicInfo: {
             economicTypeLabel,
             scaleLabel,
             licenseTypeLabel,
             createTime,
-            groupName,
             businessScope,
             companyTypeLable,
-          },
+            industryCategoryLabel,
+            companyStatusLabel,
+          }={},
         },
       },
     } = this.props;
@@ -335,24 +271,33 @@ export default class CompanyDetail extends PureComponent {
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
-          {this.renderIndustryCategory()}
+          <Description term={fieldLabels.industryCategory}>
+            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+              {industryCategoryLabel || getEmptyData()}
+            </Ellipsis>
+          </Description>
           <Description term={fieldLabels.economicType}>
             {economicTypeLabel || getEmptyData()}
           </Description>
-          {this.renderCompanyStatus()}
+          <Description term={fieldLabels.companyStatus}>
+            {companyStatusLabel || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.companyType}>
             {companyTypeLable || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
+          <Description term={fieldLabels.scale}>
+            {scaleLabel || getEmptyData()}
+          </Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
           </Description>
           <Description term={fieldLabels.createTime}>
             {createTime ? moment(+createTime).format('YYYY-MM-DD') : getEmptyData()}
           </Description>
-          <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
           <Description term={fieldLabels.businessScope}>
-            {businessScope || getEmptyData()}
+            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+              {businessScope || getEmptyData()}
+            </Ellipsis>
           </Description>
         </DescriptionList>
       </Card>
@@ -362,60 +307,44 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染人员信息 */
   renderPersonalInfo() {
     const {
-      company: {
+      maintenanceCompany: {
         detail: {
-          data: {
+          companyBasicInfo: {
             legalName,
             legalPhone,
             legalEmail,
             principalName,
             principalPhone,
             principalEmail,
-            safetyName,
-            safetyPhone,
-            safetyEmail,
-          },
+          }={},
         },
       },
     } = this.props;
     return (
-      <Fragment>
-        <Card title="人员信息" bordered={false}>
-          <DescriptionList title="法定代表人" col={3} style={{ marginBottom: 32 }}>
-            <Description term={fieldLabels.principalName}>
-              {legalName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {legalPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {legalEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-          <DescriptionList title="主要负责人" col={3} style={{ marginBottom: 32 }}>
-            <Description term={fieldLabels.principalName}>
-              {principalName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {principalPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {principalEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-          <DescriptionList title="安全负责人" col={3} style={{ marginBottom: 32 }}>
-            <Description term={fieldLabels.principalName}>
-              {safetyName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {safetyPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {safetyEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-        </Card>
-      </Fragment>
+      <Card title="人员信息" bordered={false}>
+        <DescriptionList title="法定代表人" col={3} style={{ marginBottom: 32 }}>
+          <Description term={fieldLabels.principalName}>
+            {legalName || getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.principalPhone}>
+            {legalPhone || getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.principalEmail}>
+            {legalEmail || getEmptyData()}
+          </Description>
+        </DescriptionList>
+        <DescriptionList title="主要负责人" col={3} style={{ marginBottom: 32 }}>
+          <Description term={fieldLabels.principalName}>
+            {principalName || getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.principalPhone}>
+            {principalPhone || getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.principalEmail}>
+            {principalEmail || getEmptyData()}
+          </Description>
+        </DescriptionList>
+      </Card>
     );
   }
 
@@ -452,31 +381,20 @@ export default class CompanyDetail extends PureComponent {
   render() {
     const {
       loading,
-      match: {
-        params: { id },
-      },
     } = this.props;
-    const { tabActiveKey, isCompany } = this.state;
+
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        tabList={tabList}
-        onTabChange={this.handleTabChange}
-        tabActiveKey={tabActiveKey}
         wrapperClassName={styles.advancedForm}
       >
         <Spin spinning={loading}>
-          <div style={{ display: tabActiveKey === tabList[0].key ? 'block' : 'none' }}>
             {this.renderBasicInfo()}
             {this.renderMap()}
-            {isCompany && this.renderMoreInfo()}
+            {this.renderMoreInfo()}
             {this.renderPersonalInfo()}
             {this.renderFooterToolbar()}
-          </div>
-          <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <SafetyDetail companyId={id} />
-          </div>
         </Spin>
       </PageHeaderLayout>
     );

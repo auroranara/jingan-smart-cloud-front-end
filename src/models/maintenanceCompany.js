@@ -5,9 +5,19 @@ import {
   queryMaintenanceCompanyinfo,
   updateMaintenanceCompany,
   addMaintenanceCompany,
-  queryCompanyList,
   queryServiceUnit,
+  gsafeQueryIndustryType,
+  fetchAddress,
+  gsafeQueryDict,
+  queryDict,
+  queryCompanyType,
+  queryExtraMaintenanceCompanies,
 } from '../services/maintenanceCompany.js';
+import router from "umi/router";
+import urls from '@/utils/urls';
+const {
+  exception: { 500: exceptionUrl },
+} = urls;
 
 export default {
   namespace: 'maintenanceCompany',
@@ -22,7 +32,31 @@ export default {
       },
     },
     list: [],
-    detail: {},
+    detail: {
+      companyBasicInfo: {},
+    },
+    // 注册地址列表
+    registerAddressList: [],
+    // 实际地址列表
+    practicalAddressList: [],
+    // 单位性质列表
+    companyNatureList: [],
+    // 单位状态列表
+    companyStatusList: [],
+    // 行业类别列表
+    industryCategoryList: [],
+    // 经济类型列表
+    economicTypeList: [],
+    // 规模情况列表
+    scaleList: [],
+    // 营业执照类别列表
+    licenseTypeList: [],
+    // 单位类型列表
+    companyTypeList: [],
+    // 是否为分公司字典
+    isBranchList: [],
+    // 总公司列表
+    parentIdList: [],
     categories: [],
     pageNum: 1,
     isLast: false,
@@ -65,55 +99,35 @@ export default {
           type: 'delete',
           payload: payload.id,
         });
+        if (callback) callback(response);
       }
-      if (callback) callback(response);
     },
     //  查看指定维保单位信息
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload.id);
       if (response.code === 200) {
         yield put({
-          type: 'queryDetail',
-          payload: response.data,
+          type: 'save',
+          payload: {
+            key: 'detail',
+            value: response.data,
+          },
         });
         if (callback) callback(response.data);
       }
+      else {
+        router.push(exceptionUrl);
+      }
     },
     // 修改维保单位信息
-    *updateMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
+    *updateMaintenanceCompany({ payload, callback }, { call, put }) {
       const response = yield call(updateMaintenanceCompany, payload);
-      const { code } = response;
-      if (callback) callback(code);
-      if (code === 200) {
-        yield put({
-          type: 'updateMaintenanceCompany',
-          payload: response.data,
-        });
-      }
+      if (callback) callback(response);
     },
     // 新增维保单位信息
-    *addMaintenanceCompanyAsync({ payload, callback }, { call, put }) {
+    *addMaintenanceCompany({ payload, callback }, { call, put }) {
       const response = yield call(addMaintenanceCompany, payload);
-      const { code } = response;
-      if (callback) callback(code);
-      if (code === 200) {
-        yield put({
-          type: 'addMaintenanceCompany',
-          payload: response.data,
-        });
-      }
-    },
-    // 查询企业列表
-    *fetchCompanyList({ payload, callback }, { call, put }) {
-      const response = yield call(queryCompanyList, payload);
-      const { code } = response;
-      if (callback) callback(code);
-      if (response.code === 200) {
-        yield put({
-          type: 'queryCompanyList',
-          payload: response.data,
-        });
-      }
+      if (callback) callback(response);
     },
     // 根据维保单位id查询服务单位列表
     *fetchServiceUnit({ payload }, { call, put }) {
@@ -123,6 +137,139 @@ export default {
           type: 'queryServiceUnit',
           payload: response.data,
         });
+      }
+    },
+    /* 获取行业类别列表 */
+    *fetchIndustryCategoryList({ callback }, { call, put }) {
+      const response = yield call(gsafeQueryIndustryType, { parent_id: -1 });
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'industryCategoryList',
+            value: response.data.list,
+          },
+        });
+        if (callback) {
+          callback();
+        }
+      }
+      else {
+        router.push(exceptionUrl);
+      }
+    },
+    /* 获取实际地址列表 */
+    *fetchPracticalAddressList({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchAddress, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'practicalAddressList',
+            value: response.data.list,
+          },
+        });
+        if (success) {
+          success();
+        }
+      }
+      else if (error) {
+        error(response.msg);
+      }
+    },
+    /* 获取注册地址列表 */
+    *fetchRegisterAddressList({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchAddress, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'registerAddressList',
+            value: response.data.list,
+          },
+        });
+        if (success) {
+          success();
+        }
+      }
+      else if (error) {
+        error(response.msg);
+      }
+    },
+    /* acloud版获取字典 */
+    *fetchDict({ payload: { type, key }, callback }, { call, put }) {
+      const response = yield call(queryDict, { type });
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key,
+            value: response.data.list,
+          },
+        });
+        if (callback) {
+          callback();
+        }
+      }
+      else {
+        router.push(exceptionUrl);
+      }
+    },
+    /* gsafe版获取字典 */
+    *gsafeFetchDict({ payload: { type, key }, callback }, { call, put }) {
+      const response = yield call(gsafeQueryDict, { type });
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key,
+            value: response.data.list,
+          },
+        });
+        if (callback) {
+          callback();
+        }
+      }
+      else {
+        router.push(exceptionUrl);
+      }
+    },
+    /* 获取单位类型列表 */
+    *fetchCompanyTypeList({ callback }, { call, put }) {
+      const response = yield call(queryCompanyType);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'companyTypeList',
+            value: response.data.companyType,
+          },
+        });
+        if (callback) {
+          callback();
+        }
+      }
+      else {
+        router.push(exceptionUrl);
+      }
+    },
+    /* 查询除自己以外的维保单位 */
+    *fetchExtraMaintenanceCompanies({ payload, callback }, { call, put }) {
+      const response = yield call(queryExtraMaintenanceCompanies, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'modal',
+            value: response.data,
+          },
+        });
+        if (callback) {
+          callback();
+        }
+      }
+      else {
+        router.push(exceptionUrl);
       }
     },
   },
@@ -158,45 +305,11 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    //  查看指定维保单位信息
-    queryDetail(state, { payload }) {
-      return {
-        ...state,
-        detail: payload,
-      };
-    },
     // 删除维保单位信息
     delete(state, { payload }) {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
-      };
-    },
-    // 修改维保单位信息
-    updateMaintenanceCompany(state, { payload }) {
-      return {
-        ...state,
-        detail: {
-          ...state.detail,
-          data: payload,
-        },
-      };
-    },
-    // 新增维保单位信息
-    addMaintenanceCompany(state, { payload }) {
-      return {
-        ...state,
-        detail: {
-          ...state.detail,
-          data: payload,
-        },
-      };
-    },
-    // 查询企业列表
-    queryCompanyList(state, { payload }) {
-      return {
-        ...state,
-        modal: payload,
       };
     },
     // 根据维保单位id查询服务单位列表
@@ -214,6 +327,13 @@ export default {
         list,
         pageNum: 1,
         isLast: pageNum * pageSize >= total,
+      };
+    },
+    /* 保存字段 */
+    save(state, { payload: { key, value } }) {
+      return {
+        ...state,
+        [key]: value,
       };
     },
   },

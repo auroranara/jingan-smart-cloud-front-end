@@ -24,6 +24,12 @@ export default {
   map: {
     index: '/video-surveillance/map/index/',
   },
+  maintenance: {
+    list: '/fire-control/maintenance-company/list',
+    detail: '/fire-control/maintenance-company/detail/',
+    add: '/fire-control/maintenance-company/add',
+    edit: '/fire-control/maintenance-company/edit/',
+  },
   exception: {
     500: '/exception/500/',
     403: '/exception/403/',
