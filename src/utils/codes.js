@@ -78,13 +78,16 @@ export default {
   map: {
     index: 'videoSurveillance.map.view',
   },
-  dataAnalysis:{
+  dataAnalysis: {
     IOTAbnormalData: {
       electricity: 'dataAnalysis.IOTAbnormalData.electricity',
       'toxic-gas': 'dataAnalysis.IOTAbnormalData.toxicGas',
       'waste-water': 'dataAnalysis.IOTAbnormalData.wasteWater',
       'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
       'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
+    },
+    MaintenanceRecord: {
+      view: 'dataAnalysis.maintenanceRecord.view',
     },
   },
 };
