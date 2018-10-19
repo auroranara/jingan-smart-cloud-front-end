@@ -378,7 +378,8 @@ export default class AssociatedUnit extends PureComponent {
         this.childrenMap = getTreeListChildrenMap(treeList);
 
         setFieldsValue({ maintenacePermissions });
-        const expandedKeys = getInitParentKeys(maintenacePermissions);
+        const expandedKeys = getInitParentKeys(treeList, maintenacePermissions);
+        // console.log(expandedKeys);
         this.setState({
           expandedKeys,
           autoExpandParent: true,

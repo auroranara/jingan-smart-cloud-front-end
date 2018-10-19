@@ -59,6 +59,7 @@ export function getParentKeys(tree, value) {
   return parentIds;
 }
 
+// 初始化时，根据获取的keys数组，展开树，以下方法，若某父节点全选，则只展开其自身，其下的子节点不再展开，半选的父节点都会展开
 export function getInitParentKeys(tree, keys) {
   const parentIds = [];
   traverse(tree, ({ key, parentId, children }) => {
