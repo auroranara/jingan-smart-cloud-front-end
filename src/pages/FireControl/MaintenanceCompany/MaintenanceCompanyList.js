@@ -259,7 +259,7 @@ export default class MaintenanceCompanyList extends PureComponent {
         <List
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-          dataSource={list}
+          dataSource={list || []}
           renderItem={item => (
             <List.Item key={item.id}>
               <Card

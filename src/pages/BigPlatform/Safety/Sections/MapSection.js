@@ -81,15 +81,17 @@ class MapSection extends PureComponent {
     const { filter } = this.state;
     const loactions = locData.filter(d => filter === 'All' || d.level === filter);
 
-    const markers = loactions.map((item, index) => {
-      // const markers = locData.filter(d => d.level === lvl).map((item, index) => {
-      return {
-        ...item,
-        position: this.analysisPointData(item.location),
-        id: item.company_id,
-        index,
-      };
-    });
+    const markers = loactions
+      .map((item, index) => {
+        // const markers = locData.filter(d => d.level === lvl).map((item, index) => {
+        return {
+          ...item,
+          position: this.analysisPointData(item.location),
+          id: item.company_id,
+          index,
+        };
+      })
+      .filter(m => m.level);
     return (
       <Markers
         markers={markers}
@@ -103,6 +105,9 @@ class MapSection extends PureComponent {
             });
             this.props.handleIconClick({ id: extData.id, ...extData.position });
             // this.handleIconClick({ id: extData.id, ...extData.position });
+          },
+          created: () => {
+            this.mapInstance.setFitView();
           },
         }}
         render={this.renderMarkerLayout}
@@ -372,10 +377,11 @@ class MapSection extends PureComponent {
                       searchValue: '',
                     });
                     if (this.mapInstance) {
-                      this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
-                        locationDefault.x,
-                        locationDefault.y,
-                      ]);
+                      this.mapInstance.setFitView();
+                      // this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
+                      //   locationDefault.x,
+                      //   locationDefault.y,
+                      // ]);
                     }
                     if (this.props.comInfo) {
                       this.props.goBack();

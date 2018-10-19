@@ -110,7 +110,7 @@ export default class FireControlMap extends PureComponent {
     );
   };
 
-  renderMarker = item => {
+  renderMarker = (item, isLast) => {
     const { selected, showTooltip, hideTooltip } = this.props;
     const { name, isFire } = item;
     const isSelected = !!selected;
@@ -152,7 +152,12 @@ export default class FireControlMap extends PureComponent {
         position={{ longitude: item.longitude, latitude: item.latitude }}
         key={item.id}
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
-        events={{ click: this.handleClick.bind(this, item) }}
+        events={{
+          click: this.handleClick.bind(this, item),
+          created: () => {
+            if (isLast) this.mapInstance.setFitView();
+          },
+        }}
       >
         {child}
       </Marker>
@@ -163,7 +168,9 @@ export default class FireControlMap extends PureComponent {
     // const { selected } = this.state;
     const { selected } = this.props;
     // 如果有选中的企业就只渲染选中的
-    return selected ? this.renderMarker(selected) : newList.map(item => this.renderMarker(item));
+    return selected
+      ? this.renderMarker(selected, true)
+      : newList.map((item, index) => this.renderMarker(item, index === newList.length - 1));
   }
 
   renderBackButton() {
@@ -336,6 +343,7 @@ export default class FireControlMap extends PureComponent {
             mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
             center={center}
             zoom={zoom}
+            events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
           >
             <Polygon
               path={polygon}
