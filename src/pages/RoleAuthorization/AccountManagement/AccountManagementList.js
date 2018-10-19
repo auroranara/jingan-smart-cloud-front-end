@@ -155,6 +155,12 @@ const getEmptyData = () => {
         ...action,
       })
     },
+    initPageNum(action) {
+      dispatch({
+        type: 'account/initPageNum',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -220,6 +226,11 @@ export default class accountManagementList extends PureComponent {
         });
       },
     });
+  }
+
+  componentWillUnmount() {
+    const { initPageNum } = this.props
+    initPageNum()
   }
 
   /* 去除输入框里左右两边空白 */
