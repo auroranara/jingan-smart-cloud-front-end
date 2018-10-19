@@ -259,7 +259,7 @@ export default class accountManagementEdit extends PureComponent {
             unitTypeChecked: unitType,
           }, () => {
             // 若为维保单位，则获取维保权限树
-            unitType === 1 && this.getMaintenanceTree(unitId);
+            // unitType === 1 && this.getMaintenanceTree(unitId);
           });
 
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
