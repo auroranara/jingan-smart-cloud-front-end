@@ -574,6 +574,8 @@ export default class AssociatedUnit extends PureComponent {
         companyId: value.key,
       },
     });
+
+    this.getMaintenanceTree(value.key);
   };
 
   handleUnitSelect = ({ value, label }) => {
