@@ -1,6 +1,20 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, Modal, message, Spin, Popconfirm } from 'antd';
+import {
+  Form,
+  List,
+  Card,
+  Button,
+  Icon,
+  Input,
+  Row,
+  Col,
+  message,
+  Spin,
+  Popconfirm,
+  Select,
+  Cascader,
+} from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
@@ -17,6 +31,7 @@ import fireGray from '../../../assets/fire-gray.png';
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 // 获取title
 const {
@@ -50,11 +65,15 @@ const defaultFormData = {
   name: undefined,
   practicalAddress: undefined,
   industryCategory: undefined,
+  companyType: undefined,
+  companyStatus: undefined,
 };
 // 获取无数据
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+// 获取根节点
+const getRootChild = () => document.querySelector('#root>div');
 // 阻止默认行为
 const preventDefault = e => {
   e.preventDefault();
@@ -135,6 +154,26 @@ const breadcrumbList = [
         ...action,
       });
     },
+    // gsafe版获取字典
+    gsafeFetchDict(action) {
+      dispatch({
+        type: 'company/gsafeFetchDict',
+        ...action,
+      });
+    },
+    // 获取行业类别
+    fetchIndustryType(action) {
+      dispatch({
+        type: 'company/fetchIndustryType',
+        ...action,
+      });
+    },
+    fetchOptions(action) {
+      dispatch({
+        type: 'company/fetchOptions',
+        ...action,
+      });
+    },
   })
 )
 @Form.create()
@@ -145,13 +184,39 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount() {
-    const { fetch } = this.props;
+    const {
+      fetch,
+      gsafeFetchDict,
+      goToException: error,
+      fetchIndustryType,
+      fetchOptions,
+    } = this.props;
     // 获取企业列表
     fetch({
       payload: {
         pageSize,
         pageNum: 1,
       },
+    });
+    // 获取行业类别
+    fetchIndustryType({
+      error,
+    });
+    // 获取单位状态
+    gsafeFetchDict({
+      payload: {
+        type: 'companyState',
+        key: 'companyStatuses',
+      },
+      error,
+    });
+    // 获取单位类型
+    fetchOptions({
+      payload: {
+        type: 'companyType',
+        key: 'companyTypes',
+      },
+      error,
     });
   }
 
@@ -186,6 +251,7 @@ export default class CompanyList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
+    const { industryCategory } = data;
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
@@ -194,6 +260,10 @@ export default class CompanyList extends PureComponent {
         pageSize,
         pageNum: 1,
         ...data,
+        industryCategory:
+          industryCategory && industryCategory.length > 0
+            ? industryCategory[industryCategory.length - 1]
+            : undefined,
       },
     });
   };
@@ -270,7 +340,7 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      // company: { industryCategories },
+      company: { companyTypes, industryCategories, companyStatuses },
       user: {
         currentUser: { permissionCodes },
       },
@@ -282,45 +352,91 @@ export default class CompanyList extends PureComponent {
 
     return (
       <Card>
-        <Form layout="inline">
-          <FormItem>
-            {getFieldDecorator('name', {
-              initialValue: defaultFormData.name,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入单位名称" />)}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('practicalAddress', {
-              initialValue: defaultFormData.practicalAddress,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入单位地址" />)}
-          </FormItem>
-          {/* <FormItem>
-            {getFieldDecorator('industryCategory', {
-              initialValue: defaultFormData.industryCategory,
-            })(
-              <Select allowClear placeholder="行业类别" style={{ width: '164px' }} getPopupContainer={getRootChild}>
-                {industryCategories.map(item => (
-                  <Option value={item.id} key={item.id}>
-                    {item.label}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem> */}
-          <FormItem>
-            <Button type="primary" onClick={this.handleClickToQuery}>
-              查询
-            </Button>
-          </FormItem>
-          <FormItem>
-            <Button onClick={this.handleClickToReset}>重置</Button>
-          </FormItem>
-          <FormItem style={{ float: 'right' }}>
-            <Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>
-              新增
-            </Button>
-          </FormItem>
+        <Form>
+          <Row gutter={30}>
+            <Col span={8}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('name', {
+                  initialValue: defaultFormData.name,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Input placeholder="请输入单位名称" style={{ width: '100%' }} />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('practicalAddress', {
+                  initialValue: defaultFormData.practicalAddress,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Input placeholder="请输入单位地址" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('industryCategory', {
+                  initialValue: defaultFormData.industryCategory,
+                })(
+                  <Cascader
+                    options={industryCategories}
+                    fieldNames={{
+                      value: 'type_id',
+                      label: 'gs_type_name',
+                      children: 'children',
+                    }}
+                    allowClear
+                    changeOnSelect
+                    notFoundContent
+                    placeholder="请选择行业类别"
+                    getPopupContainer={getRootChild}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('companyType', {
+                  initialValue: defaultFormData.companyType,
+                })(
+                  <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>
+                    {companyTypes.map(item => (
+                      <Option key={item.id + ''}>{item.label}</Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('companyStatus', {
+                  initialValue: defaultFormData.companyStatus,
+                })(
+                  <Select allowClear placeholder="请选择单位状态" getPopupContainer={getRootChild}>
+                    {companyStatuses.map(item => (
+                      <Option value={item.key} key={item.key}>
+                        {item.value}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                <Button
+                  type="primary"
+                  onClick={this.handleClickToQuery}
+                  style={{ marginRight: '16px' }}
+                >
+                  查询
+                </Button>
+                <Button onClick={this.handleClickToReset} style={{ marginRight: '16px' }}>
+                  重置
+                </Button>
+                <Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>
+                  新增
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Card>
     );
