@@ -249,39 +249,45 @@ class MapSection extends PureComponent {
   };
 
   renderMapLegend = () => {
-    const { companyLevelDto = [] } = this.props;
+    const { companyLevelDto = [], locData = [] } = this.props;
     const { legendActive } = this.state;
-    let Anum = 0,
-      Bnum = 0,
-      Cnum = 0,
-      Dnum = 0;
-    companyLevelDto.forEach(item => {
-      if (item.level === 'A') Anum = item.num;
-      if (item.level === 'B') Bnum = item.num;
-      if (item.level === 'C') Cnum = item.num;
-      if (item.level === 'D') Dnum = item.num;
+    // let Anum = 0,
+    //   Bnum = 0,
+    //   Cnum = 0,
+    //   Dnum = 0;
+    // companyLevelDto.forEach(item => {
+    //   if (item.level === 'A') Anum = item.num;
+    //   if (item.level === 'B') Bnum = item.num;
+    //   if (item.level === 'C') Cnum = item.num;
+    //   if (item.level === 'D') Dnum = item.num;
+    // });
+
+    const lvlNum = [];
+    const lvls = ['A', 'B', 'C', 'D'];
+    lvls.forEach((val, index) => {
+      lvlNum[val] = locData.filter(c => c.level && c.level === val).length;
     });
 
     const mapLegends = [
       {
         level: 'A',
         icon: styles.dotRed,
-        number: Anum,
+        number: lvlNum['A'],
       },
       {
         level: 'B',
         icon: styles.dotOrange,
-        number: Bnum,
+        number: lvlNum['B'],
       },
       {
         level: 'C',
         icon: styles.dotYel,
-        number: Cnum,
+        number: lvlNum['C'],
       },
       {
         level: 'D',
         icon: styles.dotBlue,
-        number: Dnum,
+        number: lvlNum['D'],
       },
     ];
     return (
