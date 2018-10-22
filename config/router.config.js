@@ -298,7 +298,7 @@ module.exports = [
                 path: '/fire-control/maintenance-company/serviceList/:id/detail/:companyId',
                 code: 'fireControl.maintenanceCompany.serviceUnitView',
                 name: 'serviceDetail',
-                component: './FireControl/MaintenanceCompany/serviceDetail',
+                component: './FireControl/MaintenanceCompany/ServiceDetail',
               },
             ],
           },
