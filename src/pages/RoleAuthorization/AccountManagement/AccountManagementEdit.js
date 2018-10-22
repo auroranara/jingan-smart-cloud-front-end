@@ -526,6 +526,8 @@ export default class accountManagementEdit extends PureComponent {
       fetchDepartmentList,
       form: { setFieldsValue },
     } = this.props;
+    const { unitTypeChecked } = this.state;
+
     // 根据value从源数组中筛选出对应的数据，获取其值
     setFieldsValue({
       treeIds: value,
@@ -536,7 +538,9 @@ export default class accountManagementEdit extends PureComponent {
       },
     });
 
-    this.getMaintenanceTree(value.key);
+    // 只有类型是维保单位的时候才请求维保树
+    // console.log(unitTypeChecked);
+    unitTypeChecked === 1 && this.getMaintenanceTree(value.key);
   };
 
   handleUnitSelect = ({ value, label }) => {
