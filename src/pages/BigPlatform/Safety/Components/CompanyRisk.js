@@ -3,6 +3,10 @@ import { Avatar, Tooltip } from 'antd';
 import classNames from 'classnames';
 import styles from '../Government.less';
 import Ellipsis from '../../../../components/Ellipsis';
+import safety from '@/assets/safety.png';
+import fireControl from '@/assets/fire-control.png';
+import environment from '@/assets/environment.png';
+import hygiene from '@/assets/hygiene.png';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -23,6 +27,22 @@ const defaultFieldNames = {
   fcr: 'fcr',
   status: 'status',
   background: 'background',
+  businessType: 'businessType',
+};
+// 根据业务分类获取对应图标
+const getIconByBusinessType = function(businessType) {
+  switch (+businessType) {
+    case 1:
+      return safety;
+    case 2:
+      return fireControl;
+    case 3:
+      return environment;
+    case 4:
+      return hygiene;
+    default:
+      return safety;
+  }
 };
 // 获取图章
 const getSeal = status => {
@@ -52,7 +72,17 @@ class CompanyRisk extends PureComponent {
     const {
       hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
     } = this.props;
-    const { id, description, sbr, sbsj, zgr, fcr, status, background } = defaultFieldNames;
+    const {
+      id,
+      description,
+      sbr,
+      sbsj,
+      zgr,
+      fcr,
+      status,
+      background,
+      businessType,
+    } = defaultFieldNames;
     const newList = [...ycq, ...wcq, ...dfc];
     return (
       <div>
@@ -71,10 +101,12 @@ class CompanyRisk extends PureComponent {
             >
               <div style={{ display: 'flex', padding: '12px 0' }}>
                 <Avatar
-                  style={{ margin: '0 10px' }}
-                  src={+item[status] === 7 ? descriptionRedIcon : descriptionBlueIcon}
+                  style={{ margin: '0 10px', borderRadius: 0 }}
+                  // src={+item[status] === 7 ? descriptionRedIcon : descriptionBlueIcon}
+                  src={getIconByBusinessType(item[businessType])}
                   size="small"
                 />
+                {/* <div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${getIconByBusinessType(data[businessType])})` }} /> */}
                 <Tooltip placement="bottom" title={item[description] || '暂无信息'}>
                   <Ellipsis
                     lines={1}
