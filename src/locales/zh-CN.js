@@ -76,6 +76,7 @@ export default {
   'menu.fireControl.contract.edit': '编辑维保合同',
   'menu.fireControl.contract.detail': '维保合同详情',
   'menu.fireControl.maintenanceCompany.serviceList': '服务单位列表',
+  'menu.fireControl.maintenanceCompany.serviceDetail': '服务单位详情',
   'menu.systemManagement': '系统管理',
   'menu.systemManagement.appManagement': '手机软件管理',
   'menu.systemManagement.appManagement.appManagement': '手机软件管理',

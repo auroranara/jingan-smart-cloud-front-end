@@ -80,3 +80,18 @@ export async function queryDict(params) {
 export async function queryCompanyType() {
   return request(`/acloud_new/v2/baseInfo/company/options`);
 }
+
+/* 获取服务单位详情 */
+export async function queryServiceDetail({ companyId }) {
+  return request(`/acloud_new/v2/fireControl/company/${companyId}`);
+}
+
+/* 获取服务单位安监信息 */
+export async function queryServiceSafetyInfo({ companyId }) {
+  return request(`/acloud_new/v2/fireControl/company/${companyId}/safetyInfo`);
+}
+
+/* 获取服务单位字典 */
+export async function queryServiceMenus() {
+  return request(`/acloud_new/v2/fireControl/safetySelectInfo`);
+}

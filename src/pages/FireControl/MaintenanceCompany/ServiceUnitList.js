@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Input, Spin } from 'antd';
-import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -78,9 +78,9 @@ export default class ServiceUnitList extends PureComponent {
   }
 
   // 跳转到企业详情页
-  goToCompany = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`../../../base-info/company/detail/${id}`));
+  goToCompany = companyId => {
+    const { match: { params: { id } } } = this.props;
+    router.push(`/fire-control/maintenance-company/serviceList/${id}/detail/${companyId}`);
   };
 
   /* 查询按钮点击事件 */

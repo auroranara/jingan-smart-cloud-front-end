@@ -17,5 +17,7 @@ export default {
     add: '新增维保单位',
     edit: '编辑维保单位',
     detail: '维保单位详情',
+    serviceList: '服务单位列表',
+    serviceDetail: '服务单位详情',
   },
 };

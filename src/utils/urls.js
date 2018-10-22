@@ -29,6 +29,7 @@ export default {
     detail: '/fire-control/maintenance-company/detail/',
     add: '/fire-control/maintenance-company/add',
     edit: '/fire-control/maintenance-company/edit/',
+    serviceList: '/fire-control/maintenance-company/serviceList/',
   },
   exception: {
     500: '/exception/500/',

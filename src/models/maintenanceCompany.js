@@ -12,6 +12,9 @@ import {
   queryDict,
   queryCompanyType,
   queryExtraMaintenanceCompanies,
+  queryServiceDetail,
+  queryServiceSafetyInfo,
+  queryServiceMenus,
 } from '../services/maintenanceCompany.js';
 import router from "umi/router";
 import urls from '@/utils/urls';
@@ -68,6 +71,12 @@ export default {
         pageSize: 10,
       },
     },
+    /* 服务单位详情 */
+    serviceDetail: {},
+    /* 服务单位安监信息 */
+    safetyInfo: {},
+    /* 服务单位字典 */
+    menus: {},
   },
 
   effects: {
@@ -266,6 +275,63 @@ export default {
         });
         if (callback) {
           callback();
+        }
+      }
+      else {
+        router.push(exceptionUrl);
+      }
+    },
+    /* 服务单位详情 */
+    *fetchServiceDetail({ payload, callback }, { call, put }) {
+      const response = yield call(queryServiceDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'serviceDetail',
+            value: response.data,
+          },
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      }
+      else {
+        router.push(exceptionUrl);
+      }
+    },
+    /* 服务单位安监信息 */
+    *fetchServiceSafetyInfo({ payload, callback }, { call, put }) {
+      const response = yield call(queryServiceSafetyInfo, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'safetyInfo',
+            value: response.data,
+          },
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      }
+      else {
+        router.push(exceptionUrl);
+      }
+    },
+    /* 服务单位字典 */
+    *fetchServiceMenus({ callback }, { call, put }) {
+      const response = yield call(queryServiceMenus);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'menus',
+            value: response.data,
+          },
+        });
+        if (callback) {
+          callback(response.data);
         }
       }
       else {
