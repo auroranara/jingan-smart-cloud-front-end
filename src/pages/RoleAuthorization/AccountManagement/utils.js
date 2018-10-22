@@ -155,6 +155,9 @@ export function getTreeListChildrenMap(treeList) {
 
 // 暴力点的方法，父节点全选时，遍历子数组，在其中找出所有子节点，并删除
 export function handleMtcTreeViolently(checkedList, childrenMap) {
+  if (!checkedList || !Array.isArray(checkedList))
+    return [];
+
   // 标记数组
   const flags = Array(checkedList.length).fill(true);
   // 遍历数组，若当前节点为父节点且未被标记为false，则在其中再遍历数组，找出其对应的子节点，对应位置都标记为false，不是，则不做处理
