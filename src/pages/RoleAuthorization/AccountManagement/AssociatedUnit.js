@@ -372,8 +372,8 @@ export default class AssociatedUnit extends PureComponent {
     dispatch({
       type: 'account/fetchMaintenanceTree',
       payload: { companyId },
-      callback: ({ list: treeList=[] }) => {
-        const { account: { detail: { data: { maintenacePermissions=[] } } } } = this.props;
+      callback: ({ list: treeList = [] }) => {
+        const { account: { detail: { data: { maintenacePermissions = [] } } } } = this.props;
 
         this.childrenMap = getTreeListChildrenMap(treeList);
 
@@ -385,7 +385,7 @@ export default class AssociatedUnit extends PureComponent {
           autoExpandParent: true,
         })
       },
-   });
+    });
   };
 
   /* 去除左右两边空白 */
@@ -738,7 +738,7 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
                   // initialValue: userId ? unitType : unitTypes.length === 0 ? undefined : 4,
-                  initialValue: userId ? unitType : 4,
+                  initialValue: userId ? unitType : unitTypes && unitTypes.length === 0 ? undefined : unitTypes[0].id,
                   rules: [
                     {
                       required: true,
@@ -963,7 +963,7 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   onTreeSearch = e => {
-    const { account: { maintenanceTree: { list: treeList=[] } } } = this.props;
+    const { account: { maintenanceTree: { list: treeList = [] } } } = this.props;
 
     const value = e.target.value;
     const expandedKeys = getParentKeys(treeList, value);
@@ -983,7 +983,7 @@ export default class AssociatedUnit extends PureComponent {
           data: { treeNames, treeIds, roleIds, maintenacePermissions },
         },
         roles,
-        maintenanceTree: { list: treeList=[] },
+        maintenanceTree: { list: treeList = [] },
       },
       form: { getFieldDecorator },
       loading,
@@ -1062,9 +1062,9 @@ export default class AssociatedUnit extends PureComponent {
                       expandedKeys={expandedKeys}
                       autoExpandParent={autoExpandParent}
                       onCheck={this.onCheck}
-                      // checkedKeys={this.state.checkedKeys}
-                      // onSelect={this.onSelect}
-                      // selectedKeys={this.state.selectedKeys}
+                    // checkedKeys={this.state.checkedKeys}
+                    // onSelect={this.onSelect}
+                    // selectedKeys={this.state.selectedKeys}
                     >
                       {renderSearchedTreeNodes(treeList, searchValue)}
                     </Tree>
@@ -1072,7 +1072,7 @@ export default class AssociatedUnit extends PureComponent {
                 </Form.Item>
               </Col>
             </Row>
-          ): null}
+          ) : null}
         </Form>
       </Card>
     );
