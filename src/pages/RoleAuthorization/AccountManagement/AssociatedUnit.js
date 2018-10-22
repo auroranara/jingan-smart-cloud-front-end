@@ -257,14 +257,14 @@ export default class AssociatedUnit extends PureComponent {
     } = this.props;
     const success = userId
       ? undefined
-      : () => {
+      : ({ unitType: unitTypes }) => {
         this.setState({
           unitTypeChecked: 4,
         });
         // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
         fetchUnitsFuzzy({
           payload: {
-            unitType: 4,
+            unitType: unitTypes[0].id,
             pageNum: 1,
             pageSize: defaultPageSize,
           },
