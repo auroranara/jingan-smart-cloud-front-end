@@ -276,7 +276,7 @@ export default class FireControlBigPlatform extends PureComponent {
       this.setState({
         showReverse: false,
         isAlarmRotated: false,
-        // mapZoom: location.zoom,
+        mapZoom: location.zoom,
         // mapCenter: [location.x, location.y],
         mapSelected: undefined,
       });
@@ -284,7 +284,7 @@ export default class FireControlBigPlatform extends PureComponent {
     else
       this.setState({
         showReverse: false,
-        // mapZoom: location.zoom,
+        mapZoom: location.zoom,
         // mapCenter: [location.x, location.y],
         mapSelected: undefined,
       });
@@ -438,7 +438,7 @@ export default class FireControlBigPlatform extends PureComponent {
       unitName: overview.titleName,
       // recordsId,
       ...offGuard,
-    }
+    };
 
     return (
       <div

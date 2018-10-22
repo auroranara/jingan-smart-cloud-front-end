@@ -169,7 +169,7 @@ export default class FireControlMap extends PureComponent {
     const { selected } = this.props;
     // 如果有选中的企业就只渲染选中的
     return selected
-      ? this.renderMarker(selected, true)
+      ? this.renderMarker(selected, false)
       : newList.map((item, index) => this.renderMarker(item, index === newList.length - 1));
   }
 
