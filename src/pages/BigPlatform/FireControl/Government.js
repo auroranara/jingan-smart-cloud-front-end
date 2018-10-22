@@ -276,16 +276,16 @@ export default class FireControlBigPlatform extends PureComponent {
       this.setState({
         showReverse: false,
         isAlarmRotated: false,
-        mapZoom: location.zoom,
-        mapCenter: [location.x, location.y],
+        // mapZoom: location.zoom,
+        // mapCenter: [location.x, location.y],
         mapSelected: undefined,
       });
     // 警情详情中返回时，原来的状态保持不变
     else
       this.setState({
         showReverse: false,
-        mapZoom: location.zoom,
-        mapCenter: [location.x, location.y],
+        // mapZoom: location.zoom,
+        // mapCenter: [location.x, location.y],
         mapSelected: undefined,
       });
   };

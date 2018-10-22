@@ -174,6 +174,18 @@ const breadcrumbList = [
         ...action,
       });
     },
+    saveSearchInfo(action) {
+      dispatch({
+        type: 'company/saveSearchInfo',
+        ...action,
+      })
+    },
+    initPageNum(action) {
+      dispatch({
+        type: 'company/initPageNum',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -184,13 +196,7 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount() {
-    const {
-      fetch,
-      gsafeFetchDict,
-      goToException: error,
-      fetchIndustryType,
-      fetchOptions,
-    } = this.props;
+    const { fetch } = this.props;
     // 获取企业列表
     fetch({
       payload: {
@@ -198,28 +204,12 @@ export default class CompanyList extends PureComponent {
         pageNum: 1,
       },
     });
-    // 获取行业类别
-    fetchIndustryType({
-      error,
-    });
-    // 获取单位状态
-    gsafeFetchDict({
-      payload: {
-        type: 'companyState',
-        key: 'companyStatuses',
-      },
-      error,
-    });
-    // 获取单位类型
-    fetchOptions({
-      payload: {
-        type: 'companyType',
-        key: 'companyTypes',
-      },
-      error,
-    });
   }
 
+  componentWillUnmount() {
+    const { initPageNum } = this.props
+    initPageNum()
+  }
   // /* 显示删除确认提示框 */
   // handleShowDeleteConfirm = id => {
   //   const { remove } = this.props;
@@ -248,6 +238,7 @@ export default class CompanyList extends PureComponent {
   handleClickToQuery = () => {
     const {
       fetch,
+      saveSearchInfo,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
@@ -266,12 +257,14 @@ export default class CompanyList extends PureComponent {
             : undefined,
       },
     });
+    saveSearchInfo({ payload: data })
   };
 
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
     const {
       fetch,
+      saveSearchInfo,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -285,6 +278,7 @@ export default class CompanyList extends PureComponent {
         pageNum: 1,
       },
     });
+    saveSearchInfo()
   };
 
   /* 滚动加载 */
@@ -513,17 +507,17 @@ export default class CompanyList extends PureComponent {
                       部门
                     </Link>,
                   ]}
-                  // extra={hasDeleteAuthority ? (
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // ) : null}
+                // extra={hasDeleteAuthority ? (
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // ) : null}
                 >
                   <div
                   // onClick={hasDetailAuthority ? () => {
@@ -566,12 +560,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                      <img
-                        className={styles.defaultIcon}
-                        src={safetyProduction ? safe : safeGray}
-                        alt="safe"
-                      />
-                    )}
+                        <img
+                          className={styles.defaultIcon}
+                          src={safetyProduction ? safe : safeGray}
+                          alt="safe"
+                        />
+                      )}
                     {unitType === 3 ? (
                       <Popconfirm
                         className={styles.ml30}
@@ -592,12 +586,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                      <img
-                        className={`${styles.defaultIcon} ${styles.ml30}`}
-                        src={fireService ? fire : fireGray}
-                        alt="fire"
-                      />
-                    )}
+                        <img
+                          className={`${styles.defaultIcon} ${styles.ml30}`}
+                          src={fireService ? fire : fireGray}
+                          alt="fire"
+                        />
+                      )}
                   </div>
                 </Card>
               </List.Item>

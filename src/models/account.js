@@ -457,5 +457,18 @@ export default {
     saveMaintenanceTree(state, { payload }) {
       return { ...state, maintenanceTree: payload };
     },
+    initPageNum(state, { payload }) {
+      return {
+        ...state,
+        pageNum: 1,
+        data: {
+          ...state.data,
+          pagination: {
+            ...state.data.pagination,
+            pageNum: 1,
+          },
+        },
+      }
+    },
   },
 };

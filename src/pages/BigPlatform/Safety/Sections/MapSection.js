@@ -81,15 +81,17 @@ class MapSection extends PureComponent {
     const { filter } = this.state;
     const loactions = locData.filter(d => filter === 'All' || d.level === filter);
 
-    const markers = loactions.map((item, index) => {
-      // const markers = locData.filter(d => d.level === lvl).map((item, index) => {
-      return {
-        ...item,
-        position: this.analysisPointData(item.location),
-        id: item.company_id,
-        index,
-      };
-    });
+    const markers = loactions
+      .map((item, index) => {
+        // const markers = locData.filter(d => d.level === lvl).map((item, index) => {
+        return {
+          ...item,
+          position: this.analysisPointData(item.location),
+          id: item.company_id,
+          index,
+        };
+      })
+      .filter(m => m.level);
     return (
       <Markers
         markers={markers}
@@ -103,6 +105,9 @@ class MapSection extends PureComponent {
             });
             this.props.handleIconClick({ id: extData.id, ...extData.position });
             // this.handleIconClick({ id: extData.id, ...extData.position });
+          },
+          created: () => {
+            this.mapInstance.setFitView();
           },
         }}
         render={this.renderMarkerLayout}
@@ -249,39 +254,45 @@ class MapSection extends PureComponent {
   };
 
   renderMapLegend = () => {
-    const { companyLevelDto = [] } = this.props;
+    const { companyLevelDto = [], locData = [] } = this.props;
     const { legendActive } = this.state;
-    let Anum = 0,
-      Bnum = 0,
-      Cnum = 0,
-      Dnum = 0;
-    companyLevelDto.forEach(item => {
-      if (item.level === 'A') Anum = item.num;
-      if (item.level === 'B') Bnum = item.num;
-      if (item.level === 'C') Cnum = item.num;
-      if (item.level === 'D') Dnum = item.num;
+    // let Anum = 0,
+    //   Bnum = 0,
+    //   Cnum = 0,
+    //   Dnum = 0;
+    // companyLevelDto.forEach(item => {
+    //   if (item.level === 'A') Anum = item.num;
+    //   if (item.level === 'B') Bnum = item.num;
+    //   if (item.level === 'C') Cnum = item.num;
+    //   if (item.level === 'D') Dnum = item.num;
+    // });
+
+    const lvlNum = [];
+    const lvls = ['A', 'B', 'C', 'D'];
+    lvls.forEach((val, index) => {
+      lvlNum[val] = locData.filter(c => c.level && c.level === val).length;
     });
 
     const mapLegends = [
       {
         level: 'A',
         icon: styles.dotRed,
-        number: Anum,
+        number: lvlNum['A'],
       },
       {
         level: 'B',
         icon: styles.dotOrange,
-        number: Bnum,
+        number: lvlNum['B'],
       },
       {
         level: 'C',
         icon: styles.dotYel,
-        number: Cnum,
+        number: lvlNum['C'],
       },
       {
         level: 'D',
         icon: styles.dotBlue,
-        number: Dnum,
+        number: lvlNum['D'],
       },
     ];
     return (
@@ -366,10 +377,11 @@ class MapSection extends PureComponent {
                       searchValue: '',
                     });
                     if (this.mapInstance) {
-                      this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
-                        locationDefault.x,
-                        locationDefault.y,
-                      ]);
+                      this.mapInstance.setFitView();
+                      // this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
+                      //   locationDefault.x,
+                      //   locationDefault.y,
+                      // ]);
                     }
                     if (this.props.comInfo) {
                       this.props.goBack();
