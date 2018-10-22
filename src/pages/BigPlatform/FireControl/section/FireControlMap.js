@@ -99,15 +99,17 @@ export default class FireControlMap extends PureComponent {
   // 点击之后不可以拖拽
   handleClick = item => {
     const { hideTooltip } = this.props;
-    this.setState(
-      {
-        status: { dragEnable: false },
-      },
-      () => {
-        hideTooltip();
-        this.selectCompany(item);
-      }
-    );
+    hideTooltip();
+    this.selectCompany(item);
+    // this.setState(
+    //   {
+    //     status: { dragEnable: false },
+    //   },
+    //   () => {
+    //     hideTooltip();
+    //     this.selectCompany(item);
+    //   }
+    // );
   };
 
   renderMarker = (item, isLast) => {
