@@ -233,14 +233,14 @@ export default class accountManagementEdit extends PureComponent {
 
     const success = id
       ? undefined
-      : () => {
+      : ({ unitType: unitTypes }) => {
         this.setState({
           unitTypeChecked: 4,
         });
         // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        fetchUnitsFuzzy({
+        unitTypes && unitTypes.length && fetchUnitsFuzzy({
           payload: {
-            unitType: 4,
+            unitType: unitTypes[0].id,
             pageNum: 1,
             pageSize: defaultPageSize,
           },
@@ -316,12 +316,12 @@ export default class accountManagementEdit extends PureComponent {
     dispatch({
       type: 'account/fetchMaintenanceTree',
       payload: { companyId },
-      callback: ({ list: treeList=[] }) => {
+      callback: ({ list: treeList = [] }) => {
         // this.sortMap = getSortMap(treeList);
         // this.totalMap = getTotalMap(treeList);
         this.childrenMap = getTreeListChildrenMap(treeList);
       },
-   });
+    });
   };
 
   /* 去除左右两边空白 */
@@ -1014,7 +1014,7 @@ export default class accountManagementEdit extends PureComponent {
   };
 
   onTreeSearch = e => {
-    const { account: { maintenanceTree: { list: treeList=[] } } } = this.props;
+    const { account: { maintenanceTree: { list: treeList = [] } } } = this.props;
 
     const value = e.target.value;
     const expandedKeys = getParentKeys(treeList, value);
@@ -1034,7 +1034,7 @@ export default class accountManagementEdit extends PureComponent {
           data: { treeNames, treeIds, roleIds },
         },
         roles,
-        maintenanceTree: { list: treeList=[] },
+        maintenanceTree: { list: treeList = [] },
       },
       form: { getFieldDecorator },
       loading,
@@ -1113,9 +1113,9 @@ export default class accountManagementEdit extends PureComponent {
                       expandedKeys={expandedKeys}
                       autoExpandParent={autoExpandParent}
                       onCheck={this.onCheck}
-                      // checkedKeys={this.state.checkedKeys}
-                      // onSelect={this.onSelect}
-                      // selectedKeys={this.state.selectedKeys}
+                    // checkedKeys={this.state.checkedKeys}
+                    // onSelect={this.onSelect}
+                    // selectedKeys={this.state.selectedKeys}
                     >
                       {renderSearchedTreeNodes(treeList, searchValue)}
                     </Tree>
@@ -1123,7 +1123,7 @@ export default class accountManagementEdit extends PureComponent {
                 </Form.Item>
               </Col>
             </Row>
-          ): null}
+          ) : null}
         </Form>
       </Card>
     );
