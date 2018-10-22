@@ -193,7 +193,7 @@ export default class accountManagementList extends PureComponent {
       },
     } = this.props;
 
-    // 获取账号列表
+    // 如果有搜索条件，则填入并获取账号列表
     if (searchInfo) {
       setFieldsValue(searchInfo)
       fetch({

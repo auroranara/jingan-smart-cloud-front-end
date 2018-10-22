@@ -196,14 +196,31 @@ export default class CompanyList extends PureComponent {
   }
 
   componentDidMount() {
-    const { fetch } = this.props;
-    // 获取企业列表
-    fetch({
-      payload: {
-        pageSize,
-        pageNum: 1,
+    const {
+      fetch,
+      company: { searchInfo },
+      form: {
+        setFieldsValue,
       },
-    });
+    } = this.props;
+    // 获取企业列表
+    if (searchInfo) {
+      setFieldsValue(searchInfo)
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+          ...searchInfo,
+        },
+      });
+    } else {
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+        },
+      });
+    }
   }
 
   componentWillUnmount() {
