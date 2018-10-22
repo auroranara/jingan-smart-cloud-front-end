@@ -110,7 +110,7 @@ function generateRules(cName, msg = '输入', ...rules) {
 }
 
 function genCheckFileList(msg) {
-  return function(rule, value, callback) {
+  return function (rule, value, callback) {
     if (!value || !value.fileList || !value.fileList.length) callback(`请上传${msg}`);
     else callback();
   };
@@ -513,7 +513,7 @@ export default class Safety extends PureComponent {
         span: 24,
         rules: generateRules('所属网格'),
         formItemLayout: gridLayout,
-        component: <Cascader options={this.gridTree} placeholder="请输入所属网格" />,
+        component: <Cascader options={this.gridTree} placeholder="请输入所属网格" changeOnSelect />,
       },
       {
         name: 'regulatoryClassification',
