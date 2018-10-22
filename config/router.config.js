@@ -528,7 +528,7 @@ module.exports = [
                 component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordList',
               },
               {
-                path: '/data-analysis/maintenance-record/detail',
+                path: '/data-analysis/maintenance-record/detail/:id',
                 code: 'dataAnalysis.maintenanceRecord.view',
                 name: 'detail',
                 component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordDetail',

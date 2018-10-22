@@ -1,6 +1,6 @@
 import {
   queryMaintenanceCheck,
-  // queryMaintenanceRecordDetail,
+  queryMaintenanceRecordDetail,
 } from '../services/maintenanceRecord.js';
 
 export default {
@@ -15,8 +15,8 @@ export default {
         pageNum: 1,
       },
     },
-    list: [],
     detail: {},
+    items: [],
   },
 
   effects: {
@@ -31,6 +31,20 @@ export default {
         });
       }
     },
+
+    // 获取记录详情
+    *fetchRecordDetail({ payload, callback }, { call, put }) {
+      const response = yield call(queryMaintenanceRecordDetail, payload);
+      console.log(response);
+
+      if (response.code === 200) {
+        yield put({
+          type: 'saveDetail',
+          payload: response.data,
+        });
+        if (callback) callback(response);
+      }
+    },
   },
 
   reducers: {
@@ -41,6 +55,14 @@ export default {
         ...state,
         list,
         data: payload,
+      };
+    },
+
+    // 获取记录详情
+    saveDetail(state, { payload }) {
+      return {
+        ...state,
+        detail: payload,
       };
     },
   },

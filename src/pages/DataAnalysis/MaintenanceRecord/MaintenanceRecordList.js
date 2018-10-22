@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import { Form, Card, Button, Input, DatePicker, Table } from 'antd';
 import { routerRedux } from 'dva/router';
 
@@ -39,7 +40,7 @@ const defaultFormData = {
   serviceUnitName: undefined,
 };
 
-const pageSize = 18;
+// const pageSize = 18;
 
 @connect(({ maintenanceRecord, user, loading }) => ({
   maintenanceRecord,
@@ -61,7 +62,14 @@ export default class MaintenanceRecordList extends PureComponent {
 
   // 挂载后
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      maintenanceRecord: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
     // 获取记录列表
     dispatch({
       type: 'maintenanceRecord/fetch',
@@ -73,9 +81,15 @@ export default class MaintenanceRecordList extends PureComponent {
   }
 
   // 跳转到记录详情页面
-  goRecordDetail = () => {
+  goRecordDetail = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/data-analysis/maintenance-record/detail`));
+    dispatch(routerRedux.push(`/data-analysis/maintenance-record/detail/${id}`));
+  };
+
+  // 异常页面
+  goToException = () => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push('/exception/500'));
   };
 
   // 显示附件模态框
@@ -97,10 +111,57 @@ export default class MaintenanceRecordList extends PureComponent {
   };
 
   /* 查询按钮点击事件 */
-  handleClickToQuery = () => {};
+  handleClickToQuery = () => {
+    const {
+      form: { getFieldsValue },
+      maintenanceRecord: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    const data = getFieldsValue();
+    const {
+      checkDate: [startTime, endTime],
+      ...restValues
+    } = data;
+    // 修改表单数据
+    this.formData = data;
+    // 重新请求数据
+    this.props.dispatch({
+      type: 'maintenanceRecord/fetch',
+      payload: {
+        ...restValues,
+        startTime: startTime && startTime.format('YYYY/M/d HH:mm:ss'),
+        endTime: endTime && endTime.format('YYYY/M/d HH:mm:ss'),
+        pageSize,
+        pageNum: 1,
+      },
+    });
+  };
 
   /* 重置按钮点击事件 */
-  handleClickToReset = () => {};
+  handleClickToReset = () => {
+    const {
+      dispatch,
+      form: { resetFields },
+      maintenanceRecord: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 清除筛选条件
+    resetFields();
+    this.formData = defaultFormData;
+    dispatch({
+      type: 'maintenanceRecord/fetch',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+  };
 
   /* 渲染form表单 */
   renderForm() {
@@ -112,19 +173,19 @@ export default class MaintenanceRecordList extends PureComponent {
       <Card>
         <Form layout="inline">
           <FormItem>
-            {getFieldDecorator('maintenanceName', {
-              initialValue: defaultFormData.maintenanceName,
+            {getFieldDecorator('checkCompanyName', {
+              initialValue: defaultFormData.checkCompanyName,
               getValueFromEvent: e => e.target.value.trim(),
             })(<Input placeholder="请输入维保单位名称" />)}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('serviceUnitName', {
-              initialValue: defaultFormData.serviceUnitName,
+            {getFieldDecorator('bcheckCompanyName', {
+              initialValue: defaultFormData.bcheckCompanyName,
               getValueFromEvent: e => e.target.value.trim(),
             })(<Input placeholder="请输入服务单位名称" />)}
           </FormItem>
           <FormItem className={styles.formItem}>
-            {getFieldDecorator('time')(<RangePicker format="YYYY/MM/DD" />)}
+            {getFieldDecorator('checkDate')(<RangePicker format="YYYY/MM/DD" />)}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
@@ -144,7 +205,7 @@ export default class MaintenanceRecordList extends PureComponent {
     const {
       tableLoading,
       maintenanceRecord: {
-        data: { list },
+        data: { list = [] },
       },
     } = this.props;
 
@@ -160,15 +221,28 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'checkDate',
         key: 'checkDate',
         align: 'center',
-        render: () => {},
+        render: time => {
+          return moment(time).format('YYYY-MM-DD HH:MM:SS');
+        },
       },
       {
         title: '维保人员',
-        dataIndex: 'safetyName',
+        dataIndex: 'checkUsers',
         key: 'checkUserIds',
         align: 'center',
+        render: val => {
+          return val.map(v => v.userName).join('  ,  ');
+        },
       },
-      { title: '联系电话', dataIndex: 'safetyPhone', key: 'safetyPhone', align: 'center' },
+      {
+        title: '联系电话',
+        dataIndex: 'checkUsers',
+        key: 'phoneNumber',
+        align: 'center',
+        render: val => {
+          return val.map(v => v.phoneNumber).join('  ,  ');
+        },
+      },
       {
         title: '服务单位',
         dataIndex: 'bcheckCompanyName',
@@ -181,10 +255,10 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'files',
         key: 'fileIds',
         align: 'center',
-        render: () => (
+        render: (val, record) => (
           <Fragment>
             {imgUrl && imgUrl.length ? (
-              <a onClick={() => this.handleShowModal()}>查看附件</a>
+              <a onClick={() => this.handleShowModal(record.id)}>查看附件</a>
             ) : (
               <span style={{ color: '#aaa' }}>查看附件</span>
             )}
@@ -196,27 +270,11 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'operation',
         key: 'operation',
         align: 'center',
-        render: () => <a onClick={() => this.goRecordDetail()}>查看</a>,
+        render: (val, record) => <a onClick={() => this.goRecordDetail(record.id)}>查看</a>,
       },
     ];
 
-    // const list = [
-    //   {
-    //     id: '01',
-    //     maintenanceUnit: '无锡晶安科技智慧有限公司',
-    //     maintenanceTime: '2018-11-11  12:00:00',
-    //     maintenancePerson: '张三',
-    //     phone: '12222222222',
-    //     serviceUnit: '无锡和晶科技有限公司',
-    //     graded: '90',
-    //     operation: '查看',
-    //   },
-    // ];
-
-    const imgUrl = [
-      // { webUrl: 'http://data.jingan-china.cn/hello/gsafe/safetyInfo/181011-092424-WDH0.jpg' },
-      // { webUrl: 'http://data.jingan-china.cn/hello/gsafe/safetyInfo/181011-134452-IRCF.jpg' },
-    ];
+    const imgUrl = list.files ? JSON.parse(list.files) : [];
 
     return (
       <Card style={{ marginTop: '20px' }}>
@@ -226,7 +284,8 @@ export default class MaintenanceRecordList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={list}
-            pagination={{ pageSize: 10 }}
+            pagination={{ pageSize: 15 }}
+            scroll={{ x: 1400 }}
             bordered
           />
         ) : (

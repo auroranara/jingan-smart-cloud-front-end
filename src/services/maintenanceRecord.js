@@ -9,6 +9,6 @@ export async function queryMaintenanceCheck(params) {
 }
 
 /* 获取维保巡检记录详情*/
-export async function queryMaintenanceRecordDetail(id) {
+export async function queryMaintenanceRecordDetail({ id }) {
   return request(`/acloud_new/v2/maintenanceCheck/maintenanceCheckRecord/${id}`);
 }

@@ -1,12 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Icon } from 'antd';
+import moment from 'moment';
+
+import { Form, Card, Button, Icon, Col, Row } from 'antd';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import Bg from './b2.jpg';
-import electricityD from './electricity-d.png';
+// import Bg from './b2.jpg';
+// import electricityD from './electricity-d.png';
 import Slider from '../../BigPlatform/FireControl/components/Slider';
 import styles from './MaintenanceRecord.less';
 
@@ -65,6 +67,24 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
+// 维保内容列表
+function ContentCard(props) {
+  const { content, statusName } = props;
+  return (
+    <Row style={{ fontSize: '15px' }}>
+      <Col span={4}>
+        <p style={{ borderBottom: '1px solid #ccc' }}>{content ? content : getEmptyData()}</p>
+      </Col>
+      <Col span={20}>
+        <p style={{ borderBottom: '1px solid #ccc' }}>
+          系统状态：
+          {statusName ? statusName : getEmptyData()}
+        </p>
+      </Col>
+    </Row>
+  );
+}
+
 @connect(({ maintenanceRecord, loading }) => ({
   maintenanceRecord,
   loading: loading.models.maintenanceRecord,
@@ -77,7 +97,22 @@ export default class MaintenanceRecordDetail extends PureComponent {
   };
 
   /* 挂载后 */
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+
+    // 获取记录详情
+    dispatch({
+      type: 'maintenanceRecord/fetchRecordDetail',
+      payload: {
+        id,
+      },
+    });
+  }
 
   extraContent = (
     <Button style={{ width: '100px', height: '36px' }} onClick={() => this.goToList()}>
@@ -114,23 +149,29 @@ export default class MaintenanceRecordDetail extends PureComponent {
   /* 渲染维保单位信息*/
   renderUnitInfo() {
     const {
-      maintenanceRecord: { detail: data },
+      maintenanceRecord: { detail },
     } = this.props;
 
     return (
       <Card title="维保单位信息" className={styles.card} bordered={false}>
         <DescriptionList col={1}>
           <Description term={fieldLabels.maintenanceUnits}>
-            {data.maintenanceUnits || getEmptyData()}
+            {detail.checkCompanyName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.maintenanceTime}>
-            {data.maintenanceTime || getEmptyData()}
+            {detail.checkDate
+              ? moment(+detail.checkDate).format('YYYY-MM-DD HH:MM:SS')
+              : getEmptyData()}
           </Description>
           <Description term={fieldLabels.maintenancePerson}>
-            {data.maintenancePerson || getEmptyData()}
+            {detail.checkUsers
+              ? detail.checkUsers.map(v => v.userName).join('  ,  ')
+              : getEmptyData()}
           </Description>
           <Description term={fieldLabels.maintenancePhone}>
-            {data.maintenancePhone || getEmptyData()}
+            {detail.checkUsers
+              ? detail.checkUsers.map(v => v.phoneNumber).join('  ,  ')
+              : getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>
@@ -140,23 +181,23 @@ export default class MaintenanceRecordDetail extends PureComponent {
   /* 渲染服务单位信息*/
   renderServiceUnitInfo() {
     const {
-      maintenanceRecord: { detail: data },
+      maintenanceRecord: { detail },
     } = this.props;
 
     return (
       <Card title="服务单位信息" className={styles.card} bordered={false}>
         <DescriptionList col={1}>
           <Description term={fieldLabels.serviceUnit}>
-            {data.serviceUnit || getEmptyData()}
+            {detail.bcheckCompanyName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.unitAddress}>
-            {data.unitAddress || getEmptyData()}
+            {detail.address || getEmptyData()}
           </Description>
           <Description term={fieldLabels.safetyPerson}>
-            {data.safetyPerson || getEmptyData()}
+            {detail.safetyName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.servicePhone}>
-            {data.servicePhone || getEmptyData()}
+            {detail.safetyPhone || getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>
@@ -166,43 +207,53 @@ export default class MaintenanceRecordDetail extends PureComponent {
   /* 渲染维保服务详情*/
   renderUnitDetail() {
     const {
-      maintenanceRecord: { detail: data },
+      maintenanceRecord: {
+        detail,
+        detail: { items = [] },
+      },
     } = this.props;
 
-    const picture = [Bg, Bg, Bg, Bg];
+    const picture = [];
 
     const { magIndex, showImg } = this.state;
     const picLength = picture.length;
     const isMagEnd = magIndex === picLength - 1;
 
-    const imgs = picture.map(i => (
+    const imgs = picture.map((src, i) => (
       <div
         key={i}
         className={styles.imgSection}
         onClick={() => this.handleClickImg(i)}
         style={{
-          backgroundImage: `url(${Bg})`,
+          backgroundImage: `url(${src})`,
           backgroundSize: 'cover',
         }}
       />
     ));
 
-    const magImgs = picture.map(i => (
-      <div className={styles.magImg} key={i} style={{ backgroundImage: `url(${Bg})` }} />
+    const magImgs = picture.map(src => (
+      <div className={styles.magImg} key={src} style={{ backgroundImage: `url(${src})` }} />
     ));
 
     return (
       <Card title="维保服务详情" className={styles.card} bordered={false}>
         <DescriptionList col={1}>
-          <Description term={fieldLabels.maintenanceContent} />
+          <Description term={fieldLabels.maintenanceContent}>
+            {items.map((item, index) => {
+              const { id, content, statusName } = item;
+              return (
+                <ContentCard key={id} index={index + 1} content={content} statusName={statusName} />
+              );
+            })}
+          </Description>
           <Description term={fieldLabels.syntheticalMark}>
-            {data.syntheticalMark || getEmptyData()}
+            {detail.score || getEmptyData()}
           </Description>
           <Description term={fieldLabels.syntheticalEvaluation}>
-            {data.syntheticalEvaluation || getEmptyData()}
+            {detail.evaluate || getEmptyData()}
           </Description>
           <Description term={fieldLabels.rectifyOpinions}>
-            {data.rectifyOpinions || getEmptyData()}
+            {detail.opinion || getEmptyData()}
           </Description>
           <Description term={fieldLabels.attachmentContent} style={{ width: '100%' }}>
             {imgs}
