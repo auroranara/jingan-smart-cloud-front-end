@@ -248,7 +248,12 @@ export default class ServiceUnitList extends PureComponent {
     } = this.props;
 
     return (
-      <PageHeaderLayout title="服务单位列表" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title="服务单位列表" breadcrumbList={breadcrumbList} content={
+        <div>
+          单位总数：
+          {list.length}
+        </div>
+      }>
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}

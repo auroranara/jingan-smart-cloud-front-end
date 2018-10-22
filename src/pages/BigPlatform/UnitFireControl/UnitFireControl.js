@@ -23,6 +23,10 @@ import wcqIcon from './images/wcq.png';
 import ycqIcon from './images/ycq.png';
 import backIcon from '../FireControl/img/back.png';
 import videoIcon from '@/assets/videoCamera.png';
+import safety from '@/assets/safety.png';
+import fireControl from '@/assets/fire-control.png';
+import environment from '@/assets/environment.png';
+import hygiene from '@/assets/hygiene.png';
 
 import styles from './UnitFireControl.less';
 
@@ -76,6 +80,7 @@ const HiddenDangerRecord = ({ data }) => {
     real_rectify_time,
     review_user_name,
     hiddenDangerRecordDto,
+    business_type,
   } = data;
   let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
   fileWebUrl = fileWebUrl ? fileWebUrl.split(',')[0] : '';
@@ -109,7 +114,7 @@ const HiddenDangerRecord = ({ data }) => {
         </div>
       </div>
       <div>
-        <div style={{ backgroundImage: `url(${icon})`, color }}>
+        <div style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})`, color }}>
           <Ellipsis lines={2} tooltip>
             {desc || <span style={{ color: '#fff' }}>暂无隐患描述</span>}
           </Ellipsis>
@@ -175,6 +180,22 @@ const Host = ({ data, onClick }) => {
       </div>
     </div>
   );
+};
+
+// 根据业务分类获取对应图标
+const getIconByBusinessType = function(businessType) {
+  switch (+businessType) {
+    case 1:
+      return safety;
+    case 2:
+      return fireControl;
+    case 3:
+      return environment;
+    case 4:
+      return hygiene;
+    default:
+      return safety;
+  }
 };
 
 /**

@@ -4,12 +4,16 @@ import Ellipsis from 'components/Ellipsis';
 import styles from './index.less';
 import noPhotoIcon from '../../img/noPhoto.png';
 import ygbIcon from '@/assets/closed.png';
+import safety from '@/assets/safety.png';
+import fireControl from '@/assets/fire-control.png';
+import environment from '@/assets/environment.png';
+import hygiene from '@/assets/hygiene.png';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 /* 图片地址 */
-const descriptionBlueIcon = `${iconPrefix}description_blue.png`;
-const descriptionRedIcon = `${iconPrefix}description_red.png`;
+// const descriptionBlueIcon = `${iconPrefix}description_blue.png`;
+// const descriptionRedIcon = `${iconPrefix}description_red.png`;
 const ycqIcon = `${iconPrefix}ycq.png`;
 const wcqIcon = `${iconPrefix}wcq.png`;
 const dfcIcon = `${iconPrefix}dfc.png`;
@@ -28,6 +32,7 @@ const defaultFieldNames = {
   status: 'status',
   background: 'background',
   source: 'source',
+  businessType: 'businessType',
 };
 // 获取图章
 const getSeal = status => {
@@ -45,6 +50,21 @@ const getSeal = status => {
       return wcqIcon;
   }
 };
+// 根据业务分类获取对应图标
+const getIconByBusinessType = function(businessType) {
+  switch (+businessType) {
+    case 1:
+      return safety;
+    case 2:
+      return fireControl;
+    case 3:
+      return environment;
+    case 4:
+      return hygiene;
+    default:
+      return safety;
+  }
+};
 
 /**
  * 隐患详情单元
@@ -58,14 +78,14 @@ export default class App extends PureComponent {
       isSourceShow,
     } = this.props;
 
-    const { description, sbr, sbsj, zgr, plan_zgsj, real_zgsj, fcr, fcsj, status, background, source } = { ...defaultFieldNames, ...fieldNames };
+    const { description, sbr, sbsj, zgr, plan_zgsj, real_zgsj, fcr, fcsj, status, background, source, businessType } = { ...defaultFieldNames, ...fieldNames };
     const isYCQ = +data[status] === 7;
     const isDFC = +data[status] === 3;
     const isYGB = +data[status] === 4;
 
     return (
       <div className={styles.riskDetailItem} style={style}>
-        <div className={styles.riskDetailItemTitleWrapper}><div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${isYCQ ? descriptionRedIcon : descriptionBlueIcon})` }} /><Ellipsis lines={1} tooltip className={styles.riskDetailItemTitle} style={{ color: isYCQ ? '#ff4848' : '#fff' }} >{data[description] || '暂无隐患描述'}</Ellipsis></div>
+        <div className={styles.riskDetailItemTitleWrapper}><div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${getIconByBusinessType(data[businessType])})` }} /><Ellipsis lines={1} tooltip className={styles.riskDetailItemTitle} style={{ color: isYCQ ? '#ff4848' : '#fff' }} >{data[description] || '暂无隐患描述'}</Ellipsis></div>
         <div className={styles.riskDetailItemSealWrapper}><img alt="" src={getSeal(data[status])} /></div>
         <div className={styles.riskDetailItemContentWrapper}>
           <div className={styles.riskDetailItemImageWrapper} style={{ backgroundImage: `url(${noPhotoIcon})` }}>

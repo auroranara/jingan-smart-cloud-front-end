@@ -67,6 +67,7 @@ const transformHiddenDangerFields = ({
   hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
   source_type_name,
   companyBuildingItem,
+  business_type,
 }) => {
   const { object_title, risk_level } = companyBuildingItem || {};
   return {
@@ -86,6 +87,7 @@ const transformHiddenDangerFields = ({
       (source_type_name === '风险点上报' &&
         `${getColorByRiskLevel(risk_level)}风险点${object_title ? `（${object_title}）` : ''}`) ||
       source_type_name,
+    businessType: business_type,
   };
 };
 
