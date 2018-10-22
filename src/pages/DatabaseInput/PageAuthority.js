@@ -1,10 +1,11 @@
 import React, { Component, createContext } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, Input, InputNumber, Popconfirm, Form } from 'antd';
+import { Button, Card, Table, Tree, Input, InputNumber, Popconfirm, Form, notification } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './PageAuthority.less';
+import { TREE, renderTreeNodes } from './utils';
 
 const data = [];
 for (let i = 0; i < 30; i++) {
@@ -22,7 +23,7 @@ for (let i = 0; i < 30; i++) {
     url: 'url',
   });
 }
-const FormItem = Form.Item;
+const { Item: FormItem } = Form;
 const EditableContext = createContext();
 
 // 包裹EditableCell用的，其子元素在props.children中传入
@@ -88,14 +89,14 @@ export default class PageAuthority extends Component {
         dataIndex: 'id',
         width: 100,
         align: 'center',
-        editable: true,
+        // editable: true,
       },
       {
         title: '父节点编号',
         dataIndex: 'parentId',
         width: 100,
         align: 'center',
-        editable: true,
+        // editable: true,
       },
       {
         title: '编码',
@@ -201,6 +202,9 @@ export default class PageAuthority extends Component {
     ];
   }
 
+  selectedKeys = [];
+  checkedKeys = [];
+
   isEditing = (record) => {
     return record.key === this.state.editingKey;
   };
@@ -234,6 +238,22 @@ export default class PageAuthority extends Component {
     this.setState({ editingKey: '' });
   };
 
+  onSelect = (selectedKeys) => {
+    this.selectedKeys = selectedKeys;
+  };
+
+  onCheck = (checkedKeys) => {
+    this.checkedKeys = checkedKeys;
+  };
+
+  onSearch = e => {
+    console.log(this.checkedKeys);
+  };
+
+  jumpTo = id => {
+    router.push(`/database-input/pageAuthority/addOrEdit/${id}`);
+  };
+
   render() {
     const { data } = this.state;
 
@@ -262,16 +282,41 @@ export default class PageAuthority extends Component {
 
     return (
       <PageHeaderLayout
-        title="编辑页面权限"
+        title="页面权限树"
         // breadcrumbList={breadcrumbList}
         // content={
         //   <div>
         //     layout
         //   </div>
         // }
-        action={<Button type="primary" onClick={e => router.push("/database-input/pageAuthority/add")}>新增</Button>}
+        action={<Button type="primary" onClick={e => this.jumpTo()}>新增</Button>}
       >
         <Card>
+          <div className={styles.btnContainer}>
+            <Button onClick={this.onSearch} className={styles.searchBtn}>搜索</Button>
+            <Button onClick={e => {
+              const id = this.selectedKeys[0];
+              if (!id) {
+                notification.warn({
+                  message: '友情提醒',
+                  description: '请先从权限树中选择一个项目，只支持单选',
+                });
+                return;
+              }
+
+              this.jumpTo(id);
+            }}>编辑</Button>
+          </div>
+          <Tree
+            checkable
+            defaultExpandAll
+            onSelect={this.onSelect}
+            onCheck={this.onCheck}
+            className={styles.tree}
+          >
+            {renderTreeNodes(TREE)}
+          </Tree>
+          <h3>权限树列表：</h3>
           <Table
             components={components}
             bordered

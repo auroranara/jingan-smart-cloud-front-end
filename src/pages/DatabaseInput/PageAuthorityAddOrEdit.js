@@ -4,54 +4,11 @@ import router from 'umi/router';
 import { Button, Card, TreeSelect, Select, Input, Form } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import { TREE, METHODS, NODE_TYPES, formItemLayout, tailFormItemLayout } from './utils';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
 // const { TreeNode } = TreeSelect;
-
-const TREE = [{
-  title: 'Node1',
-  value: '0-0',
-  key: '0-0',
-  children: [{
-    title: 'Child Node1',
-    value: '0-0-1',
-    key: '0-0-1',
-  }, {
-    title: 'Child Node2',
-    value: '0-0-2',
-    key: '0-0-2',
-  }],
-}, {
-  title: 'Node2',
-  value: '0-1',
-  key: '0-1',
-}];
-
-const METHODS = ['GET', 'PUT', 'POST', 'DELETE'];
-const NODE_TYPES = ['menu', 'node', 'page', 'button'];
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 5 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 12 },
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 10,
-    },
-  },
-};
 
 @Form.create()
 export default class PageAuthorityAdd extends Component {
@@ -65,24 +22,32 @@ export default class PageAuthorityAdd extends Component {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { form: { getFieldDecorator }, match: { params: { id } } } = this.props;
+    const isAdd = id === 'undefined';
+
+    // 在节点数外面加一层根节点NULL层，以此来可以添加或编辑节点时，可以在最顶层添加模块
+    const newTreeData = [{ title: 'NULL', value: '0', key: '0', children: TREE }];
 
     return (
       <PageHeaderLayout
-          title="新增页面权限"
+          title={`${isAdd ? '新增' : '编辑'}页面权限`}
           // breadcrumbList={breadcrumbList}
           // content={
           //   <div>
           //     layout
           //   </div>
           // }
-          action={<Button type="primary" onClick={e => router.push("/database-input/pageAuthority/index")}>编辑</Button>}
+          action={<Button type="primary" onClick={e => router.push("/database-input/pageAuthority/index")}>返回</Button>}
         >
           <Card>
             <Form onSubmit={this.handleSubmit}>
               <FormItem label="父节点" {...formItemLayout}>
                 {getFieldDecorator('parentId', { rules: [{ required: true, message: '请选择父节点' }] })(
-                  <TreeSelect treeData={[{ title: 'NULL', value: '0', key: '0', children: TREE }]} placeholder="请选择父节点" />
+                  <TreeSelect
+                    treeDefaultExpandAll
+                    placeholder="请选择父节点"
+                    treeData={newTreeData}
+                  />
                 )}
               </FormItem>
               <FormItem label="编码值" {...formItemLayout}>
