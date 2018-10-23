@@ -8,8 +8,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import Coordinate from '@/components/Coordinate';
 import styles from './MaintenanceRecord.less';
-// import codesMap from '@/utils/codes';
-// import { AuthLink, AuthButton, hasAuthority } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
+import { AuthA } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
@@ -262,7 +262,12 @@ export default class MaintenanceRecordList extends PureComponent {
           return (
             <Fragment>
               {files && files.length ? (
-                <a onClick={() => this.handleShowModal(files)}>查看附件</a>
+                <AuthA
+                  code={codesMap.dataAnalysis.maintenanceRecord.view}
+                  onClick={() => this.handleShowModal(files)}
+                >
+                  查看附件
+                </AuthA>
               ) : (
                 <span style={{ color: '#aaa' }}>查看附件</span>
               )}
@@ -275,7 +280,14 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'operation',
         key: 'operation',
         align: 'center',
-        render: (val, record) => <a onClick={() => this.goRecordDetail(record.id)}>查看</a>,
+        render: (val, record) => (
+          <AuthA
+            code={codesMap.dataAnalysis.maintenanceRecord.view}
+            onClick={() => this.goRecordDetail(record.id)}
+          >
+            查看
+          </AuthA>
+        ),
       },
     ];
 

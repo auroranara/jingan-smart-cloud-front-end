@@ -48,7 +48,7 @@ export default {
   },
 
   reducers: {
-    // 维保单位列表
+    // 维保记录列表
     saveList(state, { payload }) {
       const { list } = payload;
       return {
