@@ -14,8 +14,6 @@ import styles from './index.less';
 
 /* 默认单位性质 */
 const defaultCompanyNature = '一般企业';
-/* 默认是否为分公司 */
-const defaultIsBranch = '0';
 /* 默认单位类型 */
 const defaultCompanyType = '一般单位';
 
@@ -48,15 +46,18 @@ const fieldLabels = {
  */
 @connect(({
   maintenanceCompany,
+  user,
   loading,
 }) => ({
   maintenanceCompany,
+  user,
   loading: loading.models.maintenanceCompany,
 }))
 @Form.create()
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
+    const { user: { currentUser: { unitType, unitId, unitName } }, match: { params: { id } } } = props;
     this.state = {
       // 是否在提交中
       submitting: false,
@@ -66,6 +67,13 @@ export default class App extends PureComponent {
       uploading: false,
       // 是否为分公司
       isBranch: false,
+      // 是否为维保人员
+      isMaintenanceUser: unitType === 1 && unitId !== id,
+      // 默认总公司对象
+      defaultParentCompany: {
+        key: unitId,
+        label: unitName,
+      },
       map: {
         visible: false,
         center: undefined,
@@ -114,7 +122,7 @@ export default class App extends PureComponent {
               payload: {
                 pageSize: 20,
                 pageNum: 1,
-                id,
+                companyId: id,
               },
             });
           }
@@ -208,14 +216,14 @@ export default class App extends PureComponent {
       },
     });
 
-    // // 获取单位性质
-    // dispatch({
-    //   type: 'maintenanceCompany/fetchDict',
-    //   payload: {
-    //     type: 'company_nature',
-    //     key: 'companyNatureList',
-    //   },
-    // });
+    // 获取单位性质
+    dispatch({
+      type: 'maintenanceCompany/fetchDict',
+      payload: {
+        type: 'company_nature',
+        key: 'companyNatureList',
+      },
+    });
 
     // 获取是否为分公司字典
     dispatch({
@@ -264,7 +272,7 @@ export default class App extends PureComponent {
         payload: {
           pageSize: 20,
           pageNum: 1,
-          id,
+          companyId: id,
         },
       });
     }
@@ -290,7 +298,7 @@ export default class App extends PureComponent {
         name: value && value.trim(),
         pageSize: 20,
         pageNum: 1,
-        id,
+        companyId: id,
       },
     });
   }
@@ -513,7 +521,7 @@ export default class App extends PureComponent {
       form,
       maintenanceCompany,
     } = this.props;
-    const { submitting, isCompany, uploading, isBranch, map: { visible, center, point } } = this.state;
+    const { submitting, isCompany, uploading, isBranch, isMaintenanceUser, defaultParentCompany, map: { visible, center, point } } = this.state;
     const title = id ? '编辑维保单位' : '新增维保单位';
     const spinning = loading || submitting || uploading;
 
@@ -554,10 +562,11 @@ export default class App extends PureComponent {
             defaultCompanyNature={defaultCompanyNature}
             handleChangeUploading={this.handleChangeUploading}
             isBranch={isBranch}
-            defaultIsBranch={defaultIsBranch}
             handleChangeIsBranch={this.handleChangeIsBranch}
             loading={loading}
             handleSearchParentIdList={this.handleSearchParentIdList}
+            isMaintenanceUser={isMaintenanceUser}
+            defaultParentCompany={defaultParentCompany}
           />
           <MoreInfo
             form={form}
