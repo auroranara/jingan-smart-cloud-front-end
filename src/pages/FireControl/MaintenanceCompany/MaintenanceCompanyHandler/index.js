@@ -114,7 +114,7 @@ export default class App extends PureComponent {
               payload: {
                 pageSize: 20,
                 pageNum: 1,
-                id,
+                companyId: id,
               },
             });
           }
@@ -264,7 +264,7 @@ export default class App extends PureComponent {
         payload: {
           pageSize: 20,
           pageNum: 1,
-          id,
+          companyId: id,
         },
       });
     }
@@ -290,7 +290,7 @@ export default class App extends PureComponent {
         name: value && value.trim(),
         pageSize: 20,
         pageNum: 1,
-        id,
+        companyId: id,
       },
     });
   }
