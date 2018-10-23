@@ -130,6 +130,7 @@ export default class App extends PureComponent {
             longitude,
             latitude,
             companyIchnography,
+            companyNature,
             registerAddress,
             registerProvinceLabel,
             registerCityLabel,
@@ -170,6 +171,9 @@ export default class App extends PureComponent {
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.name}>
             {name || getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.companyNature}>
+            {companyNature || '一般企业'}
           </Description>
           <Description term={fieldLabels.code}>
             {code || getEmptyData()}

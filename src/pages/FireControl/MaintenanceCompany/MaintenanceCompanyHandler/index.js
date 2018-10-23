@@ -57,7 +57,7 @@ const fieldLabels = {
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
-    const { user: { currentUser: { unitType, unitId, unitName } } } = props;
+    const { user: { currentUser: { unitType, unitId, unitName } }, match: { params: { id } } } = props;
     this.state = {
       // 是否在提交中
       submitting: false,
@@ -68,7 +68,7 @@ export default class App extends PureComponent {
       // 是否为分公司
       isBranch: false,
       // 是否为维保人员
-      isMaintenanceUser: unitType === 1,
+      isMaintenanceUser: unitType === 1 && unitId !== id,
       // 默认总公司对象
       defaultParentCompany: {
         key: unitId,
