@@ -1105,7 +1105,7 @@ export default class accountManagementEdit extends PureComponent {
             <Row gutter={{ lg: 48, md: 24 }}>
               <Col lg={8} md={12} sm={24}>
                 <p className={styles.mTree}>维保权限</p>
-                <Search placeholder="请输入公司名称查询" onChange={this.onTreeSearch} />
+                <Search placeholder="请输入单位名称查询" onChange={this.onTreeSearch} />
                 <Form.Item>
                   {getFieldDecorator('maintenacePermissions', {
                     // initialValue: maintenacePermissions,
