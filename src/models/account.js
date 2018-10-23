@@ -461,6 +461,7 @@ export default {
       return {
         ...state,
         pageNum: 1,
+        isLast: false,
         data: {
           ...state.data,
           pagination: {

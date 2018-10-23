@@ -34,6 +34,7 @@ export default {
         pageNum: 1,
       },
     },
+    searchInfo: null,
     list: [],
     detail: {
       companyBasicInfo: {},
@@ -401,6 +402,27 @@ export default {
         ...state,
         [key]: value,
       };
+    },
+    // 保存列表查询信息
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload || null,
+      }
+    },
+    initPageNum(state, { payload }) {
+      return {
+        ...state,
+        isLast: false,
+        pageNum: 1,
+        data: {
+          ...state.data,
+          pagination: {
+            ...state.data.pagination,
+            pageNum: 1,
+          },
+        },
+      }
     },
   },
 };
