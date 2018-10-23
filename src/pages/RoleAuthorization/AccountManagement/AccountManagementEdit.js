@@ -217,6 +217,7 @@ export default class accountManagementEdit extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
+      dispatch,
       fetchAccountDetail,
       match: {
         params: { id },
@@ -245,6 +246,9 @@ export default class accountManagementEdit extends PureComponent {
           },
         });
       };
+
+    // 清空权限树
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} });
 
     // 如果id存在的话，就获取详情，即编辑状态
     if (id) {
