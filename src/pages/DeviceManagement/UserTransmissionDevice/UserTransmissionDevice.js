@@ -9,7 +9,7 @@ import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
-import { AuthLink, ERROR_MSG } from '@/utils/customAuth';
+import { AuthButton, AuthLink, ERROR_MSG } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
 
 const PAGE_SIZE = 18;
@@ -212,7 +212,7 @@ export default class UserTransmissionDevice extends PureComponent {
             <Button onClick={this.handleReset}>重置</Button>
           </Col>
           <Col span={4} offset={4}>
-            <Button type="primary" onClick={e => router.push('/device-management/user-transmission-device/add')}>新增传输装置</Button>
+            <AuthButton code={buttonCodes.deviceManagement.transmission.add} type="primary" onClick={e => router.push('/device-management/user-transmission-device/add')}>新增传输装置</AuthButton>
           </Col>
         </Row>
       </Card>
