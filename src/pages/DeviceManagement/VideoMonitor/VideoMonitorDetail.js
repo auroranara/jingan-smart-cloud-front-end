@@ -1,11 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button } from 'antd';
+import { Form, Card } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Ellipsis from '@/components/Ellipsis';
+
+import { AuthButton } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
 
 const { Description } = DescriptionList;
 
@@ -88,7 +91,8 @@ export default class VideoMonitorDetail extends PureComponent {
     } = this.props;
     return (
       <FooterToolbar>
-        <Button
+        <AuthButton
+          code={codesMap.deviceManagement.videoMonitor.edit}
           size="large"
           type="primary"
           onClick={() => {
@@ -96,7 +100,7 @@ export default class VideoMonitorDetail extends PureComponent {
           }}
         >
           编辑
-        </Button>
+        </AuthButton>
       </FooterToolbar>
     );
   }
