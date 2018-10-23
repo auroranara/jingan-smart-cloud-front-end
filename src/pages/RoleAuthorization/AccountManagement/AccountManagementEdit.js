@@ -234,9 +234,8 @@ export default class accountManagementEdit extends PureComponent {
     const success = id
       ? undefined
       : ({ unitType: unitTypes }) => {
-        this.setState({
-          unitTypeChecked: 4,
-        });
+        // 当当前用户为维保用户时，unitTypes列表长度为一，类型就是维保用户，则unitTypeChecked值为1，对应维保，否则默认选企事业主体，值为4
+        this.setState({ unitTypeChecked: unitTypes.length === 1 ? 1 : 4 });
         // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
         unitTypes && unitTypes.length && fetchUnitsFuzzy({
           payload: {
