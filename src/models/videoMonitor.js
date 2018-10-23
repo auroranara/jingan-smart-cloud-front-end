@@ -126,36 +126,18 @@ export default {
     },
 
     // 企业列表弹出框
-    *fetchModelList({ payload, success, error }, { call, put }) {
-      console.log('1', payload);
+    *fetchModelList({ payload }, { call, put }) {
       const response = yield call(queryModelList, payload);
       if (response.code === 200) {
         yield put({
           type: 'saveModelList',
           payload: response.data,
         });
-        if (success) {
-          success();
-        }
-      } else if (error) {
-        error(response.msg);
       }
     },
   },
 
   reducers: {
-    saveVideoCompanyList(state, { payload }) {
-      const {
-        list,
-        pagination: { pageNum, pageSize, total },
-      } = payload;
-      return {
-        ...state,
-        list,
-        data: payload,
-        isLast: pageNum * pageSize >= total,
-      };
-    },
     // 视频企业列表
     saveVideoCompaniesList(state, { payload }) {
       const {
@@ -237,6 +219,16 @@ export default {
       return {
         ...state,
         detail: { data: {} },
+      };
+    },
+
+    // 企业弹出框
+    saveModelList(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        modal: payload,
       };
     },
   },

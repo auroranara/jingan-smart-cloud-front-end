@@ -46,9 +46,9 @@ const defaultPagination = {
   }),
   dispatch => ({
     // 获取企业
-    fetchCompanyList(action) {
+    fetchModelList(action) {
       dispatch({
-        type: 'maintenanceCompany/fetchCompanyList',
+        type: 'videoMonitor/fetchModelList',
         ...action,
       });
     },
@@ -99,7 +99,7 @@ export default class VideoMonitorEdit extends PureComponent {
       dispatch({
         type: 'safety/fetch',
         payload: {
-          companyId: id || companyId,
+          companyId: id ? companyId : undefined || companyId,
         },
       });
     }
@@ -221,7 +221,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
   /* 显示选择企业模态框 */
   handleShowCompanyModal = () => {
-    const { fetchCompanyList } = this.props;
+    const { fetchModelList } = this.props;
     const { companyModal } = this.state;
     // 显示模态框
     this.setState({
@@ -232,7 +232,7 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     });
     // 初始化表格数据
-    fetchCompanyList({
+    fetchModelList({
       payload: {
         ...defaultPagination,
       },
@@ -279,8 +279,8 @@ export default class VideoMonitorEdit extends PureComponent {
       companyModal: { loading, visible },
     } = this.state;
     const {
-      maintenanceCompany: { modal },
-      fetchCompanyList,
+      videoMonitor: { modal },
+      fetchModelList,
     } = this.props;
     const modalProps = {
       // 模态框是否显示
@@ -292,7 +292,7 @@ export default class VideoMonitorEdit extends PureComponent {
         this.CompanyIdInput.blur();
       },
       modal,
-      fetch: fetchCompanyList,
+      fetch: fetchModelList,
       // 选择回调
       onSelect: this.handleSelectCompany,
       // 表格是否正在加载

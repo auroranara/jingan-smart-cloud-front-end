@@ -260,7 +260,7 @@ export default class VideoEquipmentList extends PureComponent {
                     <AuthLink
                       code={codesMap.deviceManagement.videoMonitor.edit}
                       codes={codes}
-                      to={`/device-management/video-monitor/edit/${id}?name=${equipmentListName}`}
+                      to={`/device-management/video-monitor/edit/${id}?name=${equipmentListName}&&companyId=${companyId}`}
                     >
                       编辑
                     </AuthLink>,
