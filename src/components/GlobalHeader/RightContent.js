@@ -137,7 +137,7 @@ export default class GlobalHeaderRight extends PureComponent {
             <Dropdown overlay={users}>
               <span className={styles.action}>
                 <Icon type="swap" style={{ fontSize: '18px' }} />
-                <span style={{ verticalAlign: 'middle' }}>切换企业</span>
+                <span style={{ verticalAlign: 'middle' }}>切换单位</span>
               </span>
             </Dropdown>
           )}
@@ -174,8 +174,8 @@ export default class GlobalHeaderRight extends PureComponent {
             </span>
           </Dropdown>
         ) : (
-            <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-          )}
+          <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+        )}
         {/*
         <Button
           size="small"
