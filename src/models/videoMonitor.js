@@ -4,6 +4,7 @@ import {
   queryVideoCompaniesList,
   queryVideoList,
   queryVideoDetail,
+  queryModelList,
 } from '../services/videoMonitor';
 
 export default {
@@ -123,9 +124,38 @@ export default {
         if (callback) callback(response.data);
       }
     },
+
+    // 企业列表弹出框
+    *fetchModelList({ payload, success, error }, { call, put }) {
+      console.log('1', payload);
+      const response = yield call(queryModelList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveModelList',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
+    saveVideoCompanyList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
+      return {
+        ...state,
+        list,
+        data: payload,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
     // 视频企业列表
     saveVideoCompaniesList(state, { payload }) {
       const {

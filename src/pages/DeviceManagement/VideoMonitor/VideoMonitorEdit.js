@@ -226,7 +226,7 @@ export default class VideoMonitorEdit extends PureComponent {
     // 显示模态框
     this.setState({
       companyModal: {
-        type: 'maintenanceCompany/fetchCompanyList',
+        type: 'videoMonitor/fetchModelList',
         ...companyModal,
         visible: true,
       },
