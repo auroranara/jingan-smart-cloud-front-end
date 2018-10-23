@@ -549,6 +549,19 @@
     .hdCompany:hover {
       background-color: rgba(4, 57, 110, 0.5);
     }
+    .riskTotal {
+      padding: 5px 16px;
+      position: absolute;
+      width: auto;
+      right: 10px;
+      border-radius: 5px;
+      z-index: 6;
+      .riskTotalNum {
+        display: inline-block;
+        margin-left: 10px;
+        font-size: 25px;
+      }
+    }
   }
 }
 
@@ -679,8 +692,8 @@
           background: none;
           height: 30px;
         }
-        .amap-zoom-touch-minus > div,
-        .amap-zoom-touch-plus > div {
+        .amap-zoom-touch-minus>div,
+        .amap-zoom-touch-plus>div {
           color: #a3a3a3;
           line-height: 30px;
         }
