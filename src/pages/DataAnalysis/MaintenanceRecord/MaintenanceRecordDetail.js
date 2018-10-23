@@ -215,22 +215,17 @@ export default class MaintenanceRecordDetail extends PureComponent {
     const picLength = files.length;
     const isMagEnd = magIndex === picLength - 1;
 
-    const imgs = files.map(
-      ({ webUrl }, i) => (
-        console.log(webUrl),
-        (
-          <div
-            key={i}
-            className={styles.imgSection}
-            style={{
-              backgroundImage: `url(${webUrl})`,
-              backgroundSize: 'cover',
-            }}
-            onClick={() => this.handleClickImg(i)}
-          />
-        )
-      )
-    );
+    const imgs = files.map(({ webUrl }, i) => (
+      <div
+        key={i}
+        className={styles.imgSection}
+        style={{
+          backgroundImage: `url(${webUrl})`,
+          backgroundSize: 'cover',
+        }}
+        onClick={() => this.handleClickImg(i)}
+      />
+    ));
 
     const magImgs = files.map(({ webUrl }) => (
       <div className={styles.magImg} key={webUrl} style={{ backgroundImage: `url(${webUrl})` }} />

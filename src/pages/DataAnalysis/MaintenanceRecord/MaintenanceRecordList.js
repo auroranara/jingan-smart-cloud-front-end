@@ -95,8 +95,6 @@ export default class MaintenanceRecordList extends PureComponent {
 
   // 显示附件模态框
   handleShowModal = files => {
-    console.log(files);
-
     this.setState({
       coordinate: {
         visible: true,
