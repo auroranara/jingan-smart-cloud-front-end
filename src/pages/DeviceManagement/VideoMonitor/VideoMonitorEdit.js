@@ -38,9 +38,9 @@ const defaultPagination = {
 };
 
 @connect(
-  ({ videoMonitor, maintenanceCompany, safety, loading }) => ({
+  ({ videoMonitor, user, safety, loading }) => ({
     videoMonitor,
-    maintenanceCompany,
+    user,
     safety,
     loading: loading.models.videoMonitor,
   }),
@@ -367,7 +367,11 @@ export default class VideoMonitorEdit extends PureComponent {
       safety: {
         detail: { safetyFourPicture },
       },
+      user: {
+        currentUser: { unitType, companyName: defaultName },
+      },
     } = this.props;
+
     const {
       coordinate: { visible },
     } = this.state;
@@ -412,7 +416,8 @@ export default class VideoMonitorEdit extends PureComponent {
             ) : (
               <Col span={23}>
                 {getFieldDecorator('companyId', {
-                  initialValue: nameCompany ? nameCompany : undefined,
+                  initialValue:
+                    unitType === 4 ? defaultName : nameCompany ? nameCompany : undefined,
                   rules: [
                     {
                       required: true,
@@ -430,7 +435,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 )}
               </Col>
             )}
-            {id || nameCompany ? null : (
+            {id || nameCompany || defaultName ? null : (
               <Col span={1}>
                 <Button
                   type="primary"
