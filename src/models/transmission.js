@@ -30,6 +30,7 @@ export default {
     isLast: false,
     deviceList: [],
     companyDetail: {},
+    selectCompany: { pagination: {} },
   },
 
   effects: {
@@ -143,6 +144,13 @@ export default {
 
       if (callback) callback(code, '删除成功', '删除失败', msg);
     },
+    *fetchSelectCompany({ payload }, { call, put }) {
+      let response = yield call(queryTransmissionDevice, payload);
+      response = response || {};
+      const { code=500, data={} } = response;
+      if (code === 200)
+        yield put({ type: 'saveSelectCompany', payload: data });
+    },
   },
 
   reducers: {
@@ -231,6 +239,9 @@ export default {
       });
 
       return { ...state, deviceList: nextDeviceList };
+    },
+    saveSelectCompany(state, action) {
+      return { ...state, selectCompany: action.payload };
     },
   },
 };
