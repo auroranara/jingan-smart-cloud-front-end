@@ -29,12 +29,12 @@ const defaultPageSizeOptions = ['5', '10', '15', '20'];
 // 表格列
 const defaultColumns = [
   {
-    title: '企业名称',
+    title: '单位名称',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: '企业代码',
+    title: '社会信用代码',
     dataIndex: 'code',
     key: 'code',
   },
