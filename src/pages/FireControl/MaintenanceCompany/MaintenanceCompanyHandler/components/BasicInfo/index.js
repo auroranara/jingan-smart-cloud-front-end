@@ -137,7 +137,7 @@ export default class App extends PureComponent {
             practicalCity,
             practicalDistrict,
             practicalTown,
-            // companyNature,
+            companyNature,
             // companyStatus,
             // industryCategory,
             companyIchnography,
@@ -153,8 +153,8 @@ export default class App extends PureComponent {
         registerAddressList,
         // 实际地址列表
         practicalAddressList,
-        // // 单位性质列表
-        // companyNatureList,
+        // 单位性质列表
+        companyNatureList,
         // // 单位状态列表
         // companyStatusList,
         // // 行业类别列表
@@ -179,10 +179,8 @@ export default class App extends PureComponent {
       handleShowMap,
       // 加载地址
       handleLoadData,
-      // // 默认选中的单位性质
-      // defaultCompanyNature,
-      // 默认选中的是否为分公司
-      defaultIsBranch,
+      // 默认选中的单位性质
+      defaultCompanyNature,
       // 修改isBranch
       handleChangeIsBranch,
       // 当前选中是否为分公司
@@ -191,6 +189,10 @@ export default class App extends PureComponent {
       loading,
       // 查询总公司列表
       handleSearchParentIdList,
+      // 是否为维保人员
+      isMaintenanceUser=false,
+      // 默认总公司对象
+      defaultParentCompany,
     } = this.props;
 
     // 修改平面图字段的格式
@@ -218,7 +220,7 @@ export default class App extends PureComponent {
                 })(<Input placeholder="请输入单位名称" />)}
               </Form.Item>
             </Col>
-            {/* <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyNature}>
                 {getFieldDecorator('companyNature', {
                   initialValue:
@@ -231,7 +233,8 @@ export default class App extends PureComponent {
                   <Select
                     placeholder="请选择单位性质"
                     getPopupContainer={getRootChild}
-                    onChange={handleChangeIsCompany}
+                    // onChange={handleChangeIsCompany}
+                    disabled={true}
                   >
                     {companyNatureList.map(item => (
                       <Option value={item.id} key={item.id}>
@@ -241,7 +244,7 @@ export default class App extends PureComponent {
                   </Select>
                 )}
               </Form.Item>
-            </Col> */}
+            </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.code}>
                 {getFieldDecorator('code', {
@@ -268,10 +271,10 @@ export default class App extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.isBranch}>
                 {getFieldDecorator('isBranch', {
-                  initialValue: isBranch ? isBranch+'' : defaultIsBranch,
+                  initialValue: isMaintenanceUser ? '1'  : (isBranch ? isBranch+'' : '0'),
                   rules: [{ required: true, message: '请选择是否为分公司' }],
                 })(
-                  <Select placeholder="请选择是否为分公司" getPopupContainer={getRootChild} onChange={handleChangeIsBranch}>
+                  <Select placeholder="请选择是否为分公司" getPopupContainer={getRootChild} onChange={handleChangeIsBranch} disabled={isMaintenanceUser}>
                     {isBranchList.map(item => (
                       <Option value={item.key} key={item.key}>
                         {item.value}
@@ -281,16 +284,16 @@ export default class App extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            {currentIsBranch && (
+            {(isMaintenanceUser || currentIsBranch) && (
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.parentId}>
                   {getFieldDecorator('parentId', {
-                    initialValue: parentId && parentUnitName
+                    initialValue: isMaintenanceUser ? defaultParentCompany: (parentId && parentUnitName
                         ? {
                             key: parentId,
                             label: parentUnitName,
                           }
-                        : undefined,
+                        : undefined),
                     rules: [
                       {
                         required: true,
@@ -311,6 +314,7 @@ export default class App extends PureComponent {
                       onBlur={this.handleClearParentId}
                       getPopupContainer={getRootChild}
                       optionLabelProp="children"
+                      disabled={isMaintenanceUser}
                     >
                       {parentIdList.map(item => (
                         <Option key={item.id}>
