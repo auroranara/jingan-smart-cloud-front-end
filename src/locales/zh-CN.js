@@ -53,6 +53,7 @@ export default {
   'menu.deviceManagement': '设备管理',
   'menu.deviceManagement.userTransmissionDevice': '用户传输装置',
   'menu.deviceManagement.userTransmissionDevice.userTransmissionDevice': '用户传输装置',
+  'menu.deviceManagement.userTransmissionDevice.add': '添加',
   'menu.deviceManagement.userTransmissionDevice.list': '单位列表',
   'menu.deviceManagement.userTransmissionDevice.deviceDetail': '详情页',
   'menu.deviceManagement.userTransmissionDevice.importPointPosition': '导入点位数据',

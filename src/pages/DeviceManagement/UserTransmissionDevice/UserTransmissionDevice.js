@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import { Link } from 'react-router-dom';
+import router from 'umi/router';
 import { Card, Button, Input, List, Row, Col } from 'antd';
 // import InfiniteScroll from 'react-infinite-scroller';
 
@@ -17,7 +17,7 @@ const PAGE_SIZE = 18;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '消防维保', name: '消防维保' },
+  { title: '设备管理', name: '设备管理' },
   { title: '用户传输装置', name: '用户传输装置' },
 ];
 
@@ -210,6 +210,9 @@ export default class UserTransmissionDevice extends PureComponent {
           </Col>
           <Col span={2}>
             <Button onClick={this.handleReset}>重置</Button>
+          </Col>
+          <Col span={4} offset={4}>
+            <Button type="primary" onClick={e => router.push('/device-management/user-transmission-device/add')}>新增传输装置</Button>
           </Col>
         </Row>
       </Card>
