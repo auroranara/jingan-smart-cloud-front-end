@@ -120,6 +120,20 @@ const getRootChild = () => document.querySelector('#root>div');
         ...action,
       });
     },
+    // 保存查询栏数据
+    saveSearchInfo(action) {
+      dispatch({
+        type: 'maintenanceCompany/saveSearchInfo',
+        ...action,
+      })
+    },
+    // 初始化页码
+    initPageNum(action) {
+      dispatch({
+        type: 'maintenanceCompany/initPageNum',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
@@ -136,14 +150,14 @@ export default class MaintenanceCompanyList extends PureComponent {
       gsafeFetchDict,
       fetchOptions,
       goToException: error,
-    } = this.props;
-    // 获取维保单位列表
-    fetch({
-      payload: {
-        pageSize,
-        pageNum: 1,
+      maintenanceCompany: {
+        searchInfo,
       },
-    });
+      form: {
+        setFieldsValue,
+      },
+    } = this.props;
+
     // 获取行业类别
     fetchIndustryType({
       error,
@@ -164,6 +178,32 @@ export default class MaintenanceCompanyList extends PureComponent {
       },
       error,
     });
+    // 判断是存了查询信息，并获取维保单位列表
+    if (searchInfo) {
+      const { industryCategory } = searchInfo
+      setFieldsValue(searchInfo)
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+          ...searchInfo,
+          industryCategory:
+            industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
+        },
+      });
+    } else {
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+        },
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    const { initPageNum } = this.props
+    initPageNum()
   }
 
   /* 显示删除确认提示框 */
@@ -195,6 +235,7 @@ export default class MaintenanceCompanyList extends PureComponent {
   handleClickToQuery = () => {
     const {
       fetch,
+      saveSearchInfo,
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
@@ -211,12 +252,16 @@ export default class MaintenanceCompanyList extends PureComponent {
           industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
       },
     });
+    saveSearchInfo({
+      payload: data,
+    })
   };
 
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
     const {
       fetch,
+      saveSearchInfo,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -230,6 +275,7 @@ export default class MaintenanceCompanyList extends PureComponent {
         pageNum: 1,
       },
     });
+    saveSearchInfo()
   };
 
   /* 滚动加载 */
@@ -399,17 +445,17 @@ export default class MaintenanceCompanyList extends PureComponent {
                     编辑
                   </AuthLink>,
                 ]}
-                // extra={
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(item.id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // }
+              // extra={
+              //   <Button
+              //     onClick={() => {
+              //       this.handleShowDeleteConfirm(item.id);
+              //     }}
+              //     shape="circle"
+              //     style={{ border: 'none', fontSize: '20px' }}
+              //   >
+              //     <Icon type="close" />
+              //   </Button>
+              // }
               >
                 <Row>
                   <Col
