@@ -13,6 +13,7 @@ import MapTypeBar from '../Components/MapTypeBar';
 import govdotRed from '../img/govdot-red.png';
 
 const { location: locationDefault } = global.PROJECT_CONFIG;
+let fitView = true;
 @connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSection extends PureComponent {
   constructor(props) {
@@ -107,7 +108,8 @@ class MapSection extends PureComponent {
             // this.handleIconClick({ id: extData.id, ...extData.position });
           },
           created: () => {
-            this.mapInstance.setFitView();
+            if (fitView) this.mapInstance.setFitView();
+            fitView = false;
           },
         }}
         render={this.renderMarkerLayout}
@@ -307,6 +309,7 @@ class MapSection extends PureComponent {
               <span
                 className={legendStyles}
                 onClick={() => {
+                  fitView = true;
                   this.filterPoint(level);
                   this.setState({
                     legendActive: index,
@@ -370,19 +373,20 @@ class MapSection extends PureComponent {
                 <div
                   className={styles.allPoint}
                   onClick={() => {
+                    fitView = true;
                     this.filterPoint('All');
                     this.setState({
                       infoWindowShow: false,
                       legendActive: null,
                       searchValue: '',
                     });
-                    if (this.mapInstance) {
-                      this.mapInstance.setFitView();
-                      // this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
-                      //   locationDefault.x,
-                      //   locationDefault.y,
-                      // ]);
-                    }
+                    // if (this.mapInstance) {
+                    //   this.mapInstance.setFitView();
+                    //   // this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
+                    //   //   locationDefault.x,
+                    //   //   locationDefault.y,
+                    //   // ]);
+                    // }
                     if (this.props.comInfo) {
                       this.props.goBack();
                     }
