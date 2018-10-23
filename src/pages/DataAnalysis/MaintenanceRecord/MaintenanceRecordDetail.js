@@ -7,8 +7,6 @@ import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-// import Bg from './b2.jpg';
-// import electricityD from './electricity-d.png';
 import Slider from '../../BigPlatform/FireControl/components/Slider';
 import styles from './MaintenanceRecord.less';
 
@@ -115,7 +113,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
   }
 
   extraContent = (
-    <Button style={{ width: '100px', height: '36px' }} onClick={() => this.goToList()}>
+    <Button className={styles.backBtn} onClick={() => this.goToList()}>
       返回
     </Button>
   );
@@ -127,8 +125,8 @@ export default class MaintenanceRecordDetail extends PureComponent {
   };
 
   // 显示图片
-  handleClickImg = () => {
-    this.setState({ showImg: true });
+  handleClickImg = i => {
+    this.setState({ showImg: true, magIndex: i });
   };
 
   // 图片左移点击事件
@@ -209,30 +207,33 @@ export default class MaintenanceRecordDetail extends PureComponent {
     const {
       maintenanceRecord: {
         detail,
-        detail: { items = [] },
+        detail: { items = [], files = [] },
       },
     } = this.props;
 
-    const picture = [];
-
     const { magIndex, showImg } = this.state;
-    const picLength = picture.length;
+    const picLength = files.length;
     const isMagEnd = magIndex === picLength - 1;
 
-    const imgs = picture.map((src, i) => (
-      <div
-        key={i}
-        className={styles.imgSection}
-        onClick={() => this.handleClickImg(i)}
-        style={{
-          backgroundImage: `url(${src})`,
-          backgroundSize: 'cover',
-        }}
-      />
-    ));
+    const imgs = files.map(
+      ({ webUrl }, i) => (
+        console.log(webUrl),
+        (
+          <div
+            key={i}
+            className={styles.imgSection}
+            style={{
+              backgroundImage: `url(${webUrl})`,
+              backgroundSize: 'cover',
+            }}
+            onClick={() => this.handleClickImg(i)}
+          />
+        )
+      )
+    );
 
-    const magImgs = picture.map(src => (
-      <div className={styles.magImg} key={src} style={{ backgroundImage: `url(${src})` }} />
+    const magImgs = files.map(({ webUrl }) => (
+      <div className={styles.magImg} key={webUrl} style={{ backgroundImage: `url(${webUrl})` }} />
     ));
 
     return (

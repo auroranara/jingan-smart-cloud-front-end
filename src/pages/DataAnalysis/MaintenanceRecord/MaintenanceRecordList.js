@@ -58,6 +58,7 @@ export default class MaintenanceRecordList extends PureComponent {
     coordinate: {
       visible: false,
     },
+    imgUrl: [],
   };
 
   // 挂载后
@@ -93,11 +94,14 @@ export default class MaintenanceRecordList extends PureComponent {
   };
 
   // 显示附件模态框
-  handleShowModal = () => {
+  handleShowModal = files => {
+    console.log(files);
+
     this.setState({
       coordinate: {
         visible: true,
       },
+      imgUrl: files,
     });
   };
 
@@ -121,10 +125,9 @@ export default class MaintenanceRecordList extends PureComponent {
       },
     } = this.props;
     const data = getFieldsValue();
-    const {
-      checkDate: [startTime, endTime],
-      ...restValues
-    } = data;
+    const { checkDate, ...restValues } = data;
+    const startTime = checkDate && checkDate.length > 0 ? checkDate.startTime : undefined;
+    const endTime = checkDate && checkDate.length > 0 ? checkDate.endTime : undefined;
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
@@ -205,12 +208,13 @@ export default class MaintenanceRecordList extends PureComponent {
     const {
       tableLoading,
       maintenanceRecord: {
-        data: { list = [] },
+        data: { list },
       },
     } = this.props;
 
     const {
       coordinate: { visible },
+      imgUrl,
     } = this.state;
 
     /* 配置描述 */
@@ -255,15 +259,18 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'files',
         key: 'fileIds',
         align: 'center',
-        render: (val, record) => (
-          <Fragment>
-            {imgUrl && imgUrl.length ? (
-              <a onClick={() => this.handleShowModal(record.id)}>查看附件</a>
-            ) : (
-              <span style={{ color: '#aaa' }}>查看附件</span>
-            )}
-          </Fragment>
-        ),
+        render: (val, record) => {
+          const { files } = record;
+          return (
+            <Fragment>
+              {files && files.length ? (
+                <a onClick={() => this.handleShowModal(files)}>查看附件</a>
+              ) : (
+                <span style={{ color: '#aaa' }}>查看附件</span>
+              )}
+            </Fragment>
+          );
+        },
       },
       {
         title: '操作',
@@ -274,8 +281,6 @@ export default class MaintenanceRecordList extends PureComponent {
       },
     ];
 
-    const imgUrl = list.files ? JSON.parse(list.files) : [];
-
     return (
       <Card style={{ marginTop: '20px' }}>
         {list && list.length ? (
@@ -284,7 +289,7 @@ export default class MaintenanceRecordList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={list}
-            pagination={{ pageSize: 15 }}
+            pagination={{ pageSize: 5 }}
             scroll={{ x: 1400 }}
             bordered
           />
@@ -294,7 +299,7 @@ export default class MaintenanceRecordList extends PureComponent {
         <Coordinate
           title="附件图片"
           visible={visible}
-          noCoordinate
+          noClick={false}
           urls={imgUrl}
           onOk={this.handleOk}
           onCancel={() => {
@@ -303,9 +308,6 @@ export default class MaintenanceRecordList extends PureComponent {
                 visible: false,
               },
             });
-          }}
-          style={{
-            backgroundImage: 'none',
           }}
         />
       </Card>
