@@ -556,6 +556,12 @@ module.exports = [
                 name: 'importPointPosition',
                 component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
               },
+              {
+                path: '/device-management/user-transmission-device/add',
+                code: 'deviceManagement.userTransmissionDevice.add',
+                name: 'add',
+                component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
+              },
             ],
           },
           // 视频监控
