@@ -177,7 +177,7 @@ export default class AddTransmission extends PureComponent {
                   />
                 )}
               </Col>
-              {defaultName ? null : (
+              {defaultName && unitType !== 2 ? null : (
                 <Col span={1}>
                   <Button type="primary" onFocus={this.handleFocus} style={{ marginLeft: '10%' }}>
                     选择单位
