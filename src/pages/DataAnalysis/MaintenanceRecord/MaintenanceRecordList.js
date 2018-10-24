@@ -263,7 +263,7 @@ export default class MaintenanceRecordList extends PureComponent {
             <Fragment>
               {files && files.length ? (
                 <AuthA
-                  code={codesMap.dataAnalysis.maintenanceRecord.view}
+                  code={codesMap.dataAnalysis.MaintenanceRecord.view}
                   onClick={() => this.handleShowModal(files)}
                 >
                   查看附件
@@ -282,7 +282,7 @@ export default class MaintenanceRecordList extends PureComponent {
         align: 'center',
         render: (val, record) => (
           <AuthA
-            code={codesMap.dataAnalysis.maintenanceRecord.view}
+            code={codesMap.dataAnalysis.MaintenanceRecord.view}
             onClick={() => this.goRecordDetail(record.id)}
           >
             查看
@@ -299,7 +299,7 @@ export default class MaintenanceRecordList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={list}
-            pagination={{ pageSize: 5 }}
+            pagination={{ pageSize: 10 }}
             scroll={{ x: 1400 }}
             bordered
           />
