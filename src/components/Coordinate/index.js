@@ -92,6 +92,7 @@ export default class App extends PureComponent {
       // 取消按钮点击事件
       onCancel,
       ratio = '75%',
+      noClick = true,
     } = this.props;
     const { position, index, pageNum } = this.state;
 
@@ -119,16 +120,17 @@ export default class App extends PureComponent {
                 onClick={this.handleShowPoint}
               />
               {/* 坐标点 */
-              position && (
-                <div
-                  className={styles.point}
-                  style={{
-                    left: `calc(${position.x * 100}% - 16px)`,
-                    top: `calc(${position.y * 100}% - 35px)`,
-                    backgroundImage: `url(${videoIcon})`,
-                  }}
-                />
-              )}
+              noClick &&
+                position && (
+                  <div
+                    className={styles.point}
+                    style={{
+                      left: `calc(${position.x * 100}% - 16px)`,
+                      top: `calc(${position.y * 100}% - 35px)`,
+                      backgroundImage: `url(${videoIcon})`,
+                    }}
+                  />
+                )}
             </div>
             <Thumbnail
               ratio={ratio}

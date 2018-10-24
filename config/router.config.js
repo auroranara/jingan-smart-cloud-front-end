@@ -516,6 +516,31 @@ module.exports = [
               },
             ],
           },
+          {
+            path: '/data-analysis/maintenance-record',
+            code: 'dataAnalysis.maintenanceRecord',
+            name: 'maintenanceRecord',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/maintenance-record',
+                name: 'maintenanceRecord',
+                redirect: '/data-analysis/maintenance-record/list',
+              },
+              {
+                path: '/data-analysis/maintenance-record/list',
+                code: 'dataAnalysis.maintenanceRecord.view',
+                name: 'listView',
+                component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordList',
+              },
+              {
+                path: '/data-analysis/maintenance-record/detail/:id',
+                code: 'dataAnalysis.maintenanceRecord.view',
+                name: 'detail',
+                component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordDetail',
+              },
+            ],
+          },
         ],
       },
 

@@ -363,6 +363,7 @@ export default class ContractList extends PureComponent {
       },
       goToDetail,
     } = this.props;
+    console.log(this.props);
     // 是否有查看权限
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
     // 是否有编辑权限
