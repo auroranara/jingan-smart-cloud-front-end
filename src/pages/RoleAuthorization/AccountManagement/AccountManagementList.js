@@ -183,7 +183,7 @@ export default class accountManagementList extends PureComponent {
       fetch,
       fetchOptions,
       fetchUnitsFuzzy,
-      fetchGavUserTypes,
+      // fetchGavUserTypes,
       fetchUserType,
       account: {
         searchInfo,
@@ -193,39 +193,57 @@ export default class accountManagementList extends PureComponent {
       },
     } = this.props;
 
-    // 如果有搜索条件，则填入并获取账号列表
-    if (searchInfo) {
-      setFieldsValue(searchInfo)
-      fetch({
-        payload: {
-          pageSize,
-          pageNum: 1,
-          ...searchInfo,
-        },
-      });
-    } else {
-      fetch({
-        payload: {
-          pageSize,
-          pageNum: 1,
-        },
-      });
-    }
-    fetchGavUserTypes()
-    fetchUserType()
+    // fetchGavUserTypes()
+    fetchUserType({
+      success: () => {
+
+      },
+    })
     // 获取单位类型和账户状态
     fetchOptions({
       success: ({ unitType }) => {
-        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        fetchUnitsFuzzy({
-          payload: {
-            unitType: unitType[0].id,
-            pageNum: 1,
-            pageSize: defaultPageSize,
-          },
-        });
+        const selectedUnitType = searchInfo && searchInfo.unitType || unitType && unitType.length && unitType[0].id || undefined
+        this.setState({ unitTypeChecked: selectedUnitType })
+
+        // 如果有搜索条件，则填入并所属单位和账号列表
+        if (searchInfo) {
+          setFieldsValue(searchInfo)
+          selectedUnitType === 2 ?
+            fetchUnitsFuzzy({
+              payload: { unitType: 2 },
+            }) : fetchUnitsFuzzy({
+              payload: {
+                unitType: selectedUnitType,
+                pageNum: 1,
+                pageSize: defaultPageSize,
+              },
+            });
+
+          fetch({
+            payload: {
+              pageSize,
+              pageNum: 1,
+              ...searchInfo,
+            },
+          });
+        } else {
+          fetchUnitsFuzzy({
+            payload: {
+              unitType: selectedUnitType,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+          fetch({
+            payload: {
+              pageSize,
+              pageNum: 1,
+            },
+          });
+        }
       },
-    });
+    })
+
   }
 
   componentWillUnmount() {
@@ -267,7 +285,7 @@ export default class accountManagementList extends PureComponent {
       saveSearchInfo,
       // goToException,
       // fetchOptions,
-      form: { resetFields },
+      form: { resetFields, getFieldValue },
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -280,10 +298,11 @@ export default class accountManagementList extends PureComponent {
         pageNum: 1,
       },
     });
-    this.setState({ unitTypeChecked: 4 }, () => {
+    const unitType = getFieldValue('unitType')
+    this.setState({ unitTypeChecked: unitType }, () => {
       fetchUnitsFuzzy({
         payload: {
-          unitType: 4,
+          unitType,
           pageNum: 1,
           pageSize: defaultPageSize,
         },
@@ -318,15 +337,22 @@ export default class accountManagementList extends PureComponent {
   handleUnitTypeSelect = value => {
     const {
       fetchUnitsFuzzy,
-      form: { setFieldsValue },
+      form: { setFieldsValue, getFieldValue },
     } = this.props;
+    const selectedUnitType = getFieldValue('unitType')
     setFieldsValue({ unitId: null, userType: [] });
-    this.setState({ unitTypeChecked: value });
+    this.setState({ unitTypeChecked: value || selectedUnitType });
     // 根据当前选中的单位类型获取对应的所属单位列表
     if (value === 2) {
       fetchUnitsFuzzy({
         payload: {
           unitType: value,
+        },
+      });
+    } else if (value === null || value === undefined) {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: selectedUnitType,
         },
       });
     } else {
