@@ -126,11 +126,12 @@ export default class AddTransmission extends PureComponent {
     } = this.props;
     e.preventDefault();
     validateFields((err, values) => {
+      console.log(values);
       if (err) return;
 
       const vals = { ...values };
       delete vals.compnayName;
-      if ('productionDate' in values)
+      if (values.productionDate)
         vals.productionDate = values.productionDate.format('YYYY-MM-DD');
       dispatch({
         type: 'transmission/deviceAddAsync',
