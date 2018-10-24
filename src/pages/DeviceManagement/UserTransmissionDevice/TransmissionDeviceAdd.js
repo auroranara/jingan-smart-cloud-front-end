@@ -160,7 +160,7 @@ export default class AddTransmission extends PureComponent {
             <FormItem {...formItemLayout} label="单位名称">
               <Col span={23}>
                 {getFieldDecorator('companyName', {
-                  initialValue: unitType === 4 ? defaultName : undefined,
+                  initialValue: unitType === 4 || unitType === 1 ? defaultName : undefined,
                   rules: [
                     {
                       required: true,

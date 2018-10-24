@@ -372,6 +372,8 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     } = this.props;
 
+    console.log('11', this.props);
+
     const {
       coordinate: { visible },
     } = this.state;
@@ -417,7 +419,11 @@ export default class VideoMonitorEdit extends PureComponent {
               <Col span={23}>
                 {getFieldDecorator('companyId', {
                   initialValue:
-                    unitType === 4 ? defaultName : nameCompany ? nameCompany : undefined,
+                    unitType === 4 || unitType === 1
+                      ? defaultName
+                      : nameCompany
+                        ? nameCompany
+                        : undefined,
                   rules: [
                     {
                       required: true,
