@@ -122,10 +122,12 @@ export default class MaintenanceRecordList extends PureComponent {
         },
       },
     } = this.props;
+
     const data = getFieldsValue();
     const { checkDate, ...restValues } = data;
-    const startTime = checkDate && checkDate.length > 0 ? checkDate.startTime : undefined;
-    const endTime = checkDate && checkDate.length > 0 ? checkDate.endTime : undefined;
+    const startTime = checkDate && checkDate.length > 0 ? checkDate[0] : undefined;
+    const endTime = checkDate && checkDate.length > 0 ? checkDate[1] : undefined;
+
     // 修改表单数据
     this.formData = data;
     // 重新请求数据

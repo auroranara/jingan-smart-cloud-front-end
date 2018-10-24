@@ -216,6 +216,7 @@ export default class ContractList extends PureComponent {
       endTime: endTime && endTime.format('YYYY-MM-DD'),
       ...restValues,
     };
+
     fetchList({
       payload: {
         ...formData,
