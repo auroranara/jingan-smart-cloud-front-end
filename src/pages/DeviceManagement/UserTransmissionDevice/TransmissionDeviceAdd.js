@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, DatePicker, Form, Input, message } from 'antd';
+import { Button, Card, DatePicker, Form, Input, message, Col } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
@@ -11,12 +11,16 @@ const { Item: FormItem } = Form;
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '设备管理', name: '设备管理' },
-  { title: '用户传输装置', name: '用户传输装置', href: '/device-management/user-transmission-device/list' },
+  {
+    title: '用户传输装置',
+    name: '用户传输装置',
+    href: '/device-management/user-transmission-device/list',
+  },
   { title: '新增', name: '新增' },
 ];
 
 const PAGE_SIZE = 10;
-const MODAL_WIDTH = 800;
+// const MODAL_WIDTH = 800;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -41,24 +45,27 @@ const tailFormItemLayout = {
   },
 };
 
-const COLUMNS = [
-  {
-    title: '企业名称',
-    dataIndex: 'name',
-    key: 'name',
-  },
-];
+// const COLUMNS = [
+//   {
+//     title: '企业名称',
+//     dataIndex: 'name',
+//     key: 'name',
+//   },
+// ];
 
 function dispatchCallback(code, successMsg, failMsg, msg) {
   if (code === 200) {
     message.success(successMsg);
     router.push('/device-management/user-transmission-device/list');
-  }
-  else
-    message.error(msg ? `${failMsg} ${msg}` : failMsg);
+  } else message.error(msg ? `${failMsg} ${msg}` : failMsg);
 }
 
-@connect(({ transmission, loading }) => ({ transmission, loading: loading.effects['transmission/fetchSelectCompany'] }))
+@connect(({ transmission, videoMonitor, user, loading }) => ({
+  transmission,
+  user,
+  videoMonitor,
+  loading: loading.effects['transmission/fetchSelectCompany'],
+}))
 @Form.create()
 export default class AddTransmission extends PureComponent {
   state = { visible: false };
@@ -72,7 +79,7 @@ export default class AddTransmission extends PureComponent {
 
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'transmission/fetchSelectCompany', payload });
+    dispatch({ type: 'videoMonitor/fetchModelList', payload });
   };
 
   handleSelect = item => {
@@ -85,22 +92,25 @@ export default class AddTransmission extends PureComponent {
 
   handleClose = () => {
     this.setState({ visible: false });
-  }
+  };
 
   renderModal() {
-    const { transmission: { selectCompany }, loading } = this.props;
+    const {
+      videoMonitor: { modal },
+      loading,
+    } = this.props;
     const { visible } = this.state;
     return (
-    <CompanyModal
-      width={MODAL_WIDTH}
-      loading={loading}
-      visible={visible}
-      columns={COLUMNS}
-      modal={selectCompany}
-      fetch={this.fetchCompany}
-      onSelect={this.handleSelect}
-      onClose={this.handleClose}
-    />
+      <CompanyModal
+        // width={MODAL_WIDTH}
+        loading={loading}
+        visible={visible}
+        // columns={COLUMNS}
+        modal={modal}
+        fetch={this.fetchCompany}
+        onSelect={this.handleSelect}
+        onClose={this.handleClose}
+      />
     );
   }
 
@@ -110,11 +120,13 @@ export default class AddTransmission extends PureComponent {
   };
 
   handleSubmit = e => {
-    const { dispatch, form: { validateFields } } = this.props;
+    const {
+      dispatch,
+      form: { validateFields },
+    } = this.props;
     e.preventDefault();
     validateFields((err, values) => {
-      if (err)
-        return;
+      if (err) return;
 
       const vals = { ...values };
       delete vals.compnayName;
@@ -129,72 +141,92 @@ export default class AddTransmission extends PureComponent {
   };
 
   render() {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      form: { getFieldDecorator },
+      user: {
+        currentUser: { unitType, companyName: defaultName },
+      },
+    } = this.props;
 
     return (
-      <PageHeaderLayout
-          title="新增用户传输装置"
-          breadcrumbList={breadcrumbList}
-        >
-          <Card>
-            <Form onSubmit={this.handleSubmit}>
-              <FormItem label="单位名称" {...formItemLayout}>
+      <PageHeaderLayout title="新增用户传输装置" breadcrumbList={breadcrumbList}>
+        <Card>
+          <Form onSubmit={this.handleSubmit}>
+            {/* <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyName', {
+                rules: [{ required: true, message: '请选择单位' }],
+              })(<Input placeholder="请选择单位" onFocus={this.handleFocus} />)}
+            </FormItem> */}
+            <FormItem {...formItemLayout} label="单位名称">
+              <Col span={23}>
                 {getFieldDecorator('companyName', {
-                  rules: [{ required: true, message: '请选择单位' }],
-                })(
-                  <Input placeholder="请选择单位" onFocus={this.handleFocus} />
-                )}
-              </FormItem>
-              <FormItem label="装置名称" {...formItemLayout}>
-                {getFieldDecorator('deviceName', {
-                  rules: [{ required: true, whitespace: true, message: '请输入用户传输装置名称' }],
-                })(
-                  <Input placeholder="请输入用户传输装置名称" />
-                )}
-              </FormItem>
-              <FormItem label="装置编号" {...formItemLayout}>
-                {getFieldDecorator('deviceCode', {
+                  initialValue: unitType === 4 ? defaultName : undefined,
                   rules: [
-                    { required: true, whitespace: true, message: '请输入用户传输装置编号' },
-                    { pattern: /^\d+$/, message: '装置编号请输入纯数字' },
+                    {
+                      required: true,
+                      message: '请选择单位',
+                    },
                   ],
                 })(
-                  <Input placeholder="请输入用户传输装置编号" />
+                  <Input
+                    disabled
+                    ref={input => {
+                      this.CompanyIdInput = input;
+                    }}
+                    placeholder="请选择单位"
+                  />
                 )}
-              </FormItem>
-              <FormItem label="品牌" {...formItemLayout}>
-                {getFieldDecorator('brand', {
-                  rules: [{ required: true, whitespace: true, message: '请输入用户传输装置品牌' }],
-                })(
-                  <Input placeholder="请输入用户传输装置品牌" />
-                )}
-              </FormItem>
-              <FormItem label="型号" {...formItemLayout}>
-                {getFieldDecorator('model', {
-                  rules: [{ required: true, whitespace: true, message: '请输入用户传输装置型号' }],
-                })(
-                  <Input placeholder="请输入用户传输装置型号" />
-                )}
-              </FormItem>
-              <FormItem label="安装位置" {...formItemLayout}>
-                {getFieldDecorator('installLocation', {
-                  rules: [{ required: true, whitespace: true, message: '请输入用户传输装置安装位置' }],
-                })(
-                  <Input placeholder="请输入用户传输装置安装位置" />
-                )}
-              </FormItem>
-              <FormItem label="生产日期" {...formItemLayout}>
-                {getFieldDecorator('productionDate', {})(
-                  <DatePicker placeholder="请选择日期" />
-                )}
-              </FormItem>
-              <FormItem {...tailFormItemLayout}>
-                <Button type="primary" htmlType="submit">提交</Button>
-              </FormItem>
-            </Form>
-          </Card>
-          {this.renderModal()}
-        </PageHeaderLayout>
+              </Col>
+              {defaultName ? null : (
+                <Col span={1}>
+                  <Button type="primary" onFocus={this.handleFocus} style={{ marginLeft: '10%' }}>
+                    选择单位
+                  </Button>
+                </Col>
+              )}
+            </FormItem>
+            <FormItem label="装置名称" {...formItemLayout}>
+              {getFieldDecorator('deviceName', {
+                rules: [{ required: true, whitespace: true, message: '请输入用户传输装置名称' }],
+              })(<Input placeholder="请输入用户传输装置名称" />)}
+            </FormItem>
+            <FormItem label="装置编号" {...formItemLayout}>
+              {getFieldDecorator('deviceCode', {
+                rules: [
+                  { required: true, whitespace: true, message: '请输入用户传输装置编号' },
+                  { pattern: /^\d+$/, message: '装置编号请输入纯数字' },
+                ],
+              })(<Input placeholder="请输入用户传输装置编号" />)}
+            </FormItem>
+            <FormItem label="品牌" {...formItemLayout}>
+              {getFieldDecorator('brand', {
+                rules: [{ required: true, whitespace: true, message: '请输入用户传输装置品牌' }],
+              })(<Input placeholder="请输入用户传输装置品牌" />)}
+            </FormItem>
+            <FormItem label="型号" {...formItemLayout}>
+              {getFieldDecorator('model', {
+                rules: [{ required: true, whitespace: true, message: '请输入用户传输装置型号' }],
+              })(<Input placeholder="请输入用户传输装置型号" />)}
+            </FormItem>
+            <FormItem label="安装位置" {...formItemLayout}>
+              {getFieldDecorator('installLocation', {
+                rules: [
+                  { required: true, whitespace: true, message: '请输入用户传输装置安装位置' },
+                ],
+              })(<Input placeholder="请输入用户传输装置安装位置" />)}
+            </FormItem>
+            <FormItem label="生产日期" {...formItemLayout}>
+              {getFieldDecorator('productionDate', {})(<DatePicker placeholder="请选择日期" />)}
+            </FormItem>
+            <FormItem {...tailFormItemLayout}>
+              <Button type="primary" htmlType="submit">
+                提交
+              </Button>
+            </FormItem>
+          </Form>
+        </Card>
+        {this.renderModal()}
+      </PageHeaderLayout>
     );
   }
 }
