@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 
-import { Form, Card, Button, Icon, Col, Row } from 'antd';
+import { Form, Card, Icon, Col, Row } from 'antd';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -112,11 +112,11 @@ export default class MaintenanceRecordDetail extends PureComponent {
     });
   }
 
-  extraContent = (
-    <Button className={styles.backBtn} onClick={() => this.goToList()}>
-      返回
-    </Button>
-  );
+  // extraContent = (
+  //   <Button className={styles.backBtn} onClick={() => this.goToList()}>
+  //     返回
+  //   </Button>
+  // );
 
   /* 跳转到列表页面*/
   goToList = () => {
@@ -300,7 +300,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        extraContent={this.extraContent}
+        // extraContent={this.extraContent}
       >
         {this.renderUnitInfo()}
         {this.renderServiceUnitInfo()}
