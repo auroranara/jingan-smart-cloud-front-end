@@ -441,7 +441,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 )}
               </Col>
             )}
-            {id || nameCompany || defaultName ? null : (
+            {id || nameCompany || (defaultName && unitType !== 2) ? null : (
               <Col span={1}>
                 <Button
                   type="primary"
