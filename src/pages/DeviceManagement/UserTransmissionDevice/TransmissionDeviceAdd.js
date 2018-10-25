@@ -67,7 +67,7 @@ function dispatchCallback(code, successMsg, failMsg, msg) {
   loading: loading.effects['transmission/fetchSelectCompany'],
 }))
 @Form.create()
-export default class AddTransmission extends PureComponent {
+export default class TransmissionAdd extends PureComponent {
   state = { visible: false };
 
   componentDidMount() {
