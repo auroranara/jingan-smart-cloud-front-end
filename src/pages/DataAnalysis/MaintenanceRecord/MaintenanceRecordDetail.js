@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
+// import moment from 'moment';
 
 import { Form, Card, Icon, Col, Row } from 'antd';
 import { routerRedux } from 'dva/router';
@@ -156,11 +156,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
           <Description term={fieldLabels.maintenanceUnits}>
             {detail.checkCompanyName || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.maintenanceTime}>
-            {detail.checkDate
-              ? moment(+detail.checkDate).format('YYYY-MM-DD HH:MM:SS')
-              : getEmptyData()}
-          </Description>
+          <Description term={fieldLabels.maintenanceTime}>{detail.checkDate}</Description>
           <Description term={fieldLabels.maintenancePerson}>
             {detail.checkUsers
               ? detail.checkUsers.map(v => v.userName).join('  ,  ')
