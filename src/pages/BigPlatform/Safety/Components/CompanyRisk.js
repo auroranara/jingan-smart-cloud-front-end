@@ -7,6 +7,7 @@ import safety from '@/assets/safety.png';
 import fireControl from '@/assets/fire-control.png';
 import environment from '@/assets/environment.png';
 import hygiene from '@/assets/hygiene.png';
+import ygbIcon from '@/assets/closed.png';
 
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
@@ -28,6 +29,7 @@ const defaultFieldNames = {
   status: 'status',
   background: 'background',
   businessType: 'businessType',
+  fcsj: 'fcsj',
 };
 // 根据业务分类获取对应图标
 const getIconByBusinessType = function(businessType) {
@@ -52,6 +54,8 @@ const getSeal = status => {
       return wcqIcon;
     case 3:
       return dfcIcon;
+    case 4:
+      return ygbIcon;
     case 7:
       return ycqIcon;
     default:
@@ -70,7 +74,7 @@ class CompanyRisk extends PureComponent {
 
   render() {
     const {
-      hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
+      hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [], ygb = [] },
     } = this.props;
     const {
       id,
@@ -82,8 +86,9 @@ class CompanyRisk extends PureComponent {
       status,
       background,
       businessType,
+      fcsj,
     } = defaultFieldNames;
-    const newList = [...ycq, ...wcq, ...dfc];
+    const newList = [...ycq, ...wcq, ...dfc, ...ygb];
     return (
       <div>
         {newList.length !== 0 ? (
@@ -182,17 +187,17 @@ class CompanyRisk extends PureComponent {
                     }}
                   >
                     <span style={{ color: '#00A8FF' }}>
-                      {item.status === 3 ? '实际' : '计划'}
+                      {+item.status === 3 || +item.status === 4 ? '实际' : '计划'}
                       整改：
                     </span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
                       <span style={{ color: item.status === 7 ? 'rgb(255, 72, 72)' : '#fff' }}>
-                        {item.status === 3 ? item.real_zgsj : item.plan_zgsj}
+                        {+item.status === 3 ? item.real_zgsj : item.plan_zgsj}
                       </span>
                     </Ellipsis>
                   </div>
-                  {+item[status] === 3 && (
+                  {(+item[status] === 3 || +item.status === 4) && (
                     <div
                       className={styles.riskMsg}
                       style={{
@@ -208,6 +213,7 @@ class CompanyRisk extends PureComponent {
                       </span>
                       <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                         <span style={{ marginRight: '20px' }}>{item[fcr]}</span>
+                        {+item.status === 4 && item[fcsj]}
                       </Ellipsis>
                     </div>
                   )}
