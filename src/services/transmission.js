@@ -17,7 +17,7 @@ export async function queryTransmissionDeviceDetail(companyId) {
 
 // 用户传输装置详情页请求企业详情
 export async function queryCompanyDetail(companyId) {
-  return request(`/acloud_new/v2/baseInfo/company/${companyId}`);
+  return request(`/acloud_new/v2/baseInfo/company2/${companyId}`);
 }
 
 // 添加用户传输装置

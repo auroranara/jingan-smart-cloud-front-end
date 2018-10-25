@@ -91,6 +91,8 @@ export default class App extends PureComponent {
       // onOk,
       // 取消按钮点击事件
       onCancel,
+      footer,
+      width,
       ratio = '75%',
       noClick = true,
     } = this.props;
@@ -101,6 +103,8 @@ export default class App extends PureComponent {
         <Modal
           title={title}
           centered
+          footer={footer}
+          width={width}
           // destroyOnClose
           maskClosable={false}
           visible={visible}

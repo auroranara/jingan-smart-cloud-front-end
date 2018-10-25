@@ -17,6 +17,9 @@ const { RangePicker } = DatePicker;
 // 标题
 const title = '维保记录';
 
+// 附件框宽度
+const MODEL_WIDTH = 650;
+
 //面包屑
 const breadcrumbList = [
   {
@@ -226,7 +229,7 @@ export default class MaintenanceRecordList extends PureComponent {
         key: 'checkDate',
         align: 'center',
         render: time => {
-          return moment(time).format('YYYY-MM-DD HH:MM:SS');
+          return moment(time).format('YYYY-MM-DD HH:mm:ss');
         },
       },
       {
@@ -235,7 +238,7 @@ export default class MaintenanceRecordList extends PureComponent {
         key: 'checkUserIds',
         align: 'center',
         render: val => {
-          return val.map(v => v.userName).join('  ,  ');
+          return val && val.length > 0 ? val.map(v => v.userName).join('  ,  ') : '';
         },
       },
       {
@@ -244,7 +247,7 @@ export default class MaintenanceRecordList extends PureComponent {
         key: 'phoneNumber',
         align: 'center',
         render: val => {
-          return val.map(v => v.phoneNumber).join('  ,  ');
+          return val && val.length > 0 ? val.map(v => v.phoneNumber).join('  ,  ') : '';
         },
       },
       {
@@ -253,7 +256,12 @@ export default class MaintenanceRecordList extends PureComponent {
         key: 'bcheckCompanyId',
         align: 'center',
       },
-      { title: '综合评分', dataIndex: 'score', key: 'score', align: 'center' },
+      {
+        title: '综合评分',
+        dataIndex: 'score',
+        key: 'score',
+        align: 'center',
+      },
       {
         title: '附件',
         dataIndex: 'files',
@@ -310,10 +318,12 @@ export default class MaintenanceRecordList extends PureComponent {
         )}
         <Coordinate
           title="附件图片"
+          width={MODEL_WIDTH}
           visible={visible}
           noClick={false}
           urls={imgUrl}
           onOk={this.handleOk}
+          footer={null}
           onCancel={() => {
             this.setState({
               coordinate: {
