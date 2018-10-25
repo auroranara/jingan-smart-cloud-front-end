@@ -420,7 +420,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 {getFieldDecorator('companyId', {
                   initialValue:
                     unitType === 4 || unitType === 1
-                      ? defaultName
+                      ? nameCompany || defaultName
                       : nameCompany
                         ? nameCompany
                         : undefined,

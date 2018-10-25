@@ -135,8 +135,8 @@ export default class MaintenanceRecordList extends PureComponent {
       type: 'maintenanceRecord/fetch',
       payload: {
         ...restValues,
-        startTime: startTime && startTime.format('YYYY/M/d HH:mm:ss'),
-        endTime: endTime && endTime.format('YYYY/M/d HH:mm:ss'),
+        startTime: startTime && startTime.format('YYYY/M/D HH:mm:ss'),
+        endTime: endTime && endTime.format('YYYY/M/D HH:mm:ss'),
         pageSize,
         pageNum: 1,
       },
@@ -188,7 +188,7 @@ export default class MaintenanceRecordList extends PureComponent {
             })(<Input placeholder="请输入服务单位名称" />)}
           </FormItem>
           <FormItem className={styles.formItem}>
-            {getFieldDecorator('checkDate')(<RangePicker format="YYYY/MM/DD" />)}
+            {getFieldDecorator('checkDate')(<RangePicker format="YYYY/M/D" />)}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
