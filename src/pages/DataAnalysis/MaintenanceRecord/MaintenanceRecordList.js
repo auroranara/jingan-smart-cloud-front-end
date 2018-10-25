@@ -238,7 +238,7 @@ export default class MaintenanceRecordList extends PureComponent {
         key: 'checkUserIds',
         align: 'center',
         render: val => {
-          return val.map(v => v.userName).join('  ,  ');
+          return val && val.length > 0 ? val.map(v => v.userName).join('  ,  ') : '';
         },
       },
       {
@@ -247,7 +247,7 @@ export default class MaintenanceRecordList extends PureComponent {
         key: 'phoneNumber',
         align: 'center',
         render: val => {
-          return val.map(v => v.phoneNumber).join('  ,  ');
+          return val && val.length > 0 ? val.map(v => v.phoneNumber).join('  ,  ') : '';
         },
       },
       {
@@ -256,7 +256,12 @@ export default class MaintenanceRecordList extends PureComponent {
         key: 'bcheckCompanyId',
         align: 'center',
       },
-      { title: '综合评分', dataIndex: 'score', key: 'score', align: 'center' },
+      {
+        title: '综合评分',
+        dataIndex: 'score',
+        key: 'score',
+        align: 'center',
+      },
       {
         title: '附件',
         dataIndex: 'files',
