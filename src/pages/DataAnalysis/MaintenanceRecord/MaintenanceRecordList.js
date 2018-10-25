@@ -191,7 +191,15 @@ export default class MaintenanceRecordList extends PureComponent {
             })(<Input placeholder="请输入服务单位名称" />)}
           </FormItem>
           <FormItem className={styles.formItem}>
-            {getFieldDecorator('checkDate')(<RangePicker format="YYYY/M/D" />)}
+            {getFieldDecorator('checkDate')(
+              <RangePicker
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder={['开始时间', '结束时间']}
+                showTime={{
+                  defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                }}
+              />
+            )}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
