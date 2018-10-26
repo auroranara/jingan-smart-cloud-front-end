@@ -302,6 +302,31 @@ module.exports = [
               },
             ],
           },
+          {
+            path: '/fire-control/test-info',
+            code: 'fireControl.testInfo',
+            name: 'testInfo',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/fire-control/test-info',
+                name: 'testInfo',
+                redirect: '/fire-control/test-info/list',
+              },
+              {
+                path: '/fire-control/test-info/list',
+                code: 'fireControl.testInfo.view',
+                name: 'list',
+                component: './FireControl/TestInfo/TestList',
+              },
+              {
+                path: '/fire-control/test-info/detail/:id',
+                code: 'fireControl.testInfo.view',
+                name: 'detail',
+                component: './FireControl/TestInfo/TestDetail',
+              },
+            ],
+          },
         ],
       },
 
