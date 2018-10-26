@@ -116,6 +116,7 @@ export default class App extends PureComponent {
       },
       yAxis: {
         type: 'value',
+        minInterval: 1,
         axisLine: {
           lineStyle: {
             color: '#3f5d79',
