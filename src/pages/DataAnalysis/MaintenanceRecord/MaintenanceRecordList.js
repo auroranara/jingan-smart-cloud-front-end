@@ -347,9 +347,7 @@ export default class MaintenanceRecordList extends PureComponent {
   render() {
     const {
       maintenanceRecord: {
-        data: {
-          pagination: { total },
-        },
+        data: { list = [] },
       },
     } = this.props;
 
@@ -360,7 +358,7 @@ export default class MaintenanceRecordList extends PureComponent {
         content={
           <div>
             列表记录：
-            {total}{' '}
+            {list.length}{' '}
           </div>
         }
       >
