@@ -64,7 +64,7 @@ function dispatchCallback(code, successMsg, failMsg, msg) {
   transmission,
   user,
   videoMonitor,
-  loading: loading.effects['transmission/fetchSelectCompany'],
+  loading: loading.effects['videoMonitor/fetchModelList'],
 }))
 @Form.create()
 export default class TransmissionAdd extends PureComponent {
@@ -127,7 +127,7 @@ export default class TransmissionAdd extends PureComponent {
     } = this.props;
     e.preventDefault();
     validateFields((err, values) => {
-      console.log(values);
+      // console.log(values);
       if (err) return;
 
       const vals = { ...values };
