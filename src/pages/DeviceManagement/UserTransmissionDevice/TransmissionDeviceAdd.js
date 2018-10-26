@@ -67,7 +67,7 @@ function dispatchCallback(code, successMsg, failMsg, msg) {
   loading: loading.effects['transmission/fetchSelectCompany'],
 }))
 @Form.create()
-export default class AddTransmission extends PureComponent {
+export default class TransmissionAdd extends PureComponent {
   state = { visible: false };
 
   componentDidMount() {
@@ -123,6 +123,7 @@ export default class AddTransmission extends PureComponent {
     const {
       dispatch,
       form: { validateFields },
+      user: { currentUser: { companyId } },
     } = this.props;
     e.preventDefault();
     validateFields((err, values) => {
@@ -135,7 +136,7 @@ export default class AddTransmission extends PureComponent {
         vals.productionDate = values.productionDate.format('YYYY-MM-DD');
       dispatch({
         type: 'transmission/deviceAddAsync',
-        payload: { companyId: this.companyId, data: vals },
+        payload: { companyId: this.companyId || companyId, data: vals },
         callback: dispatchCallback,
       });
     });
