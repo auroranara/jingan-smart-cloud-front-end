@@ -136,6 +136,9 @@ export default class VideoMonitorEdit extends PureComponent {
           data: { companyId: detailCompanyId, companyName },
         },
       },
+      user: {
+        currentUser: { unitId },
+      },
       dispatch,
     } = this.props;
 
@@ -166,7 +169,7 @@ export default class VideoMonitorEdit extends PureComponent {
           keyId,
           name,
           // status,
-          companyId: companyIdParams || companyId,
+          companyId: companyIdParams || companyId || unitId,
           rtspAddress,
           photoAddress,
           xNum,
