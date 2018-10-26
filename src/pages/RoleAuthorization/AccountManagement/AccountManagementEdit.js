@@ -22,6 +22,7 @@ import debounce from 'lodash/debounce';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
+import AuthorityTree from './AuthorityTree';
 import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree } from './utils';
 import styles from './AccountManagementEdit.less';
 
@@ -97,9 +98,11 @@ const generateUnitsTree = data => {
 };
 
 @connect(
-  ({ account, loading }) => ({
+  ({ account, role, loading }) => ({
     account,
+    role,
     loading: loading.models.account,
+    authorityTreeLoading: loading.effects['role/fetchPermissionTree'],
   }),
   dispatch => ({
     // 修改账号
@@ -365,6 +368,7 @@ export default class accountManagementEdit extends PureComponent {
           documentTypeId,
           execCertificateCode,
           regulatoryClassification,
+          permissions,
         }
       ) => {
         // console.log(maintenacePermissions, this.sortMap, this.totalMap);
@@ -373,6 +377,8 @@ export default class accountManagementEdit extends PureComponent {
 
         // console.log(maintenacePermissions, this.chidrenMap);
         // console.log(handleMtcTree(maintenacePermissions, this.childrenMap));
+
+        console.log(permissions);
 
         if (!error) {
           this.setState({
@@ -1033,9 +1039,22 @@ export default class accountManagementEdit extends PureComponent {
     });
   };
 
+  handleChange = (nextTargetKeys, direction, moveKeys) => {
+    // console.log(nextTargetKeys);
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    setFieldsValue({ roleIds: nextTargetKeys });
+    dispatch({
+      type: 'role/fetchDetail',
+      payload: { id: nextTargetKeys[0] },
+      success: ({ permissions }) => setFieldsValue({ permissions: permissions ? permissions.split(',') : [] }),
+    });
+  }
+
   /* 渲染角色权限信息 */
   renderRolePermission() {
     const {
+      dispatch,
+      role,
       account: {
         detail: {
           data: { treeNames, treeIds, roleIds },
@@ -1043,10 +1062,11 @@ export default class accountManagementEdit extends PureComponent {
         roles,
         maintenanceTree: { list: treeList = [] },
       },
-      form: { getFieldDecorator },
+      form,
       loading,
     } = this.props;
 
+    const { getFieldDecorator } = form;
     const { expandedKeys, searchValue, autoExpandParent, unitTypeChecked } = this.state;
 
     const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
@@ -1072,8 +1092,20 @@ export default class accountManagementEdit extends PureComponent {
                     dataSource={roleList}
                     titles={['可选角色', '已选角色']}
                     render={item => item.title}
+                    onChange={this.handleChange}
                   />
                 )}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label="账号权限">
+                <AuthorityTree
+                  role={role}
+                  form={form}
+                  dispatch={dispatch}
+                />
               </Form.Item>
             </Col>
           </Row>
