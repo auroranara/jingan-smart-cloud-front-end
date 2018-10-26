@@ -1,4 +1,4 @@
-import { queryCompanies, queryData, queryExport, getCompanyName } from '../services/dataAnalysis';
+import { queryCompanies, queryData, queryExport, getCompanyName, fetchRepairRecords } from '../services/dataAnalysis';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 
@@ -12,6 +12,15 @@ export default {
     companies: {},
     analysis: {},
     companyInfo: {},
+    repairRecord: {
+      repairRecords: [],
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    },
+    repairRecordDetail: {},
   },
 
   effects: {
@@ -48,13 +57,33 @@ export default {
       if (code === 200)
         yield put({ type: 'saveCompanyInfo', payload: { name: data } });
     },
+    // 获取一键报修记录列表
+    *fetchRepairRecords({ payload }, { call, put }) {
+      const response = yield call(fetchRepairRecords, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveRepairRecords',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取一键报修记录详情
+    *fetchRepairRecordDetail({ payload }, { call, put }) {
+      const response = yield call(fetchRepairRecords, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: "saveRepairRecordDetail",
+          payload: response.data,
+        })
+      }
+    },
   },
 
   reducers: {
     saveCompanyList(state, action) {
       const data = action.payload;
-      const { list=[], pagination={} } = data;
-      const { pageNum=1 } = pagination;
+      const { list = [], pagination = {} } = data;
+      const { pageNum = 1 } = pagination;
       let newList = list;
       // 第一页list就为获取的list，第二页就要在之前list上增加新获取的list
       if (pageNum !== 1)
@@ -68,6 +97,30 @@ export default {
     },
     saveCompanyInfo(state, action) {
       return { ...state, companyInfo: action.payload };
+    },
+    saveRepairRecords(state, action) {
+      const { list, pageNum, pageSize, total } = action.payload
+      return {
+        ...state,
+        repairRecord: {
+          ...state.repairRecord,
+          repairRecords: list,
+          pagination: {
+            pageNum, pageSize, total,
+          },
+        },
+      }
+    },
+    saveRepairRecordDetail(state, action) {
+      const { list } = action.payload
+      if (list && list.length) {
+        return {
+          ...state,
+          repairRecordDetail: list[0],
+        }
+      } else return {
+        ...state,
+      }
     },
   },
 };

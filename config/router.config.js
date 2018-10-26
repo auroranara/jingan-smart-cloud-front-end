@@ -566,6 +566,31 @@ module.exports = [
               },
             ],
           },
+          {
+            path: '/data-analysis/repair-record',
+            code: 'dataAnalysis.repairRecord',
+            name: 'repairRecord',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/repair-record',
+                name: 'repairRecord',
+                redirect: '/data-analysis/repair-record/list',
+              },
+              {
+                path: '/data-analysis/repair-record/list',
+                code: 'dataAnalysis.repairRecord.view',
+                name: 'list',
+                component: './DataAnalysis/RepairRecord/RepairRecordList',
+              },
+              {
+                path: '/data-analysis/repair-record/detail/:id',
+                code: 'dataAnalysis.repairRecord.view',
+                name: 'detail',
+                component: './DataAnalysis/RepairRecord/RepairRecordDetail',
+              },
+            ],
+          },
         ],
       },
 
