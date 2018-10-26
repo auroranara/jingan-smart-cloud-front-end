@@ -62,7 +62,7 @@ export default class RepairRecordList extends PureComponent {
     const data = getFieldsValue()
     const { time, ...query } = data
     if (time) {
-      const { start, end } = time
+      const [start, end] = time
       query.startTime = moment(start).format('YYYY-MM-DD h:mm:ss')
       query.endTime = moment(end).format('YYYY-MM-DD h:mm:ss')
     }
@@ -134,7 +134,7 @@ export default class RepairRecordList extends PureComponent {
     const data = getFieldsValue()
     const { time, ...query } = data
     if (time) {
-      const { start, end } = time
+      const [start, end] = time
       query.startTime = moment(start).format('YYYY-MM-DD hh:mm:ss')
       query.endTime = moment(end).format('YYYY-MM-DD hh:mm:ss')
     }
@@ -182,7 +182,7 @@ export default class RepairRecordList extends PureComponent {
             <Col span={17}>
               <FormItem className={styles.formItem} >
                 {getFieldDecorator('time')(
-                  <RangePicker format="YYYY/MM/DD" />
+                  <RangePicker showTime format="YYYY-MM-DD hh:mm:ss" />
                 )}
               </FormItem>
             </Col>
@@ -306,12 +306,15 @@ export default class RepairRecordList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        content={<span style={{ fontSize: '16px' }}>列表记录：{total}</span>}
       >
         {this.renderForm()}
-        <Card className={styles.repairRecordList}>
-          <Table scroll={{ x: 1600 }} rowKey="id" columns={columns} dataSource={repairRecords} bordered pagination={false} />
-          <Pagination style={{ marginTop: '20px', float: 'right' }} showQuickJumper current={pageNum} pageSize={pageSize} total={total} onChange={this.onPageChange} />
-        </Card>
+        {repairRecords && repairRecords.length ? (
+          <Card className={styles.repairRecordList}>
+            <Table scroll={{ x: 1600 }} rowKey="id" columns={columns} dataSource={repairRecords} bordered pagination={false} />
+            <Pagination style={{ marginTop: '20px', float: 'right' }} showQuickJumper current={pageNum} pageSize={pageSize} total={total} onChange={this.onPageChange} />
+          </Card>
+        ) : (<Card className={styles.noRepairRecordList}><span >暂无数据</span></Card>)}
         <Coordinate
           title="附件图片"
           visible={modalVisible}
@@ -319,6 +322,7 @@ export default class RepairRecordList extends PureComponent {
           urls={imageFiles}
           onOk={this.handleModalClose}
           onCancel={this.handleModalClose}
+          footer={null}
         />
       </PageHeaderLayout>
     )

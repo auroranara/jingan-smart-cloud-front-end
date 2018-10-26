@@ -6,6 +6,7 @@ import router from 'umi/router'
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Slider from '../../BigPlatform/FireControl/components/Slider';
 import styles from './RepairRecordDetail.less'
+import moment from 'moment';
 
 const FormItem = Form.Item;
 const title = "报修记录详情"
@@ -30,6 +31,7 @@ const reportInfo = [
   { label: '报修时间', key: 'create_date' },
   { label: '报修人员', key: 'createByName' },
   { label: '联系电话', key: 'createByPhone' },
+  { label: 'divider', key: 'divider' },
   { label: '系统类型', key: 'systemTypeValue' },
   { label: '设备名称', key: 'device_name' },
   { label: '详细位置', key: 'device_address' },
@@ -73,9 +75,6 @@ export default class RepairRecordDetail extends PureComponent {
     router.push('/data-analysis/repair-record/list')
   }
 
-  extraContent = (
-    <Button style={{ width: '120px', height: '36px' }} onClick={this.handleToBack}>返回</Button>
-  )
 
   // 显示图片
   handleClickImg = (i, files) => {
@@ -116,6 +115,13 @@ export default class RepairRecordDetail extends PureComponent {
     } else return (<span style={{ fontSize: '16px' }}>暂无数据</span>)
   }
 
+  renderFormItem = (item, value, content = value) => (
+    <FormItem key={item.key} label={item.label} {...formItemLayout}>
+      {value && value !== '' ? (<span style={{ fontSize: '16px' }}>{content}</span>) :
+        (<span style={{ fontSize: '16px' }}>暂无数据</span>)}
+    </FormItem>
+  )
+
   // 渲染信息
   renderInfo = (list) => {
     const {
@@ -127,23 +133,15 @@ export default class RepairRecordDetail extends PureComponent {
       if (item.key === "reportPhotos" || item.key === "sitePhotos") {
         return (
           <FormItem key={item.key} label={item.label} {...formItemLayout}>
-            <Row>
-              {this.renderPhotos(repairRecordDetail[item.key])}
-            </Row>
+            <Row>{this.renderPhotos(repairRecordDetail[item.key])}</Row>
           </FormItem>
         )
-      } else if (item.key === "createByPhone") {
+      } else if (item.key === "create_date" || item.key === "start_date" || item.key === "end_date") {
+        const content = moment(repairRecordDetail[item.key]).format("YYYY-MM-DD hh:mm:ss")
+        return this.renderFormItem(item, repairRecordDetail[item.key], content)
+      } else if (item.key === "divider") {
         return (<Divider key="divider" />)
-      } else {
-        return (
-          <FormItem key={item.key} label={item.label} {...formItemLayout}>
-            {
-              repairRecordDetail[item.key] ? (<span style={{ fontSize: '16px' }}>{repairRecordDetail[item.key]}</span>) :
-                (<span style={{ fontSize: '16px' }}>暂无数据</span>)
-            }
-          </FormItem>
-        )
-      }
+      } else return this.renderFormItem(item, repairRecordDetail[item.key])
     })
   }
 
@@ -204,8 +202,6 @@ export default class RepairRecordDetail extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<span></span>}
-        extraContent={this.extraContent}
       >
         <Card title="报修内容" className={styles.RepairRecordDetailCard}>
           <Form>
