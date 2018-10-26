@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import { Link } from 'react-router-dom';
+import router from 'umi/router';
 import { Card, Button, Input, List, Row, Col } from 'antd';
 // import InfiniteScroll from 'react-infinite-scroller';
 
@@ -9,7 +9,7 @@ import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './UserTransmissionDevice.less';
-import { AuthLink, ERROR_MSG } from '@/utils/customAuth';
+import { AuthButton, AuthLink, ERROR_MSG } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
 
 const PAGE_SIZE = 18;
@@ -17,7 +17,7 @@ const PAGE_SIZE = 18;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '消防维保', name: '消防维保' },
+  { title: '设备管理', name: '设备管理' },
   { title: '用户传输装置', name: '用户传输装置' },
 ];
 
@@ -210,6 +210,9 @@ export default class UserTransmissionDevice extends PureComponent {
           </Col>
           <Col span={2}>
             <Button onClick={this.handleReset}>重置</Button>
+          </Col>
+          <Col span={4} offset={4}>
+            <AuthButton code={buttonCodes.deviceManagement.transmission.add} type="primary" onClick={e => router.push('/device-management/user-transmission-device/add')}>新增传输装置</AuthButton>
           </Col>
         </Row>
       </Card>

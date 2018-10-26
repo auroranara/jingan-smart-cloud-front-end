@@ -23,7 +23,13 @@ import debounce from 'lodash/debounce';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
-import { renderSearchedTreeNodes, getInitParentKeys, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree } from './utils';
+import {
+  renderSearchedTreeNodes,
+  getInitParentKeys,
+  getParentKeys,
+  getTreeListChildrenMap,
+  handleMtcTreeViolently as handleMtcTree,
+} from './utils';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
@@ -68,7 +74,7 @@ const Supervisions = [
   { id: '1', label: '安全生产' },
   { id: '2', label: '消防' },
   { id: '3', label: '环保' },
-]
+];
 
 const treeData = data => {
   return data.map(item => {
@@ -124,7 +130,7 @@ const generateTressNode = data => {
       dispatch({
         type: 'account/editAssociatedUnit',
         ...action,
-      })
+      });
     },
     // 获取账号详情
     fetchAccountDetail(action) {
@@ -139,14 +145,14 @@ const generateTressNode = data => {
       dispatch({
         type: 'account/fetchAssociatedUnitDeatil',
         ...action,
-      })
+      });
     },
 
     addAssociatedUnit(action) {
       dispatch({
         type: 'account/addAssociatedUnit',
         ...action,
-      })
+      });
     },
 
     // 获取单位类型与账号状态
@@ -183,7 +189,7 @@ const generateTressNode = data => {
     initValue() {
       dispatch({
         type: 'account/initValue',
-      })
+      });
     },
 
     // 获取角色列表
@@ -241,6 +247,7 @@ export default class AssociatedUnit extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
+      dispatch,
       fetchAccountDetail,
       fetchAssociatedUnitDeatil,
       match: {
@@ -257,19 +264,21 @@ export default class AssociatedUnit extends PureComponent {
     } = this.props;
     const success = userId
       ? undefined
-      : () => {
-        this.setState({
-          unitTypeChecked: 4,
-        });
-        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        fetchUnitsFuzzy({
-          payload: {
-            unitType: 4,
-            pageNum: 1,
-            pageSize: defaultPageSize,
-          },
-        });
-      };
+      : ({ unitType: unitTypes }) => {
+          // 默认选取第一个类型
+          unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
+          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+          unitTypes && unitTypes.length && fetchUnitsFuzzy({
+            payload: {
+              unitType: unitTypes[0].id,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+        };
+
+    // 清空权限树
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} });
 
     if (!!userId) {
       // 如果是编辑
@@ -279,11 +288,14 @@ export default class AssociatedUnit extends PureComponent {
           userId,
         },
         success: ({ unitType, unitId }) => {
-          this.setState({
-            unitTypeChecked: unitType,
-          }, () => {
-            // empty
-          });
+          this.setState(
+            {
+              unitTypeChecked: unitType,
+            },
+            () => {
+              // empty
+            }
+          );
 
           // 若为维保单位，则获取维保权限树
           unitType === 1 && this.getMaintenanceTree(unitId);
@@ -367,13 +379,22 @@ export default class AssociatedUnit extends PureComponent {
   childrenMap = {};
 
   //获取维保权限树
-  getMaintenanceTree = (companyId) => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
+  getMaintenanceTree = companyId => {
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
     dispatch({
       type: 'account/fetchMaintenanceTree',
       payload: { companyId },
-      callback: ({ list: treeList=[] }) => {
-        const { account: { detail: { data: { maintenacePermissions=[] } } } } = this.props;
+      callback: ({ list: treeList = [] }) => {
+        const {
+          account: {
+            detail: {
+              data: { maintenacePermissions = [] },
+            },
+          },
+        } = this.props;
 
         this.childrenMap = getTreeListChildrenMap(treeList);
 
@@ -383,9 +404,9 @@ export default class AssociatedUnit extends PureComponent {
         this.setState({
           expandedKeys,
           autoExpandParent: true,
-        })
+        });
       },
-   });
+    });
   };
 
   /* 去除左右两边空白 */
@@ -393,8 +414,8 @@ export default class AssociatedUnit extends PureComponent {
 
   // 返回列表
   goBack = () => {
-    router.push('/role-authorization/account-management/list')
-  }
+    router.push('/role-authorization/account-management/list');
+  };
 
   /* 提交表单信息 */
   handleClickValidate = () => {
@@ -406,30 +427,34 @@ export default class AssociatedUnit extends PureComponent {
         params: { id, userId },
       },
       account: {
-        detail: { data: { loginId, active } },
+        detail: {
+          data: { loginId, active },
+        },
       },
     } = this.props;
-    const { unitTypeChecked } = this.state
+    const { unitTypeChecked } = this.state;
 
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
-      (error, {
-        loginName,
-        accountStatus,
-        userName,
-        phoneNumber,
-        unitType,
-        unitId,
-        treeIds,
-        maintenacePermissions,
-        roleIds,
-        departmentId,
-        userType,
-        documentTypeId = null,
-        execCertificateCode = null,
-        regulatoryClassification,
-      }) => {
-
+      (
+        error,
+        {
+          loginName,
+          accountStatus,
+          userName,
+          phoneNumber,
+          unitType,
+          unitId,
+          treeIds,
+          maintenacePermissions,
+          roleIds,
+          departmentId,
+          userType,
+          documentTypeId = null,
+          execCertificateCode = null,
+          regulatoryClassification,
+        }
+      ) => {
         if (!error) {
           this.setState({
             submitting: true,
@@ -447,10 +472,15 @@ export default class AssociatedUnit extends PureComponent {
             departmentId: departmentId || '',
             userType,
             documentTypeId, // 执法证种类id
-            execCertificateCode,// 执法证编号
-            regulatoryClassification: regulatoryClassification && regulatoryClassification.length ? regulatoryClassification.join(',') : null,
+            execCertificateCode, // 执法证编号
+            regulatoryClassification:
+              regulatoryClassification && regulatoryClassification.length
+                ? regulatoryClassification.join(',')
+                : null,
           };
-          switch (payload.unitType) { //单位类型
+          switch (
+            payload.unitType //单位类型
+          ) {
             // 维保企业 设置用户类型
             case 1:
               payload.userType = 'company_safer';
@@ -474,7 +504,7 @@ export default class AssociatedUnit extends PureComponent {
           };
           // 如果有userId，为编辑
           if (userId) {
-            payload = { ...payload, active, id: userId, loginId }
+            payload = { ...payload, active, id: userId, loginId };
 
             editAssociatedUnit({
               payload,
@@ -482,12 +512,12 @@ export default class AssociatedUnit extends PureComponent {
               errorCallback,
             });
           } else {
-            payload.loginId = id
+            payload.loginId = id;
             addAssociatedUnit({
               payload,
               successCallback,
               errorCallback,
-            })
+            });
           }
         }
       }
@@ -507,7 +537,12 @@ export default class AssociatedUnit extends PureComponent {
         unitTypeChecked: id,
       },
       () => {
-        setFieldsValue({ userType: null, regulatoryClassification: [], documentTypeId: null, execCertificateCode: null });
+        setFieldsValue({
+          userType: null,
+          regulatoryClassification: [],
+          documentTypeId: null,
+          execCertificateCode: null,
+        });
         // if (id === 4) {
         //   setFieldsValue({ userType: 'company_legal_person' });
         // } else {
@@ -594,7 +629,7 @@ export default class AssociatedUnit extends PureComponent {
         companyId: value,
       },
     });
-  }
+  };
 
   /** 所属单位下拉框失焦 */
   handleUnitIdBlur = value => {
@@ -691,9 +726,7 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.loginName}>
                 {getFieldDecorator('loginName', {
                   initialValue: loginName,
-                })(
-                  <Input disabled={true} placeholder="请输入用户名" min={1} max={20} />
-                )}
+                })(<Input disabled={true} placeholder="请输入用户名" min={1} max={20} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -738,7 +771,11 @@ export default class AssociatedUnit extends PureComponent {
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
                   // initialValue: userId ? unitType : unitTypes.length === 0 ? undefined : 4,
-                  initialValue: userId ? unitType : 4,
+                  initialValue: userId
+                    ? unitType
+                    : unitTypes && unitTypes.length === 0
+                      ? undefined
+                      : unitTypes[0].id,
                   rules: [
                     {
                       required: true,
@@ -765,7 +802,8 @@ export default class AssociatedUnit extends PureComponent {
                 <Form.Item label={fieldLabels.unitId}>
                   {getFieldDecorator('unitId', {
                     // TODO：
-                    initialValue: userId && unitId && unitName ? { key: unitId, label: unitName } : undefined,
+                    initialValue:
+                      userId && unitId && unitName ? { key: unitId, label: unitName } : undefined,
                     rules: [
                       {
                         required: unitTypeChecked !== 3, // 如果是运营企业 不需要必填,
@@ -794,14 +832,16 @@ export default class AssociatedUnit extends PureComponent {
                     </AutoComplete>
                   )}
                 </Form.Item>
-              </Col>)}
+              </Col>
+            )}
             {/* 单位类型为政府时的所属单位 */}
             {unitTypeChecked === 2 && (
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.unitId}>
                   {getFieldDecorator('unitId', {
                     // TODO：
-                    initialValue: userId && unitId && unitName ? { value: unitId, label: unitName } : undefined,
+                    initialValue:
+                      userId && unitId && unitName ? { value: unitId, label: unitName } : undefined,
                     rules: [
                       {
                         required: true, // 如果是运营企业 不需要必填,
@@ -819,7 +859,8 @@ export default class AssociatedUnit extends PureComponent {
                     </TreeSelect>
                   )}
                 </Form.Item>
-              </Col>)}
+              </Col>
+            )}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.departmentId}>
                 {getFieldDecorator('departmentId', {
@@ -847,7 +888,11 @@ export default class AssociatedUnit extends PureComponent {
                       //   : userTypes.length === 0
                       //     ? undefined
                       //     : userTypes[0].value,
-                      initialValue: userId ? userType : userTypes.length === 0 ? undefined : userTypes[0].value,
+                      initialValue: userId
+                        ? userType
+                        : userTypes.length === 0
+                          ? undefined
+                          : userTypes[0].value,
                       rules: [
                         {
                           required: true,
@@ -896,24 +941,22 @@ export default class AssociatedUnit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
-                      initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
-                      rules: [
-                        { required: true, message: '请选择业务分类' },
-                      ],
+                      initialValue: regulatoryClassification
+                        ? regulatoryClassification.split(',')
+                        : [],
+                      rules: [{ required: true, message: '请选择业务分类' }],
                     })(
-                      <Select
-                        mode="multiple"
-                        placeholder="请选择业务分类"
-                      >
+                      <Select mode="multiple" placeholder="请选择业务分类">
                         {Supervisions.map(item => (
-                          <Option value={item.id} key={item.id}>{item.label}</Option>
+                          <Option value={item.id} key={item.id}>
+                            {item.label}
+                          </Option>
                         ))}
                       </Select>
                     )}
                   </Form.Item>
                 </Col>
-              )
-            }
+              )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
                 <Col lg={8} md={12} sm={24}>
@@ -948,14 +991,14 @@ export default class AssociatedUnit extends PureComponent {
     );
   }
 
-  onCheck = (checkedKeys) => {
+  onCheck = checkedKeys => {
     const { setFieldsValue } = this.props.form;
 
     // console.log('onCheck', checkedKeys);
     setFieldsValue({ maintenacePermissions: checkedKeys });
   };
 
-  onExpand = (expandedKeys) => {
+  onExpand = expandedKeys => {
     this.setState({
       expandedKeys,
       autoExpandParent: false,
@@ -963,7 +1006,11 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   onTreeSearch = e => {
-    const { account: { maintenanceTree: { list: treeList=[] } } } = this.props;
+    const {
+      account: {
+        maintenanceTree: { list: treeList = [] },
+      },
+    } = this.props;
 
     const value = e.target.value;
     const expandedKeys = getParentKeys(treeList, value);
@@ -983,7 +1030,7 @@ export default class AssociatedUnit extends PureComponent {
           data: { treeNames, treeIds, roleIds, maintenacePermissions },
         },
         roles,
-        maintenanceTree: { list: treeList=[] },
+        maintenanceTree: { list: treeList = [] },
       },
       form: { getFieldDecorator },
       loading,
@@ -1050,7 +1097,7 @@ export default class AssociatedUnit extends PureComponent {
             <Row gutter={{ lg: 48, md: 24 }}>
               <Col lg={8} md={12} sm={24}>
                 <p className={styles.mTree}>维保权限</p>
-                <Search placeholder="请输入公司名称查询" onChange={this.onTreeSearch} />
+                <Search placeholder="请输入单位名称查询" onChange={this.onTreeSearch} />
                 <Form.Item>
                   {getFieldDecorator('maintenacePermissions', {
                     // initialValue: maintenacePermissions,
@@ -1072,7 +1119,7 @@ export default class AssociatedUnit extends PureComponent {
                 </Form.Item>
               </Col>
             </Row>
-          ): null}
+          ) : null}
         </Form>
       </Card>
     );

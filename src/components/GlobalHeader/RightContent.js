@@ -77,6 +77,9 @@ export default class GlobalHeaderRight extends PureComponent {
       payload: { id: userId },
       success: () => {
         message.success('切换成功！');
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 200);
       },
       error: () => {
         message.error('切换失败！');
@@ -134,7 +137,7 @@ export default class GlobalHeaderRight extends PureComponent {
             <Dropdown overlay={users}>
               <span className={styles.action}>
                 <Icon type="swap" style={{ fontSize: '18px' }} />
-                <span style={{ verticalAlign: 'middle' }}>切换企业</span>
+                <span style={{ verticalAlign: 'middle' }}>切换单位</span>
               </span>
             </Dropdown>
           )}

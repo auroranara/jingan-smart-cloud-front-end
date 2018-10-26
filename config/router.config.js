@@ -298,7 +298,32 @@ module.exports = [
                 path: '/fire-control/maintenance-company/serviceList/:id/detail/:companyId',
                 code: 'fireControl.maintenanceCompany.serviceUnitView',
                 name: 'serviceDetail',
-                component: './FireControl/MaintenanceCompany/serviceDetail',
+                component: './FireControl/MaintenanceCompany/ServiceDetail',
+              },
+            ],
+          },
+          {
+            path: '/fire-control/test-info',
+            code: 'fireControl.testInfo',
+            name: 'testInfo',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/fire-control/test-info',
+                name: 'testInfo',
+                redirect: '/fire-control/test-info/list',
+              },
+              {
+                path: '/fire-control/test-info/list',
+                code: 'fireControl.testInfo.view',
+                name: 'list',
+                component: './FireControl/TestInfo/TestList',
+              },
+              {
+                path: '/fire-control/test-info/detail/:id',
+                code: 'fireControl.testInfo.view',
+                name: 'detail',
+                component: './FireControl/TestInfo/TestDetail',
               },
             ],
           },
@@ -516,6 +541,31 @@ module.exports = [
               },
             ],
           },
+          {
+            path: '/data-analysis/maintenance-record',
+            code: 'dataAnalysis.maintenanceRecord',
+            name: 'maintenanceRecord',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/maintenance-record',
+                name: 'maintenanceRecord',
+                redirect: '/data-analysis/maintenance-record/list',
+              },
+              {
+                path: '/data-analysis/maintenance-record/list',
+                code: 'dataAnalysis.maintenanceRecord.view',
+                name: 'listView',
+                component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordList',
+              },
+              {
+                path: '/data-analysis/maintenance-record/detail/:id',
+                code: 'dataAnalysis.maintenanceRecord.view',
+                name: 'detail',
+                component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordDetail',
+              },
+            ],
+          },
         ],
       },
 
@@ -555,6 +605,12 @@ module.exports = [
                 code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
+              },
+              {
+                path: '/device-management/user-transmission-device/add',
+                code: 'deviceManagement.userTransmissionDevice.add',
+                name: 'add',
+                component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
               },
             ],
           },

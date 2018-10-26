@@ -217,6 +217,7 @@ export default class accountManagementEdit extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
+      dispatch,
       fetchAccountDetail,
       match: {
         params: { id },
@@ -234,9 +235,8 @@ export default class accountManagementEdit extends PureComponent {
     const success = id
       ? undefined
       : ({ unitType: unitTypes }) => {
-        this.setState({
-          unitTypeChecked: 4,
-        });
+        // 默认选取第一个类型
+        unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
         // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
         unitTypes && unitTypes.length && fetchUnitsFuzzy({
           payload: {
@@ -246,6 +246,9 @@ export default class accountManagementEdit extends PureComponent {
           },
         });
       };
+
+    // 清空权限树
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} });
 
     // 如果id存在的话，就获取详情，即编辑状态
     if (id) {
@@ -1105,7 +1108,7 @@ export default class accountManagementEdit extends PureComponent {
             <Row gutter={{ lg: 48, md: 24 }}>
               <Col lg={8} md={12} sm={24}>
                 <p className={styles.mTree}>维保权限</p>
-                <Search placeholder="请输入公司名称查询" onChange={this.onTreeSearch} />
+                <Search placeholder="请输入单位名称查询" onChange={this.onTreeSearch} />
                 <Form.Item>
                   {getFieldDecorator('maintenacePermissions', {
                     // initialValue: maintenacePermissions,

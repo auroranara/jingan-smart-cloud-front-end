@@ -98,11 +98,10 @@ export default {
     *changerUser({ payload, success, error }, { call, put }) {
       const response = yield call(changerUser, payload);
       if (response && response.code === 200 && response.data && response.data.webToken) {
-        if (success) success();
         yield setToken(response.data.webToken);
         reloadAuthorized();
-        // yield put(routerRedux.replace({ pathname: '/' }));
-        window.location.reload(true);
+        yield put(routerRedux.replace({ pathname: '/' }));
+        if (success) success();
       } else if (error) error();
     },
   },

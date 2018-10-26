@@ -68,6 +68,7 @@ const transformHiddenDangerFields = ({
   source_type_name,
   companyBuildingItem,
   business_type,
+  review_time,
 }) => {
   const { object_title, risk_level } = companyBuildingItem || {};
   return {
@@ -88,6 +89,7 @@ const transformHiddenDangerFields = ({
         `${getColorByRiskLevel(risk_level)}风险点${object_title ? `（${object_title}）` : ''}`) ||
       source_type_name,
     businessType: business_type,
+    fcsj: moment(+review_time).format('YYYY-MM-DD'),
   };
 };
 
@@ -199,6 +201,7 @@ export default {
       ycq: [],
       wcq: [],
       dfc: [],
+      ygb: [],
     },
     hiddenDangerCompanyAll: {},
     hiddenDangerCompanyMonth: {},
@@ -703,12 +706,19 @@ export default {
             return +a.real_rectify_time - b.real_rectify_time;
           })
           .map(transformHiddenDangerFields);
+        const ygb = response.data.hiddenDangers
+          .filter(({ status }) => +status === 4)
+          .sort((a, b) => {
+            return +a.real_rectify_time - b.real_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
         yield put({
           type: 'hiddenDangerListByDate',
           payload: {
             ycq,
             wcq,
             dfc,
+            ygb,
           },
         });
         if (success) {

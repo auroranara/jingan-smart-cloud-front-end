@@ -70,6 +70,7 @@ export default class App extends PureComponent {
       _review_time,
       hiddenStatus,
       _path,
+      business_type,
     }) => ({
       id: _id,
       description: _desc,
@@ -82,6 +83,7 @@ export default class App extends PureComponent {
       fcsj: _review_time && moment(+_review_time).format('YYYY-MM-DD'),
       status: +hiddenStatus,
       background: _path,
+      businessType: business_type,
     }));
 
     /* 表头 */

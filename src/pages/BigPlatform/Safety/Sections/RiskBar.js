@@ -482,12 +482,22 @@ class RiskBar extends PureComponent {
 
   render() {
     const { barLegend } = this.state;
+    const {
+      countDangerLocation: { red = 0, orange = 0, yellow = 0, blue = 0, not_rated = 0 },
+    } = this.props;
+    const riskTotal = red + orange + yellow + blue + not_rated;
     return (
       <section className={styles.sectionWrapper} style={{ height: 'calc(50% - 6px)' }}>
         <div className={styles.sectionWrapperIn}>
           <div className={styles.sectionTitle}>
             <span className={styles.titleBlock} />
             风险点统计
+          </div>
+          <div className={styles.riskTotal}>
+            风险点总数
+            <span className={styles.riskTotalNum} style={{ color: '#00baff' }}>
+              {riskTotal}
+            </span>
           </div>
           <div className={styles.sectionMain} style={{ display: 'flex', flexDirection: 'column' }}>
             <div className={styles.hdArea} id="hdArea">

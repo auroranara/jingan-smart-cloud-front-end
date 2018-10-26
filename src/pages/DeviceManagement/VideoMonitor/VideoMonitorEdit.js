@@ -38,17 +38,17 @@ const defaultPagination = {
 };
 
 @connect(
-  ({ videoMonitor, maintenanceCompany, safety, loading }) => ({
+  ({ videoMonitor, user, safety, loading }) => ({
     videoMonitor,
-    maintenanceCompany,
+    user,
     safety,
     loading: loading.models.videoMonitor,
   }),
   dispatch => ({
     // 获取企业
-    fetchCompanyList(action) {
+    fetchModelList(action) {
       dispatch({
-        type: 'maintenanceCompany/fetchCompanyList',
+        type: 'videoMonitor/fetchModelList',
         ...action,
       });
     },
@@ -99,7 +99,7 @@ export default class VideoMonitorEdit extends PureComponent {
       dispatch({
         type: 'safety/fetch',
         payload: {
-          companyId: id || companyId,
+          companyId: id ? companyId : undefined || companyId,
         },
       });
     }
@@ -136,6 +136,9 @@ export default class VideoMonitorEdit extends PureComponent {
           data: { companyId: detailCompanyId, companyName },
         },
       },
+      user: {
+        currentUser: { unitId },
+      },
       dispatch,
     } = this.props;
 
@@ -166,7 +169,7 @@ export default class VideoMonitorEdit extends PureComponent {
           keyId,
           name,
           // status,
-          companyId: companyIdParams || companyId,
+          companyId: companyIdParams || companyId || unitId,
           rtspAddress,
           photoAddress,
           xNum,
@@ -221,18 +224,18 @@ export default class VideoMonitorEdit extends PureComponent {
 
   /* 显示选择企业模态框 */
   handleShowCompanyModal = () => {
-    const { fetchCompanyList } = this.props;
+    const { fetchModelList } = this.props;
     const { companyModal } = this.state;
     // 显示模态框
     this.setState({
       companyModal: {
-        type: 'maintenanceCompany/fetchCompanyList',
+        type: 'videoMonitor/fetchModelList',
         ...companyModal,
         visible: true,
       },
     });
     // 初始化表格数据
-    fetchCompanyList({
+    fetchModelList({
       payload: {
         ...defaultPagination,
       },
@@ -279,8 +282,8 @@ export default class VideoMonitorEdit extends PureComponent {
       companyModal: { loading, visible },
     } = this.state;
     const {
-      maintenanceCompany: { modal },
-      fetchCompanyList,
+      videoMonitor: { modal },
+      fetchModelList,
     } = this.props;
     const modalProps = {
       // 模态框是否显示
@@ -292,7 +295,7 @@ export default class VideoMonitorEdit extends PureComponent {
         this.CompanyIdInput.blur();
       },
       modal,
-      fetch: fetchCompanyList,
+      fetch: fetchModelList,
       // 选择回调
       onSelect: this.handleSelectCompany,
       // 表格是否正在加载
@@ -367,7 +370,13 @@ export default class VideoMonitorEdit extends PureComponent {
       safety: {
         detail: { safetyFourPicture },
       },
+      user: {
+        currentUser: { unitType, companyName: defaultName },
+      },
     } = this.props;
+
+    console.log('11', this.props);
+
     const {
       coordinate: { visible },
     } = this.state;
@@ -412,7 +421,12 @@ export default class VideoMonitorEdit extends PureComponent {
             ) : (
               <Col span={23}>
                 {getFieldDecorator('companyId', {
-                  initialValue: nameCompany ? nameCompany : undefined,
+                  initialValue:
+                    unitType === 4 || unitType === 1
+                      ? nameCompany || defaultName
+                      : nameCompany
+                        ? nameCompany
+                        : undefined,
                   rules: [
                     {
                       required: true,
@@ -430,7 +444,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 )}
               </Col>
             )}
-            {id || nameCompany ? null : (
+            {id || nameCompany || (defaultName && unitType !== 2) ? null : (
               <Col span={1}>
                 <Button
                   type="primary"

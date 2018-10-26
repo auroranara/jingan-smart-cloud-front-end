@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Spin } from 'antd';
+import { Form, List, Card, Button, Input, Spin, message } from 'antd';
 import router from 'umi/router';
 import VisibilitySensor from 'react-visibility-sensor';
+import { hasAuthority } from '@/utils/customAuth';
+
 
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -47,8 +49,9 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(({ maintenanceCompany, loading }) => ({
+@connect(({ maintenanceCompany, loading, user }) => ({
   maintenanceCompany,
+  user,
   loading: loading.models.maintenanceCompany,
 }))
 @Form.create()
@@ -79,8 +82,13 @@ export default class ServiceUnitList extends PureComponent {
 
   // 跳转到企业详情页
   goToCompany = companyId => {
-    const { match: { params: { id } } } = this.props;
-    router.push(`/fire-control/maintenance-company/serviceList/${id}/detail/${companyId}`);
+    const { user: { currentUser: { permissionCodes } }, match: { params: { id } } } = this.props;
+    if (hasAuthority('fireControl.maintenanceCompany.serviceUnitView', permissionCodes)) {
+      router.push(`/fire-control/maintenance-company/serviceList/${id}/detail/${companyId}`);
+    }
+    else {
+      message.warning('您没有权限访问对应页面');
+    }
   };
 
   /* 查询按钮点击事件 */

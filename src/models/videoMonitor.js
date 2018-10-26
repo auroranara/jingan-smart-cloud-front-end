@@ -4,6 +4,7 @@ import {
   queryVideoCompaniesList,
   queryVideoList,
   queryVideoDetail,
+  queryModelList,
 } from '../services/videoMonitor';
 
 export default {
@@ -123,6 +124,17 @@ export default {
         if (callback) callback(response.data);
       }
     },
+
+    // 企业列表弹出框
+    *fetchModelList({ payload }, { call, put }) {
+      const response = yield call(queryModelList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveModelList',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -207,6 +219,16 @@ export default {
       return {
         ...state,
         detail: { data: {} },
+      };
+    },
+
+    // 企业弹出框
+    saveModelList(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        modal: payload,
       };
     },
   },

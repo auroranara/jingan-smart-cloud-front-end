@@ -33,6 +33,7 @@ export default class FireAlarm extends PureComponent {
     address: '',
     scrollLoading: false, // 下拉加载，当前是否正在请求数据
     hasMore: true, // 数据库中是否还存在数据
+    companyQuantity: 0,
   };
 
   componentDidMount() {
@@ -48,6 +49,7 @@ export default class FireAlarm extends PureComponent {
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
+        that.setState({ companyQuantity: total });
         if (total <= PAGE_SIZE) that.setState({ hasMore: false });
       },
     });
@@ -94,6 +96,9 @@ export default class FireAlarm extends PureComponent {
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
         if (total <= PAGE_SIZE) that.setState({ hasMore: false });
+        // 都为空时，即查询全部，更新企业数量
+        if (!company && !address)
+          that.setState({ companyQuantity: total });
       },
     });
   };
@@ -110,6 +115,7 @@ export default class FireAlarm extends PureComponent {
       },
       // 如果第一页已经返回了所有结果，则hasMore置为false
       callback(total) {
+        that.setState({ companyQuantity: total });
         if (total <= PAGE_SIZE) that.setState({ hasMore: false });
       },
     });
@@ -279,13 +285,15 @@ export default class FireAlarm extends PureComponent {
   render() {
     const {
       fireAlarm: {
-        data: {
-          pagination: { total },
-        },
+        // data: {
+        //   pagination: { total },
+        // },
         isLast,
       },
       loading,
     } = this.props;
+
+    const { companyQuantity } = this.state;
 
     return (
       <PageHeaderLayout
@@ -294,7 +302,7 @@ export default class FireAlarm extends PureComponent {
         content={
           <div>
             单位总数：
-            {total}
+            {companyQuantity}
             {''}
           </div>
         }
