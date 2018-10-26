@@ -43,7 +43,7 @@ const defaultFormData = {
   serviceUnitName: undefined,
 };
 
-// const pageSize = 18;
+const PageSize = 10;
 
 @connect(({ maintenanceRecord, user, loading }) => ({
   maintenanceRecord,
@@ -317,7 +317,7 @@ export default class MaintenanceRecordList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={list}
-            pagination={{ pageSize: 10 }}
+            pagination={{ pageSize: PageSize }}
             scroll={{ x: 1400 }}
             bordered
           />

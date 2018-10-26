@@ -239,7 +239,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
             })}
           </Description>
           <Description term={fieldLabels.syntheticalMark}>
-            {detail.score || getEmptyData()}
+            {detail.score + ' 分 ' || getEmptyData()}
           </Description>
           <Description term={fieldLabels.syntheticalEvaluation}>
             {detail.evaluate || getEmptyData()}
@@ -247,7 +247,11 @@ export default class MaintenanceRecordDetail extends PureComponent {
           <Description term={fieldLabels.rectifyOpinions}>
             {detail.opinion || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.attachmentContent} style={{ width: '100%' }}>
+          <Description
+            term={fieldLabels.attachmentContent}
+            className={styles.attachmentContent}
+            style={{ width: '100%' }}
+          >
             {imgs}
           </Description>
         </DescriptionList>
