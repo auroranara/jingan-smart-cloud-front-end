@@ -5,7 +5,7 @@ import { myParseInt } from '../utils';
 import styles from './OffGuardWarning.less';
 
 function UnitCard(props) {
-  const { index, companyName, alerted, onClick } = props;
+  const { index, loading, companyName, alerted, onClick } = props;
   const parsedAlerted = myParseInt(alerted);
 
   const style = parsedAlerted ? { color: '#4092fa', border: '1px solid #4092fa', backgroundColor: 'transparent' } : { backgroundColor: '#053d84', color: '#fff', border: '1px solid #053d84' };
@@ -23,6 +23,7 @@ function UnitCard(props) {
           className={styles.btnWarning}
           onClick={parsedAlerted ? null : onClick}
           style={style}
+          loading={parsedAlerted ? false : loading}
         >
           {`${parsedAlerted ? '已' : ''}警告`}
         </Button>
@@ -57,6 +58,7 @@ export default class OffGuardWarning extends Component {
         if (code !== 200)
           message.warn(msg);
         else {
+          message.info('警告成功');
           const index = list.indexOf(item);
           const newList = isWarnAll ? list.map(item => {
             if (warnedList.includes(item.companyId))
@@ -77,14 +79,14 @@ export default class OffGuardWarning extends Component {
   }
 
   render() {
-    const { showed, data: { list=[] } } = this.props;
+    const { showed, loading, data: { list=[] } } = this.props;
 
     return (
       <section style={{ display: showed ? 'block' : 'none' }} className={styles.container}>
         <Row span={24} style={{ height: '20%' }}>
           <Col span={12} style={{ height: '100%' }}>
             <div className={styles.left}>
-              <Button type="primary" onClick={() => this.handleClick()}>一键警告</Button>
+              <Button type="primary" loading={loading} onClick={() => this.handleClick()}>一键警告</Button>
             </div>
           </Col>
           <Col span={12} style={{ height: '100%' }}>
@@ -99,7 +101,7 @@ export default class OffGuardWarning extends Component {
         <div className={styles.table}>
           {list.map((item, index) => {
             const { id, companyName, alertFlag } = item;
-            return <UnitCard key={id} index={index + 1} companyName={companyName} alerted={alertFlag} onClick={e => this.handleClick(item)} />
+            return <UnitCard key={id} index={index + 1} loading={loading} companyName={companyName} alerted={alertFlag} onClick={e => this.handleClick(item)} />
           })}
         </div>
       </section>

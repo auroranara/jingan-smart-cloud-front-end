@@ -45,7 +45,7 @@ message.config({
   },
 });
 
-@connect(({ bigFireControl, user }) => ({ bigFireControl, user }))
+@connect(({ bigFireControl, user, loading }) => ({ bigFireControl, user, offGuardWarnLoading: loading.effects['bigFireControl/offGuardWarn'] }))
 export default class FireControlBigPlatform extends PureComponent {
   state = {
     alarmDetail: {},
@@ -408,6 +408,7 @@ export default class FireControlBigPlatform extends PureComponent {
         mapLocation,
       },
       dispatch,
+      offGuardWarnLoading,
     } = this.props;
 
     const {
@@ -568,6 +569,7 @@ export default class FireControlBigPlatform extends PureComponent {
                     data={{ lookUp, countdown, offGuard: newOffGuard, videoLookUp }}
                     lookUpShow={lookUpShow}
                     startLookUp={startLookUp}
+                    offGuardWarnLoading={offGuardWarnLoading}
                     fetchLookUpVideo={this.fetchLookUpVideo}
                     handleVideoShow={this.handleVideoShow}
                     handleRotateBack={this.handleLookUpRotateBack}
