@@ -8,6 +8,11 @@ import Slider from '../../BigPlatform/FireControl/components/Slider';
 import styles from './RepairRecordDetail.less'
 import moment from 'moment';
 
+// 状态戳 已处理 已关闭 待处理
+import processed from '@/assets/processed.png';
+import processing from '@/assets/processing.png';
+import toBeProcessed from '@/assets/to-be-processed.png';
+
 const FormItem = Form.Item;
 const title = "报修记录详情"
 const formItemLayout = {
@@ -96,6 +101,9 @@ export default class RepairRecordDetail extends PureComponent {
     this.setState({ showImg: false });
   };
 
+  // 暂无数据
+  hasNoContent = () => (<span style={{ fontSize: '16px' }}>暂无数据</span>)
+
   // 渲染照片
   renderPhotos = (photos) => {
     if (photos && photos.length) {
@@ -112,13 +120,13 @@ export default class RepairRecordDetail extends PureComponent {
           />
         ))
       )
-    } else return (<span style={{ fontSize: '16px' }}>暂无数据</span>)
+    } else return this.hasNoContent()
   }
 
   renderFormItem = (item, value, content = value) => (
     <FormItem key={item.key} label={item.label} {...formItemLayout}>
-      {value && value !== '' ? (<span style={{ fontSize: '16px' }}>{content}</span>) :
-        (<span style={{ fontSize: '16px' }}>暂无数据</span>)}
+      {value && value !== '' ? (<span className={styles.formContent}>{content}</span>) :
+        this.hasNoContent()}
     </FormItem>
   )
 
@@ -137,7 +145,7 @@ export default class RepairRecordDetail extends PureComponent {
           </FormItem>
         )
       } else if (item.key === "create_date" || item.key === "start_date" || item.key === "end_date") {
-        const content = moment(repairRecordDetail[item.key]).format("YYYY-MM-DD hh:mm:ss")
+        const content = moment(repairRecordDetail[item.key]).format("YYYY-MM-DD HH:MM:SS")
         return this.renderFormItem(item, repairRecordDetail[item.key], content)
       } else if (item.key === "divider") {
         return (<Divider key="divider" />)
@@ -192,12 +200,20 @@ export default class RepairRecordDetail extends PureComponent {
 
 
   render() {
+    const {
+      dataAnalysis: {
+        repairRecordDetail: {
+          realStatus,
+        },
+      },
+    } = this.props
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '数据分析', name: '数据分析' },
       { title: '报修记录', name: '报修记录', href: '/data-analysis/repair-record/list' },
       { title, name: title },
     ]
+    const statusLogo = (realStatus === "已处理" && processed) || (realStatus === "处理中" && processing) || (realStatus === "待处理" && toBeProcessed) || null
     return (
       <PageHeaderLayout
         title={title}
@@ -207,6 +223,10 @@ export default class RepairRecordDetail extends PureComponent {
           <Form>
             {this.renderInfo(reportInfo)}
           </Form>
+          <div
+            className={styles.statusLogo}
+            style={{ backgroundImage: `url(${statusLogo})` }}
+          ></div>
         </Card>
         <Card title="维修内容" style={{ marginTop: '10px' }} className={styles.RepairRecordDetailCard}>
           <Form>
