@@ -563,7 +563,7 @@ export default class accountManagementList extends PureComponent {
               <AuthButton
                 code={codesMap.account.add}
                 type="primary"
-                href="#/role-authorization/account-management/Add"
+                href="#/role-authorization/account-management/add"
               >
                 新增
               </AuthButton>

@@ -345,6 +345,7 @@ class GovernmentBigPlatform extends Component {
         status: '7',
       },
       success: response => {
+        this.companyInfo.initFull();
         this.goComponent('comInfo');
         this.setState({
           infoWindowShow: true,
@@ -375,6 +376,10 @@ class GovernmentBigPlatform extends Component {
         source_type: '3',
       },
     });
+  };
+
+  companyInfoRef = ref => {
+    this.companyInfo = ref;
   };
 
   handleHideInfoWindow = () => {
@@ -592,6 +597,7 @@ class GovernmentBigPlatform extends Component {
                 companyMessage={companyMessage}
                 specialEquipment={specialEquipment}
                 hiddenDangerListByDate={riskDetailList}
+                onRef={this.companyInfoRef}
               />
 
               {/* 单位统计 */}

@@ -302,6 +302,31 @@ module.exports = [
               },
             ],
           },
+          {
+            path: '/fire-control/test-info',
+            code: 'fireControl.testInfo',
+            name: 'testInfo',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/fire-control/test-info',
+                name: 'testInfo',
+                redirect: '/fire-control/test-info/list',
+              },
+              {
+                path: '/fire-control/test-info/list',
+                code: 'fireControl.testInfo.view',
+                name: 'list',
+                component: './FireControl/TestInfo/TestList',
+              },
+              {
+                path: '/fire-control/test-info/detail/:id',
+                code: 'fireControl.testInfo.view',
+                name: 'detail',
+                component: './FireControl/TestInfo/TestDetail',
+              },
+            ],
+          },
         ],
       },
 
@@ -538,6 +563,31 @@ module.exports = [
                 code: 'dataAnalysis.maintenanceRecord.view',
                 name: 'detail',
                 component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordDetail',
+              },
+            ],
+          },
+          {
+            path: '/data-analysis/repair-record',
+            code: 'dataAnalysis.repairRecord',
+            name: 'repairRecord',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/repair-record',
+                name: 'repairRecord',
+                redirect: '/data-analysis/repair-record/list',
+              },
+              {
+                path: '/data-analysis/repair-record/list',
+                code: 'dataAnalysis.repairRecord.view',
+                name: 'list',
+                component: './DataAnalysis/RepairRecord/RepairRecordList',
+              },
+              {
+                path: '/data-analysis/repair-record/detail/:id',
+                code: 'dataAnalysis.repairRecord.view',
+                name: 'detail',
+                component: './DataAnalysis/RepairRecord/RepairRecordDetail',
               },
             ],
           },
