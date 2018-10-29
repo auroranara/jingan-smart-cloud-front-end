@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Select, Divider } from 'antd';
+import { Form, Card, Button, Input, Table, Select, Divider, Col } from 'antd';
 // import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -8,6 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import { AuthA } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 // 标题
 const title = '法律法规库';
@@ -37,13 +38,13 @@ const defaultFormData = {
 
 const PageSize = 10;
 
-@connect(({ maintenanceRecord, user, loading }) => ({
-  maintenanceRecord,
+@connect(({ lawDatabase, user, loading }) => ({
+  lawDatabase,
   user,
-  loading: loading.models.maintenanceRecord,
+  loading: loading.models.lawDatabase,
 }))
 @Form.create()
-export default class LawDatabaseList extends PureComponent {
+export default class lawDatabase extends PureComponent {
   constructor(props) {
     super(props);
     this.formData = defaultFormData;
@@ -69,32 +70,43 @@ export default class LawDatabaseList extends PureComponent {
     return (
       <Card>
         <Form layout="inline">
-          <FormItem>
-            {getFieldDecorator('businessClassify', {
-              initialValue: defaultFormData.businessClassify,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Select placeholder="请选择业务分类" />)}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('lawsRegulations', {
-              initialValue: defaultFormData.lawsRegulations,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Select placeholder="请选择法律法规" />)}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator(' lawsRegulationsInput', {
-              initialValue: defaultFormData.lawsRegulationsInput,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入法律法规" />)}
-          </FormItem>
-          <FormItem>
-            <Button type="primary" onClick={this.handleClickToQuery}>
-              查询
-            </Button>
-          </FormItem>
-          <FormItem>
-            <Button onClick={this.handleClickToReset}>重置</Button>
-          </FormItem>
+          <Col span={18}>
+            <FormItem>
+              {getFieldDecorator('businessClassify', {})(
+                <Select style={{ width: 200 }} placeholder="请选择业务分类">
+                  <Option value="安全生产">安全生产</Option>
+                  <Option value="消防">消防</Option>
+                  <Option value="环保">环保</Option>
+                </Select>
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('lawsRegulations', {})(
+                <Select style={{ width: 200 }} placeholder="请选择法律法规" />
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator(' lawsRegulationsInput', {
+                initialValue: defaultFormData.lawsRegulationsInput,
+                getValueFromEvent: e => e.target.value.trim(),
+              })(<Input placeholder="请输入法律法规" />)}
+            </FormItem>
+            <FormItem>
+              <Button type="primary" onClick={this.handleClickToQuery}>
+                查询
+              </Button>
+            </FormItem>
+            <FormItem>
+              <Button onClick={this.handleClickToReset}>重置</Button>
+            </FormItem>
+          </Col>
+          <Col span={6}>
+            <FormItem style={{ float: 'right' }}>
+              <Button type="primary" href="#/law-enforcement/laws/add">
+                新增
+              </Button>
+            </FormItem>
+          </Col>
         </Form>
       </Card>
     );
@@ -120,31 +132,36 @@ export default class LawDatabaseList extends PureComponent {
         title: '序号',
         dataIndex: 'number',
         key: 'number',
-        align: 'number',
+        align: 'center',
+        width: 70,
       },
       {
         title: '业务分类',
         dataIndex: 'businessClassify',
         key: 'businessClassify',
         align: 'center',
+        width: 100,
       },
       {
         title: '所属法律法规',
         dataIndex: 'lawsRegulations',
         key: 'lawsRegulations',
         align: 'center',
+        width: 260,
       },
       {
         title: '所属条款',
         dataIndex: 'subClause',
         key: 'subClause',
         align: 'center',
+        width: 150,
       },
       {
         title: '法律法规内容',
         dataIndex: 'lawsRegulationsInput',
         key: 'lawsRegulationsInput',
         align: 'center',
+        width: 650,
       },
       {
         title: '操作',
@@ -155,7 +172,7 @@ export default class LawDatabaseList extends PureComponent {
         width: 180,
         render: (text, record) => (
           <span>
-            <a href="">查看</a>
+            <a href="#/law-enforcement/laws/detail">查看</a>
             <Divider type="vertical" />
             <a href="">编辑</a>
             <Divider type="vertical" />
@@ -186,16 +203,7 @@ export default class LawDatabaseList extends PureComponent {
 
   render() {
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-        // content={
-        //   <div>
-        //     列表记录：
-        //     {list.length}{' '}
-        //   </div>
-        // }
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
         {this.renderTable()}
       </PageHeaderLayout>

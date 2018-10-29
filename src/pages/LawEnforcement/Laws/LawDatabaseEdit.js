@@ -1,0 +1,192 @@
+import React, { PureComponent } from 'react';
+import { connect } from 'dva';
+// import { routerRedux } from 'dva/router';
+import { Form, Input, Button, Card, Col, Row, Switch, Select } from 'antd';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+
+import styles from './lawDatabase.less';
+
+const FormItem = Form.Item;
+const { TextArea } = Input;
+
+// 编辑页面标题
+const editTitle = '编辑法律法规';
+// 添加页面标题
+const addTitle = '新增法律法规';
+
+// 表单标签
+const fieldLabels = {
+  businessClassify: '所属业务分类',
+  lawsRegulations: '所属法律法规',
+  subClause: '所属条款',
+  lawsRegulationsInput: '法律法规内容',
+  hasUse: '是否启用',
+};
+
+//  默认分页参数
+// const defaultPagination = {
+//   pageNum: 1,
+//   pageSize: 10,
+// };
+
+@connect(({ videoMonitor, user, safety, loading }) => ({
+  videoMonitor,
+  user,
+  safety,
+  loading: loading.models.videoMonitor,
+}))
+@Form.create()
+export default class LawDatabaseEdit extends PureComponent {
+  state = {};
+
+  // 挂载后
+  componentDidMount() {
+    // const {
+    //   dispatch,
+    //   match: {
+    //     params: { id },
+    //   },
+    // } = this.props;
+    // if (id) {
+    //   // 根据id获取详情
+    //   dispatch({
+    //     type: '',
+    //     payload: {
+    //       id,
+    //     },
+    //   });
+    // } else {
+    //   // 清空详情
+    //   dispatch({
+    //     type: '',
+    //   });
+    // }
+  }
+
+  // 返回到视频企业列表页面
+  // goBack = () => {
+  //   const { dispatch } = this.props;
+  //   dispatch(routerRedux.push(`/device-management/video-monitor/list`));
+  // };
+
+  /* 点击提交按钮验证表单信息 */
+  handleClickValidate = () => {};
+
+  // 渲染信息
+  renderLawsInfo() {
+    const {
+      form: { getFieldDecorator },
+      match: {
+        params: { id },
+      },
+    } = this.props;
+
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+        md: { span: 10 },
+      },
+    };
+    return (
+      <Card className={styles.card} bordered={false}>
+        <Form hideRequiredMark style={{ marginTop: 8 }}>
+          <FormItem {...formItemLayout} label={fieldLabels.businessClassify}>
+            <Col span={24}>
+              {getFieldDecorator('businessClassify', {
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择业务分类',
+                  },
+                ],
+              })(<Select style={{ width: 200 }} placeholder="请选择业务分类" />)}
+            </Col>
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.lawsRegulations}>
+            {getFieldDecorator('lawsRegulations', {
+              rules: [
+                {
+                  required: true,
+                  message: '请选择法律法规',
+                },
+              ],
+            })(<Select style={{ width: 200 }} placeholder="请选择法律法规" />)}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.subClause}>
+            {getFieldDecorator('subClause', {
+              rules: [
+                {
+                  required: true,
+                  message: '请输入所属条款',
+                },
+              ],
+            })(<Input placeholder="请输入所属条款" />)}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.lawsRegulationsInput}>
+            {getFieldDecorator('lawsRegulationsInput', {
+              rules: [{ required: true, message: '请输入法律法规内容', whitespace: true }],
+            })(<TextArea rows={4} placeholder="请输入法律法规内容" maxLength="2000" />)}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.hasUse}>
+            {getFieldDecorator('hasUse')(
+              <Switch checkedChildren="是" unCheckedChildren="否" defaultChecked />
+            )}
+          </FormItem>
+        </Form>
+
+        <div style={{ textAlign: 'center' }}>
+          <Button type="primary" size="large" onClick={this.handleClickValidate}>
+            提交
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  // 渲染页面所有信息
+  render() {
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    const title = id ? editTitle : addTitle;
+
+    // 面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+      {
+        title: '执法检查',
+        name: '执法检查',
+      },
+      {
+        title: '法律法规库',
+        name: '法律法规库',
+        href: '/law-enforcement/laws/list',
+      },
+      {
+        title,
+        name: title,
+      },
+    ];
+
+    return (
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+        {this.renderLawsInfo()}
+      </PageHeaderLayout>
+    );
+  }
+}
