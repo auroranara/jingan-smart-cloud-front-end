@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 // import moment from 'moment';
 import { connect } from 'dva';
-import { Button, Card, Form, Divider, Row, Col, Icon } from 'antd';
+import { Button, Card, Form, Divider, Row, Col, Icon, Spin } from 'antd';
 import router from 'umi/router'
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Slider from '../../BigPlatform/FireControl/components/Slider';
@@ -54,8 +54,9 @@ const repairInfo = [
   { label: '维修照片', key: 'sitePhotos' },
 ]
 
-@connect(({ dataAnalysis }) => ({
+@connect(({ dataAnalysis, loading }) => ({
   dataAnalysis,
+  loading: loading.models.dataAnalysis,
 }))
 export default class RepairRecordDetail extends PureComponent {
   state = {
@@ -201,6 +202,7 @@ export default class RepairRecordDetail extends PureComponent {
 
   render() {
     const {
+      loading,
       dataAnalysis: {
         repairRecordDetail: {
           realStatus,
@@ -219,20 +221,22 @@ export default class RepairRecordDetail extends PureComponent {
         title={title}
         breadcrumbList={breadcrumbList}
       >
-        <Card title="报修内容" className={styles.RepairRecordDetailCard}>
-          <Form>
-            {this.renderInfo(reportInfo)}
-          </Form>
-          <div
-            className={styles.statusLogo}
-            style={{ backgroundImage: `url(${statusLogo})` }}
-          ></div>
-        </Card>
-        <Card title="维修内容" style={{ marginTop: '10px' }} className={styles.RepairRecordDetailCard}>
-          <Form>
-            {this.renderInfo(repairInfo)}
-          </Form>
-        </Card>
+        <Spin spinning={loading} delay={200}>
+          <Card title="报修内容" className={styles.RepairRecordDetailCard}>
+            <Form>
+              {this.renderInfo(reportInfo)}
+            </Form>
+            <div
+              className={styles.statusLogo}
+              style={{ backgroundImage: `url(${statusLogo})` }}
+            ></div>
+          </Card>
+          <Card title="维修内容" style={{ marginTop: '10px' }} className={styles.RepairRecordDetailCard}>
+            <Form>
+              {this.renderInfo(repairInfo)}
+            </Form>
+          </Card>
+        </Spin>
         {this.renderViewImage()}
       </PageHeaderLayout>
     )
