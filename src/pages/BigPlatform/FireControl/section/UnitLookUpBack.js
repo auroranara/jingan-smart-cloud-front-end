@@ -24,6 +24,7 @@ export default function(props) {
     videoVisible,
     lookUpShow,
     startLookUp,
+    offGuardWarnLoading,
     data: { lookUp: { createTime }, countdown, offGuard, videoLookUp },
     fetchLookUpVideo,
     handleRotateBack,
@@ -44,6 +45,7 @@ export default function(props) {
       <OffGuardWarning
         dispatch={dispatch}
         data={offGuard}
+        loading={offGuardWarnLoading}
         showed={lookUpShow === OFF_GUARD}
       />
       <VideoLookUp
