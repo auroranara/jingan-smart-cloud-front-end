@@ -230,12 +230,19 @@ export default class MaintenanceRecordList extends PureComponent {
 
     /* 配置描述 */
     const COLUMNS = [
-      { title: '维保单位', dataIndex: 'checkCompanyName', key: 'checkCompanyId', align: 'center' },
+      {
+        title: '维保单位',
+        dataIndex: 'checkCompanyName',
+        key: 'checkCompanyId',
+        align: 'center',
+        width: 300,
+      },
       {
         title: '维保时间',
         dataIndex: 'checkDate',
         key: 'checkDate',
         align: 'center',
+        width: 200,
         render: time => {
           return moment(time).format('YYYY-MM-DD HH:mm:ss');
         },
@@ -245,6 +252,7 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'checkUsers',
         key: 'checkUserIds',
         align: 'center',
+        width: 220,
         render: val => {
           return val && val.length > 0 ? val.map(v => v.userName).join('  ,  ') : '';
         },
@@ -254,6 +262,7 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'checkUsers',
         key: 'phoneNumber',
         align: 'center',
+        width: 240,
         render: val => {
           return val && val.length > 0 ? val.map(v => v.phoneNumber).join('  ,  ') : '';
         },
@@ -263,18 +272,21 @@ export default class MaintenanceRecordList extends PureComponent {
         dataIndex: 'bcheckCompanyName',
         key: 'bcheckCompanyId',
         align: 'center',
+        width: 300,
       },
       {
         title: '综合评分',
         dataIndex: 'score',
         key: 'score',
         align: 'center',
+        width: 120,
       },
       {
         title: '附件',
         dataIndex: 'files',
         key: 'fileIds',
         align: 'center',
+        width: 150,
         render: (val, record) => {
           const { files } = record;
           return (
