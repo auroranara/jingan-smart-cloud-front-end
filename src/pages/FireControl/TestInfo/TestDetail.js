@@ -4,23 +4,16 @@ import { connect } from 'dva';
 import { Button, Card, Form, Divider } from 'antd';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import DescriptionList from 'components/DescriptionList';
 // import styles from './RepairRecordDetail.less'
 
-const FormItem = Form.Item;
-const title = '消防测试记录详情';
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 3 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 21 },
-  },
-  style: {
-    marginBottom: '0px',
-  },
+const { Description } = DescriptionList;
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+const title = '消防测试记录详情';
+
 /* const applyRepairInfo=[
   {label:'工单编号',key:''},
   {label:'报修单位',key:''},
@@ -67,55 +60,37 @@ export default class RepairRecordDetail extends PureComponent {
         title={title}
         breadcrumbList={breadcrumbList}
         content={<span />}
-        extraContent={this.extraContent}
+        // extraContent={this.extraContent}
       >
         <Card title="主体单位">
-          <Form>
-            <FormItem label="单位名称" {...formItemLayout}>
-              <span>无锡市晶安智慧科技有限公司</span>
-            </FormItem>
-            <FormItem label="安全负责人" {...formItemLayout}>
-              <span>张三</span>
-            </FormItem>
-            <FormItem label="联系电话" {...formItemLayout}>
-              <span>18122965537</span>
-            </FormItem>
-          </Form>
+          <DescriptionList col={1} style={{ marginBottom: 16 }}>
+            <Description term="单位名称">
+              {'无锡市晶安智慧科技有限公司' || getEmptyData()}
+            </Description>
+            <Description term="安全负责人">{'张三' || getEmptyData()}</Description>
+            <Description term="联系电话">{'18122965537' || getEmptyData()}</Description>
+          </DescriptionList>
         </Card>
         <Card title="测试单位" style={{ marginTop: '10px' }}>
-          <Form>
-            <FormItem label="测试单位" {...formItemLayout}>
-              <span>常熟消防维保工程有限公司</span>
-            </FormItem>
-            <FormItem label="测试时间" {...formItemLayout}>
-              <span>2018-05-10 12:00:00</span>
-            </FormItem>
-            <FormItem label="测试人员" {...formItemLayout}>
-              <span>张三</span>
-            </FormItem>
-            <FormItem label="联系电话" {...formItemLayout}>
-              <span>13912345678</span>
-            </FormItem>
-          </Form>
+          <DescriptionList col={1} style={{ marginBottom: 16 }}>
+            <Description term="测试单位">
+              {'常熟消防维保工程有限公司' || getEmptyData()}
+            </Description>
+            <Description term="测试时间">{'2018-05-10 12:00:00' || getEmptyData()}</Description>
+            <Description term="测试人员">{'张三' || getEmptyData()}</Description>
+            <Description term="联系电话">{'13912345678' || getEmptyData()}</Description>
+          </DescriptionList>
         </Card>
         <Card title="测试详情" style={{ marginTop: '10px' }}>
-          <Form>
-            <FormItem label="主机编号" {...formItemLayout}>
-              <span>ZXY-001</span>
-            </FormItem>
-            <FormItem label="回路故障号" {...formItemLayout}>
-              <span>2号回路001号</span>
-            </FormItem>
-            <FormItem label="设施部件类型" {...formItemLayout}>
-              <span>点型光电感烟火灾探测器</span>
-            </FormItem>
-            <FormItem label="具体位置" {...formItemLayout}>
-              <span>A建筑物2层东大厅</span>
-            </FormItem>
-            <FormItem label="警情状态" {...formItemLayout}>
-              <span>火警</span>
-            </FormItem>
-          </Form>
+          <DescriptionList col={1} style={{ marginBottom: 16 }}>
+            <Description term="主机编号">{'ZXY-001' || getEmptyData()}</Description>
+            <Description term="回路故障号">{'2号回路001号' || getEmptyData()}</Description>
+            <Description term="设施部件类型">
+              {'点型光电感烟火灾探测器' || getEmptyData()}
+            </Description>
+            <Description term="具体位置">{'A建筑物2层东大厅' || getEmptyData()}</Description>
+            <Description term="警情状态">{'火警' || getEmptyData()}</Description>
+          </DescriptionList>
         </Card>
       </PageHeaderLayout>
     );

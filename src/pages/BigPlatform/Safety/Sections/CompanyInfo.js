@@ -14,9 +14,15 @@ class CompanyInfo extends PureComponent {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.props.onRef(this);
+  }
 
   componentWillUnmount() {}
+
+  initFull = () => {
+    this.setState({ riskDetailFull: false });
+  };
 
   render() {
     const {
