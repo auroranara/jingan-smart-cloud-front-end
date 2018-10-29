@@ -274,7 +274,6 @@ export default class MaintenanceRecordDetail extends PureComponent {
               top: '50%',
               display: magIndex ? 'block' : 'none',
               cursor: magIndex ? 'pointer' : 'auto',
-
               ...ICON_STYLE,
             }}
             onClick={magIndex ? () => this.handleLeft('magIndex') : null}

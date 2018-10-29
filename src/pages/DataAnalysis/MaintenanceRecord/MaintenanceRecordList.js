@@ -297,7 +297,9 @@ export default class MaintenanceRecordList extends PureComponent {
         title: '操作',
         dataIndex: 'operation',
         key: 'operation',
+        fixed: 'right',
         align: 'center',
+        width: 100,
         render: (val, record) => (
           <AuthA
             code={codesMap.dataAnalysis.MaintenanceRecord.view}
