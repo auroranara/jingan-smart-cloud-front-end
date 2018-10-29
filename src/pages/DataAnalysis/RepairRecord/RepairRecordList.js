@@ -61,7 +61,7 @@ export default class RepairRecordList extends PureComponent {
     } = this.props
     const data = getFieldsValue()
     const { time, ...query } = data
-    if (time) {
+    if (time && time.length) {
       const [start, end] = time
       query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss')
       query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss')
@@ -133,7 +133,7 @@ export default class RepairRecordList extends PureComponent {
     } = this.props
     const data = getFieldsValue()
     const { time, ...query } = data
-    if (time) {
+    if (time && time.length) {
       const [start, end] = time
       query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss')
       query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss')
