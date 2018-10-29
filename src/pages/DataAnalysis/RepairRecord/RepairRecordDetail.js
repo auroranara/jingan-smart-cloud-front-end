@@ -145,7 +145,7 @@ export default class RepairRecordDetail extends PureComponent {
           </FormItem>
         )
       } else if (item.key === "create_date" || item.key === "start_date" || item.key === "end_date") {
-        const content = moment(repairRecordDetail[item.key]).format("YYYY-MM-DD HH:MM:SS")
+        const content = moment(repairRecordDetail[item.key]).format("YYYY-MM-DD HH:mm:ss")
         return this.renderFormItem(item, repairRecordDetail[item.key], content)
       } else if (item.key === "divider") {
         return (<Divider key="divider" />)
