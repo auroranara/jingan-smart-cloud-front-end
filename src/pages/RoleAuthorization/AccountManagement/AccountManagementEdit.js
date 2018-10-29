@@ -23,7 +23,7 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import AuthorityTree from './AuthorityTree';
-import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree } from './utils';
+import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree, mergeArrays } from './utils';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
@@ -315,6 +315,7 @@ export default class accountManagementEdit extends PureComponent {
   // sortMap = {};
   // totalMap = {};
   childrenMap = {};
+  authTreeCheckedKeys = [];
 
   //获取维保权限树
   getMaintenanceTree = (companyId) => {
@@ -1039,15 +1040,23 @@ export default class accountManagementEdit extends PureComponent {
     });
   };
 
-  handleChange = (nextTargetKeys, direction, moveKeys) => {
+  handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
     // console.log(nextTargetKeys);
     const { dispatch, form: { setFieldsValue } } = this.props;
     setFieldsValue({ roleIds: nextTargetKeys });
-    dispatch({
-      type: 'role/fetchDetail',
-      payload: { id: nextTargetKeys[0] },
-      success: ({ permissions }) => setFieldsValue({ permissions: permissions ? permissions.split(',') : [] }),
-    });
+
+    // 穿梭框中有值
+    if (nextTargetKeys.length)
+      dispatch({
+        type: 'role/fetchDetail',
+        payload: { id: nextTargetKeys[0] },
+        success: ({ permissions }) => setFieldsValue({ permissions: mergeArrays(permissions ? permissions.split(',') : [], this.authTreeCheckedKeys) }),
+      });
+    // 穿梭框中没有值时，不需要请求服务器，本地清空即可
+    else {
+      setFieldsValue({ permissions: this.authTreeCheckedKeys });
+      dispatch({ type: 'role/queryDetail', payload: {} });
+    }
   }
 
   /* 渲染角色权限信息 */
@@ -1092,7 +1101,7 @@ export default class accountManagementEdit extends PureComponent {
                     dataSource={roleList}
                     titles={['可选角色', '已选角色']}
                     render={item => item.title}
-                    onChange={this.handleChange}
+                    onChange={this.handleTransferChange}
                   />
                 )}
               </Form.Item>
@@ -1105,6 +1114,7 @@ export default class accountManagementEdit extends PureComponent {
                   role={role}
                   form={form}
                   dispatch={dispatch}
+                  handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
                 />
               </Form.Item>
             </Col>

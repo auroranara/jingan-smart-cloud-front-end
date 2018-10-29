@@ -189,6 +189,16 @@ export function handleMtcTreeViolently(checkedList, childrenMap) {
   return checkedList.filter((key, index) => flags[index]);
 }
 
+// 将数组融合并去重
+export function mergeArrays(...arrs) {
+  return Array.from(new Set(arrs.reduce((prev, next) => prev.concat(next))));
+}
+
+// 从源数组中筛选出不存在目标数组中的项目
+export function getNoRepeat(origin, target=[]) {
+  return origin.filter(item => !target.includes(item));
+}
+
 export const TREE = [{
   id: '0-0',
   title: '0-0',
