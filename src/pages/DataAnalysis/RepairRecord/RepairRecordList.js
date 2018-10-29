@@ -63,8 +63,8 @@ export default class RepairRecordList extends PureComponent {
     const { time, ...query } = data
     if (time) {
       const [start, end] = time
-      query.startTime = moment(start).format('YYYY-MM-DD h:mm:ss')
-      query.endTime = moment(end).format('YYYY-MM-DD h:mm:ss')
+      query.startTime = moment(start).format('YYYY-MM-DD HH:MM:SS')
+      query.endTime = moment(end).format('YYYY-MM-DD HH:MM:SS')
     }
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
@@ -135,8 +135,8 @@ export default class RepairRecordList extends PureComponent {
     const { time, ...query } = data
     if (time) {
       const [start, end] = time
-      query.startTime = moment(start).format('YYYY-MM-DD hh:mm:ss')
-      query.endTime = moment(end).format('YYYY-MM-DD hh:mm:ss')
+      query.startTime = moment(start).format('YYYY-MM-DD HH:MM:SS')
+      query.endTime = moment(end).format('YYYY-MM-DD HH:MM:SS')
     }
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
@@ -182,7 +182,7 @@ export default class RepairRecordList extends PureComponent {
             <Col span={17}>
               <FormItem className={styles.formItem} >
                 {getFieldDecorator('time')(
-                  <RangePicker showTime format="YYYY-MM-DD hh:mm:ss" />
+                  <RangePicker showTime format="YYYY-MM-DD HH:MM:SS" />
                 )}
               </FormItem>
             </Col>
@@ -248,7 +248,7 @@ export default class RepairRecordList extends PureComponent {
         align: 'center',
         width: 200,
         render: (val) => (
-          <span>{moment(val).format('YYYY-MM-DD hh:mm:ss')}</span>
+          <span>{moment(+val).format('YYYY-MM-DD HH:MM:SS')}</span>
         ),
       },
       {

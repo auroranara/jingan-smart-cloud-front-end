@@ -1,6 +1,21 @@
 @import '~antd/lib/style/themes/default.less';
 @import '../../../utils/utils.less';
 .RepairRecordDetailCard {
+  position: relative;
+  .statusLogo {
+    position: absolute;
+    left: 50%;
+    top: 15%;
+    width: 170px;
+    height: 140px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+  }
+  .formContent {
+    font-size: 16px;
+    word-wrap: break-word;
+  }
   :global {
     .ant-form-item {
       margin-bottom: 10px;
@@ -37,25 +52,23 @@
   height: 100%;
   background: rgba(92, 99, 109, 0.8);
   z-index: 6666;
-}
-
-.center {
-  width: 300px;
-  height: 480px;
-  padding: 20px 0 20px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  overflow: hidden;
-  transform: translate(-50%, -50%);
-}
-
-.magImg {
-  font-size: 120px;
-  text-align: center; // line-height: 400px;
-  width: 300px;
-  height: 100%;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
+  .center {
+    width: 300px;
+    height: 480px;
+    padding: 20px 0 20px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
+    .magImg {
+      font-size: 120px;
+      text-align: center; // line-height: 400px;
+      width: 300px;
+      height: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+  }
 }

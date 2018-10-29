@@ -20,7 +20,7 @@ export default {
         pageSize: 10,
       },
     },
-    repairRecordDetail: {},
+    repairRecordDetail: {realStatus:''},
   },
 
   effects: {
@@ -120,6 +120,7 @@ export default {
         }
       } else return {
         ...state,
+        repairRecordDetail: {realStatus:''},
       }
     },
   },
