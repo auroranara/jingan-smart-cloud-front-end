@@ -31,7 +31,7 @@ function getYearTime(t) {
 }
 
 function getTime(t) {
-  return moment(t).format('HH:MM:SS');
+  return moment(t).format('HH:mm:ss');
 }
 
 export default class AlarmHandle extends Component {
