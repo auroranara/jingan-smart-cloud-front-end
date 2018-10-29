@@ -834,6 +834,35 @@ module.exports = [
           },
         ],
       },
+
+      // 执行检查
+      {
+        path: '/law-enforcement',
+        code: 'lawEnforcement',
+        icon: 'dashboard',
+        name: 'lawEnforcement',
+        routes: [
+          {
+            path: '/law-enforcement/laws',
+            code: 'lawEnforcement.laws',
+            name: 'laws',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/law-enforcement/laws',
+                name: 'laws',
+                redirect: '/law-enforcement/laws/list',
+              },
+              {
+                path: '/law-enforcement/laws/list',
+                code: 'lawEnforcement.laws.listView',
+                name: 'listView',
+                component: './LawEnforcement/Laws/LawDatabaseList',
+              },
+            ],
+          },
+        ],
+      },
       {
         name: 'exception',
         icon: 'warning',
