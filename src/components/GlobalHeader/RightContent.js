@@ -79,7 +79,7 @@ export default class GlobalHeaderRight extends PureComponent {
         message.success('切换成功！');
         setTimeout(() => {
           window.location.reload(true);
-        }, 200);
+        }, 500);
       },
       error: () => {
         message.error('切换失败！');
@@ -174,8 +174,8 @@ export default class GlobalHeaderRight extends PureComponent {
             </span>
           </Dropdown>
         ) : (
-          <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-        )}
+            <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+          )}
         {/*
         <Button
           size="small"
