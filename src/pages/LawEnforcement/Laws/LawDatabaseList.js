@@ -1,11 +1,22 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Select, Divider, Col } from 'antd';
+import {
+  Form,
+  Card,
+  Button,
+  Input,
+  Table,
+  Select,
+  Divider,
+  Col,
+  Popconfirm,
+  // message,
+} from 'antd';
 // import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-// import codesMap from '@/utils/codes';
-// import { AuthA } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
+import { AuthA, AuthButton } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -53,13 +64,87 @@ export default class lawDatabase extends PureComponent {
   state = {};
 
   // 挂载后
-  componentDidMount() {}
+  componentDidMount() {
+    // const {
+    //   dispatch,
+    //   lawDatabase: {
+    //     data: {
+    //       pagination: { pageSize },
+    //     },
+    //   },
+    // } = this.props;
+    // // 获取记录列表
+    // dispatch({
+    //   type: 'lawDatabase/fetch',
+    //   payload: {
+    //     pageSize,
+    //     pageNum: 1,
+    //   },
+    // });
+  }
 
   /* 查询按钮点击事件 */
-  handleClickToQuery = () => {};
+  handleClickToQuery = () => {
+    // const {
+    //   dispatch,
+    //   form: { getFieldsValue },
+    //   lawDatabase: {
+    //     data: {
+    //       pagination: { pageSize },
+    //     },
+    //   },
+    // } = this.props;
+    // const data = getFieldsValue();
+    // // 修改表单数据
+    // this.formData = data;
+    // // 重新请求数据
+    // dispatch({
+    //   type:'lawDatabase/fetch',
+    //   payload:{
+    //     pageSize,
+    //     pageNum: 1,
+    //     ...data,
+    //   },
+    // })
+  };
 
   /* 重置按钮点击事件 */
-  handleClickToReset = () => {};
+  handleClickToReset = () => {
+    // const {
+    //   dispatch,
+    //   form: { resetFields },
+    //   lawDatabase: {
+    //     data: {
+    //       pagination: { pageSize },
+    //     },
+    //   },
+    // } = this.props;
+    // // 清除筛选条件
+    // resetFields();
+    // this.formData = defaultFormData;
+    // dispatch({
+    //   type: 'lawDatabase/fetch',
+    //   payload: {
+    //     pageSize,
+    //     pageNum: 1,
+    //   },
+    // });
+  };
+
+  /* 删除 */
+  handleDelete = record => {
+    // const { dispatch } = this.props;
+    //   dispatch({
+    //     type: 'lawDatabase/',
+    //     payload: record.id,
+    //     callback: response => {
+    //       if (response && response.code === 200) {
+    //         this.getDepartments();
+    //         message.success('删除成功！');
+    //       } else message.success(response.msg);
+    //     },
+    //   });
+  };
 
   /* 渲染form表单 */
   renderForm() {
@@ -102,9 +187,13 @@ export default class lawDatabase extends PureComponent {
           </Col>
           <Col span={6}>
             <FormItem style={{ float: 'right' }}>
-              <Button type="primary" href="#/law-enforcement/laws/add">
+              <AuthButton
+                type="primary"
+                code={codesMap.lawEnforcement.laws.add}
+                href="#/law-enforcement/laws/add"
+              >
                 新增
-              </Button>
+              </AuthButton>
             </FormItem>
           </Col>
         </Form>
@@ -119,6 +208,13 @@ export default class lawDatabase extends PureComponent {
     const list = [
       {
         number: '001',
+        businessClassify: '消防',
+        lawsRegulations: '中华人民共和国安全生产法',
+        subClause: '第八十九条',
+        lawsRegulationsInput: '承担安全评价、认证、检测、检验工作的机构，出具虚假证明的……',
+      },
+      {
+        number: '002',
         businessClassify: '消防',
         lawsRegulations: '中华人民共和国安全生产法',
         subClause: '第八十九条',
@@ -172,11 +268,20 @@ export default class lawDatabase extends PureComponent {
         width: 180,
         render: (text, record) => (
           <span>
-            <a href="#/law-enforcement/laws/detail">查看</a>
+            <AuthA code={codesMap.lawEnforcement.laws.detail} href="#/law-enforcement/laws/detail">
+              查看
+            </AuthA>
             <Divider type="vertical" />
-            <a href="">编辑</a>
+            <AuthA code={codesMap.lawEnforcement.laws.edit} href="#/law-enforcement/laws/edit">
+              编辑
+            </AuthA>
             <Divider type="vertical" />
-            <a href="">删除</a>
+            <Popconfirm
+              title="确认要删除该法律法规库吗？"
+              onConfirm={() => this.handleDelete(record)}
+            >
+              <AuthA code={codesMap.lawEnforcement.laws.delete}>删除</AuthA>
+            </Popconfirm>
           </span>
         ),
       },

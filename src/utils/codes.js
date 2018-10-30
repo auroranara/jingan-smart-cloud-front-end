@@ -90,4 +90,13 @@ export default {
       view: 'dataAnalysis.maintenanceRecord.view',
     },
   },
+  lawEnforcement: {
+    laws: {
+      listView: 'lawEnforcement.laws.listView',
+      add: 'lawEnforcement.laws.add',
+      edit: 'lawEnforcement.laws.edit',
+      detail: 'lawEnforcement.laws.view',
+      delete: 'lawEnforcement.laws.delete',
+    },
+  },
 };

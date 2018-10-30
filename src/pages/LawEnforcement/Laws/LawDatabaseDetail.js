@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button } from 'antd';
-import moment from 'moment';
+import { Form, Card } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import codesMap from '@/utils/codes';
+import { AuthButton } from '@/utils/customAuth';
 
 const { Description } = DescriptionList;
 
@@ -34,9 +35,9 @@ const breadcrumbList = [
   },
 ];
 /* 获取无数据 */
-// const getEmptyData = () => {
-//   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-// };
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
 
 @connect(({ lawDatabase, user, loading }) => ({
   lawDatabase,
@@ -46,27 +47,55 @@ const breadcrumbList = [
 @Form.create()
 export default class LawDatabaseDetail extends PureComponent {
   /* 生命周期函数 */
-  componentDidMount() {}
+  componentDidMount() {
+    // const {
+    //   dispatch,
+    //   match: {
+    //     params: { id },
+    //   },
+    // } = this.props;
+    // // 获取详情
+    // dispatch({
+    //   type: 'lawDatabase/',
+    //   payload: {
+    //     id,
+    //   },
+    // });
+  }
+
+  // 返回到列表页面
+  goToEdit = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/law-enforcement/laws/edit/${id}`));
+  };
 
   /* 渲染详情 */
   renderDetail() {
+    const {
+      match: {
+        params: { id },
+      },
+      // lawDatabase: { detail },
+    } = this.props;
     return (
       <Card title="法律法规详情" bordered={false}>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="业务分类" />
+          <Description term="业务分类">{111 || getEmptyData()}</Description>
           <Description term="所属法律法规" />
           <Description term="所属条款" />
           <Description term="法律法规内容" />
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
-          <Button
+          <AuthButton
             type="primary"
-            // onClick={() => {
-            //   goToEdit(id);
-            // }}
+            size="large"
+            code={codesMap.lawEnforcement.laws.edit}
+            onClick={() => {
+              this.goToEdit(id);
+            }}
           >
             编辑
-          </Button>
+          </AuthButton>
         </div>
       </Card>
     );

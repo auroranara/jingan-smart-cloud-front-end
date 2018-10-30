@@ -1,7 +1,16 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import { routerRedux } from 'dva/router';
-import { Form, Input, Button, Card, Col, Row, Switch, Select } from 'antd';
+import { routerRedux } from 'dva/router';
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Col,
+  Switch,
+  Select,
+  // message,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './lawDatabase.less';
@@ -20,24 +29,24 @@ const fieldLabels = {
   lawsRegulations: '所属法律法规',
   subClause: '所属条款',
   lawsRegulationsInput: '法律法规内容',
-  hasUse: '是否启用',
+  isUse: '是否启用',
 };
 
-//  默认分页参数
-// const defaultPagination = {
-//   pageNum: 1,
-//   pageSize: 10,
-// };
-
-@connect(({ videoMonitor, user, safety, loading }) => ({
-  videoMonitor,
+@connect(({ lawDatabase, user, safety, loading }) => ({
+  lawDatabase,
   user,
   safety,
-  loading: loading.models.videoMonitor,
+  loading: loading.models.lawDatabase,
 }))
 @Form.create()
 export default class LawDatabaseEdit extends PureComponent {
   state = {};
+
+  // 返回到列表页面
+  goBack = () => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/law-enforcement/laws/list`));
+  };
 
   // 挂载后
   componentDidMount() {
@@ -50,7 +59,7 @@ export default class LawDatabaseEdit extends PureComponent {
     // if (id) {
     //   // 根据id获取详情
     //   dispatch({
-    //     type: '',
+    //     type: 'lawDatabase/',
     //     payload: {
     //       id,
     //     },
@@ -58,27 +67,82 @@ export default class LawDatabaseEdit extends PureComponent {
     // } else {
     //   // 清空详情
     //   dispatch({
-    //     type: '',
+    //     type: 'lawDatabase/clearDetail',
     //   });
     // }
   }
 
-  // 返回到视频企业列表页面
-  // goBack = () => {
-  //   const { dispatch } = this.props;
-  //   dispatch(routerRedux.push(`/device-management/video-monitor/list`));
-  // };
+  // 获取所属业务和法律法规
 
-  /* 点击提交按钮验证表单信息 */
-  handleClickValidate = () => {};
+  // 点击提交按钮验证表单信息
+  handleClickValidate = () => {
+    // const {
+    //   form: { validateFieldsAndScroll },
+    //   match: {
+    //     params: { id },
+    //   },
+    //   dispatch,
+    // } = this.props;
+    // validateFieldsAndScroll((error, values) => {
+    //   if (!error) {
+    //     this.setState({
+    //       submitting: true,
+    //     });
+    //     const {
+    //       businessClassify,
+    //       lawsRegulations,
+    //       subClause,
+    //       lawsRegulationsInput,
+    //       isUse,
+    //     } = values;
+    //     const payload = {
+    //       id,
+    //       businessClassify,
+    //       lawsRegulations,
+    //       subClause,
+    //       lawsRegulationsInput,
+    //       isUse:+isUse,
+    //     };
+    //     const success = () => {
+    //       const msg = id ? '编辑成功' : '新增成功';
+    //       message.success(msg,1,this.goBack());
+    //     };
+    //     const error = () => {
+    //       const msg = id ? '编辑失败' : '新增失败';
+    //       message.error(msg, 1);
+    //       this.setState({
+    //         submitting: false,
+    //       });
+    //     };
+    //     // 如果id存在的话，为编辑
+    //     if (id) {
+    //       dispatch({
+    //         type: 'lawDatabase/update',
+    //         payload: {
+    //           id,
+    //           ...payload,
+    //         },
+    //         success,
+    //         error,
+    //       });
+    //     }
+    //     // 不存在id,则为新增
+    //     else {
+    //       dispatch({
+    //         type: 'lawDatabase/fetch',
+    //         payload,
+    //         success,
+    //         error,
+    //       });
+    //     }
+    //   }
+    // });
+  };
 
   // 渲染信息
   renderLawsInfo() {
     const {
       form: { getFieldDecorator },
-      match: {
-        params: { id },
-      },
     } = this.props;
 
     const formItemLayout = {
@@ -92,31 +156,34 @@ export default class LawDatabaseEdit extends PureComponent {
         md: { span: 10 },
       },
     };
+
     return (
       <Card className={styles.card} bordered={false}>
         <Form hideRequiredMark style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label={fieldLabels.businessClassify}>
             <Col span={24}>
               {getFieldDecorator('businessClassify', {
+                // initialValue:
                 rules: [
                   {
                     required: true,
                     message: '请选择业务分类',
                   },
                 ],
-              })(<Select style={{ width: 200 }} placeholder="请选择业务分类" />)}
+              })(<Select placeholder="请选择业务分类">{}</Select>)}
             </Col>
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.lawsRegulations}>
             {getFieldDecorator('lawsRegulations', {
+              // initialValue:
               rules: [
                 {
                   required: true,
                   message: '请选择法律法规',
                 },
               ],
-            })(<Select style={{ width: 200 }} placeholder="请选择法律法规" />)}
+            })(<Select placeholder="请选择法律法规" />)}
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.subClause}>
@@ -136,10 +203,11 @@ export default class LawDatabaseEdit extends PureComponent {
             })(<TextArea rows={4} placeholder="请输入法律法规内容" maxLength="2000" />)}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.hasUse}>
-            {getFieldDecorator('hasUse')(
-              <Switch checkedChildren="是" unCheckedChildren="否" defaultChecked />
-            )}
+          <FormItem {...formItemLayout} label={fieldLabels.isUse}>
+            {getFieldDecorator('isUse', {
+              valuePropName: 'checked',
+              // initialValue: !!isUse,
+            })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
           </FormItem>
         </Form>
 
