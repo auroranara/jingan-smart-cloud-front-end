@@ -61,10 +61,10 @@ export default class RepairRecordList extends PureComponent {
     } = this.props
     const data = getFieldsValue()
     const { time, ...query } = data
-    if (time) {
+    if (time && time.length) {
       const [start, end] = time
-      query.startTime = moment(start).format('YYYY-MM-DD h:mm:ss')
-      query.endTime = moment(end).format('YYYY-MM-DD h:mm:ss')
+      query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss')
+      query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss')
     }
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
@@ -133,10 +133,10 @@ export default class RepairRecordList extends PureComponent {
     } = this.props
     const data = getFieldsValue()
     const { time, ...query } = data
-    if (time) {
+    if (time && time.length) {
       const [start, end] = time
-      query.startTime = moment(start).format('YYYY-MM-DD hh:mm:ss')
-      query.endTime = moment(end).format('YYYY-MM-DD hh:mm:ss')
+      query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss')
+      query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss')
     }
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
@@ -182,7 +182,13 @@ export default class RepairRecordList extends PureComponent {
             <Col span={17}>
               <FormItem className={styles.formItem} >
                 {getFieldDecorator('time')(
-                  <RangePicker showTime format="YYYY-MM-DD hh:mm:ss" />
+                  <RangePicker
+                    format="YYYY-MM-DD HH:mm:ss"
+                    placeholder={['开始时间', '结束时间']}
+                    showTime={{
+                      defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                    }}
+                  />
                 )}
               </FormItem>
             </Col>
@@ -214,7 +220,7 @@ export default class RepairRecordList extends PureComponent {
     } = this.props
     const columns = [
       {
-        title: '工号编号',
+        title: '工单编号',
         dataIndex: 'work_order',
         key: 'work_order',
         align: 'center',
@@ -248,7 +254,7 @@ export default class RepairRecordList extends PureComponent {
         align: 'center',
         width: 200,
         render: (val) => (
-          <span>{moment(val).format('YYYY-MM-DD hh:mm:ss')}</span>
+          <span>{moment(+val).format('YYYY-MM-DD HH:mm:ss')}</span>
         ),
       },
       {
@@ -323,6 +329,7 @@ export default class RepairRecordList extends PureComponent {
           onOk={this.handleModalClose}
           onCancel={this.handleModalClose}
           footer={null}
+          width={650}
         />
       </PageHeaderLayout>
     )
