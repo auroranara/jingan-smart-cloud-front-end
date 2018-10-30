@@ -187,8 +187,8 @@ export default class TestList extends PureComponent {
     const { fetchAppHistories, goToException } = this.props;
 
     const formData = {
-      startTime: startTime && startTime.format('YYYY-MM-DD 00:00:00'),
-      endTime: endTime && endTime.format('YYYY-MM-DD 23:59:59'),
+      startTime: startTime && startTime.format('YYYY-MM-DD HH:mm:ss'),
+      endTime: endTime && endTime.format('YYYY-MM-DD HH:mm:ss'),
       ...restValues,
     };
 
@@ -303,6 +303,9 @@ export default class TestList extends PureComponent {
             <Select
               allowClear
               showSearch
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
               placeholder="设施部件类型"
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
@@ -329,7 +332,17 @@ export default class TestList extends PureComponent {
           initialValue: [],
         },
         render() {
-          return <RangePicker style={{ width: '100%' }} getCalendarContainer={getRootChild} />;
+          return (
+            <RangePicker
+              style={{ width: '100%' }}
+              format="YYYY-MM-DD HH:mm:ss"
+              placeholder={['开始时间', '结束时间']}
+              showTime={{
+                defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
+              getCalendarContainer={getRootChild}
+            />
+          );
         },
       },
     ];
@@ -372,7 +385,7 @@ export default class TestList extends PureComponent {
       loading,
       fireTest: { pagination, list },
     } = this.props;
-    const { pageNum, pageSize, total, companyNum } = pagination;
+    const { pageNum, pageSize, total } = pagination;
     return (
       <PageHeaderLayout
         title={title}
@@ -380,33 +393,37 @@ export default class TestList extends PureComponent {
         content={
           <div>
             单位总数：
-            {companyNum}{' '}
+            {total}
           </div>
         }
       >
         {this.renderForm()}
-        <Card style={{ marginTop: '24px' }}>
-          <Table
-            rowKey="detailId"
-            loading={loading}
-            columns={COLUMNS}
-            dataSource={list}
-            // onChange={this.onTableChange}
-            // pagination={{ ...pagination }}
-            pagination={false}
-          />
-          <Pagination
-            style={{ marginTop: '20px' }}
-            showQuickJumper
-            showSizeChanger
-            pageSize={pageSize}
-            current={pageNum}
-            total={total}
-            onChange={this.handleTableChange}
-            onShowSizeChange={this.handleTableChange}
-            showTotal={total => `共 ${total} 条`}
-          />
-        </Card>
+        {list && list.length ? (
+          <Card style={{ marginTop: '24px' }}>
+            <Table
+              rowKey="detailId"
+              loading={loading}
+              columns={COLUMNS}
+              dataSource={list}
+              pagination={false}
+            />
+            <Pagination
+              style={{ marginTop: '20px' }}
+              showQuickJumper
+              showSizeChanger
+              pageSize={pageSize}
+              current={pageNum}
+              total={total}
+              onChange={this.handleTableChange}
+              onShowSizeChange={this.handleTableChange}
+              showTotal={total => `共 ${total} 条`}
+            />
+          </Card>
+        ) : (
+          <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+            <span>暂无数据</span>
+          </Card>
+        )}
       </PageHeaderLayout>
     );
   }

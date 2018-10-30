@@ -41,7 +41,6 @@ export default class RepairRecordDetail extends PureComponent {
       fetchDetail,
       match: { params },
     } = this.props;
-    console.log(this.props);
 
     /* 获取测试详情信息(web) */
     fetchDetail({
@@ -67,6 +66,7 @@ export default class RepairRecordDetail extends PureComponent {
           code = '',
           componentNo = '',
           componentRegion = '',
+          testPhone = '',
           failureCode = '',
           name = '',
           position = '',
@@ -97,10 +97,10 @@ export default class RepairRecordDetail extends PureComponent {
           <DescriptionList col={1} style={{ marginBottom: 16 }}>
             <Description term="测试单位">{testCompanyName || getEmptyData()}</Description>
             <Description term="测试时间">
-              {moment(testTime).format('YYYY-MM-DD HH:mm:ss') || getEmptyData()}
+              {testTime ? moment(testTime).format('YYYY-MM-DD HH:mm:ss') : getEmptyData()}
             </Description>
             <Description term="测试人员">{testMan || getEmptyData()}</Description>
-            <Description term="联系电话">{safetyPhone || getEmptyData()}</Description>
+            <Description term="联系电话">{testPhone || getEmptyData()}</Description>
           </DescriptionList>
         </Card>
         <Card title="测试详情" style={{ marginTop: '10px' }}>
