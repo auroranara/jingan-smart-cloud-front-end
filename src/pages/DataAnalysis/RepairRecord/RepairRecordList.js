@@ -220,7 +220,7 @@ export default class RepairRecordList extends PureComponent {
     } = this.props
     const columns = [
       {
-        title: '工号编号',
+        title: '工单编号',
         dataIndex: 'work_order',
         key: 'work_order',
         align: 'center',
@@ -329,6 +329,7 @@ export default class RepairRecordList extends PureComponent {
           onOk={this.handleModalClose}
           onCancel={this.handleModalClose}
           footer={null}
+          width={650}
         />
       </PageHeaderLayout>
     )
