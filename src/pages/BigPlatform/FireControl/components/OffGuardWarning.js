@@ -52,23 +52,36 @@ export default class OffGuardWarning extends Component {
     dispatch({
       type: 'bigFireControl/offGuardWarn',
       payload: { unitName, recordsId, companyIds },
-      callback(code, msg, data) {
-        const warnedList = data && data.list ? data.list : [];
+      // callback(code, msg, data) {
+      //   const warnedList = data && data.list ? data.list : [];
 
+      //   if (code !== 200)
+      //     message.warn(msg);
+      //   else {
+      //     message.info('警告成功');
+      //     const index = list.indexOf(item);
+      //     const newList = isWarnAll ? list.map(item => {
+      //       if (warnedList.includes(item.companyId))
+      //         return { ...item, alertFlag: 1 };
+      //       return item;
+      //     }) : list.map((item, i) => {
+      //       if (i === index)
+      //         return { ...item, alertFlag: 1 };
+      //       return item;
+      //     });
+      //     dispatch({
+      //       type: 'bigFireControl/saveOffGuard',
+      //       payload: { ...offGuard, list: newList },
+      //     });
+      //   }
+      // },
+      callback(code, msg) {
         if (code !== 200)
           message.warn(msg);
         else {
           message.info('警告成功');
           const index = list.indexOf(item);
-          const newList = isWarnAll ? list.map(item => {
-            if (warnedList.includes(item.companyId))
-              return { ...item, alertFlag: 1 };
-            return item;
-          }) : list.map((item, i) => {
-            if (i === index)
-              return { ...item, alertFlag: 1 };
-            return item;
-          });
+          const newList = isWarnAll ? list.map(item => ({ ...item, alertFlag: 1 })) : list.map((item, i) => i === index ? { ...item, alertFlag: 1 } : item);
           dispatch({
             type: 'bigFireControl/saveOffGuard',
             payload: { ...offGuard, list: newList },
