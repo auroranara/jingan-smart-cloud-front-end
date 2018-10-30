@@ -1,4 +1,5 @@
 import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 import { stringify } from 'qs';
 import { getFakeCaptcha } from '../services/api';
 import { setAuthority, setToken } from '../utils/authority';
@@ -77,14 +78,8 @@ export default {
       setToken();
       reloadAuthorized();
       document.cookie = '';
-      yield put(
-        routerRedux.push({
-          pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        })
-      );
+      router.push('/user/login');
+      window.location.reload();
     },
     *fetchFooterInfo({ payload }, { call, put }) {
       const response = yield call(fetchFooterInfo);
