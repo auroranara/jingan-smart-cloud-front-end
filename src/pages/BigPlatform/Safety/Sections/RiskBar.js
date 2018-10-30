@@ -111,11 +111,13 @@ const gradientsGray = {
   ],
   globalCoord: false, // 缺省为 false
 };
+
+let barLegend = 'all';
 class RiskBar extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      barLegend: 'all', // all,colors,pie
+      // barLegend: 'all', // all,colors,pie
     };
   }
 
@@ -151,15 +153,11 @@ class RiskBar extends PureComponent {
       dataHd = [red, orange, yellow, blue];
       dataAbnormal = [red_abnormal, orange_abnormal, yellow_abnormal, blue_abnormal];
       option = this.barOption(xData, dataHd, dataAbnormal);
-      this.setState({
-        barLegend: 'colors',
-      });
+      barLegend = 'colors';
     } else if (red + orange + yellow + blue === 0) {
       // 都是未评级
       option = this.pieOption(not_rated, not_rated_abnormal, not_rated_company, ycdCount);
-      this.setState({
-        barLegend: 'pie',
-      });
+      barLegend = 'pie';
     } else {
       // 都有
       xData = ['红', '橙', '黄', '蓝', '未评级'];
@@ -172,9 +170,7 @@ class RiskBar extends PureComponent {
         not_rated_abnormal,
       ];
       option = this.barOption(xData, dataHd, dataAbnormal);
-      this.setState({
-        barLegend: 'all',
-      });
+      barLegend = 'all';
     }
     return option;
   }
@@ -481,7 +477,7 @@ class RiskBar extends PureComponent {
   };
 
   render() {
-    const { barLegend } = this.state;
+    // const { barLegend } = this.state;
     const {
       countDangerLocation: { red = 0, orange = 0, yellow = 0, blue = 0, not_rated = 0 },
     } = this.props;

@@ -193,7 +193,7 @@ class CompanyRisk extends PureComponent {
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item[zgr]}</span>
                       <span style={{ color: item.status === 7 ? 'rgb(255, 72, 72)' : '#fff' }}>
-                        {+item.status === 3 ? item.real_zgsj : item.plan_zgsj}
+                        {+item.status === 3 || +item.status === 4 ? item.real_zgsj : item.plan_zgsj}
                       </span>
                     </Ellipsis>
                   </div>

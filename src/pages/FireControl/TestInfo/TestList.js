@@ -1,24 +1,17 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Input, Button, Select, Spin, DatePicker, Table } from 'antd';
-import { Link, routerRedux } from 'dva/router';
-import router from 'umi/router';
-import InfiniteScroll from 'react-infinite-scroller';
-import Ellipsis from '@/components/Ellipsis';
+import { Form, Card, Input, Pagination, Select, DatePicker, Table } from 'antd';
 import moment from 'moment';
+import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { hasAuthority } from '@/utils/customAuth';
-import urls from '@/utils/urls';
-import codes from '@/utils/codes';
-
-import styles from '../Contract/Contract.less';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const PAGE_SIZE = 10;
+let pageSize = 10;
 /* 标题 */
 const title = '消防测试记录';
 
@@ -37,16 +30,17 @@ const breadcrumbList = [
     name: title,
   },
 ];
-console.log(urls);
+// 警情状态列表
+const alertStatusList = [
+  { id: '0', label: '全部' },
+  { id: '1', label: '火警' },
+  { id: '2', label: '故障' },
+  { id: '3', label: '联动' },
+  { id: '4', label: '监管' },
+  { id: '5', label: '屏蔽' },
+  { id: '6', label: '反馈' },
+];
 
-// 获取链接地址
-const {
-  contract: { detail: detailUrl, edit: editUrl, add: addUrl },
-} = urls;
-// 获取code
-const {
-  contract: { detail: detailCode, edit: editCode, add: addCode },
-} = codes;
 /* 去除两边空格 */
 const transform = value => value.trim();
 /* 设置相对定位 */
@@ -74,43 +68,46 @@ const COLUMNS = [
   },
   {
     title: '测试时间',
-    dataIndex: 'time',
-    key: 'time',
+    dataIndex: 'createTime',
+    key: 'createTime',
     align: 'center',
     width: 180,
+    render: val => {
+      return val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '';
+    },
   },
   {
     title: '主机编号',
-    dataIndex: 'deviceId',
-    key: 'deviceId',
+    dataIndex: 'clientAddr',
+    key: 'clientAddr',
     align: 'center',
     width: 110,
   },
   {
     title: '回路故障号',
-    dataIndex: 'errorId',
-    key: 'errorId',
+    dataIndex: 'failureCode',
+    key: 'failureCode',
     align: 'center',
     width: 140,
   },
   {
     title: '设施部件类型',
-    dataIndex: 'deviceType',
-    key: 'deviceType',
+    dataIndex: 'type',
+    key: 'type',
     align: 'center',
     width: 130,
   },
   {
     title: '具体位置',
-    dataIndex: 'location',
-    key: 'location',
+    dataIndex: 'installAddress',
+    key: 'installAddress',
     align: 'center',
     width: 130,
   },
   {
     title: '主体单位',
-    dataIndex: 'company',
-    key: 'company',
+    dataIndex: 'companyName',
+    key: 'companyName',
     align: 'center',
     width: 130,
   },
@@ -123,43 +120,31 @@ const COLUMNS = [
     width: 120,
     render: (val, record) => (
       <span>
-        <a onClick={() => handleViewDetail(record.id)}>查看</a>
+        <a onClick={() => handleViewDetail(record.detailId)}>查看</a>
       </span>
     ),
   },
 ];
 
 @connect(
-  ({ contract, user, loading }) => ({
-    contract,
-    user,
-    loading: loading.models.contract,
+  ({ fireTest, loading }) => ({
+    fireTest,
+    loading: loading.models.fireTest,
   }),
   dispatch => ({
-    /* 获取合同列表 */
-    fetchList(action) {
+    /* 获取测试火灾自动报警系统历史记录(web) */
+    fetchAppHistories(action) {
       dispatch({
-        type: 'contract/fetchList',
+        type: 'fireTest/fetchAppHistories',
         ...action,
       });
     },
-    /* 追加维保合同列表 */
-    appendList(action) {
+    // 测试查询条件预加载(web)
+    fetchSelectCondition(action) {
       dispatch({
-        type: 'contract/appendList',
+        type: 'fireTest/fetchSelectCondition',
         ...action,
       });
-    },
-    /* 获取单位状态 */
-    fetchStatusList(action) {
-      dispatch({
-        type: 'contract/fetchStatusList',
-        ...action,
-      });
-    },
-    /* 跳转到详情页面 */
-    goToDetail(id) {
-      dispatch(routerRedux.push(detailUrl + id));
     },
     // 异常
     goToException() {
@@ -171,55 +156,43 @@ const COLUMNS = [
 @Form.create()
 export default class TestList extends PureComponent {
   state = {
-    formData: {},
+    formData: {
+      alertStatus: undefined,
+      companyName: undefined,
+      deviceCode: undefined,
+      endTime: undefined,
+      specificLocation: undefined,
+      startTime: undefined,
+      unitType: undefined,
+    },
     isInit: false,
   };
 
   /* 挂载后 */
   componentDidMount() {
-    const {
-      fetchList,
-      fetchStatusList,
-      contract: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    /* 获取合同列表 */
-    fetchList({
+    const { fetchAppHistories, fetchSelectCondition } = this.props;
+    /* 获取测试火灾自动报警系统历史记录(web) */
+    fetchAppHistories({
       payload: {
-        pageSize,
+        pageSize: 10,
         pageNum: 1,
       },
-      success: () => {
-        this.setState({
-          isInit: true,
-        });
-      },
     });
-    /* 获取单位状态列表 */
-    fetchStatusList();
+    // 测试查询条件预加载(web)
+    fetchSelectCondition();
   }
 
   /* 查询点击事件 */
   handleSearch = ({ period: [startTime, endTime], ...restValues }) => {
-    const {
-      fetchList,
-      goToException,
-      contract: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
+    const { fetchAppHistories, goToException } = this.props;
 
     const formData = {
-      startTime: startTime && startTime.format('YYYY-MM-DD'),
-      endTime: endTime && endTime.format('YYYY-MM-DD'),
+      startTime: startTime && startTime.format('YYYY-MM-DD 00:00:00'),
+      endTime: endTime && endTime.format('YYYY-MM-DD 23:59:59'),
       ...restValues,
     };
-    fetchList({
+
+    fetchAppHistories({
       payload: {
         ...formData,
         pageSize,
@@ -240,28 +213,26 @@ export default class TestList extends PureComponent {
 
   /* 重置点击事件 */
   handleReset = () => {
-    const {
-      fetchList,
-      goToException,
-      contract: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    fetchList({
+    const { fetchAppHistories, goToException } = this.props;
+    fetchAppHistories({
       payload: {
         pageSize,
         pageNum: 1,
       },
       success: () => {
-        // message.success('重置成功', 1);
         this.setState({
-          formData: {},
+          formData: {
+            alertStatus: undefined,
+            companyName: undefined,
+            deviceCode: undefined,
+            endTime: undefined,
+            specificLocation: undefined,
+            startTime: undefined,
+            unitType: undefined,
+          },
         });
       },
       error: () => {
-        // message.success('重置失败', 1);
         goToException();
       },
     });
@@ -270,23 +241,20 @@ export default class TestList extends PureComponent {
   /* 渲染表单 */
   renderForm() {
     const {
-      contract: { statusList },
-      goToAdd,
-      user: {
-        currentUser: { permissionCodes },
-      },
+      // fireAlarm: { dictDataList },
+      fireTest: { dictDataList, deviceCodes },
     } = this.props;
     /* 表单字段 */
     const fields = [
       {
-        id: 'name',
+        id: 'companyName',
         render() {
           return <Input placeholder="请输入单位名称" />;
         },
         transform,
       },
       {
-        id: 'contractStatus',
+        id: 'alertStatus',
         render() {
           return (
             <Select
@@ -295,9 +263,9 @@ export default class TestList extends PureComponent {
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
-              {statusList.map(item => (
+              {alertStatusList.map(item => (
                 <Option value={item.id} key={item.id}>
-                  {item.value}
+                  {item.label}
                 </Option>
               ))}
             </Select>
@@ -305,37 +273,43 @@ export default class TestList extends PureComponent {
         },
       },
       {
-        id: 'contractStatus2',
+        id: 'deviceCode',
         render() {
           return (
             <Select
               allowClear
+              showSearch
               placeholder="主机编号"
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
-              {statusList.map(item => (
-                <Option value={item.id} key={item.id}>
-                  {item.value}
-                </Option>
-              ))}
+              {[...new Set(deviceCodes)].map((item, index) => {
+                return (
+                  item && (
+                    <Option value={item} key={index}>
+                      {item}
+                    </Option>
+                  )
+                );
+              })}
             </Select>
           );
         },
       },
       {
-        id: 'contractStatus3',
+        id: 'unitType',
         render() {
           return (
             <Select
               allowClear
+              showSearch
               placeholder="设施部件类型"
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
-              {statusList.map(item => (
-                <Option value={item.id} key={item.id}>
-                  {item.value}
+              {dictDataList.map(item => (
+                <Option value={item.value} key={item.id}>
+                  {item.label}
                 </Option>
               ))}
             </Select>
@@ -343,7 +317,7 @@ export default class TestList extends PureComponent {
         },
       },
       {
-        id: 'location',
+        id: 'specificLocation',
         render() {
           return <Input placeholder="请输入具体位置" />;
         },
@@ -372,28 +346,33 @@ export default class TestList extends PureComponent {
     );
   }
 
+  // 获取历史纪录列表
+  queryueryHistories = (pageNum = 1, pageSize = 10) => {
+    const { fetchAppHistories, goToException } = this.props;
+    const { formData } = this.state;
+    fetchAppHistories({
+      payload: {
+        ...formData,
+        pageSize,
+        pageNum,
+      },
+      error: () => {
+        goToException();
+      },
+    });
+  };
+
+  // 表格改变触发，包含分页变动
+  handleTableChange = (pageNum, pageSize) => {
+    this.queryueryHistories(pageNum, pageSize);
+  };
+
   render() {
     const {
       loading,
-      contract: {
-        data: {
-          pagination: { total },
-        },
-      },
+      fireTest: { pagination, list },
     } = this.props;
-    const list = [
-      {
-        id: '1111',
-        status: '火警',
-        time: '2018-05-11 12:00:00',
-        deviceId: 'ZXY-001',
-        errorId: '2回路0001号',
-        deviceType: '点型光电烟火探测器',
-        location: 'A建筑',
-        company: '无锡长城物业',
-      },
-    ];
-
+    const { pageNum, pageSize, total, companyNum } = pagination;
     return (
       <PageHeaderLayout
         title={title}
@@ -401,19 +380,31 @@ export default class TestList extends PureComponent {
         content={
           <div>
             单位总数：
-            {total}{' '}
+            {companyNum}{' '}
           </div>
         }
       >
         {this.renderForm()}
         <Card style={{ marginTop: '24px' }}>
           <Table
-            rowKey="id"
+            rowKey="detailId"
             loading={loading}
             columns={COLUMNS}
             dataSource={list}
             // onChange={this.onTableChange}
-            // pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
+            // pagination={{ ...pagination }}
+            pagination={false}
+          />
+          <Pagination
+            style={{ marginTop: '20px' }}
+            showQuickJumper
+            showSizeChanger
+            pageSize={pageSize}
+            current={pageNum}
+            total={total}
+            onChange={this.handleTableChange}
+            onShowSizeChange={this.handleTableChange}
+            showTotal={total => `共 ${total} 条`}
           />
         </Card>
       </PageHeaderLayout>
