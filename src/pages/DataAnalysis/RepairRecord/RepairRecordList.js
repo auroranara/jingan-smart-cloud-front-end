@@ -33,7 +33,6 @@ export default class RepairRecordList extends PureComponent {
       dataAnalysis: {
         repairRecord: {
           pagination: {
-            pageNum,
             pageSize,
           },
         },
@@ -43,7 +42,7 @@ export default class RepairRecordList extends PureComponent {
     // 获取报修记录列表
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
-      payload: { pageNum, pageSize },
+      payload: { pageNum: 1, pageSize },
     })
   }
 
