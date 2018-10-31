@@ -3,9 +3,9 @@ import Result from 'components/Result';
 import router from 'umi/router';
 import { Card, Button } from 'antd'
 import { setToken } from '@/utils/authority';
-import styles from './JumpLogin.less'
+import styles from './RedirectLogin.less'
 
-export default class JumpLogin extends Component {
+export default class RedirectLogin extends Component {
 
   state = {
     count: 10,
