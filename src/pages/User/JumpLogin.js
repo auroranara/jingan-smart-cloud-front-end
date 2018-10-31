@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Result from 'components/Result';
 import router from 'umi/router';
-import { Card } from 'antd'
+import { Card, Button } from 'antd'
 import { setToken } from '@/utils/authority';
 import styles from './JumpLogin.less'
 
@@ -19,8 +19,7 @@ export default class JumpLogin extends Component {
       let { count } = this.state
       if (count <= 0) {
         if (token) {
-          setToken(token)
-          router.push('/')
+          this.toDashboard()
         } else router.push('/user')
         return
       }
@@ -32,6 +31,15 @@ export default class JumpLogin extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timer)
+  }
+
+  // 保存token并跳转到首页
+  toDashboard = () => {
+    const {
+      location: { query: { token } },
+    } = this.props
+    setToken(token)
+    router.push('/')
   }
 
   render() {
@@ -46,25 +54,27 @@ export default class JumpLogin extends Component {
             <Result
               className={styles.result}
               type="success"
-              title={
-                <div className={styles.title}>
-                  跳转登录成功
-            </div>
-              }
+              title={<div className={styles.title}>跳转登录成功</div>}
               description={<span>将在{count}秒后跳转到首页……</span>}
               style={{ marginTop: 52 }}
+              actions={(
+                <div className={styles.actions}>
+                  <Button onClick={this.toDashboard} size="large" type="primary">返回首页</Button>
+                </div>
+              )}
             />
           ) : (
               <Result
                 className={styles.result}
                 type="error"
-                title={
-                  <div className={styles.title}>
-                    跳转登录失败
-            </div>
-                }
+                title={<div className={styles.title}>跳转登录失败</div>}
                 description={<span>将在{count}秒后跳转到登录页……</span>}
                 style={{ marginTop: 52 }}
+                actions={(
+                  <div className={styles.actions}>
+                    <Button onClick={() => { router.push('/user') }} size="large" type="primary">返回登录页</Button>
+                  </div>
+                )}
               />
             )}
         </Card>
