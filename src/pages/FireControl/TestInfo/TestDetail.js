@@ -15,7 +15,7 @@ const title = '消防测试记录详情';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '数据分析', name: '数据分析' },
+  { title: '消防维保', name: '消防维保' },
   { title: '消防测试记录', name: '消防测试记录', href: '/fire-control/test-info/list' },
   { title, name: title },
 ];
