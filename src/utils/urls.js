@@ -31,6 +31,10 @@ export default {
     edit: '/fire-control/maintenance-company/edit/',
     serviceList: '/fire-control/maintenance-company/serviceList/',
   },
+  hiddenDangerReport: {
+    list: '/data-analysis/hidden-danger-report/list',
+    detail: '/data-analysis/hidden-danger-report/detail/',
+  },
   exception: {
     500: '/exception/500/',
     403: '/exception/403/',
