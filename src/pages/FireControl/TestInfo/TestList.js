@@ -45,14 +45,6 @@ const alertStatusList = [
 const transform = value => value.trim();
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-// 阻止默认行为
-const preventDefault = e => {
-  e.preventDefault();
-};
 
 const handleViewDetail = id => {
   router.push(`/fire-control/test-info/detail/${id}`);
@@ -392,7 +384,7 @@ export default class TestList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位总数：
+            列表记录：
             {total}
           </div>
         }
@@ -408,7 +400,8 @@ export default class TestList extends PureComponent {
               pagination={false}
             />
             <Pagination
-              style={{ marginTop: '20px' }}
+              style={{ marginTop: '20px', float: 'right' }}
+              showTotal={false}
               showQuickJumper
               showSizeChanger
               pageSize={pageSize}
@@ -416,7 +409,7 @@ export default class TestList extends PureComponent {
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-              showTotal={total => `共 ${total} 条`}
+              // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
