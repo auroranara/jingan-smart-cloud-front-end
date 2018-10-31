@@ -57,7 +57,7 @@ export default class App extends PureComponent {
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
+            {/* <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.economicType}>
                 {getFieldDecorator('economicType', {
                   initialValue: economicType,
@@ -72,7 +72,7 @@ export default class App extends PureComponent {
                   </Select>
                 )}
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyStatus}>
                 {getFieldDecorator('companyStatus', {
@@ -89,7 +89,7 @@ export default class App extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            {/* <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyType}>
                 {getFieldDecorator('companyType', {
                   initialValue: companyType !== undefined ? companyType+'' : (companyTypeList.length > 0
@@ -106,7 +106,7 @@ export default class App extends PureComponent {
                   </Select>
                 )}
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {
@@ -151,7 +151,7 @@ export default class App extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            {/* <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.industryCategory}>
                 {getFieldDecorator('industryCategory', {
                   initialValue: industryCategory ? industryCategory.split(',') : [],
@@ -171,7 +171,7 @@ export default class App extends PureComponent {
                   />
                 )}
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={16} md={24} sm={24}>

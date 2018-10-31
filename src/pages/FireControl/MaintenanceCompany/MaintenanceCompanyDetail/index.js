@@ -275,20 +275,20 @@ export default class App extends PureComponent {
     return (
       <Card title="更多信息" className={styles.card} bordered={false}>
         <DescriptionList col={3}>
-          <Description term={fieldLabels.industryCategory}>
+          {/* <Description term={fieldLabels.industryCategory}>
             <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
               {industryCategoryLabel || getEmptyData()}
             </Ellipsis>
           </Description>
           <Description term={fieldLabels.economicType}>
             {economicTypeLabel || getEmptyData()}
-          </Description>
+          </Description> */}
           <Description term={fieldLabels.companyStatus}>
             {companyStatusLabel || getEmptyData()}
           </Description>
-          <Description term={fieldLabels.companyType}>
+          {/* <Description term={fieldLabels.companyType}>
             {companyTypeLable || getEmptyData()}
-          </Description>
+          </Description> */}
           <Description term={fieldLabels.scale}>
             {scaleLabel || getEmptyData()}
           </Description>

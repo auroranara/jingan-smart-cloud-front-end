@@ -170,19 +170,19 @@ export default class App extends PureComponent {
       });
     }
 
-    // 获取行业类别
-    dispatch({
-      type: 'maintenanceCompany/fetchIndustryCategoryList',
-    });
+    // // 获取行业类别
+    // dispatch({
+    //   type: 'maintenanceCompany/fetchIndustryCategoryList',
+    // });
 
-    // 获取经济类型
-    dispatch({
-      type: 'maintenanceCompany/gsafeFetchDict',
-      payload: {
-        type: 'economicType',
-        key: 'economicTypeList',
-      },
-    });
+    // // 获取经济类型
+    // dispatch({
+    //   type: 'maintenanceCompany/gsafeFetchDict',
+    //   payload: {
+    //     type: 'economicType',
+    //     key: 'economicTypeList',
+    //   },
+    // });
 
     // 获取单位状态
     dispatch({
@@ -193,10 +193,10 @@ export default class App extends PureComponent {
       },
     });
 
-    // 获取单位类型
-    dispatch({
-      type: 'maintenanceCompany/fetchCompanyTypeList',
-    });
+    // // 获取单位类型
+    // dispatch({
+    //   type: 'maintenanceCompany/fetchCompanyTypeList',
+    // });
 
     // 获取规模情况
     dispatch({
@@ -443,7 +443,7 @@ export default class App extends PureComponent {
         practicalTown,
       ],
       createTime,
-      industryCategory,
+      // industryCategory,
       coordinate,
       companyIchnography,
       parentId,
@@ -467,7 +467,7 @@ export default class App extends PureComponent {
       practicalCity,
       practicalDistrict,
       practicalTown,
-      industryCategory: industryCategory.join(','),
+      // industryCategory: industryCategory.join(','),
       createTime: createTime && createTime.format('YYYY-MM-DD'),
       companyIchnography: JSON.stringify(
         companyIchnography.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))

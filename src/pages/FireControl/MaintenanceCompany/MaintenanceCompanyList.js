@@ -180,15 +180,15 @@ export default class MaintenanceCompanyList extends PureComponent {
     });
     // 判断是存了查询信息，并获取维保单位列表
     if (searchInfo) {
-      const { industryCategory } = searchInfo
+      // const { industryCategory } = searchInfo
       setFieldsValue(searchInfo)
       fetch({
         payload: {
           pageSize,
           pageNum: 1,
           ...searchInfo,
-          industryCategory:
-            industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
+          // industryCategory:
+          //   industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
         },
       });
     } else {
@@ -239,7 +239,7 @@ export default class MaintenanceCompanyList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    const { industryCategory } = data;
+    // const { industryCategory } = data;
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
@@ -248,8 +248,8 @@ export default class MaintenanceCompanyList extends PureComponent {
         pageSize,
         pageNum: 1,
         ...data,
-        industryCategory:
-          industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
+        // industryCategory:
+        //   industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
       },
     });
     saveSearchInfo({
@@ -330,7 +330,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                 })(<Input placeholder="请输入单位地址" />)}
               </FormItem>
             </Col>
-            <Col span={8}>
+            {/* <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0', marginTop: '-4px' }}>
                 {getFieldDecorator('industryCategory', {
                   initialValue: defaultFormData.industryCategory,
@@ -363,7 +363,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                   </Select>
                 )}
               </FormItem>
-            </Col>
+            </Col> */}
             <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
                 {getFieldDecorator('companyStatus', {
