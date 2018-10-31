@@ -82,7 +82,7 @@ export default class App extends PureComponent {
     /* 图片字段render方法 */
     const renderImage = (value) => {
       const { src } = value[0] || {};
-      return src && <img style={{ width: 30, height: 40, cursor: 'pointer' }} src={src} alt="" onClick={() => {this.setState({ images: value });}} />;
+      return src && <img style={{ width: 30, height: 40, cursor: 'pointer' }} src={src} alt="" onClick={() => {this.setState({ images: value, currentImage: 0 });}} />;
     };
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
