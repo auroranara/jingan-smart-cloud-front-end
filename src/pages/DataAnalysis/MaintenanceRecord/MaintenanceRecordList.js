@@ -6,7 +6,7 @@ import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
-import Coordinate from '@/components/Coordinate';
+import Lightbox from 'react-images';
 import styles from './MaintenanceRecord.less';
 import codesMap from '@/utils/codes';
 import { AuthA } from '@/utils/customAuth';
@@ -16,9 +16,6 @@ const { RangePicker } = DatePicker;
 
 // 标题
 const title = '维保记录';
-
-// 附件框宽度
-const MODEL_WIDTH = 650;
 
 //面包屑
 const breadcrumbList = [
@@ -58,10 +55,9 @@ export default class MaintenanceRecordList extends PureComponent {
   }
 
   state = {
-    coordinate: {
-      visible: false,
-    },
-    imgUrl: [],
+    visible: false,
+    imgUrl: [], // 附件图片列表
+    currentImage: 0, // 展示附件大图下标
   };
 
   // 挂载后
@@ -96,23 +92,47 @@ export default class MaintenanceRecordList extends PureComponent {
     dispatch(routerRedux.push('/exception/500'));
   };
 
-  // 显示附件模态框
+  // 查看附件
   handleShowModal = files => {
+    const newFiles = files.map(({ webUrl }) => {
+      return {
+        src: webUrl,
+      };
+    });
     this.setState({
-      coordinate: {
-        visible: true,
-      },
-      imgUrl: files,
+      visible: true,
+
+      imgUrl: newFiles,
+      currentImage: 0,
     });
   };
 
-  // 附件模态框确定按钮点击事件
-  handleOk = () => {
+  // 关闭查看附件弹窗
+  handleModalClose = () => {
     this.setState({
-      coordinate: {
-        visible: false,
-      },
+      visible: false,
     });
+  };
+
+  // 附件图片的点击翻入上一页
+  gotoPrevious = () => {
+    let { currentImage } = this.state;
+    if (currentImage <= 0) return;
+    this.setState({ currentImage: --currentImage });
+  };
+
+  // 附件图片的点击翻入下一页
+  gotoNext = () => {
+    let { currentImage, imgUrl } = this.state;
+    if (currentImage >= imgUrl.length - 1) return;
+    this.setState({ currentImage: ++currentImage });
+  };
+
+  // 附件图片点击下方缩略图
+  handleClickThumbnail = i => {
+    const { currentImage } = this.state;
+    if (currentImage === i) return;
+    this.setState({ currentImage: i });
   };
 
   /* 查询按钮点击事件 */
@@ -223,10 +243,7 @@ export default class MaintenanceRecordList extends PureComponent {
       },
     } = this.props;
 
-    const {
-      coordinate: { visible },
-      imgUrl,
-    } = this.state;
+    const { visible, imgUrl, currentImage } = this.state;
 
     /* 配置描述 */
     const COLUMNS = [
@@ -254,7 +271,11 @@ export default class MaintenanceRecordList extends PureComponent {
         align: 'center',
         width: 220,
         render: val => {
-          return val && val.length > 0 ? val.map(v => v.userName).join('  ,  ') : '';
+          return val && val.length > 0
+            ? val.map(v => {
+                return <div> {v.userName}</div>;
+              })
+            : '';
         },
       },
       {
@@ -264,7 +285,11 @@ export default class MaintenanceRecordList extends PureComponent {
         align: 'center',
         width: 240,
         render: val => {
-          return val && val.length > 0 ? val.map(v => v.phoneNumber).join('  ,  ') : '';
+          return val && val.length > 0
+            ? val.map(v => {
+                return <div>{v.phoneNumber}</div>;
+              })
+            : '';
         },
       },
       {
@@ -338,21 +363,16 @@ export default class MaintenanceRecordList extends PureComponent {
         ) : (
           <div style={{ textAlign: 'center' }}>暂无数据</div>
         )}
-        <Coordinate
-          title="附件图片"
-          width={MODEL_WIDTH}
-          visible={visible}
-          noClick={false}
-          urls={imgUrl}
-          onOk={this.handleOk}
-          footer={null}
-          onCancel={() => {
-            this.setState({
-              coordinate: {
-                visible: false,
-              },
-            });
-          }}
+        <Lightbox
+          images={imgUrl}
+          isOpen={visible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
         />
       </Card>
     );

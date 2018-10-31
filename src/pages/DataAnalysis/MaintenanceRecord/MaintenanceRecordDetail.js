@@ -247,11 +247,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
           <Description term={fieldLabels.rectifyOpinions}>
             {detail.opinion || getEmptyData()}
           </Description>
-          <Description
-            term={fieldLabels.attachmentContent}
-            className={styles.attachmentContent}
-            style={{ width: '100%' }}
-          >
+          <Description term={fieldLabels.attachmentContent} style={{ width: '100%' }}>
             {imgs}
           </Description>
         </DescriptionList>
