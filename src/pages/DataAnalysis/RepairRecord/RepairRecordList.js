@@ -3,7 +3,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import { Button, Card, Form, Input, DatePicker, Col, Table, Pagination } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import Coordinate from '@/components/Coordinate';
+import Lightbox from 'react-images';
 import router from 'umi/router';
 import styles from './RepairRecordList.less'
 
@@ -24,7 +24,8 @@ const breadcrumbList = [
 export default class RepairRecordList extends PureComponent {
   state = {
     modalVisible: false,
-    imageFiles: [],
+    imageFiles: [], // 附件图片列表
+    currentImage: 0,// 展示附件大图下标
   }
   componentDidMount() {
     const {
@@ -99,15 +100,15 @@ export default class RepairRecordList extends PureComponent {
 
   // 查看附件
   handleShowModal = (files) => {
-    const newFiles = files.map((item, index) => {
+    const newFiles = files.map(item => {
       return {
-        webUrl: item,
-        id: index,
+        src: item,
       }
     })
     this.setState({
       modalVisible: true,
       imageFiles: newFiles,
+      currentImage: 0,
     })
   }
 
@@ -116,6 +117,27 @@ export default class RepairRecordList extends PureComponent {
     this.setState({
       modalVisible: false,
     })
+  }
+
+  // 附件图片的点击翻入上一页
+  gotoPrevious = () => {
+    let { currentImage } = this.state
+    if (currentImage <= 0) return
+    this.setState({ currentImage: --currentImage })
+  }
+
+  // 附件图片的点击翻入下一页
+  gotoNext = () => {
+    let { currentImage, imageFiles } = this.state
+    if (currentImage >= imageFiles.length - 1) return
+    this.setState({ currentImage: ++currentImage })
+  }
+
+  // 附件图片点击下方缩略图
+  handleClickThumbnail = (i) => {
+    const { currentImage } = this.state
+    if (currentImage === i) return
+    this.setState({ currentImage: i })
   }
 
   // 翻页
@@ -207,7 +229,7 @@ export default class RepairRecordList extends PureComponent {
   }
 
   render() {
-    const { modalVisible, imageFiles } = this.state
+    const { modalVisible, imageFiles, currentImage } = this.state
     const {
       dataAnalysis: {
         repairRecord: {
@@ -321,15 +343,16 @@ export default class RepairRecordList extends PureComponent {
             <Pagination style={{ marginTop: '20px', float: 'right' }} showQuickJumper current={pageNum} pageSize={pageSize} total={total} onChange={this.onPageChange} />
           </Card>
         ) : (<Card className={styles.noRepairRecordList}><span >暂无数据</span></Card>)}
-        <Coordinate
-          title="附件图片"
-          visible={modalVisible}
-          noClick={false}
-          urls={imageFiles}
-          onOk={this.handleModalClose}
-          onCancel={this.handleModalClose}
-          footer={null}
-          width={650}
+        <Lightbox
+          images={imageFiles}
+          isOpen={modalVisible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
         />
       </PageHeaderLayout>
     )
