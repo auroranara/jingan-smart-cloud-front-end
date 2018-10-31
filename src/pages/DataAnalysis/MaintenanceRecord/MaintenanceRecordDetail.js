@@ -2,21 +2,15 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import moment from 'moment';
 
-import { Form, Card, Icon, Col, Row } from 'antd';
+import { Form, Card, Col, Row } from 'antd';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import Slider from '../../BigPlatform/FireControl/components/Slider';
+import Lightbox from 'react-images';
 import styles from './MaintenanceRecord.less';
 
 const { Description } = DescriptionList;
-
-const ICON_STYLE = {
-  position: 'absolute',
-  fontSize: 25,
-  color: '#fff',
-};
 
 /* 标题*/
 const title = '维保记录详情';
@@ -92,6 +86,9 @@ export default class MaintenanceRecordDetail extends PureComponent {
   state = {
     magIndex: 0,
     showImg: false,
+    visible: false,
+    imgUrl: [], // 附件图片列表
+    currentImage: 0, // 展示附件大图下标
   };
 
   /* 挂载后 */
@@ -112,36 +109,52 @@ export default class MaintenanceRecordDetail extends PureComponent {
     });
   }
 
-  // extraContent = (
-  //   <Button className={styles.backBtn} onClick={() => this.goToList()}>
-  //     返回
-  //   </Button>
-  // );
-
-  /* 跳转到列表页面*/
+  // 跳转到列表页面
   goToList = () => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push(`/data-analysis/maintenance-record/list`));
   };
 
-  // 显示图片
-  handleClickImg = i => {
-    this.setState({ showImg: true, magIndex: i });
+  // 查看图片
+  handleClickImg = (i, files) => {
+    const newFiles = files.map(({ webUrl }) => {
+      return {
+        src: webUrl,
+      };
+    });
+    this.setState({
+      visible: true,
+      imgUrl: newFiles,
+      currentImage: i,
+    });
   };
 
-  // 图片左移点击事件
-  handleLeft = indexProp => {
-    this.setState(state => ({ [indexProp]: state[indexProp] - 1 }));
+  // 关闭查看图片弹窗
+  handleModalClose = () => {
+    this.setState({
+      visible: false,
+    });
   };
 
-  // 图片右移点击事件
-  handleRight = indexProp => {
-    this.setState(state => ({ [indexProp]: state[indexProp] + 1 }));
+  // 图片的点击翻入上一页
+  gotoPrevious = () => {
+    let { currentImage } = this.state;
+    if (currentImage <= 0) return;
+    this.setState({ currentImage: --currentImage });
   };
 
-  // 关闭图片
-  handleCloseImg = () => {
-    this.setState({ showImg: false });
+  // 图片的点击翻入下一页
+  gotoNext = () => {
+    let { currentImage, imgUrl } = this.state;
+    if (currentImage >= imgUrl.length - 1) return;
+    this.setState({ currentImage: ++currentImage });
+  };
+
+  // 图片点击下方缩略图
+  handleClickThumbnail = i => {
+    const { currentImage } = this.state;
+    if (currentImage === i) return;
+    this.setState({ currentImage: i });
   };
 
   /* 渲染维保单位信息*/
@@ -207,9 +220,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
       },
     } = this.props;
 
-    const { magIndex, showImg } = this.state;
-    const picLength = files.length;
-    const isMagEnd = magIndex === picLength - 1;
+    const { visible, imgUrl, currentImage } = this.state;
 
     const imgs = files.map(({ webUrl }, i) => (
       <div
@@ -219,12 +230,8 @@ export default class MaintenanceRecordDetail extends PureComponent {
           backgroundImage: `url(${webUrl})`,
           backgroundSize: 'cover',
         }}
-        onClick={() => this.handleClickImg(i)}
+        onClick={() => this.handleClickImg(i, files)}
       />
-    ));
-
-    const magImgs = files.map(({ webUrl }) => (
-      <div className={styles.magImg} key={webUrl} style={{ backgroundImage: `url(${webUrl})` }} />
     ));
 
     return (
@@ -252,51 +259,24 @@ export default class MaintenanceRecordDetail extends PureComponent {
           </Description>
         </DescriptionList>
 
-        <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
-          <div className={styles.center}>
-            <Slider index={magIndex} length={picLength} size={1}>
-              {magImgs}
-            </Slider>
-          </div>
-          <Icon
-            type="close"
-            onClick={this.handleCloseImg}
-            style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE }}
-          />
-          <Icon
-            type="left"
-            style={{
-              left: 10,
-              top: '50%',
-              display: magIndex ? 'block' : 'none',
-              cursor: magIndex ? 'pointer' : 'auto',
-              ...ICON_STYLE,
-            }}
-            onClick={magIndex ? () => this.handleLeft('magIndex') : null}
-          />
-          <Icon
-            type="right"
-            style={{
-              right: 10,
-              top: '50%',
-              display: isMagEnd ? 'none' : 'block',
-              cursor: isMagEnd ? 'auto' : 'pointer',
-              ...ICON_STYLE,
-            }}
-            onClick={isMagEnd ? null : () => this.handleRight('magIndex')}
-          />
-        </div>
+        <Lightbox
+          images={imgUrl}
+          isOpen={visible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
+        />
       </Card>
     );
   }
 
   render() {
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-        // extraContent={this.extraContent}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderUnitInfo()}
         {this.renderServiceUnitInfo()}
         {this.renderUnitDetail()}
