@@ -64,8 +64,8 @@ export default class RepairRecordDetail extends PureComponent {
         detail: {
           alarmStatus = '',
           code = '',
-          componentNo = '',
-          componentRegion = '',
+          // componentNo = '',
+          // componentRegion = '',
           testPhone = '',
           failureCode = '',
           name = '',
