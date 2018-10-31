@@ -60,8 +60,8 @@ const COLUMNS = [
   },
   {
     title: '测试时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
+    dataIndex: 'testTime',
+    key: 'testTime',
     align: 'center',
     width: 180,
     render: val => {
