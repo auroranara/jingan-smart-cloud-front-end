@@ -23,7 +23,7 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import AuthorityTree from './AuthorityTree';
-import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree, mergeArrays } from './utils';
+import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree, mergeArrays, getNoRepeat } from './utils';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
@@ -315,6 +315,7 @@ export default class accountManagementEdit extends PureComponent {
   // sortMap = {};
   // totalMap = {};
   childrenMap = {};
+  permissions = [];
   authTreeCheckedKeys = [];
 
   //获取维保权限树
@@ -379,7 +380,7 @@ export default class accountManagementEdit extends PureComponent {
         // console.log(maintenacePermissions, this.chidrenMap);
         // console.log(handleMtcTree(maintenacePermissions, this.childrenMap));
 
-        console.log(permissions);
+        console.log(getNoRepeat(permissions, this.permissions));
 
         if (!error) {
           this.setState({
@@ -430,6 +431,7 @@ export default class accountManagementEdit extends PureComponent {
                 regulatoryClassification && regulatoryClassification.length
                   ? regulatoryClassification.join(',')
                   : null,
+              permissions: getNoRepeat(permissions, this.permissions),
             };
             switch (payload.unitType) {
               // 维保企业
@@ -1050,14 +1052,19 @@ export default class accountManagementEdit extends PureComponent {
       dispatch({
         type: 'role/fetchDetail',
         payload: { id: nextTargetKeys[0] },
-        success: ({ permissions }) => setFieldsValue({ permissions: mergeArrays(permissions ? permissions.split(',') : [], this.authTreeCheckedKeys) }),
+        success: ({ permissions }) => {
+          const perms = permissions ? permissions.split(',') : [];
+          this.permissions = perms;
+          setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+        },
       });
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
     else {
+      this.permissions = [];
       setFieldsValue({ permissions: this.authTreeCheckedKeys });
       dispatch({ type: 'role/queryDetail', payload: {} });
     }
-  }
+  };
 
   /* 渲染角色权限信息 */
   renderRolePermission() {

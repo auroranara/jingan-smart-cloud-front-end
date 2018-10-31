@@ -196,6 +196,8 @@ export function mergeArrays(...arrs) {
 
 // 从源数组中筛选出不存在目标数组中的项目
 export function getNoRepeat(origin, target=[]) {
+  if (!origin || !Array.isArray(origin))
+    return [];
   return origin.filter(item => !target.includes(item));
 }
 
