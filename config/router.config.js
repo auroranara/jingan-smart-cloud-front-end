@@ -806,7 +806,7 @@ module.exports = [
         code: 'databaseInput',
         name: 'databaseInput',
         icon: 'database',
-        hideInMenu: false,
+        hideInMenu: true,
         routes: [
           {
             path: '/database-input/pageAuthority',
