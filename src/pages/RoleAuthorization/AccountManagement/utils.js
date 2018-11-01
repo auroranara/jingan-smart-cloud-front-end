@@ -26,16 +26,22 @@ export function renderSearchedTreeNodes(data, searchValue){
   });
 }
 
-export function renderTreeNodes(data) {
+export function renderTreeNodes(data, disabledKeys, childrenProp='children', titleProp='title', keyProp='key') {
+  // disabledKeys也可以为数组拼接成的字符串，作用与数组同
+  disabledKeys = disabledKeys || [];
   return data.map((item) => {
-    if (item.children) {
+    const children = item[childrenProp];
+    const disabled = disabledKeys.includes(item[keyProp]);
+    const title = item[titleProp];
+    const key = item[keyProp];
+    if (children) {
       return (
-        <TreeNode title={item.title} key={item.key} dataRef={item}>
-          {renderTreeNodes(item.children)}
+        <TreeNode disabled={disabled} title={title} key={key} dataRef={item}>
+          {renderTreeNodes(children, disabledKeys, childrenProp, titleProp, keyProp)}
         </TreeNode>
       );
     }
-    return <TreeNode {...item} />;
+    return <TreeNode disabled={disabled} title={title} key={key} dataRef={item}/>;
   });
 }
 
@@ -45,6 +51,16 @@ function traverse(tree, callback) {
     callback(item);
     if (item.children)
       traverse(item.children, callback);
+  });
+}
+
+// 排序
+export function sortTree(tree, sortProp='sort', childrenProp='childMenus') {
+  tree.sort((n1, n2) => n1[sortProp] - n2[sortProp]);
+  tree.forEach(item => {
+    const children = item[childrenProp];
+    if (children)
+      sortTree(children, sortProp, childrenProp);
   });
 }
 
@@ -171,6 +187,18 @@ export function handleMtcTreeViolently(checkedList, childrenMap) {
   });
 
   return checkedList.filter((key, index) => flags[index]);
+}
+
+// 将数组融合并去重
+export function mergeArrays(...arrs) {
+  return Array.from(new Set(arrs.reduce((prev, next) => prev.concat(next))));
+}
+
+// 从源数组中筛选出不存在目标数组中的项目
+export function getNoRepeat(origin, target=[]) {
+  if (!origin || !Array.isArray(origin))
+    return [];
+  return origin.filter(item => !target.includes(item));
 }
 
 export const TREE = [{
