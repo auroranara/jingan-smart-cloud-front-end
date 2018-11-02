@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 // import moment from 'moment';
 import { connect } from 'dva';
-import { Button, Card, Form, Divider, Row, Col, Icon, Spin } from 'antd';
+import { Card, Form, Divider, Row, Spin } from 'antd';
 import router from 'umi/router'
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import Slider from '../../BigPlatform/FireControl/components/Slider';
 import styles from './RepairRecordDetail.less'
 import moment from 'moment';
+import Lightbox from 'react-images';
 
 // 状态戳 已处理 已关闭 待处理
 import processed from '@/assets/processed.png';
@@ -25,33 +25,33 @@ const formItemLayout = {
     sm: { span: 21 },
   },
 };
-const ICON_STYLE = {
-  position: 'absolute',
-  fontSize: 25,
-  color: '#fff',
-};
+// const ICON_STYLE = {
+//   position: 'absolute',
+//   fontSize: 25,
+//   color: '#fff',
+// };
 const reportInfo = [
-  { label: '工单编号', key: 'work_order' },
-  { label: '报修单位', key: 'company_name' },
-  { label: '报修时间', key: 'create_date' },
-  { label: '报修人员', key: 'createByName' },
-  { label: '联系电话', key: 'createByPhone' },
-  { label: 'divider', key: 'divider' },
-  { label: '系统类型', key: 'systemTypeValue' },
-  { label: '设备名称', key: 'device_name' },
-  { label: '详细位置', key: 'device_address' },
-  { label: '故障描述', key: 'report_desc' },
-  { label: '上报照片', key: 'reportPhotos' },
+  { label: '工单编号', key: 'work_order', status: 'report' },
+  { label: '报修单位', key: 'company_name', status: 'report' },
+  { label: '报修时间', key: 'create_date', status: 'report' },
+  { label: '报修人员', key: 'createByName', status: 'report' },
+  { label: '联系电话', key: 'createByPhone', status: 'report' },
+  { label: 'divider', key: 'divider', status: 'report' },
+  { label: '系统类型', key: 'systemTypeValue', status: 'report' },
+  { label: '设备名称', key: 'device_name', status: 'report' },
+  { label: '详细位置', key: 'device_address', status: 'report' },
+  { label: '故障描述', key: 'report_desc', status: 'report' },
+  { label: '上报照片', key: 'reportPhotos', status: 'report' },
 ]
 
 const repairInfo = [
-  { label: '维修单位', key: 'unit_name' },
-  { label: '维修人员', key: 'executor_name' },
-  { label: '联系电话', key: 'phone' },
-  { label: '开始时间', key: 'start_date' },
-  { label: '结束时间', key: 'end_date' },
-  { label: '维修描述', key: 'disaster_desc' },
-  { label: '维修照片', key: 'sitePhotos' },
+  { label: '维修单位', key: 'unit_name', status: 'repair' },
+  { label: '维修人员', key: 'executor_name', status: 'repair' },
+  { label: '联系电话', key: 'phone', status: 'repair' },
+  { label: '开始时间', key: 'start_date', status: 'repair' },
+  { label: '结束时间', key: 'end_date', status: 'repair' },
+  { label: '维修描述', key: 'disaster_desc', status: 'repair' },
+  { label: '维修照片', key: 'sitePhotos', status: 'repair' },
 ]
 
 @connect(({ dataAnalysis, loading }) => ({
@@ -60,9 +60,9 @@ const repairInfo = [
 }))
 export default class RepairRecordDetail extends PureComponent {
   state = {
-    showImg: false,
-    magIndex: 0,
-    files: [],
+    modalVisible: false,
+    currentImage: 0,
+    imageFiles: [],
   }
   componentDidMount() {
     const {
@@ -83,24 +83,42 @@ export default class RepairRecordDetail extends PureComponent {
 
 
   // 显示图片
-  handleClickImg = (i, files) => {
-    this.setState({ showImg: true, magIndex: i, files });
+  handleClickImg = (i, imageFiles) => {
+    const newFiles = imageFiles.map(item => {
+      return {
+        src: item,
+      }
+    })
+    this.setState({ modalVisible: true, currentImage: i, imageFiles: newFiles });
   };
 
-  // 图片左移点击事件
-  handleLeft = indexProp => {
-    this.setState(state => ({ [indexProp]: state[indexProp] - 1 }));
-  };
+  // 关闭查看附件弹窗
+  handleModalClose = () => {
+    this.setState({
+      modalVisible: false,
+    })
+  }
 
-  // 图片右移点击事件
-  handleRight = indexProp => {
-    this.setState(state => ({ [indexProp]: state[indexProp] + 1 }));
-  };
+  // 附件图片的点击翻入上一页
+  gotoPrevious = () => {
+    let { currentImage } = this.state
+    if (currentImage <= 0) return
+    this.setState({ currentImage: --currentImage })
+  }
 
-  // 关闭图片
-  handleCloseImg = () => {
-    this.setState({ showImg: false });
-  };
+  // 附件图片的点击翻入下一页
+  gotoNext = () => {
+    let { currentImage, imageFiles } = this.state
+    if (currentImage >= imageFiles.length - 1) return
+    this.setState({ currentImage: ++currentImage })
+  }
+
+  // 附件图片点击下方缩略图
+  handleClickThumbnail = (i) => {
+    const { currentImage } = this.state
+    if (currentImage === i) return
+    this.setState({ currentImage: i })
+  }
 
   // 暂无数据
   hasNoContent = () => (<span style={{ fontSize: '16px' }}>暂无数据</span>)
@@ -124,18 +142,19 @@ export default class RepairRecordDetail extends PureComponent {
     } else return this.hasNoContent()
   }
 
-  renderFormItem = (item, value, content = value) => (
+  renderFormItem = (item, realStatus, value, content = value) => (
     <FormItem key={item.key} label={item.label} {...formItemLayout}>
-      {value && value !== '' ? (<span className={styles.formContent}>{content}</span>) :
-        this.hasNoContent()}
+      {!value || value.length === 0 || (realStatus !== '已处理' && item.status === 'repair') ? this.hasNoContent() : (<span className={styles.formContent}>{content}</span>)}
     </FormItem>
   )
 
   // 渲染信息
   renderInfo = (list) => {
+    // list为reportInfo或repairInfo数组，用来配置
     const {
       dataAnalysis: {
         repairRecordDetail,
+        repairRecordDetail: { realStatus },
       },
     } = this.props
     return list.map(item => {
@@ -147,58 +166,12 @@ export default class RepairRecordDetail extends PureComponent {
         )
       } else if (item.key === "create_date" || item.key === "start_date" || item.key === "end_date") {
         const content = moment(repairRecordDetail[item.key]).format("YYYY-MM-DD HH:mm:ss")
-        return this.renderFormItem(item, repairRecordDetail[item.key], content)
+        return this.renderFormItem(item, realStatus, repairRecordDetail[item.key], content)
       } else if (item.key === "divider") {
         return (<Divider key="divider" />)
-      } else return this.renderFormItem(item, repairRecordDetail[item.key])
+      } else return this.renderFormItem(item, realStatus, repairRecordDetail[item.key])
     })
   }
-
-  renderViewImage = () => {
-    const { magIndex, showImg, files = [] } = this.state
-    const filesLength = files.length
-    const isMagEnd = magIndex === (filesLength - 1)
-    return (
-      <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
-        <div className={styles.center}>
-          <Slider index={magIndex} length={filesLength} size={1}>
-            {files.map((item, i) => (
-              <div className={styles.magImg} key={i} style={{ backgroundImage: `url(${item})` }} />
-            ))}
-          </Slider>
-        </div>
-        <Icon
-          type="close"
-          onClick={this.handleCloseImg}
-          style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE }}
-        />
-        <Icon
-          type="left"
-          style={{
-            left: 10,
-            top: '50%',
-            display: magIndex ? 'block' : 'none',
-            cursor: magIndex ? 'pointer' : 'auto',
-
-            ...ICON_STYLE,
-          }}
-          onClick={magIndex ? () => this.handleLeft('magIndex') : null}
-        />
-        <Icon
-          type="right"
-          style={{
-            right: 10,
-            top: '50%',
-            display: isMagEnd ? 'none' : 'block',
-            cursor: isMagEnd ? 'auto' : 'pointer',
-            ...ICON_STYLE,
-          }}
-          onClick={isMagEnd ? null : () => this.handleRight('magIndex')}
-        />
-      </div>
-    )
-  }
-
 
   render() {
     const {
@@ -209,6 +182,7 @@ export default class RepairRecordDetail extends PureComponent {
         },
       },
     } = this.props
+    const { currentImage, modalVisible, imageFiles = [] } = this.state
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '数据分析', name: '数据分析' },
@@ -237,7 +211,17 @@ export default class RepairRecordDetail extends PureComponent {
             </Form>
           </Card>
         </Spin>
-        {this.renderViewImage()}
+        <Lightbox
+          images={imageFiles}
+          isOpen={modalVisible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
+        />
       </PageHeaderLayout>
     )
   }
