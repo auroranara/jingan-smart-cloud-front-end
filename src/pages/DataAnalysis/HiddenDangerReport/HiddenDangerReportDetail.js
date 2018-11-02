@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Steps, Table, Icon } from 'antd';
+import { Card, Steps, Icon, Spin } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import moment from 'moment';
@@ -21,41 +21,23 @@ const breadcrumbList = [
   { title: listTitle, name: listTitle, href: listUrl },
   { title, name: title },
 ];
-/* 表格字段 */
-const columns = [
-  {
-    title: '操作类型',
-    dataIndex: 'type',
-  },
-];
-/* 卡片标签列表 */
-const cardTabList = [
-  {
-    key: '1',
-    tab: '操作日志一',
-  },
-  {
-    key: '2',
-    tab: '操作日志二',
-  },
-  {
-    key: '3',
-    tab: '操作日志三',
-  },
-];
 /* 头部标签列表 */
 const tabList = [
   {
     key: "1",
     tab: '详情',
   },
-  {
-    key: '2',
-    tab: '规则',
-  },
+  // {
+  //   key: '2',
+  //   tab: '相关文书',
+  // },
 ];
 /* 获取页面宽度 */
 const getWindowWidth = () => window.innerWidth || document.documentElement.clientWidth;
+/* 根据status获取步骤条当前索引 */
+const getCurrentByStatus = function (status) {
+
+};
 
 /**
  * 隐患排查报表详情
@@ -69,8 +51,9 @@ export default class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      // 步骤条方向
       stepDirection: 'horizontal',
-      cardTab: "1",
+      // 当前选中的tabKey
       tab: '1',
     };
     this.setStepDirection = debounce(this.setStepDirection, 200);
@@ -84,11 +67,11 @@ export default class App extends PureComponent {
     const { dispatch, match: { params: { id } } } = this.props;
     console.log(id);
 
-    // // 获取隐患列表
+    // // 获取隐患详情
     // dispatch({
-    //   type: 'hiddenDangerReport/fetchList',
+    //   type: 'hiddenDangerReport/fetchDetail',
     //   payload: {
-
+    //     id,
     //   },
     // });
     this.setStepDirection();
@@ -121,13 +104,6 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 切换卡片标签
-   */
-  handleCardTabChange = (cardTab) => {
-    this.setState({ cardTab });
-  }
-
-  /**
    * 切换头部标签
    */
   handleTabChange = (tab) => {
@@ -138,8 +114,8 @@ export default class App extends PureComponent {
    * 渲染函数
    */
   render() {
-    const { hiddenDangerReport: { detail: { id=248224024, status, unitName="无锡晶安科技有限公司" }, tempList=[] }, loading } = this.props;
-    const { stepDirection, cardTab, tab } = this.state;
+    const { hiddenDangerReport: { detail: { id=248224024, status, unitName="无锡晶安科技有限公司" } }, loading } = this.props;
+    const { stepDirection, tab } = this.state;
     // const current = status - 1;
     const current = 1;
 
@@ -160,64 +136,80 @@ export default class App extends PureComponent {
         onTabChange={this.handleTabChange}
         breadcrumbList={breadcrumbList}
       >
-        <Card title="流程进度" style={{ marginBottom: 24 }} bordered={false}>
-          <Steps direction={stepDirection} progressDot={dot => dot} current={current}>
-            <Step title="隐患创建" description={(
-              <div className={classNames(styles.textSecondary, styles.stepDescription)}>
-                曲丽丽
-                <div>2016-12-12 12:32</div>
-              </div>
-            )} />
-            <Step title="隐患整改" description={(
-              <div className={styles.stepDescription}>
-                周毛毛
-              </div>
-            )} />
-            <Step title="隐患复查" />
-            <Step title="隐患关闭" />
-          </Steps>
-        </Card>
-        <Card title="隐患信息" style={{ marginBottom: 24 }} bordered={false}>
-          <DescriptionList style={{ marginBottom: 16 }}>
-            <Description term="隐患来源">付小小</Description>
-            <Description term="点位名称">32943898021309809423</Description>
-            <Description term="业务分类">3321944288191034921</Description>
-            <Description term="隐患等级">18112345678</Description>
-            <Description term="检查人">曲丽丽</Description>
-            <Description term="创建日期">曲丽丽</Description>
-            <Description term="指定整改人">曲丽丽</Description>
-            <Description term="计划整改日期">曲丽丽</Description>
-          </DescriptionList>
-          <DescriptionList style={{ marginBottom: 16 }} col={1}>
-            <Description term="检查内容">付小小</Description>
-          </DescriptionList>
-          <DescriptionList style={{ marginBottom: 16 }} col={1}>
-            <Description term="隐患描述">付小小</Description>
-          </DescriptionList>
-          <DescriptionList style={{ marginBottom: 16 }} col={1}>
-            <Description term="隐患图片">付小小</Description>
-          </DescriptionList>
-        </Card>
-        <Card title="整改信息" style={{ marginBottom: 24 }} bordered={false}>
-          <div className={styles.noData}>
-            <Icon type="frown-o" />
-            暂无数据
-          </div>
-        </Card>
-        <Card
-          className={styles.tabsCard}
-          bordered={false}
-          tabList={cardTabList}
-          activeTabKey={cardTab}
-          onTabChange={this.handleCardTabChange}
-        >
-          <Table
-            pagination={false}
-            loading={loading}
-            dataSource={tempList}
-            columns={columns}
-          />
-        </Card>
+        <Spin spinning={!!loading}>
+          <Card title="流程进度" style={{ marginBottom: 24 }} bordered={false}>
+            <Steps direction={stepDirection} progressDot={dot => dot} current={current}>
+              <Step title="隐患创建" description={(
+                <div className={classNames(styles.textSecondary, styles.stepDescription)}>
+                  曲丽丽
+                  <div>2016-12-12 12:32</div>
+                </div>
+              )} />
+              <Step title="隐患整改" description={(
+                <div className={styles.stepDescription}>
+                  周毛毛
+                </div>
+              )} />
+              <Step title="隐患复查" />
+              <Step title="隐患关闭" />
+            </Steps>
+          </Card>
+          <Card title="隐患信息" style={{ marginBottom: 24 }} bordered={false}>
+            <DescriptionList style={{ marginBottom: 16 }}>
+              <Description term="隐患来源">隐患来源</Description>
+              <Description term="点位名称">点位名称</Description>
+              <Description term="业务分类">业务分类</Description>
+              <Description term="隐患等级">隐患等级</Description>
+              <Description term="检查人">检查人</Description>
+              <Description term="创建日期">创建日期</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="检查内容">检查内容</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="隐患描述">隐患描述</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="隐患图片">隐患图片</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="指定整改人">指定整改人</Description>
+              <Description term="计划整改日期">计划整改日期</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="指定复查人">指定复查人</Description>
+            </DescriptionList>
+          </Card>
+          <Card title="整改信息" style={{ marginBottom: 24 }} bordered={false}>
+            <DescriptionList style={{ marginBottom: 16 }}>
+              <Description term="整改人">整改人</Description>
+              <Description term="实际整改日期">实际整改日期</Description>
+              <Description term="整改金额">整改金额</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="整改措施">整改措施</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="整改图片">整改图片</Description>
+            </DescriptionList>
+          </Card>
+          <Card title="复查信息" bordered={false}>
+            <DescriptionList style={{ marginBottom: 16 }}>
+              <Description term="复查人">复查人</Description>
+              <Description term="复查日期">复查日期</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="备注">备注</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="复查图片">复查图片</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }}>
+              <Description term="指定整改人">指定整改人</Description>
+              <Description term="计划整改日期">计划整改日期</Description>
+            </DescriptionList>
+          </Card>
+        </Spin>
       </PageHeaderLayout>
     );
   }
