@@ -13,15 +13,15 @@ import {
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import styles from './lawDatabase.less';
+import styles from './IllegalDatabase.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
 // 编辑页面标题
-const editTitle = '编辑法律法规';
+const editTitle = '编辑违法行为库';
 // 添加页面标题
-const addTitle = '新增法律法规';
+const addTitle = '新增违法行为库';
 
 // 表单标签
 const fieldLabels = {
@@ -38,13 +38,13 @@ const fieldLabels = {
   loading: loading.models.lawDatabase,
 }))
 @Form.create()
-export default class LawDatabaseEdit extends PureComponent {
+export default class IllegalDatabaseEdit extends PureComponent {
   state = {};
 
   // 返回到列表页面
   goBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/laws/list`));
+    dispatch(routerRedux.push(`/law-enforcement/illegal/list`));
   };
 
   // 挂载后
@@ -240,9 +240,9 @@ export default class LawDatabaseEdit extends PureComponent {
         name: '执法检查',
       },
       {
-        title: '法律法规库',
-        name: '法律法规库',
-        href: '/law-enforcement/laws/list',
+        title: '违法行为库',
+        name: '违法行为库',
+        href: '/law-enforcement/illegal/list',
       },
       {
         title,

@@ -842,6 +842,7 @@ module.exports = [
         icon: 'dashboard',
         name: 'lawEnforcement',
         routes: [
+          // laws
           {
             path: '/law-enforcement/laws',
             code: 'lawEnforcement.laws',
@@ -876,6 +877,44 @@ module.exports = [
                 code: 'lawEnforcement.laws.view',
                 name: 'view',
                 component: './LawEnforcement/Laws/LawDatabaseDetail',
+              },
+            ],
+          },
+          // illegal
+          {
+            path: '/law-enforcement/illegal',
+            code: 'lawEnforcement.illegal',
+            name: 'illegal',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/law-enforcement/illegal',
+                name: 'illegal',
+                redirect: '/law-enforcement/illegal/list',
+              },
+              {
+                path: '/law-enforcement/illegal/list',
+                code: 'lawEnforcement.illegal.listView',
+                name: 'listView',
+                component: './LawEnforcement/Illegal/IllegalDatabaseList',
+              },
+              {
+                path: '/law-enforcement/illegal/add',
+                code: 'lawEnforcement.illegal.add',
+                name: 'add',
+                component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/illegal/edit',
+                code: 'lawEnforcement.illegal.edit',
+                name: 'edit',
+                component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/illegal/detail',
+                code: 'lawEnforcement.illegal.view',
+                name: 'view',
+                component: './LawEnforcement/Illegal/IllegalDatabaseDatail',
               },
             ],
           },

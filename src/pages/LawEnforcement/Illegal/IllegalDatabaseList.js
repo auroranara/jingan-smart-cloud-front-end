@@ -22,7 +22,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 // 标题
-const title = '法律法规库';
+const title = '违法行为库';
 
 //面包屑
 const breadcrumbList = [
@@ -37,7 +37,7 @@ const breadcrumbList = [
   },
   {
     title,
-    name: '法律法规库',
+    name: '违法行为库',
   },
 ];
 
@@ -55,7 +55,7 @@ const PageSize = 10;
   loading: loading.models.lawDatabase,
 }))
 @Form.create()
-export default class lawDatabaseList extends PureComponent {
+export default class IllegalDatabaseList extends PureComponent {
   constructor(props) {
     super(props);
     this.formData = defaultFormData;
@@ -167,14 +167,14 @@ export default class lawDatabaseList extends PureComponent {
             </FormItem>
             <FormItem>
               {getFieldDecorator('lawsRegulations', {})(
-                <Select style={{ width: 200 }} placeholder="请选择法律法规" />
+                <Select style={{ width: 200 }} placeholder="请选择类别" />
               )}
             </FormItem>
             <FormItem>
               {getFieldDecorator(' lawsRegulationsInput', {
                 initialValue: defaultFormData.lawsRegulationsInput,
                 getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入法律法规" />)}
+              })(<Input placeholder="请输入违法行为" />)}
             </FormItem>
             <FormItem>
               <Button type="primary" onClick={this.handleClickToQuery}>
@@ -189,8 +189,8 @@ export default class lawDatabaseList extends PureComponent {
             <FormItem style={{ float: 'right' }}>
               <AuthButton
                 type="primary"
-                code={codesMap.lawEnforcement.laws.add}
-                href="#/law-enforcement/laws/add"
+                code={codesMap.lawEnforcement.illegal.add}
+                href="#/law-enforcement/illegal/add"
               >
                 新增
               </AuthButton>
@@ -239,21 +239,14 @@ export default class lawDatabaseList extends PureComponent {
         width: 100,
       },
       {
-        title: '所属法律法规',
+        title: '所属类别',
         dataIndex: 'lawsRegulations',
         key: 'lawsRegulations',
         align: 'center',
         width: 260,
       },
       {
-        title: '所属条款',
-        dataIndex: 'subClause',
-        key: 'subClause',
-        align: 'center',
-        width: 150,
-      },
-      {
-        title: '法律法规内容',
+        title: '违法行为',
         dataIndex: 'lawsRegulationsInput',
         key: 'lawsRegulationsInput',
         align: 'center',
@@ -268,19 +261,25 @@ export default class lawDatabaseList extends PureComponent {
         width: 180,
         render: (text, record) => (
           <span>
-            <AuthA code={codesMap.lawEnforcement.laws.detail} href="#/law-enforcement/laws/detail">
+            <AuthA
+              code={codesMap.lawEnforcement.illegal.detail}
+              href="#/law-enforcement/illegal/detail"
+            >
               查看
             </AuthA>
             <Divider type="vertical" />
-            <AuthA code={codesMap.lawEnforcement.laws.edit} href="#/law-enforcement/laws/edit">
+            <AuthA
+              code={codesMap.lawEnforcement.illegal.edit}
+              href="#/law-enforcement/illegal/edit"
+            >
               编辑
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm
-              title="确认要删除该法律法规库吗？"
+              title="确认要删除该违法行为库吗？"
               onConfirm={() => this.handleDelete(record)}
             >
-              <AuthA code={codesMap.lawEnforcement.laws.delete}>删除</AuthA>
+              <AuthA code={codesMap.lawEnforcement.illegal.delete}>删除</AuthA>
             </Popconfirm>
           </span>
         ),

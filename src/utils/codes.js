@@ -98,5 +98,12 @@ export default {
       detail: 'lawEnforcement.laws.view',
       delete: 'lawEnforcement.laws.delete',
     },
+    illegal: {
+      listView: 'lawEnforcement.illegal.listView',
+      add: 'lawEnforcement.illegal.add',
+      edit: 'lawEnforcement.illegal.edit',
+      detail: 'lawEnforcement.illegal.view',
+      delete: 'lawEnforcement.illegal.delete',
+    },
   },
 };
