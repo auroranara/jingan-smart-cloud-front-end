@@ -1051,9 +1051,9 @@ export default class accountManagementEdit extends PureComponent {
     if (nextTargetKeys.length)
       dispatch({
         type: 'role/fetchDetail',
-        payload: { id: nextTargetKeys[0] },
+        payload: { id: nextTargetKeys.join(',') },
         success: ({ permissions }) => {
-          const perms = permissions ? permissions.split(',') : [];
+          const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
           this.permissions = perms;
           setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
         },

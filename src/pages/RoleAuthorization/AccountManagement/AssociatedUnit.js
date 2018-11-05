@@ -1057,9 +1057,9 @@ export default class AssociatedUnit extends PureComponent {
     const { dispatch, form: { setFieldsValue } } = this.props;
     dispatch({
       type: 'role/fetchDetail',
-      payload: { id: ids[0] },
+      payload: { id: ids.join(',') },
       success: ({ permissions }) => {
-        const perms = permissions ? permissions.split(',') : [];
+        const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
         this.permissions = perms;
         setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
       },

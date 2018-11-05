@@ -69,6 +69,7 @@ const fieldLabels = {
   principalPhone: '联系方式',
   principalEmail: '邮箱',
   companyNature: '单位性质',
+  gridId: '所属网格',
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
@@ -179,6 +180,7 @@ export default class CompanyDetail extends PureComponent {
       center: undefined,
       point: undefined,
     },
+    gridTree: [],
   };
 
   /* 生命周期函数 */
@@ -200,6 +202,7 @@ export default class CompanyDetail extends PureComponent {
         query: { isFromAdd },
       },
       goToException: error,
+      form: { setFieldsValue },
     } = this.props;
 
     if (this.operation === 'edit' && isFromAdd) this.setState({ tabActiveKey: tabList[1].key });
@@ -220,8 +223,14 @@ export default class CompanyDetail extends PureComponent {
           practicalDistrict,
           companyIchnography,
           companyNatureLabel,
+          gridId,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+
+          // 若idMap已获取则设值，未获取时则在获取idMap后设值
+          this.gridId = gridId;
+          Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
+
           // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
@@ -328,6 +337,18 @@ export default class CompanyDetail extends PureComponent {
   }
 
   operation = null;
+  idMap = {};
+  gridId = '';
+
+  // 在safety组件中同步gridTree
+  setGridTree = (gridTree, idMap) => {
+    const { form: { setFieldsValue } } = this.props;
+
+    this.idMap = idMap;
+    // 若gridId已获取，则在此设置gridId值，未获取，则在获取详情后设置值
+    this.gridId && setFieldsValue({ gridId: idMap[this.gridId] });
+    this.setState({ gridTree });
+  };
 
   /**
    * 从表单中获取经纬度
@@ -340,7 +361,7 @@ export default class CompanyDetail extends PureComponent {
     const coordinate = getFieldValue('coordinate');
     const temp = coordinate && coordinate.split(',');
     return temp && { longitude: +temp[0], latitude: +temp[1] };
-  }
+  };
 
   /* tab列表点击变化 */
   handleTabChange = key => {
@@ -405,6 +426,7 @@ export default class CompanyDetail extends PureComponent {
           createTime,
           industryCategory,
           coordinate,
+          gridId,
           ...restFields
         }
       ) => {
@@ -432,6 +454,7 @@ export default class CompanyDetail extends PureComponent {
             ),
             longitude,
             latitude,
+            gridId: gridId[gridId.length - 1],
           };
           // 成功回调
           const success = companyId => {
@@ -768,6 +791,7 @@ export default class CompanyDetail extends PureComponent {
             practicalDistrict,
             practicalTown,
             companyNature,
+            gridId,
           },
         },
         registerAddress: registerAddressArea,
@@ -776,7 +800,7 @@ export default class CompanyDetail extends PureComponent {
       },
       form: { getFieldDecorator },
     } = this.props;
-    const { ichnographyList, isCompany } = this.state;
+    const { ichnographyList, isCompany, gridTree } = this.state;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -829,19 +853,18 @@ export default class CompanyDetail extends PureComponent {
                 })(<Input placeholder="请输入社会信用代码" />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.grid}>
-                {getFieldDecorator('grid', {
+            <Col lg={16} md={16} sm={24}>
+              <Form.Item label={fieldLabels.gridId}>
+                {getFieldDecorator('gridId', {
                   // initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
-                  initialValue: undefined,
+                  initialValue: gridId ? this.idMap[gridId] : undefined,
                   rules: [{ required: true, message: '请选择所属网格' }],
                 })(
-                  <Cascader
-                  />
+                  <Cascader options={gridTree} placeholder="请输入所属网格" changeOnSelect />
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={8} sm={24}>
               <Form.Item label={fieldLabels.coordinate}>
                 {getFieldDecorator('coordinate', {
                   initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
@@ -1009,7 +1032,7 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             {this.renderCompanyStatus()}
-            <Col lg={8} md={12} sm={24}>
+            {/* <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyType}>
                 {getFieldDecorator('companyType', {
                   initialValue: id ? companyType+'' : undefined,
@@ -1024,7 +1047,7 @@ export default class CompanyDetail extends PureComponent {
                   </Select>
                 )}
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {
@@ -1331,7 +1354,7 @@ export default class CompanyDetail extends PureComponent {
             {this.renderFooterToolbar()}
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <Safety operation={this.operation} companyId={id} />
+            <Safety operation={this.operation} companyId={id} setGridTree={this.setGridTree} />
           </div>
         </Spin>
       </PageHeaderLayout>
