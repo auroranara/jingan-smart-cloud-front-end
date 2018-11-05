@@ -830,6 +830,18 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.grid}>
+                {getFieldDecorator('grid', {
+                  // initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
+                  initialValue: undefined,
+                  rules: [{ required: true, message: '请选择所属网格' }],
+                })(
+                  <Cascader
+                  />
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.coordinate}>
                 {getFieldDecorator('coordinate', {
                   initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
