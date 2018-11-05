@@ -1,8 +1,8 @@
 import {} from '../services/lawEnforcement/laws.js';
 
-/* 法律法规库 */
+/* 违法行为库 */
 export default {
-  namespace: 'lawDatabase',
+  namespace: 'illegalDatabase',
 
   state: {
     data: {
@@ -15,6 +15,14 @@ export default {
     },
     detail: {},
     items: [],
+    modal: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    },
   },
 
   effects: {

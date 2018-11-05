@@ -166,6 +166,8 @@ export default class CompanyModal extends PureComponent {
       columns,
       pagination,
       rowSelection,
+      field,
+      actSelect = true,
       modal: {
         list,
         pagination: { total, pageNum, pageSize },
@@ -186,8 +188,8 @@ export default class CompanyModal extends PureComponent {
         destroyOnClose
       >
         <InlineForm
-          fields={fields}
-          action={this.renderSelectButton()}
+          fields={field || fields}
+          action={actSelect && this.renderSelectButton()}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
