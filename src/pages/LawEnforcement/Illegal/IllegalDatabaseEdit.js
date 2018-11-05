@@ -168,6 +168,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
     set: {
       visible: false,
     },
+    punish: {
+      visible: false,
+    },
     check: {
       visible: false,
     },
@@ -250,6 +253,56 @@ export default class IllegalDatabaseEdit extends PureComponent {
         fetch={this.fetchIllegalSet}
         onSelect={this.handleSelectSet}
         onClose={this.handleCloseSet}
+        field={setField}
+      />
+    );
+  }
+
+  // 显示模态框(处罚依据)
+  handleFocusPunish = e => {
+    e.target.blur();
+    this.setState({ punish: { visible: true } });
+  };
+
+  // 获取内容(处罚依据)
+  fetchIllegalPunish = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'illegalDatabase/', payload });
+  };
+
+  // 选择按钮点击事件(处罚依据)
+  handleSelectPunish = item => {
+    // const { setFieldsValue } = this.props.form;
+    // const { id, name } = item;
+    // this.companyId = id;
+    // setFieldsValue({ companyName: name });
+    this.handleClose();
+  };
+
+  // 关闭模态框(处罚依据)
+  handleClosePunish = () => {
+    this.setState({ punish: { visible: false } });
+  };
+
+  // 渲染模态框(处罚依据)
+  renderPunishModal() {
+    const {
+      illegalDatabase: { modal },
+      loading,
+    } = this.props;
+    const {
+      punish: { visible },
+    } = this.state;
+    return (
+      <CompanyModal
+        title="选择设定依据"
+        loading={loading}
+        visible={visible}
+        columns={COLUMNS}
+        modal={modal}
+        fetch={this.fetchIllegalPunish}
+        onSelect={this.handleSelectPunish}
+        onClose={this.handleClosePunish}
         field={setField}
       />
     );
@@ -540,7 +593,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
                   message: '请选择处罚依据',
                 },
               ],
-            })(<Input placeholder="请选择处罚依据" />)}
+            })(<Input placeholder="请选择处罚依据" onFocus={this.handleFocusPunish} />)}
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.discretionaryBasis}>
@@ -660,6 +713,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         {this.renderLawsInfo()}
         {this.renderFooterToolbar()}
         {this.renderSetModal()}
+        {this.renderPunishModal()}
         {this.renderCheckModal()}
       </PageHeaderLayout>
     );
