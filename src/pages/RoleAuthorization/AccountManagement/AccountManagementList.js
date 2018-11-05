@@ -207,7 +207,6 @@ export default class accountManagementList extends PureComponent {
 
         // 如果有搜索条件，则填入并所属单位和账号列表
         if (searchInfo) {
-          setFieldsValue(searchInfo)
           selectedUnitType === 2 ?
             fetchUnitsFuzzy({
               payload: { unitType: 2 },
@@ -218,7 +217,7 @@ export default class accountManagementList extends PureComponent {
                 pageSize: defaultPageSize,
               },
             });
-
+          setFieldsValue(searchInfo)
           fetch({
             payload: {
               pageSize,
@@ -382,6 +381,17 @@ export default class accountManagementList extends PureComponent {
     });
   };
 
+  // 所属单位失焦
+  handleUnitIdBlur = () => {
+    const {
+      form: { setFieldsValue },
+      account: { unitIdes },
+    } = this.props
+    if (unitIdes && unitIdes.length) return
+    // 如果输入搜索没有查询到数据 清空输入值
+    setFieldsValue({ unitId: null })
+  }
+
   // 查看更多关联企业
   handleViewMore = (users, loginId) => {
     this.setState({
@@ -504,6 +514,7 @@ export default class accountManagementList extends PureComponent {
                     placeholder="请选择所属单位"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
+                    onBlur={this.handleUnitIdBlur}
                     filterOption={false}
                     style={{ width: 230 }}
                   >

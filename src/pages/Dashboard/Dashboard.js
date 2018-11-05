@@ -51,7 +51,7 @@ export default class Dashboard extends PureComponent {
       monitorItem.url = `${window.publicPath}#/big-platform/monitor/company/${companyId}`
       this.setState({
         safetyProduction,
-        fireService,
+        fireService: unitType === 1 ? 0 : fireService, // 这个迭代维保企业不能看消防
         monitorService,
       });
     }
