@@ -81,6 +81,10 @@ module.exports = [
         path: '/big-platform/monitor/company/:companyId',
         component: './BigPlatform/Monitor/Company',
       },
+      {
+        path: '/big-platform/video',
+        component: './BigPlatform/Video',
+      },
     ],
   },
   //404
