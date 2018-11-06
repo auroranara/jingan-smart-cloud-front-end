@@ -144,7 +144,7 @@ export default class RepairRecordDetail extends PureComponent {
 
   renderFormItem = (item, realStatus, value, content = value) => (
     <FormItem key={item.key} label={item.label} {...formItemLayout}>
-      {!value || value.length === 0 || (realStatus !== '已处理' && item.status === 'repair') ? this.hasNoContent() : (<span className={styles.formContent}>{content}</span>)}
+      {!value || value.length === 0 || (realStatus !== '已处理' && item.status === 'repair' && item.key !== 'unit_name') ? this.hasNoContent() : (<span className={styles.formContent}>{content}</span>)}
     </FormItem>
   )
 
