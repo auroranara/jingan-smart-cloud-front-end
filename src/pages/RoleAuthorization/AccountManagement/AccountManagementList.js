@@ -207,6 +207,7 @@ export default class accountManagementList extends PureComponent {
 
         // 如果有搜索条件，则填入并所属单位和账号列表
         if (searchInfo) {
+          const { unitId: { key } = {}, ...other } = searchInfo
           selectedUnitType === 2 ?
             fetchUnitsFuzzy({
               payload: { unitType: 2 },
@@ -222,7 +223,8 @@ export default class accountManagementList extends PureComponent {
             payload: {
               pageSize,
               pageNum: 1,
-              ...searchInfo,
+              unitId: key || null,
+              ...other,
             },
           });
         } else {
@@ -261,6 +263,7 @@ export default class accountManagementList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
+    const { unitId: { key } = {}, ...other } = data
     // 修改表单数据
     // this.formData = data;
     // 重新请求数据
@@ -268,7 +271,8 @@ export default class accountManagementList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
-        ...data,
+        unitId: key || null,
+        ...other,
       },
     });
     saveSearchInfo({
@@ -320,12 +324,14 @@ export default class accountManagementList extends PureComponent {
     if (isLast) {
       return;
     }
+    const { unitId: { key } = {}, ...other } = getFieldsValue()
     // 请求数据
     appendfetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...getFieldsValue(),
+        unitId: key || null,
+        ...other,
       },
     });
   };
@@ -337,7 +343,7 @@ export default class accountManagementList extends PureComponent {
       form: { setFieldsValue, getFieldValue },
     } = this.props;
     const selectedUnitType = getFieldValue('unitType')
-    setFieldsValue({ unitId: null, userType: [] });
+    setFieldsValue({ unitId: undefined, userType: [] });
     this.setState({ unitTypeChecked: value || selectedUnitType });
     // 根据当前选中的单位类型获取对应的所属单位列表
     if (value === 2) {
@@ -382,12 +388,14 @@ export default class accountManagementList extends PureComponent {
   // 所属单位失焦
   handleUnitIdBlur = () => {
     const {
-      form: { setFieldsValue },
-      account: { unitIdes },
+      form: { setFieldsValue, getFieldValue },
     } = this.props
-    if (unitIdes && unitIdes.length) return
-    // 如果输入搜索没有查询到数据 清空输入值
-    setFieldsValue({ unitId: null })
+    const value = getFieldValue('unitId')
+
+    // 搜索后没有选择就清空
+    if (value && value.key === value.label) {
+      setFieldsValue({ unitId: undefined })
+    }
   }
 
   // 查看更多关联企业
@@ -501,12 +509,13 @@ export default class accountManagementList extends PureComponent {
                   rules: [
                     {
                       whitespace: true,
-                      message: '请选择所属单位',
+                      transform: value => value && value.label,
                     },
                   ],
                 })(
                   <AutoComplete
                     allowClear
+                    labelInValue
                     mode="combobox"
                     optionLabelProp="children"
                     placeholder="请选择所属单位"
