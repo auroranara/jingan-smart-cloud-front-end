@@ -182,6 +182,7 @@ export default class MaintenanceCompanyList extends PureComponent {
     if (searchInfo) {
       // const { industryCategory } = searchInfo
       setFieldsValue(searchInfo)
+      this.formData = searchInfo
       fetch({
         payload: {
           pageSize,

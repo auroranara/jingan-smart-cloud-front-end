@@ -167,7 +167,7 @@ const getEmptyData = () => {
 export default class accountManagementList extends PureComponent {
   constructor(props) {
     super(props);
-    this.formData = defaultFormData;
+    // this.formData = defaultFormData;
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     this.state = {
       modalVisible: false,
@@ -262,7 +262,7 @@ export default class accountManagementList extends PureComponent {
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
-    this.formData = data;
+    // this.formData = data;
     // 重新请求数据
     fetch({
       payload: {
@@ -289,7 +289,7 @@ export default class accountManagementList extends PureComponent {
     // 清除筛选条件
     resetFields();
     // 修改表单数据
-    this.formData = defaultFormData;
+    // this.formData = defaultFormData;
     // 重新请求数据
     fetch({
       payload: {
@@ -313,21 +313,19 @@ export default class accountManagementList extends PureComponent {
   /* 滚动加载 */
   handleLoadMore = () => {
     const {
-      account: { isLast },
+      appendfetch,
+      account: { pageNum, isLast },
+      form: { getFieldsValue },
     } = this.props;
     if (isLast) {
       return;
     }
-    const {
-      appendfetch,
-      account: { pageNum },
-    } = this.props;
     // 请求数据
     appendfetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...this.formData,
+        ...getFieldsValue(),
       },
     });
   };

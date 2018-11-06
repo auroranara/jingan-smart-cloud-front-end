@@ -283,7 +283,7 @@ export default class CompanyList extends PureComponent {
     const data = getFieldsValue();
     const { industryCategory } = data;
     // 修改表单数据
-    this.formData = data;
+    // this.formData = data;
     // 重新请求数据
     fetch({
       payload: {
@@ -307,7 +307,7 @@ export default class CompanyList extends PureComponent {
     // 清除筛选条件
     resetFields();
     // 修改表单数据
-    this.formData = defaultFormData;
+    // this.formData = defaultFormData;
     // 重新请求数据
     fetch({
       payload: {
@@ -321,21 +321,19 @@ export default class CompanyList extends PureComponent {
   /* 滚动加载 */
   handleLoadMore = () => {
     const {
-      company: { isLast },
+      company: { isLast, pageNum },
+      appendFetch,
+      form: { getFieldsValue },
     } = this.props;
     if (isLast) {
       return;
     }
-    const {
-      appendFetch,
-      company: { pageNum },
-    } = this.props;
     // 请求数据
     appendFetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...this.formData,
+        ...getFieldsValue(),
       },
     });
   };
@@ -544,17 +542,17 @@ export default class CompanyList extends PureComponent {
                       部门
                     </Link>,
                   ]}
-                  // extra={hasDeleteAuthority ? (
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // ) : null}
+                // extra={hasDeleteAuthority ? (
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // ) : null}
                 >
                   <div
                   // onClick={hasDetailAuthority ? () => {
@@ -597,12 +595,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                      <img
-                        className={styles.defaultIcon}
-                        src={safetyProduction ? safe : safeGray}
-                        alt="safe"
-                      />
-                    )}
+                        <img
+                          className={styles.defaultIcon}
+                          src={safetyProduction ? safe : safeGray}
+                          alt="safe"
+                        />
+                      )}
                     {unitType === 3 ? (
                       <Popconfirm
                         className={styles.ml30}
@@ -623,12 +621,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                      <img
-                        className={`${styles.defaultIcon} ${styles.ml30}`}
-                        src={fireService ? fire : fireGray}
-                        alt="fire"
-                      />
-                    )}
+                        <img
+                          className={`${styles.defaultIcon} ${styles.ml30}`}
+                          src={fireService ? fire : fireGray}
+                          alt="fire"
+                        />
+                      )}
                   </div>
                 </Card>
               </List.Item>
