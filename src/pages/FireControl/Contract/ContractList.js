@@ -133,27 +133,30 @@ export default class ContractList extends PureComponent {
         searchInfo,
       },
     } = this.props;
-    const success = () => {
-      this.setState({
-        isInit: true,
-      });
-    }
     /* 获取单位状态列表 */
     fetchStatusList();
     /* 获取合同列表 */
     if (searchInfo) {
       const { period: [startTime, endTime], ...otherData } = searchInfo
+      const query = {
+        ...otherData,
+        startTime: startTime && startTime.format('YYYY-MM-DD'),
+        endTime: endTime && endTime.format('YYYY-MM-DD'),
+      }
       // 如果已经保存了搜索条件
       this.refs.InlineForm && this.refs.InlineForm.setFieldsValue(searchInfo)
       fetchList({
         payload: {
           pageSize,
           pageNum: 1,
-          ...otherData,
-          startTime: startTime && startTime.format('YYYY-MM-DD'),
-          endTime: endTime && endTime.format('YYYY-MM-DD'),
+          ...query,
         },
-        success,
+        success: () => {
+          this.setState({
+            isInit: true,
+            formData: query,
+          });
+        },
       });
     } else {
       fetchList({
@@ -161,7 +164,11 @@ export default class ContractList extends PureComponent {
           pageSize,
           pageNum: 1,
         },
-        success,
+        success: () => {
+          this.setState({
+            isInit: true,
+          });
+        },
       });
     }
   }
