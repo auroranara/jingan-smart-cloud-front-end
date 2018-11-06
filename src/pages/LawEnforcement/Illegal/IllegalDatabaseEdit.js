@@ -20,6 +20,7 @@ import {
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
+import CheckModal from './checkModal';
 import styles from './IllegalDatabase.less';
 
 const FormItem = Form.Item;
@@ -27,12 +28,12 @@ const { TextArea } = Input;
 
 const PageSize = 5;
 
-// 标题---编辑
+/* 标题---编辑 */
 const editTitle = '编辑违法行为';
-// 标题---新增
+/* 标题---新增 */
 const addTitle = '新增违法行为';
 
-// 表单标签
+/* 表单标签 */
 const fieldLabels = {
   businessClassify: '所属业务分类',
   hasType: '所属类别',
@@ -44,7 +45,7 @@ const fieldLabels = {
   checkContent: '检查内容',
 };
 
-// (设定依据)
+/* (设定依据) */
 const COLUMNS = [
   {
     title: '所属法律法规',
@@ -69,7 +70,7 @@ const COLUMNS = [
   },
 ];
 
-// (检查内容)
+/* (检查内容) */
 const checkCOLUMNS = [
   {
     title: '检查点名称',
@@ -92,6 +93,18 @@ const checkCOLUMNS = [
     align: 'center',
     width: 100,
   },
+];
+
+const checkList = [
+  {
+    checkName: '检查点',
+    hasIndustry: '制造业',
+    businessClassify: '环保',
+  },
+];
+
+/* (检查内容) */
+const contentCOLUMNS = [
   {
     title: '检查内容',
     dataIndex: 'checkContent',
@@ -113,7 +126,7 @@ const checkCOLUMNS = [
   },
 ];
 
-// 表单(设定依据)
+/* 表单(设定依据) */
 const setField = [
   {
     id: 'businessClassify',
@@ -135,7 +148,7 @@ const setField = [
   },
 ];
 
-// 表单(检查内容)
+/* 表单(检查内容) */
 const checkField = [
   {
     id: 'checkName',
@@ -174,6 +187,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
     check: {
       visible: false,
     },
+    clickContent: false,
   };
 
   // 返回到列表页面
@@ -226,7 +240,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
     // const { id, name } = item;
     // this.companyId = id;
     // setFieldsValue({ companyName: name });
-    this.handleClose();
+    this.handleCloseSet();
   };
 
   // 关闭模态框(设定依据)
@@ -276,7 +290,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
     // const { id, name } = item;
     // this.companyId = id;
     // setFieldsValue({ companyName: name });
-    this.handleClose();
+    this.handleClosePunish();
   };
 
   // 关闭模态框(处罚依据)
@@ -295,7 +309,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
     } = this.state;
     return (
       <CompanyModal
-        title="选择设定依据"
+        title="选择处罚依据"
         loading={loading}
         visible={visible}
         columns={COLUMNS}
@@ -316,7 +330,11 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 关闭模态框(检查内容)
   handleCloseCheck = () => {
-    this.setState({ check: { visible: false } });
+    this.setState({ check: { visible: false }, clickContent: false });
+  };
+
+  showContentTable = () => {
+    this.setState({ clickContent: true });
   };
 
   // 渲染模态框(检查内容)
@@ -327,17 +345,24 @@ export default class IllegalDatabaseEdit extends PureComponent {
     } = this.props;
     const {
       check: { visible },
+      clickContent,
     } = this.state;
+
     return (
-      <CompanyModal
+      <CheckModal
         title="选择检查内容"
         loading={loading}
         visible={visible}
         columns={checkCOLUMNS}
+        column={contentCOLUMNS}
+        checkList={checkList}
+        clickContent={clickContent}
         modal={modal}
         fetch={this.fetchIllegalCheck}
         onSelect={this.handleSelectCheck}
         onClose={this.handleCloseCheck}
+        onClick={this.handleContentTable}
+        onShowTable={this.showContentTable}
         field={checkField}
         actSelect={false}
       />
@@ -345,69 +370,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
   }
 
   // 点击提交按钮验证表单信息
-  handleClickValidate = () => {
-    // const {
-    //   form: { validateFieldsAndScroll },
-    //   match: {
-    //     params: { id },
-    //   },
-    //   dispatch,
-    // } = this.props;
-    // validateFieldsAndScroll((error, values) => {
-    //   if (!error) {
-    //     this.setState({
-    //       submitting: true,
-    //     });
-    //     const {
-    //       businessClassify,
-    //       lawsRegulations,
-    //       subClause,
-    //       lawsRegulationsInput,
-    //       isUse,
-    //     } = values;
-    //     const payload = {
-    //       id,
-    //       businessClassify,
-    //       lawsRegulations,
-    //       subClause,
-    //       lawsRegulationsInput,
-    //       isUse:+isUse,
-    //     };
-    //     const success = () => {
-    //       const msg = id ? '编辑成功' : '新增成功';
-    //       message.success(msg,1,this.goBack());
-    //     };
-    //     const error = () => {
-    //       const msg = id ? '编辑失败' : '新增失败';
-    //       message.error(msg, 1);
-    //       this.setState({
-    //         submitting: false,
-    //       });
-    //     };
-    //     // 如果id存在的话，为编辑
-    //     if (id) {
-    //       dispatch({
-    //         type: 'illegalDatabase/update',
-    //         payload: {
-    //           id,
-    //           ...payload,
-    //         },
-    //         success,
-    //         error,
-    //       });
-    //     }
-    //     // 不存在id,则为新增
-    //     else {
-    //       dispatch({
-    //         type: 'illegalDatabase/fetch',
-    //         payload,
-    //         success,
-    //         error,
-    //       });
-    //     }
-    //   }
-    // });
-  };
+  handleClickValidate = () => {};
 
   /* 渲染table */
   renderTable() {

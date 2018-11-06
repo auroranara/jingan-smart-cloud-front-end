@@ -27,7 +27,7 @@ const breadcrumbList = [
   {
     title: '违法行为库',
     name: '违法行为库',
-    href: '/law-enforcement/illega/list',
+    href: '/law-enforcement/illegal/list',
   },
   {
     title,
@@ -45,7 +45,7 @@ const getEmptyData = () => {
   loading: loading.models.lawDatabase,
 }))
 @Form.create()
-export default class LawDatabaseDetail extends PureComponent {
+export default class LawDetabaseDetail extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     // const {
@@ -66,7 +66,7 @@ export default class LawDatabaseDetail extends PureComponent {
   // 返回到列表页面
   goToEdit = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/laws/edit/${id}`));
+    dispatch(routerRedux.push(`/law-enforcement/illegal/edit/${id}`));
   };
 
   /* 渲染详情 */

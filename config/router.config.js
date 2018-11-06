@@ -914,7 +914,7 @@ module.exports = [
                 path: '/law-enforcement/illegal/detail',
                 code: 'lawEnforcement.illegal.view',
                 name: 'view',
-                component: './LawEnforcement/Illegal/IllegalDatabaseDatail',
+                component: './LawEnforcement/Illegal/IllegalDatabaseDetail',
               },
             ],
           },
