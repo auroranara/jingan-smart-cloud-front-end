@@ -71,6 +71,8 @@ const Supervisions = [
   { id: '3', label: '环保' },
 ];
 
+const SUPERVISIONS_ALL = Supervisions.map(({ id }) => id);
+
 const treeData = data => {
   return data.map(item => {
     if (item.children) {
@@ -232,7 +234,7 @@ export default class accountManagementEdit extends PureComponent {
       fetchRoles,
       fetchExecCertificateType,
       fetchUserType,
-      fetchDepartmentList,
+      // fetchDepartmentList,
     } = this.props;
 
     const success = id
@@ -476,6 +478,9 @@ export default class accountManagementEdit extends PureComponent {
         } else {
           setFieldsValue({ userType: undefined });
         }
+
+        if (id === 4 || id === 2)
+          setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
       }
     );
   };
@@ -916,6 +921,26 @@ export default class accountManagementEdit extends PureComponent {
                       <Select placeholder="请选择用户类型">
                         {userTypes.map(item => (
                           <Option value={item.value} key={item.value}>
+                            {item.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === 4 &&
+              !id && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.regulatoryClassification}>
+                    {getFieldDecorator('regulatoryClassification', {
+                      initialValue: SUPERVISIONS_ALL,
+                      rules: [{ required: true, message: '请选择业务分类' }],
+                    })(
+                      <Select mode="multiple" placeholder="请选择业务分类">
+                        {Supervisions.map(item => (
+                          <Option value={item.id} key={item.id}>
                             {item.label}
                           </Option>
                         ))}
