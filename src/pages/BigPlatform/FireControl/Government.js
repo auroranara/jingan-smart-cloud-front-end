@@ -55,6 +55,7 @@ export default class FireControlBigPlatform extends PureComponent {
     isLookUpRotated: false, // 单位查岗组件翻转
     lookUpShow: LOOKING_UP,
     // recordsId: undefined,
+    isLookingUp: false,
     startLookUp: false,
     showConfirm: false,
     confirmCount: 5,
@@ -87,6 +88,7 @@ export default class FireControlBigPlatform extends PureComponent {
   lookingUpTimer = null;
   mapItemList = [];
   dropdownDOM = null;
+  // isLookingUp = false; // 标记正在查岗状态
 
   initFetch = () => {
     const { dispatch } = this.props;
@@ -137,11 +139,14 @@ export default class FireControlBigPlatform extends PureComponent {
       type: 'bigFireControl/fetchInitLookUp',
       callback: (flag, recordsId) => {
         // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
-        if (myParseInt(flag) === AUTO_LOOKUP_ROTATE) this.handleClickLookUp(true);
+        if (myParseInt(flag) === AUTO_LOOKUP_ROTATE) {
+          this.handleClickLookUp(true);
+        }
 
         // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
         // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
         // this.setState({ recordsId });
+        this.recordsId =  recordsId;
         recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
       },
     });
@@ -216,6 +221,9 @@ export default class FireControlBigPlatform extends PureComponent {
   jumpToLookingUp = () => {
     const { dispatch } = this.props;
 
+    // 状态改为正在查岗
+    this.setState({ isLookingUp: true });
+
     // 开始轮询正在查岗数据(倒计时时候的数据)，可能会提早结束，所以轮询时判断返回的值，若提早结束，则直接赚回来
     this.lookingUpTimer = setInterval(() => {
       dispatch({
@@ -229,16 +237,27 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true, startLookUp: true });
   };
 
+  // 正在查岗时，翻转到正在查岗页面，普通翻转，并不需要上个函数那些开始查岗进行的操作
+  turnToLookingUp = () => {
+    this.setState({ lookUpShow: LOOKING_UP, isLookUpRotated: true, startLookUp: false });
+  };
+
   handleClickOffGuard = () => {
     this.setState({ lookUpShow: OFF_GUARD, isLookUpRotated: true });
   };
 
-  // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，并重新获取查岗历史记录
+  // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，正在查岗状态改为false，并重新获取查岗历史记录
   handleLookUpRotateBack = (isCountdownBack = false) => {
-    // const { dispatch } = this.props;
+    const { dispatch } = this.props;
+
     this.setState({ isLookUpRotated: false, startLookUp: false });
 
+    // 翻回来时重新更新offGuard
+    const recordsId = this.recordsId;
+    recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
+
     if (isCountdownBack) {
+      this.setState({ isLookingUp: false });
       clearInterval(this.lookingUpTimer);
       // 为了防止后台没有处理完，延迟一点发送请求
       setTimeout(() => this.fetchInitLookUp(), 1000);
@@ -431,6 +450,7 @@ export default class FireControlBigPlatform extends PureComponent {
       alarmDetail,
       lookUpShow,
       // recordsId,
+      isLookingUp,
       startLookUp,
       showReverse,
       videoVisible,
@@ -566,7 +586,8 @@ export default class FireControlBigPlatform extends PureComponent {
                 front={
                   <UnitLookUp
                     data={lookUp}
-                    handleClickLookUp={this.handleClickLookUp}
+                    // 正在查岗时候，按查岗按钮时，只是普通的翻过去，不在查岗，表示开始查岗，进行原来的逻辑
+                    handleClickLookUp={isLookingUp ? this.turnToLookingUp : this.handleClickLookUp}
                     handleClickOffGuard={this.handleClickOffGuard}
                     handleClickVideoLookUp={this.handleClickVideoLookUp}
                   />
