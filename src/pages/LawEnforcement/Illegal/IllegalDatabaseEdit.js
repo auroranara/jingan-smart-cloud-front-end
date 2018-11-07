@@ -25,6 +25,7 @@ import styles from './IllegalDatabase.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const { Option } = Select;
 
 const PageSize = 5;
 
@@ -170,8 +171,9 @@ const checkField = [
   },
 ];
 
-@connect(({ illegalDatabase, user, loading }) => ({
+@connect(({ illegalDatabase, lawDatabase, user, loading }) => ({
   illegalDatabase,
+  lawDatabase,
   user,
   loading: loading.models.illegalDatabase,
 }))
@@ -198,29 +200,35 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 挂载后
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   match: {
-    //     params: { id },
-    //   },
-    // } = this.props;
-    // if (id) {
-    //   // 根据id获取详情
-    //   dispatch({
-    //     type: 'illegalDatabase/',
-    //     payload: {
-    //       id,
-    //     },
-    //   });
-    // } else {
-    //   // 清空详情
-    //   dispatch({
-    //     type: 'illegalDatabase/clearDetail',
-    //   });
-    // }
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    if (id) {
+      // 根据id获取详情
+      dispatch({
+        type: 'illegalDatabase/fetchIllegalList',
+        payload: {
+          id,
+        },
+      });
+    } else {
+      // 清空详情
+      dispatch({
+        type: 'illegalDatabase/clearDetail',
+      });
+    }
+    // 获取初始化选项
+    dispatch({
+      type: 'lawDatabase/fetchOptions',
+    });
+    // 获取所属类别
+    dispatch({
+      type: 'illegalDatabase/fetchType',
+    });
   }
-
-  // 获取所属业务和所属类别
 
   // 显示模态框(设定依据)
   handleFocusSet = e => {
@@ -372,8 +380,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 点击提交按钮验证表单信息
   handleClickValidate = () => {};
 
-  /* 渲染table */
-  renderTable() {
+  /* 渲染table(检查内容) */
+  renderCheckTable() {
     const { tableLoading } = this.props;
 
     const list = [
@@ -480,6 +488,20 @@ export default class IllegalDatabaseEdit extends PureComponent {
   renderLawsInfo() {
     const {
       form: { getFieldDecorator },
+      illegalDatabase: {
+        detail: {
+          businessType,
+          typeCode,
+          actContent,
+          setLawIds,
+          punishLawIds,
+          discretionStandard,
+          enable,
+          // checkObjectIds,
+        },
+        businessTypes,
+        typeCodes,
+      },
     } = this.props;
 
     const formItemLayout = {
@@ -499,32 +521,49 @@ export default class IllegalDatabaseEdit extends PureComponent {
         <Form hideRequiredMark style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label={fieldLabels.businessClassify}>
             <Col span={24}>
-              {getFieldDecorator('businessClassify', {
-                // initialValue:
+              {getFieldDecorator('businessType', {
+                initialValue: businessType,
                 rules: [
                   {
                     required: true,
                     message: '请选择业务分类',
                   },
                 ],
-              })(<Select placeholder="请选择业务分类">{}</Select>)}
+              })(
+                <Select placeholder="请选择业务分类">
+                  {businessTypes.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.label}
+                    </Option>
+                  ))}
+                </Select>
+              )}
             </Col>
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.hasType}>
-            {getFieldDecorator('hasType', {
-              // initialValue:
+            {getFieldDecorator('typeCode', {
+              initialValue: typeCode,
               rules: [
                 {
                   required: true,
                   message: '请选择所属类别',
                 },
               ],
-            })(<Select placeholder="请选择所属类别" />)}
+            })(
+              <Select placeholder="请选择所属类别">
+                {typeCodes.map(item => (
+                  <Option value={item.id} key={item.id}>
+                    {item.label}
+                  </Option>
+                ))}
+              </Select>
+            )}
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.illegalAct}>
-            {getFieldDecorator('illegalAct', {
+            {getFieldDecorator('actContent', {
+              initialValue: actContent,
               rules: [
                 {
                   required: true,
@@ -536,8 +575,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.setBasis}>
-            {getFieldDecorator('setBasis', {
-              // initialValue:
+            {getFieldDecorator('setLawIds', {
+              initialValue: setLawIds,
               rules: [
                 {
                   required: true,
@@ -548,8 +587,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.punishBasis}>
-            {getFieldDecorator('punishBasis', {
-              // initialValue:
+            {getFieldDecorator('punishLawIds', {
+              initialValue: punishLawIds,
               rules: [
                 {
                   required: true,
@@ -560,15 +599,16 @@ export default class IllegalDatabaseEdit extends PureComponent {
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.discretionaryBasis}>
-            {getFieldDecorator('discretionaryBasis', {
+            {getFieldDecorator('discretionStandard', {
+              initialValue: discretionStandard,
               rules: [{ required: true, message: '请输入裁量基准', whitespace: true }],
             })(<TextArea rows={4} placeholder="请输入裁量基准" maxLength="2000" />)}
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.isUse}>
-            {getFieldDecorator('isUse', {
+            {getFieldDecorator('enable', {
               valuePropName: 'checked',
-              // initialValue: !!isUse,
+              initialValue: !!enable,
             })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
           </FormItem>
 
@@ -578,7 +618,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
             </Button>
           </FormItem>
           <Divider style={{ marginTop: '-20px' }} />
-          {this.renderTable()}
+          {this.renderCheckTable()}
         </Form>
       </Card>
     );

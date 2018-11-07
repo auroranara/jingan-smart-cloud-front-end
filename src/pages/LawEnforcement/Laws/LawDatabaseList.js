@@ -1,18 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  Input,
-  Table,
-  Select,
-  Divider,
-  Col,
-  Popconfirm,
-  // message,
-} from 'antd';
-// import { routerRedux } from 'dva/router';
+import { Form, Card, Button, Input, Table, Select, Divider, Col, Popconfirm, message } from 'antd';
+import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codesMap from '@/utils/codes';
@@ -43,8 +32,9 @@ const breadcrumbList = [
 
 // 默认表单值
 const defaultFormData = {
-  maintenanceName: undefined,
-  serviceUnitName: undefined,
+  businessType: undefined,
+  lawType: undefined,
+  content: undefined,
 };
 
 const PageSize = 10;
@@ -61,95 +51,139 @@ export default class lawDatabaseList extends PureComponent {
     this.formData = defaultFormData;
   }
 
-  state = {};
+  state = {
+    currentPage: 1,
+  };
 
   // 挂载后
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   lawDatabase: {
-    //     data: {
-    //       pagination: { pageSize },
-    //     },
-    //   },
-    // } = this.props;
-    // // 获取记录列表
-    // dispatch({
-    //   type: 'lawDatabase/fetch',
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    const {
+      dispatch,
+      lawDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 获取记录列表
+    dispatch({
+      type: 'lawDatabase/fetch',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+    // 获取初始化选项
+    dispatch({
+      type: 'lawDatabase/fetchOptions',
+    });
   }
+
+  // 跳转到详情页面
+  goLawsDetail = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/law-enforcement/laws/detail/${id}`));
+  };
+
+  // 跳转到编辑页面
+  goLawsEdit = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/law-enforcement/laws/edit/${id}`));
+  };
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
-    // const {
-    //   dispatch,
-    //   form: { getFieldsValue },
-    //   lawDatabase: {
-    //     data: {
-    //       pagination: { pageSize },
-    //     },
-    //   },
-    // } = this.props;
-    // const data = getFieldsValue();
-    // // 修改表单数据
-    // this.formData = data;
-    // // 重新请求数据
-    // dispatch({
-    //   type:'lawDatabase/fetch',
-    //   payload:{
-    //     pageSize,
-    //     pageNum: 1,
-    //     ...data,
-    //   },
-    // })
+    const {
+      dispatch,
+      form: { getFieldsValue },
+      lawDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    const data = getFieldsValue();
+    // 修改表单数据
+    this.formData = data;
+    // 重新请求数据
+    dispatch({
+      type: 'lawDatabase/fetch',
+      payload: {
+        pageSize,
+        pageNum: 1,
+        ...data,
+      },
+    });
   };
 
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
-    // const {
-    //   dispatch,
-    //   form: { resetFields },
-    //   lawDatabase: {
-    //     data: {
-    //       pagination: { pageSize },
-    //     },
-    //   },
-    // } = this.props;
-    // // 清除筛选条件
-    // resetFields();
-    // this.formData = defaultFormData;
-    // dispatch({
-    //   type: 'lawDatabase/fetch',
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    const {
+      dispatch,
+      form: { resetFields },
+      lawDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 清除筛选条件
+    resetFields();
+    this.formData = defaultFormData;
+    dispatch({
+      type: 'lawDatabase/fetch',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+  };
+
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
   };
 
   /* 删除 */
-  handleDelete = record => {
-    // const { dispatch } = this.props;
-    //   dispatch({
-    //     type: 'lawDatabase/',
-    //     payload: record.id,
-    //     callback: response => {
-    //       if (response && response.code === 200) {
-    //         this.getDepartments();
-    //         message.success('删除成功！');
-    //       } else message.success(response.msg);
-    //     },
-    //   });
+  handleDelete = id => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+      lawDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'lawDatabase/deleteLaws',
+      payload: id,
+      callback: response => {
+        if (response && response.code === 200) {
+          dispatch({
+            type: 'lawDatabase/fetch',
+            payload: {
+              pageSize,
+              pageNum: 1,
+              ...data,
+            },
+          });
+          message.success('删除成功！');
+        } else message.success(response.msg);
+      },
+    });
   };
 
   /* 渲染form表单 */
   renderForm() {
     const {
       form: { getFieldDecorator },
+      lawDatabase: { businessTypes, lawTypes },
     } = this.props;
 
     return (
@@ -157,22 +191,30 @@ export default class lawDatabaseList extends PureComponent {
         <Form layout="inline">
           <Col span={18}>
             <FormItem>
-              {getFieldDecorator('businessClassify', {})(
+              {getFieldDecorator('businessType', {})(
                 <Select style={{ width: 200 }} placeholder="请选择业务分类">
-                  <Option value="安全生产">安全生产</Option>
-                  <Option value="消防">消防</Option>
-                  <Option value="环保">环保</Option>
+                  {businessTypes.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.label}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('lawsRegulations', {})(
-                <Select style={{ width: 200 }} placeholder="请选择法律法规" />
+              {getFieldDecorator('lawType', {})(
+                <Select style={{ width: 200 }} placeholder="请选择法律法规">
+                  {lawTypes.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.label}
+                    </Option>
+                  ))}
+                </Select>
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator(' lawsRegulationsInput', {
-                initialValue: defaultFormData.lawsRegulationsInput,
+              {getFieldDecorator('content', {
+                initialValue: defaultFormData.content,
                 getValueFromEvent: e => e.target.value.trim(),
               })(<Input placeholder="请输入法律法规" />)}
             </FormItem>
@@ -203,59 +245,50 @@ export default class lawDatabaseList extends PureComponent {
 
   /* 渲染table */
   renderTable() {
-    const { tableLoading } = this.props;
+    const {
+      tableLoading,
+      lawDatabase: {
+        data: { list },
+      },
+    } = this.props;
 
-    const list = [
-      {
-        number: '001',
-        businessClassify: '消防',
-        lawsRegulations: '中华人民共和国安全生产法',
-        subClause: '第八十九条',
-        lawsRegulationsInput: '承担安全评价、认证、检测、检验工作的机构，出具虚假证明的……',
-      },
-      {
-        number: '002',
-        businessClassify: '消防',
-        lawsRegulations: '中华人民共和国安全生产法',
-        subClause: '第八十九条',
-        lawsRegulationsInput: '承担安全评价、认证、检测、检验工作的机构，出具虚假证明的……',
-      },
-    ];
+    const { currentPage } = this.state;
+    const indexBase = (currentPage - 1) * PageSize;
 
     /* 配置描述 */
     const COLUMNS = [
       {
         title: '序号',
-        dataIndex: 'number',
-        key: 'number',
+        dataIndex: 'index',
+        key: 'index',
         align: 'center',
         width: 70,
       },
       {
         title: '业务分类',
-        dataIndex: 'businessClassify',
-        key: 'businessClassify',
+        dataIndex: 'businessTypeName',
+        key: 'businessType',
         align: 'center',
         width: 100,
       },
       {
         title: '所属法律法规',
-        dataIndex: 'lawsRegulations',
-        key: 'lawsRegulations',
+        dataIndex: 'lawTypeName',
+        key: 'lawType',
         align: 'center',
         width: 260,
       },
       {
         title: '所属条款',
-        dataIndex: 'subClause',
-        key: 'subClause',
+        dataIndex: 'article',
+        key: 'article',
         align: 'center',
         width: 150,
       },
       {
         title: '法律法规内容',
-        dataIndex: 'lawsRegulationsInput',
-        key: 'lawsRegulationsInput',
+        dataIndex: 'content',
+        key: 'content',
         align: 'center',
         width: 650,
       },
@@ -266,19 +299,25 @@ export default class lawDatabaseList extends PureComponent {
         fixed: 'right',
         align: 'center',
         width: 180,
-        render: (text, record) => (
+        render: (record, rows) => (
           <span>
-            <AuthA code={codesMap.lawEnforcement.laws.detail} href="#/law-enforcement/laws/detail">
+            <AuthA
+              code={codesMap.lawEnforcement.laws.detail}
+              onClick={() => this.goLawsDetail(rows.id)}
+            >
               查看
             </AuthA>
             <Divider type="vertical" />
-            <AuthA code={codesMap.lawEnforcement.laws.edit} href="#/law-enforcement/laws/edit">
+            <AuthA
+              code={codesMap.lawEnforcement.laws.edit}
+              onClick={() => this.goLawsEdit(rows.id)}
+            >
               编辑
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm
               title="确认要删除该法律法规库吗？"
-              onConfirm={() => this.handleDelete(record)}
+              onConfirm={() => this.handleDelete(rows.id)}
             >
               <AuthA code={codesMap.lawEnforcement.laws.delete}>删除</AuthA>
             </Popconfirm>
@@ -294,7 +333,7 @@ export default class lawDatabaseList extends PureComponent {
             loading={tableLoading}
             rowKey="id"
             columns={COLUMNS}
-            dataSource={list}
+            dataSource={this.handleTableData(list, indexBase)}
             pagination={{ pageSize: PageSize }}
             scroll={{ x: 1400 }}
             bordered
@@ -307,8 +346,22 @@ export default class lawDatabaseList extends PureComponent {
   }
 
   render() {
+    const {
+      lawDatabase: {
+        data: { list },
+      },
+    } = this.props;
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            列表记录：
+            {list.length}{' '}
+          </div>
+        }
+      >
         {this.renderForm()}
         {this.renderTable()}
       </PageHeaderLayout>

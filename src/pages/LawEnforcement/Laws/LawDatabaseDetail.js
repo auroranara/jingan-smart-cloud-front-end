@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card } from 'antd';
+import { Form, Card, Badge } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -48,22 +48,22 @@ const getEmptyData = () => {
 export default class LawDatabaseDetail extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   match: {
-    //     params: { id },
-    //   },
-    // } = this.props;
-    // // 获取详情
-    // dispatch({
-    //   type: 'lawDatabase/',
-    //   payload: {
-    //     id,
-    //   },
-    // });
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    // 获取详情
+    dispatch({
+      type: 'lawDatabase/fetchLawsDetail',
+      payload: {
+        id,
+      },
+    });
   }
 
-  // 返回到列表页面
+  // 返回到编辑页面
   goToEdit = id => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push(`/law-enforcement/laws/edit/${id}`));
@@ -75,15 +75,33 @@ export default class LawDatabaseDetail extends PureComponent {
       match: {
         params: { id },
       },
-      // lawDatabase: { detail },
+      lawDatabase: {
+        detail: { businessTypeName, lawTypeName, article, content, status },
+      },
     } = this.props;
+    console.log(this.props);
     return (
       <Card title="法律法规详情" bordered={false}>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="业务分类">{111 || getEmptyData()}</Description>
-          <Description term="所属法律法规" />
-          <Description term="所属条款" />
-          <Description term="法律法规内容" />
+          <Description term="业务分类">{businessTypeName || getEmptyData()}</Description>
+          <Description term="所属法律法规">{lawTypeName || getEmptyData()}</Description>
+          <Description term="所属条款">{article || getEmptyData()}</Description>
+          <Description term="法律法规内容">{content || getEmptyData()}</Description>
+          <Description term="是否启用">
+            {+status === 1 ? (
+              <span>
+                <Badge status="success" />
+                启用
+              </span>
+            ) : (
+              (
+                <span>
+                  <Badge status="error" />
+                  禁用
+                </span>
+              ) || getEmptyData()
+            )}
+          </Description>
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
           <AuthButton

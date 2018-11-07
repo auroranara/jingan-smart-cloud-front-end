@@ -867,13 +867,13 @@ module.exports = [
                 component: './LawEnforcement/Laws/LawDatabaseEdit',
               },
               {
-                path: '/law-enforcement/laws/edit',
+                path: '/law-enforcement/laws/edit/:id',
                 code: 'lawEnforcement.laws.edit',
                 name: 'edit',
                 component: './LawEnforcement/Laws/LawDatabaseEdit',
               },
               {
-                path: '/law-enforcement/laws/detail',
+                path: '/law-enforcement/laws/detail/:id',
                 code: 'lawEnforcement.laws.view',
                 name: 'view',
                 component: './LawEnforcement/Laws/LawDatabaseDetail',
