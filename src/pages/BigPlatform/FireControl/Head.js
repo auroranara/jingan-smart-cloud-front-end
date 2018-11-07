@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import router from 'umi/router';
 import { TreeSelect } from 'antd';
 
 // import bg from './img/title.png';
@@ -14,13 +15,21 @@ function addZero(n) {
 export default class Head extends PureComponent {
   state = {
     time: new Date,
-    treeValue: TREE_DATA[0].key,
+    // treeValue: TREE_DATA[0].key,
+    treeValue: '',
   };
 
   componentDidMount() {
+    const { dispatch } = this.props;
+
     this.timer = setInterval(() => {
       this.setState({ time: new Date });
     }, 1000);
+
+    dispatch({
+      type: 'bigFireControl/fetchGrids',
+      callback: data => this.setState({ treeValue: data && data.length ? data[0].key : '' }),
+    });
   }
 
   componentWillUnmount() {
@@ -31,11 +40,19 @@ export default class Head extends PureComponent {
 
   onChange = value => {
     // console.log(value);
+    const { treeValue: formerValue } = this.state;
+
+    // 选择的值与之前相同时，不做处理
+    if (value === formerValue)
+      return;
+
     this.setState({ treeValue: value });
+    router.push(`/big-platform/fire-control/government/${value}`);
+    location.reload();
   };
 
   render() {
-    const { title } = this.props;
+    const { title, data } = this.props;
     const { time, treeValue } = this.state;
     const date = `${time.getFullYear()}-${addZero(time.getMonth() + 1)}-${addZero(time.getDate())}`;
     const day = `星期${DAY[time.getDay()]}`;
@@ -56,8 +73,8 @@ export default class Head extends PureComponent {
             value={treeValue}
             // dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
             dropdownClassName={styles.dropdown}
-            treeData={TREE_DATA}
-            // placeholder="Please select"
+            // treeData={TREE_DATA}
+            treeData={data}
             treeDefaultExpandAll
             onChange={this.onChange}
           />

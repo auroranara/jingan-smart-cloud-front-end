@@ -35,7 +35,7 @@ export default class Dashboard extends PureComponent {
     } = this.props;
 
     safeItem.url = `${window.publicPath}#/big-platform/safety/government`
-    fireItem.url = `${window.publicPath}#/big-platform/fire-control/government`
+    fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
     if (unitType === 2) {

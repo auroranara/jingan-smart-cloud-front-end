@@ -17,6 +17,7 @@ import {
   // getStartToPlay,
   getVideoLookUp,
   getMapLocation,
+  getGrids,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -112,6 +113,7 @@ export default {
     videoLookUp: [],
     lookUpCamera: [],
     mapLocation: [],
+    grids: [],
   },
 
   effects: {
@@ -265,6 +267,18 @@ export default {
         error();
       }
     },
+    // 获取网格列表
+    *fetchGrids({ payload, callback }, { call, put }) {
+      let response = yield call(getGrids);
+      response = response || EMPTY_OBJECT;
+      // const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+      const code = 200;
+      const data = response;
+      if (code === 200) {
+        yield put({ type: 'saveGrids', payload: data });
+        callback && callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -332,6 +346,9 @@ export default {
     },
     mapLocation(state, action) {
       return { ...state, mapLocation: action.payload ? JSON.parse(action.payload) : [] };
+    },
+    saveGrids(state, action) {
+      return { ...state, grids: action.payload };
     },
   },
 };

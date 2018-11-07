@@ -99,18 +99,8 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchFireTrend' });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
     dispatch({ type: 'bigFireControl/fetchDanger' });
-    dispatch({
-      type: 'bigFireControl/fetchInitLookUp',
-      callback: (flag, recordsId) => {
-        // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
-        if (myParseInt(flag) === AUTO_LOOKUP_ROTATE) this.handleClickLookUp(true);
 
-        // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
-        // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
-        // this.setState({ recordsId });
-        recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
-      },
-    });
+    this.fetchInitLookUp();
 
     if (region === '江溪街道') {
       // 获取网格区域
@@ -138,6 +128,23 @@ export default class FireControlBigPlatform extends PureComponent {
     // dispatch({ type: 'bigFireControl/fetchSys' });
     // dispatch({ type: 'bigFireControl/fetchFireTrend' });
     // dispatch({ type: 'bigFireControl/fetchDanger' });
+  };
+
+  fetchInitLookUp = () => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'bigFireControl/fetchInitLookUp',
+      callback: (flag, recordsId) => {
+        // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
+        if (myParseInt(flag) === AUTO_LOOKUP_ROTATE) this.handleClickLookUp(true);
+
+        // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
+        // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
+        // this.setState({ recordsId });
+        recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
+      },
+    });
   };
 
   handleLookUpConfirmOk = () => {
@@ -228,13 +235,13 @@ export default class FireControlBigPlatform extends PureComponent {
 
   // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，并重新获取查岗历史记录
   handleLookUpRotateBack = (isCountdownBack = false) => {
-    const { dispatch } = this.props;
+    // const { dispatch } = this.props;
     this.setState({ isLookUpRotated: false, startLookUp: false });
 
     if (isCountdownBack) {
       clearInterval(this.lookingUpTimer);
       // 为了防止后台没有处理完，延迟一点发送请求
-      setTimeout(() => dispatch({ type: 'bigFireControl/fetchInitLookUp' }), 1500);
+      setTimeout(() => this.fetchInitLookUp(), 1000);
     }
   };
 
@@ -386,6 +393,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
   render() {
     const {
+      match: { params: { gridId } },
       bigFireControl: {
         overview,
         companyOv,
@@ -406,6 +414,7 @@ export default class FireControlBigPlatform extends PureComponent {
         videoLookUp,
         lookUpCamera,
         mapLocation,
+        grids,
       },
       dispatch,
       offGuardWarnLoading,
@@ -447,7 +456,7 @@ export default class FireControlBigPlatform extends PureComponent {
         style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
       >
         {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
-        <Head title="晶 安 智 慧 消 防 云 平 台" />
+        <Head title="晶 安 智 慧 消 防 云 平 台" dispatch={dispatch} data={grids} gridId={gridId} />
         <div className={styles.empty} />
         <Row
           style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
