@@ -26,7 +26,6 @@ const breadcrumbList = [
 
 const documentElem = document.documentElement;
 // const body = document.body;
-const childElem = document.querySelector('#root div');
 
 @connect(({ transmission, user, loading }) => ({
   transmission,
@@ -43,6 +42,9 @@ export default class UserTransmissionDevice extends PureComponent {
 
   componentDidMount() {
     const that = this;
+
+    // 不能将获取childElem放在外面，因为每次组件重新渲染后childElem都可能与原来不同，所以要每次重新获取
+    this.childElem = document.querySelector('#root div');
     document.addEventListener('scroll', this.handleScroll, false);
     // 给body用addEventListener加并没有用，用onscroll却是可以的，不知为何，而用addEventListener加在document上是可以的
     // body.onscroll = this.handleScroll;
@@ -66,6 +68,7 @@ export default class UserTransmissionDevice extends PureComponent {
     // body.onscroll = null;
   }
 
+  childElem = null;
   currentpageNum = 2;
 
   handleScroll = e => {
@@ -78,6 +81,7 @@ export default class UserTransmissionDevice extends PureComponent {
 
     const { loading } = this.props;
     const { hasMore } = this.state;
+    const childElem = this.childElem;
     // const { scrollLoading, hasMore } = this.state;
     // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
     // 判断页面是否滚到底部
@@ -85,8 +89,8 @@ export default class UserTransmissionDevice extends PureComponent {
 
     // 这里的页面结构是，html和body和div.#root是一样高的，而div.#root下的唯一子元素是高度比较大的
     // 发现向上滚动时，整个html都在往上滚，所以要获取document.documentElement元素，才能正确获取到scollTop，body及div.#root获取到的scrollTop都为0
-    const scrollToBottom =
-      documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
+    const scrollToBottom = documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
+    // console.log(childElem);
     // console.log(documentElem.scrollTop + documentElem.offsetHeight, childElem.offsetHeight);
     // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
     if (scrollToBottom && !loading && hasMore) this.handleLazyload();

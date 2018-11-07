@@ -14,6 +14,7 @@ import {
   Input,
   Modal,
   Upload,
+  Radio,
   Select,
 } from 'antd';
 // import FooterToolbar from 'components/FooterToolbar';
@@ -24,7 +25,9 @@ import { getToken } from 'utils/authority';
 const { RangePicker } = DatePicker;
 const { Item: FormItem } = Form;
 const { Option } = Select;
+const { Group: RadioGroup } = Radio;
 
+const SAFETY_IMPORTANT = 'companyType';
 const UPLOADERS = ['companyLogo', 'reachGradeAccessory'];
 // const UPLOADERS = ['companyLogo', 'reachGradeAccessory', 'safetyFourPicture'];
 const UPLOADERS_MAP = { companyLogo: 'logoList', reachGradeAccessory: 'standardList' };
@@ -82,24 +85,26 @@ const itemLayout1 = {
 };
 
 const GET_ITEMS = [
-  'gridId',
+  // 'gridId',
   'regulatoryClassification',
   'regulatoryGrade',
   'reachGrade',
   'subjection',
   'regulatoryOrganization',
   'startTime',
+  SAFETY_IMPORTANT,
   'safetyFourPicture',
   'companyLogo',
 ];
 const MORE_GET_ITEMS = [
-  'gridId',
+  // 'gridId',
   'regulatoryClassification',
   'regulatoryGrade',
   'reachGrade',
   'subjection',
   'regulatoryOrganization',
   'startTime',
+  SAFETY_IMPORTANT,
   'reachGradeAccessory',
   'safetyFourPicture',
   'companyLogo',
@@ -170,8 +175,8 @@ function handleFormValues(fieldsValue) {
   delete formValues.validity;
   [formValues.startTime, formValues.endTime] = timestampArray;
 
-  const ids = formValues.gridId;
-  formValues.gridId = ids[ids.length - 1];
+  // const ids = formValues.gridId;
+  // formValues.gridId = ids[ids.length - 1];
 
   // 处理提交按钮，提交dbUrl即可
   UPLOADERS.forEach(key => {
@@ -236,12 +241,14 @@ export default class Safety extends PureComponent {
       dispatch,
       companyId,
       operation,
+      setGridTree,
       form: { setFieldsValue },
     } = this.props;
     dispatch({
       type: 'safety/fetchMenus',
       callback({ gridList }) {
         that.gridTree = handleGridTree(gridList, idMap);
+        setGridTree(that.gridTree, idMap);
 
         if (operation === 'add') return;
 
@@ -276,7 +283,7 @@ export default class Safety extends PureComponent {
         prev.validity = [detail.startTime, detail.endTime].map(timestamp =>
           moment(Number.parseInt(timestamp, 10))
         );
-      else if (next === 'gridId') prev[next] = idMap[val];
+      // else if (next === 'gridId') prev[next] = idMap[val];
       else if (next === 'safetyFourPicture') {
         let list = isJSONStr(val) ? JSON.parse(val) : [];
         list = list.map(({ fileName, webUrl, dbUrl }) => ({
@@ -507,14 +514,14 @@ export default class Safety extends PureComponent {
     } = this.state;
 
     const defaultItems = [
-      {
-        name: 'gridId',
-        cName: '所属网格',
-        span: 24,
-        rules: generateRules('所属网格'),
-        formItemLayout: gridLayout,
-        component: <Cascader options={this.gridTree} placeholder="请输入所属网格" changeOnSelect />,
-      },
+      // {
+      //   name: 'gridId',
+      //   cName: '所属网格',
+      //   span: 24,
+      //   rules: generateRules('所属网格'),
+      //   formItemLayout: gridLayout,
+      //   component: <Cascader options={this.gridTree} placeholder="请输入所属网格" changeOnSelect />,
+      // },
       {
         name: 'regulatoryClassification',
         cName: '监管分类',
@@ -560,6 +567,17 @@ export default class Safety extends PureComponent {
         cName: '服务有效期',
         rules: generateRules('服务有效期'),
         component: <RangePicker />,
+      },
+      {
+        name: SAFETY_IMPORTANT,
+        cName: '安监重点单位',
+        rules: generateRules('是否为安监重点单位'),
+        component: (
+          <RadioGroup>
+            <Radio value="1">是</Radio>
+            <Radio value="2">否</Radio>
+          </RadioGroup>
+        ),
       },
       {
         name: 'safetyFourPicture',

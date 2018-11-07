@@ -22,7 +22,8 @@ import debounce from 'lodash/debounce';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
-import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree } from './utils';
+import AuthorityTree from './AuthorityTree';
+import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree, mergeArrays, getNoRepeat } from './utils';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
@@ -70,6 +71,8 @@ const Supervisions = [
   { id: '3', label: '环保' },
 ];
 
+const SUPERVISIONS_ALL = Supervisions.map(({ id }) => id);
+
 const treeData = data => {
   return data.map(item => {
     if (item.children) {
@@ -97,9 +100,11 @@ const generateUnitsTree = data => {
 };
 
 @connect(
-  ({ account, loading }) => ({
+  ({ account, role, loading }) => ({
     account,
+    role,
     loading: loading.models.account,
+    authorityTreeLoading: loading.effects['role/fetchPermissionTree'],
   }),
   dispatch => ({
     // 修改账号
@@ -229,7 +234,7 @@ export default class accountManagementEdit extends PureComponent {
       fetchRoles,
       fetchExecCertificateType,
       fetchUserType,
-      fetchDepartmentList,
+      // fetchDepartmentList,
     } = this.props;
 
     const success = id
@@ -312,6 +317,8 @@ export default class accountManagementEdit extends PureComponent {
   // sortMap = {};
   // totalMap = {};
   childrenMap = {};
+  permissions = [];
+  authTreeCheckedKeys = [];
 
   //获取维保权限树
   getMaintenanceTree = (companyId) => {
@@ -365,6 +372,7 @@ export default class accountManagementEdit extends PureComponent {
           documentTypeId,
           execCertificateCode,
           regulatoryClassification,
+          permissions,
         }
       ) => {
         // console.log(maintenacePermissions, this.sortMap, this.totalMap);
@@ -373,6 +381,8 @@ export default class accountManagementEdit extends PureComponent {
 
         // console.log(maintenacePermissions, this.chidrenMap);
         // console.log(handleMtcTree(maintenacePermissions, this.childrenMap));
+
+        console.log(getNoRepeat(permissions, this.permissions));
 
         if (!error) {
           this.setState({
@@ -423,6 +433,7 @@ export default class accountManagementEdit extends PureComponent {
                 regulatoryClassification && regulatoryClassification.length
                   ? regulatoryClassification.join(',')
                   : null,
+              permissions: getNoRepeat(permissions, this.permissions),
             };
             switch (payload.unitType) {
               // 维保企业
@@ -467,6 +478,9 @@ export default class accountManagementEdit extends PureComponent {
         } else {
           setFieldsValue({ userType: undefined });
         }
+
+        if (id === 4 || id === 2)
+          setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
       }
     );
   };
@@ -915,6 +929,26 @@ export default class accountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === 4 &&
+              !id && (
+                <Col lg={8} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.regulatoryClassification}>
+                    {getFieldDecorator('regulatoryClassification', {
+                      initialValue: SUPERVISIONS_ALL,
+                      rules: [{ required: true, message: '请选择业务分类' }],
+                    })(
+                      <Select mode="multiple" placeholder="请选择业务分类">
+                        {Supervisions.map(item => (
+                          <Option value={item.id} key={item.id}>
+                            {item.label}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
             {/* 当单位类型为政府机构（政府机构对应id为2） */}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 &&
@@ -1033,9 +1067,35 @@ export default class accountManagementEdit extends PureComponent {
     });
   };
 
+  handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
+    // console.log(nextTargetKeys);
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    setFieldsValue({ roleIds: nextTargetKeys });
+
+    // 穿梭框中有值
+    if (nextTargetKeys.length)
+      dispatch({
+        type: 'role/fetchDetail',
+        payload: { id: nextTargetKeys.join(',') },
+        success: ({ permissions }) => {
+          const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
+          this.permissions = perms;
+          setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+        },
+      });
+    // 穿梭框中没有值时，不需要请求服务器，本地清空即可
+    else {
+      this.permissions = [];
+      setFieldsValue({ permissions: this.authTreeCheckedKeys });
+      dispatch({ type: 'role/queryDetail', payload: {} });
+    }
+  };
+
   /* 渲染角色权限信息 */
   renderRolePermission() {
     const {
+      dispatch,
+      role,
       account: {
         detail: {
           data: { treeNames, treeIds, roleIds },
@@ -1043,10 +1103,11 @@ export default class accountManagementEdit extends PureComponent {
         roles,
         maintenanceTree: { list: treeList = [] },
       },
-      form: { getFieldDecorator },
+      form,
       loading,
     } = this.props;
 
+    const { getFieldDecorator } = form;
     const { expandedKeys, searchValue, autoExpandParent, unitTypeChecked } = this.state;
 
     const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
@@ -1072,8 +1133,21 @@ export default class accountManagementEdit extends PureComponent {
                     dataSource={roleList}
                     titles={['可选角色', '已选角色']}
                     render={item => item.title}
+                    onChange={this.handleTransferChange}
                   />
                 )}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label="账号权限">
+                <AuthorityTree
+                  role={role}
+                  form={form}
+                  dispatch={dispatch}
+                  handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
+                />
               </Form.Item>
             </Col>
           </Row>

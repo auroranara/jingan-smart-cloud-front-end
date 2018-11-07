@@ -23,12 +23,15 @@ import debounce from 'lodash/debounce';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
+import AuthorityTree from './AuthorityTree';
 import {
   renderSearchedTreeNodes,
   getInitParentKeys,
   getParentKeys,
   getTreeListChildrenMap,
   handleMtcTreeViolently as handleMtcTree,
+  mergeArrays,
+  getNoRepeat,
 } from './utils';
 import styles from './AccountManagementEdit.less';
 
@@ -104,9 +107,11 @@ const generateTressNode = data => {
 };
 
 @connect(
-  ({ account, loading }) => ({
+  ({ account, role, loading }) => ({
     account,
+    role,
     loading: loading.models.account,
+    authorityTreeLoading: loading.effects['role/fetchPermissionTree'],
     editSubmitting: loading.effects['account/editAssociatedUnit'],
     addSubmitting: loading.effects['account/addAssociatedUnit'],
   }),
@@ -261,6 +266,7 @@ export default class AssociatedUnit extends PureComponent {
       fetchExecCertificateType,
       fetchUserType,
       fetchDepartmentList,
+      form: { setFieldsValue },
     } = this.props;
     const success = userId
       ? undefined
@@ -287,7 +293,7 @@ export default class AssociatedUnit extends PureComponent {
         payload: {
           userId,
         },
-        success: ({ unitType, unitId }) => {
+        success: ({ unitType, unitId, roleIds, permissions = [] }) => {
           this.setState(
             {
               unitTypeChecked: unitType,
@@ -297,8 +303,13 @@ export default class AssociatedUnit extends PureComponent {
             }
           );
 
-          // 若为维保单位，则获取维保权限树
+          // 若为维保单位，则获取维保权限树，并设置维保权限树初值
           unitType === 1 && this.getMaintenanceTree(unitId);
+
+          // 获取roleIds对应的权限，并设置权限树的初值
+          this.permissions = permissions;
+          const roles = roleIds.split(',');
+          roles.length && this.fetchRolePermissions(roles);
 
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           fetchUnitsFuzzy({
@@ -377,6 +388,8 @@ export default class AssociatedUnit extends PureComponent {
   }
 
   childrenMap = {};
+  permissions = [];
+  authTreeCheckedKeys = [];
 
   //获取维保权限树
   getMaintenanceTree = companyId => {
@@ -453,6 +466,7 @@ export default class AssociatedUnit extends PureComponent {
           documentTypeId = null,
           execCertificateCode = null,
           regulatoryClassification,
+          permissions,
         }
       ) => {
         if (!error) {
@@ -477,6 +491,7 @@ export default class AssociatedUnit extends PureComponent {
               regulatoryClassification && regulatoryClassification.length
                 ? regulatoryClassification.join(',')
                 : null,
+            permissions: getNoRepeat(permissions, this.permissions),
           };
           switch (
             payload.unitType //单位类型
@@ -1022,20 +1037,52 @@ export default class AssociatedUnit extends PureComponent {
     });
   };
 
+  handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
+    // console.log(nextTargetKeys);
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    setFieldsValue({ roleIds: nextTargetKeys });
+
+    // 穿梭框中有值
+    if (nextTargetKeys.length)
+      this.fetchRolePermissions(nextTargetKeys);
+    // 穿梭框中没有值时，不需要请求服务器，本地清空即可
+    else {
+      this.permissions = [];
+      setFieldsValue({ permissions: this.authTreeCheckedKeys });
+      dispatch({ type: 'role/queryDetail', payload: {} });
+    }
+  };
+
+  fetchRolePermissions = (ids) => {
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    dispatch({
+      type: 'role/fetchDetail',
+      payload: { id: ids.join(',') },
+      success: ({ permissions }) => {
+        const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
+        this.permissions = perms;
+        setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+      },
+    });
+  }
+
   /* 渲染角色权限信息 */
   renderRolePermission() {
     const {
+      dispatch,
+      role,
       account: {
         detail: {
-          data: { treeNames, treeIds, roleIds, maintenacePermissions },
+          data: { treeNames, treeIds, roleIds },
         },
         roles,
         maintenanceTree: { list: treeList = [] },
       },
-      form: { getFieldDecorator },
+      form,
       loading,
     } = this.props;
 
+    const { getFieldDecorator } = form;
     const { expandedKeys, searchValue, autoExpandParent, unitTypeChecked } = this.state;
 
     const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
@@ -1061,8 +1108,21 @@ export default class AssociatedUnit extends PureComponent {
                     dataSource={roleList}
                     titles={['可选角色', '已选角色']}
                     render={item => item.title}
+                    onChange={this.handleTransferChange}
                   />
                 )}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label="账号权限">
+                <AuthorityTree
+                  role={role}
+                  form={form}
+                  dispatch={dispatch}
+                  handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
+                />
               </Form.Item>
             </Col>
           </Row>
