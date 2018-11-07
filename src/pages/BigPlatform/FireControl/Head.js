@@ -4,7 +4,7 @@ import { TreeSelect } from 'antd';
 
 // import bg from './img/title.png';
 import styles from './Head.less';
-import { TREE_DATA } from './utils';
+// import { TREE_DATA } from './utils';
 
 const DAY = ['天', '一', '二', '三', '四', '五', '六'];
 
@@ -20,15 +20,19 @@ export default class Head extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, gridId } = this.props;
+    const isIndex = gridId === 'index';
 
     this.timer = setInterval(() => {
       this.setState({ time: new Date });
     }, 1000);
 
+    // 是首页则获取网格点数组后取抵押给，不是首页则将值设为传入的gridId
+    !isIndex && this.setState({ treeValue: gridId });
+
     dispatch({
       type: 'bigFireControl/fetchGrids',
-      callback: data => this.setState({ treeValue: data && data.length ? data[0].key : '' }),
+      callback: isIndex ? data => this.setState({ treeValue: data && data.length ? data[0].key : '' }) : null,
     });
   }
 
