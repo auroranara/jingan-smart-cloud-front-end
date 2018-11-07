@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Pagination, Select, DatePicker, Table } from 'antd';
+import { Form, Card, Input, Pagination, Select, DatePicker, Table, Spin } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
@@ -401,7 +401,7 @@ export default class TestList extends PureComponent {
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}
-              showTotal={false}
+              // showTotal={false}
               showQuickJumper
               showSizeChanger
               pageSize={pageSize}
@@ -413,9 +413,11 @@ export default class TestList extends PureComponent {
             />
           </Card>
         ) : (
-          <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-            <span>暂无数据</span>
-          </Card>
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          </Spin>
         )}
       </PageHeaderLayout>
     );
