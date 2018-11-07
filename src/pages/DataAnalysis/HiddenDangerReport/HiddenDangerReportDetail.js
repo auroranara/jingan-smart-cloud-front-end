@@ -1,13 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Steps, Icon, Spin } from 'antd';
+import { Card, Steps, Spin } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import moment from 'moment';
+import Lightbox from 'react-images';
 import classNames from 'classnames';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from '@/components/DescriptionList';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
+import hiddenIcon from '@/assets/hiddenIcon.png';
 
 import styles from './HiddenDangerReportDetail.less';
 const { Step } = Steps;
@@ -34,9 +36,22 @@ const tabList = [
 ];
 /* 获取页面宽度 */
 const getWindowWidth = () => window.innerWidth || document.documentElement.clientWidth;
-/* 根据status获取步骤条当前索引 */
-const getCurrentByStatus = function (status) {
-
+/* 根据status获取名称 */
+const getLabelByStatus = function(status) {
+  switch(+status) {
+    case 3:
+      return '待复查';
+    case 4:
+      return '已关闭';
+    case 7:
+      return '已超期';
+    default:
+      return '待整改';
+  }
+};
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
 /**
@@ -55,6 +70,10 @@ export default class App extends PureComponent {
       stepDirection: 'horizontal',
       // 当前选中的tabKey
       tab: '1',
+      // 图片地址
+      images: null,
+      // 当前选中图片索引
+      currentImage: 0,
     };
     this.setStepDirection = debounce(this.setStepDirection, 200);
   }
@@ -65,15 +84,14 @@ export default class App extends PureComponent {
    */
   componentDidMount() {
     const { dispatch, match: { params: { id } } } = this.props;
-    console.log(id);
 
-    // // 获取隐患详情
-    // dispatch({
-    //   type: 'hiddenDangerReport/fetchDetail',
-    //   payload: {
-    //     id,
-    //   },
-    // });
+    // 获取隐患详情
+    dispatch({
+      type: 'hiddenDangerReport/fetchDetail',
+      payload: {
+        id,
+      },
+    });
     this.setStepDirection();
     window.addEventListener('resize', this.setStepDirection, { passive: true });
   }
@@ -111,24 +129,123 @@ export default class App extends PureComponent {
   }
 
   /**
+   * 切换图片
+   */
+  handleSwitchImage = (currentImage) => {
+    this.setState({
+      currentImage,
+    });
+  }
+
+  /**
+   * 切换上一张图片
+   */
+  handlePrevImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage-1,
+    }));
+  }
+
+  /**
+   * 切换下一张图片
+   */
+  handleNextImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage+1,
+    }));
+  }
+
+  /**
+   * 关闭图片详情
+   */
+  handleClose = () => {
+    this.setState({
+      images: null,
+    });
+  }
+
+    /**
+   * 图片详情
+   */
+  renderImageDetail() {
+    const { images, currentImage } = this.state;
+    return images && images.length > 0 && (
+      <Lightbox
+        images={images}
+        isOpen={true}
+        currentImage={currentImage}
+        onClickPrev={this.handlePrevImage}
+        onClickNext={this.handleNextImage}
+        onClose={this.handleClose}
+        onClickThumbnail={this.handleSwitchImage}
+        showThumbnails
+      />
+    );
+  }
+
+  /**
    * 渲染函数
    */
   render() {
-    const { hiddenDangerReport: { detail: { id=248224024, status, unitName="无锡晶安科技有限公司" } }, loading } = this.props;
+    const {
+      hiddenDangerReport: {
+        detail: {
+          hiddenDanger: {
+            // 隐患编号
+            code,
+            // 单位名称
+            company_name,
+            // 状态
+            status,
+            // 隐患来源
+            source_type_name,
+            // 点位名称
+            item_name,
+            // 业务分类
+            business_type,
+            // 隐患等级
+            level_name,
+            // 检查人
+            report_user_name,
+            // 创建日期
+            report_time,
+            // 检查内容
+            flow_name,
+            // 隐患描述
+            desc,
+            // 隐患图片
+            files,
+            // 指定整改人
+            rectify_user_name,
+            // 计划整改日期
+            plan_rectify_time,
+            // 指定复查人
+            review_user_name,
+          },
+          hiddenDangerRecord,
+          timeLine,
+          current,
+        },
+      },
+      user: { currentUser: { unitType } },
+      loading,
+    } = this.props;
     const { stepDirection, tab } = this.state;
-    // const current = status - 1;
-    const current = 1;
+    /* 当前账号是否是企业 */
+    const isCompany = unitType === 4;
+    // 修改隐患图片
+    const fileList = files && files.map(({ id: key, web_url: src }) => ({ key, src }));
 
     return (
       <PageHeaderLayout
-        title={<Fragment>{`隐患编号：${id}`}<div className={styles.content}>{`单位名称：${unitName}`}</div></Fragment>}
+        title={<Fragment>{`隐患编号：${code}`}{!isCompany && <div className={styles.content}>{`单位名称：${company_name}`}</div>}</Fragment>}
         logo={
-          <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png" />
+          <img alt="" src={hiddenIcon} />
         }
         action={(
           <div>
             <div className={styles.textSecondary}>状态</div>
-            <div className={styles.heading}>待审批</div>
+            <div className={styles.heading}>{getLabelByStatus(status)}</div>
           </div>
         )}
         tabList={tabList}
@@ -139,76 +256,118 @@ export default class App extends PureComponent {
         <Spin spinning={!!loading}>
           <Card title="流程进度" style={{ marginBottom: 24 }} bordered={false}>
             <Steps direction={stepDirection} progressDot={dot => dot} current={current}>
-              <Step title="隐患创建" description={(
-                <div className={classNames(styles.textSecondary, styles.stepDescription)}>
-                  曲丽丽
-                  <div>2016-12-12 12:32</div>
-                </div>
-              )} />
-              <Step title="隐患整改" description={(
-                <div className={styles.stepDescription}>
-                  周毛毛
-                </div>
-              )} />
-              <Step title="隐患复查" />
-              <Step title="隐患关闭" />
+              {timeLine.map(({ id, time, type, user }) => (
+                <Step key={id} title={type} description={time && user ? (
+                  <div className={classNames(styles.textSecondary, styles.stepDescription)}>
+                    {user}
+                    <div>{time}</div>
+                  </div>
+                ) : undefined} />
+              ))}
             </Steps>
           </Card>
           <Card title="隐患信息" style={{ marginBottom: 24 }} bordered={false}>
             <DescriptionList style={{ marginBottom: 16 }}>
-              <Description term="隐患来源">隐患来源</Description>
-              <Description term="点位名称">点位名称</Description>
-              <Description term="业务分类">业务分类</Description>
-              <Description term="隐患等级">隐患等级</Description>
-              <Description term="检查人">检查人</Description>
-              <Description term="创建日期">创建日期</Description>
+              <Description term="隐患来源">{source_type_name || getEmptyData()}</Description>
+              <Description term="点位名称">{item_name || getEmptyData()}</Description>
+              <Description term="业务分类">{business_type || getEmptyData()}</Description>
+              <Description term="隐患等级">{level_name || getEmptyData()}</Description>
+              <Description term="检查人">{report_user_name || getEmptyData()}</Description>
+              <Description term="创建日期">{report_time ? moment(+report_time).format('YYYY-MM-DD') : getEmptyData()}</Description>
             </DescriptionList>
             <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="检查内容">检查内容</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="隐患描述">隐患描述</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="隐患图片">隐患图片</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="指定整改人">指定整改人</Description>
-              <Description term="计划整改日期">计划整改日期</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="指定复查人">指定复查人</Description>
-            </DescriptionList>
-          </Card>
-          <Card title="整改信息" style={{ marginBottom: 24 }} bordered={false}>
-            <DescriptionList style={{ marginBottom: 16 }}>
-              <Description term="整改人">整改人</Description>
-              <Description term="实际整改日期">实际整改日期</Description>
-              <Description term="整改金额">整改金额</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="整改措施">整改措施</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="整改图片">整改图片</Description>
-            </DescriptionList>
-          </Card>
-          <Card title="复查信息" bordered={false}>
-            <DescriptionList style={{ marginBottom: 16 }}>
-              <Description term="复查人">复查人</Description>
-              <Description term="复查日期">复查日期</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="备注">备注</Description>
-            </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="复查图片">复查图片</Description>
+              <Description term="检查内容">{flow_name || getEmptyData()}</Description>
+              <Description term="隐患描述">{desc || getEmptyData()}</Description>
+              <Description term="隐患图片">{fileList ? (
+                fileList.map(({ key, src }, index) => (
+                  <img
+                    src={src}
+                    key={key}
+                    alt=""
+                    style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
+                    onClick={() => {this.setState({ images: fileList, currentImage: index });}}
+                  />
+                ))
+              ) : getEmptyData()}</Description>
             </DescriptionList>
             <DescriptionList style={{ marginBottom: 16 }}>
-              <Description term="指定整改人">指定整改人</Description>
-              <Description term="计划整改日期">计划整改日期</Description>
+              <Description term="指定整改人">{rectify_user_name || getEmptyData()}</Description>
+              <Description term="计划整改日期">{plan_rectify_time ? moment(+plan_rectify_time).format('YYYY-MM-DD') : getEmptyData()}</Description>
+            </DescriptionList>
+            <DescriptionList style={{ marginBottom: 16 }} col={1}>
+              <Description term="指定复查人">{review_user_name || getEmptyData()}</Description>
             </DescriptionList>
           </Card>
+          {hiddenDangerRecord.map(({
+            id,
+            // 2是整改，3是复查
+            type,
+            // 人
+            operator_name,
+            // 时间
+            create_time_str,
+            // 金额
+            money,
+            // 措施
+            operate_content,
+            // 图片
+            files,
+            // 备注
+            remark,
+          }) => {
+            const fileList = files && files.map(({ id: key, web_url: src }) => ({ key, src }));
+            if (+type === 2) {
+              return (
+                <Card title="整改信息" style={{ marginBottom: 24 }} bordered={false} key={id}>
+                  <DescriptionList style={{ marginBottom: 16 }}>
+                    <Description term="整改人">{operator_name || getEmptyData()}</Description>
+                    <Description term="实际整改日期">{create_time_str || getEmptyData()}</Description>
+                    <Description term="整改金额">{money || getEmptyData()}</Description>
+                  </DescriptionList>
+                  <DescriptionList style={{ marginBottom: 16 }} col={1}>
+                    <Description term="整改措施">{operate_content || getEmptyData()}</Description>
+                    <Description term="整改图片">{fileList ? (
+                      fileList.map(({ key, src }, index) => (
+                        <img
+                          src={src}
+                          key={key}
+                          alt=""
+                          style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
+                          onClick={() => {this.setState({ images: fileList, currentImage: index });}}
+                        />
+                      ))
+                    ) : getEmptyData()}</Description>
+                  </DescriptionList>
+                </Card>
+              );
+            }
+            else if (+type === 3) {
+              return (
+                <Card title="复查信息" bordered={false} key={id}>
+                  <DescriptionList style={{ marginBottom: 16 }}>
+                    <Description term="复查人">{operator_name || getEmptyData()}</Description>
+                    <Description term="复查日期">{create_time_str || getEmptyData()}</Description>
+                  </DescriptionList>
+                  <DescriptionList style={{ marginBottom: 16 }} col={1}>
+                    <Description term="备注">{remark || getEmptyData()}</Description>
+                    <Description term="复查图片">{fileList ? (
+                      fileList.map(({ key, src }, index) => (
+                        <img
+                          src={src}
+                          key={key}
+                          alt=""
+                          style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
+                          onClick={() => {this.setState({ images: fileList, currentImage: index });}}
+                        />
+                      ))
+                    ) : getEmptyData()}</Description>
+                  </DescriptionList>
+                </Card>
+              );
+            }
+            return null;
+          })}
+          {this.renderImageDetail()}
         </Spin>
       </PageHeaderLayout>
     );

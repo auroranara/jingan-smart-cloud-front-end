@@ -8,19 +8,74 @@ import {
   getHiddenDangerDetail,
   // 获取所属网格列表
   getGridList,
-  // 获取单位名称列表
-  getUnitNameList,
-  // 获取隐患来源列表
-  getSourceList,
-  // 获取隐患状态列表
-  getStatusList,
-  // 获取业务分类列表
-  getBusinessTypeList,
-  // 获取隐患等级列表
-  getLevelList,
+  // 导出
+  exportData,
 } from '@/services/hiddenDangerReport.js'
+import fileDownload from 'js-file-download';
+import moment from 'moment';
 import router from 'umi/router';
 import urls from '@/utils/urls';
+/* 格式化网格树 */
+const formatGrid = function(tree) {
+  const list = [];
+  for(let { grid_id, grid_name, children } of tree) {
+    if (children && children.length > 0) {
+      children = formatGrid(children);
+    }
+    list.push({
+      key: grid_id,
+      value: grid_id,
+      title: grid_name,
+      children,
+    });
+  }
+  return list;
+};
+/* 完善步骤条数组 */
+const formatTimeLine = function(timeLine) {
+  const list = timeLine.map((item, index) => {
+    let type = +item.type;
+    if (type === 1) {
+      type = '隐患创建';
+    }
+    else if (type === 2) {
+      // 如果index大于1，意味着必然为重新整改
+      if (index > 1) {
+        type = '重新整改';
+      }
+      else {
+        type = '隐患整改';
+      }
+    }
+    else if (type === 3) {
+      type = '隐患复查';
+    }
+    else if (type === 4) {
+      type = '隐患关闭';
+    }
+    return {
+      ...item,
+      type,
+      id: index,
+    };
+  });
+  const lastIndex = timeLine.length - 1;
+  const { type } = timeLine[lastIndex];
+  switch(+type) {
+    case 1:
+      list.push({ type: '隐患整改', id: lastIndex+1 }, { type: '隐患复查', id: lastIndex+2 });
+      break;
+    case 2:
+      list.push({ type: '隐患复查', id: lastIndex+1 });
+      break;
+    case 3:
+      list.push({ type: '重新整改', id: lastIndex+1 }, { type: '隐患复查', id: lastIndex+2 });
+      break;
+    default:
+      break;
+  }
+  return list;
+};
 
 /* 获取500地址 */
 const {
@@ -38,224 +93,105 @@ export default {
   state: {
     /* 隐患列表 */
     list: {
-      list: [
-        {
-          id: 0,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 1,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 2,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 3,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 4,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 5,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 6,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 7,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 8,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 9,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-        {
-          id: 10,
-          unitName: 1,
-          source: 1,
-          pointName: 1,
-          businessType: 1,
-          checkContent: 1,
-          level: 1,
-          status: 1,
-          checkPerson: 1,
-          createTime: 1,
-          planRectifyTime: 1,
-          description: 1,
-          image: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-          rectifyMeasure: 1,
-          rectifyMoney: 1,
-          rectifyImage: [{id:1,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:2,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'},{id:3,src:'http://data.jingan-china.cn/hello/gsafe/hidden_danger/180820-153838-GOLB.png'}],
-        },
-      ],
-      pagination: {
-
-      },
+      list: [],
+      pagination: {},
     },
     /* 隐患详情 */
-    detail: {},
+    detail: {
+      hiddenDanger: {},
+      hiddenDangerRecord: [],
+      timeLine: [],
+      current: 0,
+    },
     /* 所属网格列表 */
     gridList: [],
-    /* 单位名称列表 */
-    unitNameList: [],
-    /* 隐患来源列表 */
-    sourceList: [],
-    /* 隐患状态列表 */
-    statusList: [],
     /* 业务分类列表 */
-    businessTypeList: [],
+    businessTypeList: [
+      {
+        key: '1',
+        value: '安全生产',
+      },
+      {
+        key: '2',
+        value: '消防',
+      },
+      {
+        key: '3',
+        value: '环保',
+      },
+      {
+        key: '4',
+        value: '卫生',
+      },
+    ],
+    /* 隐患来源列表 */
+    sourceList: [
+      {
+        key: '2',
+        value: '随手拍',
+      },
+      {
+        key: '3',
+        value: '风险点上报',
+      },
+      {
+        key: '4',
+        value: '网格点上报',
+      },
+    ],
+    /* 隐患状态列表 */
+    statusList: [
+      {
+        key: '2',
+        value: '待整改',
+      },
+      {
+        key: '3',
+        value: '待复查',
+      },
+      {
+        key: '4',
+        value: '已关闭',
+      },
+      {
+        key: '7',
+        value: '已超期',
+      },
+    ],
     /* 隐患等级列表 */
-    levelList: [],
+    levelList: [
+      {
+        key: '一般隐患',
+        value: '一般隐患',
+      },
+      {
+        key: '三级隐患',
+        value: '三级隐患',
+      },
+      {
+        key: '二级隐患',
+        value: '二级隐患',
+      },
+      {
+        key: '一级隐患',
+        value: '一级隐患',
+      },
+    ],
+    /* 相关文书列表 */
+    documentList: [
+      {
+        key: '0',
+        value: '现场检查意见书',
+      },
+      {
+        key: '1',
+        value: '整改指令书',
+      },
+      {
+        key: '2',
+        value: '复查意见书',
+      },
+    ],
   },
 
   effects: {
@@ -263,7 +199,7 @@ export default {
      * 获取隐患列表
      */
     *fetchList({ payload, callback }, { call, put }) {
-      const response = yield call(getHiddenDangerDetail, payload);
+      const response = yield call(getHiddenDangerList, payload);
       if (response.code === 200) {
         yield put({
           type: 'save',
@@ -281,20 +217,44 @@ export default {
       }
     },
     /**
+     * 追加隐患列表
+     */
+    *appendList({ payload, callback }, { call, put }) {
+      const response = yield call(getHiddenDangerList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'append',
+          payload: response.data,
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      }
+      else {
+        error();
+      }
+    },
+    /**
      * 获取隐患详情
      */
     *fetchDetail({ payload, callback }, { call, put }) {
-      const response = yield call(getHiddenDangerList, payload);
+      const response = yield call(getHiddenDangerDetail, payload);
+      const timeLine = formatTimeLine(response.data.timeLine);
+      const value = {
+        ...response.data,
+        timeLine,
+        current: response.data.timeLine.length - 1,
+      };
       if (response.code === 200) {
         yield put({
           type: 'save',
           payload: {
             key: 'detail',
-            value: response.data,
+            value,
           },
         });
         if (callback) {
-          callback(response.data);
+          callback(value);
         }
       }
       else {
@@ -307,15 +267,16 @@ export default {
     *fetchGridList({ payload, callback }, { call, put }) {
       const response = yield call(getGridList, payload);
       if (response.code === 200) {
+        const list = formatGrid(response.data.list);
         yield put({
           type: 'save',
           payload: {
             key: 'gridList',
-            value: response.data,
+            value: list,
           },
         });
         if (callback) {
-          callback(response.data);
+          callback(list);
         }
       }
       else {
@@ -323,109 +284,11 @@ export default {
       }
     },
     /**
-     * 获取单位名称列表
+     * 获取所属网格列表
      */
-    *fetchUnitNameList({ payload, callback }, { call, put }) {
-      const response = yield call(getUnitNameList, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            key: 'unitNameList',
-            value: response.data,
-          },
-        });
-        if (callback) {
-          callback(response.data);
-        }
-      }
-      else {
-        error();
-      }
-    },
-    /**
-     * 获取隐患来源列表
-     */
-    *fetchSourceList({ payload, callback }, { call, put }) {
-      const response = yield call(getSourceList, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            key: 'sourceList',
-            value: response.data,
-          },
-        });
-        if (callback) {
-          callback(response.data);
-        }
-      }
-      else {
-        error();
-      }
-    },
-    /**
-     * 获取隐患状态列表
-     */
-    *fetchStatusList({ payload, callback }, { call, put }) {
-      const response = yield call(getStatusList, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            key: 'statusList',
-            value: response.data,
-          },
-        });
-        if (callback) {
-          callback(response.data);
-        }
-      }
-      else {
-        error();
-      }
-    },
-    /**
-     * 获取业务分类列表
-     */
-    *fetchBusinessTypeList({ payload, callback }, { call, put }) {
-      const response = yield call(getBusinessTypeList, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            key: 'businessTypeList',
-            value: response.data,
-          },
-        });
-        if (callback) {
-          callback(response.data);
-        }
-      }
-      else {
-        error();
-      }
-    },
-    /**
-     * 获取隐患等级列表
-     */
-    *fetchLevelList({ payload, callback }, { call, put }) {
-      const response = yield call(getLevelList, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            key: 'levelList',
-            value: response.data,
-          },
-        });
-        if (callback) {
-          callback(response.data);
-        }
-      }
-      else {
-        error();
-      }
+    *exportData({ payload, callback }, { call, put }) {
+      const blob = yield call(exportData, payload);
+      fileDownload(blob, `隐患排查报表_${moment().format('YYYYMMDD')}.xls`);
     },
   },
 
@@ -437,6 +300,18 @@ export default {
       return {
         ...state,
         [key]: value,
+      };
+    },
+    /**
+     * 追加数组
+     */
+    append(state, { payload: { list, pagination } }) {
+      return {
+        ...state,
+        list: {
+          list: state.list.list.concat(list),
+          pagination,
+        },
       };
     },
   },
