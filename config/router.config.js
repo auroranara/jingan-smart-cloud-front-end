@@ -596,6 +596,31 @@ module.exports = [
               },
             ],
           },
+          {
+            path: '/data-analysis/hidden-danger-report',
+            code: 'dataAnalysis.hiddenDangerReport',
+            name: 'hiddenDangerReport',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/hidden-danger-report',
+                name: 'hiddenDangerReport',
+                redirect: '/data-analysis/hidden-danger-report/list',
+              },
+              {
+                path: '/data-analysis/hidden-danger-report/list',
+                code: 'dataAnalysis.hiddenDangerReport.view',
+                name: 'list',
+                component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportList',
+              },
+              {
+                path: '/data-analysis/hidden-danger-report/detail/:id',
+                code: 'dataAnalysis.hiddenDangerReport.view',
+                name: 'detail',
+                component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+              },
+            ],
+          },
         ],
       },
 

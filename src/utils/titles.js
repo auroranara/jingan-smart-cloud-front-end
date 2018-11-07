@@ -20,4 +20,9 @@ export default {
     serviceList: '服务单位列表',
     serviceDetail: '服务单位详情',
   },
+  hiddenDangerReport: {
+    menu: '数据分析',
+    list: '隐患排查报表',
+    detail: '隐患详情',
+  },
 };
