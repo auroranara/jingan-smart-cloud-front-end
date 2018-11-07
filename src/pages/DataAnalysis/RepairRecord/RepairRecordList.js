@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Button, Card, Form, Input, DatePicker, Col, Table, Pagination } from 'antd';
+import { Button, Card, Form, Input, DatePicker, Col, Table, Pagination,Select  } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Lightbox from 'react-images';
 import router from 'umi/router';
@@ -9,12 +9,20 @@ import styles from './RepairRecordList.less'
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
+const Option =Select.Option 
 
 const title = "报修记录"
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },
   { title, name: title },
+]
+
+// 维修状态配置
+const statusList=[
+  {value:0,label:'处理中'},
+  {value:1,label:'已处理'},
+  {value:2,label:'待处理'},
 ]
 
 @connect(({ dataAnalysis }) => ({
@@ -200,10 +208,20 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={17}>
+            <Col span={8}>
+              <FormItem className={styles.formItem}>
+                {getFieldDecorator('status')(
+                  <Select placeholder="请选择维修状态">
+                    {statusList.map(({value,label})=>(<Option value={value} key={value}>{label}</Option>))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={12}>
               <FormItem className={styles.formItem} >
                 {getFieldDecorator('time')(
                   <RangePicker
+                    style={{width:'100%'}}
                     format="YYYY-MM-DD HH:mm:ss"
                     placeholder={['开始时间', '结束时间']}
                     showTime={{
