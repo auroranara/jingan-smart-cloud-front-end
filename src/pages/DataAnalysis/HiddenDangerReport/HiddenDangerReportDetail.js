@@ -53,6 +53,21 @@ const getLabelByStatus = function(status) {
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+/* 根据业务分类id获取label */
+const getLabelByBusinessType = function(business_type) {
+  switch(+business_type) {
+    case 1:
+      return '安全生产';
+    case 2:
+      return '消防';
+    case 3:
+      return '环保';
+    case 4:
+      return '卫生';
+    default:
+      return '';
+  }
+};
 
 /**
  * 隐患排查报表详情
@@ -270,7 +285,7 @@ export default class App extends PureComponent {
             <DescriptionList style={{ marginBottom: 16 }}>
               <Description term="隐患来源">{source_type_name || getEmptyData()}</Description>
               <Description term="点位名称">{item_name || getEmptyData()}</Description>
-              <Description term="业务分类">{business_type || getEmptyData()}</Description>
+              <Description term="业务分类">{business_type ? getLabelByBusinessType(business_type) : getEmptyData()}</Description>
               <Description term="隐患等级">{level_name || getEmptyData()}</Description>
               <Description term="检查人">{report_user_name || getEmptyData()}</Description>
               <Description term="创建日期">{report_time ? moment(+report_time).format('YYYY-MM-DD') : getEmptyData()}</Description>
