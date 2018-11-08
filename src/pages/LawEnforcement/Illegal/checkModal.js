@@ -25,6 +25,8 @@ export default class CompanyModal extends PureComponent {
   state = {
     selectedRowKeys: [],
     name: undefined,
+    checkList: [],
+    clickContent: false,
   };
 
   /* 关闭按钮点击事件 */
@@ -43,10 +45,10 @@ export default class CompanyModal extends PureComponent {
     }
   };
 
-  handleContentTable = () => {
+  handleContentTable = record => {
     const { onShowTable } = this.props;
     if (onShowTable) {
-      onShowTable();
+      onShowTable(record);
     }
   };
 
@@ -143,6 +145,13 @@ export default class CompanyModal extends PureComponent {
     );
   }
 
+  handleContentTable = record => {
+    this.setState({
+      clickContent: true,
+      checkList: record.flows,
+    });
+  };
+
   render() {
     const {
       visible,
@@ -156,14 +165,13 @@ export default class CompanyModal extends PureComponent {
       rowSelection,
       field,
       actSelect = true,
-      clickContent = true,
-      checkList,
+      // clickContent = true,
       modal: {
         list,
         pagination: { total, pageNum, pageSize },
       },
     } = this.props;
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys, checkList, clickContent } = this.state;
 
     return (
       <Modal
@@ -194,7 +202,7 @@ export default class CompanyModal extends PureComponent {
             bordered
             size="middle"
             rowKey={rowKey || 'id'}
-            dataSource={checkList || []}
+            dataSource={list || []}
             columns={columns}
             pagination={{
               total,
@@ -233,7 +241,7 @@ export default class CompanyModal extends PureComponent {
               bordered
               size="middle"
               rowKey={rowKey || 'id'}
-              dataSource={list || []}
+              dataSource={checkList || []}
               columns={column}
             />
           )}

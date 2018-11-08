@@ -15,7 +15,7 @@ import {
   Icon,
   Table,
   Popconfirm,
-  // message,
+  message,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -27,7 +27,7 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
 
-const PageSize = 5;
+const PageSize = 10;
 
 /* 标题---编辑 */
 const editTitle = '编辑违法行为';
@@ -46,26 +46,25 @@ const fieldLabels = {
   checkContent: '检查内容',
 };
 
-/* (设定依据) */
 const COLUMNS = [
   {
     title: '所属法律法规',
-    dataIndex: 'lawsRegulations',
-    key: 'lawsRegulations',
+    dataIndex: 'lawTypeName',
+    key: 'lawType',
     align: 'center',
     width: 120,
   },
   {
     title: '所属条款',
-    dataIndex: 'subClause',
-    key: 'subClause',
+    dataIndex: 'article',
+    key: 'article',
     align: 'center',
     width: 90,
   },
   {
     title: '法律法规内容',
-    dataIndex: 'lawsRegulationsInput',
-    key: 'lawsRegulationsInput',
+    dataIndex: 'content',
+    key: 'content',
     align: 'center',
     width: 300,
   },
@@ -75,99 +74,24 @@ const COLUMNS = [
 const checkCOLUMNS = [
   {
     title: '检查点名称',
-    dataIndex: 'checkName',
-    key: 'checkName',
+    dataIndex: 'object_title',
+    key: 'object_id',
     align: 'center',
     width: 140,
   },
   {
     title: '所属行业',
-    dataIndex: 'hasIndustry',
-    key: 'hasIndustry',
+    dataIndex: 'industry',
+    key: 'industry',
     align: 'center',
     width: 90,
   },
   {
     title: '业务分类',
-    dataIndex: 'businessClassify',
-    key: 'businessClassify',
+    dataIndex: 'business_type',
+    key: 'business_type',
     align: 'center',
     width: 100,
-  },
-];
-
-const checkList = [
-  {
-    checkName: '检查点',
-    hasIndustry: '制造业',
-    businessClassify: '环保',
-  },
-];
-
-/* (检查内容) */
-const contentCOLUMNS = [
-  {
-    title: '检查内容',
-    dataIndex: 'checkContent',
-    key: 'checkContent',
-    align: 'center',
-    width: 300,
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-    align: 'center',
-    width: 80,
-    render: (text, record) => (
-      <span>
-        <a>添加</a>
-      </span>
-    ),
-  },
-];
-
-/* 表单(设定依据) */
-const setField = [
-  {
-    id: 'businessClassify',
-    render() {
-      return <Select placeholder="请选择业务分类" />;
-    },
-    transform(value) {
-      return value.trim();
-    },
-  },
-  {
-    id: 'lawsRegulations',
-    render() {
-      return <Select placeholder="请选择法律法规" />;
-    },
-    transform(value) {
-      return value.trim();
-    },
-  },
-];
-
-/* 表单(检查内容) */
-const checkField = [
-  {
-    id: 'checkName',
-    render() {
-      return <Input placeholder="请输入检查项名称" />;
-    },
-    transform(value) {
-      return value.trim();
-    },
-  },
-  {
-    id: 'businessClassify',
-    render() {
-      return <Select placeholder="请选择业务分类" />;
-    },
-    transform(value) {
-      return value.trim();
-    },
   },
 ];
 
@@ -189,7 +113,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
     check: {
       visible: false,
     },
-    clickContent: false,
+    flowList: [],
+    currentPage: 1,
   };
 
   // 返回到列表页面
@@ -206,6 +131,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
+
+    const payload = { pageSize: PageSize, pageNum: 1 };
+
     if (id) {
       // 根据id获取详情
       dispatch({
@@ -222,49 +150,86 @@ export default class IllegalDatabaseEdit extends PureComponent {
     }
     // 获取初始化选项
     dispatch({
-      type: 'lawDatabase/fetchOptions',
+      type: 'illegalDatabase/fetchOptions',
     });
     // 获取所属类别
     dispatch({
       type: 'illegalDatabase/fetchType',
     });
+    this.fetchIllegal({ payload });
+    this.fetchIllegalPunish({ payload });
+    this.fetchIllegalCheck({ payload });
   }
 
   // 显示模态框(设定依据)
-  handleFocusSet = e => {
+  handleFocus = e => {
     e.target.blur();
     this.setState({ set: { visible: true } });
   };
 
   // 获取内容(设定依据)
-  fetchIllegalSet = ({ payload }) => {
+  fetchIllegal = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'illegalDatabase/', payload });
+    dispatch({
+      type: 'illegalDatabase/fetchModalList',
+      payload,
+    });
   };
 
   // 选择按钮点击事件(设定依据)
   handleSelect = item => {
-    // const { setFieldsValue } = this.props.form;
-    // const { id, name } = item;
-    // this.companyId = id;
-    // setFieldsValue({ companyName: name });
-    this.handleCloseSet();
+    const { setFieldsValue } = this.props.form;
+    const { lawTypeName, article } = item;
+    setFieldsValue({ setLawIds: lawTypeName + ' , ' + article });
+    this.handleClose();
   };
 
   // 关闭模态框(设定依据)
-  handleCloseSet = () => {
+  handleClose = () => {
     this.setState({ set: { visible: false } });
   };
 
   // 渲染模态框(设定依据)
   renderSetModal() {
     const {
-      illegalDatabase: { modal },
       loading,
+      illegalDatabase: { modal, businessTypes, lawTypes },
     } = this.props;
     const {
       set: { visible },
     } = this.state;
+
+    const setField = [
+      {
+        id: 'businessClassify',
+        render() {
+          return (
+            <Select placeholder="请选择业务分类">
+              {businessTypes.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
+      },
+      {
+        id: 'lawsRegulations',
+        render() {
+          return (
+            <Select placeholder="请选择法律法规">
+              {lawTypes.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
+      },
+    ];
+
     return (
       <CompanyModal
         title="选择设定依据"
@@ -272,9 +237,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
         visible={visible}
         columns={COLUMNS}
         modal={modal}
-        fetch={this.fetchIllegalSet}
-        onSelect={this.handleSelectSet}
-        onClose={this.handleCloseSet}
+        fetch={this.fetchIllegal}
+        onSelect={this.handleSelect}
+        onClose={this.handleClose}
         field={setField}
       />
     );
@@ -289,15 +254,17 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 获取内容(处罚依据)
   fetchIllegalPunish = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'illegalDatabase/', payload });
+    dispatch({
+      type: 'illegalDatabase/fetchModalList',
+      payload,
+    });
   };
 
   // 选择按钮点击事件(处罚依据)
   handleSelectPunish = item => {
-    // const { setFieldsValue } = this.props.form;
-    // const { id, name } = item;
-    // this.companyId = id;
-    // setFieldsValue({ companyName: name });
+    const { setFieldsValue } = this.props.form;
+    const { lawTypeName, article } = item;
+    setFieldsValue({ punishLawIds: lawTypeName + ' , ' + article });
     this.handleClosePunish();
   };
 
@@ -309,12 +276,44 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 渲染模态框(处罚依据)
   renderPunishModal() {
     const {
-      illegalDatabase: { modal },
       loading,
+      illegalDatabase: { modal, businessTypes, lawTypes },
     } = this.props;
     const {
       punish: { visible },
     } = this.state;
+
+    const punishField = [
+      {
+        id: 'businessClassify',
+        render() {
+          return (
+            <Select placeholder="请选择业务分类">
+              {businessTypes.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
+      },
+      {
+        id: 'lawsRegulations',
+        render() {
+          return (
+            <Select placeholder="请选择法律法规">
+              {lawTypes.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
+      },
+    ];
+
     return (
       <CompanyModal
         title="选择处罚依据"
@@ -325,7 +324,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         fetch={this.fetchIllegalPunish}
         onSelect={this.handleSelectPunish}
         onClose={this.handleClosePunish}
-        field={setField}
+        field={punishField}
       />
     );
   }
@@ -336,25 +335,92 @@ export default class IllegalDatabaseEdit extends PureComponent {
     this.setState({ check: { visible: true } });
   };
 
-  // 关闭模态框(检查内容)
-  handleCloseCheck = () => {
-    this.setState({ check: { visible: false }, clickContent: false });
+  // 获取内容（检查内容）
+  fetchIllegalCheck = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'illegalDatabase/fetchDtoList',
+      payload,
+    });
   };
 
-  showContentTable = () => {
-    this.setState({ clickContent: true });
+  // 关闭模态框(检查内容)
+  handleCloseCheck = () => {
+    this.setState({ check: { visible: false } });
+  };
+
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
   };
 
   // 渲染模态框(检查内容)
   renderCheckModal() {
     const {
-      illegalDatabase: { modal },
+      illegalDatabase: { checkModal, businessTypes },
       loading,
     } = this.props;
     const {
       check: { visible },
-      clickContent,
+      flowList,
     } = this.state;
+    /* (检查内容) */
+    const contentCOLUMNS = [
+      {
+        title: '检查内容',
+        dataIndex: 'flow_name',
+        key: 'flow_name',
+        align: 'center',
+        width: 300,
+      },
+      {
+        title: '操作',
+        dataIndex: 'operation',
+        key: 'operation',
+        align: 'center',
+        width: 80,
+        render: (text, record) => (
+          <span>
+            <a
+              onClick={() => {
+                this.setState({ flowList: [...flowList, record] });
+              }}
+            >
+              添加
+            </a>
+          </span>
+        ),
+      },
+    ];
+    const checkField = [
+      {
+        id: 'checkName',
+        render() {
+          return <Input placeholder="请输入检查项名称" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+      {
+        id: 'businessClassify',
+        render() {
+          return (
+            <Select placeholder="请选择业务分类">
+              {businessTypes.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
+      },
+    ];
 
     return (
       <CheckModal
@@ -363,14 +429,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
         visible={visible}
         columns={checkCOLUMNS}
         column={contentCOLUMNS}
-        checkList={checkList}
-        clickContent={clickContent}
-        modal={modal}
+        modal={checkModal}
         fetch={this.fetchIllegalCheck}
-        onSelect={this.handleSelectCheck}
         onClose={this.handleCloseCheck}
-        onClick={this.handleContentTable}
-        onShowTable={this.showContentTable}
         field={checkField}
         actSelect={false}
       />
@@ -378,72 +439,123 @@ export default class IllegalDatabaseEdit extends PureComponent {
   }
 
   // 点击提交按钮验证表单信息
-  handleClickValidate = () => {};
+  handleClickValidate = () => {
+    const {
+      form: { validateFieldsAndScroll },
+      match: {
+        params: { id },
+      },
+      dispatch,
+    } = this.props;
+    validateFieldsAndScroll((error, values) => {
+      if (!error) {
+        this.setState({
+          submitting: true,
+        });
+        const {
+          businessType,
+          typeCode,
+          actContent,
+          setLawIds,
+          punishLawIds,
+          discretionStandard,
+          enable,
+          checkObjectIds,
+        } = values;
+        const payload = {
+          id,
+          businessType,
+          typeCode,
+          actContent,
+          setLawIds,
+          punishLawIds,
+          discretionStandard,
+          enable: +enable,
+          checkObjectIds,
+        };
+        const success = () => {
+          const msg = id ? '编辑成功' : '新增成功';
+          message.success(msg, 1, this.goBack());
+        };
+        const error = () => {
+          const msg = id ? '编辑失败' : '新增失败';
+          message.error(msg, 1);
+          this.setState({
+            submitting: false,
+          });
+        };
+        // 如果id存在的话，为编辑
+        if (id) {
+          dispatch({
+            type: 'illegalDatabase/editIllegal',
+            payload: {
+              id,
+              ...payload,
+            },
+            success,
+            error,
+          });
+        }
+        // 不存在id,则为新增
+        else {
+          dispatch({
+            type: 'illegalDatabase/insertIllegal',
+            payload,
+            success,
+            error,
+          });
+        }
+      }
+    });
+  };
 
   /* 渲染table(检查内容) */
   renderCheckTable() {
     const { tableLoading } = this.props;
-
-    const list = [
-      {
-        number: '001',
-        businessClassify: '安全生产',
-        hasIndustry: '制造业',
-        inspectionBig: '用电安全',
-        inspectionSmall: '用电安全用电安全用电安全用电安全用电安全',
-        dangerGrade: '一般隐患',
-      },
-      {
-        number: '001',
-        businessClassify: '安全生产',
-        hasIndustry: '制造业',
-        inspectionBig: '用电安全',
-        inspectionSmall: '用电安全用电安全用电安全用电安全用电安全',
-        dangerGrade: '一般隐患',
-      },
-    ];
+    const { flowList: list, currentPage } = this.state;
+    const indexBase = (currentPage - 1) * PageSize;
 
     /* 配置描述 */
     const COLUMNS = [
       {
         title: '序号',
-        dataIndex: 'number',
-        key: 'number',
+        dataIndex: 'index',
+        key: 'index',
         align: 'center',
         width: 20,
       },
       {
         title: '业务分类',
-        dataIndex: 'businessClassify',
-        key: 'businessClassify',
+        dataIndex: 'business_type',
+        key: 'business_type',
         align: 'center',
         width: 65,
       },
       {
         title: '所属行业',
-        dataIndex: 'hasIndustry',
-        key: 'hasIndustry',
+        dataIndex: 'industry',
+        key: 'industry',
         align: 'center',
         width: 70,
       },
       {
         title: '检查大项',
-        dataIndex: 'inspectionBig',
-        key: 'inspectionBig',
+        dataIndex: 'check_way',
+        key: 'check_way',
         align: 'center',
         width: 80,
       },
       {
         title: '检查小项',
-        dataIndex: 'inspectionSmall',
-        key: 'inspectionSmall',
+        dataIndex: 'flow_name',
+        key: 'flow_name',
         align: 'center',
         width: 150,
       },
       {
         title: '隐患等级',
-        dataIndex: 'dangerGrade',
-        key: 'dangerGrade',
+        dataIndex: 'danger_level',
+        key: 'danger_level',
         align: 'center',
         width: 65,
       },
@@ -473,7 +585,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
             loading={tableLoading}
             rowKey="id"
             columns={COLUMNS}
-            dataSource={list}
+            dataSource={this.handleTableData(list, indexBase)}
             pagination={{ pageSize: PageSize }}
             bordered
           />
@@ -553,7 +665,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
             })(
               <Select placeholder="请选择所属类别">
                 {typeCodes.map(item => (
-                  <Option value={item.id} key={item.id}>
+                  <Option value={item.value} key={item.value}>
                     {item.label}
                   </Option>
                 ))}
@@ -583,7 +695,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
                   message: '请选择设定依据',
                 },
               ],
-            })(<Input placeholder="请选择设定依据" onFocus={this.handleFocusSet} />)}
+            })(<Input placeholder="请选择设定依据" onFocus={this.handleFocus} />)}
           </FormItem>
 
           <FormItem {...formItemLayout} label={fieldLabels.punishBasis}>

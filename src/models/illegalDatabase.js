@@ -7,7 +7,7 @@ import {
   queryDtoLIst,
 } from '../services/lawEnforcement/illegal.js';
 
-import { queryLawsOptions } from '../services/lawEnforcement/laws.js';
+import { queryLawsOptions, queryLawsList } from '../services/lawEnforcement/laws.js';
 
 /* 违法行为库 */
 export default {
@@ -22,15 +22,27 @@ export default {
         pageNum: 1,
       },
     },
+    // 业务分类
     businessTypes: [],
+    // 所属法律法规
+    lawTypes: [],
+    // 所属类别
     typeCodes: [],
     detail: {},
     modal: {
       list: [],
       pagination: {
+        total: 0,
         pageNum: 1,
         pageSize: 10,
+      },
+    },
+    checkModal: {
+      list: [],
+      pagination: {
         total: 0,
+        pageNum: 1,
+        pageSize: 10,
       },
     },
   },
@@ -42,6 +54,16 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'saveList',
+          payload: response.data,
+        });
+      }
+    },
+    // 模态框
+    *fetchModalList({ payload }, { call, put }) {
+      const response = yield call(queryLawsList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveModalList',
           payload: response.data,
         });
       }
@@ -70,7 +92,7 @@ export default {
         yield put({
           type: 'queryType',
           payload: {
-            type: 'typeCode',
+            type: 'typeCodes',
             list: response.data.list,
           },
         });
@@ -82,24 +104,17 @@ export default {
       }
     },
     // 获取检查内容
-    *fetchDtoList({ success, error }, { call, put }) {
-      const response = yield call(queryDtoLIst);
+    *fetchDtoList({ payload }, { call, put }) {
+      const response = yield call(queryDtoLIst, payload);
       if (response.code === 200) {
         yield put({
           type: 'queryDtoList',
-          payload: {
-            data: response.data,
-          },
+          payload: response.data,
         });
-        if (success) {
-          success(response.data);
-        }
-      } else if (error) {
-        error(response.msg);
       }
     },
     // 新增
-    *insertLaws({ payload, success, error }, { call, put }) {
+    *insertIllegal({ payload, success, error }, { call, put }) {
       const response = yield call(addIllegal, payload);
       const { code, data } = response;
       if (code === 200) {
@@ -112,8 +127,7 @@ export default {
       }
     },
     // 编辑
-    *editLaws({ payload, success, error }, { call, put }) {
-      console.log(payload);
+    *editIllegal({ payload, success, error }, { call, put }) {
       const response = yield call(updateIllegal, payload);
       if (response.code === 200) {
         yield put({
@@ -156,18 +170,28 @@ export default {
         data: payload,
       };
     },
+    // 模态框
+    saveModalList(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        modal: payload,
+      };
+    },
     // 初始化选项
     queryOptions(
       state,
       {
         payload: {
-          data: { businessType },
+          data: { businessType, lawType },
         },
       }
     ) {
       return {
         ...state,
         businessTypes: businessType,
+        lawTypes: lawType,
       };
     },
 
@@ -185,18 +209,12 @@ export default {
     },
 
     // 获取检查内容
-    queryDtoList(
-      state,
-      {
-        payload: {
-          data: { businessType, lawType },
-        },
-      }
-    ) {
+    queryDtoList(state, { payload }) {
+      const { list } = payload;
       return {
         ...state,
-        businessTypes: businessType,
-        lawTypes: lawType,
+        list,
+        checkModal: payload,
       };
     },
     // 新增

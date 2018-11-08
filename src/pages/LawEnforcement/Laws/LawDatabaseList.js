@@ -150,6 +150,8 @@ export default class lawDatabaseList extends PureComponent {
 
   /* 删除 */
   handleDelete = id => {
+    console.log('id', id);
+
     const {
       dispatch,
       form: { getFieldsValue },

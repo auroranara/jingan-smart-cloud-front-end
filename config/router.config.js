@@ -905,13 +905,13 @@ module.exports = [
                 component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
               },
               {
-                path: '/law-enforcement/illegal/edit',
+                path: '/law-enforcement/illegal/edit/:id',
                 code: 'lawEnforcement.illegal.edit',
                 name: 'edit',
                 component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
               },
               {
-                path: '/law-enforcement/illegal/detail',
+                path: '/law-enforcement/illegal/detail/:id',
                 code: 'lawEnforcement.illegal.view',
                 name: 'view',
                 component: './LawEnforcement/Illegal/IllegalDatabaseDetail',

@@ -9,11 +9,11 @@ export async function queryIllegalList(params) {
 }
 
 // 获得所属类别
-export async function queryIllegalType() {
-  return request(`/acloud_new/v2/actInfo/typeCode`);
+export async function queryIllegalType(params) {
+  return request(`/acloud_new/v2/actInfo/typeCode?${stringify(params)}`);
 }
 
-// 获得所属类别
+// 获得检查内容
 export async function queryDtoLIst() {
   return request(`/acloud_new/v2/actInfo/dtoList.json`);
 }
@@ -35,8 +35,8 @@ export async function updateIllegal(params) {
 }
 
 // 删除
-export async function deleteIllegal({ u0ynzi27rj5ajelf }) {
-  return request(`/acloud_new/v2/actInfo/deleteActInfo/${u0ynzi27rj5ajelf}`, {
+export async function deleteIllegal(id) {
+  return request(`/acloud_new/v2/actInfo/deleteActInfo/${id}`, {
     method: 'DELETE',
   });
 }

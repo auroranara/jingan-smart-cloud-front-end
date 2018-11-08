@@ -1,18 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  Input,
-  Table,
-  Select,
-  Divider,
-  Col,
-  Popconfirm,
-  // message,
-} from 'antd';
-// import { routerRedux } from 'dva/router';
+import { Form, Card, Button, Input, Table, Select, Divider, Col, Popconfirm, message } from 'antd';
+import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codesMap from '@/utils/codes';
@@ -49,10 +38,10 @@ const defaultFormData = {
 
 const PageSize = 10;
 
-@connect(({ lawDatabase, user, loading }) => ({
-  lawDatabase,
+@connect(({ illegalDatabase, user, loading }) => ({
+  illegalDatabase,
   user,
-  loading: loading.models.lawDatabase,
+  loading: loading.models.illegalDatabase,
 }))
 @Form.create()
 export default class IllegalDatabaseList extends PureComponent {
@@ -61,95 +50,143 @@ export default class IllegalDatabaseList extends PureComponent {
     this.formData = defaultFormData;
   }
 
-  state = {};
+  state = {
+    currentPage: 1,
+  };
+
+  // 跳转到详情页面
+  goIllegalDetail = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/law-enforcement/illegal/detail/${id}`));
+  };
+
+  // 跳转到编辑页面
+  goIllegalEdit = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/law-enforcement/illegal/edit/${id}`));
+  };
 
   // 挂载后
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   lawDatabase: {
-    //     data: {
-    //       pagination: { pageSize },
-    //     },
-    //   },
-    // } = this.props;
-    // // 获取记录列表
-    // dispatch({
-    //   type: 'lawDatabase/fetch',
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    const {
+      dispatch,
+      illegalDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 获取记录列表
+    dispatch({
+      type: 'illegalDatabase/fetchIllegalList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+    // 获取初始化选项
+    dispatch({
+      type: 'illegalDatabase/fetchOptions',
+    });
+    // 获取所属类别
+    dispatch({
+      type: 'illegalDatabase/fetchType',
+    });
   }
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
-    // const {
-    //   dispatch,
-    //   form: { getFieldsValue },
-    //   lawDatabase: {
-    //     data: {
-    //       pagination: { pageSize },
-    //     },
-    //   },
-    // } = this.props;
-    // const data = getFieldsValue();
-    // // 修改表单数据
-    // this.formData = data;
-    // // 重新请求数据
-    // dispatch({
-    //   type:'lawDatabase/fetch',
-    //   payload:{
-    //     pageSize,
-    //     pageNum: 1,
-    //     ...data,
-    //   },
-    // })
+    const {
+      dispatch,
+      form: { getFieldsValue },
+      illegalDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    const data = getFieldsValue();
+    // 修改表单数据
+    this.formData = data;
+    // 重新请求数据
+    dispatch({
+      type: 'illegalDatabase/fetchIllegalList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+        ...data,
+      },
+    });
   };
 
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
-    // const {
-    //   dispatch,
-    //   form: { resetFields },
-    //   lawDatabase: {
-    //     data: {
-    //       pagination: { pageSize },
-    //     },
-    //   },
-    // } = this.props;
-    // // 清除筛选条件
-    // resetFields();
-    // this.formData = defaultFormData;
-    // dispatch({
-    //   type: 'lawDatabase/fetch',
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
+    const {
+      dispatch,
+      form: { resetFields },
+      illegalDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 清除筛选条件
+    resetFields();
+    this.formData = defaultFormData;
+    dispatch({
+      type: 'illegalDatabase/fetchIllegalList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
   };
 
   /* 删除 */
-  handleDelete = record => {
-    // const { dispatch } = this.props;
-    //   dispatch({
-    //     type: 'lawDatabase/',
-    //     payload: record.id,
-    //     callback: response => {
-    //       if (response && response.code === 200) {
-    //         this.getDepartments();
-    //         message.success('删除成功！');
-    //       } else message.success(response.msg);
-    //     },
-    //   });
+  handleDelete = id => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+      illegalDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'illegalDatabase/deleteLaws',
+      payload: id,
+      callback: response => {
+        if (response && response.code === 200) {
+          dispatch({
+            type: 'illegalDatabase/fetchIllegalList',
+            payload: {
+              pageSize,
+              pageNum: 1,
+              ...data,
+            },
+          });
+          message.success('删除成功！');
+        } else message.success(response.msg);
+      },
+    });
+  };
+
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
   };
 
   /* 渲染form表单 */
   renderForm() {
     const {
       form: { getFieldDecorator },
+      illegalDatabase: { businessTypes, typeCodes },
     } = this.props;
 
     return (
@@ -157,17 +194,25 @@ export default class IllegalDatabaseList extends PureComponent {
         <Form layout="inline">
           <Col span={18}>
             <FormItem>
-              {getFieldDecorator('businessClassify', {})(
+              {getFieldDecorator('businessType', {})(
                 <Select style={{ width: 200 }} placeholder="请选择业务分类">
-                  <Option value="安全生产">安全生产</Option>
-                  <Option value="消防">消防</Option>
-                  <Option value="环保">环保</Option>
+                  {businessTypes.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.label}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator('lawsRegulations', {})(
-                <Select style={{ width: 200 }} placeholder="请选择类别" />
+              {getFieldDecorator('typeCode', {})(
+                <Select style={{ width: 200 }} placeholder="请选择类别">
+                  {typeCodes.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.label}
+                    </Option>
+                  ))}
+                </Select>
               )}
             </FormItem>
             <FormItem>
@@ -203,54 +248,45 @@ export default class IllegalDatabaseList extends PureComponent {
 
   /* 渲染table */
   renderTable() {
-    const { tableLoading } = this.props;
+    const {
+      tableLoading,
+      illegalDatabase: {
+        data: { list },
+      },
+    } = this.props;
 
-    const list = [
-      {
-        number: '001',
-        businessClassify: '消防',
-        lawsRegulations: '中华人民共和国安全生产法',
-        subClause: '第八十九条',
-        lawsRegulationsInput: '承担安全评价、认证、检测、检验工作的机构，出具虚假证明的……',
-      },
-      {
-        number: '002',
-        businessClassify: '消防',
-        lawsRegulations: '中华人民共和国安全生产法',
-        subClause: '第八十九条',
-        lawsRegulationsInput: '承担安全评价、认证、检测、检验工作的机构，出具虚假证明的……',
-      },
-    ];
+    const { currentPage } = this.state;
+    const indexBase = (currentPage - 1) * PageSize;
 
     /* 配置描述 */
     const COLUMNS = [
       {
         title: '序号',
-        dataIndex: 'number',
-        key: 'number',
+        dataIndex: 'index',
+        key: 'index',
         align: 'center',
         width: 70,
       },
       {
         title: '业务分类',
-        dataIndex: 'businessClassify',
-        key: 'businessClassify',
+        dataIndex: 'businessTypeName',
+        key: 'businessTypeName',
         align: 'center',
         width: 100,
       },
       {
         title: '所属类别',
-        dataIndex: 'lawsRegulations',
-        key: 'lawsRegulations',
+        dataIndex: 'typeCodeName',
+        key: 'typeCode',
         align: 'center',
-        width: 260,
+        width: 100,
       },
       {
         title: '违法行为',
-        dataIndex: 'lawsRegulationsInput',
-        key: 'lawsRegulationsInput',
+        dataIndex: 'actContent',
+        key: 'actContent',
         align: 'center',
-        width: 650,
+        width: 500,
       },
       {
         title: '操作',
@@ -259,25 +295,25 @@ export default class IllegalDatabaseList extends PureComponent {
         fixed: 'right',
         align: 'center',
         width: 180,
-        render: (text, record) => (
+        render: (text, rows) => (
           <span>
             <AuthA
               code={codesMap.lawEnforcement.illegal.detail}
-              href="#/law-enforcement/illegal/detail"
+              onClick={() => this.goIllegalDetail(rows.id)}
             >
               查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA
               code={codesMap.lawEnforcement.illegal.edit}
-              href="#/law-enforcement/illegal/edit"
+              onClick={() => this.goIllegalEdit(rows.id)}
             >
               编辑
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm
               title="确认要删除该违法行为库吗？"
-              onConfirm={() => this.handleDelete(record)}
+              onConfirm={() => this.handleDelete(rows.id)}
             >
               <AuthA code={codesMap.lawEnforcement.illegal.delete}>删除</AuthA>
             </Popconfirm>
@@ -293,7 +329,7 @@ export default class IllegalDatabaseList extends PureComponent {
             loading={tableLoading}
             rowKey="id"
             columns={COLUMNS}
-            dataSource={list}
+            dataSource={this.handleTableData(list, indexBase)}
             pagination={{ pageSize: PageSize }}
             scroll={{ x: 1400 }}
             bordered

@@ -39,31 +39,31 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-@connect(({ lawDatabase, user, loading }) => ({
-  lawDatabase,
+@connect(({ illegalDatabase, user, loading }) => ({
+  illegalDatabase,
   user,
-  loading: loading.models.lawDatabase,
+  loading: loading.models.illegalDatabase,
 }))
 @Form.create()
 export default class LawDetabaseDetail extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   match: {
-    //     params: { id },
-    //   },
-    // } = this.props;
-    // // 获取详情
-    // dispatch({
-    //   type: 'lawDatabase/',
-    //   payload: {
-    //     id,
-    //   },
-    // });
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    // 获取详情
+    dispatch({
+      type: 'illegalDatabase/fetchIllegalList',
+      payload: {
+        id,
+      },
+    });
   }
 
-  // 返回到列表页面
+  // 返回到编辑页面
   goToEdit = id => {
     const { dispatch } = this.props;
     dispatch(routerRedux.push(`/law-enforcement/illegal/edit/${id}`));
@@ -75,7 +75,7 @@ export default class LawDetabaseDetail extends PureComponent {
       match: {
         params: { id },
       },
-      // lawDatabase: { detail },
+      // illegalDatabase: { detail },
     } = this.props;
     return (
       <Card title="违法行为详情" bordered={false}>
