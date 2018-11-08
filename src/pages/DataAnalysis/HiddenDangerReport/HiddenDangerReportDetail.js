@@ -269,7 +269,7 @@ export default class App extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Spin spinning={!!loading}>
-          <Card title="流程进度" style={{ marginBottom: 24 }} bordered={false}>
+          <Card title="流程进度" className={styles.card} bordered={false}>
             <Steps direction={stepDirection} progressDot={dot => dot} current={current}>
               {timeLine.map(({ id, time, type, user }) => (
                 <Step key={id} title={type} description={time && user ? (
@@ -281,7 +281,7 @@ export default class App extends PureComponent {
               ))}
             </Steps>
           </Card>
-          <Card title="隐患信息" style={{ marginBottom: 24 }} bordered={false}>
+          <Card title="隐患信息" className={styles.card} bordered={false}>
             <DescriptionList style={{ marginBottom: 16 }}>
               <Description term="隐患来源">{source_type_name || getEmptyData()}</Description>
               <Description term="点位名称">{item_name || getEmptyData()}</Description>
@@ -333,7 +333,7 @@ export default class App extends PureComponent {
             const fileList = files && files.map(({ id: key, web_url: src }) => ({ key, src }));
             if (+type === 2) {
               return (
-                <Card title="整改信息" style={{ marginBottom: 24 }} bordered={false} key={id}>
+                <Card title="整改信息" className={styles.card} bordered={false} key={id}>
                   <DescriptionList style={{ marginBottom: 16 }}>
                     <Description term="整改人">{operator_name || getEmptyData()}</Description>
                     <Description term="实际整改日期">{create_time_str || getEmptyData()}</Description>
@@ -358,7 +358,7 @@ export default class App extends PureComponent {
             }
             else if (+type === 3) {
               return (
-                <Card title="复查信息" bordered={false} key={id}>
+                <Card title="复查信息" className={styles.card} bordered={false} key={id}>
                   <DescriptionList style={{ marginBottom: 16 }}>
                     <Description term="复查人">{operator_name || getEmptyData()}</Description>
                     <Description term="复查日期">{create_time_str || getEmptyData()}</Description>
