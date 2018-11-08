@@ -15,7 +15,7 @@ export async function getHiddenDangerList(params) {
  * 获取隐患详情
  */
 export async function getHiddenDangerDetail({ id }) {
-  return request(`/acloud_new//v2/hiddenDanger/hiddenDangerInfo/${id}`);
+  return request(`/acloud_new/v2/hiddenDanger/hiddenDangerInfo/${id}`);
 }
 
 /**
