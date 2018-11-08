@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Table, Row, Col, Input, Select, DatePicker, Button, Spin, Badge, message, TreeSelect } from 'antd';
+import { Form, Card, Table, Row, Col, Input, Select, DatePicker, Button, Spin, Badge, TreeSelect } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Lightbox from 'react-images';
 import Link from 'umi/link';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import InfiniteScroll from 'react-infinite-scroller';
 import TagSelect from '@/components/TagSelect';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
@@ -75,7 +74,7 @@ const getRootChild = () => document.querySelector('#root>div');
 const defaultDateRange = [moment().subtract(1, 'months'), moment()];
 /* 默认的payload */
 const defaultPayload = {
-  pageSize: 20,
+  pageSize: 5,
   pageNum: 1,
   query_start_time: `${defaultDateRange[0].format('YYYY/MM/DD')} 00:00:00`,
   query_end_time: `${defaultDateRange[1].format('YYYY/MM/DD')} 23:59:59`,
@@ -312,18 +311,18 @@ export default class App extends PureComponent {
   /**
    * 加载更多
    */
-  handleLoadMore = () => {
-    const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageNum } } } } = this.props;
+  handleLoadMore = (pageNum, pageSize) => {
+    const { dispatch, form: { getFieldsValue } } = this.props;
     const { createTime, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime;
-    // console.log(pageNum+1);
+    // console.log(pageNum);
     // 获取隐患列表
     dispatch({
-      type: 'hiddenDangerReport/appendList',
+      type: 'hiddenDangerReport/fetchList',
       payload: {
-        ...defaultPayload,
         ...rest,
-        pageNum: pageNum+1,
+        pageNum: pageNum,
+        pageSize,
         query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
         query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
       },
@@ -506,36 +505,35 @@ export default class App extends PureComponent {
         list: {
           list,
           pagination: {
-            pageSize=20,
+            pageSize=5,
             pageNum=1,
             total=0,
           },
         },
       },
-      loading,
     } = this.props;
     const { columns } = this.state;
-    const hasMore = pageNum * pageSize < total;
     return (
-      <InfiniteScroll
-        hasMore={hasMore}
-        initialLoad={false}
-        loadMore={() => {
-          // 防止多次加载
-          !loading && this.handleLoadMore();
+      <Table
+        className={styles.table}
+        dataSource={list}
+        columns={columns.length > 0 ? columns.concat(fixedOperationColumn) : columns.concat(operationColumn)}
+        rowKey="id"
+        scroll={{
+          x: true,
         }}
-      >
-        <Table
-          className={styles.table}
-          dataSource={list}
-          columns={columns.length > 0 ? columns.concat(fixedOperationColumn) : columns.concat(operationColumn)}
-          pagination={false}
-          rowKey="id"
-          scroll={{
-            x: true,
-          }}
-        />
-      </InfiniteScroll>
+        pagination={{
+          current: pageNum,
+          pageSize,
+          total,
+          pageSizeOptions: ['5', '10', '15', '20'],
+          showTotal: (total) => `共 ${total} 条`,
+          showQuickJumper: true,
+          showSizeChanger: true,
+          onChange: this.handleLoadMore,
+          onShowSizeChange: (num, size) => { this.handleLoadMore(1, size); },
+        }}
+      />
     );
   }
 
