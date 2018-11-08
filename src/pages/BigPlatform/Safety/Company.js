@@ -1091,11 +1091,12 @@ class CompanyLayout extends PureComponent {
       selectedFourColorImgUrl,
       points,
     } = this.state;
+    let red=0, orange=0, yellow=0, blue=0, gray=0, camera=0;
 
     return (
       <div className={riskStyles.fourColorImgContainer}>
         {this.renderMonitorBall()}
-        <div className={riskStyles.fourColorImgTitle}>安全风险四色图</div>
+        <div className={riskStyles.fourColorImgTitle}>安全点位图</div>
         <RiskImage
           src={selectedFourColorImgUrl}
           wrapperClassName={riskStyles.riskImage}
@@ -1105,19 +1106,24 @@ class CompanyLayout extends PureComponent {
           {allCamera.length > 0 &&
             allCamera.map(({ id, fix_img_id: fixImgId, x_num: x, y_num: y, key_id }) => {
               const position = { x, y };
-              return selectedFourColorImgId === fixImgId ? (
-                <Fragment key={id}>
-                  <RiskPoint
-                    position={position}
-                    src={videoPointIcon}
-                    style={{ width: 36, height: 36, cursor: 'pointer', boxShadow: '0 0 5px rgba(0,0,0,0.9)', borderRadius: '50%' }}
-                    offset={normalOffset}
-                    onClick={() => {
-                      this.handleVideoShow(key_id);
-                    }}
-                  />
-                </Fragment>
-              ) : null;
+              const isCurrentImgCamera = selectedFourColorImgId === fixImgId;
+              if (isCurrentImgCamera) {
+                camera++;
+                return (
+                  <Fragment key={id}>
+                    <RiskPoint
+                      position={position}
+                      src={videoPointIcon}
+                      style={{ width: 36, height: 36, cursor: 'pointer', boxShadow: '0 0 5px rgba(0,0,0,0.9)', borderRadius: '50%' }}
+                      offset={normalOffset}
+                      onClick={() => {
+                        this.handleVideoShow(key_id);
+                      }}
+                    />
+                  </Fragment>
+                );
+              }
+              return null;
             })}
           {points &&
             points.map(({ itemId: id, yNum: y, xNum: x }, index) => {
@@ -1143,6 +1149,25 @@ class CompanyLayout extends PureComponent {
                 info.hdLetterInfo.riskLevelName.desc,
                 +info.hdLetterInfo.status === 2
               );
+              let isGray = false;
+              switch(info.hdLetterInfo.riskLevelName.desc) {
+                case '红':
+                  red++;
+                  break;
+                case '橙':
+                  orange++;
+                  break;
+                case '黄':
+                  yellow++;
+                  break;
+                case '蓝':
+                  blue++;
+                  break;
+                default:
+                  gray++;
+                  isGray = true;
+                  break;
+              };
               const infoData = [
                 {
                   icon: pointIcon,
@@ -1174,6 +1199,9 @@ class CompanyLayout extends PureComponent {
                   content: info.hdLetterInfo.riskLevelName.desc,
                 },
               ];
+              if (isGray) {
+                infoData.splice(4, 1);
+              }
               return (
                 <Fragment key={id}>
                   <RiskPoint
@@ -1202,7 +1230,7 @@ class CompanyLayout extends PureComponent {
                     position={position}
                     offset={defaultInfoOffset}
                     data={infoData}
-                    background={info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl}
+                    background={isGray ? undefined: (info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl)}
                     style={{
                       display: selectedId === id ? 'block' : 'none',
                       // opacity: selectedId === id ? '1' : '0',
@@ -1214,23 +1242,37 @@ class CompanyLayout extends PureComponent {
           {this.renderFourColorImgSelect()}
         </RiskImage>
         <div className={riskStyles.fourColorImgLabelContainer}>
-          <div className={riskStyles.fourColorImgLabel}>
-            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FC1F02' }} />
-            <span>重大风险</span>
-          </div>
-          <div className={riskStyles.fourColorImgLabel}>
-            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#F17A0A' }} />
-            <span>较大风险</span>
-          </div>
-          <div className={riskStyles.fourColorImgLabel}>
-            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FBF719' }} />
-            <span>一般风险</span>
-          </div>
-          <div className={riskStyles.fourColorImgLabel}>
-            <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#1E60FF' }} />
-            <span>低风险</span>
-          </div>
-          {allCamera.length > 0 && (
+          {red > 0 && (
+            <div className={riskStyles.fourColorImgLabel}>
+              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FC1F02' }} />
+              <span>重大风险</span>
+            </div>
+          )}
+          {orange > 0 && (
+            <div className={riskStyles.fourColorImgLabel}>
+              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#F17A0A' }} />
+              <span>较大风险</span>
+            </div>
+          )}
+          {yellow > 0 && (
+            <div className={riskStyles.fourColorImgLabel}>
+              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FBF719' }} />
+              <span>一般风险</span>
+            </div>
+          )}
+          {blue > 0 && (
+            <div className={riskStyles.fourColorImgLabel}>
+              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#1E60FF' }} />
+              <span>低风险</span>
+            </div>
+          )}
+          {gray > 0 && (
+            <div className={riskStyles.fourColorImgLabel}>
+              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#4E6693' }} />
+              <span>风险点</span>
+            </div>
+          )}
+          {camera > 0 && (
             <div className={riskStyles.fourColorImgLabel}>
               <span
                 className={riskStyles.fourColorImgLabelIcon}
