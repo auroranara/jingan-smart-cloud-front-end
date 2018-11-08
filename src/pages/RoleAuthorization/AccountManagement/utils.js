@@ -50,7 +50,7 @@ function traverse(tree, callback, childProp='children') {
   tree.forEach(item => {
     callback(item);
     if (item[childProp])
-      traverse(item[childProp], callback);
+      traverse(item[childProp], callback, childProp);
   });
 }
 
@@ -207,7 +207,7 @@ export function getIdMaps(tree) {
   const childIdMap = {};
   traverse(tree, ({ id, parentIds, childMenus }) => {
     parentIdMap[id] = parentIds.split(',').filter(k => k !== '0');
-    console.log(id);
+    // console.log(id, parentIds);
     childIdMap[id] = childMenus ? childMenus.map(({ id }) => id) : [];
   }, 'childMenus');
   return [parentIdMap, childIdMap];
@@ -262,7 +262,7 @@ export function removeParentKey(keys, childIdMap) {
     return prev;
   }, []);
 
-  return keys.filter((k, i) => indexes.includes(i));
+  return keys.filter((k, i) => !indexes.includes(i));
 }
 
 export const TREE = [{

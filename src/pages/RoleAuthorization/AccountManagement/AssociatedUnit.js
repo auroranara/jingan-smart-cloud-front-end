@@ -309,7 +309,7 @@ export default class AssociatedUnit extends PureComponent {
           unitType === 1 && this.getMaintenanceTree(unitId);
 
           // 获取roleIds对应的权限，并设置权限树的初值
-          this.permissions = permissions;
+          this.authTreeCheckedKeys = permissions ? permissions.split(',') : [];
           const roles = roleIds.split(',');
           roles.length && this.fetchRolePermissions(roles);
 
@@ -499,7 +499,7 @@ export default class AssociatedUnit extends PureComponent {
               regulatoryClassification && regulatoryClassification.length
                 ? regulatoryClassification.join(',')
                 : null,
-            permissions: getNoRepeat(permissions, this.permissions),
+            permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap).join(','),
           };
           switch (
             payload.unitType //单位类型
@@ -1069,7 +1069,8 @@ export default class AssociatedUnit extends PureComponent {
       success: ({ permissions }) => {
         const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
         this.permissions = perms;
-        setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+        // setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+        setFieldsValue({ permissions: removeParentKey(mergeArrays(perms, this.authTreeCheckedKeys), this.childIdMap) });
       },
     });
   }

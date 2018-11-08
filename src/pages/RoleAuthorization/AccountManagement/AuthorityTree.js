@@ -16,8 +16,8 @@ export default class AthorityTree extends PureComponent {
     dispatch({
       type: 'role/fetchPermissionTree',
       success: tree => {
-        console.log('tree', tree);
-        console.log(getIdMaps(tree));
+        // console.log('tree', tree);
+        // console.log(getIdMaps(tree));
         setIdMaps(getIdMaps(tree));
         sortTree(tree);
       },
@@ -34,7 +34,7 @@ export default class AthorityTree extends PureComponent {
     const { form: { setFieldsValue }, role: { detail: { permissions } }, handleChangeAuthTreeCheckedKeys } = this.props;
     handleChangeAuthTreeCheckedKeys(getNoRepeat(checkedKeys, permissions));
 
-    console.log('onCheck', checkedKeys, permissions && permissions.split(','));
+    // console.log('onCheck', checkedKeys, permissions && permissions.split(','));
     setFieldsValue({ permissions: checkedKeys });
   };
 
@@ -59,6 +59,7 @@ export default class AthorityTree extends PureComponent {
         autoExpandParent={autoExpandParent}
       >
         {renderTreeNodes(permissionTree, permissions, 'childMenus', 'showZname', 'id')}
+        {/* {renderTreeNodes(permissionTree, [], 'childMenus', 'showZname', 'id')} */}
       </Tree>
     );
   }

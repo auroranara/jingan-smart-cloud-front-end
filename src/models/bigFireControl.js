@@ -118,7 +118,7 @@ export default {
 
   effects: {
     *fetchCompanyFireInfo({ payload }, { call, put }) {
-      let response = yield call(getCompanyFireInfo);
+      let response = yield call(getCompanyFireInfo, payload);
       if (response && response.code === 200) yield put({ type: 'saveMap', payload: response.data });
     },
     *fetchOvAlarmCounts({ payload }, { call, put }) {
@@ -162,7 +162,7 @@ export default {
       }
     },
     *fetchSys({ payload }, { call, put }) {
-      const response = yield call(querySys);
+      const response = yield call(querySys, payload);
       if (response && response.code === 200) {
         const { data = EMPTY_OBJECT } = response;
         const { total, activeCount, titleName } = data;
@@ -191,7 +191,7 @@ export default {
       }
     },
     *fetchInitLookUp({ payload, callback }, { call, put }) {
-      let response = yield call(queryLookUp);
+      let response = yield call(queryLookUp, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200) {
@@ -201,7 +201,7 @@ export default {
       }
     },
     *fetchCountdown({ payload, callback }, { call, put }) {
-      let response = yield call(queryCountdown);
+      let response = yield call(queryCountdown, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200) {
@@ -210,7 +210,7 @@ export default {
       }
     },
     *postLookingUp({ payload, callback }, { call, put }) {
-      let response = yield call(postLookingUp);
+      let response = yield call(postLookingUp, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, msg = '暂无信息' } = response;
       callback && callback(code, msg);

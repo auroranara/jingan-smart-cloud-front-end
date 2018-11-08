@@ -397,8 +397,8 @@ export default class accountManagementEdit extends PureComponent {
         // console.log(maintenacePermissions, this.chidrenMap);
         // console.log(handleMtcTree(maintenacePermissions, this.childrenMap));
 
-        console.log(getNoRepeat(permissions, this.permissions));
-        console.log(addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap));
+        // console.log(getNoRepeat(permissions, this.permissions));
+        // console.log(addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap));
 
         if (!error) {
           this.setState({
@@ -449,7 +449,7 @@ export default class accountManagementEdit extends PureComponent {
                 regulatoryClassification && regulatoryClassification.length
                   ? regulatoryClassification.join(',')
                   : null,
-              permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap),
+              permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap).join(','),
             };
             switch (payload.unitType) {
               // 维保企业
