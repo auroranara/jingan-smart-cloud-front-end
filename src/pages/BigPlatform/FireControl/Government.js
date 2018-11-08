@@ -73,7 +73,9 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   componentDidMount() {
-    this.initFetch();
+    const { match: { params: { gridId } } } = this.props;
+
+    this.initFetch(gridId === 'index' ? undefined : gridId);
     this.timer = setInterval(this.polling, DELAY);
   }
 
@@ -90,12 +92,12 @@ export default class FireControlBigPlatform extends PureComponent {
   dropdownDOM = null;
   // isLookingUp = false; // 标记正在查岗状态
 
-  initFetch = () => {
+  initFetch = (gridId) => {
     const { dispatch } = this.props;
 
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
     dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
-    dispatch({ type: 'bigFireControl/fetchSys' });
+    dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchAlarm' });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory' });
     dispatch({ type: 'bigFireControl/fetchFireTrend' });

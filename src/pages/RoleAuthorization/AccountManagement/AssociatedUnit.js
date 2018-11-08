@@ -32,6 +32,8 @@ import {
   handleMtcTreeViolently as handleMtcTree,
   mergeArrays,
   getNoRepeat,
+  addParentKey,
+  removeParentKey,
 } from './utils';
 import styles from './AccountManagementEdit.less';
 
@@ -388,8 +390,14 @@ export default class AssociatedUnit extends PureComponent {
   }
 
   childrenMap = {};
+  childIdMap = {};
+  parentIdMap = {};
   permissions = [];
   authTreeCheckedKeys = [];
+
+  setIdMaps = idMaps => {
+    [this.parentIdMap, this.childIdMap] = idMaps;
+  };
 
   //获取维保权限树
   getMaintenanceTree = companyId => {
@@ -1121,6 +1129,7 @@ export default class AssociatedUnit extends PureComponent {
                   role={role}
                   form={form}
                   dispatch={dispatch}
+                  setIdMaps = {this.setIdMaps}
                   handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
                 />
               </Form.Item>

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 // import { connect } from 'dva';
 import { Tree } from 'antd';
 
-import { renderTreeNodes, sortTree, mergeArrays, getNoRepeat } from './utils';
+import { renderTreeNodes, sortTree, mergeArrays, getNoRepeat, getIdMaps } from './utils';
 
 // @connect(({ role, loading }) => ({ role, loading: loading.effects['role/fetchPermissionTree'] }))
 export default class AthorityTree extends PureComponent {
@@ -12,10 +12,15 @@ export default class AthorityTree extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, setIdMaps } = this.props;
     dispatch({
       type: 'role/fetchPermissionTree',
-      success: tree => sortTree(tree),
+      success: tree => {
+        console.log('tree', tree);
+        console.log(getIdMaps(tree));
+        setIdMaps(getIdMaps(tree));
+        sortTree(tree);
+      },
     });
     // 清空detail，以免从角色页面跳过来时，渲染其获取的detail
     dispatch({

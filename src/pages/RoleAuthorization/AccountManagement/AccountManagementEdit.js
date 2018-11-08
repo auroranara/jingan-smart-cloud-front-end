@@ -23,7 +23,16 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import AuthorityTree from './AuthorityTree';
-import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree, mergeArrays, getNoRepeat } from './utils';
+import {
+  renderSearchedTreeNodes,
+  getParentKeys,
+  getTreeListChildrenMap,
+  handleMtcTreeViolently as handleMtcTree,
+  mergeArrays,
+  getNoRepeat,
+  addParentKey,
+  removeParentKey,
+} from './utils';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
@@ -317,8 +326,14 @@ export default class accountManagementEdit extends PureComponent {
   // sortMap = {};
   // totalMap = {};
   childrenMap = {};
+  childIdMap = {};
+  parentIdMap = {};
   permissions = [];
   authTreeCheckedKeys = [];
+
+  setIdMaps = idMaps => {
+    [this.parentIdMap, this.childIdMap] = idMaps;
+  };
 
   //获取维保权限树
   getMaintenanceTree = (companyId) => {
@@ -383,6 +398,7 @@ export default class accountManagementEdit extends PureComponent {
         // console.log(handleMtcTree(maintenacePermissions, this.childrenMap));
 
         console.log(getNoRepeat(permissions, this.permissions));
+        console.log(addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap));
 
         if (!error) {
           this.setState({
@@ -433,7 +449,7 @@ export default class accountManagementEdit extends PureComponent {
                 regulatoryClassification && regulatoryClassification.length
                   ? regulatoryClassification.join(',')
                   : null,
-              permissions: getNoRepeat(permissions, this.permissions),
+              permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap),
             };
             switch (payload.unitType) {
               // 维保企业
@@ -1146,6 +1162,7 @@ export default class accountManagementEdit extends PureComponent {
                   role={role}
                   form={form}
                   dispatch={dispatch}
+                  setIdMaps = {this.setIdMaps}
                   handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
                 />
               </Form.Item>

@@ -46,11 +46,11 @@ export function renderTreeNodes(data, disabledKeys, childrenProp='children', tit
 }
 
 // 遍历树
-function traverse(tree, callback) {
+function traverse(tree, callback, childProp='children') {
   tree.forEach(item => {
     callback(item);
-    if (item.children)
-      traverse(item.children, callback);
+    if (item[childProp])
+      traverse(item[childProp], callback);
   });
 }
 
@@ -199,6 +199,70 @@ export function getNoRepeat(origin, target=[]) {
   if (!origin || !Array.isArray(origin))
     return [];
   return origin.filter(item => !target.includes(item));
+}
+
+// id => parentIds, id => childIds
+export function getIdMaps(tree) {
+  const parentIdMap = {};
+  const childIdMap = {};
+  traverse(tree, ({ id, parentIds, childMenus }) => {
+    parentIdMap[id] = parentIds.split(',').filter(k => k !== '0');
+    console.log(id);
+    childIdMap[id] = childMenus ? childMenus.map(({ id }) => id) : [];
+  }, 'childMenus');
+  return [parentIdMap, childIdMap];
+}
+
+// 在selectedKeys添加对应父节点
+export function addParentKey(keys, parentIdMap) {
+  // 源数组中的所有值默认都被添加过了，所以都标记为true
+  const parentsFlag = keys.reduce((prev, next) => {
+    prev[next] = true;
+    return prev;
+  }, {});
+
+  // 遍历源数组，生成一个要添加的父节点数组
+  const parents = keys.reduce((prev, next) => {
+    // 遍历对应的父节点，若在parentsFlag对象中，父节点key值不存在，则未被添加过，将其加入parents数组
+    parentIdMap[next].forEach(p => {
+      if (!parentsFlag[p]) {
+        prev.push(p);
+        parentsFlag[p] = true;
+      }
+    });
+
+    return prev;
+  }, []);
+
+  return [...keys, ...parents];
+}
+
+// 找出树中子节点不唯一的父节点
+// export function getChildrenNotAloneKeys(tree) {
+//   const keys = [];
+//   traverse(tree, ({ id, childMenus }) => {
+//     const children = childMenus || [];
+//     if (children.length > 1)
+//       keys.push(id);
+//   }, 'childMenus');
+
+//   return keys;
+// }
+
+// 在selectedKeys中剔除半选的父节点，对每个key进行遍历，若其所有子节点都在数组中，则保留，否则剔除
+export function removeParentKey(keys, childIdMap) {
+  const indexes = keys.reduce((prev, next, i) => {
+    // 遍历每个项目的所有子节点，若只要有一个不在数组中，则将当前节点序号存入待删除的序号数组中
+    for (let k of childIdMap[next])
+      if (!keys.includes(k)) {
+        prev.push(i);
+        break;
+      }
+
+    return prev;
+  }, []);
+
+  return keys.filter((k, i) => indexes.includes(i));
 }
 
 export const TREE = [{
