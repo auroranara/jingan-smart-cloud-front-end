@@ -194,7 +194,7 @@ class GovernmentBigPlatform extends Component {
       },
     });
 
-    if (region === '江溪街道') {
+    if (region === '无锡市') {
       // 获取网格区域
       dispatch({
         type: 'bigPlatform/fetchMapLocation',
