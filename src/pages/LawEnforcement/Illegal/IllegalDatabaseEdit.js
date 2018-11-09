@@ -26,7 +26,7 @@ import styles from './IllegalDatabase.less';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
-
+let checkObjectIds = [];
 const PageSize = 10;
 
 /* 标题---编辑 */
@@ -115,6 +115,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
     },
     flowList: [],
     currentPage: 1,
+    setLawIds: undefined,
+    punishLawIds: undefined,
+    business_type: undefined,
   };
 
   // 返回到列表页面
@@ -177,10 +180,12 @@ export default class IllegalDatabaseEdit extends PureComponent {
   };
 
   // 选择按钮点击事件(设定依据)
-  handleSelect = item => {
+  handleSelect = value => {
     const { setFieldsValue } = this.props.form;
-    const { lawTypeName, article } = item;
-    setFieldsValue({ setLawIds: lawTypeName + ' , ' + article });
+    setFieldsValue({ setLawIds: value.lawTypeName + ' , ' + value.article });
+    this.setState({
+      setLawIds: value.id,
+    });
     this.handleClose();
   };
 
@@ -201,7 +206,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
     const setField = [
       {
-        id: 'businessClassify',
+        id: 'businessType',
         render() {
           return (
             <Select placeholder="请选择业务分类">
@@ -215,7 +220,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         },
       },
       {
-        id: 'lawsRegulations',
+        id: 'lawType',
         render() {
           return (
             <Select placeholder="请选择法律法规">
@@ -261,10 +266,12 @@ export default class IllegalDatabaseEdit extends PureComponent {
   };
 
   // 选择按钮点击事件(处罚依据)
-  handleSelectPunish = item => {
+  handleSelectPunish = value => {
     const { setFieldsValue } = this.props.form;
-    const { lawTypeName, article } = item;
-    setFieldsValue({ punishLawIds: lawTypeName + ' , ' + article });
+    setFieldsValue({ punishLawIds: value.lawTypeName + ' , ' + value.article });
+    this.setState({
+      punishLawIds: value.id,
+    });
     this.handleClosePunish();
   };
 
@@ -285,7 +292,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
     const punishField = [
       {
-        id: 'businessClassify',
+        id: 'businessType',
         render() {
           return (
             <Select placeholder="请选择业务分类">
@@ -299,7 +306,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         },
       },
       {
-        id: 'lawsRegulations',
+        id: 'lawType',
         render() {
           return (
             <Select placeholder="请选择法律法规">
@@ -349,6 +356,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
     this.setState({ check: { visible: false } });
   };
 
+  // 处理数据（检查内容table）
   handleTableData = (list = [], indexBase) => {
     return list.map((item, index) => {
       return {
@@ -387,7 +395,12 @@ export default class IllegalDatabaseEdit extends PureComponent {
           <span>
             <a
               onClick={() => {
+                if (checkObjectIds.join(',').indexOf(record.object_id) >= 0) {
+                  message.success('已添加');
+                  return;
+                }
                 this.setState({ flowList: [...flowList, record] });
+                checkObjectIds.push(record.object_id);
               }}
             >
               添加
@@ -398,7 +411,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
     ];
     const checkField = [
       {
-        id: 'checkName',
+        id: 'object_title',
         render() {
           return <Input placeholder="请输入检查项名称" />;
         },
@@ -407,7 +420,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         },
       },
       {
-        id: 'businessClassify',
+        id: 'business_type',
         render() {
           return (
             <Select placeholder="请选择业务分类">
@@ -429,7 +442,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         visible={visible}
         columns={checkCOLUMNS}
         column={contentCOLUMNS}
-        modal={checkModal}
+        checkModal={checkModal}
         fetch={this.fetchIllegalCheck}
         onClose={this.handleCloseCheck}
         field={checkField}
@@ -437,6 +450,13 @@ export default class IllegalDatabaseEdit extends PureComponent {
       />
     );
   }
+
+  // 删除检查内容添加项
+  handleDeleteCheck = key => {
+    const flowList = [...this.state.flowList];
+    this.setState({ flowList: flowList.filter(item => item.object_id !== key) });
+    checkObjectIds = checkObjectIds.filter(d => d !== key);
+  };
 
   // 点击提交按钮验证表单信息
   handleClickValidate = () => {
@@ -452,26 +472,20 @@ export default class IllegalDatabaseEdit extends PureComponent {
         this.setState({
           submitting: true,
         });
-        const {
-          businessType,
-          typeCode,
-          actContent,
-          setLawIds,
-          punishLawIds,
-          discretionStandard,
-          enable,
-          checkObjectIds,
-        } = values;
+        const { businessType, typeCode, actContent, discretionStandard, enable } = values;
+
+        const { setLawIds, punishLawIds } = this.state;
+
         const payload = {
           id,
           businessType,
           typeCode,
           actContent,
-          setLawIds,
-          punishLawIds,
+          setLawIds: setLawIds,
+          punishLawIds: punishLawIds,
           discretionStandard,
           enable: +enable,
-          checkObjectIds,
+          checkObjectIds: checkObjectIds.join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -569,7 +583,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
           <span>
             <Popconfirm
               title="确认要删除该检查内容吗？"
-              onConfirm={() => this.handleDelete(record)}
+              onConfirm={() => this.handleDeleteCheck(record.object_id)}
             >
               <a>删除</a>
             </Popconfirm>
@@ -599,22 +613,27 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 渲染信息
   renderLawsInfo() {
     const {
+      match: {
+        params: { id },
+      },
       form: { getFieldDecorator },
       illegalDatabase: {
-        detail: {
-          businessType,
-          typeCode,
-          actContent,
-          setLawIds,
-          punishLawIds,
-          discretionStandard,
-          enable,
-          // checkObjectIds,
-        },
+        data: { list },
         businessTypes,
         typeCodes,
       },
     } = this.props;
+
+    const detail = list.find(d => d.id === id) || {};
+    const {
+      businessType,
+      typeCode,
+      actContent,
+      setLaw,
+      punishLaw,
+      discretionStandard,
+      enable,
+    } = detail;
 
     const formItemLayout = {
       labelCol: {
@@ -688,7 +707,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.setBasis}>
             {getFieldDecorator('setLawIds', {
-              initialValue: setLawIds,
+              initialValue: setLaw,
               rules: [
                 {
                   required: true,
@@ -700,7 +719,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.punishBasis}>
             {getFieldDecorator('punishLawIds', {
-              initialValue: punishLawIds,
+              initialValue: punishLaw,
               rules: [
                 {
                   required: true,

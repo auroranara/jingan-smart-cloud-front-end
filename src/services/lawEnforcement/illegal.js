@@ -14,8 +14,8 @@ export async function queryIllegalType(params) {
 }
 
 // 获得检查内容
-export async function queryDtoLIst() {
-  return request(`/acloud_new/v2/actInfo/dtoList.json`);
+export async function queryDtoLIst(params) {
+  return request(`/acloud_new/v2/actInfo/dtoList.json?${stringify(params)}`);
 }
 
 // 新增

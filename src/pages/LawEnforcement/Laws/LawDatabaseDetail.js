@@ -79,7 +79,6 @@ export default class LawDatabaseDetail extends PureComponent {
         detail: { businessTypeName, lawTypeName, article, content, status },
       },
     } = this.props;
-    console.log(this.props);
     return (
       <Card title="法律法规详情" bordered={false}>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>

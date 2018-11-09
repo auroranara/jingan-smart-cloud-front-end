@@ -1,30 +1,17 @@
 import React, { PureComponent } from 'react';
-import { Form, Modal, Button, Table, Input } from 'antd';
+import { Form, Modal, Table } from 'antd';
 
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 
-const fieldList = {
-  name: '单位名称',
-};
-const fields = [
-  {
-    id: 'name',
-    render() {
-      return <Input placeholder={fieldList.name} />;
-    },
-    transform(value) {
-      return value.trim();
-    },
-  },
-];
 // 默认页面显示数量列表
 const defaultPageSizeOptions = ['5', '10', '15', '20'];
 
 @Form.create()
 export default class CompanyModal extends PureComponent {
   state = {
-    selectedRowKeys: [],
-    name: undefined,
+    // selectedRowKeys: [],
+    object_title: undefined,
+    business_type: undefined,
     checkList: [],
     clickContent: false,
   };
@@ -43,6 +30,7 @@ export default class CompanyModal extends PureComponent {
     if (afterClose) {
       afterClose();
     }
+    this.setState({ clickContent: false });
   };
 
   handleContentTable = record => {
@@ -56,14 +44,13 @@ export default class CompanyModal extends PureComponent {
   handleSearch = value => {
     const {
       fetch,
-      modal: {
+      checkModal: {
         pagination: { pageSize },
       },
       payload,
     } = this.props;
     this.setState({
       ...value,
-      selectedRowKeys: [],
     });
     fetch({
       payload: {
@@ -73,26 +60,13 @@ export default class CompanyModal extends PureComponent {
         ...payload,
       },
     });
-  };
-
-  /* 选择按钮点击事件 */
-  handleSelect = () => {
-    const { selectedRowKeys } = this.state;
-    const {
-      modal: { list },
-      onSelect,
-    } = this.props;
-    const selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
-    if (onSelect) {
-      onSelect(selectedData);
-    }
   };
 
   /* 重置按钮点击事件 */
   handleReset = value => {
     const {
       fetch,
-      modal: {
+      checkModal: {
         pagination: { pageSize },
       },
       payload,
@@ -111,39 +85,23 @@ export default class CompanyModal extends PureComponent {
     });
   };
 
-  /* 选择更换 */
-  handleSelectChange = selectedRowKeys => {
-    this.setState({
-      selectedRowKeys,
-    });
-  };
-
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
     const { fetch, payload } = this.props;
-    const { name } = this.state;
+    const { object_title, business_type } = this.state;
     this.setState({
       selectedRowKeys: [],
     });
     fetch({
       payload: {
-        name,
+        object_title,
+        business_type,
         pageNum: current,
         pageSize,
         ...payload,
       },
     });
   };
-
-  /* 渲染选择按钮 */
-  renderSelectButton() {
-    const { selectedRowKeys } = this.state;
-    return (
-      <Button type="primary" onClick={this.handleSelect} disabled={!selectedRowKeys.length}>
-        选择
-      </Button>
-    );
-  }
 
   handleContentTable = record => {
     this.setState({
@@ -162,16 +120,14 @@ export default class CompanyModal extends PureComponent {
       columns,
       column,
       pagination,
-      rowSelection,
       field,
       actSelect = true,
-      // clickContent = true,
-      modal: {
+      checkModal: {
         list,
         pagination: { total, pageNum, pageSize },
       },
     } = this.props;
-    const { selectedRowKeys, checkList, clickContent } = this.state;
+    const { checkList, clickContent } = this.state;
 
     return (
       <Modal
@@ -186,7 +142,7 @@ export default class CompanyModal extends PureComponent {
         destroyOnClose
       >
         <InlineForm
-          fields={field || fields}
+          fields={field}
           action={actSelect && this.renderSelectButton()}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -213,13 +169,6 @@ export default class CompanyModal extends PureComponent {
               showTotal: t => `共 ${t} 条记录`,
               pageSizeOptions: defaultPageSizeOptions,
               ...pagination,
-            }}
-            rowSelection={{
-              selectedRowKeys,
-              onChange: this.handleSelectChange,
-              hideDefaultSelections: true,
-              type: 'radio',
-              ...rowSelection,
             }}
             onChange={this.handleChangePagination}
             onRow={record => {

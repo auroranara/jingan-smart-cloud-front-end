@@ -32,8 +32,9 @@ const breadcrumbList = [
 
 // 默认表单值
 const defaultFormData = {
-  maintenanceName: undefined,
-  serviceUnitName: undefined,
+  businessType: undefined,
+  typeCode: undefined,
+  actContent: undefined,
 };
 
 const PageSize = 10;
@@ -208,7 +209,7 @@ export default class IllegalDatabaseList extends PureComponent {
               {getFieldDecorator('typeCode', {})(
                 <Select style={{ width: 200 }} placeholder="请选择类别">
                   {typeCodes.map(item => (
-                    <Option value={item.id} key={item.id}>
+                    <Option value={item.value} key={item.value}>
                       {item.label}
                     </Option>
                   ))}
@@ -216,8 +217,8 @@ export default class IllegalDatabaseList extends PureComponent {
               )}
             </FormItem>
             <FormItem>
-              {getFieldDecorator(' lawsRegulationsInput', {
-                initialValue: defaultFormData.lawsRegulationsInput,
+              {getFieldDecorator('actContent', {
+                initialValue: defaultFormData.actContent,
                 getValueFromEvent: e => e.target.value.trim(),
               })(<Input placeholder="请输入违法行为" />)}
             </FormItem>
@@ -265,28 +266,28 @@ export default class IllegalDatabaseList extends PureComponent {
         dataIndex: 'index',
         key: 'index',
         align: 'center',
-        width: 70,
+        width: 100,
       },
       {
         title: '业务分类',
         dataIndex: 'businessTypeName',
-        key: 'businessTypeName',
+        key: 'businessType',
         align: 'center',
-        width: 100,
+        width: 200,
       },
       {
         title: '所属类别',
         dataIndex: 'typeCodeName',
         key: 'typeCode',
         align: 'center',
-        width: 100,
+        width: 200,
       },
       {
         title: '违法行为',
         dataIndex: 'actContent',
         key: 'actContent',
         align: 'center',
-        width: 500,
+        width: 680,
       },
       {
         title: '操作',
@@ -294,7 +295,7 @@ export default class IllegalDatabaseList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 180,
+        width: 220,
         render: (text, rows) => (
           <span>
             <AuthA
@@ -342,8 +343,22 @@ export default class IllegalDatabaseList extends PureComponent {
   }
 
   render() {
+    const {
+      illegalDatabase: {
+        data: { list },
+      },
+    } = this.props;
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            列表记录：
+            {list.length}{' '}
+          </div>
+        }
+      >
         {this.renderForm()}
         {this.renderTable()}
       </PageHeaderLayout>

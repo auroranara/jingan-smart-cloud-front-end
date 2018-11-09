@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card } from 'antd';
+import { Form, Card, Badge, Row, Col } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from 'components/DescriptionList';
@@ -34,6 +34,22 @@ const breadcrumbList = [
     name: title,
   },
 ];
+
+// 依据
+function LawCard(props) {
+  const { lawTypeName, article } = props;
+  return (
+    <Row>
+      <Col span={4}>
+        <p>{lawTypeName ? lawTypeName : getEmptyData()}</p>
+      </Col>
+      <Col span={20}>
+        <p>{article ? article : getEmptyData()}</p>
+      </Col>
+    </Row>
+  );
+}
+
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
@@ -45,7 +61,7 @@ const getEmptyData = () => {
   loading: loading.models.illegalDatabase,
 }))
 @Form.create()
-export default class LawDetabaseDetail extends PureComponent {
+export default class IllegalDetabaseDetail extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
@@ -70,26 +86,69 @@ export default class LawDetabaseDetail extends PureComponent {
   };
 
   /* 渲染详情 */
-  renderDetail() {
+  renderDetail = () => {
     const {
       match: {
         params: { id },
       },
-      // illegalDatabase: { detail },
+      illegalDatabase: {
+        data: { list },
+      },
     } = this.props;
+
+    const detail = list.find(d => d.id === id) || {};
+
+    const {
+      businessTypeName,
+      typeCodeName,
+      actContent,
+      setLaw = [],
+      punishLaw = [],
+      discretionStandard,
+      enable,
+      checkObjectIds,
+    } = detail;
     return (
       <Card title="违法行为详情" bordered={false}>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="业务分类">{111 || getEmptyData()}</Description>
-          <Description term="所属法律法规" />
-          <Description term="所属条款" />
-          <Description term="法律法规内容" />
+          <Description term="业务分类">{businessTypeName || getEmptyData()}</Description>
+          <Description term="所属类别">{typeCodeName || getEmptyData()}</Description>
+          <Description term="违法行为">{actContent || getEmptyData()}</Description>
+          <Description term="设定依据">
+            {setLaw.map(item => {
+              const { lawTypeName, article } = item;
+              return <LawCard lawTypeName={lawTypeName} article={article} />;
+            })}
+          </Description>
+          <Description term="处罚依据">
+            {punishLaw.map(item => {
+              const { lawTypeName, article } = item;
+              return <LawCard lawTypeName={lawTypeName} article={article} />;
+            })}
+          </Description>
+          <Description term="裁量基准">{discretionStandard || getEmptyData()}</Description>
+          <Description term="是否启用">
+            {+enable === 1 ? (
+              <span>
+                <Badge status="success" />
+                启用
+              </span>
+            ) : (
+              (
+                <span>
+                  <Badge status="error" />
+                  禁用
+                </span>
+              ) || getEmptyData()
+            )}
+          </Description>
+          <Description term="检查内容">{checkObjectIds || getEmptyData()}</Description>
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
           <AuthButton
             type="primary"
             size="large"
-            code={codesMap.lawEnforcement.laws.edit}
+            code={codesMap.lawEnforcement.illegal.edit}
             onClick={() => {
               this.goToEdit(id);
             }}
@@ -99,7 +158,7 @@ export default class LawDetabaseDetail extends PureComponent {
         </div>
       </Card>
     );
-  }
+  };
 
   render() {
     return (

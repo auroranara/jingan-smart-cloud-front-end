@@ -142,18 +142,6 @@ export default {
       }
     },
 
-    // 查看
-    *fetchLawsDetail({ payload, callback }, { call, put }) {
-      const response = yield call(queryIllegalList, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'saveDetail',
-          payload: response.data,
-        });
-        if (callback) callback(response);
-      }
-    },
-
     *deleteLaws({ payload, callback }, { call }) {
       const response = yield call(deleteIllegal, payload);
       if (callback) callback(response);
@@ -232,13 +220,6 @@ export default {
           ...state.detail,
           data: payload,
         },
-      };
-    },
-    // 查看
-    saveDetail(state, { payload }) {
-      return {
-        ...state,
-        detail: payload,
       };
     },
     // 清除详情
