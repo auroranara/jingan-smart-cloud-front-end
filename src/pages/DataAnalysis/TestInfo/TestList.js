@@ -22,8 +22,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '消防维保',
-    name: '消防维保',
+    title: '数据分析',
+    name: '数据分析',
   },
   {
     title,
@@ -47,7 +47,7 @@ const transform = value => value.trim();
 const getRootChild = () => document.querySelector('#root>div');
 
 const handleViewDetail = id => {
-  router.push(`/fire-control/test-info/detail/${id}`);
+  router.push(`/data-analysis/test-info/detail/${id}`);
 };
 
 const COLUMNS = [

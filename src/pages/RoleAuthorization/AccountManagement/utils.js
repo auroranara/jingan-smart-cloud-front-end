@@ -46,11 +46,11 @@ export function renderTreeNodes(data, disabledKeys, childrenProp='children', tit
 }
 
 // 遍历树
-function traverse(tree, callback) {
+function traverse(tree, callback, childProp='children') {
   tree.forEach(item => {
     callback(item);
-    if (item.children)
-      traverse(item.children, callback);
+    if (item[childProp])
+      traverse(item[childProp], callback, childProp);
   });
 }
 
@@ -199,6 +199,116 @@ export function getNoRepeat(origin, target=[]) {
   if (!origin || !Array.isArray(origin))
     return [];
   return origin.filter(item => !target.includes(item));
+}
+
+// id => parentIds, id => node
+export function getIdMaps(tree) {
+  const parentIdMap = {};
+  // const childIdMap = {};
+  const idMap = {};
+  traverse(tree, item => {
+    const { id, parentIds, childMenus } = item;
+    parentIdMap[id] = parentIds.split(',').filter(k => k !== '0');
+    // console.log(id, parentIds);
+    // childIdMap[id] = childMenus ? childMenus.map(({ id }) => id) : [];
+    idMap[id] = item;
+  }, 'childMenus');
+  return [parentIdMap, idMap];
+}
+
+// 在selectedKeys添加对应父节点
+export function addParentKey(keys, parentIdMap) {
+  // 源数组中的所有值默认都被添加过了，所以都标记为true
+  const parentsFlag = keys.reduce((prev, next) => {
+    prev[next] = true;
+    return prev;
+  }, {});
+
+  // 遍历源数组，生成一个要添加的父节点数组
+  const parents = keys.reduce((prev, next) => {
+    // 遍历对应的父节点，若在parentsFlag对象中，父节点key值不存在，则未被添加过，将其加入parents数组
+    parentIdMap[next].forEach(p => {
+      if (!parentsFlag[p]) {
+        prev.push(p);
+        parentsFlag[p] = true;
+      }
+    });
+
+    return prev;
+  }, []);
+
+  return [...keys, ...parents];
+}
+
+// 找出树中子节点不唯一的父节点
+// export function getChildrenNotAloneKeys(tree) {
+//   const keys = [];
+//   traverse(tree, ({ id, childMenus }) => {
+//     const children = childMenus || [];
+//     if (children.length > 1)
+//       keys.push(id);
+//   }, 'childMenus');
+
+//   return keys;
+// }
+
+// 获取树的所有子节点中不存在于目标数组中的节点数目
+function getNotExist(node, target, cache) {
+  const { id } = node;
+  const cached = cache[id];
+  if (cached !== undefined)
+    return cached;
+
+  const children = node.childMenus;
+  let counter = 0;
+  if (children)
+    for (let child of children) {
+      // 子节点不包含在目标数组中则计一个数字
+      const flag = target.includes(child.id) ? 0 : 1;
+      counter += flag + getNotExist(child, target, cache);
+    }
+
+  cache[id] = counter;
+  return counter;
+}
+
+// 对节点下所有子节点进行遍历，若每个节点都在数组中则为全选，否则为半选或未选
+export function removeParentKey(keys, idMap) {
+  // 以下注掉的代码逻辑是错误的
+  // const indexes = keys.reduce((prev, next, i) => {
+  //   // 遍历每个项目的所有子节点，若只要有一个不在数组中，则将当前节点序号存入待删除的序号数组中
+  //   for (let k of childIdMap[next])
+  //     if (!keys.includes(k)) {
+  //       prev.push(i);
+  //       break;
+  //     }
+
+  //   return prev;
+  // }, []);
+
+  const cache = {};
+  const indexes = keys.reduce((prev, next, i) => {
+    // 若目标节点含有子元素
+    const node = idMap[next];
+    if (Array.isArray(node.childMenus) && getNotExist(node, keys, cache))
+      prev.push(i);
+
+    return prev;
+  }, []);
+
+  return keys.filter((k, i) => !indexes.includes(i));
+}
+
+// 处理后台传过来的将key值数组拼接成的字符串并去重
+export function handleKeysString(str, divider=',') {
+  if (Array.isArray(str))
+    return str;
+
+  if (typeof str === 'string')
+    return str.split(divider).filter(k => k);
+
+  console.warn('permissions is not String or Array in function[handleKeysString] in utils.js');
+  return [];
 }
 
 export const TREE = [{

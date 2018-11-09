@@ -23,7 +23,16 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import AuthorityTree from './AuthorityTree';
-import { renderSearchedTreeNodes, getParentKeys, getTreeListChildrenMap, handleMtcTreeViolently as handleMtcTree, mergeArrays, getNoRepeat } from './utils';
+import {
+  renderSearchedTreeNodes,
+  getParentKeys,
+  getTreeListChildrenMap,
+  handleMtcTreeViolently as handleMtcTree,
+  mergeArrays,
+  getNoRepeat,
+  addParentKey,
+  removeParentKey,
+} from './utils';
 import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
@@ -317,8 +326,14 @@ export default class accountManagementEdit extends PureComponent {
   // sortMap = {};
   // totalMap = {};
   childrenMap = {};
+  idMap = {};
+  parentIdMap = {};
   permissions = [];
   authTreeCheckedKeys = [];
+
+  setIdMaps = idMaps => {
+    [this.parentIdMap, this.idMap] = idMaps;
+  };
 
   //获取维保权限树
   getMaintenanceTree = (companyId) => {
@@ -382,7 +397,8 @@ export default class accountManagementEdit extends PureComponent {
         // console.log(maintenacePermissions, this.chidrenMap);
         // console.log(handleMtcTree(maintenacePermissions, this.childrenMap));
 
-        console.log(getNoRepeat(permissions, this.permissions));
+        // console.log(getNoRepeat(permissions, this.permissions));
+        // console.log(addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap));
 
         if (!error) {
           this.setState({
@@ -433,7 +449,7 @@ export default class accountManagementEdit extends PureComponent {
                 regulatoryClassification && regulatoryClassification.length
                   ? regulatoryClassification.join(',')
                   : null,
-              permissions: getNoRepeat(permissions, this.permissions),
+              permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap).join(','),
             };
             switch (payload.unitType) {
               // 维保企业
@@ -1075,19 +1091,18 @@ export default class accountManagementEdit extends PureComponent {
     // 穿梭框中有值
     if (nextTargetKeys.length)
       dispatch({
-        type: 'role/fetchDetail',
+        type: 'role/fetchRolePermissions',
         payload: { id: nextTargetKeys.join(',') },
-        success: ({ permissions }) => {
-          const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
-          this.permissions = perms;
-          setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+        success: permissions => {
+          this.permissions = permissions;
+          setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap) });
         },
       });
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
     else {
       this.permissions = [];
       setFieldsValue({ permissions: this.authTreeCheckedKeys });
-      dispatch({ type: 'role/queryDetail', payload: {} });
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
     }
   };
 
@@ -1146,6 +1161,7 @@ export default class accountManagementEdit extends PureComponent {
                   role={role}
                   form={form}
                   dispatch={dispatch}
+                  setIdMaps = {this.setIdMaps}
                   handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
                 />
               </Form.Item>

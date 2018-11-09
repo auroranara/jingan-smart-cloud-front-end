@@ -32,6 +32,9 @@ import {
   handleMtcTreeViolently as handleMtcTree,
   mergeArrays,
   getNoRepeat,
+  addParentKey,
+  removeParentKey,
+  handleKeysString,
 } from './utils';
 import styles from './AccountManagementEdit.less';
 
@@ -293,7 +296,7 @@ export default class AssociatedUnit extends PureComponent {
         payload: {
           userId,
         },
-        success: ({ unitType, unitId, roleIds, permissions = [] }) => {
+        success: ({ unitType, unitId, roleIds, permissions = '' }) => {
           this.setState(
             {
               unitTypeChecked: unitType,
@@ -307,7 +310,7 @@ export default class AssociatedUnit extends PureComponent {
           unitType === 1 && this.getMaintenanceTree(unitId);
 
           // 获取roleIds对应的权限，并设置权限树的初值
-          this.permissions = permissions;
+          this.authTreeCheckedKeys = handleKeysString(permissions);
           const roles = roleIds.split(',');
           roles.length && this.fetchRolePermissions(roles);
 
@@ -388,8 +391,14 @@ export default class AssociatedUnit extends PureComponent {
   }
 
   childrenMap = {};
+  idMap = {};
+  parentIdMap = {};
   permissions = [];
   authTreeCheckedKeys = [];
+
+  setIdMaps = idMaps => {
+    [this.parentIdMap, this.idMap] = idMaps;
+  };
 
   //获取维保权限树
   getMaintenanceTree = companyId => {
@@ -491,7 +500,7 @@ export default class AssociatedUnit extends PureComponent {
               regulatoryClassification && regulatoryClassification.length
                 ? regulatoryClassification.join(',')
                 : null,
-            permissions: getNoRepeat(permissions, this.permissions),
+            permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap).join(','),
           };
           switch (
             payload.unitType //单位类型
@@ -1049,19 +1058,20 @@ export default class AssociatedUnit extends PureComponent {
     else {
       this.permissions = [];
       setFieldsValue({ permissions: this.authTreeCheckedKeys });
-      dispatch({ type: 'role/queryDetail', payload: {} });
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
     }
   };
 
   fetchRolePermissions = (ids) => {
     const { dispatch, form: { setFieldsValue } } = this.props;
     dispatch({
-      type: 'role/fetchDetail',
+      type: 'role/fetchRolePermissions',
       payload: { id: ids.join(',') },
-      success: ({ permissions }) => {
-        const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
-        this.permissions = perms;
-        setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+      success: permissions => {
+        this.permissions = permissions;
+        console.log(permissions, this.authTreeCheckedKeys);
+        console.log(removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap));
+        setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap) });
       },
     });
   }
@@ -1121,6 +1131,7 @@ export default class AssociatedUnit extends PureComponent {
                   role={role}
                   form={form}
                   dispatch={dispatch}
+                  setIdMaps = {this.setIdMaps}
                   handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
                 />
               </Form.Item>

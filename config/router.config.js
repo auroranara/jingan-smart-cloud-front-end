@@ -307,31 +307,31 @@ module.exports = [
               },
             ],
           },
-          {
-            path: '/fire-control/test-info',
-            code: 'fireControl.testInfo',
-            name: 'testInfo',
-            hideChildrenInMenu: true,
-            routes: [
-              {
-                path: '/fire-control/test-info',
-                name: 'testInfo',
-                redirect: '/fire-control/test-info/list',
-              },
-              {
-                path: '/fire-control/test-info/list',
-                code: 'fireControl.testInfo.view',
-                name: 'list',
-                component: './FireControl/TestInfo/TestList',
-              },
-              {
-                path: '/fire-control/test-info/detail/:id',
-                code: 'fireControl.testInfo.view',
-                name: 'detail',
-                component: './FireControl/TestInfo/TestDetail',
-              },
-            ],
-          },
+          // {
+          //   path: '/fire-control/test-info',
+          //   code: 'fireControl.testInfo',
+          //   name: 'testInfo',
+          //   hideChildrenInMenu: true,
+          //   routes: [
+          //     {
+          //       path: '/fire-control/test-info',
+          //       name: 'testInfo',
+          //       redirect: '/fire-control/test-info/list',
+          //     },
+          //     {
+          //       path: '/fire-control/test-info/list',
+          //       code: 'fireControl.testInfo.view',
+          //       name: 'list',
+          //       component: './FireControl/TestInfo/TestList',
+          //     },
+          //     {
+          //       path: '/fire-control/test-info/detail/:id',
+          //       code: 'fireControl.testInfo.view',
+          //       name: 'detail',
+          //       component: './FireControl/TestInfo/TestDetail',
+          //     },
+          //   ],
+          // },
         ],
       },
 
@@ -618,6 +618,31 @@ module.exports = [
                 code: 'dataAnalysis.hiddenDangerReport.view',
                 name: 'detail',
                 component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+              },
+            ],
+          },
+          {
+            path: '/data-analysis/test-info',
+            code: 'dataAnalysis.testInfo',
+            name: 'testInfo',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/test-info',
+                name: 'testInfo',
+                redirect: '/data-analysis/test-info/list',
+              },
+              {
+                path: '/data-analysis/test-info/list',
+                code: 'dataAnalysis.testInfo.view',
+                name: 'list',
+                component: './DataAnalysis/TestInfo/TestList',
+              },
+              {
+                path: '/data-analysis/test-info/detail/:id',
+                code: 'dataAnalysis.testInfo.view',
+                name: 'detail',
+                component: './DataAnalysis/TestInfo/TestDetail',
               },
             ],
           },

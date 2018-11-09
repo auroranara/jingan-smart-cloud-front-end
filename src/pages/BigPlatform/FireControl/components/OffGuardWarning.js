@@ -38,7 +38,7 @@ function UnitCard(props) {
 
 export default class OffGuardWarning extends Component {
   handleClick = item => {
-    const { dispatch, data: offGuard } = this.props;
+    const { gridId, dispatch, data: offGuard } = this.props;
     const { unitName, list=[] } = offGuard;
     if (!list.length) {
       message.warn('企业列表为空，无法一键警告');
@@ -51,7 +51,7 @@ export default class OffGuardWarning extends Component {
 
     dispatch({
       type: 'bigFireControl/offGuardWarn',
-      payload: { unitName, recordsId, companyIds },
+      payload: { unitName, recordsId, companyIds, gridId },
       // callback(code, msg, data) {
       //   const warnedList = data && data.list ? data.list : [];
 
