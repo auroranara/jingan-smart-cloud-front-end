@@ -31,6 +31,8 @@ export default function OverviewSection(props) {
     }={},
   } = props;
 
+  // console.log('overview', props.data);
+
   return (
     // <FcSection style={{ padding: '0 2px' }}>
     <FcSection title="辖区概况">

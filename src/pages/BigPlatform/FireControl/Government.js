@@ -24,6 +24,8 @@ import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
 
+import { getGridId } from './utils';
+
 const { location, region } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
@@ -73,9 +75,9 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   componentDidMount() {
-    const { match: { params: { gridId } } } = this.props;
+    // const { match: { params: { gridId } } } = this.props;
 
-    this.initFetch(gridId === 'index' ? undefined : gridId);
+    this.initFetch();
     this.timer = setInterval(this.polling, DELAY);
   }
 
@@ -92,17 +94,25 @@ export default class FireControlBigPlatform extends PureComponent {
   dropdownDOM = null;
   // isLookingUp = false; // 标记正在查岗状态
 
-  initFetch = (gridId) => {
+  getGridId = () => {
+    const { match: { params: { gridId } } } = this.props;
+
+    return getGridId(gridId);
+  };
+
+  initFetch = () => {
     const { dispatch } = this.props;
 
-    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
-    dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
+    const gridId = this.getGridId();
+
+    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { gridId } });
+    dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
-    dispatch({ type: 'bigFireControl/fetchAlarm' });
-    dispatch({ type: 'bigFireControl/fetchAlarmHistory' });
-    dispatch({ type: 'bigFireControl/fetchFireTrend' });
-    dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
-    dispatch({ type: 'bigFireControl/fetchDanger' });
+    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
+    dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
+    dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { gridId } });
+    dispatch({ type: 'bigFireControl/fetchCompanyFireInfo', payload: { gridId } });
+    dispatch({ type: 'bigFireControl/fetchDanger', payload: { gridId } });
 
     this.fetchInitLookUp();
 
@@ -121,11 +131,12 @@ export default class FireControlBigPlatform extends PureComponent {
 
   polling = () => {
     const { dispatch } = this.props;
+    const gridId = this.getGridId();
 
     // 只需要轮询火警相关，其他不必轮询
-    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts' });
-    dispatch({ type: 'bigFireControl/fetchAlarm' });
-    dispatch({ type: 'bigFireControl/fetchAlarmHistory' });
+    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { gridId } });
+    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
+    dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
     // dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
 
     // dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
@@ -135,10 +146,16 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   fetchInitLookUp = () => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // match: { params: { gridId } },
+    } = this.props;
+
+    const gridId = this.getGridId();
 
     dispatch({
       type: 'bigFireControl/fetchInitLookUp',
+      payload: { gridId },
       callback: (flag, recordsId) => {
         // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
         if (myParseInt(flag) === AUTO_LOOKUP_ROTATE) {
@@ -149,18 +166,23 @@ export default class FireControlBigPlatform extends PureComponent {
         // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
         // this.setState({ recordsId });
         this.recordsId =  recordsId;
-        recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
+        recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId, gridId } });
       },
     });
   };
 
   handleLookUpConfirmOk = () => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // match: { params: { gridId } },
+    } = this.props;
 
+    const gridId = this.getGridId();
     this.showLookUpConfirm();
 
     dispatch({
       type: 'bigFireControl/postLookingUp',
+      payload: { gridId },
       callback: (code, msg) => {
         if (code === 200) {
           this.jumpToLookingUp();
@@ -221,7 +243,12 @@ export default class FireControlBigPlatform extends PureComponent {
 
   // 跳转到正在查岗界面
   jumpToLookingUp = () => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // match: { params: { gridId } },
+    } = this.props;
+
+    const gridId = this.getGridId();
 
     // 状态改为正在查岗
     this.setState({ isLookingUp: true });
@@ -230,6 +257,7 @@ export default class FireControlBigPlatform extends PureComponent {
     this.lookingUpTimer = setInterval(() => {
       dispatch({
         type: 'bigFireControl/fetchCountdown',
+        payload: { gridId },
         callback: ended => {
           if (ended) this.handleLookUpRotateBack(true);
         },
@@ -250,13 +278,18 @@ export default class FireControlBigPlatform extends PureComponent {
 
   // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，正在查岗状态改为false，并重新获取查岗历史记录
   handleLookUpRotateBack = (isCountdownBack = false) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // match: { params: { gridId } },
+    } = this.props;
+
+    const gridId = this.getGridId();
 
     this.setState({ isLookUpRotated: false, startLookUp: false });
 
     // 翻回来时重新更新offGuard
     const recordsId = this.recordsId;
-    recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId } });
+    recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId, gridId } });
 
     if (isCountdownBack) {
       this.setState({ isLookingUp: false });
@@ -275,10 +308,16 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   fetchLookUpVideo = (value = '') => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // match: { params: { gridId } },
+    } = this.props;
+
+    const gridId = this.getGridId();
+
     dispatch({
       type: 'bigFireControl/fetchVideoLookUp',
-      payload: { searchName: value },
+      payload: { searchName: value, gridId },
     });
   };
 
@@ -321,18 +360,21 @@ export default class FireControlBigPlatform extends PureComponent {
   handleMapSelected = (item, alarmDetail) => {
     const isInMap = !alarmDetail;
     const {
+      // match: { params: { gridId } },
       dispatch,
       bigFireControl: {
         alarm: { list = [] },
       },
     } = this.props;
 
+    const gridId = this.getGridId();
+
     const { id, isFire, latitude, longitude } = item;
-    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { companyId: id } });
-    dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { company_id: id } });
-    dispatch({ type: 'bigFireControl/fetchCompanyOv', payload: { company_id: id } });
-    dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id } });
-    dispatch({ type: 'bigFireControl/fetchDanger', payload: { company_id: id } });
+    dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { companyId: id, gridId } });
+    dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { company_id: id, gridId } });
+    dispatch({ type: 'bigFireControl/fetchCompanyOv', payload: { company_id: id, gridId } });
+    dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id, gridId } });
+    dispatch({ type: 'bigFireControl/fetchDanger', payload: { company_id: id, gridId } });
 
     // 点击火警或地图中的企业时，获取视频相关信息
     this.handleVideoSelect(id);
@@ -360,7 +402,7 @@ export default class FireControlBigPlatform extends PureComponent {
       id: detailId,
       // companyId,
     } = detail;
-    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: detailId } });
+    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: detailId, gridId } });
 
     this.setState({
       showReverse: true,
@@ -390,11 +432,16 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   handleVideoSelect = companyId => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // match: { params: { gridId } },
+      } = this.props;
+    const gridId = this.getGridId();
     dispatch({
       type: 'bigFireControl/fetchAllCamera',
       payload: {
         company_id: companyId, // companyId
+        gridId,
       },
     });
   };
@@ -414,7 +461,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
   render() {
     const {
-      match: { params: { gridId } },
+      // match: { params: { gridId } },
       bigFireControl: {
         overview,
         companyOv,
@@ -466,6 +513,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
     // console.log(user);
 
+    const gridId = this.getGridId();
     const newOffGuard = {
       unitName: overview.titleName,
       // recordsId,
@@ -500,7 +548,7 @@ export default class FireControlBigPlatform extends PureComponent {
                   title="警情信息"
                   backTitle="历史火警"
                   handleRotate={this.handleAlarmRotate}
-                  handleFetch={payload => dispatch({ type: 'bigFireControl/fetchAlarm', payload })}
+                  handleFetch={payload => dispatch({ type: 'bigFireControl/fetchAlarm', payload: { ...payload, gridId } })}
                   handleClick={this.handleAlarmClick}
                 />
               }
@@ -512,7 +560,7 @@ export default class FireControlBigPlatform extends PureComponent {
                   backTitle="实时火警"
                   handleRotate={this.handleAlarmRotate}
                   handleFetch={payload =>
-                    dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload })
+                    dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { ...payload, gridId } })
                   }
                   handleClick={this.handleAlarmClick}
                 />
@@ -596,6 +644,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 }
                 back={
                   <UnitLookUpBack
+                    gridId={gridId}
                     dispatch={dispatch}
                     videoVisible={videoVisible}
                     data={{ lookUp, countdown, offGuard: newOffGuard, videoLookUp }}

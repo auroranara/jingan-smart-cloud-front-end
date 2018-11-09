@@ -45,9 +45,9 @@ export async function getAllCamera(params) {
 //   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
 // }
 
-export async function queryAlarmHandle({ id }) {
+export async function queryAlarmHandle({ id, gridId }) {
   // console.log('fetch handleAlarm');
-  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory`);
+  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ gridId })}`);
 }
 
 export async function queryLookUp(params) {

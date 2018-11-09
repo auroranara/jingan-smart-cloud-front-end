@@ -7,6 +7,10 @@ export function myParseInt(n) {
   return Number.parseInt(n, 10);
 }
 
+export function getGridId(gridId, initVal='index') {
+  return !gridId || gridId === initVal ? undefined : gridId;
+}
+
 export const TREE_DATA = [{
   title: 'Node1',
   value: '0-0',

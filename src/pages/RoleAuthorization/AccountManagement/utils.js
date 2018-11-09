@@ -265,6 +265,18 @@ export function removeParentKey(keys, childIdMap) {
   return keys.filter((k, i) => !indexes.includes(i));
 }
 
+// 处理后台传过来的将key值数组拼接成的字符串并去重
+export function handleKeysString(str, divider=',') {
+  if (Array.isArray(str))
+    return str;
+
+  if (typeof str === 'string')
+    return str.split(divider).filter(k => k);
+
+  console.warn('permissions is not String or Array in function[handleKeysString] in utils.js');
+  return [];
+}
+
 export const TREE = [{
   id: '0-0',
   title: '0-0',

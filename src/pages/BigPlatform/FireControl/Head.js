@@ -21,13 +21,13 @@ export default class Head extends PureComponent {
 
   componentDidMount() {
     const { dispatch, gridId } = this.props;
-    const isIndex = gridId === 'index';
+    const isIndex = !gridId;
 
     this.timer = setInterval(() => {
       this.setState({ time: new Date });
     }, 1000);
 
-    // 是首页则获取网格点数组后取抵押给，不是首页则将值设为传入的gridId
+    // 是首页则获取网格点数组后第一个，不是首页则将值设为传入的gridId
     !isIndex && this.setState({ treeValue: gridId });
 
     dispatch({

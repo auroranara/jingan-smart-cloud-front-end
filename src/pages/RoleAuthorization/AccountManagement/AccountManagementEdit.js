@@ -1091,19 +1091,18 @@ export default class accountManagementEdit extends PureComponent {
     // 穿梭框中有值
     if (nextTargetKeys.length)
       dispatch({
-        type: 'role/fetchDetail',
+        type: 'role/fetchRolePermissions',
         payload: { id: nextTargetKeys.join(',') },
-        success: ({ permissions }) => {
-          const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
-          this.permissions = perms;
-          setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
+        success: permissions => {
+          this.permissions = permissions;
+          setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.childIdMap) });
         },
       });
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
     else {
       this.permissions = [];
       setFieldsValue({ permissions: this.authTreeCheckedKeys });
-      dispatch({ type: 'role/queryDetail', payload: {} });
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
     }
   };
 

@@ -34,6 +34,7 @@ import {
   getNoRepeat,
   addParentKey,
   removeParentKey,
+  handleKeysString,
 } from './utils';
 import styles from './AccountManagementEdit.less';
 
@@ -295,7 +296,7 @@ export default class AssociatedUnit extends PureComponent {
         payload: {
           userId,
         },
-        success: ({ unitType, unitId, roleIds, permissions = [] }) => {
+        success: ({ unitType, unitId, roleIds, permissions = '' }) => {
           this.setState(
             {
               unitTypeChecked: unitType,
@@ -309,7 +310,7 @@ export default class AssociatedUnit extends PureComponent {
           unitType === 1 && this.getMaintenanceTree(unitId);
 
           // 获取roleIds对应的权限，并设置权限树的初值
-          this.authTreeCheckedKeys = permissions ? permissions.split(',') : [];
+          this.authTreeCheckedKeys = handleKeysString(permissions);
           const roles = roleIds.split(',');
           roles.length && this.fetchRolePermissions(roles);
 
@@ -1057,20 +1058,19 @@ export default class AssociatedUnit extends PureComponent {
     else {
       this.permissions = [];
       setFieldsValue({ permissions: this.authTreeCheckedKeys });
-      dispatch({ type: 'role/queryDetail', payload: {} });
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
     }
   };
 
   fetchRolePermissions = (ids) => {
     const { dispatch, form: { setFieldsValue } } = this.props;
     dispatch({
-      type: 'role/fetchDetail',
+      type: 'role/fetchRolePermissions',
       payload: { id: ids.join(',') },
-      success: ({ permissions }) => {
-        const perms = permissions ? Array.from(new Set(permissions.split(','))) : [];
-        this.permissions = perms;
+      success: permissions => {
+        this.permissions = permissions;
         // setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
-        setFieldsValue({ permissions: removeParentKey(mergeArrays(perms, this.authTreeCheckedKeys), this.childIdMap) });
+        setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.childIdMap) });
       },
     });
   }

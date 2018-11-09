@@ -125,14 +125,14 @@ export default {
       let response = yield call(queryOvAlarmCounts, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200) yield put({ type: payload ? 'saveCompanyOv' : 'saveOv', payload: data });
+      if (code === 200) yield put({ type: payload.companyId ? 'saveCompanyOv' : 'saveOv', payload: data });
     },
     *fetchOvDangerCounts({ payload }, { call, put }) {
       const response = yield call(queryOvDangerCounts, payload);
       if (response) {
         const { total: totalDanger, overRectifyNum: overdueNum, rectifyNum, reviewNum } = response;
         yield put({
-          type: payload ? 'saveCompanyOv' : 'saveOv',
+          type: payload.company_id ? 'saveCompanyOv' : 'saveOv',
           payload: { totalDanger, overdueNum, rectifyNum, reviewNum },
         });
       }
@@ -175,13 +175,13 @@ export default {
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200)
-        yield put({ type: payload ? 'saveCompanyTrend' : 'saveTrend', payload: data });
+        yield put({ type: payload.companyId ? 'saveCompanyTrend' : 'saveTrend', payload: data });
     },
     *fetchDanger({ payload }, { call, put }) {
       const response = yield call(queryDanger, payload);
       // const { code, data } = response;
       if (response) {
-        if (payload)
+        if (payload.company_id)
           yield put({ type: 'saveCompanyDanger', payload: handleDanger(response, true) });
         else {
           const [pyd, gridPyd] = handleDanger(response);
