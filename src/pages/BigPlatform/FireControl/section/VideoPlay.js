@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from 'antd';
+import { Icon, notification } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '../components/HLSSource.js';
@@ -94,6 +94,13 @@ class VideoPlay extends Component {
           });
         }
       },
+      error: response => {
+        notification['error']({
+          message: '视频请求失败',
+          description: response.msg,
+          duration: null,
+        });
+      },
     });
   };
 
@@ -139,7 +146,6 @@ class VideoPlay extends Component {
       () => {
         dispatch({
           type: 'videoPlay/fetchStartToPlay',
-          // type: actionType,
           payload: {
             key_id: keyId,
           },
@@ -148,18 +154,16 @@ class VideoPlay extends Component {
               videoSrc: response.data.url,
             });
           },
+          error: response => {
+            notification['error']({
+              message: '视频请求失败',
+              description: response.msg,
+              duration: null,
+            });
+          },
         });
       }
     );
-    // dispatch({
-    //   type: 'videoPlay/fetchStartToPlay',
-    //   // type: actionType,
-    //   payload: {
-    //     key_id: keyId,
-    //   },
-    //   success: response => {
-    //   },
-    // });
   };
 
   handleClose = () => {
