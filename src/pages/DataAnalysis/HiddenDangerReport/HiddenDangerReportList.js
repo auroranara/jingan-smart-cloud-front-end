@@ -66,19 +66,12 @@ const fieldLabels = {
   business_type: '业务分类',
   item_name: '点位名称',
   level: '隐患等级',
-  document: '相关文书',
+  documentTypeIds: '相关文书',
 };
 /* 获取root下的div */
 const getRootChild = () => document.querySelector('#root>div');
-/* 默认日期范围 */
-const defaultDateRange = [moment().subtract(1, 'months'), moment()];
-/* 默认的payload */
-const defaultPayload = {
-  pageSize: 5,
-  pageNum: 1,
-  query_start_time: `${defaultDateRange[0].format('YYYY/MM/DD')} 00:00:00`,
-  query_end_time: `${defaultDateRange[1].format('YYYY/MM/DD')} 23:59:59`,
-};
+/* sessionStorage名称 */
+const sessionName = 'acloud_report_control';
 
 
 /**
@@ -164,7 +157,7 @@ export default class App extends PureComponent {
         dataIndex: 'real_rectify_money',
       },
       {
-        title: '整改图片',
+        title: '整改后图片',
         dataIndex: 'rectifyImgs',
         render: renderImage,
       },
@@ -193,12 +186,26 @@ export default class App extends PureComponent {
    * 挂载后
    */
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const payload = JSON.parse(sessionStorage.getItem(sessionName)) || {
+      pageNum: 1,
+      pageSize: 5,
+      query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+      query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+    };
+    const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = payload;
+    // 重置控件
+    setFieldsValue({
+      createTime: query_start_time && query_end_time && [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')],
+      documentTypeIds: documentTypeIds && documentTypeIds.split(','),
+      ...rest,
+    });
 
     // 获取隐患列表
     dispatch({
       type: 'hiddenDangerReport/fetchList',
-      payload: defaultPayload,
+      payload,
     });
 
     // 获取网格列表
@@ -226,49 +233,61 @@ export default class App extends PureComponent {
    * 查询
    */
   handleSearch = () => {
-    const { dispatch, form: { getFieldsValue } } = this.props;
-    const { createTime, ...rest } = getFieldsValue();
+    const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageSize } } } } = this.props;
+    const { createTime, documentTypeIds, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime;
+    const payload = {
+      ...rest,
+      pageNum: 1,
+      pageSize,
+      query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
+      query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
+      documentTypeIds: documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
+    };
     // 获取隐患列表
     dispatch({
       type: 'hiddenDangerReport/fetchList',
-      payload: {
-        ...defaultPayload,
-        ...rest,
-        query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
-        query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
-      },
+      payload,
     });
+    // 保存筛选条件
+    sessionStorage.setItem(sessionName, JSON.stringify(payload));
   }
 
   /**
    * 重置
    */
   handleReset = () => {
-    const { dispatch, form: { resetFields } } = this.props;
-    // 重置
-    resetFields();
-    // 获取隐患列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchList',
-      payload: defaultPayload,
+    const { form: { setFieldsValue } } = this.props;
+    const createTime = [moment().subtract(1, 'months'), moment()];
+    // 重置控件
+    setFieldsValue({
+      grid_id: undefined,
+      company_name: undefined,
+      code: undefined,
+      createTime,
+      source_type: undefined,
+      status: undefined,
+      business_type: undefined,
+      item_name: undefined,
+      level: undefined,
+      documentTypeIds: undefined,
     });
+    this.handleSearch();
   }
 
   /**
    * 导出
    */
   handleExport = () => {
-    const { dispatch, form: { getFieldsValue } } = this.props;
-    const { createTime, ...rest } = getFieldsValue();
-    const [query_start_time, query_end_time] = createTime;
+    const { dispatch } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const payload = JSON.parse(sessionStorage.getItem(sessionName)) || {
+      query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+      query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+    };
     dispatch({
       type: 'hiddenDangerReport/exportData',
-      payload: {
-        ...rest,
-        query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
-        query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
-      },
+      payload,
     });
   }
 
@@ -311,22 +330,44 @@ export default class App extends PureComponent {
   /**
    * 加载更多
    */
-  handleLoadMore = (pageNum, pageSize) => {
-    const { dispatch, form: { getFieldsValue } } = this.props;
-    const { createTime, ...rest } = getFieldsValue();
-    const [query_start_time, query_end_time] = createTime;
+  handleLoadMore = (num, size) => {
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const fieldsValue = JSON.parse(sessionStorage.getItem(sessionName)) || {
+      query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+      query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+    };
+    const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = fieldsValue;
+    // 重置控件
+    setFieldsValue({
+      grid_id: undefined,
+      company_name: undefined,
+      code: undefined,
+      source_type: undefined,
+      status: undefined,
+      business_type: undefined,
+      item_name: undefined,
+      level: undefined,
+      createTime: query_start_time && query_end_time && [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')],
+      documentTypeIds: documentTypeIds && documentTypeIds.split(','),
+      ...rest,
+    });
     // console.log(pageNum);
     // 获取隐患列表
     dispatch({
       type: 'hiddenDangerReport/fetchList',
       payload: {
-        ...rest,
-        pageNum: pageNum,
-        pageSize,
-        query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
-        query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
+        ...fieldsValue,
+        pageNum: num,
+        pageSize: size,
       },
     });
+    // 保存筛选条件
+    sessionStorage.setItem(sessionName, JSON.stringify({
+      ...fieldsValue,
+      pageNum: 1,
+      pageSize: size,
+    }));
   }
 
   /**
@@ -360,6 +401,7 @@ export default class App extends PureComponent {
         statusList,
         businessTypeList,
         levelList,
+        documentTypeList,
       },
       form: {
         getFieldDecorator,
@@ -401,7 +443,6 @@ export default class App extends PureComponent {
           <Col lg={8} md={12} sm={24}>
             <Form.Item label={fieldLabels.createTime}>
               {getFieldDecorator('createTime', {
-                initialValue: defaultDateRange,
               })(<RangePicker style={{ width: '100%' }} getCalendarContainer={getRootChild} allowClear />)}
             </Form.Item>
           </Col>
@@ -483,8 +524,27 @@ export default class App extends PureComponent {
               )}
             </Form.Item>
           </Col>
+          {/* 相关文书 */}
+          <Col lg={8} md={12} sm={24}>
+            <Form.Item label={fieldLabels.documentTypeIds}>
+              {getFieldDecorator('documentTypeIds')(
+                <Select
+                  mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="请选择"
+                  allowClear
+                >
+                  {documentTypeList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
           {/* 按钮 */}
-          <Col md={12} sm={24}>
+          <Col lg={16} md={24} sm={24}>
             <Form.Item>
               <Button type="primary" onClick={this.handleSearch} style={{ marginRight: 16 }}>查询</Button>
               <Button onClick={this.handleReset} style={{ marginRight: 16 }}>重置</Button>

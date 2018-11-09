@@ -10,6 +10,8 @@ import {
   getGridList,
   // 导出
   exportData,
+  // 获取文书列表
+  getDocumentList,
 } from '@/services/hiddenDangerReport.js'
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -103,6 +105,8 @@ export default {
       timeLine: [],
       current: 0,
     },
+    /* 文书列表 */
+    documentList: [],
     /* 所属网格列表 */
     gridList: [],
     /* 业务分类列表 */
@@ -178,7 +182,7 @@ export default {
       },
     ],
     /* 相关文书列表 */
-    documentList: [
+    documentTypeList: [
       {
         key: '0',
         value: '现场检查意见书',
@@ -289,6 +293,27 @@ export default {
     *exportData({ payload, callback }, { call, put }) {
       const blob = yield call(exportData, payload);
       fileDownload(blob, `隐患排查报表_${moment().format('YYYYMMDD')}.xls`);
+    },
+    /**
+     * 获取文书列表
+     */
+    *fetchDocumentList({ payload, callback }, { call, put }) {
+      const response = yield call(getDocumentList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'documentList',
+            value: response.data.list,
+          },
+        });
+        if (callback) {
+          callback(response.data.list);
+        }
+      }
+      else {
+        error();
+      }
     },
   },
 
