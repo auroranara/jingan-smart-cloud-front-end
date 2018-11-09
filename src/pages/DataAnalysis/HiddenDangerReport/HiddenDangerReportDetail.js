@@ -248,8 +248,19 @@ export default class App extends PureComponent {
     const { stepDirection, tab } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
-    // 修改隐患图片
-    const fileList = files && files.map(({ id: key, web_url: src }) => ({ key, src }));
+    // 文件
+    const fileList = files ? files.map(({ id: key, web_url: src }) => ({ key, src })) : [];
+    // 隐患图片
+    const images=[], audios=[];
+    for (const file of fileList) {
+      if (/(.jpg|.png)$/.test(file.src)) {
+        images.push(file);
+      }
+      else {
+        audios.push(file);
+      }
+    }
+
 
     return (
       <PageHeaderLayout
@@ -293,25 +304,38 @@ export default class App extends PureComponent {
             <DescriptionList style={{ marginBottom: 16 }} col={1}>
               <Description term="检查内容">{flow_name || getEmptyData()}</Description>
               <Description term="隐患描述">{desc || getEmptyData()}</Description>
-              <Description term="隐患图片">{fileList ? (
-                fileList.map(({ key, src }, index) => (
+              <Description term="隐患图片">{images.length > 0 ? (
+                images.map(({ key, src }, index) => (
                   <img
                     src={src}
                     key={key}
                     alt=""
                     style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
-                    onClick={() => {this.setState({ images: fileList, currentImage: index });}}
+                    onClick={() => {this.setState({ images, currentImage: index });}}
                   />
                 ))
               ) : getEmptyData()}</Description>
+              {audios.length > 0 && (
+                <Description term="隐患音频">{(
+                  audios.map(({ key, src }, index) => (
+                    <div key={key}>
+                      <a href={src} target="_blank" rel="noopener noreferrer">
+                        {`隐患音频${index+1}`}
+                      </a>
+                    </div>
+                  ))
+                )}</Description>
+              )}
             </DescriptionList>
             <DescriptionList style={{ marginBottom: 16 }}>
               <Description term="指定整改人">{rectify_user_name || getEmptyData()}</Description>
               <Description term="计划整改日期">{plan_rectify_time ? moment(+plan_rectify_time).format('YYYY-MM-DD') : getEmptyData()}</Description>
             </DescriptionList>
-            <DescriptionList style={{ marginBottom: 16 }} col={1}>
-              <Description term="指定复查人">{review_user_name || getEmptyData()}</Description>
-            </DescriptionList>
+            {report_user_name !== review_user_name && (
+              <DescriptionList style={{ marginBottom: 16 }} col={1}>
+                <Description term="指定复查人">{review_user_name || getEmptyData()}</Description>
+              </DescriptionList>
+            )}
           </Card>
           {hiddenDangerRecord.map(({
             id,
@@ -331,6 +355,16 @@ export default class App extends PureComponent {
             remark,
           }) => {
             const fileList = files && files.map(({ id: key, web_url: src }) => ({ key, src }));
+            // 隐患图片
+            const images=[], audios=[];
+            for (const file of fileList) {
+              if (/(.jpg|.png)$/.test(file.src)) {
+                images.push(file);
+              }
+              else {
+                audios.push(file);
+              }
+            }
             if (+type === 2) {
               return (
                 <Card title="整改信息" className={styles.card} bordered={false} key={id}>
@@ -341,17 +375,28 @@ export default class App extends PureComponent {
                   </DescriptionList>
                   <DescriptionList style={{ marginBottom: 16 }} col={1}>
                     <Description term="整改措施">{operate_content || getEmptyData()}</Description>
-                    <Description term="整改图片">{fileList ? (
-                      fileList.map(({ key, src }, index) => (
+                    <Description term="整改图片">{images.length > 0 ? (
+                      images.map(({ key, src }, index) => (
                         <img
                           src={src}
                           key={key}
                           alt=""
                           style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
-                          onClick={() => {this.setState({ images: fileList, currentImage: index });}}
+                          onClick={() => {this.setState({ images, currentImage: index });}}
                         />
                       ))
                     ) : getEmptyData()}</Description>
+                    {audios.length > 0 && (
+                      <Description term="整改音频">{(
+                        audios.map(({ key, src }, index) => (
+                          <div key={key}>
+                            <a href={src} target="_blank" rel="noopener noreferrer">
+                              {`整改音频${index+1}`}
+                            </a>
+                          </div>
+                        ))
+                      )}</Description>
+                    )}
                   </DescriptionList>
                 </Card>
               );
@@ -365,17 +410,28 @@ export default class App extends PureComponent {
                   </DescriptionList>
                   <DescriptionList style={{ marginBottom: 16 }} col={1}>
                     <Description term="备注">{remark || getEmptyData()}</Description>
-                    <Description term="复查图片">{fileList ? (
-                      fileList.map(({ key, src }, index) => (
+                    <Description term="复查图片">{images.length > 0 ? (
+                      images.map(({ key, src }, index) => (
                         <img
                           src={src}
                           key={key}
                           alt=""
                           style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
-                          onClick={() => {this.setState({ images: fileList, currentImage: index });}}
+                          onClick={() => {this.setState({ images, currentImage: index });}}
                         />
                       ))
                     ) : getEmptyData()}</Description>
+                    {audios.length > 0 && (
+                      <Description term="复查音频">{(
+                        audios.map(({ key, src }, index) => (
+                          <div key={key}>
+                            <a href={src} target="_blank" rel="noopener noreferrer">
+                              {`复查音频${index+1}`}
+                            </a>
+                          </div>
+                        ))
+                      )}</Description>
+                    )}
                   </DescriptionList>
                 </Card>
               );

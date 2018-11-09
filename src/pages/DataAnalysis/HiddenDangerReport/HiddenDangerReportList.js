@@ -542,18 +542,24 @@ export default class App extends PureComponent {
    */
   renderImageDetail() {
     const { images, currentImage } = this.state;
-    return images && images.length > 0 && (
-      <Lightbox
-        images={images.map(src => ({ src }))}
-        isOpen={true}
-        currentImage={currentImage}
-        onClickPrev={this.handlePrevImage}
-        onClickNext={this.handleNextImage}
-        onClose={this.handleClose}
-        onClickThumbnail={this.handleSwitchImage}
-        showThumbnails
-      />
-    );
+    if (images) {
+      const list = images.filter(image => /(.jpg|.png)$/.test(image)).map(src => ({ src }));
+      if (list.length > 0) {
+        return (
+          <Lightbox
+            images={list}
+            isOpen={true}
+            currentImage={currentImage}
+            onClickPrev={this.handlePrevImage}
+            onClickNext={this.handleNextImage}
+            onClose={this.handleClose}
+            onClickThumbnail={this.handleSwitchImage}
+            showThumbnails
+          />
+        );
+      }
+    }
+    return null;
   }
 
   /**
