@@ -108,8 +108,8 @@ export default class App extends PureComponent {
         dataIndex: 'code',
       },
       {
-        title: '单位名称',
-        dataIndex: 'company_name',
+        title: '隐患来源',
+        dataIndex: 'source_type_name',
       },
       {
         title: '点位名称',
@@ -170,10 +170,10 @@ export default class App extends PureComponent {
       },
     ];
     if (!isCompany) {
-      defaultColumns.splice(2, 0, {
-        title: '隐患来源',
-        dataIndex: 'source_type_name',
-      });
+      defaultColumns.splice(1, 0, {
+          title: '单位名称',
+          dataIndex: 'company_name',
+        });
     }
     this.state = {
       // 当前显示的表格字段
