@@ -157,7 +157,7 @@ export default class App extends PureComponent {
         dataIndex: 'real_rectify_money',
       },
       {
-        title: '整改图片',
+        title: '整改后图片',
         dataIndex: 'rectifyImgs',
         render: renderImage,
       },
@@ -349,7 +349,7 @@ export default class App extends PureComponent {
       item_name: undefined,
       level: undefined,
       createTime: query_start_time && query_end_time && [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')],
-      documentTypeIds: documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
+      documentTypeIds: documentTypeIds && documentTypeIds.split(','),
       ...rest,
     });
     // console.log(pageNum);
@@ -401,7 +401,7 @@ export default class App extends PureComponent {
         statusList,
         businessTypeList,
         levelList,
-        documentList,
+        documentTypeList,
       },
       form: {
         getFieldDecorator,
@@ -534,7 +534,7 @@ export default class App extends PureComponent {
                   placeholder="请选择"
                   allowClear
                 >
-                  {documentList.map(({ key, value }) => (
+                  {documentTypeList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
                     </Option>

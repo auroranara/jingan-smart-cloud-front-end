@@ -31,3 +31,10 @@ export async function getGridList() {
 export async function exportData(params) {
   return request(`/acloud_new/v2/hiddenDanger/export?${stringify(params)}`);
 }
+
+/**
+ * 获取文书列表
+ */
+export async function getDocumentList({ id }) {
+  return request(`/acloud_new/v2/hiddenDanger/showDoc/${id}`);
+}
