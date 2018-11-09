@@ -513,7 +513,7 @@ export default class App extends PureComponent {
       },
     } = this.props;
     const { columns } = this.state;
-    return (
+    return list.length > 0 ? (
       <Table
         className={styles.table}
         dataSource={list}
@@ -527,13 +527,15 @@ export default class App extends PureComponent {
           pageSize,
           total,
           pageSizeOptions: ['5', '10', '15', '20'],
-          showTotal: (total) => `共 ${total} 条`,
+          // showTotal: (total) => `共 ${total} 条`,
           showQuickJumper: true,
           showSizeChanger: true,
           onChange: this.handleLoadMore,
           onShowSizeChange: (num, size) => { this.handleLoadMore(1, size); },
         }}
       />
+    ) : (
+      <div style={{ textAlign: 'center' }}><span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span></div>
     );
   }
 
