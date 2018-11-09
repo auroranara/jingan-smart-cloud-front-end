@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Table, Row, Col, Input, Select, DatePicker, Button, Spin, Badge, message, TreeSelect } from 'antd';
+import { Form, Card, Table, Row, Col, Input, Select, DatePicker, Button, Spin, Badge, TreeSelect } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Lightbox from 'react-images';
 import Link from 'umi/link';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import InfiniteScroll from 'react-infinite-scroller';
 import TagSelect from '@/components/TagSelect';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
@@ -75,7 +74,7 @@ const getRootChild = () => document.querySelector('#root>div');
 const defaultDateRange = [moment().subtract(1, 'months'), moment()];
 /* 默认的payload */
 const defaultPayload = {
-  pageSize: 20,
+  pageSize: 5,
   pageNum: 1,
   query_start_time: `${defaultDateRange[0].format('YYYY/MM/DD')} 00:00:00`,
   query_end_time: `${defaultDateRange[1].format('YYYY/MM/DD')} 23:59:59`,
@@ -109,8 +108,8 @@ export default class App extends PureComponent {
         dataIndex: 'code',
       },
       {
-        title: '单位名称',
-        dataIndex: 'company_name',
+        title: '隐患来源',
+        dataIndex: 'source_type_name',
       },
       {
         title: '点位名称',
@@ -171,10 +170,10 @@ export default class App extends PureComponent {
       },
     ];
     if (!isCompany) {
-      defaultColumns.splice(2, 0, {
-        title: '隐患来源',
-        dataIndex: 'source_type_name',
-      });
+      defaultColumns.splice(1, 0, {
+          title: '单位名称',
+          dataIndex: 'company_name',
+        });
     }
     this.state = {
       // 当前显示的表格字段
@@ -312,18 +311,18 @@ export default class App extends PureComponent {
   /**
    * 加载更多
    */
-  handleLoadMore = () => {
-    const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageNum } } } } = this.props;
+  handleLoadMore = (pageNum, pageSize) => {
+    const { dispatch, form: { getFieldsValue } } = this.props;
     const { createTime, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime;
-    // console.log(pageNum+1);
+    // console.log(pageNum);
     // 获取隐患列表
     dispatch({
-      type: 'hiddenDangerReport/appendList',
+      type: 'hiddenDangerReport/fetchList',
       payload: {
-        ...defaultPayload,
         ...rest,
-        pageNum: pageNum+1,
+        pageNum: pageNum,
+        pageSize,
         query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
         query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
       },
@@ -506,36 +505,37 @@ export default class App extends PureComponent {
         list: {
           list,
           pagination: {
-            pageSize=20,
+            pageSize=5,
             pageNum=1,
             total=0,
           },
         },
       },
-      loading,
     } = this.props;
     const { columns } = this.state;
-    const hasMore = pageNum * pageSize < total;
-    return (
-      <InfiniteScroll
-        hasMore={hasMore}
-        initialLoad={false}
-        loadMore={() => {
-          // 防止多次加载
-          !loading && this.handleLoadMore();
+    return list.length > 0 ? (
+      <Table
+        className={styles.table}
+        dataSource={list}
+        columns={columns.length > 0 ? columns.concat(fixedOperationColumn) : columns.concat(operationColumn)}
+        rowKey="id"
+        scroll={{
+          x: true,
         }}
-      >
-        <Table
-          className={styles.table}
-          dataSource={list}
-          columns={columns.length > 0 ? columns.concat(fixedOperationColumn) : columns.concat(operationColumn)}
-          pagination={false}
-          rowKey="id"
-          scroll={{
-            x: true,
-          }}
-        />
-      </InfiniteScroll>
+        pagination={{
+          current: pageNum,
+          pageSize,
+          total,
+          pageSizeOptions: ['5', '10', '15', '20'],
+          // showTotal: (total) => `共 ${total} 条`,
+          showQuickJumper: true,
+          showSizeChanger: true,
+          onChange: this.handleLoadMore,
+          onShowSizeChange: (num, size) => { this.handleLoadMore(1, size); },
+        }}
+      />
+    ) : (
+      <div style={{ textAlign: 'center' }}><span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span></div>
     );
   }
 
@@ -544,18 +544,24 @@ export default class App extends PureComponent {
    */
   renderImageDetail() {
     const { images, currentImage } = this.state;
-    return images && images.length > 0 && (
-      <Lightbox
-        images={images.map(src => ({ src }))}
-        isOpen={true}
-        currentImage={currentImage}
-        onClickPrev={this.handlePrevImage}
-        onClickNext={this.handleNextImage}
-        onClose={this.handleClose}
-        onClickThumbnail={this.handleSwitchImage}
-        showThumbnails
-      />
-    );
+    if (images) {
+      const list = images.filter(image => /(.jpg|.png)$/.test(image)).map(src => ({ src }));
+      if (list.length > 0) {
+        return (
+          <Lightbox
+            images={list}
+            isOpen={true}
+            currentImage={currentImage}
+            onClickPrev={this.handlePrevImage}
+            onClickNext={this.handleNextImage}
+            onClose={this.handleClose}
+            onClickThumbnail={this.handleSwitchImage}
+            showThumbnails
+          />
+        );
+      }
+    }
+    return null;
   }
 
   /**

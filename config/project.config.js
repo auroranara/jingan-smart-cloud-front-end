@@ -1,7 +1,7 @@
 export default {
   default: {
     logo: '',
-    region: '江溪街道',
+    region: '无锡市',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
@@ -16,7 +16,7 @@ export default {
     },
   },
   jiangxi: {
-    region: '江溪街道',
+    region: '无锡市',
     logo: '',
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',

@@ -136,7 +136,7 @@ export default {
       },
       {
         key: '4',
-        value: '网格点上报',
+        value: '监督点上报',
       },
     ],
     /* 隐患状态列表 */

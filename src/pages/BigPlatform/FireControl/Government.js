@@ -45,7 +45,11 @@ message.config({
   },
 });
 
-@connect(({ bigFireControl, user, loading }) => ({ bigFireControl, user, offGuardWarnLoading: loading.effects['bigFireControl/offGuardWarn'] }))
+@connect(({ bigFireControl, user, loading }) => ({
+  bigFireControl,
+  user,
+  offGuardWarnLoading: loading.effects['bigFireControl/offGuardWarn'],
+}))
 export default class FireControlBigPlatform extends PureComponent {
   state = {
     alarmDetail: {},
@@ -102,7 +106,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
     this.fetchInitLookUp();
 
-    if (region === '江溪街道') {
+    if (region === '无锡市') {
       // 获取网格区域
       dispatch({
         type: 'bigFireControl/fetchMapLocation',
@@ -393,7 +397,9 @@ export default class FireControlBigPlatform extends PureComponent {
 
   render() {
     const {
-      match: { params: { gridId } },
+      match: {
+        params: { gridId },
+      },
       bigFireControl: {
         overview,
         companyOv,

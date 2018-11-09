@@ -16,7 +16,7 @@ import personIcon from '../img/mapPerson.png';
 import statusIcon from '../img/mapFire.png';
 import status1Icon from '../img/mapFire1.png';
 // import redCircle from '../img/redCircle.png';
-
+const { region } = global.PROJECT_CONFIG;
 const NO_DATA = '暂无信息';
 
 // const { location } = global.PROJECT_CONFIG;
@@ -345,7 +345,12 @@ export default class FireControlMap extends PureComponent {
             mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
             center={center}
             zoom={zoom}
-            events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
+            events={{
+              created: mapInstance => {
+                this.mapInstance = mapInstance;
+                mapInstance.setCity(region);
+              },
+            }}
           >
             <Polygon
               path={polygon}
