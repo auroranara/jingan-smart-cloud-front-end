@@ -51,9 +51,18 @@ class VideoPlay extends Component {
   }
 
   handleInit = () => {
-    const { dispatch, videoList, keyId } = this.props;
-    if (!(videoList && videoList.length)) return;
-    const videoId = keyId || videoList[0].key_id;
+    const { dispatch, videoList, keyId, showList } = this.props;
+    let videoId = '';
+    // 如果现实列表
+    if (showList) {
+      // 列表为空直接return
+      if (!(videoList && videoList.length)) return;
+      // 如果keyId为空 默认获取video列表第一个
+      videoId = keyId || videoList[0].key_id;
+    } else {
+      videoId = keyId;
+    }
+
     // 清空视频链接
     this.setState({ videoSrc: '' });
     let index = videoList.findIndex(item => {

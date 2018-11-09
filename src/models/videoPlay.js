@@ -28,7 +28,8 @@ export default {
         payload: { videoId: payload.key_id },
       });
       const response = yield call(getStartToPlay, payload);
-      if (response && response.code === 200) {
+      // fxck 沙雕接口 该设备ID不存在也回复200
+      if (response && response.code === 200 && response.data.url !== '该设备ID不存在') {
         let videoId = yield select(state => state.videoPlay.videoId);
         if (videoId && response.data.key_id !== videoId) return;
         yield put({

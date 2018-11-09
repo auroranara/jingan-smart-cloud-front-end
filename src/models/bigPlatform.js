@@ -602,13 +602,13 @@ export default {
       yield put({ type: 'saveAllCamera', payload: list });
       if (success) success(response);
     },
-    *fetchStartToPlay({ payload, success }, { call, put }) {
-      const response = yield call(getStartToPlay, payload);
-      if (response && response.code === 200) {
-        yield put({ type: 'startToPlay', payload: { src: response.data.url } });
-        if (success) success(response);
-      }
-    },
+    // *fetchStartToPlay({ payload, success }, { call, put }) {
+    //   const response = yield call(getStartToPlay, payload);
+    //   if (response && response.code === 200) {
+    //     yield put({ type: 'startToPlay', payload: { src: response.data.url } });
+    //     if (success) success(response);
+    //   }
+    // },
     // 获取监控球数据
     *fetchMonitorData({ payload, success, error }, { call, put }) {
       const response = yield call(getMonitorData, payload);

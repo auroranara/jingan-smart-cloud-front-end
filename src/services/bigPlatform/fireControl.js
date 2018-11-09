@@ -40,11 +40,6 @@ export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
-// 视频播放，已转移到services.videoPlay
-// export async function getStartToPlay(params) {
-//   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
-// }
-
 export async function queryAlarmHandle({ id }) {
   // console.log('fetch handleAlarm');
   return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory`);
@@ -59,7 +54,9 @@ export async function queryCountdown(params) {
 }
 
 export async function postLookingUp(params) {
-  return request(`${URL_PREFIX}/screenShowData/inspectionRecords?${stringify(params)}`, { method: 'POST' });
+  return request(`${URL_PREFIX}/screenShowData/inspectionRecords?${stringify(params)}`, {
+    method: 'POST',
+  });
 }
 
 export async function queryOffGuard(params) {

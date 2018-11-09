@@ -14,7 +14,6 @@ import {
   warnOffGuard,
   postLookingUp,
   getAllCamera,
-  // getStartToPlay,
   getVideoLookUp,
   getMapLocation,
   getGrids,
@@ -238,13 +237,6 @@ export default {
       const { list } = response;
       yield put({ type: 'saveAllCamera', payload: list });
     },
-    // *fetchStartToPlay({ payload, success }, { call, put }) {
-    //   const response = yield call(getStartToPlay, payload);
-    //   if (response && response.code === 200) {
-    //     yield put({ type: 'startToPlay', payload: { src: response.data.url } });
-    //     if (success) success(response);
-    //   }
-    // },
     *fetchVideoLookUp({ payload, callback }, { call, put }) {
       let response = yield call(getVideoLookUp, payload);
       response = response || EMPTY_OBJECT;

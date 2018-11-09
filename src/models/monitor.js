@@ -4,7 +4,6 @@ import {
   getDeviceConfig,
   getRealTimeData,
   getAllCamera,
-  // getStartToPlay,
   getGasCount,
   getGasList,
   fetchCountAndExponent,
@@ -62,24 +61,14 @@ export default {
     // },
     *fetchAllCamera({ payload }, { call, put }) {
       const response = yield call(getAllCamera, payload);
-      if (response && response.list)
-        yield put({ type: 'saveAllCamera', payload: response.list });
-      if (response)
-        yield put({ type: 'saveCompanyInfo', payload: { name: response.companyName } });
+      if (response && response.list) yield put({ type: 'saveAllCamera', payload: response.list });
+      if (response) yield put({ type: 'saveCompanyInfo', payload: { name: response.companyName } });
     },
-    // *fetchStartToPlay({ payload, success }, { call, put }) {
-    //   const response = yield call(getStartToPlay, payload);
-    //   if (response && response.code === 200) {
-    //     // yield put({ type: 'startToPlay', payload: { src: response.data.url } });
-    //     if (success) success(response);
-    //   }
-    // },
     *fetchGasCount({ payload }, { call, put }) {
       let response = yield call(getGasCount, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200)
-        yield put({ type: 'saveGasCount', payload: data });
+      if (code === 200) yield put({ type: 'saveGasCount', payload: data });
     },
     *fetchGasList({ payload }, { call, put }) {
       let response = yield call(getGasList, payload);
@@ -128,22 +117,22 @@ export default {
     },
     // 获取监测指数和设备数量等信息
     *fetchCountAndExponent({ payload }, { call, put }) {
-      const response = yield call(fetchCountAndExponent, payload)
+      const response = yield call(fetchCountAndExponent, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveCountAndExponent',
           payload: response.data,
-        })
+        });
       }
     },
     // 获取实时报警
     *fetchRealTimeAlarm({ payload }, { call, put }) {
-      const response = yield call(fetchAlarmInfo, payload)
+      const response = yield call(fetchAlarmInfo, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveRealTimeAlarm',
           payload: response.data.list,
-        })
+        });
       }
     },
     // 获取报警历史记录
@@ -153,8 +142,7 @@ export default {
         yield put({
           type: 'saveHistoryAlarm',
           payload: response.data,
-        })
-
+        });
       }
     },
     // 获取传感器历史
@@ -192,30 +180,29 @@ export default {
       let response = yield call(getDeviceConfig, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200)
-        yield put({ type: 'saveChartParams', payload: data });
+      if (code === 200) yield put({ type: 'saveChartParams', payload: data });
     },
     // 获取失联设备、报警设备列表
     *fetchErrorDevices({ payload }, { call, put }) {
-      const response = yield call(fetchErrorDevices, payload)
+      const response = yield call(fetchErrorDevices, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveErrorDevices',
           payload: response.data.list || [],
-        })
+        });
         yield put({
           type: 'handleDevicesPagination',
           payload: { pageNum: 1 },
-        })
+        });
       }
     },
     *fetchAlarmInfoTypes({ payload }, { call, put }) {
-      const response = yield call(fetchAlarmInfoTypes)
+      const response = yield call(fetchAlarmInfoTypes);
       if (response && response.code === 200) {
         yield put({
           type: 'saveAlarmTypes',
           payload: response.data.list,
-        })
+        });
       }
     },
   },
@@ -249,19 +236,24 @@ export default {
       return {
         ...state,
         countAndExponent: payload || {},
-      }
+      };
     },
     saveRealTimeAlarm(state, { payload }) {
       return {
         ...state,
         realTimeAlarm: payload || [],
-      }
+      };
     },
-    saveHistoryAlarm(state, { payload: {
-      list = [],
-      pagination,
-      pagination: { pageNum, pageSize, total },
-    } }) {
+    saveHistoryAlarm(
+      state,
+      {
+        payload: {
+          list = [],
+          pagination,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       if (pageNum > 1) {
         return {
           ...state,
@@ -271,7 +263,7 @@ export default {
             pagination,
             list: [...state.historyAlarm.list, ...list],
           },
-        }
+        };
       } else {
         return {
           ...state,
@@ -281,7 +273,7 @@ export default {
             pagination,
             list,
           },
-        }
+        };
       }
     },
     clearHistoryAlarm(state) {
@@ -293,7 +285,7 @@ export default {
           pagination: { pageNum: 1, pageSize: 20, total: 0 },
           list: [],
         },
-      }
+      };
     },
     gsmsHstData(state, action) {
       return {
@@ -323,14 +315,16 @@ export default {
           errorDevices: payload || [],
           errorDevicesByPage: [],
           pageNum: 1,
-          total: payload && payload.length || 0,
+          total: (payload && payload.length) || 0,
         },
-      }
+      };
     },
     handleDevicesPagination(state, { payload }) {
-      const { pageNum } = payload
-      const { errorDevice: { pageSize, errorDevices } } = state
-      const list = errorDevices.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+      const { pageNum } = payload;
+      const {
+        errorDevice: { pageSize, errorDevices },
+      } = state;
+      const list = errorDevices.slice((pageNum - 1) * pageSize, pageNum * pageSize);
       return {
         ...state,
         errorDevice: {
@@ -338,7 +332,7 @@ export default {
           errorDevicesByPage: list,
           pageNum,
         },
-      }
+      };
     },
     saveAlarmTypes(state, action) {
       return {
@@ -347,7 +341,7 @@ export default {
           ...state.historyAlarm,
           alarmTypes: action.payload,
         },
-      }
+      };
     },
   },
 };
