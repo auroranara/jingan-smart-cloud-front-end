@@ -201,16 +201,19 @@ export function getNoRepeat(origin, target=[]) {
   return origin.filter(item => !target.includes(item));
 }
 
-// id => parentIds, id => childIds
+// id => parentIds, id => node
 export function getIdMaps(tree) {
   const parentIdMap = {};
-  const childIdMap = {};
-  traverse(tree, ({ id, parentIds, childMenus }) => {
+  // const childIdMap = {};
+  const idMap = {};
+  traverse(tree, item => {
+    const { id, parentIds, childMenus } = item;
     parentIdMap[id] = parentIds.split(',').filter(k => k !== '0');
     // console.log(id, parentIds);
-    childIdMap[id] = childMenus ? childMenus.map(({ id }) => id) : [];
+    // childIdMap[id] = childMenus ? childMenus.map(({ id }) => id) : [];
+    idMap[id] = item;
   }, 'childMenus');
-  return [parentIdMap, childIdMap];
+  return [parentIdMap, idMap];
 }
 
 // 在selectedKeys添加对应父节点
@@ -249,15 +252,46 @@ export function addParentKey(keys, parentIdMap) {
 //   return keys;
 // }
 
-// 在selectedKeys中剔除半选的父节点，对每个key进行遍历，若其所有子节点都在数组中，则保留，否则剔除
-export function removeParentKey(keys, childIdMap) {
+// 获取树的所有子节点中不存在于目标数组中的节点数目
+function getNotExist(node, target, cache) {
+  const { id } = node;
+  const cached = cache[id];
+  if (cached !== undefined)
+    return cached;
+
+  const children = node.childMenus;
+  let counter = 0;
+  if (children)
+    for (let child of children) {
+      // 子节点不包含在目标数组中则计一个数字
+      const flag = target.includes(child.id) ? 0 : 1;
+      counter += flag + getNotExist(child, target, cache);
+    }
+
+  cache[id] = counter;
+  return counter;
+}
+
+// 对节点下所有子节点进行遍历，若每个节点都在数组中则为全选，否则为半选或未选
+export function removeParentKey(keys, idMap) {
+  // 以下注掉的代码逻辑是错误的
+  // const indexes = keys.reduce((prev, next, i) => {
+  //   // 遍历每个项目的所有子节点，若只要有一个不在数组中，则将当前节点序号存入待删除的序号数组中
+  //   for (let k of childIdMap[next])
+  //     if (!keys.includes(k)) {
+  //       prev.push(i);
+  //       break;
+  //     }
+
+  //   return prev;
+  // }, []);
+
+  const cache = {};
   const indexes = keys.reduce((prev, next, i) => {
-    // 遍历每个项目的所有子节点，若只要有一个不在数组中，则将当前节点序号存入待删除的序号数组中
-    for (let k of childIdMap[next])
-      if (!keys.includes(k)) {
-        prev.push(i);
-        break;
-      }
+    // 若目标节点含有子元素
+    const node = idMap[next];
+    if (Array.isArray(node.childMenus) && getNotExist(node, keys, cache))
+      prev.push(i);
 
     return prev;
   }, []);

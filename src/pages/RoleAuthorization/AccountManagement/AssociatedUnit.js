@@ -391,13 +391,13 @@ export default class AssociatedUnit extends PureComponent {
   }
 
   childrenMap = {};
-  childIdMap = {};
+  idMap = {};
   parentIdMap = {};
   permissions = [];
   authTreeCheckedKeys = [];
 
   setIdMaps = idMaps => {
-    [this.parentIdMap, this.childIdMap] = idMaps;
+    [this.parentIdMap, this.idMap] = idMaps;
   };
 
   //获取维保权限树
@@ -1069,8 +1069,9 @@ export default class AssociatedUnit extends PureComponent {
       payload: { id: ids.join(',') },
       success: permissions => {
         this.permissions = permissions;
-        // setFieldsValue({ permissions: mergeArrays(perms, this.authTreeCheckedKeys) });
-        setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.childIdMap) });
+        console.log(permissions, this.authTreeCheckedKeys);
+        console.log(removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap));
+        setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap) });
       },
     });
   }

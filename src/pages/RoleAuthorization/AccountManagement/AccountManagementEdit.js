@@ -326,13 +326,13 @@ export default class accountManagementEdit extends PureComponent {
   // sortMap = {};
   // totalMap = {};
   childrenMap = {};
-  childIdMap = {};
+  idMap = {};
   parentIdMap = {};
   permissions = [];
   authTreeCheckedKeys = [];
 
   setIdMaps = idMaps => {
-    [this.parentIdMap, this.childIdMap] = idMaps;
+    [this.parentIdMap, this.idMap] = idMaps;
   };
 
   //获取维保权限树
@@ -1095,7 +1095,7 @@ export default class accountManagementEdit extends PureComponent {
         payload: { id: nextTargetKeys.join(',') },
         success: permissions => {
           this.permissions = permissions;
-          setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.childIdMap) });
+          setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap) });
         },
       });
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
