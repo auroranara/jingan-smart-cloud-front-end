@@ -12,7 +12,7 @@ import MapTypeBar from '../Components/MapTypeBar';
 
 import govdotRed from '../img/govdot-red.png';
 
-const { location: locationDefault } = global.PROJECT_CONFIG;
+const { location: locationDefault, region } = global.PROJECT_CONFIG;
 let fitView = true;
 @connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSection extends PureComponent {
@@ -355,7 +355,12 @@ class MapSection extends PureComponent {
                 mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
                 center={center}
                 zoom={zoom}
-                events={{ created: mapInstance => (this.mapInstance = mapInstance) }}
+                events={{
+                  created: mapInstance => {
+                    this.mapInstance = mapInstance;
+                    mapInstance.setCity(region);
+                  },
+                }}
               >
                 <Polygon
                   path={polygon}
