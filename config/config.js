@@ -22,12 +22,13 @@ const hosts = {
   cfm: '192.168.10.6', // 崔富民
   jiangxi: '58.215.178.100:12083',
   xuzhou: '58.215.178.100:12081',
+  sk: '192.168.10.21',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.gj}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },

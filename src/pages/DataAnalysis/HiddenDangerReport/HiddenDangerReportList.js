@@ -420,6 +420,9 @@ export default class App extends PureComponent {
                     placeholder="请选择"
                     getPopupContainer={getRootChild}
                     allowClear
+                    dropdownStyle={{
+                      maxHeight: '50vh',
+                    }}
                   />
                 )}
               </Form.Item>
