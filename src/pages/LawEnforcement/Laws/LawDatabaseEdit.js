@@ -4,7 +4,7 @@ import { routerRedux } from 'dva/router';
 import { Form, Input, Button, Card, Col, Switch, Select, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import styles from './lawDatabase.less';
+import styles from './LawDatabase.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;

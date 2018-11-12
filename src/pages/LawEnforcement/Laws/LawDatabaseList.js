@@ -150,8 +150,6 @@ export default class lawDatabaseList extends PureComponent {
 
   /* 删除 */
   handleDelete = id => {
-    console.log('id', id);
-
     const {
       dispatch,
       form: { getFieldsValue },
@@ -176,7 +174,7 @@ export default class lawDatabaseList extends PureComponent {
             },
           });
           message.success('删除成功！');
-        } else message.success(response.msg);
+        } else message.error(response.msg);
       },
     });
   };
@@ -191,7 +189,7 @@ export default class lawDatabaseList extends PureComponent {
     return (
       <Card>
         <Form layout="inline">
-          <Col span={18}>
+          <Col>
             <FormItem>
               {getFieldDecorator('businessType', {})(
                 <Select style={{ width: 200 }} placeholder="请选择业务分类">
@@ -205,7 +203,7 @@ export default class lawDatabaseList extends PureComponent {
             </FormItem>
             <FormItem>
               {getFieldDecorator('lawType', {})(
-                <Select style={{ width: 200 }} placeholder="请选择法律法规">
+                <Select style={{ width: 320 }} placeholder="请选择法律法规">
                   {lawTypes.map(item => (
                     <Option value={item.id} key={item.id}>
                       {item.label}
@@ -218,7 +216,7 @@ export default class lawDatabaseList extends PureComponent {
               {getFieldDecorator('content', {
                 initialValue: defaultFormData.content,
                 getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入法律法规" />)}
+              })(<Input placeholder="请输入法律法规内容" />)}
             </FormItem>
             <FormItem>
               <Button type="primary" onClick={this.handleClickToQuery}>
@@ -228,8 +226,6 @@ export default class lawDatabaseList extends PureComponent {
             <FormItem>
               <Button onClick={this.handleClickToReset}>重置</Button>
             </FormItem>
-          </Col>
-          <Col span={6}>
             <FormItem style={{ float: 'right' }}>
               <AuthButton
                 type="primary"

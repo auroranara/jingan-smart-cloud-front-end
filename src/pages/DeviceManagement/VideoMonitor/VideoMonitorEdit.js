@@ -5,7 +5,7 @@ import { Form, Input, Button, Card, Col, Row, Switch, Icon, Popover, message } f
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import { numReg } from '@/utils/validate';
+// import { numReg } from '@/utils/validate';
 import Coordinate from '@/components/Coordinate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import styles from './VideoMonitorEdit.less';
@@ -324,6 +324,26 @@ export default class VideoMonitorEdit extends PureComponent {
     });
   };
 
+  validatorID = (rule, value, callback) => {
+    let charCode;
+    let charMode = false;
+    for (let i = 0; i < value.length; i++) {
+      charCode = value.charCodeAt(i);
+      if (charCode >= 97 && charCode <= 122) {
+        charMode = true;
+        continue;
+      }
+    }
+    if (
+      value.length >= 6 &&
+      value.indexOf('_') > 0 &&
+      value.substr(value.length - 1, 1) !== '_' &&
+      charMode
+    )
+      callback();
+    else callback('设备ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾');
+  };
+
   // 定位模态框确定按钮点击事件
   handleOk = (value, fourColorImg) => {
     const {
@@ -464,8 +484,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   message: '请输入设备ID',
                 },
                 {
-                  pattern: numReg,
-                  message: '设备ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾',
+                  validator: this.validatorID,
                 },
               ],
             })(<Input placeholder="请输入设备ID" />)}
@@ -480,8 +499,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   message: '请输入摄像头ID',
                 },
                 {
-                  pattern: numReg,
-                  message: '摄像头ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾',
+                  validator: this.validatorID,
                 },
               ],
             })(<Input placeholder="请输入摄像头ID" />)}
