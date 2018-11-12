@@ -880,6 +880,8 @@ module.exports = [
           },
         ],
       },
+
+      // 执行检查
       // {
       //   path: '/database-input',
       //   code: 'databaseInput',
@@ -914,6 +916,90 @@ module.exports = [
       //     },
       //   ],
       // },
+      {
+        path: '/law-enforcement',
+        code: 'lawEnforcement',
+        icon: 'project',
+        name: 'lawEnforcement',
+        routes: [
+          // laws
+          {
+            path: '/law-enforcement/laws',
+            code: 'lawEnforcement.laws',
+            name: 'laws',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/law-enforcement/laws',
+                name: 'laws',
+                redirect: '/law-enforcement/laws/list',
+              },
+              {
+                path: '/law-enforcement/laws/list',
+                code: 'lawEnforcement.laws.listView',
+                name: 'listView',
+                component: './LawEnforcement/Laws/LawDatabaseList',
+              },
+              {
+                path: '/law-enforcement/laws/add',
+                code: 'lawEnforcement.laws.add',
+                name: 'add',
+                component: './LawEnforcement/Laws/LawDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/laws/edit/:id',
+                code: 'lawEnforcement.laws.edit',
+                name: 'edit',
+                component: './LawEnforcement/Laws/LawDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/laws/detail/:id',
+                code: 'lawEnforcement.laws.view',
+                name: 'view',
+                component: './LawEnforcement/Laws/LawDatabaseDetail',
+              },
+            ],
+          },
+          // illegal
+          {
+            path: '/law-enforcement/illegal',
+            code: 'lawEnforcement.illegal',
+            name: 'illegal',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/law-enforcement/illegal',
+                name: 'illegal',
+                redirect: '/law-enforcement/illegal/list',
+              },
+              {
+                path: '/law-enforcement/illegal/list',
+                code: 'lawEnforcement.illegal.listView',
+                name: 'listView',
+                component: './LawEnforcement/Illegal/IllegalDatabaseList',
+              },
+              {
+                path: '/law-enforcement/illegal/add',
+                code: 'lawEnforcement.illegal.add',
+                name: 'add',
+                component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/illegal/edit/:id',
+                code: 'lawEnforcement.illegal.edit',
+                name: 'edit',
+                component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/illegal/detail/:id',
+                code: 'lawEnforcement.illegal.view',
+                name: 'view',
+                component: './LawEnforcement/Illegal/IllegalDatabaseDetail',
+              },
+            ],
+          },
+        ],
+      },
       {
         name: 'exception',
         icon: 'warning',

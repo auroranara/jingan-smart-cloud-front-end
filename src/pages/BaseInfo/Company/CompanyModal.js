@@ -45,6 +45,9 @@ export default class CompanyModal extends PureComponent {
   state = {
     selectedRowKeys: [],
     name: undefined,
+    lawType: undefined,
+    businessType: undefined,
+    content: undefined,
   };
 
   /* 关闭按钮点击事件 */
@@ -132,13 +135,16 @@ export default class CompanyModal extends PureComponent {
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
     const { fetch, payload } = this.props;
-    const { name } = this.state;
+    const { name, lawType, businessType, content } = this.state;
     this.setState({
       selectedRowKeys: [],
     });
     fetch({
       payload: {
         name,
+        lawType,
+        businessType,
+        content,
         pageNum: current,
         pageSize,
         ...payload,
@@ -166,6 +172,8 @@ export default class CompanyModal extends PureComponent {
       columns,
       pagination,
       rowSelection,
+      field,
+      actSelect = true,
       modal: {
         list,
         pagination: { total, pageNum, pageSize },
@@ -186,8 +194,8 @@ export default class CompanyModal extends PureComponent {
         destroyOnClose
       >
         <InlineForm
-          fields={fields}
-          action={this.renderSelectButton()}
+          fields={field || fields}
+          action={actSelect && this.renderSelectButton()}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />

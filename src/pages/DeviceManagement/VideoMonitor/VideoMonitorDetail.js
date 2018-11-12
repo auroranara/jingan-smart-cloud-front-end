@@ -58,7 +58,7 @@ export default class VideoMonitorDetail extends PureComponent {
         },
       },
     } = this.props;
-
+    console.log('11', this.props);
     return (
       <Card title="视频设备信息详情" bordered={false}>
         <DescriptionList col={3}>
