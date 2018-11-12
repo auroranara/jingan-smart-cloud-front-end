@@ -220,7 +220,7 @@ export default class IllegalDatabaseList extends PureComponent {
               {getFieldDecorator('actContent', {
                 initialValue: defaultFormData.actContent,
                 getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入违法行为" />)}
+              })(<Input placeholder="请输入违法行为内容" />)}
             </FormItem>
             <FormItem>
               <Button type="primary" onClick={this.handleClickToQuery}>
