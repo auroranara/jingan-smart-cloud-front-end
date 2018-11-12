@@ -404,21 +404,22 @@ export default class TestList extends PureComponent {
               // showTotal={false}
               showQuickJumper
               showSizeChanger
+              pageSizeOptions={['5', '10', '15', '20']}
               pageSize={pageSize}
               current={pageNum}
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-              // showTotal={total => `共 ${total} 条`}
+            // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-          <Spin spinning={loading}>
-            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </Card>
-          </Spin>
-        )}
+            <Spin spinning={loading}>
+              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+                <span>暂无数据</span>
+              </Card>
+            </Spin>
+          )}
       </PageHeaderLayout>
     );
   }
