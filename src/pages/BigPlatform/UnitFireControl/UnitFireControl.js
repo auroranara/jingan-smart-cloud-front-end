@@ -305,6 +305,7 @@ export default class App extends PureComponent {
       type: 'unitFireControl/fetchHiddenDangerRecords',
       payload: {
         company_id: companyId,
+        businessType: 2,
       },
     });
 
