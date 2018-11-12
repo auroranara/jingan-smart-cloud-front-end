@@ -106,9 +106,9 @@ export default class App extends PureComponent {
       },
       {
         title: '操作',
-        dataIndex: 'docTypeName',
+        dataIndex: '',
         render: (text, { docPath }) => docPath ? (
-          <span style={{ cursor: 'pointer', color: '#1890ff' }} onClick={() => {this.setState({ images: [{ src: docPath }] });}}>查看</span>
+          <span style={{ cursor: 'pointer', color: '#1890ff' }} onClick={() => {this.setState({ images: docPath.split(',').map(src => ({ src })) });}}>查看</span>
         ) : (
           <span style={{ color: 'rgba(0,0,0,0.45)' }}>未上传</span>
         ),
@@ -225,7 +225,7 @@ export default class App extends PureComponent {
         <Table
           dataSource={documentList}
           columns={this.columns}
-          rowKey="id"
+          rowKey="createTime"
           pagination={false}
         />
       </Card>

@@ -70,8 +70,8 @@ const fieldLabels = {
 };
 /* 获取root下的div */
 const getRootChild = () => document.querySelector('#root>div');
-/* sessionStorage名称 */
-const sessionName = 'acloud_report_control';
+/* session前缀 */
+const sessionPrefix = 'hidden_danger_report_list_';
 
 
 /**
@@ -91,8 +91,8 @@ export default class App extends PureComponent {
     const isCompany = unitType === 4;
     /* 图片字段render方法 */
     const renderImage = (value) => {
-      const src = value[0];
-      return src && <img style={{ width: 30, height: 40, cursor: 'pointer' }} src={src} alt="" onClick={() => {this.setState({ images: value, currentImage: 0 });}} />;
+      const src = value.filter(image => /(.jpg|.png)$/.test(image))[0];
+      return src ? <img style={{ width: 30, height: 40, cursor: 'pointer' }} src={src} alt="" onClick={() => {this.setState({ images: value, currentImage: 0 });}} /> : <span style={{ display: 'inline-block', width: 30, height: 40 }} />;
     };
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
@@ -186,9 +186,9 @@ export default class App extends PureComponent {
    * 挂载后
    */
   componentDidMount() {
-    const { dispatch, form: { setFieldsValue } } = this.props;
+    const { dispatch, form: { setFieldsValue }, user: { currentUser: { id } } } = this.props;
     // 从sessionStorage中获取存储的控件值
-    const payload = JSON.parse(sessionStorage.getItem(sessionName)) || {
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
       pageSize: 5,
       query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
@@ -197,7 +197,7 @@ export default class App extends PureComponent {
     const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = payload;
     // 重置控件
     setFieldsValue({
-      createTime: query_start_time && query_end_time && [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')],
+      createTime: query_start_time && query_end_time ? [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')] : [],
       documentTypeIds: documentTypeIds && documentTypeIds.split(','),
       ...rest,
     });
@@ -233,9 +233,9 @@ export default class App extends PureComponent {
    * 查询
    */
   handleSearch = () => {
-    const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageSize } } } } = this.props;
+    const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageSize } } }, user: { currentUser: { id } } } = this.props;
     const { createTime, documentTypeIds, ...rest } = getFieldsValue();
-    const [query_start_time, query_end_time] = createTime;
+    const [query_start_time, query_end_time] = createTime || [];
     const payload = {
       ...rest,
       pageNum: 1,
@@ -250,7 +250,7 @@ export default class App extends PureComponent {
       payload,
     });
     // 保存筛选条件
-    sessionStorage.setItem(sessionName, JSON.stringify(payload));
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
   }
 
   /**
@@ -279,9 +279,9 @@ export default class App extends PureComponent {
    * 导出
    */
   handleExport = () => {
-    const { dispatch } = this.props;
+    const { dispatch, user: { currentUser: { id } } } = this.props;
     // 从sessionStorage中获取存储的控件值
-    const payload = JSON.parse(sessionStorage.getItem(sessionName)) || {
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
@@ -331,9 +331,9 @@ export default class App extends PureComponent {
    * 加载更多
    */
   handleLoadMore = (num, size) => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
+    const { dispatch, form: { setFieldsValue }, user: { currentUser: { id } } } = this.props;
     // 从sessionStorage中获取存储的控件值
-    const fieldsValue = JSON.parse(sessionStorage.getItem(sessionName)) || {
+    const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
@@ -348,7 +348,7 @@ export default class App extends PureComponent {
       business_type: undefined,
       item_name: undefined,
       level: undefined,
-      createTime: query_start_time && query_end_time && [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')],
+      createTime: query_start_time && query_end_time ? [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')] : [],
       documentTypeIds: documentTypeIds && documentTypeIds.split(','),
       ...rest,
     });
@@ -363,7 +363,7 @@ export default class App extends PureComponent {
       },
     });
     // 保存筛选条件
-    sessionStorage.setItem(sessionName, JSON.stringify({
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify({
       ...fieldsValue,
       pageNum: 1,
       pageSize: size,
@@ -412,7 +412,7 @@ export default class App extends PureComponent {
         <Row gutter={{ md: 24 }}>
           {/* 所属网格 */}
           {!this.isCompany && (
-            <Col lg={8} md={12} sm={24}>
+            <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.grid_id}>
                 {getFieldDecorator('grid_id')(
                   <TreeSelect
@@ -427,27 +427,27 @@ export default class App extends PureComponent {
           )}
           {/* 单位名称 */}
           {!this.isCompany && (
-            <Col lg={8} md={12} sm={24}>
+            <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.company_name}>
                 {getFieldDecorator('company_name')(<Input placeholder="请输入" />)}
               </Form.Item>
             </Col>
           )}
           {/* 隐患编号 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.code}>
               {getFieldDecorator('code')(<Input placeholder="请输入" />)}
             </Form.Item>
           </Col>
           {/* 创建时间 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.createTime}>
               {getFieldDecorator('createTime', {
               })(<RangePicker style={{ width: '100%' }} getCalendarContainer={getRootChild} allowClear />)}
             </Form.Item>
           </Col>
           {/* 隐患来源 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.source_type}>
               {getFieldDecorator('source_type')(
                 <Select
@@ -465,7 +465,7 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 隐患状态 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.status}>
               {getFieldDecorator('status')(
                 <Select
@@ -483,7 +483,7 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 业务分类 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.business_type}>
               {getFieldDecorator('business_type')(
                 <Select
@@ -501,13 +501,13 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 点位名称 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.item_name}>
               {getFieldDecorator('item_name')(<Input placeholder="请输入" />)}
             </Form.Item>
           </Col>
           {/* 隐患等级 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.level}>
               {getFieldDecorator('level')(
                 <Select
@@ -525,7 +525,7 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 相关文书 */}
-          <Col lg={8} md={12} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.documentTypeIds}>
               {getFieldDecorator('documentTypeIds')(
                 <Select
@@ -544,7 +544,7 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 按钮 */}
-          <Col lg={16} md={24} sm={24}>
+          <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item>
               <Button type="primary" onClick={this.handleSearch} style={{ marginRight: 16 }}>查询</Button>
               <Button onClick={this.handleReset} style={{ marginRight: 16 }}>重置</Button>
