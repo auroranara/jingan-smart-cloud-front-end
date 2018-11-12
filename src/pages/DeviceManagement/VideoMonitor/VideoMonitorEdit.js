@@ -375,8 +375,6 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     } = this.props;
 
-    console.log('11', this.props);
-
     const {
       coordinate: { visible },
     } = this.state;

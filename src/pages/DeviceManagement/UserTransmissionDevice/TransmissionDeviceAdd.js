@@ -123,7 +123,9 @@ export default class TransmissionAdd extends PureComponent {
     const {
       dispatch,
       form: { validateFields },
-      user: { currentUser: { companyId } },
+      user: {
+        currentUser: { companyId },
+      },
     } = this.props;
     e.preventDefault();
     validateFields((err, values) => {
@@ -132,8 +134,7 @@ export default class TransmissionAdd extends PureComponent {
 
       const vals = { ...values };
       delete vals.compnayName;
-      if (values.productionDate)
-        vals.productionDate = values.productionDate.format('YYYY-MM-DD');
+      if (values.productionDate) vals.productionDate = values.productionDate.format('YYYY-MM-DD');
       dispatch({
         type: 'transmission/deviceAddAsync',
         payload: { companyId: this.companyId || companyId, data: vals },

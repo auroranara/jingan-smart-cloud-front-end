@@ -156,8 +156,8 @@ class VideoPlay extends Component {
           },
           error: response => {
             notification['error']({
-              message: '视频请求失败',
-              description: response.msg,
+              message: '失败',
+              description: '视频请求失败',
               duration: null,
             });
           },

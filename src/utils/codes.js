@@ -1,4 +1,9 @@
 export default {
+  dashboard: {
+    safety: 'dashboard.safetyView',
+    fireControl: 'dashboard.fireControlView',
+    dynamicMonitor: 'dashboard.dynamicMonitorView',
+  },
   role: {
     list: 'roleAuthorization.role.listView',
     detail: 'roleAuthorization.role.view',
@@ -88,6 +93,22 @@ export default {
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
+    },
+  },
+  lawEnforcement: {
+    laws: {
+      listView: 'lawEnforcement.laws.listView',
+      add: 'lawEnforcement.laws.add',
+      edit: 'lawEnforcement.laws.edit',
+      detail: 'lawEnforcement.laws.view',
+      delete: 'lawEnforcement.laws.delete',
+    },
+    illegal: {
+      listView: 'lawEnforcement.illegal.listView',
+      add: 'lawEnforcement.illegal.add',
+      edit: 'lawEnforcement.illegal.edit',
+      detail: 'lawEnforcement.illegal.view',
+      delete: 'lawEnforcement.illegal.delete',
     },
   },
 };
