@@ -29,6 +29,12 @@ const { Option } = Select;
 let flow_id = [];
 const PageSize = 10;
 
+//  默认分页参数
+const defaultPagination = {
+  pageNum: 1,
+  pageSize: 10,
+};
+
 /* 标题---编辑 */
 const editTitle = '编辑违法行为';
 /* 标题---新增 */
@@ -171,8 +177,14 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 显示模态框(设定依据)
   handleFocus = e => {
+    const { dispatch } = this.props;
     e.target.blur();
     this.setState({ set: { visible: true } });
+    // 初始化表格
+    dispatch({
+      type: 'illegalDatabase/fetchModalList',
+      ...defaultPagination,
+    });
   };
 
   // 获取内容(设定依据)
@@ -196,7 +208,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 关闭模态框(设定依据)
   handleClose = () => {
-    this.setState({ set: { visible: false } });
+    this.setState({
+      set: { visible: false },
+    });
   };
 
   // 渲染模态框(设定依据)
@@ -241,7 +255,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
       {
         id: 'content',
         render() {
-          return <Input placeholder="请选择法律法规" />;
+          return <Input placeholder="请输入法律法规内容" />;
         },
       },
     ];
@@ -263,8 +277,14 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 显示模态框(处罚依据)
   handleFocusPunish = e => {
+    const { dispatch } = this.props;
     e.target.blur();
     this.setState({ punish: { visible: true } });
+    // 初始化表格
+    dispatch({
+      type: 'illegalDatabase/fetchModalList',
+      ...defaultPagination,
+    });
   };
 
   // 获取内容(处罚依据)
@@ -333,7 +353,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
       {
         id: 'content',
         render() {
-          return <Input placeholder="请选择法律法规" />;
+          return <Input placeholder="请输入法律法规内容" />;
         },
       },
     ];
@@ -355,8 +375,14 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 显示模态框(检查内容)
   handleContentModal = e => {
+    const { dispatch } = this.props;
     e.target.blur();
     this.setState({ check: { visible: true } });
+    // 初始化表格
+    dispatch({
+      type: 'illegalDatabase/fetchDtoList',
+      ...defaultPagination,
+    });
   };
 
   // 获取内容（检查内容）
@@ -760,7 +786,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.isUse}>
             {getFieldDecorator('enable', {
               valuePropName: 'checked',
-              initialValue: !!enable,
+              initialValue: +enable,
             })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
           </FormItem>
 

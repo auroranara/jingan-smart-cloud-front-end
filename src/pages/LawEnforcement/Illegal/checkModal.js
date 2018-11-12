@@ -149,6 +149,7 @@ export default class CompanyModal extends PureComponent {
               marginTop: '16px',
               width: '420px',
               display: 'table-cell',
+              cursor: 'pointer',
             }}
             loading={loading}
             bordered

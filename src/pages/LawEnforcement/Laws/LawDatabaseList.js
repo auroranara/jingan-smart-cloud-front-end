@@ -314,7 +314,7 @@ export default class lawDatabaseList extends PureComponent {
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm
-              title="确认要删除该法律法规库吗？"
+              title="确认要删除该法律法规吗？"
               onConfirm={() => this.handleDelete(rows.id)}
             >
               <AuthA code={codesMap.lawEnforcement.laws.delete}>删除</AuthA>
