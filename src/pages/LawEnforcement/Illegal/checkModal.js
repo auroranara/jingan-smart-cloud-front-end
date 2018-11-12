@@ -33,13 +33,6 @@ export default class CompanyModal extends PureComponent {
     this.setState({ clickContent: false });
   };
 
-  // handleContentTable = record => {
-  //   const { onShowTable } = this.props;
-  //   if (onShowTable) {
-  //     onShowTable(record);
-  //   }
-  // };
-
   /* 查询按钮点击事件 */
   handleSearch = value => {
     const {

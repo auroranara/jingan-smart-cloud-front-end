@@ -169,12 +169,12 @@ export default class MaintenanceRecordList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
-    } = this.props
+    } = this.props;
     const { checkDate, ...query } = getFieldsValue();
     if (checkDate && checkDate.length) {
-      const [start, end] = checkDate
-      query.startTime = start.format('YYYY-MM-DD HH:mm:ss')
-      query.endTime = end.format('YYYY-MM-DD HH:mm:ss')
+      const [start, end] = checkDate;
+      query.startTime = start.format('YYYY-MM-DD HH:mm:ss');
+      query.endTime = end.format('YYYY-MM-DD HH:mm:ss');
     }
     dispatch({
       type: 'maintenanceRecord/fetch',
@@ -184,7 +184,7 @@ export default class MaintenanceRecordList extends PureComponent {
         ...query,
       },
     });
-  }
+  };
 
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
@@ -261,11 +261,7 @@ export default class MaintenanceRecordList extends PureComponent {
       maintenanceRecord: {
         data: {
           list,
-          pagination: {
-            total,
-            pageSize,
-            pageNum,
-          },
+          pagination: { total, pageSize, pageNum },
         },
       },
     } = this.props;
@@ -300,8 +296,8 @@ export default class MaintenanceRecordList extends PureComponent {
         render: val => {
           return val && val.length > 0
             ? val.map((v, i) => {
-              return <div key={i}> {v.userName}</div>;
-            })
+                return <div key={i}> {v.userName}</div>;
+              })
             : '';
         },
       },
@@ -314,8 +310,8 @@ export default class MaintenanceRecordList extends PureComponent {
         render: val => {
           return val && val.length > 0
             ? val.map((v, i) => {
-              return <div key={i}>{v.phoneNumber}</div>;
-            })
+                return <div key={i}>{v.phoneNumber}</div>;
+              })
             : '';
         },
       },
@@ -351,8 +347,8 @@ export default class MaintenanceRecordList extends PureComponent {
                   查看附件
                 </AuthA>
               ) : (
-                  <span style={{ color: '#aaa' }}>查看附件</span>
-                )}
+                <span style={{ color: '#aaa' }}>查看附件</span>
+              )}
             </Fragment>
           );
         },
@@ -391,14 +387,16 @@ export default class MaintenanceRecordList extends PureComponent {
               showSizeChanger: true,
               pageSizeOptions: ['5', '10', '15', '20'],
               onChange: this.handlePageChange,
-              onShowSizeChange: (num, size) => { this.handlePageChange(1, size) },
+              onShowSizeChange: (num, size) => {
+                this.handlePageChange(1, size);
+              },
             }}
             scroll={{ x: 1400 }}
             bordered
           />
         ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
         <Lightbox
           images={imgUrl}
           isOpen={visible}
@@ -417,7 +415,9 @@ export default class MaintenanceRecordList extends PureComponent {
   render() {
     const {
       maintenanceRecord: {
-        data: { list = [] },
+        data: {
+          pagination: { total },
+        },
       },
     } = this.props;
 
@@ -428,7 +428,7 @@ export default class MaintenanceRecordList extends PureComponent {
         content={
           <div>
             列表记录：
-            {list.length}{' '}
+            {total}{' '}
           </div>
         }
       >

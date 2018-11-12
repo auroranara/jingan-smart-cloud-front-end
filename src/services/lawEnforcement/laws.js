@@ -23,7 +23,7 @@ export async function addLaws(params) {
 
 // 查看详情
 export async function queryLawsDetail({ id }) {
-  return request(`/acloud_new//v2/lawsAndRegulations/lawsAndRegulations/${id}`);
+  return request(`/acloud_new/v2/lawsAndRegulations/lawsAndRegulations/${id}`);
 }
 
 // 编辑
