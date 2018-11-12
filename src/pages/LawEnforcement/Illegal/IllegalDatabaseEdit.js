@@ -238,6 +238,12 @@ export default class IllegalDatabaseEdit extends PureComponent {
           );
         },
       },
+      {
+        id: 'content',
+        render() {
+          return <Input placeholder="请选择法律法规" />;
+        },
+      },
     ];
 
     return (
@@ -322,6 +328,12 @@ export default class IllegalDatabaseEdit extends PureComponent {
               ))}
             </Select>
           );
+        },
+      },
+      {
+        id: 'content',
+        render() {
+          return <Input placeholder="请选择法律法规" />;
         },
       },
     ];
@@ -754,7 +766,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.checkContent}>
             <Button type="primary" style={{ float: 'right' }} onClick={this.handleContentModal}>
-              添加内容
+              添加
             </Button>
           </FormItem>
           <Divider style={{ marginTop: '-20px' }} />

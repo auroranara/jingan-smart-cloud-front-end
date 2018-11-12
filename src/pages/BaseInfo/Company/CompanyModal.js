@@ -47,6 +47,7 @@ export default class CompanyModal extends PureComponent {
     name: undefined,
     lawType: undefined,
     businessType: undefined,
+    content: undefined,
   };
 
   /* 关闭按钮点击事件 */
@@ -134,7 +135,7 @@ export default class CompanyModal extends PureComponent {
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
     const { fetch, payload } = this.props;
-    const { name, lawType, businessType } = this.state;
+    const { name, lawType, businessType, content } = this.state;
     this.setState({
       selectedRowKeys: [],
     });
@@ -143,6 +144,7 @@ export default class CompanyModal extends PureComponent {
         name,
         lawType,
         businessType,
+        content,
         pageNum: current,
         pageSize,
         ...payload,
