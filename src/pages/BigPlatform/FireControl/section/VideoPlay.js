@@ -94,13 +94,13 @@ class VideoPlay extends Component {
           });
         }
       },
-      error: response => {
-        notification['error']({
-          message: '视频请求失败',
-          description: response.msg,
-          duration: null,
-        });
-      },
+      // error: response => {
+      //   notification['error']({
+      //     message: '视频请求失败',
+      //     description: response.msg,
+      //     duration: null,
+      //   });
+      // },
     });
   };
 
