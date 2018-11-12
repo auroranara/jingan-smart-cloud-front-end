@@ -25,8 +25,9 @@ const statusList = [
   { value: 2, label: '待处理' },
 ]
 
-@connect(({ dataAnalysis }) => ({
+@connect(({ dataAnalysis, user }) => ({
   dataAnalysis,
+  user,
 }))
 @Form.create()
 export default class RepairRecordList extends PureComponent {
@@ -169,6 +170,11 @@ export default class RepairRecordList extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator },
+      user: {
+        currentUser: {
+          unitType,
+        } = {},
+      },
     } = this.props
     return (
       <Card>
@@ -205,7 +211,7 @@ export default class RepairRecordList extends PureComponent {
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('status')(
                   <Select placeholder="请选择维修状态">
-                    {statusList.map(({ value, label }) => (<Option value={value} key={value}>{label}</Option>))}
+                    {statusList.map(({ value, label }) => (<Option value={value} key={value} disabled={unitType === 4 && value === 2}>{label}</Option>))}
                   </Select>
                 )}
               </FormItem>
