@@ -5,7 +5,7 @@ import InlineForm from '../../BaseInfo/Company/InlineForm';
 
 // 默认页面显示数量列表
 const defaultPageSizeOptions = ['5', '10', '15', '20'];
-
+const PageSize = 5;
 @Form.create()
 export default class CompanyModal extends PureComponent {
   state = {
@@ -33,12 +33,12 @@ export default class CompanyModal extends PureComponent {
     this.setState({ clickContent: false });
   };
 
-  handleContentTable = record => {
-    const { onShowTable } = this.props;
-    if (onShowTable) {
-      onShowTable(record);
-    }
-  };
+  // handleContentTable = record => {
+  //   const { onShowTable } = this.props;
+  //   if (onShowTable) {
+  //     onShowTable(record);
+  //   }
+  // };
 
   /* 查询按钮点击事件 */
   handleSearch = value => {
@@ -104,9 +104,12 @@ export default class CompanyModal extends PureComponent {
   };
 
   handleContentTable = record => {
+    const { flows, business_type, industry } = record;
     this.setState({
       clickContent: true,
-      checkList: record.flows,
+      checkList: flows.map(d => {
+        return { ...d, business_type, industry };
+      }),
     });
   };
 
@@ -190,6 +193,7 @@ export default class CompanyModal extends PureComponent {
               bordered
               size="middle"
               rowKey={rowKey || 'id'}
+              pagination={{ pageSize: PageSize }}
               dataSource={checkList || []}
               columns={column}
             />

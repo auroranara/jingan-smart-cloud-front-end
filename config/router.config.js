@@ -839,7 +839,7 @@ module.exports = [
       {
         path: '/law-enforcement',
         code: 'lawEnforcement',
-        icon: 'dashboard',
+        icon: 'project',
         name: 'lawEnforcement',
         routes: [
           // laws

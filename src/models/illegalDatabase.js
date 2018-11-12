@@ -49,13 +49,14 @@ export default {
 
   effects: {
     // 列表
-    *fetchIllegalList({ payload }, { call, put }) {
+    *fetchIllegalList({ payload, success }, { call, put }) {
       const response = yield call(queryIllegalList, payload);
       if (response.code === 200) {
         yield put({
           type: 'saveList',
           payload: response.data,
         });
+        if (success) success(response);
       }
     },
     // 模态框

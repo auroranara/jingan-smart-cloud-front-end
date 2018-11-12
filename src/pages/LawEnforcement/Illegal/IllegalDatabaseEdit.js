@@ -26,7 +26,7 @@ import styles from './IllegalDatabase.less';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
-let checkObjectIds = [];
+let flow_id = [];
 const PageSize = 10;
 
 /* 标题---编辑 */
@@ -143,6 +143,11 @@ export default class IllegalDatabaseEdit extends PureComponent {
         type: 'illegalDatabase/fetchIllegalList',
         payload: {
           id,
+        },
+        success: response => {
+          const flows = response.data.list[0].checkObject;
+          this.setState({ flowList: flows });
+          flow_id = flows.map(d => d.flow_id);
         },
       });
     } else {
@@ -395,15 +400,14 @@ export default class IllegalDatabaseEdit extends PureComponent {
           <span>
             <a
               onClick={() => {
-                if (checkObjectIds.join(',').indexOf(record.object_id) >= 0) {
-                  message.success('已添加');
+                if (flow_id.join(',').indexOf(record.flow_id) >= 0) {
                   return;
                 }
                 this.setState({ flowList: [...flowList, record] });
-                checkObjectIds.push(record.object_id);
+                flow_id.push(record.flow_id);
               }}
             >
-              添加
+              {flow_id.join(',').indexOf(record.flow_id) >= 0 ? '已添加' : '添加'}
             </a>
           </span>
         ),
@@ -454,8 +458,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 删除检查内容添加项
   handleDeleteCheck = key => {
     const flowList = [...this.state.flowList];
-    this.setState({ flowList: flowList.filter(item => item.object_id !== key) });
-    checkObjectIds = checkObjectIds.filter(d => d !== key);
+    this.setState({ flowList: flowList.filter(item => item.flow_id !== key) });
+    flow_id = flow_id.filter(d => d !== key);
   };
 
   // 点击提交按钮验证表单信息
@@ -485,7 +489,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
           punishLawIds: punishLawIds,
           discretionStandard,
           enable: +enable,
-          checkObjectIds: checkObjectIds.join(','),
+          checkObjectIds: flow_id.join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -529,6 +533,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
     const { flowList: list, currentPage } = this.state;
     const indexBase = (currentPage - 1) * PageSize;
 
+    const BusinessType = ['安全生产', '消防', '环保', '卫生'];
+
     /* 配置描述 */
     const COLUMNS = [
       {
@@ -544,6 +550,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
         key: 'business_type',
         align: 'center',
         width: 65,
+        render: val => {
+          return BusinessType[val - 1];
+        },
       },
       {
         title: '所属行业',
@@ -583,7 +592,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
           <span>
             <Popconfirm
               title="确认要删除该检查内容吗？"
-              onConfirm={() => this.handleDeleteCheck(record.object_id)}
+              onConfirm={() => this.handleDeleteCheck(record.flow_id)}
             >
               <a>删除</a>
             </Popconfirm>
@@ -629,8 +638,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
       businessType,
       typeCode,
       actContent,
-      setLaw,
-      punishLaw,
+      setLaw = [],
+      punishLaw = [],
       discretionStandard,
       enable,
     } = detail;
@@ -707,7 +716,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.setBasis}>
             {getFieldDecorator('setLawIds', {
-              initialValue: setLaw,
+              initialValue: setLaw.map(s => s.lawTypeName + ' ' + s.article).join(','),
               rules: [
                 {
                   required: true,
@@ -719,7 +728,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.punishBasis}>
             {getFieldDecorator('punishLawIds', {
-              initialValue: punishLaw,
+              initialValue: punishLaw.map(s => s.lawTypeName + ' ' + s.article).join(','),
               rules: [
                 {
                   required: true,
