@@ -1,4 +1,9 @@
 export default {
+  dashboard: {
+    safety: 'dashboard.safetyView',
+    fireControl: 'dashboard.fireControlView',
+    dynamicMonitor: 'dashboard.dynamicMonitorView',
+  },
   role: {
     list: 'roleAuthorization.role.listView',
     detail: 'roleAuthorization.role.view',

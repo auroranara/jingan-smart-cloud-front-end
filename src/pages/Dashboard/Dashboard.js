@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+
 // import Carousel3d from './Carousel3d';
+import codes from '@/utils/codes';
 import styles from './Dashboard.less';
 
 // const fire = 'http://data.jingan-china.cn/v2/dashboard/fire-control.png';
@@ -27,6 +29,7 @@ export default class Dashboard extends PureComponent {
     let {
       user: {
         currentUser: {
+          permissionCodes=[],
           companyBasicInfo: { fireService, safetyProduction, monitorService } = {},
           unitType,
           companyId,
@@ -34,25 +37,27 @@ export default class Dashboard extends PureComponent {
       },
     } = this.props;
 
+    const [safetyAuth, fireControlAuth, dynamicMonitorAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
+
     safeItem.url = `${window.publicPath}#/big-platform/safety/government`
     fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
     if (unitType === 2) {
       //TODO 政府大屏开启
-      this.setState({ safetyProduction, fireService });
+      this.setState({ safetyProduction: safetyProduction && safetyAuth, fireService: fireService && fireControlAuth });
     } else if (unitType === 3) {
       // 运营可以看所有政府大屏
-      this.setState({ safetyProduction: 1, fireService: 1 });
+      this.setState({ safetyProduction: 1 && safetyAuth, fireService: 1 && fireControlAuth });
     } else {
       // 企业根据companyBasicInfo的数据来
       safeItem.url = `${window.publicPath}#/big-platform/safety/company/${companyId}`;
       fireItem.url = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
       monitorItem.url = `${window.publicPath}#/big-platform/monitor/company/${companyId}`
       this.setState({
-        safetyProduction,
-        fireService: unitType === 1 ? 0 : fireService, // 这个迭代维保企业不能看消防
-        monitorService,
+        safetyProduction: safetyProduction && safetyAuth,
+        fireService: unitType === 1 ? 0 : fireService && fireControlAuth, // 这个迭代维保企业不能看消防
+        monitorService: monitorService && dynamicMonitorAuth,
       });
     }
   }
