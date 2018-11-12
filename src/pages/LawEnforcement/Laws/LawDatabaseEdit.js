@@ -69,6 +69,9 @@ export default class LawDatabaseEdit extends PureComponent {
     });
   }
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   // 点击提交按钮验证表单信息
   handleClickValidate = () => {
     const {
@@ -201,10 +204,12 @@ export default class LawDatabaseEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.subClause}>
             {getFieldDecorator('article', {
               initialValue: article,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
                   message: '请输入所属条款',
+                  whitespace: true,
                 },
               ],
             })(<Input placeholder="请输入所属条款" />)}
@@ -213,6 +218,7 @@ export default class LawDatabaseEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.lawsRegulationsInput}>
             {getFieldDecorator('content', {
               initialValue: content,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入法律法规内容', whitespace: true }],
             })(<TextArea rows={4} placeholder="请输入法律法规内容" maxLength="2000" />)}
           </FormItem>
@@ -220,7 +226,7 @@ export default class LawDatabaseEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.isUse}>
             {getFieldDecorator('status', {
               valuePropName: 'checked',
-              initialValue: !!status,
+              initialValue: +status,
             })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
           </FormItem>
         </Form>

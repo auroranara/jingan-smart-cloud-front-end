@@ -313,7 +313,7 @@ export default class IllegalDatabaseList extends PureComponent {
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm
-              title="确认要删除该违法行为库吗？"
+              title="确认要删除该违法行为吗？"
               onConfirm={() => this.handleDelete(rows.id)}
             >
               <AuthA code={codesMap.lawEnforcement.illegal.delete}>删除</AuthA>
