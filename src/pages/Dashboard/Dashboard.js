@@ -38,6 +38,7 @@ export default class Dashboard extends PureComponent {
     } = this.props;
 
     const [safetyAuth, fireControlAuth, dynamicMonitorAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
+    // console.log(safetyAuth, fireControlAuth, dynamicMonitorAuth);
 
     safeItem.url = `${window.publicPath}#/big-platform/safety/government`
     fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
