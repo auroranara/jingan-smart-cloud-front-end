@@ -190,7 +190,7 @@ export default class App extends PureComponent {
     // 从sessionStorage中获取存储的控件值
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
-      pageSize: 5,
+      pageSize: 10,
       query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
@@ -568,7 +568,7 @@ export default class App extends PureComponent {
         list: {
           list,
           pagination: {
-            pageSize=5,
+            pageSize=10,
             pageNum=1,
             total=0,
           },

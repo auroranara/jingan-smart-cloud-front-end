@@ -25,6 +25,11 @@ const statusList = [
   { value: 2, label: '待处理' },
 ]
 
+// 栅格的配置
+const grdiSetting={
+  xl:8,md:12, sm:24, xs:24,
+}
+
 @connect(({ dataAnalysis, user }) => ({
   dataAnalysis,
   user,
@@ -179,8 +184,7 @@ export default class RepairRecordList extends PureComponent {
     return (
       <Card>
         <Form layout="inline" className={styles.repairRecordForm}>
-          <Col span={18}>
-            <Col span={8}>
+            <Col {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('workOrder', {
                   getValueFromEvent: e => e.target.value.trim(),
@@ -189,7 +193,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col  {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('companyName', {
                   getValueFromEvent: e => e.target.value.trim(),
@@ -198,7 +202,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col  {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('unitName', {
                   getValueFromEvent: e => e.target.value.trim(),
@@ -207,7 +211,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('status')(
                   <Select placeholder="请选择维修状态">
@@ -216,7 +220,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={12}>
+            <Col {...grdiSetting}>
               <FormItem className={styles.formItem} >
                 {getFieldDecorator('time')(
                   <RangePicker
@@ -230,8 +234,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Col>
-          <Col span={6}>
+          <Col {...grdiSetting}>
             <FormItem>
               <Button onClick={this.handleQuery} type="primary">查询</Button>
             </FormItem>
