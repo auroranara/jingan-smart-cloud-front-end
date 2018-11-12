@@ -211,7 +211,7 @@ export default class RepairRecordList extends PureComponent {
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('status')(
                   <Select placeholder="请选择维修状态">
-                    {statusList.map(({ value, label }) => (<Option value={value} key={value} disabled={unitType === 4 && value === 2}>{label}</Option>))}
+                    {statusList.map(({ value, label }) => unitType === 4 && value === 2 ? null : (<Option value={value} key={value} >{label}</Option>))}
                   </Select>
                 )}
               </FormItem>
