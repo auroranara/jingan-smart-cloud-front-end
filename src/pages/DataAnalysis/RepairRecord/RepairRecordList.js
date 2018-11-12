@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Button, Card, Form, Input, DatePicker, Col, Table, Pagination,Select  } from 'antd';
+import { Button, Card, Form, Input, DatePicker, Col, Table, Pagination, Select } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Lightbox from 'react-images';
 import router from 'umi/router';
@@ -9,7 +9,7 @@ import styles from './RepairRecordList.less'
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
-const Option =Select.Option 
+const Option = Select.Option
 
 const title = "报修记录"
 const breadcrumbList = [
@@ -19,10 +19,10 @@ const breadcrumbList = [
 ]
 
 // 维修状态配置
-const statusList=[
-  {value:0,label:'处理中'},
-  {value:1,label:'已处理'},
-  {value:2,label:'待处理'},
+const statusList = [
+  { value: 0, label: '处理中' },
+  { value: 1, label: '已处理' },
+  { value: 2, label: '待处理' },
 ]
 
 @connect(({ dataAnalysis }) => ({
@@ -148,17 +148,10 @@ export default class RepairRecordList extends PureComponent {
   }
 
   // 翻页
-  onPageChange = (pageNum) => {
+  onPageChange = (pageNum, pageSize) => {
     const {
       form: { getFieldsValue },
       dispatch,
-      dataAnalysis: {
-        repairRecord: {
-          pagination: {
-            pageSize,
-          },
-        },
-      },
     } = this.props
     const data = getFieldsValue()
     const { time, ...query } = data
@@ -212,7 +205,7 @@ export default class RepairRecordList extends PureComponent {
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('status')(
                   <Select placeholder="请选择维修状态">
-                    {statusList.map(({value,label})=>(<Option value={value} key={value}>{label}</Option>))}
+                    {statusList.map(({ value, label }) => (<Option value={value} key={value}>{label}</Option>))}
                   </Select>
                 )}
               </FormItem>
@@ -221,7 +214,7 @@ export default class RepairRecordList extends PureComponent {
               <FormItem className={styles.formItem} >
                 {getFieldDecorator('time')(
                   <RangePicker
-                    style={{width:'100%'}}
+                    style={{ width: '100%' }}
                     format="YYYY-MM-DD HH:mm:ss"
                     placeholder={['开始时间', '结束时间']}
                     showTime={{
@@ -357,7 +350,16 @@ export default class RepairRecordList extends PureComponent {
         {repairRecords && repairRecords.length ? (
           <Card className={styles.repairRecordList}>
             <Table scroll={{ x: 1600 }} rowKey="id" columns={columns} dataSource={repairRecords} bordered pagination={false} />
-            <Pagination style={{ marginTop: '20px', float: 'right' }} showQuickJumper current={pageNum} pageSize={pageSize} total={total} onChange={this.onPageChange} />
+            <Pagination
+              style={{ marginTop: '20px', float: 'right' }}
+              showQuickJumper
+              showSizeChanger
+              current={pageNum}
+              pageSize={pageSize}
+              pageSizeOptions={['5', '10', '15', '20']}
+              total={total}
+              onChange={this.onPageChange}
+              onShowSizeChange={(num, size) => { this.onPageChange(1, size) }} />
           </Card>
         ) : (<Card className={styles.noRepairRecordList}><span >暂无数据</span></Card>)}
         <Lightbox

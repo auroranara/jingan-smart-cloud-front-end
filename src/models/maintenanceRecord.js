@@ -11,7 +11,7 @@ export default {
       list: [],
       pagination: {
         total: 0,
-        pageSize: 24,
+        pageSize: 10,
         pageNum: 1,
       },
     },
@@ -23,7 +23,6 @@ export default {
     // 维保记录列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCheck, payload);
-      console.log('payload', payload);
       if (response.code === 200) {
         yield put({
           type: 'saveList',
@@ -35,8 +34,6 @@ export default {
     // 获取记录详情
     *fetchRecordDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceRecordDetail, payload);
-      console.log(response);
-
       if (response.code === 200) {
         yield put({
           type: 'saveDetail',

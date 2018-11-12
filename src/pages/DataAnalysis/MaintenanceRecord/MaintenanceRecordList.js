@@ -40,8 +40,6 @@ const defaultFormData = {
   serviceUnitName: undefined,
 };
 
-const PageSize = 10;
-
 @connect(({ maintenanceRecord, user, loading }) => ({
   maintenanceRecord,
   user,
@@ -166,6 +164,28 @@ export default class MaintenanceRecordList extends PureComponent {
     });
   };
 
+  /* 处理翻页 */
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props
+    const { checkDate, ...query } = getFieldsValue();
+    if (checkDate && checkDate.length) {
+      const [start, end] = checkDate
+      query.startTime = start.format('YYYY-MM-DD HH:mm:ss')
+      query.endTime = end.format('YYYY-MM-DD HH:mm:ss')
+    }
+    dispatch({
+      type: 'maintenanceRecord/fetch',
+      payload: {
+        pageSize,
+        pageNum,
+        ...query,
+      },
+    });
+  }
+
   /* 重置按钮点击事件 */
   handleClickToReset = () => {
     const {
@@ -239,7 +259,14 @@ export default class MaintenanceRecordList extends PureComponent {
     const {
       tableLoading,
       maintenanceRecord: {
-        data: { list },
+        data: {
+          list,
+          pagination: {
+            total,
+            pageSize,
+            pageNum,
+          },
+        },
       },
     } = this.props;
 
@@ -272,9 +299,9 @@ export default class MaintenanceRecordList extends PureComponent {
         width: 220,
         render: val => {
           return val && val.length > 0
-            ? val.map(v => {
-                return <div> {v.userName}</div>;
-              })
+            ? val.map((v, i) => {
+              return <div key={i}> {v.userName}</div>;
+            })
             : '';
         },
       },
@@ -286,9 +313,9 @@ export default class MaintenanceRecordList extends PureComponent {
         width: 240,
         render: val => {
           return val && val.length > 0
-            ? val.map(v => {
-                return <div>{v.phoneNumber}</div>;
-              })
+            ? val.map((v, i) => {
+              return <div key={i}>{v.phoneNumber}</div>;
+            })
             : '';
         },
       },
@@ -324,8 +351,8 @@ export default class MaintenanceRecordList extends PureComponent {
                   查看附件
                 </AuthA>
               ) : (
-                <span style={{ color: '#aaa' }}>查看附件</span>
-              )}
+                  <span style={{ color: '#aaa' }}>查看附件</span>
+                )}
             </Fragment>
           );
         },
@@ -356,13 +383,22 @@ export default class MaintenanceRecordList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={list}
-            pagination={{ pageSize: PageSize }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handlePageChange,
+              onShowSizeChange: (num, size) => { this.handlePageChange(1, size) },
+            }}
             scroll={{ x: 1400 }}
             bordered
           />
         ) : (
-          <div style={{ textAlign: 'center' }}>暂无数据</div>
-        )}
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
+          )}
         <Lightbox
           images={imgUrl}
           isOpen={visible}
