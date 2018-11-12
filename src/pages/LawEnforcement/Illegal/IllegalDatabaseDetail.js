@@ -82,7 +82,6 @@ export default class IllegalDetabaseDetail extends PureComponent {
         id,
       },
       success: response => {
-        console.log(response);
         const flows = response.data.list[0].checkObject;
         this.setState({ flowList: flows });
       },
