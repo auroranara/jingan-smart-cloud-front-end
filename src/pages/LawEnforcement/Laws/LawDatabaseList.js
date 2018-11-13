@@ -329,7 +329,6 @@ export default class lawDatabaseList extends PureComponent {
         ),
       },
     ];
-    console.log(pageSize);
 
     return (
       <Card style={{ marginTop: '20px' }}>

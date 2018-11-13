@@ -143,6 +143,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
     const payload = { pageSize: PageSize, pageNum: 1 };
 
+    // 清空
     flow_id = [];
 
     if (id) {
@@ -236,7 +237,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         id: 'businessType',
         render() {
           return (
-            <Select placeholder="请选择业务分类">
+            <Select style={{ width: 200 }} placeholder="请选择业务分类">
               {businessTypes.map(item => (
                 <Option value={item.id} key={item.id}>
                   {item.label}
@@ -250,7 +251,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         id: 'lawType',
         render() {
           return (
-            <Select placeholder="请选择法律法规">
+            <Select style={{ width: 350, marginLeft: '-75px' }} placeholder="请选择法律法规">
               {lawTypes.map(item => (
                 <Option value={item.id} key={item.id}>
                   {item.label}
@@ -340,7 +341,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         id: 'businessType',
         render() {
           return (
-            <Select placeholder="请选择业务分类">
+            <Select style={{ width: 200 }} placeholder="请选择业务分类">
               {businessTypes.map(item => (
                 <Option value={item.id} key={item.id}>
                   {item.label}
@@ -354,7 +355,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         id: 'lawType',
         render() {
           return (
-            <Select placeholder="请选择法律法规">
+            <Select style={{ width: 350, marginLeft: '-75px' }} placeholder="请选择法律法规">
               {lawTypes.map(item => (
                 <Option value={item.id} key={item.id}>
                   {item.label}
@@ -412,7 +413,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 关闭模态框(检查内容)
   handleCloseCheck = () => {
-    this.setState({ check: { visible: false } });
+    this.setState({ check: { visible: false }, business_type: null, object_title: null });
   };
 
   // 处理数据（检查内容table）
@@ -550,7 +551,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
           message.success(msg, 1, this.goBack());
         };
         const error = () => {
-          const msg = id ? '编辑失败' : '新增失败';
+          const msg = id ? '系统中已有该条法律法规，修改失败' : '系统中已有该条法律法规，新增失败';
           message.error(msg, 1);
           this.setState({
             submitting: false,
