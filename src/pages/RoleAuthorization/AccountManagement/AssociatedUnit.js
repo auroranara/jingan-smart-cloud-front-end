@@ -298,7 +298,7 @@ export default class AssociatedUnit extends PureComponent {
         payload: {
           userId,
         },
-        success: ({ unitType, unitId, roleIds, permissions = '' }) => {
+        success: ({ unitType, unitId, regulatoryClassification, roleIds, permissions = '' }) => {
           this.setState(
             {
               unitTypeChecked: unitType,
@@ -307,6 +307,9 @@ export default class AssociatedUnit extends PureComponent {
               // empty
             }
           );
+
+          // 初始化业务分类
+          setFieldsValue({ regulatoryClassification: regulatoryClassification ? regulatoryClassification.split(',').filter(v => v) : [] });
 
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
           unitType === 1 && this.getMaintenanceTree(unitId);
@@ -723,7 +726,7 @@ export default class AssociatedUnit extends PureComponent {
             documentTypeId,
             execCertificateCode,
             departmentId,
-            regulatoryClassification,
+            // regulatoryClassification,
           },
         },
         unitTypes,
@@ -944,7 +947,8 @@ export default class AssociatedUnit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
-                      initialValue: SUPERVISIONS_ALL,
+                      initialValue: [],
+                      // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
                       <Select mode="multiple" placeholder="请选择业务分类">
@@ -988,9 +992,8 @@ export default class AssociatedUnit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
-                      initialValue: regulatoryClassification
-                        ? regulatoryClassification.split(',')
-                        : [],
+                      initialValue: [],
+                      // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
                       <Select mode="multiple" placeholder="请选择业务分类">
