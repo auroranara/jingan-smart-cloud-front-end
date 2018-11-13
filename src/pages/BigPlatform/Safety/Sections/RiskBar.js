@@ -3,6 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import styles from '../Government.less';
 
 const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点', '未评级风险点'];
+const riskTitlesPie = ['正常风险点', '异常风险点'];
 const lightGray = {
   type: 'linear',
   x: 0,
@@ -429,7 +430,9 @@ class RiskBar extends PureComponent {
           not_rated = 0,
           not_rated_abnormal = 0,
           not_rated_company = 0,
+          ycdCount = 0,
         },
+        gridId,
       } = this.props;
       const risks = [
         {
@@ -458,21 +461,53 @@ class RiskBar extends PureComponent {
           company: not_rated_company,
         },
       ];
-      dispatch({
-        type: 'bigPlatform/fetchDangerLocationCompanyData',
-        payload: {
-          riskLevel: params.dataIndex + 1,
+      const risksPie = [
+        {
+          risk: not_rated - not_rated_abnormal,
+          // abnormal: not_rated_abnormal,
+          company: not_rated_company - ycdCount,
         },
-      });
+        {
+          risk: not_rated_abnormal,
+          abnormal: not_rated_abnormal,
+          company: +ycdCount,
+        },
+      ];
+      const { componentSubType, dataIndex } = params;
+      if (componentSubType === 'bar') {
+        dispatch({
+          type: 'bigPlatform/fetchDangerLocationCompanyData',
+          payload: {
+            riskLevel: dataIndex + 1,
+            gridId,
+          },
+        });
+        handleParentChange({
+          riskColorSummary: {
+            riskColorTitle: riskTitles[dataIndex],
+            risk: risks[dataIndex].risk,
+            abnormal: risks[dataIndex].abnormal,
+            company: risks[dataIndex].company,
+          },
+        });
+      } else {
+        dispatch({
+          type: 'bigPlatform/fetchDangerLocationCompanyNotRatedData',
+          payload: {
+            status: dataIndex + 1,
+            gridId,
+          },
+        });
+        handleParentChange({
+          riskColorSummary: {
+            riskColorTitle: riskTitlesPie[dataIndex],
+            risk: risksPie[dataIndex].risk,
+            abnormal: risksPie[dataIndex].abnormal,
+            company: risksPie[dataIndex].company,
+          },
+        });
+      }
       goComponent('riskColors');
-      handleParentChange({
-        riskColorSummary: {
-          riskColorTitle: riskTitles[params.dataIndex],
-          risk: risks[params.dataIndex].risk,
-          abnormal: risks[params.dataIndex].abnormal,
-          company: risks[params.dataIndex].company,
-        },
-      });
     });
   };
 

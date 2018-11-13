@@ -97,7 +97,7 @@ const COLUMNS = [
     width: 130,
   },
   {
-    title: '主体单位',
+    title: '服务单位',
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
@@ -119,9 +119,10 @@ const COLUMNS = [
 ];
 
 @connect(
-  ({ fireTest, loading }) => ({
+  ({ fireTest, loading, user }) => ({
     fireTest,
     loading: loading.models.fireTest,
+    user,
   }),
   dispatch => ({
     /* 获取测试火灾自动报警系统历史记录(web) */
@@ -378,6 +379,8 @@ export default class TestList extends PureComponent {
       fireTest: { pagination, list },
     } = this.props;
     const { pageNum, pageSize, total } = pagination;
+    console.log(this.props);
+
     return (
       <PageHeaderLayout
         title={title}
@@ -410,16 +413,16 @@ export default class TestList extends PureComponent {
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-            // showTotal={total => `共 ${total} 条`}
+              // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-            <Spin spinning={loading}>
-              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-                <span>暂无数据</span>
-              </Card>
-            </Spin>
-          )}
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          </Spin>
+        )}
       </PageHeaderLayout>
     );
   }

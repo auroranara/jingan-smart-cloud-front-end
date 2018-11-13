@@ -23,6 +23,7 @@ class HdOverCompany extends PureComponent {
       listData,
       overRectifyNum,
       goComponent,
+      gridId,
     } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
@@ -85,6 +86,7 @@ class HdOverCompany extends PureComponent {
                                   payload: {
                                     company_id: item.companyId,
                                     status: '7',
+                                    gridId,
                                   },
                                 });
                                 goComponent('hdOverDetail');

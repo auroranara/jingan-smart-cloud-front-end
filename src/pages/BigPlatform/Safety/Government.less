@@ -25,10 +25,27 @@
       line-height: 1;
       letter-spacing: 0px;
       word-spacing: 10px;
-      font-size: 22px;
+      font-size: 20px;
       position: absolute;
       bottom: 15px;
       right: 30px;
+    }
+    .treeContainer {
+      position: absolute;
+      left: 6%;
+      bottom: 0;
+      :global {
+        .ant-select {
+          color: #fff;
+        }
+        .ant-select-arrow {
+          color: #fff;
+        }
+        .ant-select-selection {
+          border: none;
+          background-color: transparent;
+        }
+      }
     }
   }
   .mainBody {
@@ -586,6 +603,26 @@
         display: inline-block;
         margin-left: 10px;
         font-size: 25px;
+      }
+    }
+  }
+}
+
+.gridDropdown {
+  color: #fff;
+  background-color: rgba(1, 29, 67, 0.9);
+  box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
+  :global {
+    .ant-select-tree {
+      color: #fff;
+      li .ant-select-tree-node-content-wrapper {
+        color: #fff;
+      }
+      li .ant-select-tree-node-content-wrapper:hover {
+        background-color: rgba(4, 73, 140, 0.5);
+      }
+      li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
+        background-color: rgb(4, 73, 140);
       }
     }
   }
