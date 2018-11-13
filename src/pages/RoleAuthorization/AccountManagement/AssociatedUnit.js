@@ -942,12 +942,11 @@ export default class AssociatedUnit extends PureComponent {
                 </Col>
               )}
               {unitTypes.length !== 0 &&
-              unitTypeChecked === 4 &&
-              !id && (
+              unitTypeChecked === 4 && (
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
-                      initialValue: [],
+                      initialValue: SUPERVISIONS_ALL,
                       // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
@@ -992,7 +991,7 @@ export default class AssociatedUnit extends PureComponent {
                 <Col lg={8} md={12} sm={24}>
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
-                      initialValue: [],
+                      initialValue: SUPERVISIONS_ALL,
                       // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
