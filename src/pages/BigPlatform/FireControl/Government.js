@@ -26,7 +26,7 @@ import VideoPlay from './section/VideoPlay';
 
 import { getGridId } from './utils';
 
-const { location, region } = global.PROJECT_CONFIG;
+const { location, region, projectName } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
 const AUTO_LOOKUP_ROTATE = 2;
@@ -99,7 +99,11 @@ export default class FireControlBigPlatform extends PureComponent {
   // isLookingUp = false; // 标记正在查岗状态
 
   getGridId = () => {
-    const { match: { params: { gridId } } } = this.props;
+    const {
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
 
     return getGridId(gridId);
   };
@@ -169,8 +173,9 @@ export default class FireControlBigPlatform extends PureComponent {
         // 当有查岗记录时，存在recordsId，则获取脱岗情况，否则没有查过岗，不用获取并默认显示0
         // recordsId = 'ZwNsxkTES_y5Beu560xF5w';
         // this.setState({ recordsId });
-        this.recordsId =  recordsId;
-        recordsId && dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId, gridId } });
+        this.recordsId = recordsId;
+        recordsId &&
+          dispatch({ type: 'bigFireControl/fetchOffGuard', payload: { recordsId, gridId } });
       },
     });
   };
@@ -375,10 +380,16 @@ export default class FireControlBigPlatform extends PureComponent {
 
     const { id, isFire, latitude, longitude } = item;
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { companyId: id, gridId } });
-    dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { company_id: id, gridId, businessType: 2 } });
+    dispatch({
+      type: 'bigFireControl/fetchOvDangerCounts',
+      payload: { company_id: id, gridId, businessType: 2 },
+    });
     dispatch({ type: 'bigFireControl/fetchCompanyOv', payload: { company_id: id, gridId } });
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id, gridId } });
-    dispatch({ type: 'bigFireControl/fetchDanger', payload: { company_id: id, gridId, businessType: 2 } });
+    dispatch({
+      type: 'bigFireControl/fetchDanger',
+      payload: { company_id: id, gridId, businessType: 2 },
+    });
 
     // 点击火警或地图中的企业时，获取视频相关信息
     this.handleVideoSelect(id);
@@ -439,7 +450,7 @@ export default class FireControlBigPlatform extends PureComponent {
     const {
       dispatch,
       // match: { params: { gridId } },
-      } = this.props;
+    } = this.props;
     const gridId = this.getGridId();
     dispatch({
       type: 'bigFireControl/fetchAllCamera',
@@ -530,7 +541,12 @@ export default class FireControlBigPlatform extends PureComponent {
         style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
       >
         {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
-        <Head title="晶 安 智 慧 消 防 云 平 台" dispatch={dispatch} data={grids} gridId={gridId} />
+        <Head
+          title={projectName.split('').join(' ')}
+          dispatch={dispatch}
+          data={grids}
+          gridId={gridId}
+        />
         <div className={styles.empty} />
         <Row
           style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
@@ -552,7 +568,9 @@ export default class FireControlBigPlatform extends PureComponent {
                   title="警情信息"
                   backTitle="历史火警"
                   handleRotate={this.handleAlarmRotate}
-                  handleFetch={payload => dispatch({ type: 'bigFireControl/fetchAlarm', payload: { ...payload, gridId } })}
+                  handleFetch={payload =>
+                    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { ...payload, gridId } })
+                  }
                   handleClick={this.handleAlarmClick}
                 />
               }
@@ -564,7 +582,10 @@ export default class FireControlBigPlatform extends PureComponent {
                   backTitle="实时火警"
                   handleRotate={this.handleAlarmRotate}
                   handleFetch={payload =>
-                    dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { ...payload, gridId } })
+                    dispatch({
+                      type: 'bigFireControl/fetchAlarmHistory',
+                      payload: { ...payload, gridId },
+                    })
                   }
                   handleClick={this.handleAlarmClick}
                 />

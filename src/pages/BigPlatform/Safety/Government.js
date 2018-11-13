@@ -48,7 +48,7 @@ class GovernmentBigPlatform extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      safetyGovernmentTitle: global.PROJECT_CONFIG.safetyGovernmentTitle,
+      projectName: global.PROJECT_CONFIG.projectName,
       scrollNodeTop: 0,
       label: {
         longitude: 120.366011,
@@ -454,7 +454,7 @@ class GovernmentBigPlatform extends Component {
       comInfo,
       riskColors,
       hdOverDetail,
-      safetyGovernmentTitle,
+      projectName,
       riskColorSummary,
       center,
       zoom,
@@ -509,7 +509,7 @@ class GovernmentBigPlatform extends Component {
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
-          <span>{safetyGovernmentTitle}</span>
+          <span>{projectName}</span>
           <div className={styles.subHeader}>
             <Timer />
           </div>

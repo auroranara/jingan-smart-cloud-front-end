@@ -16,14 +16,14 @@ import EffluentMonitor from './sections/EffluentMonitor';
 // 实时报警
 import RealTimeAlarm from './sections/RealTimeAlarm.js';
 import TopCenter from './sections/TopCenter.js';
-import AlarmHistory from './sections/AlarmHistory.js'
+import AlarmHistory from './sections/AlarmHistory.js';
 
 import ElectricityCharts from './Sections/ElectricityCharts';
 
 const DELAY = 5 * 1000;
 // const WATER_DELAY = 5 * 60 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
-
+const { projectName } = global.PROJECT_CONFIG;
 /**
  * 动态监测
  */
@@ -226,33 +226,35 @@ export default class App extends PureComponent {
   };
 
   // 获取报警设备、失联设备列表
-  fetchErrorDevices = (status) => {
+  fetchErrorDevices = status => {
     const {
       dispatch,
       match: {
         params: { companyId },
       },
-    } = this.props
+    } = this.props;
     dispatch({
       type: 'monitor/fetchErrorDevices',
       payload: { companyId, status },
-    })
-  }
+    });
+  };
   // 查看报警历史纪录
   handleViewHistory = () => {
     const {
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       dispatch,
-    } = this.props
-    this.leftSection.style.opacity = 0
-    this.historyAlarm.style.right = 0
+    } = this.props;
+    this.leftSection.style.opacity = 0;
+    this.historyAlarm.style.right = 0;
     this.setState({
       selectedDeviceType: 1,
-    })
+    });
     dispatch({
       type: 'monitor/clearHistoryAlarm',
-    })
-    dispatch({ type: 'monitor/fetchAlarmInfoTypes' })
+    });
+    dispatch({ type: 'monitor/fetchAlarmInfoTypes' });
     dispatch({
       type: 'monitor/fetchHistoryAlarm',
       payload: {
@@ -262,17 +264,19 @@ export default class App extends PureComponent {
         overFlag: 1,
         deviceType: 1,
       },
-    })
-  }
+    });
+  };
 
-  handleFilterHistory = (deviceType) => {
+  handleFilterHistory = deviceType => {
     const {
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       dispatch,
-    } = this.props
+    } = this.props;
     this.setState({
       selectedDeviceType: deviceType,
-    })
+    });
     dispatch({
       type: 'monitor/fetchHistoryAlarm',
       payload: {
@@ -282,20 +286,22 @@ export default class App extends PureComponent {
         overFlag: 1,
         deviceType,
       },
-    })
-  }
+    });
+  };
 
   handleLoadMore = ({ deviceType }) => {
     const {
       dispatch,
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       monitor: {
         historyAlarm: {
           isLast,
           pagination: { pageNum },
         },
       },
-    } = this.props
+    } = this.props;
 
     if (isLast) {
       return;
@@ -309,8 +315,8 @@ export default class App extends PureComponent {
         overFlag: 1,
         deviceType,
       },
-    })
-  }
+    });
+  };
 
   render() {
     // 从props中获取企业名称
@@ -332,9 +338,7 @@ export default class App extends PureComponent {
         chartParams,
         errorDevice,
       },
-      unitFireControl: {
-        fireAlarmSystem,
-      },
+      unitFireControl: { fireAlarmSystem },
       dispatch,
       historyAlarmLoading,
     } = this.props;
@@ -354,12 +358,20 @@ export default class App extends PureComponent {
 
     return (
       <div className={styles.main}>
-        <Header title="晶安智慧安全云平台" extraContent={companyName ? companyName : '暂无信息'} />
+        <Header title={projectName} extraContent={companyName ? companyName : '暂无信息'} />
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%' }}>
-              <div style={{ width: '100%', height: '100%', overflow: 'hidden', transition: 'opacity 0.5s' }}
-                ref={leftSection => { this.leftSection = leftSection }}
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'hidden',
+                  transition: 'opacity 0.5s',
+                }}
+                ref={leftSection => {
+                  this.leftSection = leftSection;
+                }}
               >
                 <div className={styles.realTimeAlarmContainer}>
                   <RealTimeAlarm
@@ -387,7 +399,9 @@ export default class App extends PureComponent {
                   right: '110%',
                   transition: 'top 0.5s, left 0.5s, right 0.5s, bottom 0.5s',
                 }}
-                ref={historyAlarm => { this.historyAlarm = historyAlarm }}
+                ref={historyAlarm => {
+                  this.historyAlarm = historyAlarm;
+                }}
               >
                 <AlarmHistory
                   historyAlarm={historyAlarm}
@@ -396,8 +410,8 @@ export default class App extends PureComponent {
                   handleFilterHistory={this.handleFilterHistory}
                   selectedDeviceType={selectedDeviceType}
                   handleClose={() => {
-                    this.leftSection.style.opacity = 1
-                    this.historyAlarm.style.right = '110%'
+                    this.leftSection.style.opacity = 1;
+                    this.historyAlarm.style.right = '110%';
                   }}
                 />
               </div>
