@@ -41,10 +41,11 @@ export default class Dashboard extends PureComponent {
       },
     } = this.props;
 
+    // const regulatoryClassification = ['1', '2'];
     const classification = Array.isArray(regulatoryClassification) && regulatoryClassification.map(n => Number.parseInt(n, 10)) || [];
     const [[safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]] = Object.entries(codes.dashboard)
       .map(([k, v]) => [permissionCodes.includes(v), classification.includes(CLASSIFICATION[k])]);
-    console.log([safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]);
+    // console.log([safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]);
 
     safeItem.url = `${window.publicPath}#/big-platform/safety/government`
     fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
