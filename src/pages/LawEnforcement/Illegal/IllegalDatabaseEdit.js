@@ -551,7 +551,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
           message.success(msg, 1, this.goBack());
         };
         const error = () => {
-          const msg = id ? '系统中已有该条法律法规，修改失败' : '系统中已有该条法律法规，新增失败';
+          const msg = id ? '修改失败' : '新增失败';
           message.error(msg, 1);
           this.setState({
             submitting: false,
