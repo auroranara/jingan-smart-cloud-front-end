@@ -183,6 +183,23 @@ export default class IllegalDatabaseList extends PureComponent {
     });
   };
 
+  // 处理翻页
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'illegalDatabase/fetchIllegalList',
+      payload: {
+        pageSize,
+        pageNum,
+        ...data,
+      },
+    });
+  };
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -250,7 +267,10 @@ export default class IllegalDatabaseList extends PureComponent {
     const {
       tableLoading,
       illegalDatabase: {
-        data: { list },
+        data: {
+          list,
+          pagination: { total, pageSize, pageNum },
+        },
       },
     } = this.props;
 
@@ -329,7 +349,18 @@ export default class IllegalDatabaseList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={this.handleTableData(list, indexBase)}
-            pagination={{ pageSize: PageSize }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handlePageChange,
+              onShowSizeChange: (num, size) => {
+                this.handlePageChange(1, size);
+              },
+            }}
             scroll={{ x: 1400 }}
             bordered
           />
@@ -343,7 +374,9 @@ export default class IllegalDatabaseList extends PureComponent {
   render() {
     const {
       illegalDatabase: {
-        data: { list },
+        data: {
+          pagination: { total },
+        },
       },
     } = this.props;
     return (
@@ -353,7 +386,7 @@ export default class IllegalDatabaseList extends PureComponent {
         content={
           <div>
             列表记录：
-            {list.length}{' '}
+            {total}{' '}
           </div>
         }
       >

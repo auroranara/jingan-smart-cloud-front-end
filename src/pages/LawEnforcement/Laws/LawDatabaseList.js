@@ -37,7 +37,7 @@ const defaultFormData = {
   content: undefined,
 };
 
-const PageSize = 10;
+const PAGE_SIZE = 10;
 
 @connect(({ lawDatabase, user, loading }) => ({
   lawDatabase,
@@ -165,6 +165,23 @@ export default class lawDatabaseList extends PureComponent {
     });
   };
 
+  // 处理翻页
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'lawDatabase/fetch',
+      payload: {
+        pageSize,
+        pageNum,
+        ...data,
+      },
+    });
+  };
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -232,12 +249,15 @@ export default class lawDatabaseList extends PureComponent {
     const {
       tableLoading,
       lawDatabase: {
-        data: { list },
+        data: {
+          list,
+          pagination: { total, pageSize, pageNum },
+        },
       },
     } = this.props;
 
     const { currentPage } = this.state;
-    const indexBase = (currentPage - 1) * PageSize;
+    const indexBase = (currentPage - 1) * PAGE_SIZE;
 
     /* 配置描述 */
     const COLUMNS = [
@@ -309,6 +329,7 @@ export default class lawDatabaseList extends PureComponent {
         ),
       },
     ];
+    console.log(pageSize);
 
     return (
       <Card style={{ marginTop: '20px' }}>
@@ -318,7 +339,18 @@ export default class lawDatabaseList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={this.handleTableData(list, indexBase)}
-            pagination={{ pageSize: PageSize }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handlePageChange,
+              onShowSizeChange: (num, size) => {
+                this.handlePageChange(1, size);
+              },
+            }}
             scroll={{ x: 1400 }}
             bordered
           />
@@ -332,7 +364,9 @@ export default class lawDatabaseList extends PureComponent {
   render() {
     const {
       lawDatabase: {
-        data: { list },
+        data: {
+          pagination: { total },
+        },
       },
     } = this.props;
     return (
@@ -342,7 +376,7 @@ export default class lawDatabaseList extends PureComponent {
         content={
           <div>
             列表记录：
-            {list.length}{' '}
+            {total}{' '}
           </div>
         }
       >
