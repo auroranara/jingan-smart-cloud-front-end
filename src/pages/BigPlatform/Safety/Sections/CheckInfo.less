@@ -3,13 +3,13 @@ div.monthSelect {
   width: 100px;
   font-size: 12px;
   font-weight: bold;
-  color: #00A9FF;
+  color: #00a9ff;
   vertical-align: top;
   :global {
     .ant-select-selection {
       background-color: transparent;
       border-radius: 4px;
-      border-color: #00A9FF;
+      border-color: #00a9ff;
     }
     .ant-select-selection__rendered {
       margin-left: 11px;
@@ -17,7 +17,7 @@ div.monthSelect {
     }
     .ant-select-arrow {
       right: 6;
-      color: #00A9FF;
+      color: #00a9ff;
     }
     .ant-select-selection-selected-value {
       padding-right: 8px;
@@ -27,9 +27,23 @@ div.monthSelect {
 
 div.monthDropDown {
   padding: 4px 0;
-  background-color: #022C5A;
+  background-color: #022c5a;
   font-size: 12px;
   :global {
+    .ant-select-dropdown-menu {
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3); // background-color: #021c40;
+        background-color: transparent;
+      }
+      &::-webkit-scrollbar {
+        width: 8px;
+        background-color: transparent; // background-color: #021c40;
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: rgba(9, 103, 211, 0.5);
+      }
+    }
     .ant-select-dropdown-menu-item {
       padding-top: 1px;
       padding-bottom: 1px;
@@ -38,10 +52,10 @@ div.monthDropDown {
       color: #4f6793;
       font-weight: bold;
       border-radius: 0;
-      background-color: #022C5A;
+      background-color: #022c5a;
       &:hover {
         color: #fff;
-        background-color: #022C5A;
+        background-color: #022c5a;
       }
     }
   }

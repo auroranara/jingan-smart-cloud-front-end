@@ -3,13 +3,13 @@ import { stringify } from 'qs';
 
 // 政府大屏
 // 获取平台名字
-export async function getProjectName() {
-  return request(`/acloud_new/v2/sfg/getProjectName.json`);
+export async function getProjectName(params) {
+  return request(`/acloud_new/v2/sfg/getProjectName.json?${stringify(params)}`);
 }
 
 // 获取地图中心点
-export async function getLocationCenter() {
-  return request(`/acloud_new/v2/sfg/getLocationCenter.json`);
+export async function getLocationCenter(params) {
+  return request(`/acloud_new/v2/sfg/getLocationCenter.json?${stringify(params)}`);
 }
 
 // 获取风险点总数
@@ -18,13 +18,13 @@ export async function getItemList(params) {
 }
 
 // 政府大屏风险统计
-export async function getCountDangerLocation() {
-  return request(`/acloud_new/v2/sfg/countDangerLocation.json`);
+export async function getCountDangerLocation(params) {
+  return request(`/acloud_new/v2/sfg/countDangerLocation.json?${stringify(params)}`);
 }
 
 // 地图坐标
-export async function getLocation() {
-  return request(`/acloud_new/v2/sfg/location.json`);
+export async function getLocation(params) {
+  return request(`/acloud_new/v2/sfg/location.json?${stringify(params)}`);
 }
 
 // 大屏隐患点位等数据(1.0接口移入)
@@ -33,8 +33,8 @@ export async function getNewHomePage(params) {
 }
 
 // 大屏隐患点位总数据(待检查已过期等)
-export async function getListForMap() {
-  return request(`/acloud_new/v2/sfg/listForMap.json`);
+export async function getListForMap(params) {
+  return request(`/acloud_new/v2/sfg/listForMap.json?${stringify(params)}`);
 }
 
 // 大屏隐患点位等数据(1.0接口移入)
@@ -44,22 +44,22 @@ export async function getInfoByLocation(params) {
 
 // 查找重点和非重点单位
 export async function getSearchAllCompany(params) {
-  return request(`/acloud_new/v2/sfg/searchAllCompany.json`);
+  return request(`/acloud_new/v2/sfg/searchAllCompany.json?${stringify(params)}`);
 }
 
 // 政府专职人员列表
-export async function getGovFulltimeWorkerList() {
-  return request(`/acloud_new/v2/sfg/govFulltimeWorkerList.json`);
+export async function getGovFulltimeWorkerList(params) {
+  return request(`/acloud_new/v2/sfg/govFulltimeWorkerList.json?${stringify(params)}`);
 }
 
 // 获取超期未整改隐患企业列表
-export async function getOverRectifyCompany() {
-  return request(`/acloud_new/v2/sfg/overRectifyCompany.json`);
+export async function getOverRectifyCompany(params) {
+  return request(`/acloud_new/v2/sfg/overRectifyCompany.json?${stringify(params)}`);
 }
 
 // 查找重点单位
-export async function getSearchImportantCompany() {
-  return request(`/acloud_new/v2/sfg/searchImportantCompany.json`);
+export async function getSearchImportantCompany(params) {
+  return request(`/acloud_new/v2/sfg/searchImportantCompany.json?${stringify(params)}`);
 }
 
 // 风险点点击的具体信息
@@ -115,6 +115,11 @@ export async function getMapLocation(params) {
 // 专职人员检查信息 已检查和未检查单位数量
 export async function getCompanyCheckCount(params) {
   return request(`/acloud_new/v2/sfg/companyCount.json?${stringify(params)}`);
+}
+
+// 未评级单位风险点与异常点
+export async function getDangerLocationCompanyNotRatedData(params) {
+  return request(`/acloud_new/v2/sfg/dangerLocationCompanyNotRatedData.json?${stringify(params)}`);
 }
 
 // 企业大屏

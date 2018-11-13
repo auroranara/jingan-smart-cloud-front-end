@@ -15,7 +15,7 @@ class RiskColors extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const {} = this.state;
+    // const {} = this.state;
     const {
       visible,
       goBack,
@@ -46,7 +46,7 @@ class RiskColors extends PureComponent {
           <div className={styles.sectionMain}>
             <div className={styles.sectionContent}>
               <Row style={{ borderBottom: '2px solid #0967d3', padding: '6px 0' }}>
-                <Col span={8}>
+                <Col span={abnormal === undefined ? 12 : 8}>
                   <div className={styles.riskContent}>
                     <span className={styles.iconCom} />
                     <div className={styles.riskWrapper}>
@@ -55,7 +55,7 @@ class RiskColors extends PureComponent {
                     </div>
                   </div>
                 </Col>
-                <Col span={8}>
+                <Col span={abnormal === undefined ? 12 : 8}>
                   <div className={styles.riskContent}>
                     <span className={styles.iconRisk} />
                     <div className={styles.riskWrapper}>
@@ -64,15 +64,17 @@ class RiskColors extends PureComponent {
                     </div>
                   </div>
                 </Col>
-                <Col span={8}>
-                  <div className={styles.riskContent}>
-                    <span className={styles.iconDanger} />
-                    <div className={styles.riskWrapper}>
-                      异常
-                      <div className={styles.riskNum}>{abnormal}</div>
+                {abnormal !== undefined && (
+                  <Col span={8}>
+                    <div className={styles.riskContent}>
+                      <span className={styles.iconDanger} />
+                      <div className={styles.riskWrapper}>
+                        异常
+                        <div className={styles.riskNum}>{abnormal}</div>
+                      </div>
                     </div>
-                  </div>
-                </Col>
+                  </Col>
+                )}
               </Row>
               <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
                 <table className={styles.scrollTable}>
@@ -80,7 +82,9 @@ class RiskColors extends PureComponent {
                     <tr>
                       <th style={{ width: '70%' }}>单位</th>
                       <th style={{ width: '18%' }}>风险点</th>
-                      <th style={{ color: 'rgba(232, 103, 103, 0.8)' }}>异常</th>
+                      {abnormal !== undefined && (
+                        <th style={{ color: 'rgba(232, 103, 103, 0.8)' }}>异常</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -98,15 +102,17 @@ class RiskColors extends PureComponent {
                             </span>
                           </td>
                           <td>{item.fxd}</td>
-                          <td
-                            style={{
-                              color: item.ycd
-                                ? 'rgba(232, 103, 103, 0.8)'
-                                : 'rgba(255, 255, 255, 0.7)',
-                            }}
-                          >
-                            {item.ycd}
-                          </td>
+                          {abnormal !== undefined && (
+                            <td
+                              style={{
+                                color: item.ycd
+                                  ? 'rgba(232, 103, 103, 0.8)'
+                                  : 'rgba(255, 255, 255, 0.7)',
+                              }}
+                            >
+                              {item.ycd}
+                            </td>
+                          )}
                         </tr>
                       );
                     })}

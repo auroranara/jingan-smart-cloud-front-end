@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, TreeSelect } from 'antd';
+import router from 'umi/router';
 import { connect } from 'dva';
 import moment from 'moment';
 // import classNames from 'classnames';
@@ -40,9 +41,14 @@ const sectionsVisible = {
   companyOver: false, // 已超时单位
   riskOver: false, // 已超时风险点
 };
-@connect(({ bigPlatform, bigPlatformSafetyCompany }) => ({
+
+export function getGridId(gridId, initVal = 'index') {
+  return !gridId || gridId === initVal ? undefined : gridId;
+}
+@connect(({ bigPlatform, bigPlatformSafetyCompany, bigFireControl }) => ({
   bigPlatform,
   bigPlatformSafetyCompany,
+  bigFireControl,
 }))
 class GovernmentBigPlatform extends Component {
   constructor(props) {
@@ -98,6 +104,7 @@ class GovernmentBigPlatform extends Component {
       checksMonth: moment().format('YYYY-MM'),
       checkUserId: '',
       checkNum: 0,
+      treeValue: '',
     };
   }
 
@@ -107,6 +114,17 @@ class GovernmentBigPlatform extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const gridId = this.getGridId();
+    const isIndex = !gridId;
+    // 是首页则获取网格点数组后第一个，不是首页则将值设为传入的gridId
+    !isIndex && this.setState({ treeValue: gridId });
+    dispatch({
+      type: 'bigFireControl/fetchGrids',
+      callback: isIndex
+        ? data => this.setState({ treeValue: data && data.length ? data[0].key : '' })
+        : null,
+    });
+
     this.reqRef = requestAnimationFrame(() => {
       setTimeout(() => {
         this.setState({
@@ -122,16 +140,19 @@ class GovernmentBigPlatform extends Component {
         end: 24,
         pageSize: 25,
         item_type: 1,
+        gridId,
       },
     });
 
-    dispatch({
-      type: 'bigPlatform/fetchProjectName',
-    });
+    // dispatch({
+    //   type: 'bigPlatform/fetchProjectName',
+    //   payload: { gridId },
+    // });
 
     // 大屏隐患点位总数据
     dispatch({
       type: 'bigPlatform/fetchListForMapForOptimize',
+      payload: { gridId },
     });
 
     // dispatch({
@@ -140,25 +161,30 @@ class GovernmentBigPlatform extends Component {
 
     dispatch({
       type: 'bigPlatform/fetchCountDangerLocation',
+      payload: { gridId },
     });
 
     dispatch({
       type: 'bigPlatform/fetchLocation',
+      payload: { gridId },
     });
 
     // 政府专职人员列表
     dispatch({
       type: 'bigPlatform/fetchGovFulltimeWorkerList',
+      payload: { gridId },
     });
 
     // 获取超期未整改隐患企业列表
     dispatch({
       type: 'bigPlatform/fetchOverRectifyCompany',
+      payload: { gridId },
     });
 
     // 查找重点和非重点单位
     dispatch({
       type: 'bigPlatform/fetchSearchAllCompany',
+      payload: { gridId },
     });
 
     // // 隐患单位数量以及具体信息
@@ -173,17 +199,20 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchNewHomePage',
       payload: {
         month: moment().format('YYYY-MM'),
+        gridId,
       },
     });
 
     // 获取已超时风险点总数
     dispatch({
       type: 'bigPlatform/fetchSelectOvertimeItemNum',
+      payload: { gridId },
     });
 
     // 安全政府-超时未查单位
     dispatch({
       type: 'bigPlatform/fetchOvertimeUncheckedCompany',
+      payload: { gridId },
     });
 
     // 已超时单位信息
@@ -191,6 +220,7 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchHiddenDangerOverTime',
       payload: {
         date: moment().format('YYYY-MM'),
+        gridId,
       },
     });
 
@@ -212,14 +242,25 @@ class GovernmentBigPlatform extends Component {
     this.setViewport();
   }
 
+  getGridId = () => {
+    const {
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
+    return getGridId(gridId);
+  };
+
   // 某月监督检查相关信息
   fetchCheckMsgs = month => {
     const { dispatch } = this.props;
+    const gridId = this.getGridId();
     // 专职人员检查信息
     dispatch({
       type: 'bigPlatform/fetchCheckInfo',
       payload: {
         date: month,
+        gridId,
       },
     });
 
@@ -228,6 +269,7 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchHiddenDangerCompany',
       payload: {
         date: month,
+        gridId,
       },
     });
 
@@ -236,6 +278,7 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchCompanyCheckCount',
       payload: {
         date: month,
+        gridId,
       },
       success: data => {
         if (month === moment().format('YYYY-MM'))
@@ -324,6 +367,7 @@ class GovernmentBigPlatform extends Component {
     const { dispatch } = this.props;
     const { companyId, infoWindowShow, comInfo } = this.state;
     const { id } = company;
+    const gridId = this.getGridId();
     if (companyId === company.id) {
       if (!comInfo) {
         this.goComponent('comInfo');
@@ -343,6 +387,7 @@ class GovernmentBigPlatform extends Component {
         company_id: id,
         month: moment().format('YYYY-MM'),
         status: '7',
+        gridId,
       },
       success: response => {
         this.companyInfo.initFull();
@@ -366,6 +411,7 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchSpecialEquipment',
       payload: {
         company_id: id,
+        gridId,
       },
     });
     // 风险点隐患
@@ -374,6 +420,7 @@ class GovernmentBigPlatform extends Component {
       payload: {
         company_id: id,
         source_type: '3',
+        gridId,
       },
     });
   };
@@ -444,6 +491,15 @@ class GovernmentBigPlatform extends Component {
     });
   };
 
+  onGridChange = value => {
+    const { treeValue: formerValue } = this.state;
+    // 选择的值与之前相同时，不做处理
+    if (value === formerValue) return;
+    this.setState({ treeValue: value });
+    router.push(`/big-platform/safety/government/${value}`);
+    location.reload();
+  };
+
   render() {
     const {
       communityCom,
@@ -473,6 +529,7 @@ class GovernmentBigPlatform extends Component {
       riskOver,
       checkUserId,
       checkNum,
+      treeValue,
     } = this.state;
     const {
       dispatch,
@@ -504,14 +561,25 @@ class GovernmentBigPlatform extends Component {
         companyCheckCount,
         riskDetailList,
       },
+      bigFireControl: { grids },
     } = this.props;
-
+    const gridId = this.getGridId();
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
           <span>{projectName}</span>
           <div className={styles.subHeader}>
             <Timer />
+          </div>
+          <div className={styles.treeContainer}>
+            <TreeSelect
+              style={{ width: 300 }}
+              value={treeValue}
+              dropdownClassName={styles.gridDropdown}
+              treeData={grids}
+              treeDefaultExpandAll
+              onChange={this.onGridChange}
+            />
           </div>
         </header>
 
@@ -525,6 +593,7 @@ class GovernmentBigPlatform extends Component {
                 handleParentChange={newState => {
                   this.setState(newState);
                 }}
+                gridId={gridId}
               />
 
               <HiddenDangerPie
@@ -535,6 +604,7 @@ class GovernmentBigPlatform extends Component {
                 handleParentChange={newState => {
                   this.setState(newState);
                 }}
+                gridId={gridId}
               />
             </Col>
             <Col
@@ -639,6 +709,7 @@ class GovernmentBigPlatform extends Component {
                 goComponent={this.goComponent}
                 listData={overRectifyCompany}
                 overRectifyNum={overRectifyNum}
+                gridId={gridId}
               />
 
               {/* 已超时风险点 */}
@@ -678,6 +749,7 @@ class GovernmentBigPlatform extends Component {
                 lastSection={dangerCompanyLast}
                 month={checksMonth}
                 checkUserId={checkUserId}
+                gridId={gridId}
                 // monthSelecter={hdComMonth}
               />
 
@@ -696,6 +768,7 @@ class GovernmentBigPlatform extends Component {
                 }}
                 fetchCheckMsgs={this.fetchCheckMsgs}
                 checksMonth={checksMonth}
+                gridId={gridId}
               />
 
               {/* 已超时单位 */}
