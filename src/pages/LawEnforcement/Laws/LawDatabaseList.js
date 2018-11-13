@@ -150,31 +150,17 @@ export default class lawDatabaseList extends PureComponent {
 
   /* 删除 */
   handleDelete = id => {
-    const {
-      dispatch,
-      form: { getFieldsValue },
-      lawDatabase: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    const data = getFieldsValue();
+    const { dispatch } = this.props;
     dispatch({
       type: 'lawDatabase/deleteLaws',
-      payload: id,
+      payload: { id },
       callback: response => {
         if (response && response.code === 200) {
           dispatch({
             type: 'lawDatabase/fetch',
-            payload: {
-              pageSize,
-              pageNum: 1,
-              ...data,
-            },
           });
           message.success('删除成功！');
-        } else message.error(response.msg);
+        } else message.warning('该法律法规有违法行为关联关系，不予删除！');
       },
     });
   };

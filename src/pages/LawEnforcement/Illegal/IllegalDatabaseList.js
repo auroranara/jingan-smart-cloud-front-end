@@ -193,7 +193,7 @@ export default class IllegalDatabaseList extends PureComponent {
     return (
       <Card>
         <Form layout="inline">
-          <Col span={18}>
+          <Col>
             <FormItem>
               {getFieldDecorator('businessType', {})(
                 <Select style={{ width: 200 }} placeholder="请选择业务分类">
@@ -230,8 +230,6 @@ export default class IllegalDatabaseList extends PureComponent {
             <FormItem>
               <Button onClick={this.handleClickToReset}>重置</Button>
             </FormItem>
-          </Col>
-          <Col span={6}>
             <FormItem style={{ float: 'right' }}>
               <AuthButton
                 type="primary"
