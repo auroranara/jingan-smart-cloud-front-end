@@ -16,7 +16,7 @@ export default {
       list: [],
       pagination: {
         total: 0,
-        pageSize: 24,
+        pageSize: 10,
         pageNum: 1,
       },
     },
@@ -95,8 +95,15 @@ export default {
       }
     },
 
-    *deleteLaws({ payload, callback }, { call }) {
+    //删除
+    *deleteLaws({ payload, callback }, { call, put }) {
       const response = yield call(deleteLaws, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'delete',
+          payload: payload.id,
+        });
+      }
       if (callback) callback(response);
     },
   },
@@ -150,6 +157,17 @@ export default {
         detail: payload,
       };
     },
+
+    delete(state, { payload: id }) {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          list: state.data.list.filter(item => item.id !== id),
+        },
+      };
+    },
+
     // 清除详情
     clearDetail(state) {
       return {

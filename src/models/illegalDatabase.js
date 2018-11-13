@@ -18,7 +18,7 @@ export default {
       list: [],
       pagination: {
         total: 0,
-        pageSize: 24,
+        pageSize: 10,
         pageNum: 1,
       },
     },

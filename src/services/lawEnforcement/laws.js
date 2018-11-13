@@ -35,8 +35,8 @@ export async function updateLaws(params) {
 }
 
 // 删除
-export async function deleteLaws(id) {
+export async function deleteLaws({ id }) {
   return request(`/acloud_new/v2/lawsAndRegulations/lawsAndRegulations/${id}`, {
-    method: 'DELETE',
+    method: 'POST',
   });
 }

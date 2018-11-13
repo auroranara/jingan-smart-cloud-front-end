@@ -143,6 +143,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
     const payload = { pageSize: PageSize, pageNum: 1 };
 
+    flow_id = [];
+
     if (id) {
       // 根据id获取详情
       dispatch({
@@ -183,7 +185,10 @@ export default class IllegalDatabaseEdit extends PureComponent {
     // 初始化表格
     dispatch({
       type: 'illegalDatabase/fetchModalList',
-      ...defaultPagination,
+      payload: {
+        status: 1,
+        ...defaultPagination,
+      },
     });
   };
 
@@ -192,7 +197,10 @@ export default class IllegalDatabaseEdit extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'illegalDatabase/fetchModalList',
-      payload,
+      payload: {
+        status: 1,
+        ...payload,
+      },
     });
   };
 
@@ -283,7 +291,10 @@ export default class IllegalDatabaseEdit extends PureComponent {
     // 初始化表格
     dispatch({
       type: 'illegalDatabase/fetchModalList',
-      ...defaultPagination,
+      payload: {
+        status: 1,
+        ...defaultPagination,
+      },
     });
   };
 
@@ -292,7 +303,10 @@ export default class IllegalDatabaseEdit extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'illegalDatabase/fetchModalList',
-      payload,
+      payload: {
+        status: 1,
+        ...payload,
+      },
     });
   };
 
@@ -381,7 +395,9 @@ export default class IllegalDatabaseEdit extends PureComponent {
     // 初始化表格
     dispatch({
       type: 'illegalDatabase/fetchDtoList',
-      ...defaultPagination,
+      payload: {
+        ...defaultPagination,
+      },
     });
   };
 
@@ -567,7 +583,12 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   /* 渲染table(检查内容) */
   renderCheckTable() {
-    const { tableLoading } = this.props;
+    const {
+      tableLoading,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const { flowList: list, currentPage } = this.state;
     const indexBase = (currentPage - 1) * PageSize;
 
@@ -589,7 +610,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         align: 'center',
         width: 65,
         render: val => {
-          return BusinessType[val - 1];
+          return id ? BusinessType[val - 1] || val : val;
         },
       },
       {

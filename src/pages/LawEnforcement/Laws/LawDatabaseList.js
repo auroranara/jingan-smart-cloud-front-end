@@ -37,7 +37,7 @@ const defaultFormData = {
   content: undefined,
 };
 
-const PageSize = 10;
+const PAGE_SIZE = 10;
 
 @connect(({ lawDatabase, user, loading }) => ({
   lawDatabase,
@@ -150,31 +150,34 @@ export default class lawDatabaseList extends PureComponent {
 
   /* 删除 */
   handleDelete = id => {
-    const {
-      dispatch,
-      form: { getFieldsValue },
-      lawDatabase: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
-    } = this.props;
-    const data = getFieldsValue();
+    const { dispatch } = this.props;
     dispatch({
       type: 'lawDatabase/deleteLaws',
-      payload: id,
+      payload: { id },
       callback: response => {
         if (response && response.code === 200) {
           dispatch({
             type: 'lawDatabase/fetch',
-            payload: {
-              pageSize,
-              pageNum: 1,
-              ...data,
-            },
           });
           message.success('删除成功！');
-        } else message.error(response.msg);
+        } else message.warning('该法律法规有违法行为关联关系，不予删除！');
+      },
+    });
+  };
+
+  // 处理翻页
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'lawDatabase/fetch',
+      payload: {
+        pageSize,
+        pageNum,
+        ...data,
       },
     });
   };
@@ -246,12 +249,15 @@ export default class lawDatabaseList extends PureComponent {
     const {
       tableLoading,
       lawDatabase: {
-        data: { list },
+        data: {
+          list,
+          pagination: { total, pageSize, pageNum },
+        },
       },
     } = this.props;
 
     const { currentPage } = this.state;
-    const indexBase = (currentPage - 1) * PageSize;
+    const indexBase = (currentPage - 1) * PAGE_SIZE;
 
     /* 配置描述 */
     const COLUMNS = [
@@ -323,6 +329,7 @@ export default class lawDatabaseList extends PureComponent {
         ),
       },
     ];
+    console.log(pageSize);
 
     return (
       <Card style={{ marginTop: '20px' }}>
@@ -332,7 +339,18 @@ export default class lawDatabaseList extends PureComponent {
             rowKey="id"
             columns={COLUMNS}
             dataSource={this.handleTableData(list, indexBase)}
-            pagination={{ pageSize: PageSize }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handlePageChange,
+              onShowSizeChange: (num, size) => {
+                this.handlePageChange(1, size);
+              },
+            }}
             scroll={{ x: 1400 }}
             bordered
           />
@@ -346,7 +364,9 @@ export default class lawDatabaseList extends PureComponent {
   render() {
     const {
       lawDatabase: {
-        data: { list },
+        data: {
+          pagination: { total },
+        },
       },
     } = this.props;
     return (
@@ -356,7 +376,7 @@ export default class lawDatabaseList extends PureComponent {
         content={
           <div>
             列表记录：
-            {list.length}{' '}
+            {total}{' '}
           </div>
         }
       >
