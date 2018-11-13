@@ -279,14 +279,14 @@ export default class CompanyDetail extends PureComponent {
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.gridId}>{this.getGridLabel()}</Description>
           <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
-            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+            {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
               {registerAddressLabel || getEmptyData()}
-            </Ellipsis>
+            {/* </Ellipsis> */}
           </Description>
           <Description term={fieldLabels.practicalAddress} style={{ height: 38 }}>
-            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+            {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
               {practicalAddressLabel || getEmptyData()}
-            </Ellipsis>
+            {/* </Ellipsis> */}
           </Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 20 }}>

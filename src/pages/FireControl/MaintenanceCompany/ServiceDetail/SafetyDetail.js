@@ -33,6 +33,10 @@ const dspItems = [
     name: 'validity',
     cName: '服务有效期',
   },
+  {
+    name: 'companyType',
+    cName: '安监重点单位',
+  },
 ];
 
 const dspItems1 = [
@@ -100,6 +104,9 @@ function renderDsp(items, detail, menus) {
           if (!list.length)
             val = '暂无信息';
           break;
+        case 'companyType':
+          val = v === '1' ? '是' : '否';
+          break;
         default:
           // console.log(name, menus[name], detail[name], menus[name].find(item => item.value === detail[name]));
           const menu = menus[name].find(item => item.value === detail[name]);
@@ -122,12 +129,14 @@ function isJSONStr(str) {
 @connect(({ maintenanceCompany }) => ({ maintenanceCompany }))
 export default class SafetyDetail extends PureComponent {
   componentDidMount() {
-    const { dispatch, companyId } = this.props;
+    const { dispatch, companyId, setGotMenus } = this.props;
     dispatch({ type: 'maintenanceCompany/fetchServiceSafetyInfo', payload: { companyId } });
     dispatch({
       type: 'maintenanceCompany/fetchServiceMenus',
       callback(menus) {
         traverse(JSON.parse(menus.gridList));
+        // 将值缓存到上层组件中，在上层组件中渲染
+        setGotMenus(idMap, textMap);
       },
     });
   }
@@ -144,18 +153,18 @@ export default class SafetyDetail extends PureComponent {
         ? [...moreItems, ...dspItems1]
         : dspItems1;
 
-    const grid = detail.gridId;
+    // const grid = detail.gridId;
     // console.log(grid, menus.gridList, idMap);
 
     return (
       <Card title="安监信息">
-        <DescriptionList col={1} style={{ marginBottom: 13 }}>
+        {/* <DescriptionList col={1} style={{ marginBottom: 13 }}>
           <Description term="所属网格">
             {grid && menus.gridList && idMap[grid]
               ? idMap[grid].map(id => textMap[id]).join('-')
               : '暂无信息'}
           </Description>
-        </DescriptionList>
+        </DescriptionList> */}
         <DescriptionList col={3} style={{ marginBottom: 13 }}>
           {renderDsp(dspItems, detail, menus)}
         </DescriptionList>
