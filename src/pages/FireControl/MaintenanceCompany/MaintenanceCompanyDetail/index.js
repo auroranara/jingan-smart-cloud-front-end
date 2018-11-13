@@ -141,7 +141,7 @@ export default class App extends PureComponent {
             practicalCityLabel,
             practicalDistrictLabel,
             practicalTownLabel,
-          }={},
+          } = {},
           parentUnitName,
           isBranch,
         },
@@ -206,12 +206,12 @@ export default class App extends PureComponent {
           <Description term={fieldLabels.companyIchnography}>
             {companyIchnographyList.length !== 0
               ? companyIchnographyList.map(({ name, url }) => (
-                  <div key={url}>
-                    <a href={url} target="_blank" rel="noopener noreferrer">
-                      {name || '预览'}
-                    </a>
-                  </div>
-                ))
+                <div key={url}>
+                  <a href={url} target="_blank" rel="noopener noreferrer">
+                    {name || '预览'}
+                  </a>
+                </div>
+              ))
               : getEmptyData()}
           </Description>
         </DescriptionList>
@@ -229,7 +229,7 @@ export default class App extends PureComponent {
           companyBasicInfo: {
             longitude,
             latitude,
-          }={},
+          } = {},
         },
       },
     } = this.props;
@@ -267,7 +267,7 @@ export default class App extends PureComponent {
             companyTypeLable,
             industryCategoryLabel,
             companyStatusLabel,
-          }={},
+          } = {},
         },
       },
     } = this.props;
@@ -317,10 +317,13 @@ export default class App extends PureComponent {
             legalName,
             legalPhone,
             legalEmail,
-            principalName,
+            /* principalName,
             principalPhone,
-            principalEmail,
-          }={},
+            principalEmail, */
+            safetyName,
+            safetyPhone,
+            safetyEmail,
+          } = {},
         },
       },
     } = this.props;
@@ -339,13 +342,13 @@ export default class App extends PureComponent {
         </DescriptionList>
         <DescriptionList title="主要负责人" col={3} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.principalName}>
-            {principalName || getEmptyData()}
+            {safetyName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.principalPhone}>
-            {principalPhone || getEmptyData()}
+            {safetyPhone || getEmptyData()}
           </Description>
           <Description term={fieldLabels.principalEmail}>
-            {principalEmail || getEmptyData()}
+            {safetyEmail || getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>
@@ -394,11 +397,11 @@ export default class App extends PureComponent {
         wrapperClassName={styles.advancedForm}
       >
         <Spin spinning={loading}>
-            {this.renderBasicInfo()}
-            {this.renderMap()}
-            {this.renderMoreInfo()}
-            {this.renderPersonalInfo()}
-            {this.renderFooterToolbar()}
+          {this.renderBasicInfo()}
+          {this.renderMap()}
+          {this.renderMoreInfo()}
+          {this.renderPersonalInfo()}
+          {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>
     );
