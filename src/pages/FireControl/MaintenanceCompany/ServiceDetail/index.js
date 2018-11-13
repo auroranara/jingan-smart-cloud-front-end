@@ -303,7 +303,7 @@ export default class App extends PureComponent {
           createTime,
           groupName,
           businessScope,
-          companyTypeLable,
+          companyTypeLabel,
         },
       },
     } = this.props;
@@ -316,9 +316,9 @@ export default class App extends PureComponent {
             {economicTypeLabel || getEmptyData()}
           </Description>
           {this.renderCompanyStatus()}
-          <Description term={fieldLabels.companyType}>
-            {companyTypeLable || getEmptyData()}
-          </Description>
+          {/* <Description term={fieldLabels.companyType}>
+            {companyTypeLabel || getEmptyData()}
+          </Description> */}
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}

@@ -76,7 +76,7 @@ function renderDsp(items, detail, menus) {
     const v = detail[name];
     // console.log(name, cName, menus[name], detail[name]);
     // 如果菜单或detail还没获取
-    if (!Object.keys(menus).length || !Object.keys(detail).length) val = '暂无信息';
+    if (!Object.keys(menus || {}).length || !Object.keys(detail || {}).length) val = '暂无信息';
     else if ((v === null || v === undefined || v === '') && name !== 'validity') val = '暂无信息';
     else if (name === 'validity') {
       // console.log(detail.startTime, detail.endTime);
