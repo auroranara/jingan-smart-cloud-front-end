@@ -99,10 +99,10 @@ export default class App extends PureComponent {
         onClick={this.handleClick}
       >
         <div style={{ display: 'flex', width: '100%', height: '100%', background: `url(${background}) no-repeat center / 100% 100%` }}>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '10px 20px', background: 'rgba(8, 60, 120, 0.8)', textShadow: '2px 2px 2px #333' }}>
+          <div style={{ flex: 1, /* display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center',  */padding: '10px 20px', background: 'rgba(8, 60, 120, 0.8)', textShadow: '2px 2px 2px #333' }}>
             {data.map(item => {
               return (
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'nowrap' }} key={item[icon]}>
+                <div style={{ /* flex: 1,  */display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'nowrap', height: '20%' }} key={item[icon]}>
                   <Avatar src={item[icon]} size="small" style={{ flex: 'none', marginRight: '10px' }} title={item[title]} />
                   <Ellipsis lines={1} style={{ flex: 1, lineHeight: '24px', fontSize: "18px", color: '#fff' }}>{item[render] ? item[render](item[content]) : item[content]}</Ellipsis>
                 </div>

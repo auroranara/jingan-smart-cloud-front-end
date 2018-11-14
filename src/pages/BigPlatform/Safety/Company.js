@@ -1281,6 +1281,12 @@ class CompanyLayout extends PureComponent {
               ];
               if (isGray) {
                 infoData.splice(4, 1);
+                if (!info.hdLetterInfo.accidentTypeName) {
+                  infoData.splice(2, 1);
+                }
+                if (!info.hdLetterInfo.areaName) {
+                  infoData.splice(1, 1);
+                }
               }
               return (
                 <Fragment key={id}>
