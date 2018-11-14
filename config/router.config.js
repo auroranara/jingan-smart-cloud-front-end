@@ -87,6 +87,10 @@ module.exports = [
       },
     ],
   },
+  {
+    path: '/demo',
+    component: './Demo',
+  },
   //404
   {
     path: '/404',
