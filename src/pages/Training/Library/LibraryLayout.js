@@ -5,7 +5,7 @@ import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Questions from './Questions/QuestionsList';
 import Article from './Article/ArticleList';
-import Resource from './Resource/ResourceList';
+import Courseware from './Courseware/CoursewareList';
 
 const TabPane = Tabs.TabPane
 
@@ -19,7 +19,7 @@ const breadcrumbList = [
 const tabsInfo = [
   { label: '试题', key: 'questions' },
   { label: '文章', key: 'article' },
-  { label: '资源', key: 'resource' },
+  { label: '课件', key: 'courseware' },
 ]
 
 export default class LibraryLayout extends PureComponent {
@@ -66,7 +66,7 @@ export default class LibraryLayout extends PureComponent {
               >
                 {tabsInfo.map(item => (
                   <TabPane tab={item.label} key={item.key}>
-                    {activeKey === 'questions' && <Questions /> || activeKey === 'article' && <Article /> || activeKey === 'resource' && <Resource />}
+                    {activeKey === 'questions' && <Questions /> || activeKey === 'article' && <Article /> || activeKey === 'courseware' && <Courseware />}
                   </TabPane>
                 ))}
               </Tabs>

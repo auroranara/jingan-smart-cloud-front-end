@@ -1,9 +1,13 @@
-.articleList {
+.coursewareList {
   @mb: 14px;
+  @mr: 10px;
   :global {
     .ant-form-item {
-      margin-bottom: @mb;
+      margin-bottom: 0.8em;
     }
+  }
+  .mr10 {
+    margin-right: @mr;
   }
   .cardContainer {
     .firstLine {
@@ -14,18 +18,14 @@
         font-weight: 600;
         word-break: break-all;
         padding-right: 10px;
+        cursor: pointer;
       }
-      .rightIcon {
+      .rightIcons {
         visibility: hidden;
         color: #615b5b;
         .icon {
           cursor: pointer;
         }
-      }
-    }
-    &:hover {
-      .rightIcon {
-        visibility: visible;
       }
     }
     .tags {
@@ -42,6 +42,9 @@
         margin-right: 8px;
       }
     }
+  }
+  .cardContainer:hover .rightIcons {
+    visibility: visible;
   }
   .grey {
     color: rgba(0, 0, 0, .45);

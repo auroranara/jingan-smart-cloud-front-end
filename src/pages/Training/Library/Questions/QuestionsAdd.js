@@ -14,10 +14,17 @@ const questionsTypes = [
   { value: 'judge', label: '判断题' },
 ]
 
-const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const formItemLayout = {
   labelCol: { span: 3 },
   wrapperCol: { span: 21 },
+};
+const smallerItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+const colWrapper = {
+  xl: 12, md: 12, sm: 24, xs: 24,
 };
 
 @Form.create()
@@ -170,20 +177,47 @@ export default class QuestionsAdd extends PureComponent {
         <Card title="试题信息" className={styles.questionsAdd}>
           <Form>
             <Row>
-              <Form.Item label="试题类型" {...formItemLayout}>
-                {getFieldDecorator('type', {
-                  validateTrigger: 'onBlur',
-                  rules: [
-                    { required: true, whitespace: true, message: '请选择试题类型' },
-                  ],
-                })(
-                  <Select onChange={this.handleSelectType} placeholder="请选择" style={{ width: '350px' }}>
-                    {questionsTypes.map(({ value, label }) => (
-                      <Option key={value} value={value}>{label}</Option>
-                    ))}
-                  </Select>
-                )}
-              </Form.Item>
+              <Col {...colWrapper}>
+                <Form.Item label="试题类型" {...smallerItemLayout}>
+                  {getFieldDecorator('type', {
+                    validateTrigger: 'onBlur',
+                    rules: [
+                      { required: true, message: '请选择试题类型' },
+                    ],
+                  })(
+                    <Select onChange={this.handleSelectType} placeholder="请选择">
+                      {questionsTypes.map(({ value, label }) => (
+                        <Option key={value} value={value}>{label}</Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col {...colWrapper}>
+                <Form.Item label="试题类型" {...smallerItemLayout}>
+                  {getFieldDecorator('classification', {
+                    rules: [
+                      { required: true, message: '请选择试题类型' },
+                    ],
+                  })(
+                    <Select placeholder="请选择">
+                      {[{ value: 'normal', label: '普通题' }].map(({ value, label }) => (
+                        <Option key={value} value={value}>{label}</Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col {...colWrapper}>
+                <Form.Item label="知识点分类" {...smallerItemLayout}>
+
+                </Form.Item>
+              </Col>
+              <Col {...colWrapper}>
+                <Form.Item label="难易程度" {...smallerItemLayout}>
+
+                </Form.Item>
+              </Col>
             </Row>
             <Row>
               <Form.Item label="试题题干"  {...formItemLayout}>
