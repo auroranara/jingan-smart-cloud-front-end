@@ -324,6 +324,7 @@ export default class VideoMonitorEdit extends PureComponent {
     });
   };
 
+  // 验证设备Id和摄像头Id
   validatorID = (rule, value, callback) => {
     let charCode;
     let charMode = false;
@@ -341,7 +342,7 @@ export default class VideoMonitorEdit extends PureComponent {
       charMode
     )
       callback();
-    else callback('设备ID至少6位，必须含有小写字母与下划线，不能下划线开头和结尾');
+    else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾');
   };
 
   // 定位模态框确定按钮点击事件
