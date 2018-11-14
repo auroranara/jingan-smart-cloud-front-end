@@ -1068,6 +1068,37 @@ module.exports = [
               },
             ],
           },
+          {
+            name: 'myExam',
+            path: '/training/my-exam',
+            code: 'training.myExam',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/my-exam',
+                name: 'myExam',
+                redirect: '/training/my-exam/list',
+              },
+              {
+                path: '/training/my-exam/list',
+                code: 'training.myExam.listView',
+                name: 'list',
+                component: './Training/MyExam/ExamList',
+              },
+              {
+                path: '/training/my-exam/examing/:id',
+                code: 'training.myExam.listView',
+                name: 'examing',
+                component: './Training/MyExam/Examing',
+              },
+              {
+                path: '/training/my-exam/result/:id',
+                code: 'training.myExam.listView',
+                name: 'result',
+                component: './Training/MyExam/Result',
+              },
+            ],
+          },
         ],
       },
     ],
