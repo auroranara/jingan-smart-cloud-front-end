@@ -170,6 +170,10 @@ export default class FireControlMap extends PureComponent {
     // const { selected } = this.state;
     const { selected } = this.props;
     // 如果有选中的企业就只渲染选中的
+    if (newList.length === 0) {
+      if (this.mapInstance) this.mapInstance.setCity(region);
+      return null;
+    }
     return selected
       ? this.renderMarker(selected, false)
       : newList.map((item, index) => this.renderMarker(item, index === newList.length - 1));
@@ -348,7 +352,7 @@ export default class FireControlMap extends PureComponent {
             events={{
               created: mapInstance => {
                 this.mapInstance = mapInstance;
-                mapInstance.setCity(region);
+                // mapInstance.setCity(region);
               },
             }}
           >

@@ -524,12 +524,14 @@ class RiskBar extends PureComponent {
             <span className={styles.titleBlock} />
             风险点统计
           </div>
-          <div className={styles.riskTotal}>
-            风险点总数
-            <span className={styles.riskTotalNum} style={{ color: '#00baff' }}>
-              {riskTotal}
-            </span>
-          </div>
+          {barLegend !== 'pie' && (
+            <div className={styles.riskTotal}>
+              风险点总数
+              <span className={styles.riskTotalNum} style={{ color: '#00baff' }}>
+                {riskTotal}
+              </span>
+            </div>
+          )}
           <div className={styles.sectionMain} style={{ display: 'flex', flexDirection: 'column' }}>
             <div className={styles.hdArea} id="hdArea">
               <ReactEcharts
