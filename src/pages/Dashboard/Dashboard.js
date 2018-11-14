@@ -47,7 +47,7 @@ export default class Dashboard extends PureComponent {
       .map(([k, v]) => [permissionCodes.includes(v), classification.includes(CLASSIFICATION[k])]);
     // console.log([safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]);
 
-    safeItem.url = `${window.publicPath}#/big-platform/safety/government`
+    safeItem.url = `${window.publicPath}#/big-platform/safety/government/index`
     fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
