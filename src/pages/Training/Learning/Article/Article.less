@@ -1,0 +1,32 @@
+@mb: 0.8em;
+:global {
+  .ant-form-item {
+    margin-bottom: @mb;
+  }
+}
+.cardContainer {
+  .firstLine {
+    display: flex;
+    .title {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .rightIcon {
+      visibility: hidden;
+      color: #615b5b;
+      .icon {
+        cursor: pointer;
+      }
+    }
+  }
+  &:hover {
+    .rightIcon {
+      visibility: visible;
+    }
+  }
+  .secondLine {
+    margin-top: 0.6em;
+    font-size: 15px;
+  }
+}
