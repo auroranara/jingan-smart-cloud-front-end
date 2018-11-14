@@ -1018,6 +1018,58 @@ module.exports = [
           },
         ],
       },
+      {
+        name: 'training',
+        icon: 'database',
+        code: 'training',
+        path: '/training',
+        hideInMenu: false,
+        routes: [
+          {
+            name: 'library',
+            path: '/training/library',
+            code: 'training.library',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/library',
+                name: 'library',
+                redirect: '/training/library/questions/list',
+              },
+              {
+                path: '/training/library/:type/list',
+                code: 'training.library.listView',
+                name: 'list',
+                component: './Training/Library/LibraryLayout',
+              },
+              {
+                path: '/training/library/questions/add',
+                code: 'training.library.add',
+                name: 'questionsAdd',
+                component: './Training/Library/Questions/QuestionsAdd',
+              },
+              {
+                path: '/training/library/questions/edit/:id',
+                code: 'training.library.edit',
+                name: 'questionsEdit',
+                component: './Training/Library/Questions/QuestionsAdd',
+              },
+              {
+                path: '/training/library/article/add',
+                code: 'training.library.add',
+                name: 'articleAdd',
+                component: './Training/Library/Article/ArticleAdd',
+              },
+              {
+                path: '/training/library/article/edit/:id',
+                code: 'training.library.edit',
+                name: 'articleEdit',
+                component: './Training/Library/Article/ArticleAdd',
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
 ];
