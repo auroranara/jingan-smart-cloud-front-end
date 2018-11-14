@@ -92,6 +92,7 @@ class GovernmentBigPlatform extends Component {
         risk: 0,
         abnormal: 0,
         company: 0,
+        componentSubType: 'bar',
       },
       filter: 'All',
       legendActive: null,
