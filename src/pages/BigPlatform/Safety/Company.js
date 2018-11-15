@@ -1248,7 +1248,7 @@ class CompanyLayout extends PureComponent {
                   isGray = true;
                   break;
               }
-              const infoData = [
+              let infoData = [
                 {
                   icon: pointIcon,
                   title: '风险点名称',
@@ -1280,12 +1280,17 @@ class CompanyLayout extends PureComponent {
                 },
               ];
               if (isGray) {
-                infoData.splice(4, 1);
-                if (!info.hdLetterInfo.accidentTypeName) {
-                  infoData.splice(2, 1);
+                if (!info.hdLetterInfo.pointName && !info.hdLetterInfo.areaName && !info.hdLetterInfo.accidentTypeName && !info.hdLetterInfo.status && !info.hdLetterInfo.riskLevelName.desc) {
+                  infoData = [];
                 }
-                if (!info.hdLetterInfo.areaName) {
-                  infoData.splice(1, 1);
+                else {
+                  infoData.splice(4, 1);
+                  if (!info.hdLetterInfo.accidentTypeName) {
+                    infoData.splice(2, 1);
+                  }
+                  if (!info.hdLetterInfo.areaName) {
+                    infoData.splice(1, 1);
+                  }
                 }
               }
               return (
