@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import { Form, Card, Button, Input, DatePicker, Table } from 'antd';
 import { routerRedux } from 'dva/router';
-
+import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import Lightbox from 'react-images';
@@ -35,100 +35,108 @@ const breadcrumbList = [
 ];
 
 /* 配置描述 */
-const defaultColumns = [
-  {
-    title: '维保时间',
-    dataIndex: 'checkDate',
-    key: 'checkDate',
-    align: 'center',
-    width: 200,
-    render: time => {
-      return moment(time).format('YYYY-MM-DD HH:mm:ss');
+const defaultColumns = fuc => {
+  return [
+    {
+      title: '维保时间',
+      dataIndex: 'checkDate',
+      key: 'checkDate',
+      align: 'center',
+      width: 200,
+      render: time => {
+        return moment(time).format('YYYY-MM-DD HH:mm:ss');
+      },
     },
-  },
-  {
-    title: '维保人员',
-    dataIndex: 'checkUsers',
-    key: 'checkUserIds',
-    align: 'center',
-    width: 220,
-    render: val => {
-      return val && val.length > 0
-        ? val.map((v, i) => {
-          return <div key={i}> {v.userName}</div>;
-        })
-        : '';
+    {
+      title: '维保人员',
+      dataIndex: 'checkUsers',
+      key: 'checkUserIds',
+      align: 'center',
+      width: 220,
+      render: val => {
+        return val && val.length > 0
+          ? val.map((v, i) => {
+              return <div key={i}> {v.userName}</div>;
+            })
+          : '';
+      },
     },
-  },
-  {
-    title: '联系电话',
-    dataIndex: 'checkUsers',
-    key: 'phoneNumber',
-    align: 'center',
-    width: 240,
-    render: val => {
-      return val && val.length > 0
-        ? val.map((v, i) => {
-          return <div key={i}>{v.phoneNumber}</div>;
-        })
-        : '';
+    {
+      title: '联系电话',
+      dataIndex: 'checkUsers',
+      key: 'phoneNumber',
+      align: 'center',
+      width: 240,
+      render: val => {
+        return val && val.length > 0
+          ? val.map((v, i) => {
+              return <div key={i}>{v.phoneNumber}</div>;
+            })
+          : '';
+      },
     },
-  },
-  {
-    title: '服务单位',
-    dataIndex: 'bcheckCompanyName',
-    key: 'bcheckCompanyId',
-    align: 'center',
-    width: 300,
-  },
-  {
-    title: '综合评分',
-    dataIndex: 'score',
-    key: 'score',
-    align: 'center',
-    width: 120,
-  },
-  {
-    title: '附件',
-    dataIndex: 'files',
-    key: 'fileIds',
-    align: 'center',
-    width: 150,
-    render: (val, record) => {
-      const { files } = record;
-      return (
-        <Fragment>
-          {files && files.length ? (
-            <AuthA
-              code={codesMap.dataAnalysis.MaintenanceRecord.view}
-              onClick={() => this.handleShowModal(files)}
-            >
-              查看附件
-            </AuthA>
-          ) : (
+    {
+      title: '服务单位',
+      dataIndex: 'bcheckCompanyName',
+      key: 'bcheckCompanyId',
+      align: 'center',
+      width: 300,
+    },
+    {
+      title: '综合评分',
+      dataIndex: 'score',
+      key: 'score',
+      align: 'center',
+      width: 120,
+    },
+    {
+      title: '附件',
+      dataIndex: 'files',
+      key: 'fileIds',
+      align: 'center',
+      width: 150,
+      render: (val, record) => {
+        const { files } = record;
+        return (
+          <Fragment>
+            {files && files.length ? (
+              <AuthA
+                code={codesMap.dataAnalysis.MaintenanceRecord.view}
+                onClick={() => {
+                  fuc(files);
+                }}
+              >
+                查看附件
+              </AuthA>
+            ) : (
               <span style={{ color: '#aaa' }}>查看附件</span>
             )}
-        </Fragment>
-      );
+          </Fragment>
+        );
+      },
     },
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-    fixed: 'right',
-    align: 'center',
-    width: 100,
-    render: (val, record) => (
-      <AuthA
-        code={codesMap.dataAnalysis.MaintenanceRecord.view}
-        onClick={() => this.goRecordDetail(record.id)}
-      >
-        查看
-      </AuthA>
-    ),
-  },
-];
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      key: 'operation',
+      fixed: 'right',
+      align: 'center',
+      width: 100,
+      render: (val, record) => (
+        <AuthA
+          code={codesMap.dataAnalysis.MaintenanceRecord.view}
+          onClick={() => goRecordDetail(record.id)}
+        >
+          查看
+        </AuthA>
+      ),
+    },
+  ];
+};
+
+const goRecordDetail = id => {
+  router.push(`/data-analysis/maintenance-record/detail/${id}`);
+};
 
 // 默认表单值
 const defaultFormData = {
@@ -152,7 +160,7 @@ export default class MaintenanceRecordList extends PureComponent {
     visible: false,
     imgUrl: [], // 附件图片列表
     currentImage: 0, // 展示附件大图下标
-    columns: defaultColumns,
+    columns: defaultColumns(this.handleShowModal),
   };
 
   // 挂载后
@@ -165,22 +173,21 @@ export default class MaintenanceRecordList extends PureComponent {
         },
       },
       user: {
-        currentUser: {
-          companyBasicInfo: {
-            isBranch,
-          } = {},
-        },
+        currentUser: { companyBasicInfo: { isBranch } = {} },
       },
     } = this.props;
     if (!isBranch) {
-      const newColumns = [{
-        title: '维保单位',
-        dataIndex: 'checkCompanyName',
-        key: 'checkCompanyId',
-        align: 'center',
-        width: 300,
-      }, ...defaultColumns]
-      this.setState({ columns: newColumns })
+      const newColumns = [
+        {
+          title: '维保单位',
+          dataIndex: 'checkCompanyName',
+          key: 'checkCompanyId',
+          align: 'center',
+          width: 300,
+        },
+        ...defaultColumns(this.handleShowModal),
+      ];
+      this.setState({ columns: newColumns });
     }
     // 获取记录列表
     dispatch({
@@ -193,10 +200,10 @@ export default class MaintenanceRecordList extends PureComponent {
   }
 
   // 跳转到记录详情页面
-  goRecordDetail = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/data-analysis/maintenance-record/detail/${id}`));
-  };
+  // goRecordDetail = id => {
+  //   const { dispatch } = this.props;
+  //   dispatch(routerRedux.push(`/data-analysis/maintenance-record/detail/${id}`));
+  // };
 
   // 异常页面
   goToException = () => {
@@ -213,7 +220,6 @@ export default class MaintenanceRecordList extends PureComponent {
     });
     this.setState({
       visible: true,
-
       imgUrl: newFiles,
       currentImage: 0,
     });
@@ -328,11 +334,7 @@ export default class MaintenanceRecordList extends PureComponent {
     const {
       form: { getFieldDecorator },
       user: {
-        currentUser: {
-          companyBasicInfo: {
-            isBranch,
-          } = {},
-        },
+        currentUser: { companyBasicInfo: { isBranch } = {} },
       },
     } = this.props;
 
@@ -415,8 +417,8 @@ export default class MaintenanceRecordList extends PureComponent {
             bordered
           />
         ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
         <Lightbox
           images={imgUrl}
           isOpen={visible}
