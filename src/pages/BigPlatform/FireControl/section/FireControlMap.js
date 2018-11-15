@@ -159,7 +159,9 @@ export default class FireControlMap extends PureComponent {
           created: () => {
             if (isLast) {
               this.mapInstance.on('complete', () => {
-                this.mapInstance.setFitView();
+                this.mapInstance.setFitView(
+                  this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
+                );
               });
             }
           },

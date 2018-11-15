@@ -114,7 +114,9 @@ class MapSection extends PureComponent {
           created: () => {
             if (fitView) {
               this.mapInstance.on('complete', () => {
-                this.mapInstance.setFitView();
+                this.mapInstance.setFitView(
+                  this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
+                );
               });
             }
             fitView = false;
