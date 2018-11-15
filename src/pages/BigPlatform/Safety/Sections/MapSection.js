@@ -112,7 +112,11 @@ class MapSection extends PureComponent {
             // this.handleIconClick({ id: extData.id, ...extData.position });
           },
           created: () => {
-            if (fitView) this.mapInstance.setFitView();
+            if (fitView) {
+              this.mapInstance.on('complete', () => {
+                this.mapInstance.setFitView();
+              });
+            }
             fitView = false;
           },
         }}
