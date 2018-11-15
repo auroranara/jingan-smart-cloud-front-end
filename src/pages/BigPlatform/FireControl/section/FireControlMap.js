@@ -355,6 +355,8 @@ export default class FireControlMap extends PureComponent {
             mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
             center={center}
             zoom={zoom}
+            expandZoomRange
+            zooms={[3, 20]}
             events={{
               created: mapInstance => {
                 this.mapInstance = mapInstance;
