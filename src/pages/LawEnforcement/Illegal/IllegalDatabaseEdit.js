@@ -461,19 +461,22 @@ export default class IllegalDatabaseEdit extends PureComponent {
         align: 'center',
         width: 80,
         render: (text, record) => (
-          <span>
-            <a
-              onClick={() => {
-                if (flow_id.join(',').indexOf(record.flow_id) >= 0) {
-                  return;
-                }
-                this.setState({ flowList: [...flowList, record] });
-                flow_id.push(record.flow_id);
-              }}
-            >
-              {flow_id.join(',').indexOf(record.flow_id) >= 0 ? '已添加' : '添加'}
-            </a>
-          </span>
+          console.log(record),
+          (
+            <span>
+              <a
+                onClick={() => {
+                  if (flow_id.join(',').indexOf(record.flow_id) >= 0) {
+                    return;
+                  }
+                  this.setState({ flowList: [...flowList, record] });
+                  flow_id.push(record.flow_id);
+                }}
+              >
+                {flow_id.join(',').indexOf(record.flow_id) >= 0 ? '已添加' : '添加'}
+              </a>
+            </span>
+          )
         ),
       },
     ];
