@@ -31,8 +31,8 @@ const degrees = [
 ]
 const data = [
   { id: '001', question: '为什么月亮是圆的？', answer: '阿萨大大', analysis: '就是圆的', options: ['正确', '错误'], type: '单选题', sort: '普通题', degree: '简单' },
-  { id: '002', question: 'a+b=？', answer: '22222222', analysis: 'asdasdsaddddddddddddd', options: ['圆的', '三角', '正方形'], type: '单选题', sort: '普通题', degree: '简单' },
-  { id: '003', question: '题目3', answer: '33333333', analysis: '解析这道题', options: ['正确', '错误'], type: '单选题', sort: '普通题', degree: '简单' },
+  { id: '002', question: 'a+b=？', answer: '222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222', analysis: 'asdasdsaddddddddddddd', options: ['圆的', '三角', '正方形'], type: '单选题', sort: '普通题', degree: '简单' },
+  { id: '003', question: '题目3', answer: 'werfe', analysis: '解析这道题', options: ['正确', '错误'], type: '单选题', sort: '普通题', degree: '简单' },
 ]
 
 @Form.create()

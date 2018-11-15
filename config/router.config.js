@@ -1066,6 +1066,18 @@ module.exports = [
                 name: 'articleEdit',
                 component: './Training/Library/Article/ArticleAdd',
               },
+              {
+                path: '/training/library/courseware/add',
+                code: 'training.library.add',
+                name: 'coursewareAdd',
+                component: './Training/Library/Courseware/CoursewareAdd',
+              },
+              {
+                path: '/training/library/courseware/edit/:id',
+                code: 'training.library.edit',
+                name: 'coursewareEdit',
+                component: './Training/Library/Courseware/CoursewareAdd',
+              },
             ],
           },
         ],

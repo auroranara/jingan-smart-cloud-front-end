@@ -167,6 +167,8 @@ export default {
   'menu.training.library.questionsEdit': '编辑试题',
   'menu.training.library.articleAdd': '新增文章',
   'menu.training.library.articleEdit': '编辑文章',
+  'menu.training.library.coursewareAdd': '添加课件',
+  'menu.training.library.coursewareEdit': '编辑课件',
   'app.home.introduce': '介绍',
   'app.analysis.test': '工专路 {no} 号店',
   'app.analysis.introduce': '指标说明',

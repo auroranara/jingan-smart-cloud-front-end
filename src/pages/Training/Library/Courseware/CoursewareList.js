@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Tag, List, Button, Row, Col, Card, Form, Input, Select, DatePicker, Divider, Popconfirm, Icon } from 'antd';
 import moment from 'moment';
+import router from 'umi/router';
 import styles from './CoursewareList.less'
 
 const FormItem = Form.Item;
@@ -10,7 +11,7 @@ const ListItem = List.Item;
 
 // 筛选栏grid配置
 const colWrapper = {
-  xl: 8, md: 12, sm: 24, xs: 24,
+  xl: 12, md: 12, sm: 24, xs: 24,
 }
 const statusList = [
   { value: '发布', label: '发布' },
@@ -25,6 +26,7 @@ const list = [
     people: 500,
     time: '2018-11-14 14:44',
     status: 1,
+    id: '001',
   },
   {
     name: 'asdsasadsaddddddddddddddddddddddddddddsaddddddddddddddddddddddddddddddddddddddasdsasadsadddddddddddddddddddddddddddddddddddddd',
@@ -32,12 +34,18 @@ const list = [
     view: 1000,
     people: 500,
     time: '2018-11-14 14:44',
-    status: 1,
+    status: 0,
+    id: '002',
   },
 ]
 
 @Form.create()
 export default class CoursewareList extends PureComponent {
+
+  // 点击新增
+  handleToAdd = () => {
+    router.push('/training/library/courseware/add')
+  }
 
   render() {
     const {
@@ -79,7 +87,7 @@ export default class CoursewareList extends PureComponent {
               <FormItem>
                 <Button className={styles.mr10} type="primary">查询</Button>
                 <Button className={styles.mr10}>重置</Button>
-                <Button type="primary">新增</Button>
+                <Button onClick={this.handleToAdd} type="primary">新增</Button>
               </FormItem>
             </Col>
           </Form>
@@ -102,7 +110,9 @@ export default class CoursewareList extends PureComponent {
                     </Popconfirm>
                   </div>
                 </div>
-                <Tag className={styles.tags} color={item.status ? 'blue' : 'grey'}>{item.status ? '已发布' : '未发布'}</Tag>
+                <Popconfirm className={styles.tags} title={`确定要${item.status ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { console.log('111') }}>
+                  <Tag color={item.status ? 'blue' : 'grey'}>{item.status ? '已发布' : '未发布'}</Tag>
+                </Popconfirm>
                 <div className={styles.introduction}>
                   <span>{item.author}</span>
                   <span className={styles.grey}>{' 发布于 '}</span>
