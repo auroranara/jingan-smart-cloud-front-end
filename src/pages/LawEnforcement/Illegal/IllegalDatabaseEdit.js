@@ -208,12 +208,15 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 选择按钮点击事件(设定依据)
   handleSelect = value => {
     const { setFieldsValue } = this.props.form;
-    setFieldsValue({ setLawIds: value.lawTypeName + ' , ' + value.article });
+    setFieldsValue({
+      setLawIds: value.map(item => item.lawTypeName + ' ' + item.article).join(','),
+    });
     this.setState({
-      setLawIds: value.id,
+      setLawIds: value.map(item => item.id).join(','),
     });
     this.handleClose();
   };
+  8;
 
   // 关闭模态框(设定依据)
   handleClose = () => {
@@ -280,6 +283,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
         onSelect={this.handleSelect}
         onClose={this.handleClose}
         field={setField}
+        rowSelection={{ type: 'checkbox ' }}
+        multiSelect={true}
       />
     );
   }
@@ -314,9 +319,11 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 选择按钮点击事件(处罚依据)
   handleSelectPunish = value => {
     const { setFieldsValue } = this.props.form;
-    setFieldsValue({ punishLawIds: value.lawTypeName + ' , ' + value.article });
+    setFieldsValue({
+      punishLawIds: value.map(item => item.lawTypeName + ' ' + item.article).join(','),
+    });
     this.setState({
-      punishLawIds: value.id,
+      punishLawIds: value.map(item => item.id).join(','),
     });
     this.handleClosePunish();
   };
@@ -384,6 +391,8 @@ export default class IllegalDatabaseEdit extends PureComponent {
         onSelect={this.handleSelectPunish}
         onClose={this.handleClosePunish}
         field={punishField}
+        rowSelection={{ type: 'checkbox ' }}
+        multiSelect={true}
       />
     );
   }
@@ -534,6 +543,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         const { businessType, typeCode, actContent, discretionStandard, enable } = values;
 
         const { setLawIds, punishLawIds } = this.state;
+        console.log(setLawIds);
 
         const payload = {
           id,

@@ -326,23 +326,25 @@ export default class VideoMonitorEdit extends PureComponent {
 
   // 验证设备Id和摄像头Id
   validatorID = (rule, value, callback) => {
-    let charCode;
-    let charMode = false;
-    for (let i = 0; i < value.length; i++) {
-      charCode = value.charCodeAt(i);
-      if (charCode >= 97 && charCode <= 122) {
-        charMode = true;
-        continue;
+    if (value) {
+      let charCode;
+      let charMode = false;
+      for (let i = 0; i < value.length; i++) {
+        charCode = value.charCodeAt(i);
+        if (charCode >= 97 && charCode <= 122) {
+          charMode = true;
+          continue;
+        }
       }
-    }
-    if (
-      value.length >= 6 &&
-      value.indexOf('_') > 0 &&
-      value.substr(value.length - 1, 1) !== '_' &&
-      charMode
-    )
-      callback();
-    else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾');
+      if (
+        value.length >= 6 &&
+        value.indexOf('_') > 0 &&
+        value.substr(value.length - 1, 1) !== '_' &&
+        charMode
+      )
+        callback();
+      else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾');
+    } else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾');
   };
 
   // 定位模态框确定按钮点击事件

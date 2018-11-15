@@ -116,7 +116,9 @@ export default class TransmissionAdd extends PureComponent {
 
   handleFocus = e => {
     e.target.blur();
+    const { dispatch } = this.props;
     this.setState({ visible: true });
+    dispatch({ type: 'videoMonitor/fetchModelList' });
   };
 
   handleSubmit = e => {
