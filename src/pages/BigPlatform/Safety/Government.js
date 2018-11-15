@@ -572,16 +572,31 @@ class GovernmentBigPlatform extends Component {
           <div className={styles.subHeader}>
             <Timer />
           </div>
-          <div className={styles.treeContainer}>
-            <TreeSelect
-              style={{ width: 300 }}
-              value={treeValue}
-              dropdownClassName={styles.gridDropdown}
-              treeData={grids}
-              treeDefaultExpandAll
-              onChange={this.onGridChange}
-            />
-          </div>
+          {grids.length > 0 && (
+            <div className={styles.treeContainer}>
+              {grids.length === 1 ? (
+                <span
+                  style={{
+                    fontSize: '14px',
+                    letterSpacing: '14px',
+                    lineHeight: '30px',
+                    paddingLeft: '11px',
+                  }}
+                >
+                  {grids[0].title}
+                </span>
+              ) : (
+                <TreeSelect
+                  style={{ width: 300 }}
+                  value={treeValue}
+                  dropdownClassName={styles.gridDropdown}
+                  treeData={grids}
+                  treeDefaultExpandAll
+                  onChange={this.onGridChange}
+                />
+              )}
+            </div>
+          )}
         </header>
 
         <article className={styles.mainBody}>
