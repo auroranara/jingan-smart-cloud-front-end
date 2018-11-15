@@ -5,10 +5,9 @@ export default {
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
-    projectName: '测试晶安智慧云平台',
+    projectName: '测试市晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '测试晶安智慧云平台',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -24,7 +23,7 @@ export default {
     projectName: '无锡市晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '无锡市晶安智慧云平台',
+    // safetyGovernmentTitle: '无锡市晶安智慧云平台',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -40,7 +39,7 @@ export default {
     projectName: '徐州市晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '徐州市晶安智慧云平台',
+    // safetyGovernmentTitle: '徐州市晶安智慧云平台',
     location: {
       x: 117.407812,
       y: 34.501282,
@@ -56,7 +55,7 @@ export default {
     projectName: '常熟市晶安智慧云平台',
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
-    safetyGovernmentTitle: '常熟市晶安智慧云平台',
+    // safetyGovernmentTitle: '常熟市晶安智慧云平台',
     location: {
       x: 120.848825,
       y: 31.639258,
@@ -72,7 +71,7 @@ export default {
     projectName: '晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '晶安智慧云平台',
+    // safetyGovernmentTitle: '晶安智慧云平台',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -88,7 +87,7 @@ export default {
     projectName: '校园晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    safetyGovernmentTitle: '校园晶安智慧云平台',
+    // safetyGovernmentTitle: '校园晶安智慧云平台',
     location: {
       x: 120.401163,
       y: 31.560116,

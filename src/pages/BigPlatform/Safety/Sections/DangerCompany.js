@@ -14,7 +14,7 @@ class DangerCompany extends PureComponent {
   componentWillUnmount() {}
 
   handleClick = id => {
-    const { dispatch, lastSection, month, checkUserId } = this.props;
+    const { dispatch, lastSection, month, checkUserId, gridId } = this.props;
     const param = lastSection === 'checks' ? { date: month } : {};
     console.log(lastSection);
     if (lastSection === 'checks') {
@@ -24,6 +24,7 @@ class DangerCompany extends PureComponent {
           company_id: id,
           reportUserId: checkUserId,
           ...param,
+          gridId,
         },
       });
     } else {
@@ -31,6 +32,7 @@ class DangerCompany extends PureComponent {
         type: 'bigPlatform/fetchRiskDetail',
         payload: {
           company_id: id,
+          gridId,
         },
       });
     }

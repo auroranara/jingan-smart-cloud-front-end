@@ -38,7 +38,7 @@ class CheckInfo extends PureComponent {
   };
 
   handleGoDangerCompany = userId => {
-    const { dispatch, handleParentChange, goComponent, checksMonth } = this.props;
+    const { dispatch, handleParentChange, goComponent, checksMonth, gridId } = this.props;
     const { selectedMonth } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerCompany',
@@ -46,6 +46,7 @@ class CheckInfo extends PureComponent {
         // date: selectedMonth,
         date: checksMonth,
         userId: userId || '',
+        gridId,
       },
       success: res => {
         handleParentChange({
@@ -106,7 +107,7 @@ class CheckInfo extends PureComponent {
               onSelect={this.handleMonthSelect}
               className={styles2.monthSelect}
               dropdownClassName={styles2.monthDropDown}
-              style={{ position: 'relative', top: '1px', width: '90px' }}
+              style={{ position: 'relative', top: '1px', width: '105px' }}
             >
               {months.map(({ value }) => {
                 const isSelected = checksMonth === value;

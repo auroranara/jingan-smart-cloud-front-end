@@ -63,8 +63,11 @@ module.exports = [
   {
     path: '/big-platform',
     routes: [
-      { path: '/big-platform', redirect: '/big-platform/safety/government' },
-      { path: '/big-platform/safety/government', component: './BigPlatform/Safety/Government' },
+      { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
+      {
+        path: '/big-platform/safety/government/:gridId',
+        component: './BigPlatform/Safety/Government',
+      },
       {
         path: '/big-platform/safety/company/:companyId',
         component: './BigPlatform/Safety/Company',
@@ -547,6 +550,31 @@ module.exports = [
             ],
           },
           {
+            path: '/data-analysis/test-info',
+            code: 'dataAnalysis.testInfo',
+            name: 'testInfo',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/test-info',
+                name: 'testInfo',
+                redirect: '/data-analysis/test-info/list',
+              },
+              {
+                path: '/data-analysis/test-info/list',
+                code: 'dataAnalysis.testInfo.view',
+                name: 'list',
+                component: './DataAnalysis/TestInfo/TestList',
+              },
+              {
+                path: '/data-analysis/test-info/detail/:id',
+                code: 'dataAnalysis.testInfo.view',
+                name: 'detail',
+                component: './DataAnalysis/TestInfo/TestDetail',
+              },
+            ],
+          },
+          {
             path: '/data-analysis/maintenance-record',
             code: 'dataAnalysis.maintenanceRecord',
             name: 'maintenanceRecord',
@@ -618,31 +646,6 @@ module.exports = [
                 code: 'dataAnalysis.hiddenDangerReport.view',
                 name: 'detail',
                 component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
-              },
-            ],
-          },
-          {
-            path: '/data-analysis/test-info',
-            code: 'dataAnalysis.testInfo',
-            name: 'testInfo',
-            hideChildrenInMenu: true,
-            routes: [
-              {
-                path: '/data-analysis/test-info',
-                name: 'testInfo',
-                redirect: '/data-analysis/test-info/list',
-              },
-              {
-                path: '/data-analysis/test-info/list',
-                code: 'dataAnalysis.testInfo.view',
-                name: 'list',
-                component: './DataAnalysis/TestInfo/TestList',
-              },
-              {
-                path: '/data-analysis/test-info/detail/:id',
-                code: 'dataAnalysis.testInfo.view',
-                name: 'detail',
-                component: './DataAnalysis/TestInfo/TestDetail',
               },
             ],
           },

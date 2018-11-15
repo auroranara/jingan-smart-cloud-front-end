@@ -48,6 +48,7 @@ const fieldLabels = {
   principalPhone: '联系方式',
   principalEmail: '邮箱',
   companyNature: '单位性质',
+  gridId: '所属网格',
 };
 // tab列表
 const tabList = [
@@ -80,6 +81,8 @@ export default class App extends PureComponent {
   state = {
     isCompany: true,
     tabActiveKey: tabList[0].key,
+    gridId: '',
+    gotMenus: false,
   };
 
   /* 生命周期函数 */
@@ -96,8 +99,9 @@ export default class App extends PureComponent {
       payload: {
         companyId,
       },
-      callback: ({ companyNatureLabel }) => {
+      callback: ({ companyNatureLabel, gridId }) => {
         this.setState({
+          gridId,
           isCompany: companyNatureLabel === defaultCompanyNature,
         });
       },
@@ -139,6 +143,24 @@ export default class App extends PureComponent {
       </Description>
     );
   }
+
+  // 从子组件中获取值并将获取menus接口的flag置为true
+  setGotMenus = (idMap, textMap) => {
+    this.idMap = idMap;
+    this.textMap = textMap;
+    this.setState({ gotMenus: true });
+  };
+
+  // 若menus菜单已获取并且detail已获取，则取值
+  getGridLabel = () => {
+    const idMap = this.idMap;
+    const textMap = this.textMap;
+    const { gridId, gotMenus } = this.state;
+
+    if (gridId && gotMenus && idMap[gridId])
+      return idMap[gridId].map(id => textMap[id]).join('-');
+    return '暂无信息';
+  };
 
   /* 渲染基础信息 */
   renderBasicInfo() {
@@ -198,7 +220,7 @@ export default class App extends PureComponent {
               getEmptyData()
             )}
           </Description>
-          <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
+          {/* <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
             <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
               {registerAddressLabel || getEmptyData()}
             </Ellipsis>
@@ -207,9 +229,22 @@ export default class App extends PureComponent {
             <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
               {practicalAddressLabel || getEmptyData()}
             </Ellipsis>
-          </Description>
+          </Description> */}
           {!isCompany && this.renderIndustryCategory()}
           {!isCompany && this.renderCompanyStatus()}
+        </DescriptionList>
+        <DescriptionList col={1} style={{ marginBottom: 16 }}>
+          <Description term={fieldLabels.gridId}>{this.getGridLabel()}</Description>
+          <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
+            {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
+              {registerAddressLabel || getEmptyData()}
+            {/* </Ellipsis> */}
+          </Description>
+          <Description term={fieldLabels.practicalAddress} style={{ height: 38 }}>
+            {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
+              {practicalAddressLabel || getEmptyData()}
+            {/* </Ellipsis> */}
+          </Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>
@@ -268,7 +303,7 @@ export default class App extends PureComponent {
           createTime,
           groupName,
           businessScope,
-          companyTypeLable,
+          companyTypeLabel,
         },
       },
     } = this.props;
@@ -281,9 +316,9 @@ export default class App extends PureComponent {
             {economicTypeLabel || getEmptyData()}
           </Description>
           {this.renderCompanyStatus()}
-          <Description term={fieldLabels.companyType}>
-            {companyTypeLable || getEmptyData()}
-          </Description>
+          {/* <Description term={fieldLabels.companyType}>
+            {companyTypeLabel || getEmptyData()}
+          </Description> */}
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
@@ -410,7 +445,7 @@ export default class App extends PureComponent {
             {this.renderPersonalInfo()}
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <SafetyDetail companyId={companyId} />
+            <SafetyDetail companyId={companyId} setGotMenus={this.setGotMenus} />
           </div>
         </Spin>
       </PageHeaderLayout>

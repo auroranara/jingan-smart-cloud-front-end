@@ -115,6 +115,7 @@ export default class TransmissionAdd extends PureComponent {
   }
 
   handleFocus = e => {
+    console.log(11111);
     e.target.blur();
     const { dispatch } = this.props;
     this.setState({ visible: true });
@@ -184,7 +185,7 @@ export default class TransmissionAdd extends PureComponent {
               </Col>
               {defaultName && unitType !== 2 ? null : (
                 <Col span={1}>
-                  <Button type="primary" onFocus={this.handleFocus} style={{ marginLeft: '10%' }}>
+                  <Button type="primary" onClick={this.handleFocus} style={{ marginLeft: '10%' }}>
                     选择单位
                   </Button>
                 </Col>

@@ -3,6 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import styles from '../Government.less';
 
 const riskTitles = ['红色风险点', '橙色风险点', '黄色风险点', '蓝色风险点', '未评级风险点'];
+const riskTitlesPie = ['正常风险点', '异常风险点'];
 const lightGray = {
   type: 'linear',
   x: 0,
@@ -141,6 +142,8 @@ class RiskBar extends PureComponent {
         not_rated_abnormal = 0,
         not_rated_company = 0,
         ycdCount = 0,
+        zcdCount,
+        zcdCompanyCount,
       },
     } = this.props;
     let xData,
@@ -156,7 +159,7 @@ class RiskBar extends PureComponent {
       barLegend = 'colors';
     } else if (red + orange + yellow + blue === 0) {
       // 都是未评级
-      option = this.pieOption(not_rated, not_rated_abnormal, not_rated_company, ycdCount);
+      option = this.pieOption(not_rated, not_rated_abnormal, zcdCount, ycdCount, zcdCompanyCount);
       barLegend = 'pie';
     } else {
       // 都有
@@ -317,8 +320,8 @@ class RiskBar extends PureComponent {
     return option;
   };
 
-  pieOption = (risks, risksAbnormal, companys, companysAbnormal) => {
-    const comArr = [companys - companysAbnormal, +companysAbnormal];
+  pieOption = (risks, risksAbnormal, risksNormal, companysAbnormal, companysNormal) => {
+    const comArr = [+companysNormal, +companysAbnormal];
     const option = {
       title: {
         text: risks,
@@ -369,7 +372,7 @@ class RiskBar extends PureComponent {
             },
           },
           data: [
-            { value: risks - risksAbnormal, name: '正常风险点' },
+            { value: risksNormal, name: '正常风险点' },
             { value: risksAbnormal, name: '异常风险点' },
           ],
         },
@@ -429,7 +432,11 @@ class RiskBar extends PureComponent {
           not_rated = 0,
           not_rated_abnormal = 0,
           not_rated_company = 0,
+          ycdCount = 0,
+          zcdCount = 0,
+          zcdCompanyCount = 0,
         },
+        gridId,
       } = this.props;
       const risks = [
         {
@@ -458,21 +465,55 @@ class RiskBar extends PureComponent {
           company: not_rated_company,
         },
       ];
-      dispatch({
-        type: 'bigPlatform/fetchDangerLocationCompanyData',
-        payload: {
-          riskLevel: params.dataIndex + 1,
+      const risksPie = [
+        {
+          risk: not_rated,
+          abnormal: +zcdCount,
+          company: +zcdCompanyCount,
         },
-      });
+        {
+          risk: not_rated,
+          abnormal: not_rated_abnormal,
+          company: +ycdCount,
+        },
+      ];
+      const { componentSubType, dataIndex } = params;
+      if (componentSubType === 'bar') {
+        dispatch({
+          type: 'bigPlatform/fetchDangerLocationCompanyData',
+          payload: {
+            riskLevel: dataIndex + 1,
+            gridId,
+          },
+        });
+        handleParentChange({
+          riskColorSummary: {
+            riskColorTitle: riskTitles[dataIndex],
+            risk: risks[dataIndex].risk,
+            abnormal: risks[dataIndex].abnormal,
+            company: risks[dataIndex].company,
+            componentSubType: 'bar',
+          },
+        });
+      } else {
+        dispatch({
+          type: 'bigPlatform/fetchDangerLocationCompanyNotRatedData',
+          payload: {
+            status: dataIndex + 1,
+            gridId,
+          },
+        });
+        handleParentChange({
+          riskColorSummary: {
+            riskColorTitle: riskTitlesPie[dataIndex],
+            risk: not_rated,
+            abnormal: risksPie[dataIndex].abnormal,
+            company: risksPie[dataIndex].company,
+            componentSubType: 'pie',
+          },
+        });
+      }
       goComponent('riskColors');
-      handleParentChange({
-        riskColorSummary: {
-          riskColorTitle: riskTitles[params.dataIndex],
-          risk: risks[params.dataIndex].risk,
-          abnormal: risks[params.dataIndex].abnormal,
-          company: risks[params.dataIndex].company,
-        },
-      });
     });
   };
 
@@ -489,12 +530,14 @@ class RiskBar extends PureComponent {
             <span className={styles.titleBlock} />
             风险点统计
           </div>
-          <div className={styles.riskTotal}>
-            风险点总数
-            <span className={styles.riskTotalNum} style={{ color: '#00baff' }}>
-              {riskTotal}
-            </span>
-          </div>
+          {barLegend !== 'pie' && (
+            <div className={styles.riskTotal}>
+              风险点总数
+              <span className={styles.riskTotalNum} style={{ color: '#00baff' }}>
+                {riskTotal}
+              </span>
+            </div>
+          )}
           <div className={styles.sectionMain} style={{ display: 'flex', flexDirection: 'column' }}>
             <div className={styles.hdArea} id="hdArea">
               <ReactEcharts

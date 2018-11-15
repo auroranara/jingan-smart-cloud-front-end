@@ -86,7 +86,7 @@ export default class RepairRecordDetail extends PureComponent {
         content={<span />}
         // extraContent={this.extraContent}
       >
-        <Card title="主体单位">
+        <Card title="服务单位">
           <DescriptionList col={1} style={{ marginBottom: 16 }}>
             <Description term="单位名称">{name || getEmptyData()}</Description>
             <Description term="安全负责人">{safetyName || getEmptyData()}</Description>

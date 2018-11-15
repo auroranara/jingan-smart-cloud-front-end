@@ -93,6 +93,10 @@ class MapSection extends PureComponent {
         };
       })
       .filter(m => m.level);
+    if (markers.length === 0) {
+      if (this.mapInstance) this.mapInstance.setCity(region);
+      return null;
+    }
     return (
       <Markers
         markers={markers}
@@ -108,7 +112,11 @@ class MapSection extends PureComponent {
             // this.handleIconClick({ id: extData.id, ...extData.position });
           },
           created: () => {
-            if (fitView) this.mapInstance.setFitView();
+            if (fitView) {
+              this.mapInstance.on('complete', () => {
+                this.mapInstance.setFitView();
+              });
+            }
             fitView = false;
           },
         }}
@@ -358,7 +366,7 @@ class MapSection extends PureComponent {
                 events={{
                   created: mapInstance => {
                     this.mapInstance = mapInstance;
-                    mapInstance.setCity(region);
+                    // mapInstance.setCity(region);
                   },
                 }}
               >

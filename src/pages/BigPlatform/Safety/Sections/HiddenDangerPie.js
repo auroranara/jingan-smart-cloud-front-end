@@ -106,13 +106,10 @@ class HiddenDangerPie extends PureComponent {
     const {
       dispatch,
       goComponent,
-      listForMap: {
-        dangerCompany=[],
-        total: dangerCount=0,
-        dangerCompanyNum=0,
-      },
+      listForMap: { dangerCompany = [], total: dangerCount = 0, dangerCompanyNum = 0 },
       listForMap: { overRectifyNum = 0, rectifyNum = 0, reviewNum = 0, total: riskTotal = 0 },
       handleParentChange,
+      gridId,
     } = this.props;
     return (
       <section
@@ -129,6 +126,9 @@ class HiddenDangerPie extends PureComponent {
             onClick={() => {
               dispatch({
                 type: 'bigPlatform/fetchHiddenDangerCompany',
+                payload: {
+                  gridId,
+                },
                 success: () => {
                   handleParentChange({
                     dangerCompanyData: { dangerCompanyNum, dangerCompany, dangerCount },

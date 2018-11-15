@@ -31,7 +31,7 @@ import gray from '@/assets/gray_new.png';
 import exceptionGray from '@/assets/exception_gray.png';
 
 const { Option } = Select;
-
+const { projectName } = global.PROJECT_CONFIG;
 /* 图片地址前缀 */
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 /* 图片 */
@@ -280,8 +280,7 @@ class CompanyLayout extends PureComponent {
         // 如果id不存在，则意味着没有四色图
         if (id) {
           this.filterPointsByFourColorImgId(point, id, webUrl);
-        }
-        else {
+        } else {
           this.setState({
             isCurrentHiddenDangerShow: true,
           });
@@ -339,7 +338,6 @@ class CompanyLayout extends PureComponent {
       },
     });
 
-
     // 添加曲线图显示文字定时器
     this.showTipTimer = setInterval(this.showLineChartTip, 2000);
   }
@@ -360,14 +358,14 @@ class CompanyLayout extends PureComponent {
     } else {
       this.handleClick(currentFourColorImgPointIds[selectedIndex + 1], selectedIndex + 1);
     }
-  }
+  };
 
   // 添加风险点轮播定时器
   addTimeout = () => {
     this.myTimer = setTimeout(this.timeoutCallback, 10000);
   };
 
-    /**
+  /**
    * 根据当前选中的四色图id筛选出对应的风险点
    * 将id和points保存到state中
    * 自动选中第一个point
@@ -417,7 +415,7 @@ class CompanyLayout extends PureComponent {
   /**
    * 环形图加载完毕
    */
-  handlePieChartReady = (chart) => {
+  handlePieChartReady = chart => {
     const changeHighLight = () => {
       var length = chart.getOption().series[0].data.length;
       // 取消之前高亮的图形
@@ -477,7 +475,7 @@ class CompanyLayout extends PureComponent {
   /**
    * 曲线图加载完毕
    */
-  handleLineChartReady = (chart) => {
+  handleLineChartReady = chart => {
     if (document.querySelector('.domLineChart').getAttribute('_echarts_instance_') === chart.id) {
       this.lineChart = chart;
     }
@@ -486,7 +484,7 @@ class CompanyLayout extends PureComponent {
   /**
    * 四色图下拉框选择事件
    */
-  handleSelectFourColorImg = (id, {props: { url }}) => {
+  handleSelectFourColorImg = (id, { props: { url } }) => {
     const {
       bigPlatform: {
         companyMessage: { point },
@@ -549,7 +547,7 @@ class CompanyLayout extends PureComponent {
     }));
     // 取消风险点选中并移除定时器
     this.handleClick(null, 0);
-  }
+  };
 
   /**
    * 隐藏当前隐患
@@ -562,15 +560,19 @@ class CompanyLayout extends PureComponent {
     });
     // 选中之前选中的风险点并添加定时器
     this.handleClick(currentFourColorImgPointIds[selectedIndex], selectedIndex);
-  }
+  };
 
   /**
    * 监控球点击事件
    */
   handleClickMonitorBall = () => {
-    const { match: { params: { companyId } } } = this.props;
-    window.open(`${window.publicPath}#/big-platform/monitor/company/${companyId}`)
-  }
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    window.open(`${window.publicPath}#/big-platform/monitor/company/${companyId}`);
+  };
 
   /**
    * 点击显示风险点模块
@@ -593,21 +595,25 @@ class CompanyLayout extends PureComponent {
     // 每次翻转重新获取源数据
     if (index === 1 && unitInspectionIndex === 0) {
       this.handleSelectStaffList(moment().format('YYYY-MM'));
-    }
-    else if (index === 2) {
+    } else if (index === 2) {
       this.handleSelectStaffRecords(selectedStaffListMonth, checkUserId);
     }
     this.setState({
       unitInspectionIndex: index,
       selectedUserId: checkUserId,
     });
-  }
+  };
 
   /**
    * 根据月份获取人员列表
    */
-  handleSelectStaffList = (month) => {
-    const { dispatch, match: { params: { companyId } } } = this.props;
+  handleSelectStaffList = month => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     dispatch({
       type: 'bigPlatform/fetchStaffList',
       payload: {
@@ -618,13 +624,18 @@ class CompanyLayout extends PureComponent {
     this.setState({
       selectedStaffListMonth: month,
     });
-  }
+  };
 
   /**
    * 根据月份获取人员记录
    */
-  handleSelectStaffRecords = (month, checkUserId=this.state.selectedUserId) => {
-    const { dispatch, match: { params: { companyId } } } = this.props;
+  handleSelectStaffRecords = (month, checkUserId = this.state.selectedUserId) => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     dispatch({
       type: 'bigPlatform/fetchStaffRecords',
       payload: {
@@ -636,14 +647,16 @@ class CompanyLayout extends PureComponent {
     this.setState({
       selectedStaffRecordsMonth: month,
     });
-  }
+  };
 
   /**
    * 单位巡查人员列表
    */
   renderStaffList() {
     // 从props中获取人员列表
-    const { bigPlatform: { staffList } } = this.props;
+    const {
+      bigPlatform: { staffList },
+    } = this.props;
     // 从state中获取当前选中的月份
     const { selectedStaffListMonth } = this.state;
 
@@ -651,9 +664,18 @@ class CompanyLayout extends PureComponent {
       <StaffList
         data={staffList}
         month={selectedStaffListMonth}
-        fieldNames={{ id: 'check_user_id', person: 'user_name', total: 'totalCheck', abnormal: 'abnormal' }}
-        onBack={() => {this.handleSwitchUnitInspection(0)}}
-        onClick={(checkUserId) => {this.handleSwitchUnitInspection(2, checkUserId)}}
+        fieldNames={{
+          id: 'check_user_id',
+          person: 'user_name',
+          total: 'totalCheck',
+          abnormal: 'abnormal',
+        }}
+        onBack={() => {
+          this.handleSwitchUnitInspection(0);
+        }}
+        onClick={checkUserId => {
+          this.handleSwitchUnitInspection(2, checkUserId);
+        }}
         onSelect={this.handleSelectStaffList}
       />
     );
@@ -664,7 +686,9 @@ class CompanyLayout extends PureComponent {
    */
   renderStaffRecords() {
     // 从props中获取人员记录
-    const { bigPlatform: { staffRecords } } = this.props;
+    const {
+      bigPlatform: { staffRecords },
+    } = this.props;
     const { selectedStaffRecordsMonth } = this.state;
 
     return (
@@ -678,7 +702,9 @@ class CompanyLayout extends PureComponent {
           point: 'object_title',
           result: 'fireCheckStatus',
         }}
-        onBack={() => {this.handleSwitchUnitInspection(1)}}
+        onBack={() => {
+          this.handleSwitchUnitInspection(1);
+        }}
         onSelect={this.handleSelectStaffRecords}
       />
     );
@@ -690,16 +716,12 @@ class CompanyLayout extends PureComponent {
   renderMonitorBall() {
     const {
       bigPlatform: {
-        monitorData: {
-          score=0,
-          count=0,
-          unnormal=0,
-        },
+        monitorData: { score = 0, count = 0, unnormal = 0 },
       },
       monitorDataLoading,
     } = this.props;
     // 当percent小于80或者报警时，显示异常颜色
-    const color = (+score < 80 || +unnormal > 0) ? '#ff7863' : '#00A8FF';
+    const color = +score < 80 || +unnormal > 0 ? '#ff7863' : '#00A8FF';
     // 当percent为0时不显示监控球
     return +count !== 0 && !monitorDataLoading ? (
       <MonitorBall
@@ -735,18 +757,25 @@ class CompanyLayout extends PureComponent {
         onSelect={this.handleSelectFourColorImg}
         className={riskStyles.fourColorImgSelect}
         style={{
-          position: "absolute",
+          position: 'absolute',
           top: '16px',
           left: 0,
           width: 150,
         }}
         dropdownClassName={riskStyles.fourColorImgSelectDropDown}
       >
-        {fourColorImg.map(({ id, fileName='未命名', webUrl }) => {
+        {fourColorImg.map(({ id, fileName = '未命名', webUrl }) => {
           const isSelected = selectedFourColorImgId === id;
           const i = fileName.indexOf('.');
           return (
-            <Option key={id} value={id} url={webUrl} style={{ backgroundColor: isSelected && '#0967D3', color: isSelected && '#fff' }}>{i === -1 ? fileName : fileName.slice(0, i)}</Option>
+            <Option
+              key={id}
+              value={id}
+              url={webUrl}
+              style={{ backgroundColor: isSelected && '#0967D3', color: isSelected && '#fff' }}
+            >
+              {i === -1 ? fileName : fileName.slice(0, i)}
+            </Option>
           );
         })}
       </Select>
@@ -757,7 +786,11 @@ class CompanyLayout extends PureComponent {
    * 当前隐患
    */
   renderCurrentHiddenDanger(closable) {
-    const { bigPlatform: { riskDetailList: { ycq=[], wcq=[], dfc=[] } } } = this.props;
+    const {
+      bigPlatform: {
+        riskDetailList: { ycq = [], wcq = [], dfc = [] },
+      },
+    } = this.props;
     return (
       <CurrentHiddenDanger
         ycq={ycq}
@@ -775,27 +808,37 @@ class CompanyLayout extends PureComponent {
    */
   renderRightSection() {
     const {
-      bigPlatform: { riskDetailList: { ycq=[], wcq=[], dfc=[] } },
+      bigPlatform: {
+        riskDetailList: { ycq = [], wcq = [], dfc = [] },
+      },
     } = this.props;
-    const { prevSelectedId, selectedId, isCurrentHiddenDangerShow, selectedFourColorImgId, currentFourColorImgPointIds } = this.state;
+    const {
+      prevSelectedId,
+      selectedId,
+      isCurrentHiddenDangerShow,
+      selectedFourColorImgId,
+      currentFourColorImgPointIds,
+    } = this.state;
     const riskDetailList = ycq.concat(wcq, dfc);
-    let data = isCurrentHiddenDangerShow ? (prevSelectedId === null ? riskDetailList.filter(({ item_id }) => currentFourColorImgPointIds.includes(item_id))
-    : riskDetailList.filter(({ item_id }) => item_id === prevSelectedId)) : (
-      selectedId === null
+    let data = isCurrentHiddenDangerShow
+      ? prevSelectedId === null
         ? riskDetailList.filter(({ item_id }) => currentFourColorImgPointIds.includes(item_id))
-        : riskDetailList.filter(({ item_id }) => item_id === selectedId));
+        : riskDetailList.filter(({ item_id }) => item_id === prevSelectedId)
+      : selectedId === null
+        ? riskDetailList.filter(({ item_id }) => currentFourColorImgPointIds.includes(item_id))
+        : riskDetailList.filter(({ item_id }) => item_id === selectedId);
 
     // 当没有四色图时，默认显示当前隐患，否则显示选中的风险点对应的隐患详情
-    return !selectedFourColorImgId ? this.renderCurrentHiddenDanger(false) : (
+    return !selectedFourColorImgId ? (
+      this.renderCurrentHiddenDanger(false)
+    ) : (
       <Slide
         // offset={{
         //   left: 12,
         // }}
         direction="left"
         showExtra={isCurrentHiddenDangerShow}
-        extra={(
-          this.renderCurrentHiddenDanger(true)
-        )}
+        extra={this.renderCurrentHiddenDanger(true)}
       >
         <RiskDetail
           style={{
@@ -832,7 +875,7 @@ class CompanyLayout extends PureComponent {
       },
       // 特种设备总数
       specialEquipment,
-      riskDetailList: { ycq=[], wcq=[], dfc=[] },
+      riskDetailList: { ycq = [], wcq = [], dfc = [] },
     } = this.props.bigPlatform;
     const { isCurrentHiddenDangerShow } = this.state;
     const infoClassNames = classNames(styles.sectionWrapper, styles.infoWrapper);
@@ -875,12 +918,18 @@ class CompanyLayout extends PureComponent {
 
             <div className={styles.summaryBottom} style={{ height: '50%' }}>
               <div
-                className={isPeopleValued?`${styles.summaryHalf} ${styles.hoverable}`:styles.summaryHalf}
+                className={
+                  isPeopleValued ? `${styles.summaryHalf} ${styles.hoverable}` : styles.summaryHalf
+                }
                 style={{ backgroundImage: `url(${peopleIcon})` }}
-                onClick={isPeopleValued ? (() => {
-                  this.safety.style.right = 0;
-                  this.leftSection.style.opacity = 0;
-                }): undefined}
+                onClick={
+                  isPeopleValued
+                    ? () => {
+                        this.safety.style.right = 0;
+                        this.leftSection.style.opacity = 0;
+                      }
+                    : undefined
+                }
               >
                 <div className={styles.summaryText}>
                   <span className={styles.fieldName}>安全人员</span>
@@ -889,9 +938,15 @@ class CompanyLayout extends PureComponent {
               </div>
 
               <div
-                className={isRiskPointValued?`${styles.summaryHalf} ${styles.hoverable}`:styles.summaryHalf}
+                className={
+                  isRiskPointValued
+                    ? `${styles.summaryHalf} ${styles.hoverable}`
+                    : styles.summaryHalf
+                }
                 style={{ backgroundImage: `url(${checkIcon})` }}
-                onClick={() => {isRiskPointValued && this.handleClickShowRiskSection();}}
+                onClick={() => {
+                  isRiskPointValued && this.handleClickShowRiskSection();
+                }}
               >
                 <div className={styles.summaryText}>
                   <span className={styles.fieldName}>风险点</span>
@@ -910,7 +965,11 @@ class CompanyLayout extends PureComponent {
               </div>
 
               <div
-                className={isHiddenDangerValued?`${styles.summaryHalf} ${styles.hoverable}`:styles.summaryHalf}
+                className={
+                  isHiddenDangerValued
+                    ? `${styles.summaryHalf} ${styles.hoverable}`
+                    : styles.summaryHalf
+                }
                 style={{ backgroundImage: `url(${hdIcon})` }}
                 onClick={isHiddenDangerValued ? this.handleShowCurrentHiddenDanger : undefined}
               >
@@ -939,7 +998,9 @@ class CompanyLayout extends PureComponent {
     const {
       coItemList: { status1, status2, status3, status4 },
       countDangerLocationForCompany: {
-        countDangerLocation: [{ red = 0, orange = 0, yellow = 0, blue = 0, not_rated: unvalued=0 } = {}] = [{}],
+        countDangerLocation: [
+          { red = 0, orange = 0, yellow = 0, blue = 0, not_rated: unvalued = 0 } = {},
+        ] = [{}],
       },
     } = this.props.bigPlatform;
     const hdClassNames = classNames(styles.sectionWrapper, styles.hdWrapper);
@@ -948,10 +1009,9 @@ class CompanyLayout extends PureComponent {
     const isAbnormalValued = +status2 !== 0;
     const isOverValued = +status4 !== 0;
     let data;
-    if (red === 0 && orange === 0 && yellow ===0 && blue === 0 ) {
+    if (red === 0 && orange === 0 && yellow === 0 && blue === 0) {
       data = [{ value: unvalued, name: '总计', itemStyle: { color: '#4F6793' } }];
-    }
-    else {
+    } else {
       const valuedData = [
         { value: red, name: '红', itemStyle: { color: '#BF6C6D' } },
         { value: orange, name: '橙', itemStyle: { color: '#CC964B' } },
@@ -960,11 +1020,8 @@ class CompanyLayout extends PureComponent {
       ];
       if (unvalued === 0) {
         data = valuedData;
-      }
-      else {
-        const unvaluedData = [
-          { value: unvalued, name: '未评级', itemStyle: { color: '#4F6793' } },
-        ];
+      } else {
+        const unvaluedData = [{ value: unvalued, name: '未评级', itemStyle: { color: '#4F6793' } }];
         data = valuedData.concat(unvaluedData);
       }
     }
@@ -1025,9 +1082,13 @@ class CompanyLayout extends PureComponent {
 
             <div className={styles.summaryBottom} style={{ height: '42%' }}>
               <div
-                className={isNormalValued?`${styles.summaryHalf} ${styles.hoverable}`:styles.summaryHalf}
+                className={
+                  isNormalValued ? `${styles.summaryHalf} ${styles.hoverable}` : styles.summaryHalf
+                }
                 style={{ backgroundImage: `url(${normalIcon})` }}
-                onClick={() => {isNormalValued && this.handleClickShowRiskSection(1);}}
+                onClick={() => {
+                  isNormalValued && this.handleClickShowRiskSection(1);
+                }}
               >
                 <div className={styles.summaryText} style={{ color: '#00A181' }}>
                   正常
@@ -1036,9 +1097,15 @@ class CompanyLayout extends PureComponent {
               </div>
 
               <div
-                className={isCheckingValued?`${styles.summaryHalf} ${styles.hoverable}`:styles.summaryHalf}
+                className={
+                  isCheckingValued
+                    ? `${styles.summaryHalf} ${styles.hoverable}`
+                    : styles.summaryHalf
+                }
                 style={{ backgroundImage: `url(${checkingIcon})` }}
-                onClick={() => {isCheckingValued && this.handleClickShowRiskSection(3);}}
+                onClick={() => {
+                  isCheckingValued && this.handleClickShowRiskSection(3);
+                }}
               >
                 <div className={styles.summaryText} style={{ color: '#5EBEFF' }}>
                   待检查
@@ -1047,9 +1114,15 @@ class CompanyLayout extends PureComponent {
               </div>
 
               <div
-                className={isAbnormalValued?`${styles.summaryHalf} ${styles.hoverable}`:styles.summaryHalf}
+                className={
+                  isAbnormalValued
+                    ? `${styles.summaryHalf} ${styles.hoverable}`
+                    : styles.summaryHalf
+                }
                 style={{ backgroundImage: `url(${abnormalIcon})` }}
-                onClick={() => {isAbnormalValued && this.handleClickShowRiskSection(2);}}
+                onClick={() => {
+                  isAbnormalValued && this.handleClickShowRiskSection(2);
+                }}
               >
                 <div className={styles.summaryText} style={{ color: '#FF4848' }}>
                   异常
@@ -1058,9 +1131,13 @@ class CompanyLayout extends PureComponent {
               </div>
 
               <div
-                className={isOverValued?`${styles.summaryHalf} ${styles.hoverable}`:styles.summaryHalf}
+                className={
+                  isOverValued ? `${styles.summaryHalf} ${styles.hoverable}` : styles.summaryHalf
+                }
                 style={{ backgroundImage: `url(${overIcon})` }}
-                onClick={() => {isOverValued && this.handleClickShowRiskSection(4);}}
+                onClick={() => {
+                  isOverValued && this.handleClickShowRiskSection(4);
+                }}
               >
                 <div className={styles.summaryText} style={{ color: '#FF4848' }}>
                   已超时
@@ -1080,18 +1157,15 @@ class CompanyLayout extends PureComponent {
    */
   renderCenterTopSection() {
     const {
-      bigPlatform: {
-        riskPointInfoList,
-        allCamera = [],
-      },
+      bigPlatform: { riskPointInfoList, allCamera = [] },
     } = this.props;
-    const {
-      selectedId,
-      selectedFourColorImgId,
-      selectedFourColorImgUrl,
-      points,
-    } = this.state;
-    let red=0, orange=0, yellow=0, blue=0, gray=0, camera=0;
+    const { selectedId, selectedFourColorImgId, selectedFourColorImgUrl, points } = this.state;
+    let red = 0,
+      orange = 0,
+      yellow = 0,
+      blue = 0,
+      gray = 0,
+      camera = 0;
 
     return (
       <div className={riskStyles.fourColorImgContainer}>
@@ -1114,7 +1188,13 @@ class CompanyLayout extends PureComponent {
                     <RiskPoint
                       position={position}
                       src={videoPointIcon}
-                      style={{ width: 36, height: 36, cursor: 'pointer', boxShadow: '0 0 5px rgba(0,0,0,0.9)', borderRadius: '50%' }}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        cursor: 'pointer',
+                        boxShadow: '0 0 5px rgba(0,0,0,0.9)',
+                        borderRadius: '50%',
+                      }}
                       offset={normalOffset}
                       onClick={() => {
                         this.handleVideoShow(key_id);
@@ -1150,7 +1230,7 @@ class CompanyLayout extends PureComponent {
                 +info.hdLetterInfo.status === 2
               );
               let isGray = false;
-              switch(info.hdLetterInfo.riskLevelName.desc) {
+              switch (info.hdLetterInfo.riskLevelName.desc) {
                 case '红':
                   red++;
                   break;
@@ -1167,8 +1247,8 @@ class CompanyLayout extends PureComponent {
                   gray++;
                   isGray = true;
                   break;
-              };
-              const infoData = [
+              }
+              let infoData = [
                 {
                   icon: pointIcon,
                   title: '风险点名称',
@@ -1200,7 +1280,18 @@ class CompanyLayout extends PureComponent {
                 },
               ];
               if (isGray) {
-                infoData.splice(4, 1);
+                if (!info.hdLetterInfo.pointName && !info.hdLetterInfo.areaName && !info.hdLetterInfo.accidentTypeName && !info.hdLetterInfo.status && !info.hdLetterInfo.riskLevelName.desc) {
+                  infoData = [];
+                }
+                else {
+                  infoData.splice(4, 1);
+                  if (!info.hdLetterInfo.accidentTypeName) {
+                    infoData.splice(2, 1);
+                  }
+                  if (!info.hdLetterInfo.areaName) {
+                    infoData.splice(1, 1);
+                  }
+                }
               }
               return (
                 <Fragment key={id}>
@@ -1230,7 +1321,11 @@ class CompanyLayout extends PureComponent {
                     position={position}
                     offset={defaultInfoOffset}
                     data={infoData}
-                    background={isGray ? undefined: (info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl)}
+                    background={
+                      isGray
+                        ? undefined
+                        : info.localPictureUrlList[0] && info.localPictureUrlList[0].webUrl
+                    }
                     style={{
                       display: selectedId === id ? 'block' : 'none',
                       // opacity: selectedId === id ? '1' : '0',
@@ -1244,31 +1339,46 @@ class CompanyLayout extends PureComponent {
         <div className={riskStyles.fourColorImgLabelContainer}>
           {red > 0 && (
             <div className={riskStyles.fourColorImgLabel}>
-              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FC1F02' }} />
+              <span
+                className={riskStyles.fourColorImgLabelIcon}
+                style={{ backgroundColor: '#FC1F02' }}
+              />
               <span>重大风险</span>
             </div>
           )}
           {orange > 0 && (
             <div className={riskStyles.fourColorImgLabel}>
-              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#F17A0A' }} />
+              <span
+                className={riskStyles.fourColorImgLabelIcon}
+                style={{ backgroundColor: '#F17A0A' }}
+              />
               <span>较大风险</span>
             </div>
           )}
           {yellow > 0 && (
             <div className={riskStyles.fourColorImgLabel}>
-              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#FBF719' }} />
+              <span
+                className={riskStyles.fourColorImgLabelIcon}
+                style={{ backgroundColor: '#FBF719' }}
+              />
               <span>一般风险</span>
             </div>
           )}
           {blue > 0 && (
             <div className={riskStyles.fourColorImgLabel}>
-              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#1E60FF' }} />
+              <span
+                className={riskStyles.fourColorImgLabelIcon}
+                style={{ backgroundColor: '#1E60FF' }}
+              />
               <span>低风险</span>
             </div>
           )}
           {gray > 0 && (
             <div className={riskStyles.fourColorImgLabel}>
-              <span className={riskStyles.fourColorImgLabelIcon} style={{ backgroundColor: '#4E6693' }} />
+              <span
+                className={riskStyles.fourColorImgLabelIcon}
+                style={{ backgroundColor: '#4E6693' }}
+              />
               <span>风险点</span>
             </div>
           )}
@@ -1276,7 +1386,11 @@ class CompanyLayout extends PureComponent {
             <div className={riskStyles.fourColorImgLabel}>
               <span
                 className={riskStyles.fourColorImgLabelIcon}
-                style={{ backgroundImage: `url(${videoPointIcon})`, boxShadow: 'none', border: 'none' }}
+                style={{
+                  backgroundImage: `url(${videoPointIcon})`,
+                  boxShadow: 'none',
+                  border: 'none',
+                }}
               />
               <span>视频监控</span>
             </div>
@@ -1409,18 +1523,21 @@ class CompanyLayout extends PureComponent {
     };
 
     return (
-      <Rotate
-        axis="x"
-        frontIndex={unitInspectionIndex}
-        style={{ height: '32%' }}
-      >
+      <Rotate axis="x" frontIndex={unitInspectionIndex} style={{ height: '32%' }}>
         <section className={styles.sectionWrapper} style={{ height: '100%' }}>
           <div className={styles.sectionMain}>
             <div className={styles.shadowIn}>
               <div className={styles.sectionTitle}>
                 <span className={styles.sectionTitleIcon} />
                 单位巡查
-                <div className={styles.jumpButton} onClick={() => {this.handleSwitchUnitInspection(1);}}>巡查记录>></div>
+                <div
+                  className={styles.jumpButton}
+                  onClick={() => {
+                    this.handleSwitchUnitInspection(1);
+                  }}
+                >
+                  巡查记录>>
+                </div>
               </div>
               <div className={styles.lineChart} style={{ position: 'relative' }}>
                 <ReactEcharts
@@ -1431,11 +1548,17 @@ class CompanyLayout extends PureComponent {
                 />
                 <div className={styles.legendList}>
                   <div className={styles.legendItem}>
-                    <span className={styles.legendItemIcon} style={{ backgroundColor: '#5EBEFF' }} />
+                    <span
+                      className={styles.legendItemIcon}
+                      style={{ backgroundColor: '#5EBEFF' }}
+                    />
                     <span className={styles.legendItemName}>巡查</span>
                   </div>
                   <div className={styles.legendItem}>
-                    <span className={styles.legendItemIcon} style={{ backgroundColor: '#F7E68A' }} />
+                    <span
+                      className={styles.legendItemIcon}
+                      style={{ backgroundColor: '#F7E68A' }}
+                    />
                     <span className={styles.legendItemName}>隐患</span>
                   </div>
                 </div>
@@ -1581,79 +1704,86 @@ class CompanyLayout extends PureComponent {
       bigPlatform: {
         countDangerLocationForCompany: {
           // 未评级总数
-          countDangerLocation: [{ red: r, orange: o, yellow: y, blue: b, not_rated=0 } = {}] = [{}],
+          countDangerLocation: [{ red: r, orange: o, yellow: y, blue: b, not_rated = 0 } = {}] = [
+            {},
+          ],
           redDangerResult: {
-            normal: redNormal=[],
-            checking: redChecking=[],
-            abnormal: redAbnormal=[],
-            over: redOver=[],
+            normal: redNormal = [],
+            checking: redChecking = [],
+            abnormal: redAbnormal = [],
+            over: redOver = [],
           } = {},
           orangeDangerResult: {
-            normal: orangeNormal=[],
-            checking: orangeChecking=[],
-            abnormal: orangeAbnormal=[],
-            over: orangeOver=[],
+            normal: orangeNormal = [],
+            checking: orangeChecking = [],
+            abnormal: orangeAbnormal = [],
+            over: orangeOver = [],
           } = {},
           yellowDangerResult: {
-            normal: yellowNormal=[],
-            checking: yellowChecking=[],
-            abnormal: yellowAbnormal=[],
-            over: yellowOver=[],
+            normal: yellowNormal = [],
+            checking: yellowChecking = [],
+            abnormal: yellowAbnormal = [],
+            over: yellowOver = [],
           } = {},
           blueDangerResult: {
-            normal: blueNormal=[],
-            checking: blueChecking=[],
-            abnormal: blueAbnormal=[],
-            over: blueOver=[],
+            normal: blueNormal = [],
+            checking: blueChecking = [],
+            abnormal: blueAbnormal = [],
+            over: blueOver = [],
           } = {},
           unvaluedDangerResult: {
-            normal: unvaluedNormal=[],
-            checking: unvaluedChecking=[],
-            abnormal: unvaluedAbnormal=[],
-            over: unvaluedOver=[],
+            normal: unvaluedNormal = [],
+            checking: unvaluedChecking = [],
+            abnormal: unvaluedAbnormal = [],
+            over: unvaluedOver = [],
           } = {},
         },
       },
     } = this.props;
     const { riskStatus } = this.state;
     // 是否全部未评级
-    const isAllUnvalued = (r+o+y+b) === 0;
+    const isAllUnvalued = r + o + y + b === 0;
     // 获取对应状态的风险点
-    let redDangerResult, orangeDangerResult, yellowDangerResult, blueDangerResult, unvaluedDangerResult;
+    let redDangerResult,
+      orangeDangerResult,
+      yellowDangerResult,
+      blueDangerResult,
+      unvaluedDangerResult;
     if (riskStatus === 1) {
       redDangerResult = redNormal;
       orangeDangerResult = orangeNormal;
       yellowDangerResult = yellowNormal;
       blueDangerResult = blueNormal;
       unvaluedDangerResult = unvaluedNormal;
-    }
-    else if (riskStatus === 2) {
+    } else if (riskStatus === 2) {
       redDangerResult = redAbnormal;
       orangeDangerResult = orangeAbnormal;
       yellowDangerResult = yellowAbnormal;
       blueDangerResult = blueAbnormal;
       unvaluedDangerResult = unvaluedAbnormal;
-    }
-    else if (riskStatus === 3) {
+    } else if (riskStatus === 3) {
       redDangerResult = redChecking;
       orangeDangerResult = orangeChecking;
       yellowDangerResult = yellowChecking;
       blueDangerResult = blueChecking;
       unvaluedDangerResult = unvaluedChecking;
-    }
-    else if (riskStatus === 4) {
+    } else if (riskStatus === 4) {
       redDangerResult = redOver;
       orangeDangerResult = orangeOver;
       yellowDangerResult = yellowOver;
       blueDangerResult = blueOver;
       unvaluedDangerResult = unvaluedOver;
-    }
-    else {
+    } else {
       redDangerResult = [...redAbnormal, ...redOver, ...redChecking, ...redNormal];
       orangeDangerResult = [...orangeAbnormal, ...orangeOver, ...orangeChecking, ...orangeNormal];
       yellowDangerResult = [...yellowAbnormal, ...yellowOver, ...yellowChecking, ...yellowNormal];
       blueDangerResult = [...blueAbnormal, ...blueOver, ...blueChecking, ...blueNormal];
-      unvaluedDangerResult = [...unvaluedAbnormal, ...unvaluedOver, ...unvaluedChecking, ...unvaluedNormal];
+      unvaluedDangerResult = [
+        ...unvaluedAbnormal,
+        ...unvaluedOver,
+        ...unvaluedChecking,
+        ...unvaluedNormal,
+      ];
     }
     // 获取对应状态的评级数量统计
     const red = redDangerResult.length;
@@ -1689,7 +1819,13 @@ class CompanyLayout extends PureComponent {
           <div className={styles.shadowIn}>
             <div className={styles.sectionTitle}>
               <span className={styles.sectionTitleIcon} />
-              风险点{riskStatus && <span><span style={{ position: 'relative', top: '-2px' }}>—</span><span style={{ color: _color }}>{content}</span></span>}
+              风险点
+              {riskStatus && (
+                <span>
+                  <span style={{ position: 'relative', top: '-2px' }}>—</span>
+                  <span style={{ color: _color }}>{content}</span>
+                </span>
+              )}
               <Icon
                 type="close"
                 style={{
@@ -1705,7 +1841,8 @@ class CompanyLayout extends PureComponent {
                 }}
               />
             </div>
-            {!isAllUnvalued ? (<div className={styles.riskLevelList}>
+            {!isAllUnvalued ? (
+              <div className={styles.riskLevelList}>
                 <div className={styles.riskLevelItem}>
                   <div className={styles.riskLevelItemValue}>{red}</div>
                   <div className={styles.riskLevelItemName} style={{ color: '#FF4848' }}>
@@ -1743,7 +1880,7 @@ class CompanyLayout extends PureComponent {
                   </div>
                 )}
               </div>
-            ): (
+            ) : (
               <div className={styles.riskLevelList}>
                 <div className={`${styles.unvaluedItem} ${styles.riskLevelItem}`}>
                   <div className={styles.riskLevelItemValue}>{unvalued}</div>
@@ -1755,212 +1892,212 @@ class CompanyLayout extends PureComponent {
             )}
             <div className={scrollClassName}>
               {redDangerResult.map(
-                  ({
-                    item_id: id,
-                    object_title: name,
-                    status,
-                    user_name: checkPerson,
-                    check_date: checkTime,
-                  }) => {
-                    const { content, color } = switchCheckStatus(+status);
-                    return (
-                      <div className={styles.riskPointItem} key={id}>
-                        <div
-                          className={styles.riskPointItemLabel}
-                          style={switchColorAndBgColor('红')}
-                        >
-                          红
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>风险点</div>
-                          <div className={styles.riskPointItemValue}>{name}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查人</div>
-                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查时间</div>
-                          <div className={styles.riskPointItemValue}>{checkTime}</div>
-                        </div>
-                        {!riskStatus && (
-                          <div className={styles.riskPointItemNameWrapper}>
-                            <div className={styles.riskPointItemName}>状态</div>
-                            <div className={styles.riskPointItemValue} style={{ color }}>
-                              {content}
-                            </div>
-                          </div>
-                        )}
+                ({
+                  item_id: id,
+                  object_title: name,
+                  status,
+                  user_name: checkPerson,
+                  check_date: checkTime,
+                }) => {
+                  const { content, color } = switchCheckStatus(+status);
+                  return (
+                    <div className={styles.riskPointItem} key={id}>
+                      <div
+                        className={styles.riskPointItemLabel}
+                        style={switchColorAndBgColor('红')}
+                      >
+                        红
                       </div>
-                    );
-                  }
-                )}
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>风险点</div>
+                        <div className={styles.riskPointItemValue}>{name}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查人</div>
+                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查时间</div>
+                        <div className={styles.riskPointItemValue}>{checkTime}</div>
+                      </div>
+                      {!riskStatus && (
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              )}
               {orangeDangerResult.map(
-                  ({
-                    item_id: id,
-                    object_title: name,
-                    status,
-                    user_name: checkPerson,
-                    check_date: checkTime,
-                  }) => {
-                    const { content, color } = switchCheckStatus(+status);
-                    return (
-                      <div className={styles.riskPointItem} key={id}>
-                        <div
-                          className={styles.riskPointItemLabel}
-                          style={switchColorAndBgColor('橙')}
-                        >
-                          橙
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>风险点</div>
-                          <div className={styles.riskPointItemValue}>{name}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查人</div>
-                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查时间</div>
-                          <div className={styles.riskPointItemValue}>{checkTime}</div>
-                        </div>
-                        {!riskStatus && (
-                          <div className={styles.riskPointItemNameWrapper}>
-                            <div className={styles.riskPointItemName}>状态</div>
-                            <div className={styles.riskPointItemValue} style={{ color }}>
-                              {content}
-                            </div>
-                          </div>
-                        )}
+                ({
+                  item_id: id,
+                  object_title: name,
+                  status,
+                  user_name: checkPerson,
+                  check_date: checkTime,
+                }) => {
+                  const { content, color } = switchCheckStatus(+status);
+                  return (
+                    <div className={styles.riskPointItem} key={id}>
+                      <div
+                        className={styles.riskPointItemLabel}
+                        style={switchColorAndBgColor('橙')}
+                      >
+                        橙
                       </div>
-                    );
-                  }
-                )}
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>风险点</div>
+                        <div className={styles.riskPointItemValue}>{name}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查人</div>
+                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查时间</div>
+                        <div className={styles.riskPointItemValue}>{checkTime}</div>
+                      </div>
+                      {!riskStatus && (
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              )}
               {yellowDangerResult.map(
-                  ({
-                    item_id: id,
-                    object_title: name,
-                    status,
-                    user_name: checkPerson,
-                    check_date: checkTime,
-                  }) => {
-                    const { content, color } = switchCheckStatus(+status);
-                    return (
-                      <div className={styles.riskPointItem} key={id}>
-                        <div
-                          className={styles.riskPointItemLabel}
-                          style={switchColorAndBgColor('黄')}
-                        >
-                          黄
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>风险点</div>
-                          <div className={styles.riskPointItemValue}>{name}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查人</div>
-                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查时间</div>
-                          <div className={styles.riskPointItemValue}>{checkTime}</div>
-                        </div>
-                        {!riskStatus && (
-                          <div className={styles.riskPointItemNameWrapper}>
-                            <div className={styles.riskPointItemName}>状态</div>
-                            <div className={styles.riskPointItemValue} style={{ color }}>
-                              {content}
-                            </div>
-                          </div>
-                        )}
+                ({
+                  item_id: id,
+                  object_title: name,
+                  status,
+                  user_name: checkPerson,
+                  check_date: checkTime,
+                }) => {
+                  const { content, color } = switchCheckStatus(+status);
+                  return (
+                    <div className={styles.riskPointItem} key={id}>
+                      <div
+                        className={styles.riskPointItemLabel}
+                        style={switchColorAndBgColor('黄')}
+                      >
+                        黄
                       </div>
-                    );
-                  }
-                )}
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>风险点</div>
+                        <div className={styles.riskPointItemValue}>{name}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查人</div>
+                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查时间</div>
+                        <div className={styles.riskPointItemValue}>{checkTime}</div>
+                      </div>
+                      {!riskStatus && (
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              )}
               {blueDangerResult.map(
-                  ({
-                    item_id: id,
-                    object_title: name,
-                    status,
-                    user_name: checkPerson,
-                    check_date: checkTime,
-                  }) => {
-                    const { content, color } = switchCheckStatus(+status);
-                    return (
-                      <div className={styles.riskPointItem} key={id}>
+                ({
+                  item_id: id,
+                  object_title: name,
+                  status,
+                  user_name: checkPerson,
+                  check_date: checkTime,
+                }) => {
+                  const { content, color } = switchCheckStatus(+status);
+                  return (
+                    <div className={styles.riskPointItem} key={id}>
+                      <div
+                        className={styles.riskPointItemLabel}
+                        style={switchColorAndBgColor('蓝')}
+                      >
+                        蓝
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>风险点</div>
+                        <div className={styles.riskPointItemValue}>{name}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查人</div>
+                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
+                      </div>
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查时间</div>
+                        <div className={styles.riskPointItemValue}>{checkTime}</div>
+                      </div>
+                      {!riskStatus && (
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              )}
+              {unvaluedDangerResult.map(
+                ({
+                  item_id: id,
+                  object_title: name,
+                  status,
+                  user_name: checkPerson,
+                  check_date: checkTime,
+                }) => {
+                  const { content, color } = switchCheckStatus(+status);
+                  return (
+                    <div className={styles.riskPointItem} key={id}>
+                      {!isAllUnvalued && (
                         <div
                           className={styles.riskPointItemLabel}
-                          style={switchColorAndBgColor('蓝')}
+                          style={switchColorAndBgColor('未评级')}
                         >
-                          蓝
+                          未评级
                         </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>风险点</div>
-                          <div className={styles.riskPointItemValue}>{name}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查人</div>
-                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查时间</div>
-                          <div className={styles.riskPointItemValue}>{checkTime}</div>
-                        </div>
-                        {!riskStatus && (
-                          <div className={styles.riskPointItemNameWrapper}>
-                            <div className={styles.riskPointItemName}>状态</div>
-                            <div className={styles.riskPointItemValue} style={{ color }}>
-                              {content}
-                            </div>
-                          </div>
-                        )}
+                      )}
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>风险点</div>
+                        <div className={styles.riskPointItemValue}>{name}</div>
                       </div>
-                    );
-                  }
-                )}
-                {unvaluedDangerResult.map(
-                  ({
-                    item_id: id,
-                    object_title: name,
-                    status,
-                    user_name: checkPerson,
-                    check_date: checkTime,
-                  }) => {
-                    const { content, color } = switchCheckStatus(+status);
-                    return (
-                      <div className={styles.riskPointItem} key={id}>
-                        {!isAllUnvalued && (
-                          <div
-                            className={styles.riskPointItemLabel}
-                            style={switchColorAndBgColor('未评级')}
-                          >
-                            未评级
-                          </div>
-                        )}
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>风险点</div>
-                          <div className={styles.riskPointItemValue}>{name}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查人</div>
-                          <div className={styles.riskPointItemValue}>{checkPerson}</div>
-                        </div>
-                        <div className={styles.riskPointItemNameWrapper}>
-                          <div className={styles.riskPointItemName}>检查时间</div>
-                          <div className={styles.riskPointItemValue}>{checkTime}</div>
-                        </div>
-                        {!riskStatus && (
-                          <div className={styles.riskPointItemNameWrapper}>
-                            <div className={styles.riskPointItemName}>状态</div>
-                            <div className={styles.riskPointItemValue} style={{ color }}>
-                              {content}
-                            </div>
-                          </div>
-                        )}
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查人</div>
+                        <div className={styles.riskPointItemValue}>{checkPerson}</div>
                       </div>
-                    );
-                  }
-                )}
+                      <div className={styles.riskPointItemNameWrapper}>
+                        <div className={styles.riskPointItemName}>检查时间</div>
+                        <div className={styles.riskPointItemValue}>{checkTime}</div>
+                      </div>
+                      {!riskStatus && (
+                        <div className={styles.riskPointItemNameWrapper}>
+                          <div className={styles.riskPointItemName}>状态</div>
+                          <div className={styles.riskPointItemValue} style={{ color }}>
+                            {content}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              )}
             </div>
           </div>
         </div>
@@ -1976,16 +2113,23 @@ class CompanyLayout extends PureComponent {
     const { videoVisible, videoKeyId } = this.state;
     return (
       <div className={styles.main}>
-        <Header title="晶安智慧安全云平台" />
+        <Header title={projectName} />
         <Row
           gutter={24}
           className={styles.mainBody}
           style={{ margin: '0', padding: '16px 12px 24px', overflow: 'hidden' }}
         >
           <Col span={6} className={styles.column}>
-            <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+            <div
+              style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}
+            >
               <div
-                style={{ width: '100%', height: '100%', overflow: 'hidden', transition: 'opacity 0.5s' }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'hidden',
+                  transition: 'opacity 0.5s',
+                }}
                 ref={leftSection => (this.leftSection = leftSection)}
               >
                 {this.renderLeftTopSection()}

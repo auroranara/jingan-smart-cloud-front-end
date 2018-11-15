@@ -36,6 +36,7 @@ import {
   getListForMapForOptimize,
   getMapLocation,
   getCompanyCheckCount,
+  getDangerLocationCompanyNotRatedData,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -596,6 +597,21 @@ export default {
         error();
       }
     },
+    // 风险点点击的具体信息
+    *fetchDangerLocationCompanyNotRatedData({ payload, success, error }, { call, put }) {
+      const response = yield call(getDangerLocationCompanyNotRatedData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'dangerLocationCompanyNotRatedData',
+          payload: response.data.list,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
     *fetchAllCamera({ payload, success }, { call, put }) {
       const response = yield call(getAllCamera, payload);
       const { list } = response;
@@ -996,6 +1012,12 @@ export default {
       };
     },
     dangerLocationCompanyData(state, { payload }) {
+      return {
+        ...state,
+        dangerLocationCompanyData: payload,
+      };
+    },
+    dangerLocationCompanyNotRatedData(state, { payload }) {
       return {
         ...state,
         dangerLocationCompanyData: payload,

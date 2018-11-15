@@ -25,8 +25,14 @@ const statusList = [
   { value: 2, label: '待处理' },
 ]
 
-@connect(({ dataAnalysis }) => ({
+// 栅格的配置
+const grdiSetting={
+  xl:8,md:12, sm:24, xs:24,
+}
+
+@connect(({ dataAnalysis, user }) => ({
   dataAnalysis,
+  user,
 }))
 @Form.create()
 export default class RepairRecordList extends PureComponent {
@@ -169,12 +175,16 @@ export default class RepairRecordList extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator },
+      user: {
+        currentUser: {
+          unitType,
+        } = {},
+      },
     } = this.props
     return (
       <Card>
         <Form layout="inline" className={styles.repairRecordForm}>
-          <Col span={18}>
-            <Col span={8}>
+            <Col {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('workOrder', {
                   getValueFromEvent: e => e.target.value.trim(),
@@ -183,7 +193,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col  {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('companyName', {
                   getValueFromEvent: e => e.target.value.trim(),
@@ -192,7 +202,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col  {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('unitName', {
                   getValueFromEvent: e => e.target.value.trim(),
@@ -201,16 +211,16 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={8}>
+            <Col {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('status')(
                   <Select placeholder="请选择维修状态">
-                    {statusList.map(({ value, label }) => (<Option value={value} key={value}>{label}</Option>))}
+                    {statusList.map(({ value, label }) => unitType === 4 && value === 2 ? null : (<Option value={value} key={value} >{label}</Option>))}
                   </Select>
                 )}
               </FormItem>
             </Col>
-            <Col span={12}>
+            <Col {...grdiSetting}>
               <FormItem className={styles.formItem} >
                 {getFieldDecorator('time')(
                   <RangePicker
@@ -224,8 +234,7 @@ export default class RepairRecordList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Col>
-          <Col span={6}>
+          <Col {...grdiSetting}>
             <FormItem>
               <Button onClick={this.handleQuery} type="primary">查询</Button>
             </FormItem>
