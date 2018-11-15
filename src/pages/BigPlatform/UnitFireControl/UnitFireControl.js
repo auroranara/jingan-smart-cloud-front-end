@@ -322,6 +322,7 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         month: moment({ month: defaultHiddenDangerType }).format('YYYY-MM'),
+        businessType: 2,
       },
     });
 
@@ -472,6 +473,7 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         month: moment({ month: hiddenDangerType }).format('YYYY-MM'),
+        businessType: 2,
       },
     });
   };
