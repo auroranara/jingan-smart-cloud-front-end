@@ -92,8 +92,16 @@ export default class CompanyModal extends PureComponent {
     const {
       modal: { list },
       onSelect,
+      multiSelect,
     } = this.props;
-    const selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
+    let selectedData;
+    if (multiSelect) {
+      selectedData = selectedRowKeys.map(data => {
+        return list.find(item => item.id === data);
+      });
+    } else {
+      selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
+    }
     if (onSelect) {
       onSelect(selectedData);
     }
