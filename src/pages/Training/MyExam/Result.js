@@ -20,7 +20,10 @@ export default class ExamList extends PureComponent {
           // breadcrumbList={breadcrumbList}
           // content={}
         >
-          <h1>考试分析</h1>
+          <Row>
+            <Col span={6}>答题卡</Col>
+            <Col span={18}>试卷内容</Col>
+          </Row>
         </PageHeaderLayout>
       );
     }
