@@ -96,6 +96,8 @@ const defaultColumns = fuc => {
       align: 'center',
       width: 150,
       render: (val, record) => {
+        console.log('fuc', fuc);
+
         const { files } = record;
         return (
           <Fragment>
@@ -160,7 +162,104 @@ export default class MaintenanceRecordList extends PureComponent {
     visible: false,
     imgUrl: [], // 附件图片列表
     currentImage: 0, // 展示附件大图下标
-    columns: defaultColumns(this.handleShowModal),
+    columns: [
+      {
+        title: '维保时间',
+        dataIndex: 'checkDate',
+        key: 'checkDate',
+        align: 'center',
+        width: 200,
+        render: time => {
+          return moment(time).format('YYYY-MM-DD HH:mm:ss');
+        },
+      },
+      {
+        title: '维保人员',
+        dataIndex: 'checkUsers',
+        key: 'checkUserIds',
+        align: 'center',
+        width: 220,
+        render: val => {
+          return val && val.length > 0
+            ? val.map((v, i) => {
+                return <div key={i}> {v.userName}</div>;
+              })
+            : '';
+        },
+      },
+      {
+        title: '联系电话',
+        dataIndex: 'checkUsers',
+        key: 'phoneNumber',
+        align: 'center',
+        width: 240,
+        render: val => {
+          return val && val.length > 0
+            ? val.map((v, i) => {
+                return <div key={i}>{v.phoneNumber}</div>;
+              })
+            : '';
+        },
+      },
+      {
+        title: '服务单位',
+        dataIndex: 'bcheckCompanyName',
+        key: 'bcheckCompanyId',
+        align: 'center',
+        width: 300,
+      },
+      {
+        title: '综合评分',
+        dataIndex: 'score',
+        key: 'score',
+        align: 'center',
+        width: 120,
+      },
+      {
+        title: '附件',
+        dataIndex: 'files',
+        key: 'fileIds',
+        align: 'center',
+        width: 150,
+        render: (val, record) => {
+          const { files } = record;
+          return (
+            <Fragment>
+              {files && files.length ? (
+                <AuthA
+                  code={codesMap.dataAnalysis.MaintenanceRecord.view}
+                  onClick={() => {
+                    this.handleShowModal(files);
+                  }}
+                >
+                  查看附件
+                </AuthA>
+              ) : (
+                <span style={{ color: '#aaa' }}>查看附件</span>
+              )}
+            </Fragment>
+          );
+        },
+      },
+      {
+        title: '操作',
+        dataIndex: 'operation',
+        key: 'operation',
+        fixed: 'right',
+        align: 'center',
+        width: 100,
+        render: (val, record) => (
+          <AuthA
+            code={codesMap.dataAnalysis.MaintenanceRecord.view}
+            onClick={() => goRecordDetail(record.id)}
+          >
+            查看
+          </AuthA>
+        ),
+      },
+    ],
+
+    // defaultColumns(this.handleShowModal),
   };
 
   // 挂载后
@@ -176,6 +275,7 @@ export default class MaintenanceRecordList extends PureComponent {
         currentUser: { companyBasicInfo: { isBranch } = {} },
       },
     } = this.props;
+    const { columns } = this.state;
     if (!isBranch) {
       const newColumns = [
         {
@@ -185,9 +285,8 @@ export default class MaintenanceRecordList extends PureComponent {
           align: 'center',
           width: 300,
         },
-        ...defaultColumns(this.handleShowModal),
       ];
-      this.setState({ columns: newColumns });
+      this.setState({ columns: [...newColumns, ...columns] });
     }
     // 获取记录列表
     dispatch({

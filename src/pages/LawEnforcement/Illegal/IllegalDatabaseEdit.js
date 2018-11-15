@@ -207,6 +207,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 选择按钮点击事件(设定依据)
   handleSelect = value => {
+    console.log('value', value);
     const { setFieldsValue } = this.props.form;
     setFieldsValue({
       setLawIds: value.map(item => item.lawTypeName + ' ' + item.article).join(','),
