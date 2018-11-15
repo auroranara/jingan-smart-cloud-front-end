@@ -157,7 +157,11 @@ export default class FireControlMap extends PureComponent {
         events={{
           click: this.handleClick.bind(this, item),
           created: () => {
-            if (isLast) this.mapInstance.setFitView();
+            if (isLast) {
+              this.mapInstance.on('complete', () => {
+                this.mapInstance.setFitView();
+              });
+            }
           },
         }}
       >
