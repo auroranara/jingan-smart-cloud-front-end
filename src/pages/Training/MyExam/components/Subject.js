@@ -1,16 +1,27 @@
 import React, { PureComponent } from 'react';
 import { Checkbox, Radio } from 'antd';
 
+import styles from './Subject.less';
+
 const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;
-const CHOICES = ['A', 'B', 'C', 'K', 'E', 'F', 'G', 'H'];
+const CHOICES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+const CHOICE_STYLE = { display: 'block', fontSize: 18, height: 50, lineHeight: '50px', margin: '0 0 0 20px' };
 
 export default class Subject extends PureComponent {
   render() {
-    return (
-      <div>
-        <p></p>
+    const { index=0, question, choices, type='single', onChange, value='', ...restProps } = this.props;
+    const isSingle = type === 'single';
+    const Group = isSingle ? RadioGroup : CheckboxGroup;
+    const Choice = isSingle ? Radio : Checkbox;
 
+    return (
+      <div className={styles.container} {...restProps}>
+        <p className={styles.p}>{`${index + 1}、${question}：(`}<span className={styles.backspace} />)</p>
+        <Group onChange={e => onChange(isSingle ? e.target.value : e)} value={value}>
+          {choices.map((c, i) => <Choice key={i} value={i} style={CHOICE_STYLE}>{`${CHOICES[i]}、${c}`}</Choice>)}
+        </Group>
       </div>
     );
   }
