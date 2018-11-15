@@ -160,7 +160,7 @@ export default {
   'menu.account.settings': '个人设置',
   'menu.account.changePassword': '修改密码',
   'menu.account.trigger': '触发报错',
-  'menu.training': '培训',
+  'menu.training': '教育培训',
   'menu.training.library': '题库',
   'menu.training.library.list': '题库列表',
   'menu.training.library.questionsAdd': '新增试题',

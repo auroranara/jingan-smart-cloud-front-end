@@ -24,13 +24,13 @@ const data = [
     id: '001',
   },
   {
-    title: '消防应急操作指南指导...',
+    title: '消防应急操作指南指导fsdfvsd',
     content: '学习学习',
     author: '啊是大',
     id: '002',
   },
   {
-    title: '消防应急操作指南指导...',
+    title: '消防应急操作指南指导东方闪电',
     content: '学习学习',
     author: '啊是大',
     id: '003',
@@ -92,16 +92,7 @@ export default class ArticleList extends PureComponent {
           grid={{ gutter: 16, column: 1 }}
           dataSource={data}
           renderItem={item => (
-            <ListItem
-              key={item.id}
-              actions={[
-                <IconText type="user" text="100" />,
-                <IconText type="eye" text="1000" />,
-                <a>
-                  <IconText type="read" text="开始阅读" />
-                </a>,
-              ]}
-            >
+            <ListItem key={item.id}>
               <Card className={styles.cardContainer}>
                 <div className={styles.firstLine}>
                   <div className={styles.title}>{item.title}</div>
@@ -112,6 +103,17 @@ export default class ArticleList extends PureComponent {
                     <Tag color="blue">已读</Tag>
                   </p>
                   <span>2018-11-11 11:11</span>
+                  <p>
+                    <ListItem
+                      actions={[
+                        <IconText type="user" text="100" />,
+                        <IconText type="eye" text="1000" />,
+                        <a>
+                          <IconText type="read" text="开始阅读" />
+                        </a>,
+                      ]}
+                    />
+                  </p>
                 </div>
               </Card>
             </ListItem>
