@@ -142,6 +142,8 @@ class RiskBar extends PureComponent {
         not_rated_abnormal = 0,
         not_rated_company = 0,
         ycdCount = 0,
+        zcdCount,
+        zcdCompanyCount,
       },
     } = this.props;
     let xData,
@@ -157,7 +159,7 @@ class RiskBar extends PureComponent {
       barLegend = 'colors';
     } else if (red + orange + yellow + blue === 0) {
       // 都是未评级
-      option = this.pieOption(not_rated, not_rated_abnormal, not_rated_company, ycdCount);
+      option = this.pieOption(not_rated, not_rated_abnormal, zcdCount, ycdCount, zcdCompanyCount);
       barLegend = 'pie';
     } else {
       // 都有
@@ -318,8 +320,8 @@ class RiskBar extends PureComponent {
     return option;
   };
 
-  pieOption = (risks, risksAbnormal, companys, companysAbnormal) => {
-    const comArr = [companys - companysAbnormal, +companysAbnormal];
+  pieOption = (risks, risksAbnormal, risksNormal, companysAbnormal, companysNormal) => {
+    const comArr = [+companysNormal, +companysAbnormal];
     const option = {
       title: {
         text: risks,
@@ -370,7 +372,7 @@ class RiskBar extends PureComponent {
             },
           },
           data: [
-            { value: risks - risksAbnormal, name: '正常风险点' },
+            { value: risksNormal, name: '正常风险点' },
             { value: risksAbnormal, name: '异常风险点' },
           ],
         },
@@ -431,6 +433,8 @@ class RiskBar extends PureComponent {
           not_rated_abnormal = 0,
           not_rated_company = 0,
           ycdCount = 0,
+          zcdCount = 0,
+          zcdCompanyCount = 0,
         },
         gridId,
       } = this.props;
@@ -463,12 +467,12 @@ class RiskBar extends PureComponent {
       ];
       const risksPie = [
         {
-          risk: not_rated - not_rated_abnormal,
-          // abnormal: not_rated_abnormal,
-          company: not_rated_company - ycdCount,
+          risk: not_rated,
+          abnormal: +zcdCount,
+          company: +zcdCompanyCount,
         },
         {
-          risk: not_rated_abnormal,
+          risk: not_rated,
           abnormal: not_rated_abnormal,
           company: +ycdCount,
         },
@@ -488,6 +492,7 @@ class RiskBar extends PureComponent {
             risk: risks[dataIndex].risk,
             abnormal: risks[dataIndex].abnormal,
             company: risks[dataIndex].company,
+            componentSubType: 'bar',
           },
         });
       } else {
@@ -501,9 +506,10 @@ class RiskBar extends PureComponent {
         handleParentChange({
           riskColorSummary: {
             riskColorTitle: riskTitlesPie[dataIndex],
-            risk: risksPie[dataIndex].risk,
+            risk: not_rated,
             abnormal: risksPie[dataIndex].abnormal,
             company: risksPie[dataIndex].company,
+            componentSubType: 'pie',
           },
         });
       }

@@ -229,7 +229,7 @@ export default class lawDatabaseList extends PureComponent {
             <FormItem>
               <Button onClick={this.handleClickToReset}>重置</Button>
             </FormItem>
-            <FormItem style={{ float: 'right' }}>
+            <FormItem>
               <AuthButton
                 type="primary"
                 code={codesMap.lawEnforcement.laws.add}

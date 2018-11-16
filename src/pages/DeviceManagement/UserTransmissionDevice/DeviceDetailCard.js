@@ -36,7 +36,9 @@ export default class DeviceDetailCard extends Component {
       <ButtonGroup>
         <AuthButton
           code={buttonCodes.deviceManagement.transmission.update}
-          onClick={() =>{ handleDeviceUpdateClick(deviceData); } }
+          onClick={() => {
+            handleDeviceUpdateClick(deviceData);
+          }}
         >
           编辑
         </AuthButton>
@@ -155,7 +157,12 @@ export default class DeviceDetailCard extends Component {
                 >
                   删除
                 </a> */}
-                <AuthA code={buttonCodes.deviceManagement.transmission.host.delete} onClick={() => handleHostDeleteClick(id, record.id)}>删除</AuthA>
+                <AuthA
+                  code={buttonCodes.deviceManagement.transmission.host.delete}
+                  onClick={() => handleHostDeleteClick(id, record.id)}
+                >
+                  删除
+                </AuthA>
               </MenuItem>
               <MenuItem>
                 {/* <Link
@@ -173,7 +180,9 @@ export default class DeviceDetailCard extends Component {
                 <AuthLink
                   // codes={[]}
                   code={buttonCodes.deviceManagement.transmission.host.import}
-                  to={`/device-management/user-transmission-device/${companyId}/import-point-position/${record.id}`}
+                  to={`/device-management/user-transmission-device/${companyId}/import-point-position/${
+                    record.id
+                  }`}
                 >
                   导入点位
                 </AuthLink>
@@ -218,9 +227,13 @@ export default class DeviceDetailCard extends Component {
                 </a> */}
                 <AuthA
                   // hasAuthFn = {() => false}
-                  hasAuthFn={codes => hasAuthority(buttonCodes.deviceManagement.transmission.host.delete, codes) || hasAuthority(buttonCodes.transmission.host.import, codes)}
+                  hasAuthFn={codes =>
+                    hasAuthority(buttonCodes.deviceManagement.transmission.host.delete, codes) ||
+                    hasAuthority(buttonCodes.deviceManagement.transmission.host.import, codes)
+                  }
                 >
-                  更多<Icon type="down" />
+                  更多
+                  <Icon type="down" />
                 </AuthA>
               </Dropdown>
             </Fragment>
