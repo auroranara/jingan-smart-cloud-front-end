@@ -7,7 +7,8 @@ const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;
 const CHOICES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
-const CHOICE_STYLE = { display: 'block', fontSize: 18, height: 50, lineHeight: '50px', margin: '0 0 0 20px' };
+const HEIGHT = 40;
+const CHOICE_STYLE = { display: 'block', fontSize: 16, height: HEIGHT, lineHeight: `${HEIGHT}px`, margin: '0 0 0 20px' };
 
 export default class Subject extends PureComponent {
   render() {
