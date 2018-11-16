@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { List, Card, Button, Row, Icon, Form, Input, Select, Col, Divider, Popconfirm, Tag } from 'antd';
+import { List, Card, Button, Row, Icon, Form, Input, Select, Col, Divider, Popconfirm, Tag, Spin } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import styles from './QuestionsList.less';
@@ -19,12 +19,15 @@ const formWrapper = {
     span: 22,
   },
 }
-
+// 标签颜色
+const colors = ['green', 'blue', 'volcano']
+// 试题类型选项
 const questionsTypes = [
   { value: '1', label: '单选题' },
   { value: '2', label: '多选题' },
   { value: '3', label: '判断题' },
 ]
+// 难易程度选项
 const levels = [
   { value: '1', label: '简单' },
   { value: '2', label: '一般' },
@@ -32,20 +35,27 @@ const levels = [
 ]
 
 @Form.create()
-@connect(({ resourceManagement, loading }) => ({
+@connect(({ resourceManagement, user, loading }) => ({
   resourceManagement,
-  // treeLoading: loading.effects['resourceManagement/fetchKnowledgeTree'],
+  user,
+  initLoading: loading.effects['resourceManagement/fetchQuestions'],
+  loading: loading.effects['resourceManagement/appendQuestions'],
 }))
 export default class QuestionsList extends PureComponent {
 
   componentDidMount() {
-    const { dispatch } = this.props
+    const {
+      dispatch,
+      unitType,
+      companyId,
+    } = this.props
     // 获取试题列表
     dispatch({
       type: 'resourceManagement/fetchQuestions',
       payload: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
+        companyId: unitType === 2 ? companyId : null,
       },
     })
   }
@@ -53,6 +63,82 @@ export default class QuestionsList extends PureComponent {
   // 点击新增
   handleAddQuestions = () => {
     router.push('/training/library/questions/add')
+  }
+
+  // 点击查询按钮
+  handleQuery = () => {
+    const {
+      dispatch,
+      knowledgeId,
+      unitType,
+      companyId,
+      form: { getFieldsValue },
+      resourceManagement: {
+        questions: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props
+    const values = getFieldsValue()
+    dispatch({
+      type: 'resourceManagement/fetchQuestions',
+      payload: {
+        pageNum: 1,
+        pageSize,
+        knowledgeId,
+        companyId: unitType === 2 ? companyId : null,
+        ...values,
+      },
+    })
+  }
+
+  // 加载更多试题
+  handleLoadMore = () => {
+    const {
+      dispatch,
+      knowledgeId,
+      unitType,
+      companyId,
+      form: { getFieldsValue },
+      resourceManagement: {
+        questions: {
+          pagination: { pageSize, pageNum },
+        },
+      },
+    } = this.props
+    const values = getFieldsValue()
+    dispatch({
+      type: 'resourceManagement/appendQuestions',
+      payload: {
+        pageNum: pageNum + 1,
+        pageSize,
+        knowledgeId,
+        companyId: unitType === 2 ? companyId : null,
+        ...values,
+      },
+    })
+  }
+
+  // 点击重置按钮
+  handleReset = () => {
+    const {
+      dispatch,
+      unitType,
+      companyId,
+      knowledgeId,
+      form: { resetFields },
+    } = this.props
+    // 清空筛选数据
+    resetFields()
+    dispatch({
+      type: 'resourceManagement/fetchQuestions',
+      payload: {
+        pageNum: 1,
+        pageSize: 5,
+        knowledgeId,
+        companyId: unitType === 2 ? companyId : null,
+      },
+    })
   }
 
   // 渲染试题单元
@@ -114,8 +200,8 @@ export default class QuestionsList extends PureComponent {
         </Col>
         <Col {...colWrapper}>
           <FormItem>
-            <Button style={{ marginRight: '10px' }} type="primary">查询</Button>
-            <Button style={{ marginRight: '10px' }}>重置</Button>
+            <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
+            <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
             <Button onClick={this.handleAddQuestions} type="primary">新增</Button>
           </FormItem>
         </Col>
@@ -125,9 +211,12 @@ export default class QuestionsList extends PureComponent {
 
   render() {
     const {
+      initLoading,
+      loading,
       resourceManagement: {
         questions: {
           list,
+          isLast,
         },
       },
     } = this.props
@@ -137,6 +226,14 @@ export default class QuestionsList extends PureComponent {
           {this.renderFilter()}
         </Row>
         <List
+          loading={initLoading}
+          loadMore={(
+            <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px' }}>
+              {!isLast && !initLoading && !loading ? (<Button onClick={this.handleLoadMore}>加载更多</Button>) : (
+                (<Spin spinning={!initLoading && loading} />)
+              )}
+            </div>
+          )}
           grid={{ gutter: 16, column: 1 }}
           dataSource={list}
           renderItem={item => {
@@ -149,7 +246,7 @@ export default class QuestionsList extends PureComponent {
                     <div className={styles.tags}>
                       {item.typeName && <Tag>{item.typeName}</Tag>}
                       {/* {item.sort && <Tag>{item.sort}</Tag>} */}
-                      {item.levelName && <Tag color={"green"}>{item.levelName}</Tag>}
+                      {item.levelName && <Tag color={colors[item.level - 1]}>{item.levelName}</Tag>}
                     </div>
                     <div className={styles.rightIcon}>
                       <Icon className={styles.icon} type="edit" onClick={() => { router.push(`/training/library/questions/edit/${item.id}`) }} />

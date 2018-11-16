@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Form, Row, Col, Input, Select, Icon, Radio, Checkbox, TreeSelect, message } from 'antd';
+import { Button, Card, Form, Row, Col, Input, Select, Icon, Radio, Checkbox, TreeSelect, message, Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './QuestionsAdd.less';
 
@@ -40,7 +40,7 @@ const colWrapper = {
 @Form.create()
 @connect(({ resourceManagement, loading }) => ({
   resourceManagement,
-  // treeLoading: loading.effects['resourceManagement/'],
+  loading: loading.models.resourceManagement,
 }))
 export default class QuestionsAdd extends PureComponent {
 
@@ -48,13 +48,45 @@ export default class QuestionsAdd extends PureComponent {
     super(props)
     this.state = {
       optionsHelp: '',
+      title: '新增试题',
+      keys: [], // 只是用来计数（子选项数量）
     }
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+      form: { setFieldsValue },
+    } = this.props
     // 获取知识点树
     dispatch({ type: 'resourceManagement/fetchKnowledgeTree' })
+    // 如果是编辑的情况
+    if (id) {
+      this.setState({ title: '编辑试题' })
+      dispatch({
+        type: 'resourceManagement/fetchQuestionDetail',
+        payload: { id },
+        callback: async ({ type, arrOptions, knowledgeId, level, stem, des, arrAnswer }) => {
+          this.setState({ keys: arrOptions }, () => {
+            setFieldsValue({
+              type,
+              knowledgeId,
+              level,
+              stem,
+              des,
+              arrOptions: arrOptions.map(item => {
+                return item.desc
+              }),
+              arrAnswer: type === '2' ? arrAnswer : arrAnswer[0],
+            })
+          })
+
+        },
+      })
+    }
   }
 
   // 点击选择试题类型
@@ -64,13 +96,13 @@ export default class QuestionsAdd extends PureComponent {
     } = this.props
     if (value === '3') {
       // 如果是判断题(必须先getFieldDecorator绑定再使用setFieldsValue)
-      await setFieldsValue({
-        keys: [0, 1],
+      this.setState({ keys: [0, 1] }, () => {
+        setFieldsValue({
+          arrAnswer: null,
+          arrOptions: ['正确', '错误'],
+        })
       })
-      setFieldsValue({
-        arrAnswer: null,
-        arrOptions: ['正确', '错误'],
-      })
+
       return
     }
     setFieldsValue({
@@ -81,9 +113,9 @@ export default class QuestionsAdd extends PureComponent {
   // 点击添加子选项
   handleAddOption = () => {
     const {
-      form: { getFieldValue, setFieldsValue, validateFields },
+      form: { validateFields },
     } = this.props
-    const keys = getFieldValue('keys')
+    const { keys } = this.state
     // 校验试题类型是否选择
     validateFields(['type'], (errors, value) => {
       if (!errors) {
@@ -91,7 +123,7 @@ export default class QuestionsAdd extends PureComponent {
           return;
         }
         let nextKeys = keys.concat(keys.length)
-        setFieldsValue({ keys: nextKeys })
+        this.setState({ keys: nextKeys })
       }
     })
   }
@@ -103,22 +135,25 @@ export default class QuestionsAdd extends PureComponent {
         setFieldsValue, getFieldsValue,
       },
     } = this.props
-    const { type, arrAnswer, keys, arrOptions } = getFieldsValue()
+    const { keys } = this.state
+    const { type, arrAnswer, arrOptions } = getFieldsValue()
     arrOptions.splice(i, 1)
     const newKeys = keys.slice(0, -1)
     const ans = Array.isArray(arrAnswer) ? arrAnswer : [arrAnswer]
     // 如果删除的子选项包含在正确答案里，就在答案中去除
     if (ans.includes(i)) {
-      setFieldsValue({
-        arrOptions,
-        keys: newKeys,
-        arrAnswer: type === '2' ? ans.filter(item => item < i) : null,
+      this.setState({ keys: newKeys }, () => {
+        setFieldsValue({
+          arrOptions,
+          arrAnswer: type === '2' ? ans.filter(item => item < i) : null,
+        })
       })
       return
     }
-    setFieldsValue({
-      arrOptions,
-      keys: newKeys,
+    this.setState({ keys: newKeys }, () => {
+      setFieldsValue({
+        arrOptions,
+      })
     })
   }
 
@@ -144,26 +179,45 @@ export default class QuestionsAdd extends PureComponent {
       form: { validateFields },
       dispatch,
     } = this.props
+    const {
+      match: {
+        params: { id },
+      },
+    } = this.props
     validateFields((errors, values) => {
       if (!errors) {
-        const { arrOptions, arrAnswer, keys, ...others } = values
+        const { arrOptions, arrAnswer, ...others } = values
         const newAnswers = Array.isArray(arrAnswer) ? arrAnswer : [arrAnswer]
         const newOptions = arrOptions.map(item => {
           return { desc: item }
         })
         // console.log('value', { ...others, arrAnswer: newAnswers, arrOptions: newOptions });
 
-        dispatch({
-          type: 'resourceManagement/addQuestion',
-          payload: { ...others, arrAnswer: newAnswers, arrOptions: newOptions },
-          success: () => {
-            message.success('新增试题成功！')
-            router.push('/training/library/questions/list')
-          },
-          error: () => {
-            message.error('新增试题失败')
-          },
-        })
+        if (!id) {
+          dispatch({
+            type: 'resourceManagement/addQuestion',
+            payload: { ...others, arrAnswer: newAnswers, arrOptions: newOptions },
+            success: () => {
+              message.success('新增试题成功！')
+              router.push('/training/library/questions/list')
+            },
+            error: () => {
+              message.error('新增试题失败！')
+            },
+          })
+        } else {
+          dispatch({
+            type: 'resourceManagement/updateQuestion',
+            payload: { id, ...others, arrAnswer: newAnswers, arrOptions: newOptions },
+            success: () => {
+              message.success('编辑试题成功！')
+              router.push('/training/library/questions/list')
+            },
+            error: () => {
+              message.error('编辑试题失败！')
+            },
+          })
+        }
       }
     })
 
@@ -177,37 +231,6 @@ export default class QuestionsAdd extends PureComponent {
     return true
   }
 
-  // 渲染正确答案
-  renderAnswer = () => {
-    const {
-      form: { getFieldDecorator, getFieldsValue },
-    } = this.props
-    const { type, keys } = getFieldsValue()
-    if (type === '1' || type === '3') {
-      return (
-        getFieldDecorator('arrAnswer', {
-          rules: [
-            { required: true, message: '请选择正确答案' },
-          ],
-        })(<RadioGroup name="arrAnswer">
-          {keys && keys.map((item, index) => (
-            <Radio key={index} value={index}>选项{letters[index]}</Radio>
-          ))}
-        </RadioGroup>)
-      )
-    } else if (type === '2') {
-      return (
-        getFieldDecorator('arrAnswer', {
-          rules: [
-            { required: true, type: 'array', message: '请选择正确答案' },
-          ],
-        })(
-          <CheckboxGroup options={keys && keys.map((item, index) => { return { label: `选项${letters[index]}`, value: index } })} />
-        )
-      )
-    } else return null
-  }
-
   render() {
     const {
       location: { pathname },
@@ -215,42 +238,43 @@ export default class QuestionsAdd extends PureComponent {
       resourceManagement: {
         knowledgeTree,
       },
+      loading,
     } = this.props
+    const { title, keys } = this.state
     const libraryType = pathname.split('/')[3]
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '培训', name: '培训' },
       { title: '题库', name: '题库', href: `/training/library/${libraryType}/list` },
-      { title: '新增试题', name: '新增试题' },
+      { title: title, name: title },
     ]
-    getFieldDecorator('keys', { initialValue: [] });
-    const keys = getFieldValue('keys')
     const type = getFieldValue('type')
     return (
       <PageHeaderLayout
-        title="新增试题"
+        title={title}
         breadcrumbList={breadcrumbList}
       >
-        <Card title="试题信息" className={styles.questionsAdd}>
-          <Form>
-            <Row>
-              <Col {...colWrapper}>
-                <Form.Item label="试题类型" {...smallerItemLayout}>
-                  {getFieldDecorator('type', {
-                    validateTrigger: 'onBlur',
-                    rules: [
-                      { required: true, message: '请选择试题类型' },
-                    ],
-                  })(
-                    <Select onChange={this.handleSelectType} placeholder="请选择">
-                      {questionsTypes.map(({ value, label }) => (
-                        <Option key={value} value={value}>{label}</Option>
-                      ))}
-                    </Select>
-                  )}
-                </Form.Item>
-              </Col>
-              {/* <Col {...colWrapper}>
+        <Spin spinning={loading}>
+          <Card title="试题信息" className={styles.questionsAdd}>
+            <Form>
+              <Row>
+                <Col {...colWrapper}>
+                  <Form.Item label="试题类型" {...smallerItemLayout}>
+                    {getFieldDecorator('type', {
+                      validateTrigger: 'onBlur',
+                      rules: [
+                        { required: true, message: '请选择试题类型' },
+                      ],
+                    })(
+                      <Select onChange={this.handleSelectType} placeholder="请选择">
+                        {questionsTypes.map(({ value, label }) => (
+                          <Option key={value} value={value}>{label}</Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+                {/* <Col {...colWrapper}>
                 <Form.Item label="试题类型" {...smallerItemLayout}>
                   {getFieldDecorator('classification', {
                     rules: [
@@ -265,97 +289,117 @@ export default class QuestionsAdd extends PureComponent {
                   )}
                 </Form.Item>
               </Col> */}
-              <Col {...colWrapper}>
-                <Form.Item label="知识点分类" {...smallerItemLayout}>
-                  {getFieldDecorator('knowledgeId', {
+                <Col {...colWrapper}>
+                  <Form.Item label="知识点分类" {...smallerItemLayout}>
+                    {getFieldDecorator('knowledgeId', {
+                      rules: [
+                        { required: true, message: '请选择知识点分类' },
+                      ],
+                    })(
+                      <TreeSelect placeholder="请选择">
+                        {this.renderTreeNodes(knowledgeTree)}
+                      </TreeSelect>
+                    )}
+                  </Form.Item>
+                </Col>
+                <Col {...colWrapper}>
+                  <Form.Item label="难易程度" {...smallerItemLayout}>
+                    {getFieldDecorator('level', {
+                      rules: [
+                        { required: true, message: '请选择难易程度' },
+                      ],
+                    })(
+                      <Select placeholder="请选择">
+                        {levels.map(({ value, label }) => (
+                          <Option value={value} key={value}>{label}</Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Form.Item label="试题题干"  {...formItemLayout}>
+                  {getFieldDecorator('stem', {
+                    validateTrigger: 'onBlur',
                     rules: [
-                      { required: true, message: '请选择知识点分类' },
+                      { required: true, whitespace: true, message: '请输入题干' },
                     ],
                   })(
-                    <TreeSelect placeholder="请选择">
-                      {this.renderTreeNodes(knowledgeTree)}
-                    </TreeSelect>
+                    <TextArea rows={2} />
                   )}
                 </Form.Item>
-              </Col>
-              <Col {...colWrapper}>
-                <Form.Item label="难易程度" {...smallerItemLayout}>
-                  {getFieldDecorator('level', {
-                    rules: [
-                      { required: true, message: '请选择难易程度' },
-                    ],
-                  })(
-                    <Select placeholder="请选择">
-                      {levels.map(({ value, label }) => (
-                        <Option value={value} key={value}>{label}</Option>
-                      ))}
-                    </Select>
-                  )}
+              </Row>
+              <Row>
+                <Button disabled={type === '3'} onClick={this.handleAddOption}>请添加子选项</Button>
+              </Row>
+              <Row>
+                <Form.Item label="选项内容"  {...formItemLayout} required>
+                  <div className={styles.optionsContainer}>
+                    {keys && keys.length > 0 && keys.map((item, index) => (
+                      <Form.Item key={index}>
+                        <span>选项{letters[index]}</span>
+                        {getFieldDecorator(`arrOptions[${index}]`, {
+                          validateTrigger: 'onBlur',
+                          rules: [
+                            { required: true, whitespace: true, message: '请输入子选项内容' },
+                          ],
+                        })(
+                          <Input style={{ width: '60%', marginRight: 8, marginLeft: 8 }} />
+                        )}
+                        <Icon
+                          className={type !== '3' ? styles.deleteButton : styles.disabledDeleteButton}
+                          type="close"
+                          theme="outlined"
+                          onClick={type !== '3' ? () => this.handleRemoveOption(index) : null}
+                        />
+                      </Form.Item>
+                    ))}
+                  </div>
                 </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Form.Item label="试题题干"  {...formItemLayout}>
-                {getFieldDecorator('stem', {
-                  validateTrigger: 'onBlur',
-                  rules: [
-                    { required: true, whitespace: true, message: '请输入题干' },
-                  ],
-                })(
-                  <TextArea rows={2} />
-                )}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Button disabled={type === '3'} onClick={this.handleAddOption}>请添加子选项</Button>
-            </Row>
-            <Row>
-              <Form.Item label="选项内容"  {...formItemLayout} required>
-                <div className={styles.optionsContainer}>
-                  {keys && keys.map((item, index) => (
-                    <Form.Item key={index}>
-                      <span>选项{letters[index]}</span>
-                      {getFieldDecorator(`arrOptions[${index}]`, {
-                        validateTrigger: 'onBlur',
+              </Row>
+              <Row>
+                <Form.Item label="正确答案"  {...formItemLayout}>
+                  {type === '2' ? (
+                    getFieldDecorator('arrAnswer', {
+                      rules: [
+                        { required: true, type: 'array', message: '请选择正确答案' },
+                      ],
+                    })(
+                      <CheckboxGroup options={keys && keys.length > 0 && keys.map((item, index) => { return { label: `选项${letters[index]}`, value: index } })} />
+                    )
+                  ) : (
+                      getFieldDecorator('arrAnswer', {
                         rules: [
-                          { required: true, whitespace: true, message: '请输入子选项内容' },
+                          { required: true, message: '请选择正确答案' },
                         ],
-                      })(
-                        <Input style={{ width: '60%', marginRight: 8, marginLeft: 8 }} />
-                      )}
-                      <Icon
-                        className={type !== '3' ? styles.deleteButton : styles.disabledDeleteButton}
-                        type="close"
-                        theme="outlined"
-                        onClick={type !== '3' ? () => this.handleRemoveOption(index) : null}
-                      />
-                    </Form.Item>
-                  ))}
-                </div>
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="正确答案"  {...formItemLayout}>
-                {this.renderAnswer()}
-              </Form.Item>
-            </Row>
-            <Row>
-              <Form.Item label="试题解析" {...formItemLayout}>
-                {getFieldDecorator('des')(
-                  <TextArea rows={4} />
-                )}
-              </Form.Item>
-            </Row>
-            <div style={{ textAlign: 'center' }}>
-              <Button style={{ marginRight: '24px' }}>
-                返回
+                      })(<RadioGroup name="arrAnswer">
+                        {keys && keys.length > 0 && keys.map((item, index) => (
+                          <Radio key={index} value={index}>选项{letters[index]}</Radio>
+                        ))}
+                      </RadioGroup>)
+                    )
+                  }
+                </Form.Item>
+              </Row>
+              <Row>
+                <Form.Item label="试题解析" {...formItemLayout}>
+                  {getFieldDecorator('des')(
+                    <TextArea rows={4} />
+                  )}
+                </Form.Item>
+              </Row>
+              <div style={{ textAlign: 'center' }}>
+                <Button style={{ marginRight: '24px' }}>
+                  返回
               </Button>
-              <Button type="primary" onClick={this.handleSubmit} /* loading={} */>
-                确定
+                <Button type="primary" onClick={this.handleSubmit} /* loading={} */>
+                  确定
               </Button>
-            </div>
-          </Form>
-        </Card>
+              </div>
+            </Form>
+          </Card>
+        </Spin>
       </PageHeaderLayout>
     )
   }
