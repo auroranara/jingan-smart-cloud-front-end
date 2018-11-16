@@ -140,6 +140,7 @@ export default {
         total: 0,
       },
     },
+    searchInfo: null,
   },
 
   effects: {
@@ -374,7 +375,7 @@ export default {
         list,
         pagination: { pageNum, pageSize, total },
       } = payload;
-      console.log('payload', payload);
+      // console.log('payload', payload);
       return {
         ...state,
         list,
@@ -480,6 +481,26 @@ export default {
         ...state,
         companyTypes: companyTypes,
       };
+    },
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload || null,
+      }
+    },
+    initPageNum(state, { payload }) {
+      return {
+        ...state,
+        pageNum: 1,
+        isLast: false,
+        data: {
+          ...state.data,
+          pagination: {
+            ...state.data.pagination,
+            pageNum: 1,
+          },
+        },
+      }
     },
   },
 };

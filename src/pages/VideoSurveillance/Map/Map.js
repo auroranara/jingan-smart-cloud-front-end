@@ -10,6 +10,22 @@ import styles from './Map.less';
 const statusMap = ['default', 'success', 'error', 'processing'];
 const status = ['关闭', '正常', '异常', '缓慢'];
 
+const breadcrumbList = [
+  {
+    title: '首页',
+    name: '首页',
+    href: '/',
+  },
+  {
+    title: '视频监控',
+    name: '视频监控',
+  },
+  {
+    title: '地图',
+    name: '地图',
+  },
+];
+
 @connect(({ map }) => ({
   map,
 }))
@@ -265,7 +281,7 @@ export default class Map extends PureComponent {
     const { loading, isUsersShow, isVideosShow } = this.state;
     const { videoUrl } = this.props.map;
     return (
-      <PageHeaderLayout title="地图">
+      <PageHeaderLayout title="地图" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
           <Spin spinning={loading}>
             <div style={{ width: '100%', height: '590px' }}>

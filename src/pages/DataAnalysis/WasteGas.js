@@ -60,7 +60,7 @@ export default class ToxicGas extends PureComponent {
 
   renderExportButton() {
     return (
-      <Button type="primary" onClick={this.handleExport} ghost>
+      <Button type="primary" onClick={this.handleExport} ghost style={{ marginTop: '8px' }}>
         导出报表
       </Button>
     );
@@ -170,7 +170,7 @@ export default class ToxicGas extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div className={styles.content}>
-            {/* <p>{companyName ? companyName : '暂无企业信息'}</p> */}
+            <p>{companyName ? companyName : '暂无企业信息'}</p>
             <p className={styles.count}>
               监测点：
               {count}

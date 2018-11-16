@@ -19,8 +19,8 @@ export async function queryAlarm(params) {
   return request(`${URL_PREFIX}/automaticFireAlarmSystem/getFireInfo?${stringify(params)}`);
 }
 
-export async function querySys() {
-  return request(`${URL_PREFIX}/baseInfo/systemAccess`);
+export async function querySys(params) {
+  return request(`${URL_PREFIX}/baseInfo/systemAccess?${stringify(params)}`);
 }
 
 export async function queryFireTrend(params) {
@@ -28,11 +28,11 @@ export async function queryFireTrend(params) {
 }
 
 export async function queryDanger(params) {
-  return request(`${URL_PREFIX}//hdfg/hiddenDangerMap.json?${stringify(params)}`);
+  return request(`${URL_PREFIX}/hdfg/hiddenDangerMap.json?${stringify(params)}`);
 }
 
-export async function getCompanyFireInfo() {
-  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo`);
+export async function getCompanyFireInfo(params) {
+  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo?${stringify(params)}`);
 }
 
 // 视频列表
@@ -40,35 +40,46 @@ export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
-// 视频播放，已转移到services[videoPlay]
+// 视频播放，已转移到services.videoPlay
 // export async function getStartToPlay(params) {
 //   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
 // }
 
-export async function queryAlarmHandle({ id }) {
+export async function queryAlarmHandle({ id, gridId }) {
   // console.log('fetch handleAlarm');
-  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory`);
+  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ gridId })}`);
 }
 
-export async function queryLookUp() {
-  return request(`${URL_PREFIX}/screenShowData/inspectionRecords`);
+export async function queryLookUp(params) {
+  return request(`${URL_PREFIX}/screenShowData/inspectionRecords?${stringify(params)}`);
 }
 
-export async function queryCountdown() {
-  return request(`${URL_PREFIX}/screenShowData/countDown`);
+export async function queryCountdown(params) {
+  return request(`${URL_PREFIX}/screenShowData/countDown?${stringify(params)}`);
 }
 
-export async function postLookingUp() {
-  return request(`${URL_PREFIX}/screenShowData/inspectionRecords`, { method: 'POST' });
+export async function postLookingUp(params) {
+  return request(`${URL_PREFIX}/screenShowData/inspectionRecords?${stringify(params)}`, {
+    method: 'POST',
+  });
 }
 
 export async function queryOffGuard(params) {
   return request(`${URL_PREFIX}/screenShowData/companyResponse?${stringify(params)}`);
 }
 
+export async function warnOffGuard(params) {
+  return request(`${URL_PREFIX}/screenShowData/inspectionRecordsAlert?${stringify(params)}`);
+}
+
 // 获取网格区域
 export async function getMapLocation(params) {
   return request(`${URL_PREFIX}/gridInfo/getMapLocation?${stringify(params)}`);
+}
+
+// 获取网格列表
+export async function getGrids(params) {
+  return request(`${URL_PREFIX}/sfc/getGridData.json`);
 }
 
 /************************************** 单位消防 *********************************************** */
@@ -95,6 +106,7 @@ export async function getOutOfDateNumber(params) {
     end: 0,
     pageSize: 1,
     _status: 7,
+    businessType: 2,
     ...params,
   };
   return request(`/acloud_new/v2/hdf/list.json?${stringify(props)}`);
@@ -109,6 +121,7 @@ export async function getToBeRectifiedNumber(params) {
     end: 0,
     pageSize: 1,
     _status: 2,
+    businessType: 2,
     ...params,
   };
   return request(`/acloud_new/v2/hdf/list.json?${stringify(props)}`);

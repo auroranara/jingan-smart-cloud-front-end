@@ -20,10 +20,12 @@ const titleMap = {
 
 export default function(props) {
   const {
+    gridId,
     dispatch,
     videoVisible,
     lookUpShow,
     startLookUp,
+    offGuardWarnLoading,
     data: { lookUp: { createTime }, countdown, offGuard, videoLookUp },
     fetchLookUpVideo,
     handleRotateBack,
@@ -34,7 +36,7 @@ export default function(props) {
   return (
     <FcSection title={titleMap[lookUpShow]} style={{ position: 'relative' }} isBack>
       <LookingUp
-        dispatch={dispatch}
+        // dispatch={dispatch}
         createTime={createTime}
         data={countdown}
         showed={lookUpShow === LOOKING_UP}
@@ -42,7 +44,10 @@ export default function(props) {
         handleCounterStop={() => handleRotateBack(true)}
       />
       <OffGuardWarning
+        gridId={gridId}
+        dispatch={dispatch}
         data={offGuard}
+        loading={offGuardWarnLoading}
         showed={lookUpShow === OFF_GUARD}
       />
       <VideoLookUp

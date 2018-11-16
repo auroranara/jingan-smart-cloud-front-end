@@ -15,6 +15,7 @@ import {
   addAssociatedUnit,
   editAssociatedUnit,
   chnageAccountStatus,
+  queryMaintenanceTree,
 } from '../services/accountManagement.js';
 
 import { checkOldPass, changePass } from '../services/account.js';
@@ -64,6 +65,7 @@ export default {
     departments: [],
     user: {},
     searchInfo: null,
+    maintenanceTree: {},
   },
 
   effects: {
@@ -288,6 +290,15 @@ export default {
         error(response.msg);
       }
     },
+    // 维保权限树
+    *fetchMaintenanceTree({ payload, callback }, { call, put }) {
+      const response = yield call(queryMaintenanceTree, payload);
+      if (response && response.code === 200) {
+        yield put({ type: 'saveMaintenanceTree', payload: response.data });
+        // callback放后面，因为callback中有setFieldsValue，所以要先等上面先保存好值，先渲染好表单中的Tree，不如可能会报错，在注册组建前设置其值
+        callback && callback(response.data);
+      }
+    },
   },
 
   reducers: {
@@ -441,6 +452,23 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
+      }
+    },
+    saveMaintenanceTree(state, { payload }) {
+      return { ...state, maintenanceTree: payload };
+    },
+    initPageNum(state, { payload }) {
+      return {
+        ...state,
+        pageNum: 1,
+        isLast: false,
+        data: {
+          ...state.data,
+          pagination: {
+            ...state.data.pagination,
+            pageNum: 1,
+          },
+        },
       }
     },
   },

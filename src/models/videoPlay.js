@@ -17,7 +17,7 @@ export default {
 
     // 'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8'
     // http://218.90.184.178:23389/hls/dangkou/test.m3u8
-    *fetchStartToPlay({ payload, success }, { call, put, select }) {
+    *fetchStartToPlay({ payload, success, error }, { call, put, select }) {
       // let videoId = yield select(state => state.videoPlay.videoId);
       // console.log('开始的videoId', videoId);
       // console.log('payload.key_id', payload.key_id);
@@ -28,7 +28,8 @@ export default {
         payload: { videoId: payload.key_id },
       });
       const response = yield call(getStartToPlay, payload);
-      if (response && response.code === 200) {
+      // fxck 沙雕接口 该设备ID不存在也回复200
+      if (response && response.code === 200 && response.data.url !== '该设备ID不存在') {
         let videoId = yield select(state => state.videoPlay.videoId);
         if (videoId && response.data.key_id !== videoId) return;
         yield put({
@@ -36,6 +37,8 @@ export default {
           payload: { src: response.data.url, videoId: response.data.key_id },
         });
         if (success) success(response);
+      } else if (error) {
+        error(response);
       }
     },
 

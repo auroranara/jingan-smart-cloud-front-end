@@ -97,6 +97,20 @@ const markLabelList = {
     goToException() {
       dispatch(routerRedux.push('/exception/500'));
     },
+    // 保存查询栏数据
+    saveSearchInfo(action) {
+      dispatch({
+        type: 'contract/saveSearchInfo',
+        ...action,
+      })
+    },
+    // 初始化页码
+    initPageNum(action) {
+      dispatch({
+        type: 'contract/initPageNum',
+        ...action,
+      })
+    },
     dispatch,
   })
 )
@@ -116,22 +130,52 @@ export default class ContractList extends PureComponent {
         data: {
           pagination: { pageSize },
         },
+        searchInfo,
       },
     } = this.props;
-    /* 获取合同列表 */
-    fetchList({
-      payload: {
-        pageSize,
-        pageNum: 1,
-      },
-      success: () => {
-        this.setState({
-          isInit: true,
-        });
-      },
-    });
     /* 获取单位状态列表 */
     fetchStatusList();
+    /* 获取合同列表 */
+    if (searchInfo) {
+      const { period: [startTime, endTime], ...otherData } = searchInfo
+      const query = {
+        ...otherData,
+        startTime: startTime && startTime.format('YYYY-MM-DD'),
+        endTime: endTime && endTime.format('YYYY-MM-DD'),
+      }
+      // 如果已经保存了搜索条件
+      this.refs.InlineForm && this.refs.InlineForm.setFieldsValue(searchInfo)
+      fetchList({
+        payload: {
+          pageSize,
+          pageNum: 1,
+          ...query,
+        },
+        success: () => {
+          this.setState({
+            isInit: true,
+            formData: query,
+          });
+        },
+      });
+    } else {
+      fetchList({
+        payload: {
+          pageSize,
+          pageNum: 1,
+        },
+        success: () => {
+          this.setState({
+            isInit: true,
+          });
+        },
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    const { initPageNum } = this.props
+    initPageNum()
   }
 
   /* 滚动加载 */
@@ -171,6 +215,7 @@ export default class ContractList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      saveSearchInfo,
     } = this.props;
 
     const formData = {
@@ -178,6 +223,7 @@ export default class ContractList extends PureComponent {
       endTime: endTime && endTime.format('YYYY-MM-DD'),
       ...restValues,
     };
+
     fetchList({
       payload: {
         ...formData,
@@ -195,6 +241,9 @@ export default class ContractList extends PureComponent {
         goToException();
       },
     });
+    saveSearchInfo({
+      payload: { period: [startTime, endTime], ...restValues },
+    })
   };
 
   /* 重置点击事件 */
@@ -202,6 +251,7 @@ export default class ContractList extends PureComponent {
     const {
       fetchList,
       goToException,
+      saveSearchInfo,
       contract: {
         data: {
           pagination: { pageSize },
@@ -224,6 +274,7 @@ export default class ContractList extends PureComponent {
         goToException();
       },
     });
+    saveSearchInfo()
   };
 
   /* 渲染表单 */
@@ -303,6 +354,7 @@ export default class ContractList extends PureComponent {
           }
           onSearch={this.handleSearch}
           onReset={this.handleReset}
+          ref="InlineForm"
         />
       </Card>
     );
@@ -319,6 +371,7 @@ export default class ContractList extends PureComponent {
       },
       goToDetail,
     } = this.props;
+    console.log(this.props);
     // 是否有查看权限
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
     // 是否有编辑权限
@@ -367,24 +420,24 @@ export default class ContractList extends PureComponent {
                       编辑
                     </Link>,
                   ]}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <div
                     onClick={
                       hasDetailAuthority
                         ? () => {
-                            goToDetail(id);
-                          }
+                          goToDetail(id);
+                        }
                         : null
                     }
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
@@ -405,8 +458,8 @@ export default class ContractList extends PureComponent {
                           <span>{safetyPhone}</span>
                         </Fragment>
                       ) : (
-                        getEmptyData()
-                      )}
+                          getEmptyData()
+                        )}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       合同期限：

@@ -1,0 +1,17 @@
+# props属性介绍
+* model
+> 父组件对应的model
+* form
+> 父组件通过Form.create()得到的参数
+* styles
+> 样式
+* fieldLabels
+> 表单标签
+* isCompany
+> 是否是一般企业
+* handleChangeIsCompany
+> 用于修改isCompany
+* handleShowMap
+> 显示地图
+* handleLoadData
+> 加载地址信息

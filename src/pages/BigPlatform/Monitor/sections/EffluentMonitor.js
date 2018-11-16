@@ -81,7 +81,7 @@ export default function EffluentMonitor(props) {
                     const { id, desc, unit, value, isBeyond } = item;
                     return (
                       <Col key={id} style={{ height: '100%' }} span={8}>
-                        {value && (
+                        {(value || value === 0) && (
                           <WasteWaterWave
                             height={110}
                             percent={34}

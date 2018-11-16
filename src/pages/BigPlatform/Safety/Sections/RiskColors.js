@@ -3,7 +3,17 @@ import { Row, Col } from 'antd';
 import classNames from 'classnames';
 import rotate from '../Animate.less';
 import styles from '../Government.less';
+import iconNormal from '../img/icon-normal.png';
 
+const iconNormalStyles = {
+  display: 'inline-block',
+  position: 'relative',
+  marginRight: '8px',
+  height: '40px',
+  width: '40px',
+  background: `url(${iconNormal}) no-repeat center center`,
+  backgroundSize: '100% 100%',
+};
 class RiskColors extends PureComponent {
   constructor(props) {
     super(props);
@@ -15,17 +25,22 @@ class RiskColors extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const {} = this.state;
+    // const {} = this.state;
     const {
       visible,
       goBack,
       goCompany,
-      riskColorSummary: { riskColorTitle, company, risk, abnormal },
+      riskColorSummary: { riskColorTitle, company, risk, abnormal, componentSubType },
       listData,
     } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,
       [rotate.out]: !visible,
+    });
+    const normalRisk = componentSubType !== 'pie' || riskColorTitle === '异常风险点';
+    let riskTotal = 0;
+    listData.forEach(item => {
+      riskTotal += item.fxd;
     });
     return (
       <section
@@ -60,19 +75,32 @@ class RiskColors extends PureComponent {
                     <span className={styles.iconRisk} />
                     <div className={styles.riskWrapper}>
                       风险点
-                      <div className={styles.riskNum}>{risk}</div>
+                      <div className={styles.riskNum}>{riskTotal}</div>
                     </div>
                   </div>
                 </Col>
-                <Col span={8}>
-                  <div className={styles.riskContent}>
-                    <span className={styles.iconDanger} />
-                    <div className={styles.riskWrapper}>
-                      异常
-                      <div className={styles.riskNum}>{abnormal}</div>
+                {normalRisk && (
+                  <Col span={8}>
+                    <div className={styles.riskContent}>
+                      <span className={styles.iconDanger} />
+                      <div className={styles.riskWrapper}>
+                        异常
+                        <div className={styles.riskNum}>{abnormal}</div>
+                      </div>
                     </div>
-                  </div>
-                </Col>
+                  </Col>
+                )}
+                {riskColorTitle === '正常风险点' && (
+                  <Col span={8}>
+                    <div className={styles.riskContent}>
+                      <span style={{ ...iconNormalStyles }} />
+                      <div className={styles.riskWrapper}>
+                        正常
+                        <div className={styles.riskNum}>{abnormal}</div>
+                      </div>
+                    </div>
+                  </Col>
+                )}
               </Row>
               <div className={styles.scrollContainer} style={{ borderTop: 'none' }}>
                 <table className={styles.scrollTable}>
@@ -80,7 +108,13 @@ class RiskColors extends PureComponent {
                     <tr>
                       <th style={{ width: '70%' }}>单位</th>
                       <th style={{ width: '18%' }}>风险点</th>
-                      <th style={{ color: 'rgba(232, 103, 103, 0.8)' }}>异常</th>
+                      <th
+                        style={{
+                          color: normalRisk ? 'rgba(232, 103, 103, 0.8)' : '#00baff',
+                        }}
+                      >
+                        {normalRisk ? '异常' : '正常'}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -100,9 +134,10 @@ class RiskColors extends PureComponent {
                           <td>{item.fxd}</td>
                           <td
                             style={{
-                              color: item.ycd
-                                ? 'rgba(232, 103, 103, 0.8)'
-                                : 'rgba(255, 255, 255, 0.7)',
+                              color:
+                                item.ycd && normalRisk
+                                  ? 'rgba(232, 103, 103, 0.8)'
+                                  : 'rgba(255, 255, 255, 0.7)',
                             }}
                           >
                             {item.ycd}

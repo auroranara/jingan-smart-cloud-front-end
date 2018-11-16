@@ -2,6 +2,7 @@ import { stringify } from 'qs';
 import request from '@/utils/request';
 
 const URL_PREFIX = '/acloud_new/v2/iot';
+const URL_REPAIR = '/acloud_new/v2'
 
 // 公司列表
 export async function queryCompanies(params) {
@@ -22,4 +23,9 @@ export async function queryExport(params) {
 // 获取企业名字
 export async function getCompanyName(params) {
   return request(`${URL_PREFIX}/getCompanyName?${stringify(params)}`);
+}
+
+// 获取一键报修记录列表
+export async function fetchRepairRecords(params) {
+  return request(`${URL_REPAIR}/fireManage/selectFaultReport?${stringify(params)}`);
 }

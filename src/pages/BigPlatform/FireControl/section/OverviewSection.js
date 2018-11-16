@@ -9,7 +9,8 @@ import styles from './OverviewSection.less';
 import companyIcon from '../img/ovCompany.png';
 import hostIcon from '../img/ovHost.png';
 
-const HEIGHT = 'calc(50% - 74px)';
+const HEIGHT = 'calc(50% - 69px)';
+const PADDING = '25px 0';
 // const companyIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ovCompany.png';
 // const hostIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ovHost.png';
 const { region } = global.PROJECT_CONFIG;
@@ -30,12 +31,15 @@ export default function OverviewSection(props) {
     }={},
   } = props;
 
+  // console.log('overview', props.data);
+
   return (
-    <FcSection style={{ padding: '0 2px' }}>
-      <div className={styles.divider}>
+    // <FcSection style={{ padding: '0 2px' }}>
+    <FcSection title="辖区概况">
+      {/* <div className={styles.divider}>
         <Divider><p className={styles.title}>{titleName}</p></Divider>
-      </div>
-      <Row style={{ marginTop: 0 }}>
+      </div> */}
+      <Row style={{ marginTop: 25 }}>
         <Col span={12}>
           <div className={styles.unit}>
             <OvUnit url={companyIcon} title="管辖单位" num={total} />
@@ -51,14 +55,14 @@ export default function OverviewSection(props) {
         today={todayCount}
         thisWeek={thisWeekCount}
         thisMonth={thisMonthCount}
-        style={{ height: HEIGHT }}
+        style={{ height: HEIGHT, padding: PADDING, marginTop: 25 }}
       />
       <OvDangerCards
         total={totalDanger}
         overdue={overdueNum}
         rectify={rectifyNum}
         review={reviewNum}
-        style={{ height: HEIGHT }}
+        style={{ height: HEIGHT, padding: PADDING }}
       />
     </FcSection>
   );

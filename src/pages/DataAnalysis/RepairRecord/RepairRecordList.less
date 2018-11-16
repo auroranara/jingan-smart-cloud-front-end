@@ -1,0 +1,28 @@
+@import '~antd/lib/style/themes/default.less';
+@import '../../../utils/utils.less';
+.repairRecordForm {
+  .formItem {
+    width: 100%;
+    :global {
+      .ant-form-item-control-wrapper {
+        width: 90%;
+      }
+    }
+  }
+}
+
+.repairRecordList {
+  margin-top: 20px;
+}
+
+.noRepairRecordList {
+  margin-top: 20px;
+  span {
+    color: '#aaa';
+  }
+  :global {
+    .ant-card-body {
+      text-align: center;
+    }
+  }
+}

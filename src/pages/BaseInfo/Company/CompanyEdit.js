@@ -19,9 +19,9 @@ import {
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
-import { Map, Marker } from 'react-amap';
 
 import FooterToolbar from '@/components/FooterToolbar';
+import MapModal from '@/components/MapModal';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { phoneReg, emailReg } from '@/utils/validate';
 import urls from '@/utils/urls';
@@ -31,7 +31,7 @@ import { getToken } from '@/utils/authority';
 import styles from './Company.less';
 import Safety from './Safety';
 
-const { TextArea, Search } = Input;
+const { TextArea } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
 const {
@@ -69,6 +69,7 @@ const fieldLabels = {
   principalPhone: '联系方式',
   principalEmail: '邮箱',
   companyNature: '单位性质',
+  gridId: '所属网格',
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
@@ -174,9 +175,12 @@ export default class CompanyDetail extends PureComponent {
     submitting: false,
     uploading: false,
     tabActiveKey: tabList[0].key,
-    visible: false,
-    center: undefined,
-    markerPosition: undefined,
+    map: {
+      visible: false,
+      center: undefined,
+      point: undefined,
+    },
+    gridTree: [],
   };
 
   /* 生命周期函数 */
@@ -198,6 +202,7 @@ export default class CompanyDetail extends PureComponent {
         query: { isFromAdd },
       },
       goToException: error,
+      form: { setFieldsValue },
     } = this.props;
 
     if (this.operation === 'edit' && isFromAdd) this.setState({ tabActiveKey: tabList[1].key });
@@ -218,8 +223,14 @@ export default class CompanyDetail extends PureComponent {
           practicalDistrict,
           companyIchnography,
           companyNatureLabel,
+          gridId,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+
+          // 若idMap已获取则设值，未获取时则在获取idMap后设值
+          this.gridId = gridId;
+          Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
+
           // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
@@ -326,6 +337,31 @@ export default class CompanyDetail extends PureComponent {
   }
 
   operation = null;
+  idMap = {};
+  gridId = '';
+
+  // 在safety组件中同步gridTree
+  setGridTree = (gridTree, idMap) => {
+    const { form: { setFieldsValue } } = this.props;
+
+    this.idMap = idMap;
+    // 若gridId已获取，则在此设置gridId值，未获取，则在获取详情后设置值
+    this.gridId && setFieldsValue({ gridId: idMap[this.gridId] });
+    this.setState({ gridTree });
+  };
+
+  /**
+   * 从表单中获取经纬度
+   */
+  getCoordinateFromInput = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props;
+    // 获取坐标，值可能为undefined或"135.12123,141.4142"这样的格式
+    const coordinate = getFieldValue('coordinate');
+    const temp = coordinate && coordinate.split(',');
+    return temp && { longitude: +temp[0], latitude: +temp[1] };
+  };
 
   /* tab列表点击变化 */
   handleTabChange = key => {
@@ -390,6 +426,7 @@ export default class CompanyDetail extends PureComponent {
           createTime,
           industryCategory,
           coordinate,
+          gridId,
           ...restFields
         }
       ) => {
@@ -417,6 +454,7 @@ export default class CompanyDetail extends PureComponent {
             ),
             longitude,
             latitude,
+            gridId: gridId[gridId.length - 1],
           };
           // 成功回调
           const success = companyId => {
@@ -540,55 +578,88 @@ export default class CompanyDetail extends PureComponent {
     });
   };
 
-  /* 显示地图 */
+  /**
+   * 显示地图
+   */
   handleShowMap = () => {
-    const {
-      form: { getFieldValue },
-    } = this.props;
-    // 获取坐标，值可能为undefined或"135.12123,141.4142"这样的格式
-    const coordinate = getFieldValue('coordinate');
-    const temp = coordinate && coordinate.split(',');
-    const center = coordinate && { longitude: +temp[0], latitude: +temp[1] };
+    const coord = this.getCoordinateFromInput();
 
-    this.setState({
-      visible: true,
-      center,
-      markerPosition: center,
-    });
+    this.setState(({ map }) => ({
+      map: {
+        visible: true,
+        center: coord,
+        point: coord,
+      },
+    }));
   };
 
-  /* 隐藏地图 */
+  /**
+   * 隐藏地图
+   */
   handleHideMap = () => {
-    this.setState({
-      visible: false,
-    });
+    this.setState(({ map }) => ({
+      map: {
+        ...map,
+        visible: false,
+      },
+    }));
   };
 
-  /* 地图搜索 */
-  handleMapSearch = value => {
-    if (value) {
-      /* eslint-disable */
-      AMap.plugin('AMap.Geocoder', () => {
-        const geocoder = new AMap.Geocoder();
-        geocoder.getLocation(value, (status, result) => {
-          if (status === 'complete' && result.info === 'OK') {
-            const { lng, lat } = result.geocodes[0].location;
-            const point = {
-              longitude: lng,
-              latitude: lat,
-            };
-            this.setState({
-              center: point,
-              markerPosition: point,
-            });
-          } else {
-            message.warning('您输入的地址没有解析到结果!');
-          }
-        });
-      });
-      /* eslint-enable */
-    }
-  };
+  /**
+   * 确认选中的地图点坐标
+   */
+  handleConfirmPoint = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const { map: { point: { longitude, latitude } } } = this.state;
+    // 将选中点的坐标放入输入框
+    setFieldsValue({
+      coordinate: `${longitude},${latitude}`,
+    });
+    // 隐藏地图模态框
+    this.handleHideMap();
+  }
+
+  /**
+   * 重置地图
+   */
+  handleResetMap = () => {
+    const coord = this.getCoordinateFromInput();
+
+    this.setState(({ map }) => ({
+      map: {
+        ...map,
+        center: coord,
+        point: coord,
+      },
+    }));
+  }
+
+  /**
+   * 搜索地图
+   */
+  handleSearchMap = (point) => {
+    this.setState(({ map }) => ({
+      map: {
+        ...map,
+        center: point,
+        point,
+      },
+    }));
+  }
+
+  /**
+   * 点击地图
+   */
+  handleClickMap = (point) => {
+    this.setState(({ map }) => ({
+      map: {
+        ...map,
+        point,
+      },
+    }));
+  }
 
   /* 上传文件按钮 */
   renderUploadButton = ({ fileList, onChange }) => {
@@ -683,81 +754,19 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染地图 */
   renderMap() {
-    const { visible, center, markerPosition } = this.state;
+    const { map: { visible, center, point } } = this.state;
 
     return (
-      <Modal
-        title="企业定位"
-        width="80%"
+      <MapModal
+        center={center}
+        point={point}
         visible={visible}
+        onOk={this.handleConfirmPoint}
         onCancel={this.handleHideMap}
-        footer={null}
-        maskClosable={false}
-        keyboard={false}
-        className={styles.mapModal}
-        destroyOnClose
-      >
-        <Map
-          amapkey="08390761c9e9bcedbdb2f18a2a815541"
-          plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
-          status={{
-            keyboardEnable: false,
-          }}
-          center={center}
-          useAMapUI
-          events={{
-            click: e => {
-              const { lng: longitude, lat: latitude } = e.lnglat;
-              this.setState({
-                markerPosition: {
-                  longitude,
-                  latitude,
-                },
-              });
-            },
-          }}
-        >
-          <div style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent' }}>
-            <Search placeholder="请输入地址" enterButton onSearch={this.handleMapSearch} />
-          </div>
-          {markerPosition && (
-            <Marker
-              position={markerPosition}
-              events={{
-                click: () => {
-                  /* eslint-disable */
-                  AMap.plugin('AMap.Geocoder', () => {
-                    const { longitude, latitude } = markerPosition;
-                    const geocoder = new AMap.Geocoder();
-                    geocoder.getAddress([longitude, latitude], (status, result) => {
-                      if (status === 'complete' && result.info === 'OK') {
-                        confirm({
-                          title: '您确定要选择当前地址吗？',
-                          content: `当前地址：${result.regeocode.formattedAddress}`,
-                          okText: '确定',
-                          cancelText: '取消',
-                          onOk: () => {
-                            const {
-                              form: { setFieldsValue },
-                            } = this.props;
-                            setFieldsValue({
-                              coordinate: `${longitude},${latitude}`,
-                            });
-                            this.handleHideMap();
-                          },
-                        });
-                      } else {
-                        message.warning('未匹配到您当前选中的地址！');
-                      }
-                    });
-                  });
-                  /* eslint-enable */
-                },
-              }}
-            />
-          )}
-        </Map>
-      </Modal>
+        onReset={this.handleResetMap}
+        onSearch={this.handleSearchMap}
+        onClick={this.handleClickMap}
+      />
     );
   }
 
@@ -782,6 +791,7 @@ export default class CompanyDetail extends PureComponent {
             practicalDistrict,
             practicalTown,
             companyNature,
+            gridId,
           },
         },
         registerAddress: registerAddressArea,
@@ -790,7 +800,7 @@ export default class CompanyDetail extends PureComponent {
       },
       form: { getFieldDecorator },
     } = this.props;
-    const { ichnographyList, isCompany } = this.state;
+    const { ichnographyList, isCompany, gridTree } = this.state;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -843,11 +853,23 @@ export default class CompanyDetail extends PureComponent {
                 })(<Input placeholder="请输入社会信用代码" />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={16} md={16} sm={24}>
+              <Form.Item label={fieldLabels.gridId}>
+                {getFieldDecorator('gridId', {
+                  // initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
+                  initialValue: gridId ? this.idMap[gridId] : undefined,
+                  rules: [{ required: true, message: '请选择所属网格' }],
+                })(
+                  <Cascader options={gridTree} placeholder="请输入所属网格" changeOnSelect />
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={8} md={8} sm={24}>
               <Form.Item label={fieldLabels.coordinate}>
                 {getFieldDecorator('coordinate', {
                   initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
                   getValueFromEvent: this.handleTrim,
+                  rules: [{ required: true, message: '请选择经纬度' }],
                 })(
                   <Input
                     placeholder="请选择经纬度"
@@ -1010,7 +1032,7 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
             {this.renderCompanyStatus()}
-            <Col lg={8} md={12} sm={24}>
+            {/* <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyType}>
                 {getFieldDecorator('companyType', {
                   initialValue: id ? companyType+'' : undefined,
@@ -1025,7 +1047,7 @@ export default class CompanyDetail extends PureComponent {
                   </Select>
                 )}
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.scale}>
                 {getFieldDecorator('scale', {
@@ -1332,7 +1354,7 @@ export default class CompanyDetail extends PureComponent {
             {this.renderFooterToolbar()}
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <Safety operation={this.operation} companyId={id} />
+            <Safety operation={this.operation} companyId={id} setGridTree={this.setGridTree} />
           </div>
         </Spin>
       </PageHeaderLayout>

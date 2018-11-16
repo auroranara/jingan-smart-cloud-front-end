@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from 'antd';
+import { Icon, notification } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '../components/HLSSource.js';
@@ -51,9 +51,18 @@ class VideoPlay extends Component {
   }
 
   handleInit = () => {
-    const { dispatch, videoList, keyId } = this.props;
-    if (!(videoList && videoList.length)) return;
-    const videoId = keyId || videoList[0].key_id;
+    const { dispatch, videoList, keyId, showList } = this.props;
+    let videoId = '';
+    // 如果现实列表
+    if (showList) {
+      // 列表为空直接return
+      if (!(videoList && videoList.length)) return;
+      // 如果keyId为空 默认获取video列表第一个
+      videoId = keyId || videoList[0].key_id;
+    } else {
+      videoId = keyId;
+    }
+
     // 清空视频链接
     this.setState({ videoSrc: '' });
     let index = videoList.findIndex(item => {
@@ -85,6 +94,13 @@ class VideoPlay extends Component {
           });
         }
       },
+      // error: response => {
+      //   notification['error']({
+      //     message: '视频请求失败',
+      //     description: response.msg,
+      //     duration: null,
+      //   });
+      // },
     });
   };
 
@@ -130,7 +146,6 @@ class VideoPlay extends Component {
       () => {
         dispatch({
           type: 'videoPlay/fetchStartToPlay',
-          // type: actionType,
           payload: {
             key_id: keyId,
           },
@@ -139,18 +154,16 @@ class VideoPlay extends Component {
               videoSrc: response.data.url,
             });
           },
+          error: response => {
+            notification['error']({
+              message: '失败',
+              description: '视频请求失败',
+              duration: null,
+            });
+          },
         });
       }
     );
-    // dispatch({
-    //   type: 'videoPlay/fetchStartToPlay',
-    //   // type: actionType,
-    //   payload: {
-    //     key_id: keyId,
-    //   },
-    //   success: response => {
-    //   },
-    // });
   };
 
   handleClose = () => {

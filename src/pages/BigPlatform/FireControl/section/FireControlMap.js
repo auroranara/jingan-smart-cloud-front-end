@@ -16,7 +16,7 @@ import personIcon from '../img/mapPerson.png';
 import statusIcon from '../img/mapFire.png';
 import status1Icon from '../img/mapFire1.png';
 // import redCircle from '../img/redCircle.png';
-
+const { region } = global.PROJECT_CONFIG;
 const NO_DATA = '暂无信息';
 
 // const { location } = global.PROJECT_CONFIG;
@@ -99,18 +99,20 @@ export default class FireControlMap extends PureComponent {
   // 点击之后不可以拖拽
   handleClick = item => {
     const { hideTooltip } = this.props;
-    this.setState(
-      {
-        status: { dragEnable: false },
-      },
-      () => {
-        hideTooltip();
-        this.selectCompany(item);
-      }
-    );
+    hideTooltip();
+    this.selectCompany(item);
+    // this.setState(
+    //   {
+    //     status: { dragEnable: false },
+    //   },
+    //   () => {
+    //     hideTooltip();
+    //     this.selectCompany(item);
+    //   }
+    // );
   };
 
-  renderMarker = item => {
+  renderMarker = (item, isLast) => {
     const { selected, showTooltip, hideTooltip } = this.props;
     const { name, isFire } = item;
     const isSelected = !!selected;
@@ -152,7 +154,18 @@ export default class FireControlMap extends PureComponent {
         position={{ longitude: item.longitude, latitude: item.latitude }}
         key={item.id}
         offset={isFire && isSelected ? [-100, -122] : [-22, -45]}
-        events={{ click: this.handleClick.bind(this, item) }}
+        events={{
+          click: this.handleClick.bind(this, item),
+          created: () => {
+            if (isLast) {
+              this.mapInstance.on('complete', () => {
+                this.mapInstance.setFitView(
+                  this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
+                );
+              });
+            }
+          },
+        }}
       >
         {child}
       </Marker>
@@ -163,7 +176,13 @@ export default class FireControlMap extends PureComponent {
     // const { selected } = this.state;
     const { selected } = this.props;
     // 如果有选中的企业就只渲染选中的
-    return selected ? this.renderMarker(selected) : newList.map(item => this.renderMarker(item));
+    if (newList.length === 0) {
+      if (this.mapInstance) this.mapInstance.setCity(region);
+      return null;
+    }
+    return selected
+      ? this.renderMarker(selected, false)
+      : newList.map((item, index) => this.renderMarker(item, index === newList.length - 1));
   }
 
   renderBackButton() {
@@ -336,6 +355,14 @@ export default class FireControlMap extends PureComponent {
             mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
             center={center}
             zoom={zoom}
+            expandZoomRange
+            zooms={[3, 20]}
+            events={{
+              created: mapInstance => {
+                this.mapInstance = mapInstance;
+                // mapInstance.setCity(region);
+              },
+            }}
           >
             <Polygon
               path={polygon}

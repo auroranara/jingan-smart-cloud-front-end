@@ -1,4 +1,4 @@
-import { queryList, queryDetail, queryPermissionTree, addRole, editRole, deleteRole } from '../services/role/role';
+import { queryList, queryDetail, queryPermissionTree, addRole, editRole, deleteRole, queryRolePermissions } from '../services/role/role';
 
 export default {
   namespace: 'role',
@@ -7,6 +7,7 @@ export default {
     detail: {
       sysRole: {},
     },
+    rolePermissions: [],
     permissionTree: [],
     data: {
       list: [],
@@ -67,6 +68,24 @@ export default {
       else if (error) {
         error();
       }
+    },
+    // 在账号菜单中(非当前的角色菜单)获取roles对应的权限
+    *fetchRolePermissions({ payload, success, error }, { call, put }) {
+      const response = yield call(queryRolePermissions, payload);
+      // console.log(response);
+      if (response && response.code === 200) {
+        let rolePermissions = [];
+        if (response.data && response.data.permissions)
+          rolePermissions = Array.from(new Set(response.data.permissions.split(',').filter(k => k)));
+
+        yield put({
+          type: 'saveRolePermissions',
+          payload: rolePermissions,
+        });
+        success &&  success(rolePermissions);
+      }
+      else
+        error && error();
     },
     /* 获取权限树 */
     *fetchPermissionTree({ payload, success, error }, { call, put }) {
@@ -162,6 +181,10 @@ export default {
         ...state,
         detail,
       };
+    },
+    // 保存roles对应的permissions
+    saveRolePermissions(state, { payload: rolePermissions }) {
+      return { ...state, rolePermissions };
     },
     /* 获取权限树 */
     queryPermissionTree(state, { payload: permissionTree }) {

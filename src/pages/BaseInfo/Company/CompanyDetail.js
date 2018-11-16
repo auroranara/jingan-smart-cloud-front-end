@@ -78,6 +78,7 @@ const fieldLabels = {
   principalPhone: '联系方式',
   principalEmail: '邮箱',
   companyNature: '单位性质',
+  gridId: '所属网格',
 };
 // tab列表
 const tabList = [
@@ -126,7 +127,8 @@ export default class CompanyDetail extends PureComponent {
   state = {
     isCompany: true,
     tabActiveKey: tabList[0].key,
-    visible: false,
+    gridId: '',
+    gotMenus: false,
   };
 
   /* 生命周期函数 */
@@ -143,8 +145,9 @@ export default class CompanyDetail extends PureComponent {
       payload: {
         id,
       },
-      success: ({ companyNatureLabel }) => {
+      success: ({ companyNatureLabel, gridId }) => {
         this.setState({
+          gridId,
           isCompany: companyNatureLabel === defaultCompanyNature,
         });
       },
@@ -154,65 +157,29 @@ export default class CompanyDetail extends PureComponent {
     });
   }
 
+  // 从子组件中获取值并将获取menus接口的flag置为true
+  setGotMenus = (idMap, textMap) => {
+    this.idMap = idMap;
+    this.textMap = textMap;
+    this.setState({ gotMenus: true });
+  };
+
+  // 若menus菜单已获取并且detail已获取，则取值
+  getGridLabel = () => {
+    const idMap = this.idMap;
+    const textMap = this.textMap;
+    const { gridId, gotMenus } = this.state;
+
+    if (gridId && gotMenus && idMap[gridId])
+      return idMap[gridId].map(id => textMap[id]).join('-');
+    return '暂无信息';
+  };
+
   handleTabChange = key => {
     this.setState({
       tabActiveKey: key,
     });
   };
-
-  /* 显示地图 */
-  handleShowMap = e => {
-    e.preventDefault();
-    this.setState({
-      visible: true,
-    });
-  };
-
-  /* 隐藏地图 */
-  handleHideMap = () => {
-    this.setState({
-      visible: false,
-    });
-  };
-
-  /* 渲染地图 */
-  renderMap() {
-    const { visible } = this.state;
-    const {
-      company: {
-        detail: {
-          data: { longitude, latitude },
-        },
-      },
-    } = this.props;
-    const center = longitude && latitude ? { longitude, latitude } : undefined;
-
-    return (
-      <Modal
-        title="企业定位"
-        width="80%"
-        visible={visible}
-        onCancel={this.handleHideMap}
-        footer={null}
-        maskClosable={false}
-        keyboard={false}
-        className={styles.mapModal}
-        destroyOnClose
-      >
-        <Map
-          amapkey="08390761c9e9bcedbdb2f18a2a815541"
-          plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
-          status={{
-            keyboardEnable: false,
-          }}
-          center={center}
-          useAMapUI
-        >
-          {center && <Marker position={center} />}
-        </Map>
-      </Modal>
-    );
-  }
 
   /* 渲染行业类别 */
   renderIndustryCategory() {
@@ -274,7 +241,7 @@ export default class CompanyDetail extends PureComponent {
         },
       },
     } = this.props;
-    const { isCompany } = this.state;
+    const { isCompany, gridLabel } = this.state;
 
     const registerAddressLabel =
       (registerProvinceLabel || '') +
@@ -304,28 +271,23 @@ export default class CompanyDetail extends PureComponent {
           </Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.coordinate}>
-            {longitude && latitude ? (
-              <a
-                href="#"
-                className={styles.link}
-                onClick={this.handleShowMap}
-              >{`${longitude},${latitude}`}</a>
-            ) : (
-              getEmptyData()
-            )}
-          </Description>
-          <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
-            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-              {registerAddressLabel || getEmptyData()}
-            </Ellipsis>
-          </Description>
-          <Description term={fieldLabels.practicalAddress} style={{ height: 38 }}>
-            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-              {practicalAddressLabel || getEmptyData()}
-            </Ellipsis>
+            {longitude && latitude ? `${longitude},${latitude}` : getEmptyData()}
           </Description>
           {!isCompany && this.renderIndustryCategory()}
           {!isCompany && this.renderCompanyStatus()}
+        </DescriptionList>
+        <DescriptionList col={1} style={{ marginBottom: 16 }}>
+          <Description term={fieldLabels.gridId}>{this.getGridLabel()}</Description>
+          <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
+            {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
+              {registerAddressLabel || getEmptyData()}
+            {/* </Ellipsis> */}
+          </Description>
+          <Description term={fieldLabels.practicalAddress} style={{ height: 38 }}>
+            {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
+              {practicalAddressLabel || getEmptyData()}
+            {/* </Ellipsis> */}
+          </Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>
@@ -344,6 +306,37 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
+  /**
+   * 渲染地图
+   */
+  renderMap() {
+    const {
+      company: {
+        detail: {
+          data: { longitude, latitude },
+        },
+      },
+    } = this.props;
+    const center = longitude && latitude ? { longitude, latitude } : undefined;
+
+    return (
+      <Card title="位置信息" className={`${styles.card} ${styles.mapCard}`} bordered={false}>
+        <Map
+          amapkey="08390761c9e9bcedbdb2f18a2a815541"
+          plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
+          status={{
+            keyboardEnable: false,
+          }}
+          center={center}
+          useAMapUI
+          scrollWheel={false}
+        >
+          {center && <Marker position={center} />}
+        </Map>
+      </Card>
+    );
+  }
+
   /* 渲染更多信息 */
   renderMoreInfo() {
     const {
@@ -356,7 +349,7 @@ export default class CompanyDetail extends PureComponent {
             createTime,
             groupName,
             businessScope,
-            companyTypeLable,
+            companyTypeLabel,
           },
         },
       },
@@ -370,9 +363,9 @@ export default class CompanyDetail extends PureComponent {
             {economicTypeLabel || getEmptyData()}
           </Description>
           {this.renderCompanyStatus()}
-          <Description term={fieldLabels.companyType}>
-            {companyTypeLable || getEmptyData()}
-          </Description>
+          {/* <Description term={fieldLabels.companyType}>
+            {companyTypeLabel || getEmptyData()}
+          </Description> */}
           <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
           <Description term={fieldLabels.licenseType}>
             {licenseTypeLabel || getEmptyData()}
@@ -499,13 +492,13 @@ export default class CompanyDetail extends PureComponent {
         <Spin spinning={loading}>
           <div style={{ display: tabActiveKey === tabList[0].key ? 'block' : 'none' }}>
             {this.renderBasicInfo()}
+            {this.renderMap()}
             {isCompany && this.renderMoreInfo()}
             {this.renderPersonalInfo()}
             {this.renderFooterToolbar()}
-            {this.renderMap()}
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <SafetyDetail companyId={id} />
+            <SafetyDetail companyId={id} setGotMenus={this.setGotMenus} />
           </div>
         </Spin>
       </PageHeaderLayout>

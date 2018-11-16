@@ -6,6 +6,7 @@ module.exports = [
     routes: [
       { path: '/user', redirect: '/user/login' },
       { path: '/user/login', component: '/User/Login' },
+      { path: '/user/redirect-login', component: '/User/RedirectLogin' },
       { path: '/user/register', component: './User/Register' },
       { path: '/user/register-result', component: './User/RegisterResult' },
       {
@@ -62,14 +63,17 @@ module.exports = [
   {
     path: '/big-platform',
     routes: [
-      { path: '/big-platform', redirect: '/big-platform/safety/government' },
-      { path: '/big-platform/safety/government', component: './BigPlatform/Safety/Government' },
+      { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
+      {
+        path: '/big-platform/safety/government/:gridId',
+        component: './BigPlatform/Safety/Government',
+      },
       {
         path: '/big-platform/safety/company/:companyId',
         component: './BigPlatform/Safety/Company',
       },
       {
-        path: '/big-platform/fire-control/government',
+        path: '/big-platform/fire-control/government/:gridId',
         component: './BigPlatform/FireControl/Government',
       },
       {
@@ -79,6 +83,10 @@ module.exports = [
       {
         path: '/big-platform/monitor/company/:companyId',
         component: './BigPlatform/Monitor/Company',
+      },
+      {
+        path: '/big-platform/video',
+        component: './BigPlatform/Video',
       },
     ],
   },
@@ -162,7 +170,7 @@ module.exports = [
         path: '/base-info',
         code: 'baseInfo',
         name: 'baseInfo',
-        icon: 'database',
+        icon: 'file-text',
         routes: [
           {
             path: '/base-info/company',
@@ -274,13 +282,13 @@ module.exports = [
                 path: '/fire-control/maintenance-company/add',
                 code: 'fireControl.maintenanceCompany.add',
                 name: 'add',
-                component: './FireControl/MaintenanceCompany/MaintenanceCompanyAdd',
+                component: './FireControl/MaintenanceCompany/MaintenanceCompanyHandler',
               },
               {
                 path: '/fire-control/maintenance-company/edit/:id',
                 code: 'fireControl.maintenanceCompany.edit',
                 name: 'edit',
-                component: './FireControl/MaintenanceCompany/MaintenanceCompanyEdit',
+                component: './FireControl/MaintenanceCompany/MaintenanceCompanyHandler',
               },
               {
                 path: '/fire-control/maintenance-company/detail/:id',
@@ -294,8 +302,39 @@ module.exports = [
                 name: 'serviceList',
                 component: './FireControl/MaintenanceCompany/ServiceUnitList',
               },
+              {
+                path: '/fire-control/maintenance-company/serviceList/:id/detail/:companyId',
+                code: 'fireControl.maintenanceCompany.serviceUnitView',
+                name: 'serviceDetail',
+                component: './FireControl/MaintenanceCompany/ServiceDetail',
+              },
             ],
           },
+          // {
+          //   path: '/fire-control/test-info',
+          //   code: 'fireControl.testInfo',
+          //   name: 'testInfo',
+          //   hideChildrenInMenu: true,
+          //   routes: [
+          //     {
+          //       path: '/fire-control/test-info',
+          //       name: 'testInfo',
+          //       redirect: '/fire-control/test-info/list',
+          //     },
+          //     {
+          //       path: '/fire-control/test-info/list',
+          //       code: 'fireControl.testInfo.view',
+          //       name: 'list',
+          //       component: './FireControl/TestInfo/TestList',
+          //     },
+          //     {
+          //       path: '/fire-control/test-info/detail/:id',
+          //       code: 'fireControl.testInfo.view',
+          //       name: 'detail',
+          //       component: './FireControl/TestInfo/TestDetail',
+          //     },
+          //   ],
+          // },
         ],
       },
 
@@ -510,6 +549,106 @@ module.exports = [
               },
             ],
           },
+          {
+            path: '/data-analysis/test-info',
+            code: 'dataAnalysis.testInfo',
+            name: 'testInfo',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/test-info',
+                name: 'testInfo',
+                redirect: '/data-analysis/test-info/list',
+              },
+              {
+                path: '/data-analysis/test-info/list',
+                code: 'dataAnalysis.testInfo.view',
+                name: 'list',
+                component: './DataAnalysis/TestInfo/TestList',
+              },
+              {
+                path: '/data-analysis/test-info/detail/:id',
+                code: 'dataAnalysis.testInfo.view',
+                name: 'detail',
+                component: './DataAnalysis/TestInfo/TestDetail',
+              },
+            ],
+          },
+          {
+            path: '/data-analysis/maintenance-record',
+            code: 'dataAnalysis.maintenanceRecord',
+            name: 'maintenanceRecord',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/maintenance-record',
+                name: 'maintenanceRecord',
+                redirect: '/data-analysis/maintenance-record/list',
+              },
+              {
+                path: '/data-analysis/maintenance-record/list',
+                code: 'dataAnalysis.maintenanceRecord.view',
+                name: 'listView',
+                component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordList',
+              },
+              {
+                path: '/data-analysis/maintenance-record/detail/:id',
+                code: 'dataAnalysis.maintenanceRecord.view',
+                name: 'detail',
+                component: './DataAnalysis/MaintenanceRecord/MaintenanceRecordDetail',
+              },
+            ],
+          },
+          {
+            path: '/data-analysis/repair-record',
+            code: 'dataAnalysis.repairRecord',
+            name: 'repairRecord',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/repair-record',
+                name: 'repairRecord',
+                redirect: '/data-analysis/repair-record/list',
+              },
+              {
+                path: '/data-analysis/repair-record/list',
+                code: 'dataAnalysis.repairRecord.view',
+                name: 'list',
+                component: './DataAnalysis/RepairRecord/RepairRecordList',
+              },
+              {
+                path: '/data-analysis/repair-record/detail/:id',
+                code: 'dataAnalysis.repairRecord.view',
+                name: 'detail',
+                component: './DataAnalysis/RepairRecord/RepairRecordDetail',
+              },
+            ],
+          },
+          {
+            path: '/data-analysis/hidden-danger-report',
+            code: 'dataAnalysis.hiddenDangerReport',
+            name: 'hiddenDangerReport',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/data-analysis/hidden-danger-report',
+                name: 'hiddenDangerReport',
+                redirect: '/data-analysis/hidden-danger-report/list',
+              },
+              {
+                path: '/data-analysis/hidden-danger-report/list',
+                code: 'dataAnalysis.hiddenDangerReport.view',
+                name: 'list',
+                component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportList',
+              },
+              {
+                path: '/data-analysis/hidden-danger-report/detail/:id',
+                code: 'dataAnalysis.hiddenDangerReport.view',
+                name: 'detail',
+                component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+              },
+            ],
+          },
         ],
       },
 
@@ -549,6 +688,12 @@ module.exports = [
                 code: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
                 name: 'importPointPosition',
                 component: './DeviceManagement/UserTransmissionDevice/ImportPointPosition',
+              },
+              {
+                path: '/device-management/user-transmission-device/add',
+                code: 'deviceManagement.userTransmissionDevice.add',
+                name: 'add',
+                component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
               },
             ],
           },
@@ -708,6 +853,151 @@ module.exports = [
                 code: 'systemManagement.appManagement.listView',
                 name: 'list',
                 component: './SystemManagement/AppManagement/AppManagementList',
+              },
+            ],
+          },
+          {
+            path: '/system-management/page-authority',
+            code: 'systemManagement.pageAuthority',
+            name: 'pageAuthority',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/system-management/page-authority',
+                name: 'pageAuthority',
+                redirect: '/system-management/page-authority/index',
+              },
+              {
+                path: '/system-management/page-authority/index',
+                code: 'systemManagement.pageAuthority.view',
+                name: 'view',
+                component: './SystemManagement/PageAuthority/PageAuthority',
+              },
+              {
+                path: '/system-management/page-authority/add-or-edit/:id',
+                code: 'systemManagement.pageAuthority.edit',
+                name: 'edit',
+                component: './SystemManagement/PageAuthority/PageAuthorityAddOrEdit',
+              },
+            ],
+          },
+        ],
+      },
+
+      // 执行检查
+      // {
+      //   path: '/database-input',
+      //   code: 'databaseInput',
+      //   name: 'databaseInput',
+      //   icon: 'database',
+      //   hideInMenu: true,
+      //   routes: [
+      //     {
+      //       path: '/database-input/pageAuthority',
+      //       code: 'databaseInput.pageAuthority',
+      //       name: 'pageAuthority',
+      //       hideChildrenInMenu: true,
+      //       routes: [
+      //         {
+      //           path: '/database-input/pageAuthority',
+      //           name: 'pageAuthority',
+      //           redirect: '/database-input/pageAuthority/index',
+      //         },
+      //         {
+      //           path: '/database-input/pageAuthority/index',
+      //           code: 'databaseInput.pageAuthority.view',
+      //           name: 'view',
+      //           component: './DatabaseInput/PageAuthority',
+      //         },
+      //         {
+      //           path: '/database-input/pageAuthority/addOrEdit/:id',
+      //           code: 'databaseInput.pageAuthority.edit',
+      //           name: 'edit',
+      //           component: './DatabaseInput/PageAuthorityAddOrEdit',
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
+      {
+        path: '/law-enforcement',
+        code: 'lawEnforcement',
+        icon: 'project',
+        name: 'lawEnforcement',
+        routes: [
+          // laws
+          {
+            path: '/law-enforcement/laws',
+            code: 'lawEnforcement.laws',
+            name: 'laws',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/law-enforcement/laws',
+                name: 'laws',
+                redirect: '/law-enforcement/laws/list',
+              },
+              {
+                path: '/law-enforcement/laws/list',
+                code: 'lawEnforcement.laws.listView',
+                name: 'listView',
+                component: './LawEnforcement/Laws/LawDatabaseList',
+              },
+              {
+                path: '/law-enforcement/laws/add',
+                code: 'lawEnforcement.laws.add',
+                name: 'add',
+                component: './LawEnforcement/Laws/LawDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/laws/edit/:id',
+                code: 'lawEnforcement.laws.edit',
+                name: 'edit',
+                component: './LawEnforcement/Laws/LawDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/laws/detail/:id',
+                code: 'lawEnforcement.laws.view',
+                name: 'view',
+                component: './LawEnforcement/Laws/LawDatabaseDetail',
+              },
+            ],
+          },
+          // illegal
+          {
+            path: '/law-enforcement/illegal',
+            code: 'lawEnforcement.illegal',
+            name: 'illegal',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/law-enforcement/illegal',
+                name: 'illegal',
+                redirect: '/law-enforcement/illegal/list',
+              },
+              {
+                path: '/law-enforcement/illegal/list',
+                code: 'lawEnforcement.illegal.listView',
+                name: 'listView',
+                component: './LawEnforcement/Illegal/IllegalDatabaseList',
+              },
+              {
+                path: '/law-enforcement/illegal/add',
+                code: 'lawEnforcement.illegal.add',
+                name: 'add',
+                component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/illegal/edit/:id',
+                code: 'lawEnforcement.illegal.edit',
+                name: 'edit',
+                component: './LawEnforcement/Illegal/IllegalDatabaseEdit',
+              },
+              {
+                path: '/law-enforcement/illegal/detail/:id',
+                code: 'lawEnforcement.illegal.view',
+                name: 'view',
+                component: './LawEnforcement/Illegal/IllegalDatabaseDetail',
               },
             ],
           },

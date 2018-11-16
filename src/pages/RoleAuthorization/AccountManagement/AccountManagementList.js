@@ -155,13 +155,19 @@ const getEmptyData = () => {
         ...action,
       })
     },
+    initPageNum(action) {
+      dispatch({
+        type: 'account/initPageNum',
+        ...action,
+      })
+    },
   })
 )
 @Form.create()
 export default class accountManagementList extends PureComponent {
   constructor(props) {
     super(props);
-    this.formData = defaultFormData;
+    // this.formData = defaultFormData;
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     this.state = {
       modalVisible: false,
@@ -177,7 +183,7 @@ export default class accountManagementList extends PureComponent {
       fetch,
       fetchOptions,
       fetchUnitsFuzzy,
-      fetchGavUserTypes,
+      // fetchGavUserTypes,
       fetchUserType,
       account: {
         searchInfo,
@@ -187,39 +193,63 @@ export default class accountManagementList extends PureComponent {
       },
     } = this.props;
 
-    // 获取账号列表
-    if (searchInfo) {
-      setFieldsValue(searchInfo)
-      fetch({
-        payload: {
-          pageSize,
-          pageNum: 1,
-          ...searchInfo,
-        },
-      });
-    } else {
-      fetch({
-        payload: {
-          pageSize,
-          pageNum: 1,
-        },
-      });
-    }
-    fetchGavUserTypes()
-    fetchUserType()
+    // fetchGavUserTypes()
+    fetchUserType({
+      success: () => {
+
+      },
+    })
     // 获取单位类型和账户状态
     fetchOptions({
       success: ({ unitType }) => {
-        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        fetchUnitsFuzzy({
-          payload: {
-            unitType: unitType[0].id,
-            pageNum: 1,
-            pageSize: defaultPageSize,
-          },
-        });
+        const selectedUnitType = searchInfo && searchInfo.unitType || unitType && unitType.length && unitType[0].id || undefined
+        this.setState({ unitTypeChecked: selectedUnitType })
+
+        // 如果有搜索条件，则填入并所属单位和账号列表
+        if (searchInfo) {
+          const { unitId: { key } = {}, ...other } = searchInfo
+          selectedUnitType === 2 ?
+            fetchUnitsFuzzy({
+              payload: { unitType: 2 },
+            }) : fetchUnitsFuzzy({
+              payload: {
+                unitType: selectedUnitType,
+                pageNum: 1,
+                pageSize: defaultPageSize,
+              },
+            });
+          setFieldsValue(searchInfo)
+          fetch({
+            payload: {
+              pageSize,
+              pageNum: 1,
+              unitId: key || null,
+              ...other,
+            },
+          });
+        } else {
+          fetchUnitsFuzzy({
+            payload: {
+              unitType: selectedUnitType,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+          fetch({
+            payload: {
+              pageSize,
+              pageNum: 1,
+            },
+          });
+        }
       },
-    });
+    })
+
+  }
+
+  componentWillUnmount() {
+    const { initPageNum } = this.props
+    initPageNum()
   }
 
   /* 去除输入框里左右两边空白 */
@@ -233,14 +263,16 @@ export default class accountManagementList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
+    const { unitId: { key } = {}, ...other } = data
     // 修改表单数据
-    this.formData = data;
+    // this.formData = data;
     // 重新请求数据
     fetch({
       payload: {
         pageSize,
         pageNum: 1,
-        ...data,
+        unitId: key || null,
+        ...other,
       },
     });
     saveSearchInfo({
@@ -256,12 +288,12 @@ export default class accountManagementList extends PureComponent {
       saveSearchInfo,
       // goToException,
       // fetchOptions,
-      form: { resetFields },
+      form: { resetFields, getFieldValue },
     } = this.props;
     // 清除筛选条件
     resetFields();
     // 修改表单数据
-    this.formData = defaultFormData;
+    // this.formData = defaultFormData;
     // 重新请求数据
     fetch({
       payload: {
@@ -269,10 +301,11 @@ export default class accountManagementList extends PureComponent {
         pageNum: 1,
       },
     });
-    this.setState({ unitTypeChecked: 4 }, () => {
+    const unitType = getFieldValue('unitType')
+    this.setState({ unitTypeChecked: unitType }, () => {
       fetchUnitsFuzzy({
         payload: {
-          unitType: 4,
+          unitType,
           pageNum: 1,
           pageSize: defaultPageSize,
         },
@@ -284,21 +317,21 @@ export default class accountManagementList extends PureComponent {
   /* 滚动加载 */
   handleLoadMore = () => {
     const {
-      account: { isLast },
+      appendfetch,
+      account: { pageNum, isLast },
+      form: { getFieldsValue },
     } = this.props;
     if (isLast) {
       return;
     }
-    const {
-      appendfetch,
-      account: { pageNum },
-    } = this.props;
+    const { unitId: { key } = {}, ...other } = getFieldsValue()
     // 请求数据
     appendfetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...this.formData,
+        unitId: key || null,
+        ...other,
       },
     });
   };
@@ -307,15 +340,22 @@ export default class accountManagementList extends PureComponent {
   handleUnitTypeSelect = value => {
     const {
       fetchUnitsFuzzy,
-      form: { setFieldsValue },
+      form: { setFieldsValue, getFieldValue },
     } = this.props;
-    setFieldsValue({ unitId: null, userType: [] });
-    this.setState({ unitTypeChecked: value });
+    const selectedUnitType = getFieldValue('unitType')
+    setFieldsValue({ unitId: undefined, userType: [] });
+    this.setState({ unitTypeChecked: value || selectedUnitType });
     // 根据当前选中的单位类型获取对应的所属单位列表
     if (value === 2) {
       fetchUnitsFuzzy({
         payload: {
           unitType: value,
+        },
+      });
+    } else if (value === null || value === undefined) {
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: selectedUnitType,
         },
       });
     } else {
@@ -344,6 +384,19 @@ export default class accountManagementList extends PureComponent {
       },
     });
   };
+
+  // 所属单位失焦
+  handleUnitIdBlur = () => {
+    const {
+      form: { setFieldsValue, getFieldValue },
+    } = this.props
+    const value = getFieldValue('unitId')
+
+    // 搜索后没有选择就清空
+    if (value && value.key === value.label) {
+      setFieldsValue({ unitId: undefined })
+    }
+  }
 
   // 查看更多关联企业
   handleViewMore = (users, loginId) => {
@@ -456,17 +509,19 @@ export default class accountManagementList extends PureComponent {
                   rules: [
                     {
                       whitespace: true,
-                      message: '请选择所属单位',
+                      transform: value => value && value.label,
                     },
                   ],
                 })(
                   <AutoComplete
                     allowClear
+                    labelInValue
                     mode="combobox"
                     optionLabelProp="children"
                     placeholder="请选择所属单位"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
+                    onBlur={this.handleUnitIdBlur}
                     filterOption={false}
                     style={{ width: 230 }}
                   >
@@ -526,7 +581,7 @@ export default class accountManagementList extends PureComponent {
               <AuthButton
                 code={codesMap.account.add}
                 type="primary"
-                href="#/role-authorization/account-management/Add"
+                href="#/role-authorization/account-management/add"
               >
                 新增
               </AuthButton>

@@ -23,9 +23,13 @@ import wcqIcon from './images/wcq.png';
 import ycqIcon from './images/ycq.png';
 import backIcon from '../FireControl/img/back.png';
 import videoIcon from '@/assets/videoCamera.png';
+import safety from '@/assets/safety.png';
+import fireControl from '@/assets/fire-control.png';
+import environment from '@/assets/environment.png';
+import hygiene from '@/assets/hygiene.png';
 
 import styles from './UnitFireControl.less';
-
+const { projectName } = global.PROJECT_CONFIG;
 const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
 const fireIcon = `${prefix}fire_hj.png`;
 const faultIcon = `${prefix}fire_gz.png`;
@@ -56,7 +60,9 @@ const PendingInfoItem = ({ data, onClick }) => {
       <div style={{ backgroundImage: `url(${isFire ? positionRedIcon : positionBlueIcon})` }}>
         {install_address}
       </div>
-      <div className={styles.videoPlayButton} onClick={onClick}><img src={videoIcon} alt=""/></div>
+      <div className={styles.videoPlayButton} onClick={onClick}>
+        <img src={videoIcon} alt="" />
+      </div>
     </div>
   );
 };
@@ -76,6 +82,7 @@ const HiddenDangerRecord = ({ data }) => {
     real_rectify_time,
     review_user_name,
     hiddenDangerRecordDto,
+    business_type,
   } = data;
   let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
   fileWebUrl = fileWebUrl ? fileWebUrl.split(',')[0] : '';
@@ -109,13 +116,16 @@ const HiddenDangerRecord = ({ data }) => {
         </div>
       </div>
       <div>
-        <div style={{ backgroundImage: `url(${icon})`, color }}>
+        <div style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})`, color }}>
           <Ellipsis lines={2} tooltip>
             {desc || <span style={{ color: '#fff' }}>暂无隐患描述</span>}
           </Ellipsis>
         </div>
         <div>
-          <span>上<span style={{ opacity: '0' }}>隐藏</span>报：</span>
+          <span>
+            上<span style={{ opacity: '0' }}>隐藏</span>
+            报：
+          </span>
           <Ellipsis lines={1} tooltip>
             <span style={{ marginRight: '16px' }}>{report_user_name}</span>
             {moment(+report_time).format('YYYY-MM-DD')}
@@ -132,7 +142,10 @@ const HiddenDangerRecord = ({ data }) => {
         </div>
         {isDFC && (
           <div>
-            <span>复<span style={{ opacity: '0' }}>隐藏</span>查：</span>
+            <span>
+              复<span style={{ opacity: '0' }}>隐藏</span>
+              查：
+            </span>
             <Ellipsis lines={1} tooltip>
               <span>{review_user_name}</span>
             </Ellipsis>
@@ -148,9 +161,8 @@ const HiddenDangerRecord = ({ data }) => {
  */
 const Host = ({ data, onClick }) => {
   const { id, deviceCode, installLocation, isReset, isFire } = data;
-  const hostInfoItemClassName = +isFire && !isReset
-    ? `${styles.hostInfoItem} ${styles.fireHostInfoItem}`
-    : styles.hostInfoItem;
+  const hostInfoItemClassName =
+    +isFire && !isReset ? `${styles.hostInfoItem} ${styles.fireHostInfoItem}` : styles.hostInfoItem;
   return (
     <div className={styles.hostContainer} key={id}>
       <div className={styles.hostIconContainer}>
@@ -175,6 +187,22 @@ const Host = ({ data, onClick }) => {
       </div>
     </div>
   );
+};
+
+// 根据业务分类获取对应图标
+const getIconByBusinessType = function(businessType) {
+  switch (+businessType) {
+    case 1:
+      return safety;
+    case 2:
+      return fireControl;
+    case 3:
+      return environment;
+    case 4:
+      return hygiene;
+    default:
+      return safety;
+  }
 };
 
 /**
@@ -284,6 +312,7 @@ export default class App extends PureComponent {
       type: 'unitFireControl/fetchHiddenDangerRecords',
       payload: {
         company_id: companyId,
+        businessType: 2,
       },
     });
 
@@ -293,6 +322,7 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         month: moment({ month: defaultHiddenDangerType }).format('YYYY-MM'),
+        businessType: 2,
       },
     });
 
@@ -443,6 +473,7 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         month: moment({ month: hiddenDangerType }).format('YYYY-MM'),
+        businessType: 2,
       },
     });
   };
@@ -643,15 +674,20 @@ export default class App extends PureComponent {
           linkage={start_state}
           supervise={supervise_state}
           feedback={feedback_state}
-          fixedContent={hosts.length > 0 && (
-            <Tooltip overlayClassName={styles.tooltip} title="一键复位功能只对平台数据进行复位，并不能控制主机复位。如需复位火警等，需到消防主机进行复位">
-              <div className={styles.resetButton} onClick={this.handleShowResetSection}>
-                <img src={resetKeyIcon} alt="" />
-                一键复位
-              </div>
-            </Tooltip>
-          )}
-        // onClick={this.handleVideoOpen}
+          fixedContent={
+            hosts.length > 0 && (
+              <Tooltip
+                overlayClassName={styles.tooltip}
+                title="一键复位功能只对平台数据进行复位，并不能控制主机复位。如需复位火警等，需到消防主机进行复位"
+              >
+                <div className={styles.resetButton} onClick={this.handleShowResetSection}>
+                  <img src={resetKeyIcon} alt="" />
+                  一键复位
+                </div>
+              </Tooltip>
+            )
+          }
+          // onClick={this.handleVideoOpen}
         />
         <Section
           title="一键复位"
@@ -703,10 +739,10 @@ export default class App extends PureComponent {
               );
             })
           ) : (
-              <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
-                暂无主机
+            <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
+              暂无主机
             </div>
-            )}
+          )}
         </Section>
       </Rotate>
     );
@@ -865,22 +901,40 @@ export default class App extends PureComponent {
 
     return (
       <div className={styles.main}>
-        <Header title="晶安智慧消防云平台" extraContent={companyName} />
+        <Header title={projectName} extraContent={companyName} />
         <div className={styles.mainBody}>
           <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
             <Col span={6} style={{ height: '100%' }}>
-              <Section isScroll isCarousel split={<div key="split" className={styles.splitText}>——已经到底了，您即将看到第一条信息——</div>} splitHeight={48}>
+              <Section
+                isScroll
+                isCarousel
+                split={
+                  <div key="split" className={styles.splitText}>
+                    ——已经到底了，您即将看到第一条信息——
+                  </div>
+                }
+                splitHeight={48}
+              >
                 {pendingInfoList.length !== 0 ? (
                   [
                     ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType === '火警'),
                     ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType !== '火警'),
                   ].map((item, index) => {
                     const { id } = item;
-                    return <PendingInfoItem key={id || index} data={item} onClick={this.handleVideoOpen} />;
+                    return (
+                      <PendingInfoItem
+                        key={id || index}
+                        data={item}
+                        onClick={this.handleVideoOpen}
+                      />
+                    );
                   })
                 ) : (
-                    <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noPendingInfo})` }}></div>
-                  )}
+                  <div
+                    className={styles.noPendingInfo}
+                    style={{ backgroundImage: `url(${noPendingInfo})` }}
+                  />
+                )}
               </Section>
             </Col>
             <Col span={12} style={{ height: '100%' }}>
@@ -899,8 +953,11 @@ export default class App extends PureComponent {
                     return <HiddenDangerRecord key={id} data={item} />;
                   })
                 ) : (
-                    <div className={styles.noPendingInfo} style={{ backgroundImage: `url(${noHiddenDangerRecords})` }}></div>
-                  )}
+                  <div
+                    className={styles.noPendingInfo}
+                    style={{ backgroundImage: `url(${noHiddenDangerRecords})` }}
+                  />
+                )}
               </Section>
             </Col>
             <Col span={6} style={{ height: '100%' }}>

@@ -17,6 +17,7 @@ export default {
     detail: {},
     maintenanceList: [],
     serviceList: [],
+    searchInfo: null,
   },
 
   effects: {
@@ -210,6 +211,24 @@ export default {
         ...state,
         serviceList: payload,
       };
+    },
+    // 保存列表查询信息
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload || null,
+      }
+    },
+    // 初始化列表页码
+    initPageNum(state, action) {
+      return {
+        ...state,
+        isLast: false,
+        pagination: {
+          ...state.pagination,
+          pageNum: 1,
+        },
+      }
     },
   },
 }

@@ -3,7 +3,7 @@ import moment from 'moment';
 const DATE_FORMAT = 'YYYY/M/D H:m';
 const CONDITION_MAP = { 1: '≥', 2: '≤' };
 
-export function addAlign(columns, align='center') {
+export function addAlign(columns, align = 'center') {
   if (!columns)
     return;
 
@@ -50,7 +50,7 @@ export function handleFormVals(vals) {
   return newVals;
 }
 
-export function handleTableData(list=[], indexBase) {
+export function handleTableData(list = [], indexBase) {
   return list.map((item, index) => {
     const { id, realtime, area, location, status, realtimeData, unit, limitValue, condition, desc } = item;
     const sts = Number.parseInt(status, 10);
@@ -59,13 +59,13 @@ export function handleTableData(list=[], indexBase) {
     return {
       id,
       index: indexBase + index + 1,
-      time: realtime ? moment(realtime).format('YYYY-MM-DD HH:MM:SS') : '-',
+      time: realtime ? moment(realtime).format('YYYY-MM-DD HH:mm:ss') : '-',
       area: area || '-',
       location: location || '-',
       status: sts,
       // value: sts === -1 || realtimeData === null ? '-' : `${realtimeData}${u}`,
       value: sts === -1 || realtimeData === null ? '-' : renderVal(realtimeData, u),
-      limitValue: limitValue || limitValue === 0 ? renderVal(limitValue, u) :  '-',
+      limitValue: limitValue || limitValue === 0 ? renderVal(limitValue, u) : '-',
       // limitValue: <p style={{color: 'red'}}>limit</p>,
       condition: sts === -1 ? '设备失联' : `${CONDITION_MAP[condition]}界限值`,
       parameter: sts === -1 || desc === null ? '-' : desc,
@@ -73,7 +73,7 @@ export function handleTableData(list=[], indexBase) {
   });
 }
 
-export function handleChemicalFormula(param='') {
+export function handleChemicalFormula(param = '') {
   if (param.length <= 1)
     return param;
 
@@ -123,7 +123,7 @@ function renderVal(val, unit) {
   return <span>{[val, ...unit]}</span>;
 }
 
-export function isDateDisabled(current, moments, months=3) {
+export function isDateDisabled(current, moments, months = 3) {
   const today = moment();
   if (!moments || !moments.length || moments.length === 2)
     return current > today;

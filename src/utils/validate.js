@@ -8,6 +8,6 @@ const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{
 const loginNameReg = /^.*[^\d].*$/;
 
 /* 验证keyId和deviceId */
-const numReg = /^(?!_)(?=.*[a-z])(?=.*_)[0-9a-z_]{6,}(?<!_)$/;
+// const numReg = /^(?!_)(?=.*[a-z])(?=.*_)[0-9a-z_]{6,}(?<!_)$/;
 
-export { phoneReg, emailReg, loginNameReg, numReg };
+export { phoneReg, emailReg, loginNameReg };

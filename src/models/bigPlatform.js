@@ -36,6 +36,7 @@ import {
   getListForMapForOptimize,
   getMapLocation,
   getCompanyCheckCount,
+  getDangerLocationCompanyNotRatedData,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -67,6 +68,8 @@ const transformHiddenDangerFields = ({
   hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
   source_type_name,
   companyBuildingItem,
+  business_type,
+  review_time,
 }) => {
   const { object_title, risk_level } = companyBuildingItem || {};
   return {
@@ -86,6 +89,8 @@ const transformHiddenDangerFields = ({
       (source_type_name === '风险点上报' &&
         `${getColorByRiskLevel(risk_level)}风险点${object_title ? `（${object_title}）` : ''}`) ||
       source_type_name,
+    businessType: business_type,
+    fcsj: moment(+review_time).format('YYYY-MM-DD'),
   };
 };
 
@@ -197,6 +202,7 @@ export default {
       ycq: [],
       wcq: [],
       dfc: [],
+      ygb: [],
     },
     hiddenDangerCompanyAll: {},
     hiddenDangerCompanyMonth: {},
@@ -591,19 +597,34 @@ export default {
         error();
       }
     },
+    // 风险点点击的具体信息
+    *fetchDangerLocationCompanyNotRatedData({ payload, success, error }, { call, put }) {
+      const response = yield call(getDangerLocationCompanyNotRatedData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'dangerLocationCompanyNotRatedData',
+          payload: response.data.list,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
     *fetchAllCamera({ payload, success }, { call, put }) {
       const response = yield call(getAllCamera, payload);
       const { list } = response;
       yield put({ type: 'saveAllCamera', payload: list });
       if (success) success(response);
     },
-    *fetchStartToPlay({ payload, success }, { call, put }) {
-      const response = yield call(getStartToPlay, payload);
-      if (response && response.code === 200) {
-        yield put({ type: 'startToPlay', payload: { src: response.data.url } });
-        if (success) success(response);
-      }
-    },
+    // *fetchStartToPlay({ payload, success }, { call, put }) {
+    //   const response = yield call(getStartToPlay, payload);
+    //   if (response && response.code === 200) {
+    //     yield put({ type: 'startToPlay', payload: { src: response.data.url } });
+    //     if (success) success(response);
+    //   }
+    // },
     // 获取监控球数据
     *fetchMonitorData({ payload, success, error }, { call, put }) {
       const response = yield call(getMonitorData, payload);
@@ -701,12 +722,19 @@ export default {
             return +a.real_rectify_time - b.real_rectify_time;
           })
           .map(transformHiddenDangerFields);
+        const ygb = response.data.hiddenDangers
+          .filter(({ status }) => +status === 4)
+          .sort((a, b) => {
+            return +a.real_rectify_time - b.real_rectify_time;
+          })
+          .map(transformHiddenDangerFields);
         yield put({
           type: 'hiddenDangerListByDate',
           payload: {
             ycq,
             wcq,
             dfc,
+            ygb,
           },
         });
         if (success) {
@@ -984,6 +1012,12 @@ export default {
       };
     },
     dangerLocationCompanyData(state, { payload }) {
+      return {
+        ...state,
+        dangerLocationCompanyData: payload,
+      };
+    },
+    dangerLocationCompanyNotRatedData(state, { payload }) {
       return {
         ...state,
         dangerLocationCompanyData: payload,

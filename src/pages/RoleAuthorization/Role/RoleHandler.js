@@ -234,7 +234,7 @@ export default class RoleHandler extends PureComponent {
     const {
       role: {
         detail: {
-          sysRole: { name, description },
+          sysRole: { name, description } = {},
         },
       },
       form: { getFieldDecorator },

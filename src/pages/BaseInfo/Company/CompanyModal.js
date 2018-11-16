@@ -29,12 +29,12 @@ const defaultPageSizeOptions = ['5', '10', '15', '20'];
 // 表格列
 const defaultColumns = [
   {
-    title: '企业名称',
+    title: '单位名称',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: '企业代码',
+    title: '社会信用代码',
     dataIndex: 'code',
     key: 'code',
   },
@@ -92,8 +92,16 @@ export default class CompanyModal extends PureComponent {
     const {
       modal: { list },
       onSelect,
+      multiSelect,
     } = this.props;
-    const selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
+    let selectedData;
+    if (multiSelect) {
+      selectedData = selectedRowKeys.map(data => {
+        return list.find(item => item.id === data);
+      });
+    } else {
+      selectedData = list.filter(item => item.id === selectedRowKeys[0])[0];
+    }
     if (onSelect) {
       onSelect(selectedData);
     }
@@ -166,6 +174,8 @@ export default class CompanyModal extends PureComponent {
       columns,
       pagination,
       rowSelection,
+      field,
+      actSelect = true,
       modal: {
         list,
         pagination: { total, pageNum, pageSize },
@@ -186,8 +196,8 @@ export default class CompanyModal extends PureComponent {
         destroyOnClose
       >
         <InlineForm
-          fields={fields}
-          action={this.renderSelectButton()}
+          fields={field || fields}
+          action={actSelect && this.renderSelectButton()}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />

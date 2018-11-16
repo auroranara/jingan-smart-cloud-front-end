@@ -1,4 +1,5 @@
 import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 import { stringify } from 'qs';
 import { getFakeCaptcha } from '../services/api';
 import { setAuthority, setToken } from '../utils/authority';
@@ -77,14 +78,8 @@ export default {
       setToken();
       reloadAuthorized();
       document.cookie = '';
-      yield put(
-        routerRedux.push({
-          pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        })
-      );
+      router.push('/user/login');
+      window.location.reload();
     },
     *fetchFooterInfo({ payload }, { call, put }) {
       const response = yield call(fetchFooterInfo);
@@ -98,11 +93,10 @@ export default {
     *changerUser({ payload, success, error }, { call, put }) {
       const response = yield call(changerUser, payload);
       if (response && response.code === 200 && response.data && response.data.webToken) {
-        if (success) success();
         yield setToken(response.data.webToken);
         reloadAuthorized();
-        // yield put(routerRedux.replace({ pathname: '/' }));
-        window.location.reload(true);
+        yield put(routerRedux.replace({ pathname: '/' }));
+        if (success) success();
       } else if (error) error();
     },
   },
