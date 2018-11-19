@@ -1576,7 +1576,7 @@ class CompanyLayout extends PureComponent {
    * 安全人员
    */
   renderSafety() {
-    const {
+    let {
       bigPlatform: {
         safetyOfficer: {
           legalNum = 0,
@@ -1590,6 +1590,10 @@ class CompanyLayout extends PureComponent {
         },
       },
     } = this.props;
+    legalList = legalList || [];
+    safeChargerList = safeChargerList || [];
+    safeManagerList = safeManagerList || [];
+    saferList = saferList || [];
 
     // 类名
     const className = classNames(styles.sectionWrapper, styles.safety);
