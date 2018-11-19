@@ -29,7 +29,7 @@ export default class App extends PureComponent {
       startIndex: 0,
     };
     // resize添加去抖
-    this.resize = debounce(this.resize, 100, { leading: true, trailing: false });
+    this.debouncedResize = debounce(this.resize, 100, { leading: true, trailing: false });
     // 轮播定时器（当开启轮播且内容超出时添加）
     this.carouselTimer = null;
     // 轮播定时器起始时间
@@ -51,7 +51,7 @@ export default class App extends PureComponent {
     // 初始化（判断当前内容高度是否超出）
     this.resize();
     // 添加resize事件监听
-    window.addEventListener('resize', this.resize, false);
+    window.addEventListener('resize', this.debouncedResize, false);
   }
 
   /**
@@ -60,7 +60,7 @@ export default class App extends PureComponent {
   componentDidUpdate({ children: prevChildren, hackHeight: prevHackHeight }) {
     const { children, hackHeight } = this.props;
     // 比较源数据的key是否发生变化，如果发生变化就重新计算内容高度
-    if (children.length !== prevChildren.length) {
+    if (this.getChildrenLength(children) !== this.getChildrenLength(prevChildren)) {
       this.resize();
     }
     else if (hackHeight !== prevHackHeight) {
@@ -75,7 +75,7 @@ export default class App extends PureComponent {
    */
   componentWillUnmount() {
     // 清除事件监听
-    window.removeEventListener('resize', this.resize, false);
+    window.removeEventListener('resize', this.debouncedResize, false);
     // 清除轮播定时器
     this.clearCarousel()
     // 清除过渡定时器
@@ -83,13 +83,23 @@ export default class App extends PureComponent {
   }
 
   /**
+   * 获取children的实际长度
+   */
+  getChildrenLength(children) {
+    return children.length && children.reduce((total, cur) => {
+      total += (cur && cur.length) ? cur.length : 0;
+      return total;
+    }, 0);
+  }
+
+  /**
    * 判断是否内容超出容器高度
    */
   resize = () => {
-    const { splitHeight=0 } = this.props;
+    const { splitHeight=0, isCarousel } = this.props;
     const { isOverflow } = this.state;
     // 判断是否内容超出容器高度
-    const nextIsOverflow = isOverflow ? (this.container.scrollHeight - splitHeight) / 2 > this.container.offsetHeight  : this.container.scrollHeight > this.container.offsetHeight;
+    const nextIsOverflow = isOverflow && isCarousel ? (this.container.scrollHeight - splitHeight) / 2 > this.container.offsetHeight  : this.container.scrollHeight > this.container.offsetHeight;
     // 修改state
     this.setState({
       isOverflow: nextIsOverflow,

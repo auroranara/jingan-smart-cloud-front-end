@@ -12,7 +12,7 @@ const isNumber = (value) => {
 };
 
 const iconPrefix = 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
-const defaultFourColorImg = `${iconPrefix}defaultFourColorImg.png`;
+const defaultFourColorImg = `${iconPrefix}defaultFourColorImg1.png`;
 
 export default class App extends PureComponent {
   static propTypes = {
