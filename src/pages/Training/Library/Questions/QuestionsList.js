@@ -230,7 +230,7 @@ export default class QuestionsList extends PureComponent {
           loadMore={(
             <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px' }}>
               {!isLast && !initLoading && !loading ? (<Button onClick={this.handleLoadMore}>加载更多</Button>) : (
-                (<Spin spinning={!initLoading && loading} />)
+                (list && list.length > 0 && loading && <Spin spinning={loading} />)
               )}
             </div>
           )}
@@ -245,7 +245,6 @@ export default class QuestionsList extends PureComponent {
                   <div className={styles.firstLine}>
                     <div className={styles.tags}>
                       {item.typeName && <Tag>{item.typeName}</Tag>}
-                      {/* {item.sort && <Tag>{item.sort}</Tag>} */}
                       {item.levelName && <Tag color={colors[item.level - 1]}>{item.levelName}</Tag>}
                     </div>
                     <div className={styles.rightIcon}>

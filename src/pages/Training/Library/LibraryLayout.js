@@ -41,6 +41,7 @@ export default class LibraryLayout extends PureComponent {
       activeKey: null, // 当前tabs的值
       knowledgeId: null, // 点击保存的知识点id
       companyId: null, // 所属单位
+      selectedKeys: [],
     }
     this.onSearchUnits = debounce(this.onSearchUnits, 800)
   }
@@ -96,7 +97,7 @@ export default class LibraryLayout extends PureComponent {
     const { activeKey } = this.state
     // 如果输入了搜索内容，则返回
     if (!value || value.key === value.label) return
-    this.setState({ companyId: value.key })
+    this.setState({ companyId: value.key, selectedKeys: [], knowledgeId: null })
     // 更新知识点树
     dispatch({
       type: 'resourceManagement/fetchKnowledgeTree',
@@ -107,6 +108,7 @@ export default class LibraryLayout extends PureComponent {
     if (activeKey === 'questions') {
       // 清空试题筛选数据
       this.refs.questions && this.refs.questions.resetFields()
+      // 获取试题列表
       dispatch({
         type: 'resourceManagement/fetchQuestions',
         payload: {
@@ -136,7 +138,7 @@ export default class LibraryLayout extends PureComponent {
       },
     } = this.props
     const [selected] = keys
-    this.setState({ knowledgeId: selected })
+    this.setState({ knowledgeId: selected, selectedKeys: keys })
     if (activeKey === 'questions') {
       // 获取试题列表 Tips：user为政府人员需要传companyId，来看所有试题
       dispatch({
@@ -180,11 +182,15 @@ export default class LibraryLayout extends PureComponent {
         knowledgeTree,
       },
     } = this.props
+    const { selectedKeys } = this.state
 
     if (knowledgeTree && knowledgeTree.length) {
       return (
         <Spin spinning={treeLoading}>
-          <Tree showLine onSelect={this.handleSelectTree}>
+          <Tree
+            selectedKeys={selectedKeys}
+            showLine
+            onSelect={this.handleSelectTree}>
             {this.renderTreeNodes(knowledgeTree)}
           </Tree>
         </Spin>
@@ -217,7 +223,6 @@ export default class LibraryLayout extends PureComponent {
             <FormItem>
               {getFieldDecorator('unitId')(
                 <AutoComplete
-                  allowClear
                   labelInValue
                   mode="combobox"
                   optionLabelProp="children"
