@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Card, Row, Col, Tabs } from 'antd';
-// import connect from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Courseware from './Courseware/CoursewareList';

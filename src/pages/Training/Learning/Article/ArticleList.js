@@ -1,68 +1,167 @@
 import React, { PureComponent } from 'react';
-// import connect from 'dva';
-import { List, Card, Row, Button, Icon, Tag, Form, Col, Input, Select } from 'antd';
-// import router from 'umi/router';
+import { connect } from 'dva';
+import {
+  List,
+  Card,
+  Row,
+  Button,
+  Icon,
+  Tag,
+  Form,
+  Col,
+  Input,
+  Divider,
+  Select,
+  TreeSelect,
+} from 'antd';
+// import moment from 'moment';
+
 import styles from './Article.less';
 
 const ListItem = List.Item;
 const FormItem = Form.Item;
 const Option = Select.Option;
+// const TreeNode = TreeSelect.TreeNode;
 
-// 筛选栏grid配置
-const colWrapper = {
-  xl: 4,
-  md: 8,
-  sm: 12,
-  xs: 12,
+// 默认表单值
+const defaultFormData = {
+  title: undefined,
 };
+
+const treeData = data => {
+  // return data.map(item => {
+  //   if (item.children) {
+  //     return (
+  //       <TreeNode title={item.name} key={item.id} value={item.id}>
+  //         {treeData(item.children)}
+  //       </TreeNode>
+  //     );
+  //   }
+  //   return <TreeNode title={item.name} key={item.id} value={item.id} />;
+  // });
+};
+
+// function getTime(t) {
+//   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
+// }
 
 const data = [
   {
     title: '消防应急操作指南指导消防应急操作指南指导 ',
-    content: '学习学习',
-    author: '马云',
     id: '001',
   },
   {
     title: '消防应急操作指南指导fsdfvsd',
-    content: '学习学习',
-    author: '啊是大',
+    status: '发布',
     id: '002',
   },
   {
     title: '消防应急操作指南指导东方闪电',
-    content: '学习学习',
-    author: '啊是大',
     id: '003',
   },
 ];
 
+@connect(({ learning }) => ({
+  learning,
+}))
 @Form.create()
 export default class ArticleList extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.formData = defaultFormData;
+  }
+
+  // 挂载后
+  // componentDidMount() {
+  //   const {
+  //     dispatch,
+  //     learning: {
+  //       data: {
+  //         pagination: { pageSize },
+  //       },
+  //     },
+  //   } = this.props;
+  //   // 获取文章列表
+  //   dispatch({
+  //     type: 'learning/fetch',
+  //     payload: {
+  //       pageSize,
+  //       pageNum: 1,
+  //     },
+  //   });
+  // }
+
+  // 查询
+  handleArticleQuery = () => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+      learning: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    const data = getFieldsValue();
+    // 修改表单数据
+    this.formData = data;
+    // 重新请求数据
+    dispatch({
+      type: 'learning/fetch',
+      payload: {
+        pageSize,
+        pageNum: 1,
+        ...data,
+      },
+    });
+  };
+
+  // 重置
+  handleArticleReset = () => {
+    const {
+      dispatch,
+      form: { resetFields },
+      learning: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 清除筛选条件
+    resetFields();
+    this.formData = defaultFormData;
+    dispatch({
+      type: 'learning/fetch',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+  };
+
+  // 渲染
   render() {
     const {
       form: { getFieldDecorator },
     } = this.props;
 
-    const IconText = ({ type, text }) => (
-      <span>
-        <Icon type={type} style={{ marginRight: 7 }} />
-        {text}
-      </span>
-    );
+    const treeList = treeData();
 
     return (
       <div>
         <Row gutter={8}>
           <Form>
-            <Col {...colWrapper}>
+            <Col span={6}>
               <FormItem>
-                {getFieldDecorator('title')(<Input placeholder="请输入文章标题" />)}
+                {getFieldDecorator('title', {
+                  initialValue: defaultFormData.title,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Input placeholder="请输入文章标题" />)}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            <Col span={6}>
               <FormItem>
-                {getFieldDecorator('author')(
+                {getFieldDecorator('status')(
                   <Select placeholder="请选择阅读状态">
                     <Option value="已读">已读</Option>
                     <Option value="未读">未读</Option>
@@ -70,18 +169,30 @@ export default class ArticleList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            <Col span={8}>
               <FormItem>
-                {getFieldDecorator('author')(<Select placeholder="请选择知识点" />)}
+                {getFieldDecorator('knowledge')(
+                  <TreeSelect
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    allowClear
+                    placeholder="请选择知识点"
+                  >
+                    {treeList}
+                  </TreeSelect>
+                )}
               </FormItem>
             </Col>
           </Form>
-          <Col {...colWrapper}>
+          <Col span={4}>
             <FormItem>
-              <Button type="primary" onClick={this.handleAddArticle}>
+              <Button type="primary" onClick={this.handleArticleQuery}>
                 查询
               </Button>
-              <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleAddArticle}>
+              <Button
+                type="primary"
+                style={{ marginLeft: '10px' }}
+                onClick={this.handleArticleReset}
+              >
                 重置
               </Button>
             </FormItem>
@@ -91,33 +202,49 @@ export default class ArticleList extends PureComponent {
         <List
           grid={{ gutter: 16, column: 1 }}
           dataSource={data}
-          renderItem={item => (
-            <ListItem key={item.id}>
-              <Card className={styles.cardContainer}>
-                <div className={styles.firstLine}>
-                  <div className={styles.title}>{item.title}</div>
-                </div>
-                <div className={styles.secondLine}>
-                  <p>
-                    <Tag>知识点一</Tag>
-                    <Tag color="blue">已读</Tag>
-                  </p>
-                  <span>2018-11-11 11:11</span>
-                  <p>
-                    <ListItem
-                      actions={[
-                        <IconText type="user" text="100" />,
-                        <IconText type="eye" text="1000" />,
-                        <a>
-                          <IconText type="read" text="开始阅读" />
-                        </a>,
-                      ]}
-                    />
-                  </p>
-                </div>
-              </Card>
-            </ListItem>
-          )}
+          renderItem={item => {
+            const { title, status } = item;
+            // const { title, status, time, view, user } = item;
+            return (
+              <ListItem>
+                <Card className={styles.cardContainer}>
+                  <div className={styles.firstLine}>
+                    <div className={styles.title}>{title}</div>
+                  </div>
+                  <Tag className={styles.tags}>知识点一</Tag>
+                  <Tag className={styles.tags} color={status ? 'blue' : 'grey'}>
+                    {item.status ? '已发布' : '未发布'}
+                  </Tag>
+                  <div className={styles.introduction}>
+                    <span className={styles.grey}>{' 发布于 '}</span>
+                    {/* <span>{getTime(time)}</span> */}
+                    <span>2018-11-11 13:00:00</span>
+                  </div>
+                  <div className={styles.statistics}>
+                    <span>
+                      <Icon className={styles.icon} type="eye" />
+                      {/* <span>{item.view}</span> */}
+                      {'1111'}
+                    </span>
+                    <Divider type="vertical" />
+                    <span>
+                      <Icon className={styles.icon} type="user" />
+                      {/* <span>{item.user}</span> */}
+                      {'1111'}
+                    </span>
+                    <Divider type="vertical" />
+                    <span>
+                      <a style={{ width: '20px' }} href="#/training/learning/article/detail">
+                        <Icon className={styles.icon} type="read" />
+                        {'开始阅读'}
+                      </a>
+                    </span>
+                    ,
+                  </div>
+                </Card>
+              </ListItem>
+            );
+          }}
         />
       </div>
     );
