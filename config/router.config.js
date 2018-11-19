@@ -1075,6 +1075,37 @@ module.exports = [
               },
             ],
           },
+          {
+            name: 'mission',
+            path: '/training/mission',
+            code: 'training.mission',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                name: 'mission',
+                path: '/training/mission',
+                redirect: '/training/mission/list',
+              },
+              {
+                name: 'list',
+                path: '/training/mission/list',
+                code: 'training.mission.listView',
+                component: './Training/Mission/ExaminationMissionList',
+              },
+              {
+                name: 'add',
+                path: '/training/mission/add',
+                code: 'training.mission.add',
+                component: './Training/Mission/ExaminationMissionAdd',
+              },
+              {
+                name: 'edit',
+                path: '/training/mission/edit',
+                code: 'training.mission.edit',
+                component: './Training/Mission/ExaminationMissionAdd',
+              },
+            ],
+          },
         ],
       },
     ],
