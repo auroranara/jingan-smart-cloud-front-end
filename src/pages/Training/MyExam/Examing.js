@@ -7,6 +7,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import PersonCard from './components/PersonCard';
 import Flag from './components/Flag';
 import MultiSubSide from './components/MultiSubSide';
+import Clock from './components/Clock';
 import Subject from './components/Subject';
 import styles from './Result.less';
 import editIcon from './imgs/edit.png';
@@ -24,17 +25,12 @@ const breadcrumbList = [
 ];
 
 const choices = ["经验管理阶段", "现代化管理阶段", "科学管理阶段", "人治管理阶段"];
-const analysis = Array(50).fill('答案解析').join();
 
 export default class Examing extends PureComponent {
   state = { val: '', vals: [], index: 0 };
 
-  onSingleChange = v => {
+  onChoiceChange = v => {
     this.setState({ val: v });
-  };
-
-  onMultiChange = vals => {
-    this.setState({ vals });
   };
 
   onIndexChange = i => {
@@ -42,7 +38,7 @@ export default class Examing extends PureComponent {
   };
 
   render() {
-    const { val, vals, index } = this.state;
+    const { val, index } = this.state;
     const colors = [...Array(60).keys()].map(i => i === index ? 'blue' : 'white');
 
     return (
@@ -74,8 +70,10 @@ export default class Examing extends PureComponent {
               <div className={styles.head}>
                 <img src={editIcon} alt="编辑" className={styles.editIcon} />
                 试卷内容
+                <Clock counting startTime={Date.now()} time={Date.now()} limit={120} />
               </div>
-              <Subject question="企业管理的发展阶段" choices={choices} onChange={this.onSingleChange} value={val} />
+              <Subject question="企业管理的发展阶段" type="multi" choices={choices} onChange={this.onChoiceChange} value={val} />
+              {/* <Subject question="企业管理的发展阶段" type="judge" onChange={this.onChoiceChange} value={val} /> */}
               <div className={styles.btnContainer}>
                 <div className={styles.innerBtnContainer}>
                   <Button type="primary" style={{...BTN_STYLE, marginRight: 15}}>上一题</Button>

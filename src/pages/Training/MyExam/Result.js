@@ -8,6 +8,7 @@ import PersonCard from './components/PersonCard';
 import Flag from './components/Flag';
 import Accuracy from './components/Accuracy';
 import MultiSubSide from './components/MultiSubSide';
+import Clock from './components/Clock';
 import Subject from './components/Subject';
 import Answer from './components/Answer';
 import SubjectCategory from './components/SubjectCategory';
@@ -76,6 +77,7 @@ export default class ExamList extends PureComponent {
               <div className={styles.head}>
                 <img src={editIcon} alt="编辑" className={styles.editIcon} />
                 试卷内容
+                <Clock counting startTime={Date.now()} time={Date.now()} limit={120} />
               </div>
               <SubjectCategory title="单项选择题" quantity="30">
                 <Subject question="企业管理的发展阶段" choices={choices} onChange={this.onSingleChange} value={val} />
