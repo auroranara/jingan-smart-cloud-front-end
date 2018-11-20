@@ -103,7 +103,7 @@ export default class InlineForm extends PureComponent {
                     wrapperCol={field.wrapperCol}
                     style={{ margin: '0', padding: '4px 0' }}
                   >
-                    {getFieldDecorator(field.id, field.options)(field.render())}
+                    {getFieldDecorator(field.id, field.options)(field.render(this.handleSearch))}
                   </FormItem>
                 </Col>
             )})}

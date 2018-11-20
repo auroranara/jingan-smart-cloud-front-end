@@ -50,7 +50,7 @@ export default class ExamList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="我的考试"
+        title="考试分析"
         breadcrumbList={breadcrumbList}
         // content={}
       >

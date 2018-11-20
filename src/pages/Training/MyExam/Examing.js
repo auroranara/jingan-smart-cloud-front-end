@@ -21,13 +21,13 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '教育培训', name: '教育培训' },
   { title: '我的考试', name: '我的考试', href: '/training/my-exam/list' },
-  { title: '开始考试', name: '开始考试' },
+  { title: '正在考试', name: '正在考试' },
 ];
 
 const choices = ["经验管理阶段", "现代化管理阶段", "科学管理阶段", "人治管理阶段"];
 
 export default class Examing extends PureComponent {
-  state = { val: '', vals: [], index: 0 };
+  state = { val: '', index: 0 };
 
   onChoiceChange = v => {
     this.setState({ val: v });
@@ -43,7 +43,7 @@ export default class Examing extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="我的考试"
+        title="正在考试"
         breadcrumbList={breadcrumbList}
         // content={}
       >
@@ -70,7 +70,7 @@ export default class Examing extends PureComponent {
               <div className={styles.head}>
                 <img src={editIcon} alt="编辑" className={styles.editIcon} />
                 试卷内容
-                <Clock counting startTime={Date.now()} time={Date.now()} limit={120} />
+                <Clock counting startTime={Date.now()} time={Date.now()} limit={6000} />
               </div>
               <Subject question="企业管理的发展阶段" type="multi" choices={choices} onChange={this.onChoiceChange} value={val} />
               {/* <Subject question="企业管理的发展阶段" type="judge" onChange={this.onChoiceChange} value={val} /> */}

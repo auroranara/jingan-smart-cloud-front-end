@@ -18,5 +18,5 @@ export function getCounter(count, limit, startTime, serverTime, callback) {
 }
 
 function fillZero(n) {
-  return n > 10 ? n : `0${n}`;
+  return n > 9 ? n : `0${n}`;
 }
