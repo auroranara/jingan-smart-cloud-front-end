@@ -3,10 +3,11 @@ import React, { PureComponent } from 'react';
 const offices = ['pptx', 'docx', 'xlsx', 'ppt', 'doc', 'xls'];
 export default class Resource extends PureComponent {
   renderOffice = () => {
-    const { src, extension, key, styles } = this.props;
+    const { src, extension, key, visible, styles } = this.props;
     return (
       <iframe
         title="office"
+        visible={visible}
         src={`https://view.officeapps.live.com/op/embed.aspx?src=${src}`}
         frameborder="0"
         style={styles}
@@ -25,8 +26,8 @@ export default class Resource extends PureComponent {
   };
 
   renderPdf = () => {
-    const { src, extension, key, styles } = this.props;
-    return <embed src={src} style={styles} type="application/pdf" />;
+    const { src, extension, key, visible, styles } = this.props;
+    return <embed src={src} style={{ ...styles }} type="application/pdf" />;
   };
 
   render() {
