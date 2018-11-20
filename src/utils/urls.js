@@ -35,6 +35,13 @@ export default {
     list: '/data-analysis/hidden-danger-report/list',
     detail: '/data-analysis/hidden-danger-report/detail/',
   },
+  examinationPaper: {
+    list: '/training/examination-paper/list',
+    detail: '/training/examination-paper/detail/',
+    add: '/training/examination-paper/add',
+    edit: '/training/examination-paper/edit/',
+    preview: '/training/examination-paper/preview/',
+  },
   exception: {
     500: '/exception/500/',
     403: '/exception/403/',

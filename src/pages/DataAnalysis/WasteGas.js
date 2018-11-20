@@ -6,20 +6,34 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
-import { WASTE_GAS_TYPE as TYPE, WASTE_GAS_TYPE_LABEL as TYPE_LABEL, WASTE_GAS_PARAMS as PARAMS, WASTE_GAS_COLUMNS as COLUMNS, PAGE_SIZE, getFields } from './constant';
-import { addAlign,getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
+import {
+  WASTE_GAS_TYPE as TYPE,
+  WASTE_GAS_TYPE_LABEL as TYPE_LABEL,
+  WASTE_GAS_PARAMS as PARAMS,
+  WASTE_GAS_COLUMNS as COLUMNS,
+  PAGE_SIZE,
+  getFields,
+} from './constant';
+import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },
-  { title: 'IOT异常数据分析', name: 'IOT异常数据分析', href: '/data-analysis/IOT-abnormal-data/list' },
+  {
+    title: 'IOT异常数据分析',
+    name: 'IOT异常数据分析',
+    href: '/data-analysis/IOT-abnormal-data/list',
+  },
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
 
 // const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: 19.6, limitValue: '18', condition: 1 }));
 // const total = list.length;
 
-@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.effects['dataAnalysis/fetchData'] }))
+@connect(({ loading, dataAnalysis }) => ({
+  dataAnalysis,
+  loading: loading.effects['dataAnalysis/fetchData'],
+}))
 export default class ToxicGas extends PureComponent {
   state = {
     // moments: null,
@@ -31,17 +45,22 @@ export default class ToxicGas extends PureComponent {
     const vals = { date: getThisMonth() };
     this.setState({ formVals: vals });
     this.fetchData(1, vals);
-    this.fetchCompanyInfo();
+    // this.fetchCompanyInfo();
   }
 
   fetchCompanyInfo() {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     dispatch({ type: 'dataAnalysis/fetchCompanyInfo', payload: { companyId: id } });
   }
 
   renderExportButton() {
     return (
-      <Button type="primary" onClick={this.handleExport} ghost>
+      <Button type="primary" onClick={this.handleExport} ghost style={{ marginTop: '8px' }}>
         导出报表
       </Button>
     );
@@ -50,10 +69,12 @@ export default class ToxicGas extends PureComponent {
   handleExport = () => {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       dataAnalysis: {
-        analysis: { list=[] },
-        companyInfo: { name: companyName},
+        analysis: { list = [] },
+        companyInfo: { name: companyName },
       },
     } = this.props;
     const { formVals } = this.state;
@@ -73,7 +94,7 @@ export default class ToxicGas extends PureComponent {
       });
   };
 
-  handleSearch = (values) => {
+  handleSearch = values => {
     this.setState({ formVals: values });
     this.fetchData(1, values, (code, msg) => this.setPage(code, 1, msg));
   };
@@ -85,10 +106,14 @@ export default class ToxicGas extends PureComponent {
   };
 
   fetchData = (pageNum, values, callback) => {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     let payload = { pageSize: PAGE_SIZE, pageNum, type: TYPE, companyId: id };
-    if (values)
-      payload = { ...payload, ...handleFormVals(values) };
+    if (values) payload = { ...payload, ...handleFormVals(values) };
     dispatch({
       type: 'dataAnalysis/fetchData',
       payload,
@@ -97,10 +122,8 @@ export default class ToxicGas extends PureComponent {
   };
 
   setPage = (code, current, msg) => {
-    if (code === 200)
-      this.setState({ currentPage: current });
-    else if (msg)
-      message.error(msg);
+    if (code === 200) this.setState({ currentPage: current });
+    else if (msg) message.error(msg);
   };
 
   onTableChange = (pagination, filters, sorter) => {
@@ -123,17 +146,12 @@ export default class ToxicGas extends PureComponent {
   render() {
     const {
       loading,
-      match: { params: { count } },
+      match: {
+        params: { count },
+      },
       dataAnalysis: {
-        companyInfo: {
-          name: companyName,
-        },
-        analysis: {
-          list=[],
-          pagination: {
-            total,
-          }={ total: 0 },
-        },
+        companyInfo: { name: companyName },
+        analysis: { list = [], pagination: { total } = { total: 0 } },
       },
     } = this.props;
 
@@ -150,12 +168,15 @@ export default class ToxicGas extends PureComponent {
       <PageHeaderLayout
         title={TYPE_LABEL}
         breadcrumbList={breadcrumbList}
-        content={(
+        content={
           <div className={styles.content}>
             <p>{companyName ? companyName : '暂无企业信息'}</p>
-            <p className={styles.count}>监测点：{count}</p>
+            <p className={styles.count}>
+              监测点：
+              {count}
+            </p>
           </div>
-        )}
+        }
       >
         <Card className={styles.search}>
           <InlineForm
@@ -167,7 +188,10 @@ export default class ToxicGas extends PureComponent {
           />
         </Card>
         <div className={styles.container}>
-          <p className={styles.statistics}>查询数据统计：{total}</p>
+          <p className={styles.statistics}>
+            查询数据统计：
+            {total}
+          </p>
           <Table
             rowKey="id"
             loading={loading}

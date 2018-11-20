@@ -106,6 +106,7 @@ export async function getOutOfDateNumber(params) {
     end: 0,
     pageSize: 1,
     _status: 7,
+    businessType: 2,
     ...params,
   };
   return request(`/acloud_new/v2/hdf/list.json?${stringify(props)}`);
@@ -120,6 +121,7 @@ export async function getToBeRectifiedNumber(params) {
     end: 0,
     pageSize: 1,
     _status: 2,
+    businessType: 2,
     ...params,
   };
   return request(`/acloud_new/v2/hdf/list.json?${stringify(props)}`);

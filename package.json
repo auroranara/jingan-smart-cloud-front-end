@@ -43,7 +43,7 @@
     "antd": "^3.10.0",
     "bizcharts": "^3.2.2",
     "bizcharts-plugin-slider": "^2.0.3",
-    "braft-editor": "^2.1.26",
+    "braft-editor": "^2.1.28",
     "classnames": "^2.2.6",
     "coordtransform": "^2.1.2",
     "crypto-js": "^3.1.9-1",
@@ -121,7 +121,8 @@
     "stylelint-config-standard": "^18.0.0",
     "umi": "^2.1.2",
     "umi-plugin-ga": "^1.1.3",
-    "umi-plugin-react": "^1.1.1"
+    "umi-plugin-react": "^1.1.1",
+    "web-report": "^1.0.0"
   },
   "optionalDependencies": {
     "puppeteer": "^1.6.0"

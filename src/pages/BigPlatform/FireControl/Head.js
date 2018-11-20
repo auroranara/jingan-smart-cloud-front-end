@@ -62,6 +62,9 @@ export default class Head extends PureComponent {
     const day = `星期${DAY[time.getDay()]}`;
     const hour = `${addZero(time.getHours())}:${addZero(time.getMinutes())}:${addZero(time.getSeconds())}`;
 
+    // 对data进行处理，data不为数组或为空数组则赋为含有一个暂无信息元素的数组
+    const list = Array.isArray(data) && data.length ? data : [{ title: '暂无信息' }];
+
     return (
       <div className={styles.container}>
       {/* <div className={styles.container} style={{ backgroundImage: `url(${bg})` }}> */}
@@ -72,16 +75,18 @@ export default class Head extends PureComponent {
           <span className={styles.hour}>{hour}</span>
         </p>
         <div className={styles.treeContainer}>
-          <TreeSelect
-            style={{ width: 300 }}
-            value={treeValue}
-            // dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            dropdownClassName={styles.dropdown}
-            // treeData={TREE_DATA}
-            treeData={data}
-            treeDefaultExpandAll
-            onChange={this.onChange}
-          />
+          {list.length > 1 ? (
+            <TreeSelect
+              style={{ width: 300 }}
+              value={treeValue}
+              // dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              dropdownClassName={styles.dropdown}
+              // treeData={TREE_DATA}
+              treeData={list}
+              treeDefaultExpandAll
+              onChange={this.onChange}
+            />
+          ) : list[0].title}
         </div>
       </div>
     );

@@ -15,8 +15,7 @@ const safeItem = { src: safe, url: '', label: '安全驾驶舱' };
 const fireItem = { src: fire, url: '', label: '消防驾驶舱' };
 const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' }
 
-// 1=>安全生产 2=>消防 3=>环保(暂时对应动态监测大屏)
-const CLASSIFICATION = { safety: 1, fireControl: 2, dynamicMonitor: 3 };
+// const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
 @connect(({ user }) => ({
   user,
@@ -43,11 +42,13 @@ export default class Dashboard extends PureComponent {
 
     // const regulatoryClassification = ['1', '2'];
     const classification = Array.isArray(regulatoryClassification) && regulatoryClassification.map(n => Number.parseInt(n, 10)) || [];
-    const [[safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]] = Object.entries(codes.dashboard)
-      .map(([k, v]) => [permissionCodes.includes(v), classification.includes(CLASSIFICATION[k])]);
+    const [safetyAuth, fireControlAuth, dynamicMonitorAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
+
+    // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应)
+    const [clfcSafetyAuth, clfcFireControlAuth, clfcEnviromentAuth] = [1,2,3].map(k => classification.includes(k));
     // console.log([safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]);
 
-    safeItem.url = `${window.publicPath}#/big-platform/safety/government`
+    safeItem.url = `${window.publicPath}#/big-platform/safety/government/index`
     fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
@@ -112,7 +113,7 @@ export default class Dashboard extends PureComponent {
         this.setState({
           safetyProduction: safetyProduction && safetyAuth && clfcSafetyAuth,
           fireService: fireService && fireControlAuth && clfcFireControlAuth,
-          monitorService: monitorService && dynamicMonitorAuth && clfcDynamicMonitorAuth,
+          monitorService: monitorService && dynamicMonitorAuth && clfcSafetyAuth,
         });
         break;
 
