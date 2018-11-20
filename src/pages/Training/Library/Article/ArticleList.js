@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import connect from 'dva';
-import { List, Card, Row, Button, Icon, Divider, Popconfirm, Form, Col, Input } from 'antd';
+import { List, Card, Row, Button, Icon, Divider, Popconfirm, Form, Col, Input, Tag } from 'antd';
 import router from 'umi/router';
 import styles from './articleList.less';
 
@@ -13,9 +13,36 @@ const colWrapper = {
 }
 
 const data = [
-  { title: '文章一按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒', content: 'asdsadsadsadassssssssssssssssssssssssss', author: '马云', id: '001' },
-  { title: '按时大撒大撒大撒', content: 'asdsadsadsadassssssssssssssssssssssssss', author: '啊是大', id: '002' },
-  { title: '撒大苏打撒旦撒旦', content: 'asdsadsadsadassssssssssssssssssssssssss', author: '啊是大', id: '003' },
+  {
+    title: '文章一按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒按时大撒大撒大撒',
+    content: 'asdsadsadsadassssssssssssssssssssssssss',
+    author: '马云',
+    id: '001',
+    view: 1000,
+    people: 500,
+    time: '2018-11-14 14:44',
+    status: true,
+  },
+  {
+    title: '按时大撒大撒大撒asdsadsadsadassssssssssssssssssssssssssasdsadsadsadassssssssssssssssssssssssssasdsadsadsadassssssssssssssssssssssssssaa',
+    content: 'asdsadsadsadassssssssssssssssssssssssss',
+    author: '啊是大',
+    id: '002',
+    view: 1000,
+    people: 500,
+    time: '2018-11-14 14:44',
+    status: false,
+  },
+  {
+    title: 'Aplity',
+    content: 'asdsadsadsadassssssssssssssssssssssssss',
+    author: '啊是大',
+    id: '003',
+    view: 1000,
+    people: 500,
+    time: '2018-11-14 14:44',
+    status: true,
+  },
 ]
 
 @Form.create()
@@ -71,9 +98,16 @@ export default class ArticleList extends PureComponent {
                     </Popconfirm>
                   </div>
                 </div>
+                <Tag className={styles.tags} color={item.status ? 'blue' : 'grey'}>{item.status ? '已发布' : '未发布'}</Tag>
                 <div className={styles.introduction}>
-                  <span>作者：</span>
                   <span>{item.author}</span>
+                  <span className={styles.grey}>{' 发布于 '}</span>
+                  <span>{item.time}</span>
+                </div>
+                <div className={styles.statistics}>
+                  <span><Icon className={styles.icon} type="eye" />{item.view}</span>
+                  <Divider type="vertical" />
+                  <span><Icon className={styles.icon} type="user" />{item.people}</span>
                 </div>
               </Card>
             </ListItem>

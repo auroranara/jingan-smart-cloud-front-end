@@ -25,4 +25,12 @@ export default {
     list: '隐患排查报表',
     detail: '隐患详情',
   },
+  examinationPaper: {
+    menu: '教育培训',
+    list: '试卷管理',
+    detail: '试卷规则',
+    preview: '预览试卷',
+    add: '新增试卷',
+    edit: '编辑规则',
+  },
 };
