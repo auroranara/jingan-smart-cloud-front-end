@@ -1,32 +1,28 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
+import { Document, Page } from 'react-pdf';
+import Resource from '@/components/Resource';
 
-const src =
-  'http://data.jingan-china.cn/%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84X%E6%88%98%E8%AD%A62.pptx';
 export default class Demo extends Component {
-  renderIframe = () => {
-    return (
-      <iframe
-        title="111"
-        src={`https://view.officeapps.live.com/op/embed.aspx?src=${src}`}
-        width="1026px"
-        height="793px"
-        frameborder="0"
-      >
-        这是嵌入{' '}
-        <a target="_blank" href="https://office.com">
-          Microsoft Office
-        </a>{' '}
-        演示文稿，由{' '}
-        <a target="_blank" href="https://office.com/webapps">
-          Office Online
-        </a>{' '}
-        支持。
-      </iframe>
-    );
+  state = {
+    numPages: null,
+    pageNumber: 1,
+    pdfSrc: 'http://data.jingan-china.cn/%E6%BC%94%E7%A4%BA%E6%96%87%E6%A1%A3.pdf',
+    pptSrc:
+      'http://data.jingan-china.cn/%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84X%E6%88%98%E8%AD%A62.pptx',
+    styles: {
+      width: 1026,
+      height: '100vh',
+    },
   };
 
   render() {
-    return <div>{this.renderIframe()}</div>;
+    const { pdfSrc, pptSrc, styles } = this.state;
+    return (
+      <div>
+        <Resource src={pdfSrc} styles={styles} extension="pdf" />
+        <Resource src={pptSrc} styles={styles} extension="pptx" />
+      </div>
+    );
   }
 }
