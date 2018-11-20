@@ -61,7 +61,9 @@ export default class ExaminationMissionList extends PureComponent {
     const {
       form: { getFieldDecorator },
       examinationMission: {
-        list,
+        mission: {
+          list,
+        },
       },
     } = this.props
     return (
@@ -118,7 +120,7 @@ export default class ExaminationMissionList extends PureComponent {
                 </AuthLink>,
                   <AuthLink
                     code={'training.mission.edit'}
-                    to={'/training/mission/edit'}
+                    to={`/training/mission/edit/${item.id}`}
                   >
                     编辑
                 </AuthLink>,
@@ -142,7 +144,7 @@ export default class ExaminationMissionList extends PureComponent {
                   </Col>
                   <Col span={24}>
                     <Ellipsis className={styles.ellipsisText} tooltip lines={1}>
-                      考试期限：{moment(item.startTime).format('YYYY-MM-DD HH:mm')} 至 {moment(item.endTime).format('YYYY-MM-DD HH:mm')}
+                      考试期限：{item.startTime} 至 {item.endTime}
                     </Ellipsis>
                   </Col>
                 </Row>

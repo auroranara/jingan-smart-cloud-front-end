@@ -1100,7 +1100,7 @@ module.exports = [
               },
               {
                 name: 'edit',
-                path: '/training/mission/edit',
+                path: '/training/mission/edit/:id',
                 code: 'training.mission.edit',
                 component: './Training/Mission/ExaminationMissionAdd',
               },
