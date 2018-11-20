@@ -17,6 +17,11 @@ function getTime(t) {
   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
 }
 
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 export default class LearningLayout extends PureComponent {
   render() {
     return (
@@ -35,7 +40,14 @@ export default class LearningLayout extends PureComponent {
                 <span>阅读次数：1000 次</span>
               </div>
               <div className={styles.detailMain}>
-                <span />
+                <h3>
+                  课件内容：
+                  <a>预览附件</a>
+                </h3>
+                <h3>
+                  详细内容：
+                  {getEmptyData()}
+                </h3>
               </div>
             </Card>
           </Col>
