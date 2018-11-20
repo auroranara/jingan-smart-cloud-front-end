@@ -331,6 +331,10 @@ export default class VideoMonitorEdit extends PureComponent {
       let charMode = false;
       for (let i = 0; i < value.length; i++) {
         charCode = value.charCodeAt(i);
+        if (charCode >= 65 && charCode <= 90) {
+          callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
+          return;
+        }
         if (charCode >= 97 && charCode <= 122) {
           charMode = true;
           continue;
@@ -343,7 +347,7 @@ export default class VideoMonitorEdit extends PureComponent {
         charMode
       )
         callback();
-    } else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾');
+    } else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
   };
 
   // 定位模态框确定按钮点击事件
