@@ -1,0 +1,26 @@
+.treeNodeExtra {
+  position: fixed;
+  right: 0;
+  width: 56px;
+  text-align: center;
+  cursor: auto;
+
+  .treeNodeExtraInput {
+    width: 42px;
+    text-align: center;
+  }
+}
+@media screen and (min-width: 576px) {
+  .formItem {
+    display: flex;
+
+    :global {
+      .ant-form-item-label {
+        flex: none;
+      }
+      .ant-form-item-control-wrapper {
+        flex: 1;
+      }
+    }
+  }
+}

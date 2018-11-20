@@ -36,6 +36,16 @@ const defaultInputSpan = {
 
 @Form.create()
 export default class InlineForm extends PureComponent {
+  /**
+   * 组件挂载以后修改值可以通过修改values来实现
+   */
+  componentDidUpdate({ values: prevValues }) {
+    const { values, form: { setFieldsValue } } = this.props;
+    if (values !== prevValues) {
+      setFieldsValue(values);
+    }
+  }
+
   /* 查询按钮点击事件 */
   handleSearch = () => {
     const {
