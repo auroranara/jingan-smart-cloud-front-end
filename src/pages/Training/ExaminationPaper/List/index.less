@@ -1,0 +1,87 @@
+/**
+ * 试卷管理
+ */
+.cardList {
+  margin-top: 24px;
+  margin-bottom: -24px;
+
+  .card {
+    overflow: hidden;
+
+    :global {
+      .ant-card-extra {
+        display: none;
+        margin-right: -12px;
+        padding: 12px 0;
+      }
+      .ant-card-head-title {
+        display: block;
+        padding-right: 4px;
+        font-weight: bold;
+        white-space: normal;
+      }
+      .ant-card-body {
+        padding: 12px 24px 0;
+      }
+      p {
+        margin-bottom: 12px;
+      }
+    }
+    .ellipsisText {
+      margin-bottom: 12px;
+      height: 1.5em;
+    }
+    .screenControlIcon {
+      cursor: pointer;
+      height: 1.5em;
+      margin-bottom: 12px;
+    }
+    .defaultIcon {
+      height: 1.5em;
+      margin-bottom: 12px;
+    }
+    .ml30 {
+      margin-left: 30px;
+    }
+  }
+  :global {
+    .ant-list-item .ant-list-item-content-single {
+      max-width: 100%;
+      overflow: hidden;
+
+      &:hover {
+        .ant-card {
+          -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
+          border-color: rgba(0, 0, 0, 0.09);
+        }
+        .ant-card-extra {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+.mark {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  transform: translate(50%, 0) translate(-20px, 20px) rotate(45deg);
+  transform-origin: 50% 0;
+  color: #fff;
+  background-color: #bbb;
+}
+
+.card-title-ellipsis {
+  :global {
+    span {
+      display: block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+}
