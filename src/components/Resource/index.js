@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Player } from 'video-react';
-import 'node_modules/video-react/dist/video-react.css';
+import 'video-react/dist/video-react.css';
 
 const offices = ['pptx', 'docx', 'xlsx', 'ppt', 'doc', 'xls'];
 export default class Resource extends PureComponent {
