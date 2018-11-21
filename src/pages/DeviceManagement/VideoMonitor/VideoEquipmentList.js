@@ -341,7 +341,7 @@ export default class VideoEquipmentList extends PureComponent {
     } = this.props;
 
     const { total, videoVisible, keyId } = this.state;
-    console.log('keyId', keyId);
+    // console.log('keyId', keyId);
 
     const content =
       list && list.length ? (

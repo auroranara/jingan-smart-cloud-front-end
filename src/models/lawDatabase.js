@@ -68,7 +68,7 @@ export default {
     },
     // 编辑
     *editLaws({ payload, success, error }, { call, put }) {
-      console.log(payload);
+      // console.log(payload);
       const response = yield call(updateLaws, payload);
       if (response.code === 200) {
         yield put({

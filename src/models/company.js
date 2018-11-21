@@ -283,7 +283,7 @@ export default {
       }
     },
     *editCompany({ payload, success, error }, { call, put }) {
-      console.log('success', success);
+      // console.log('success', success);
       const response = yield call(updateCompany, payload);
       if (response.code === 200) {
         yield put({
@@ -486,7 +486,7 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
-      }
+      };
     },
     initPageNum(state, { payload }) {
       return {
@@ -500,7 +500,7 @@ export default {
             pageNum: 1,
           },
         },
-      }
+      };
     },
   },
 };

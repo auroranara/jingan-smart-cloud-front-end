@@ -1,7 +1,17 @@
 import React, { Component, createContext } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Table, Tree, Input, InputNumber, Popconfirm, Form, notification } from 'antd';
+import {
+  Button,
+  Card,
+  Table,
+  Tree,
+  Input,
+  InputNumber,
+  Popconfirm,
+  Form,
+  notification,
+} from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './PageAuthority.less';
@@ -45,32 +55,28 @@ class EditableCell extends Component {
   // };
 
   render() {
-    const {
-      editing,
-      dataIndex,
-      title,
-      inputType,
-      record,
-      index,
-      ...restProps
-    } = this.props;
+    const { editing, dataIndex, title, inputType, record, index, ...restProps } = this.props;
     return (
       <EditableContext.Consumer>
-        {(form) => {
+        {form => {
           const { getFieldDecorator } = form;
           return (
             <td {...restProps}>
               {editing ? (
                 <FormItem style={{ margin: 0 }}>
                   {getFieldDecorator(dataIndex, {
-                    rules: [{
-                      required: true,
-                      message: `Please Input ${title}!`,
-                    }],
+                    rules: [
+                      {
+                        required: true,
+                        message: `Please Input ${title}!`,
+                      },
+                    ],
                     initialValue: record[dataIndex],
                   })(<Input />)}
                 </FormItem>
-              ) : restProps.children}
+              ) : (
+                restProps.children
+              )}
             </td>
           );
         }}
@@ -177,21 +183,17 @@ export default class PageAuthority extends Component {
                       </a>
                     )}
                   </EditableContext.Consumer>
-                  <Popconfirm
-                    title="确定取消？"
-                    onConfirm={() => this.cancel(record.key)}
-                  >
+                  <Popconfirm title="确定取消？" onConfirm={() => this.cancel(record.key)}>
                     <a>取消</a>
                   </Popconfirm>
                 </span>
               ) : (
                 <span>
                   <a onClick={() => this.edit(record.key)}>编辑</a>
-                  <Popconfirm
-                    title="确定删除？"
-                    onConfirm={null}
-                  >
-                    <a onClick={null} className={styles.delete}>删除</a>
+                  <Popconfirm title="确定删除？" onConfirm={null}>
+                    <a onClick={null} className={styles.delete}>
+                      删除
+                    </a>
                   </Popconfirm>
                 </span>
               )}
@@ -205,7 +207,7 @@ export default class PageAuthority extends Component {
   selectedKeys = [];
   checkedKeys = [];
 
-  isEditing = (record) => {
+  isEditing = record => {
     return record.key === this.state.editingKey;
   };
 
@@ -238,16 +240,16 @@ export default class PageAuthority extends Component {
     this.setState({ editingKey: '' });
   };
 
-  onSelect = (selectedKeys) => {
+  onSelect = selectedKeys => {
     this.selectedKeys = selectedKeys;
   };
 
-  onCheck = (checkedKeys) => {
+  onCheck = checkedKeys => {
     this.checkedKeys = checkedKeys;
   };
 
   onSearch = e => {
-    console.log(this.checkedKeys);
+    // console.log(this.checkedKeys);
   };
 
   jumpTo = id => {
@@ -264,7 +266,7 @@ export default class PageAuthority extends Component {
       },
     };
 
-    const columns = this.columns.map((col) => {
+    const columns = this.columns.map(col => {
       if (!col.editable) {
         return col;
       }
@@ -289,23 +291,33 @@ export default class PageAuthority extends Component {
         //     layout
         //   </div>
         // }
-        action={<Button type="primary" onClick={e => this.jumpTo()}>新增</Button>}
+        action={
+          <Button type="primary" onClick={e => this.jumpTo()}>
+            新增
+          </Button>
+        }
       >
         <Card>
           <div className={styles.btnContainer}>
-            <Button onClick={this.onSearch} className={styles.searchBtn}>搜索</Button>
-            <Button onClick={e => {
-              const id = this.selectedKeys[0];
-              if (!id) {
-                notification.warn({
-                  message: '友情提醒',
-                  description: '请先从权限树中选择一个项目，只支持单选',
-                });
-                return;
-              }
+            <Button onClick={this.onSearch} className={styles.searchBtn}>
+              搜索
+            </Button>
+            <Button
+              onClick={e => {
+                const id = this.selectedKeys[0];
+                if (!id) {
+                  notification.warn({
+                    message: '友情提醒',
+                    description: '请先从权限树中选择一个项目，只支持单选',
+                  });
+                  return;
+                }
 
-              this.jumpTo(id);
-            }}>编辑</Button>
+                this.jumpTo(id);
+              }}
+            >
+              编辑
+            </Button>
           </div>
           <Tree
             checkable

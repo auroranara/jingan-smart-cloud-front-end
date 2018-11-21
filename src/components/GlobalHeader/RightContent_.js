@@ -90,10 +90,10 @@ export default class GlobalHeaderRight extends PureComponent {
           placeholder="站内搜索"
           dataSource={['搜索提示一', '搜索提示二', '搜索提示三']}
           onSearch={value => {
-            console.log('input', value); // eslint-disable-line
+            // console.log('input', value); // eslint-disable-line
           }}
           onPressEnter={value => {
-            console.log('enter', value); // eslint-disable-line
+            // console.log('enter', value); // eslint-disable-line
           }}
         />
         <Tooltip title="使用文档">
@@ -111,7 +111,7 @@ export default class GlobalHeaderRight extends PureComponent {
           className={styles.action}
           count={currentUser.notifyCount}
           onItemClick={(item, tabProps) => {
-            console.log(item, tabProps); // eslint-disable-line
+            // console.log(item, tabProps); // eslint-disable-line
           }}
           onClear={onNoticeClear}
           onPopupVisibleChange={onNoticeVisibleChange}

@@ -8,9 +8,12 @@ import Exception from '@/components/Exception';
 
 const Authorized = RenderAuthorized(getAuthority());
 
-export default (props) => {
-  console.log(props);
-  const { children, location: { pathname } } = props;
+export default props => {
+  // console.log(props);
+  const {
+    children,
+    location: { pathname },
+  } = props;
 
   const page403 = (
     <Exception

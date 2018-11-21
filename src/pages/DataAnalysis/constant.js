@@ -152,7 +152,15 @@ export const TOXIC_GAS_COLUMNS = [
 
 export const WASTE_WATER_PARAMS = [
   { name: '全部', key: 0 },
-  { name: <span>NH<sub>3</sub></span>, key: '060' },
+  {
+    name: (
+      <span>
+        NH
+        <sub>3</sub>
+      </span>
+    ),
+    key: '060',
+  },
   { name: 'COD', key: '011' },
   { name: '总磷', key: '101' },
   { name: '总氮', key: '065' },
@@ -212,10 +220,44 @@ export const WASTE_WATER_COLUMNS = [
 
 export const WASTE_GAS_PARAMS = [
   { name: '全部', key: 0 },
-  { name: <span>SO<sub>2</sub></span>, key: 1 },
-  { name: <span>NO<sub>x</sub></span>, key: 2 },
-  { name: <span>SO<sub>2</sub>折算</span>, key: 3 },
-  { name: <span>NO<sub>x</sub>折算</span>, key: 4 },
+  {
+    name: (
+      <span>
+        SO
+        <sub>2</sub>
+      </span>
+    ),
+    key: 1,
+  },
+  {
+    name: (
+      <span>
+        NO
+        <sub>x</sub>
+      </span>
+    ),
+    key: 2,
+  },
+  {
+    name: (
+      <span>
+        SO
+        <sub>2</sub>
+        折算
+      </span>
+    ),
+    key: 3,
+  },
+  {
+    name: (
+      <span>
+        NO
+        <sub>x</sub>
+        折算
+      </span>
+    ),
+    key: 4,
+  },
 ];
 
 export const WASTE_GAS_COLUMNS = [
@@ -337,14 +379,12 @@ function dateValidator(rule, value, callback) {
 
   const [start, end] = value;
   const threeMore = start.clone().add(3, 'months');
-  if (threeMore < end)
-    callback('日期范围不能超过三个月');
-  else
-    callback();
+  if (threeMore < end) callback('日期范围不能超过三个月');
+  else callback();
 }
 
 export function getFields(type, params, methods) {
-  switch(type) {
+  switch (type) {
     case ELECTRICITY_TYPE:
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
@@ -375,7 +415,13 @@ export function getFields(type, params, methods) {
           wrapperCol: WRAPPER_COL,
           inputSpan: INPUT_SPAN,
           options: { initialValue: '0' },
-          render: () => <Select placeholder="请选择异常类别">{OPTIONS.map(({ name, key }) => <Option key={key}>{name}</Option>)}</Select>,
+          render: () => (
+            <Select placeholder="请选择异常类别">
+              {OPTIONS.map(({ name, key }) => (
+                <Option key={key}>{name}</Option>
+              ))}
+            </Select>
+          ),
         },
         {
           id: 'code',
@@ -384,7 +430,13 @@ export function getFields(type, params, methods) {
           wrapperCol: WRAPPER_COL,
           inputSpan: INPUT_SPAN,
           options: { initialValue: '0' },
-          render: () => <Select placeholder="请选择异常参数">{params.map(({ name, key }) => <Option key={key}>{name}</Option>)}</Select>,
+          render: () => (
+            <Select placeholder="请选择异常参数">
+              {params.map(({ name, key }) => (
+                <Option key={key}>{name}</Option>
+              ))}
+            </Select>
+          ),
         },
         {
           id: 'date',
@@ -405,7 +457,10 @@ export function getFields(type, params, methods) {
               // onCalendarChange={methods.onCalendarChange}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
-              showTime={{ format: 'HH:mm', defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
+              showTime={{
+                format: 'HH:mm',
+                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
             />
           ),
         },
@@ -437,7 +492,13 @@ export function getFields(type, params, methods) {
           wrapperCol: WRAPPER_COL,
           // inputSpan: INPUT_SPAN,
           options: { initialValue: '0' },
-          render: () => <Select placeholder="请选择异常类别">{OPTIONS.map(({ name, key }) => <Option key={key}>{name}</Option>)}</Select>,
+          render: () => (
+            <Select placeholder="请选择异常类别">
+              {OPTIONS.map(({ name, key }) => (
+                <Option key={key}>{name}</Option>
+              ))}
+            </Select>
+          ),
         },
         {
           id: 'date',
@@ -455,13 +516,16 @@ export function getFields(type, params, methods) {
               // onCalendarChange={methods.onCalendarChange}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
-              showTime={{ format: 'HH:mm', defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
+              showTime={{
+                format: 'HH:mm',
+                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
             />
           ),
         },
       ];
     default:
-      console.log('default');
+      // console.log('default');
       return [];
   }
 }
