@@ -1,0 +1,52 @@
+.coursewareList {
+  @mb: 14px;
+  @mr: 10px;
+  :global {
+    .ant-form-item {
+      margin-bottom: 0.8em;
+    }
+  }
+  .mr10 {
+    margin-right: @mr;
+  }
+  .cardContainer {
+    .firstLine {
+      display: flex;
+      .title {
+        flex: 1;
+        font-size: 16px;
+        font-weight: 600;
+        word-break: break-all;
+        padding-right: 10px;
+        cursor: pointer;
+      }
+      .rightIcons {
+        visibility: hidden;
+        color: #615b5b;
+        .icon {
+          cursor: pointer;
+        }
+      }
+    }
+    .tags {
+      margin-top: @mb;
+    }
+    .introduction {
+      margin-top: @mb;
+      font-size: 15px;
+    }
+    .statistics {
+      margin-top: @mb;
+      color: rgba(0, 0, 0, .45);
+      .icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  .cardContainer:hover .rightIcons {
+    visibility: visible;
+  }
+  .grey {
+    color: rgba(0, 0, 0, .45);
+  }
+}

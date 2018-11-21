@@ -1,0 +1,53 @@
+.treeMain {
+  :global {
+    .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background-color: transparent;
+    }
+    .ant-tree-title {
+      border: none !important;
+    }
+    .ant-tree-node-content-wrapper {
+      border-color: transparent;
+    }
+  }
+  .nodeTitle {
+    height: 24px;
+    line-height: 24px;
+    display: inline-block;
+    position: relative;
+    border: none !important;
+    .nodeBtn {
+      &:first-child {
+        margin-left: 60px;
+      }
+      &+.nodeBtn {
+        margin-left: 8px;
+      }
+    }
+  }
+  .nodeInputWrapper {
+    position: relative;
+    height: 24px;
+    line-height: 24px;
+    display: inline-block;
+    :global {
+      .ant-form-item {
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      .ant-input {
+        height: 24px;
+        position: relative; // top: -8px;
+        padding: 2px 11px;
+      }
+      .ant-btn {
+        position: relative;
+        top: -9px;
+        height: 22px;
+        &+.ant-btn {
+          margin: 8px;
+        }
+      }
+    }
+  }
+}

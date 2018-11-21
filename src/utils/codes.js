@@ -111,4 +111,13 @@ export default {
       delete: 'lawEnforcement.illegal.delete',
     },
   },
+  training: {
+    examinationPaper: {
+      list: 'training.examinationPaper.listView',
+      add: 'training.examinationPaper.add',
+      edit: 'training.examinationPaper.edit',
+      detail: 'training.examinationPaper.view',
+      delete: 'training.examinationPaper.delete',
+    },
+  },
 };

@@ -90,6 +90,10 @@ module.exports = [
       },
     ],
   },
+  {
+    path: '/demo',
+    component: './Demo',
+  },
   //404
   {
     path: '/404',
@@ -1018,6 +1022,158 @@ module.exports = [
             name: 'trigger',
             hideInMenu: true,
             component: './Exception/triggerException',
+          },
+        ],
+      },
+      {
+        name: 'training',
+        icon: 'database',
+        code: 'training',
+        path: '/training',
+        hideInMenu: false,
+        routes: [
+          {
+            name: 'knowledgeSys',
+            path: '/training/knowledgeSys',
+            code: 'training.points',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/knowledgeSys',
+                code: 'training.knowledgeSys.view',
+                name: 'KnowledgeSys',
+                component: './Training/KnowledgeSys/KnowledgeSys',
+              },
+            ],
+          },
+          {
+            name: 'library',
+            path: '/training/library',
+            code: 'training.library',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/library',
+                name: 'library',
+                redirect: '/training/library/questions/list',
+              },
+              {
+                path: '/training/library/:type/list',
+                code: 'training.library.listView',
+                name: 'list',
+                component: './Training/Library/LibraryLayout',
+              },
+              {
+                path: '/training/library/questions/add',
+                code: 'training.library.add',
+                name: 'questionsAdd',
+                component: './Training/Library/Questions/QuestionsAdd',
+              },
+              {
+                path: '/training/library/questions/edit/:id',
+                code: 'training.library.edit',
+                name: 'questionsEdit',
+                component: './Training/Library/Questions/QuestionsAdd',
+              },
+              {
+                path: '/training/library/article/add',
+                code: 'training.library.add',
+                name: 'articleAdd',
+                component: './Training/Library/Article/ArticleAdd',
+              },
+              {
+                path: '/training/library/article/edit/:id',
+                code: 'training.library.edit',
+                name: 'articleEdit',
+                component: './Training/Library/Article/ArticleAdd',
+              },
+              {
+                path: '/training/library/courseware/add',
+                code: 'training.library.add',
+                name: 'coursewareAdd',
+                component: './Training/Library/Courseware/CoursewareAdd',
+              },
+              {
+                path: '/training/library/courseware/edit/:id',
+                code: 'training.library.edit',
+                name: 'coursewareEdit',
+                component: './Training/Library/Courseware/CoursewareAdd',
+              },
+            ],
+          },
+          {
+            name: 'examinationPaper',
+            path: '/training/examination-paper',
+            code: 'training.examinationPaper',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/examination-paper',
+                name: 'examinationPaper',
+                redirect: '/training/examination-paper/list',
+              },
+              {
+                path: '/training/examination-paper/list',
+                code: 'training.examinationPaper.listView',
+                name: 'list',
+                component: './Training/ExaminationPaper/List',
+              },
+              {
+                path: '/training/examination-paper/detail/:id',
+                code: 'training.examinationPaper.view',
+                name: 'view',
+                component: './Training/ExaminationPaper/Detail',
+              },
+              {
+                path: '/training/examination-paper/add',
+                code: 'training.examinationPaper.add',
+                name: 'add',
+                component: './Training/ExaminationPaper/Handler',
+              },
+              {
+                path: '/training/examination-paper/edit/:id',
+                code: 'training.examinationPaper.edit',
+                name: 'edit',
+                component: './Training/ExaminationPaper/Handler',
+              },
+              {
+                path: '/training/examination-paper/preview/:id',
+                code: 'training.examinationPaper.view',
+                name: 'view',
+                component: './Training/ExaminationPaper/Preview',
+              },
+            ],
+          },
+          {
+            name: 'mission',
+            path: '/training/mission',
+            code: 'training.mission',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                name: 'mission',
+                path: '/training/mission',
+                redirect: '/training/mission/list',
+              },
+              {
+                name: 'list',
+                path: '/training/mission/list',
+                code: 'training.mission.listView',
+                component: './Training/Mission/ExaminationMissionList',
+              },
+              {
+                name: 'add',
+                path: '/training/mission/add',
+                code: 'training.mission.add',
+                component: './Training/Mission/ExaminationMissionAdd',
+              },
+              {
+                name: 'edit',
+                path: '/training/mission/edit/:id',
+                code: 'training.mission.edit',
+                component: './Training/Mission/ExaminationMissionAdd',
+              },
+            ],
           },
         ],
       },

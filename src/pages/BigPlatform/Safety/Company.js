@@ -1280,10 +1280,15 @@ class CompanyLayout extends PureComponent {
                 },
               ];
               if (isGray) {
-                if (!info.hdLetterInfo.pointName && !info.hdLetterInfo.areaName && !info.hdLetterInfo.accidentTypeName && !info.hdLetterInfo.status && !info.hdLetterInfo.riskLevelName.desc) {
+                if (
+                  !info.hdLetterInfo.pointName &&
+                  !info.hdLetterInfo.areaName &&
+                  !info.hdLetterInfo.accidentTypeName &&
+                  !info.hdLetterInfo.status &&
+                  !info.hdLetterInfo.riskLevelName.desc
+                ) {
                   infoData = [];
-                }
-                else {
+                } else {
                   infoData.splice(4, 1);
                   if (!info.hdLetterInfo.accidentTypeName) {
                     infoData.splice(2, 1);
@@ -1649,17 +1654,18 @@ class CompanyLayout extends PureComponent {
               </Col>
             </Row>
             <div className={scrollClassName}>
-              {legalList.length !== 0 && (
-                <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
-                  <div className={styles.personLabel}>单位法人</div>
-                  {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                    <div className={styles.personItem} key={id}>
-                      <div className={styles.personItemName}>{name}</div>
-                      <div className={styles.personItemPhone}>{phone}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {legalList &&
+                legalList.length && (
+                  <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
+                    <div className={styles.personLabel}>单位法人</div>
+                    {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                      <div className={styles.personItem} key={id}>
+                        <div className={styles.personItemName}>{name}</div>
+                        <div className={styles.personItemPhone}>{phone}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               {safeChargerList.length !== 0 && (
                 <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
                   <div className={styles.personLabel}>安全负责人</div>
