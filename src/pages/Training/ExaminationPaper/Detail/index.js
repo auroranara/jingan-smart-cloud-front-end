@@ -101,7 +101,7 @@ export default class App extends PureComponent {
   }
 
   render() {
-    const { loading, user: { currentUser: { permissionCodes } }, examinationPaper: { singleTree, multipleTree, judgeTree, detail: { name, ruleTypeName } } } = this.props;
+    const { loading, user: { currentUser: { permissionCodes } }, examinationPaper: { singleTree, multipleTree, judgeTree, detail: { name, ruleTypeName, status } } } = this.props;
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
@@ -182,7 +182,7 @@ export default class App extends PureComponent {
               <Button onClick={this.goToList} style={{ marginRight: '24px' }} disabled={!hasListAuthority}>
                 返回
               </Button>
-              <Button type="primary" onClick={this.goToEdit} disabled={!hasEditAuthority}>
+              <Button type="primary" onClick={this.goToEdit} disabled={!hasEditAuthority || !!+status}>
                 编辑规则
               </Button>
             </div>

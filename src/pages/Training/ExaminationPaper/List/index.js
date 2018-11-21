@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { List, Spin, Card, Input, Button, Icon, Modal, message } from 'antd';
 import { connect } from 'dva';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -7,6 +7,7 @@ import Bind from 'lodash-decorators/bind';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Ellipsis from '@/components/Ellipsis';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
 import codes from '@/utils/codes';
@@ -17,6 +18,7 @@ import unusedIcon from '@/assets/unused.png'
 import usedIcon from '@/assets/used.png'
 
 import styles from './index.less';
+
 
 const { home: homeUrl, examinationPaper: { list: listUrl, detail: detailUrl, add: addUrl, preview: previewUrl } } = urls;
 const { home: homeTitle, examinationPaper: { list: title, menu: menuTitle } } = titles;
@@ -35,6 +37,8 @@ const controlSessionName = 'examination_paper_list_control_';
 const scrollSessionName = 'examination_paper_list_scrollTop_';
 // paginationSessionName
 const paginationSessionName = 'examination_paper_list_pagination_';
+// session
+const companySessionName = 'examination_paper_list_company_';
 // form字段
 const fields = [
   {
@@ -68,6 +72,8 @@ const defaultPagination = { pageNum: 1, pageSize: 18 };
 export default class App extends PureComponent {
   state = {
     values: null,
+    company: undefined,
+    visible: false,
   }
 
   componentDidMount() {
@@ -81,6 +87,10 @@ export default class App extends PureComponent {
       const values = JSON.parse(sessionStorage.getItem(`${controlSessionName}${id}`));
       // 如果控件数据存在的话，就将数据重置到控件中
       values && this.setState({ values });
+      // 从sessionStorage中获取之前的企业选择数据
+      const company = JSON.parse(sessionStorage.getItem(`${companySessionName}${id}`));
+      // 如果company存在的话，就将数据重置到输入框中
+      company && this.setState({ company });
       // 从sessionStorage中获取之前的scrollTop
       const scrollTop = sessionStorage.getItem(`${scrollSessionName}${id}`);
       // 如果scrollTop存在的话，就将滚动条移动到对应位置
@@ -88,9 +98,15 @@ export default class App extends PureComponent {
       // 从sessionStorage中获取之前的分页信息
       const { pageNum: realPageNum, pageSize: realPageSize } = JSON.parse(sessionStorage.getItem(`${paginationSessionName}${id}`)) || defaultPagination;
       // 创建请求参数
-      payload = { ...values, pageNum: 1, pageSize: realPageSize*realPageNum, realPageNum, realPageSize };
+      payload = { ...values, pageNum: 1, pageSize: realPageSize*realPageNum, realPageNum, realPageSize, companyId: company ? company.id : undefined };
     }
     else {
+      // 清除session
+      sessionStorage.removeItem(`${controlSessionName}${id}`);
+      sessionStorage.removeItem(`${companySessionName}${id}`);
+      sessionStorage.removeItem(`${scrollSessionName}${id}`);
+      sessionStorage.removeItem(`${paginationSessionName}${id}`);
+      // 默认没有companyId
       payload = { ...defaultPagination, ...getInitialValues() };
     }
     // 获取初始化列表
@@ -99,6 +115,7 @@ export default class App extends PureComponent {
       payload,
       callback,
     });
+
     // 添加scroll监听事件
     window.addEventListener('scroll', this.handleScroll);
   }
@@ -107,6 +124,14 @@ export default class App extends PureComponent {
     // 移除scroll监听事件
     window.removeEventListener('scroll', this.handleScroll);
     this.handleScroll.cancel();
+  }
+
+  /**
+   * 获取企业列表
+   */
+  fetchCompanyList = (action) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'examinationPaper/fetchCompanyList', ...action });
   }
 
   /**
@@ -125,6 +150,7 @@ export default class App extends PureComponent {
    */
   handleSearch = (values) => {
     const { dispatch, user: { currentUser: { id } } } = this.props;
+    const { company } = this.state;
     // 保存控件数据
     sessionStorage.setItem(`${controlSessionName}${id}`, JSON.stringify(values));
     // 保存分页信息
@@ -135,6 +161,7 @@ export default class App extends PureComponent {
       payload: {
         ...defaultPagination,
         ...values,
+        companyId: company && company.id,
       },
     });
   }
@@ -151,6 +178,7 @@ export default class App extends PureComponent {
    */
   handleLoadMore = () => {
     const { dispatch, examinationPaper: { list: { pagination: { pageSize, pageNum } } }, user: { currentUser: { id } } } = this.props;
+    const { company } = this.state;
     // 创建分页信息
     const pagination = { pageNum: pageNum+1, pageSize };
     // 从session中获取上次查询的表单数据
@@ -163,6 +191,7 @@ export default class App extends PureComponent {
       payload: {
         ...pagination,
         ...values,
+        companyId: company && company.id,
       },
     });
     // 保存分页信息
@@ -197,20 +226,98 @@ export default class App extends PureComponent {
   }
 
   /**
+   * 选择企业
+   */
+  handleSelectCompany = (company) => {
+    const { dispatch, user: { currentUser: { id } } } = this.props;
+    this.setState({ company, visible: false });
+    // 从session中获取上次查询的表单数据
+    const values = JSON.parse(sessionStorage.getItem(`${controlSessionName}${id}`)) || getInitialValues();
+    // 获取该企业的第一页试卷列表
+    dispatch({
+      type: 'examinationPaper/fetchList',
+      payload: {
+        ...defaultPagination,
+        ...values,
+        companyId: company.id,
+      },
+    });
+    // 将company保存到的session中
+    sessionStorage.setItem(`${companySessionName}${id}`, JSON.stringify(company));
+  }
+
+  /**
+   * 输入框聚焦
+   */
+  handleFocus = e => {
+    e.target.blur();
+    this.setState({ visible: true });
+    this.fetchCompanyList({ payload: { pageSize: 10, pageNum: 1 } });
+  };
+
+  /**
+   * 关闭模态框
+   */
+  handleClose = () => {
+    this.setState({ visible: false });
+  }
+
+  /**
+   * 弹出框
+   */
+  renderModal() {
+    const { examinationPaper: { companyList } } = this.props;
+    const { visible, loading } = this.state;
+    return (
+      <CompanyModal
+        title="选择企业单位"
+        loading={loading}
+        visible={visible}
+        modal={companyList}
+        fetch={this.fetchCompanyList}
+        onSelect={this.handleSelectCompany}
+        onClose={this.handleClose}
+      />
+    );
+  }
+
+
+  /**
+   * 企业选择框
+   */
+  renderSelect() {
+    const { user: { currentUser: { unitType } } } = this.props;
+    const { company } = this.state;
+    const notCompany = unitType === 2 || unitType === 3;
+    // 当账户为政府或运营时可以选择企业
+    return notCompany && (
+      <Input
+        placeholder="请选择企业单位"
+        style={{ marginBottom: 8, width: 256 }}
+        onFocus={this.handleFocus}
+        value={company && company.name}
+        readOnly
+      />
+    );
+  }
+
+  /**
    * 控件
    */
   renderForm() {
-    const { user: { currentUser: { permissionCodes } } } = this.props;
-    const { values } = this.state;
+    const { user: { currentUser: { permissionCodes, unitType } } } = this.props;
+    const { values, company } = this.state;
     // 是否有新增权限
     const hasAddAuthority = hasAuthority(addCode, permissionCodes);
+    // 当账号非企业时，只有state中的company存在时，才能新增
+    const notCompany = unitType === 2 || unitType === 3;
 
     return (
       <Card>
         <InlineForm
           fields={fields}
           values={values}
-          action={<Button type="primary" disabled={!hasAddAuthority} onClick={() => {router.push(addUrl);}}>新增</Button>}
+          action={<Button type="primary" disabled={!hasAddAuthority || (notCompany && !company)} onClick={() => {router.push(addUrl);}}>新增</Button>}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
@@ -287,7 +394,7 @@ export default class App extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<div>试卷总数：{total}</div>}
+        content={<Fragment>{this.renderSelect()}<div>试卷总数：{total}</div></Fragment>}
       >
         {/* 控件 */this.renderForm()}
         <InfiniteScroll
@@ -309,6 +416,7 @@ export default class App extends PureComponent {
         >
           {/* 列表 */this.renderList()}
         </InfiniteScroll>
+        {this.renderModal()}
       </PageHeaderLayout>
     );
   }

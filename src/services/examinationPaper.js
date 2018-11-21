@@ -57,3 +57,10 @@ export async function editPaper(params) {
 export async function getPreview({ id }) {
   return request(`/acloud_new/v2/education/examPaperTemplate/${id}`);
 }
+
+/**
+ * 企业列表
+ */
+export async function getCompanyList(params) {
+  return request(`/acloud_new/v2/baseInfo/educationCompanies?${stringify(params)}`);
+}

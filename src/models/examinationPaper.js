@@ -16,6 +16,8 @@ import {
   editPaper,
   // 预览试卷
   getPreview,
+  // 获取企业列表
+  getCompanyList,
 } from '@/services/examinationPaper.js'
 import router from 'umi/router';
 import urls from '@/utils/urls';
@@ -70,6 +72,15 @@ export default {
     judgeTree: [],
     // 预览试卷
     preview: {},
+    // 企业列表
+    companyList: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
   },
 
   effects: {
@@ -215,6 +226,27 @@ export default {
           type: 'save',
           payload: {
             key: 'preview',
+            value: response.data,
+          },
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      }
+      else {
+        error();
+      }
+    },
+    /**
+     * 获取企业列表
+     */
+    *fetchCompanyList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'companyList',
             value: response.data,
           },
         });

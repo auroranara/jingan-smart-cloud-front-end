@@ -19,6 +19,8 @@ const { home: homeTitle, examinationPaper: { list: listTitle, menu: menuTitle, a
 const backUrl = `${listUrl}?back`;
 // 获取code
 const { training: { examinationPaper: { list: listCode } } } = codes;
+// session
+const companySessionName = 'examination_paper_list_company_';
 
 @connect(({ examinationPaper, user, loading }) => ({
   examinationPaper,
@@ -45,7 +47,7 @@ export default class App extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const { dispatch, match: { params: { id } }, user: { currentUser: { id: userId, unitType } } } = this.props;
 
     // 如果为编辑状态
     if (id) {
@@ -69,8 +71,17 @@ export default class App extends PureComponent {
         type: 'examinationPaper/save',
         payload: { key: 'detail', value: {} },
       });
+      // 从session中获取companyId
+      const { id: companyId } = JSON.parse(sessionStorage.getItem(`${companySessionName}${userId}`)) || {};
+      // 如果为非企业，则companyId不存在时返回列表页面
+      if ((unitType === 2 || unitType === 3) && !companyId) {
+        this.goToList();
+      }
+      else {
+        this.companyId = companyId;
+      }
       // 获取规则树
-      this.getRuleTree(dispatch);
+      this.getRuleTree(dispatch, id, companyId);
     }
   }
 
@@ -172,7 +183,7 @@ export default class App extends PureComponent {
    * 提交
    */
   handleSubmit = () => {
-    const { dispatch, form: { validateFieldsAndScroll }, match: { params: { id } }, examinationPaper: { detail: { companyId } } } = this.props;
+    const { dispatch, form: { validateFieldsAndScroll }, match: { params: { id } }, examinationPaper: { detail: { companyId=this.companyId } } } = this.props;
     const { singleValues, multipleValues, judgeValues, radioValue: ruleType } = this.state;
     const singleKnowledgeRuleInfoList = singleValues && Object.entries(singleValues).filter(([ knowledgeId, selQuestionNum ]) => selQuestionNum).map(([ knowledgeId, selQuestionNum ]) => ({ knowledgeId, selQuestionNum }));
     const multiKnowledgeRuleInfoList = multipleValues && Object.entries(multipleValues).filter(([ knowledgeId, selQuestionNum ]) => selQuestionNum).map(([ knowledgeId, selQuestionNum ]) => ({ knowledgeId, selQuestionNum }));
