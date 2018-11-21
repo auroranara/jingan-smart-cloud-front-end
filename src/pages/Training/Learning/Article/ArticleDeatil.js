@@ -20,7 +20,7 @@ const breadcrumbList = [
 @connect(({ learning }) => ({
   learning,
 }))
-export default class LearningLayout extends PureComponent {
+export default class ArticleDeatil extends PureComponent {
   // 挂载后
   componentDidMount() {
     const {
@@ -31,7 +31,7 @@ export default class LearningLayout extends PureComponent {
     } = this.props;
     // 获取详情
     dispatch({
-      type: 'learning',
+      type: 'learning/fetch',
       payload: {
         id,
       },
@@ -39,26 +39,45 @@ export default class LearningLayout extends PureComponent {
   }
 
   render() {
+    const {
+      match: {
+        params: { id },
+      },
+      learning: {
+        data: { list },
+      },
+    } = this.props;
+
+    const detail = list.find(d => d.id === id) || {};
+
+    const { name, createTime, totalPerson, totalRead, content } = detail;
+
     return (
       <PageHeaderLayout title="文章阅读" breadcrumbList={breadcrumbList}>
         <Row gutter={16}>
           <Col>
             <Card>
               <div className={styles.detailFirst}>
-                <div className={styles.detailTitle}>{'发自内心的文章致敬所有消防员！'}</div>
+                <div className={styles.detailTitle}>{name}</div>
               </div>
               <div className={styles.detailSecond}>
                 <span>
                   发布时间：
-                  {getTime()}
+                  {getTime(createTime)}
                 </span>
                 <Divider type="vertical" />
-                <span>阅读人数：100 人</span>
+                <span>
+                  阅读人数：
+                  {totalPerson}
+                </span>
                 <Divider type="vertical" />
-                <span>阅读次数：1000 次</span>
+                <span>
+                  阅读次数：
+                  {totalRead}
+                </span>
               </div>
               <div className={styles.detailMain}>
-                <div dangerouslySetInnerHTML={{ __html: '' }} />,
+                <div dangerouslySetInnerHTML={{ __html: content }} />
               </div>
             </Card>
           </Col>

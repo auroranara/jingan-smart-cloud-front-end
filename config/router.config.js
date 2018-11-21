@@ -1112,7 +1112,7 @@ module.exports = [
               //   component: './Training/Learning/Article/ArticleList',
               // },
               {
-                path: '/training/learning/article/detail',
+                path: '/training/learning/article/detail/:id',
                 code: 'training.learning.view',
                 name: 'article',
                 component: './Training/Learning/Article/ArticleDeatil',
@@ -1124,7 +1124,7 @@ module.exports = [
               //   component: './Training/Learning/Courseware/CoursewareList',
               // },
               {
-                path: '/training/learning/courseware/detail',
+                path: '/training/learning/courseware/detail/:id',
                 code: 'training.learning.view',
                 name: 'courseware',
                 component: './Training/Learning/Courseware/CoursewareDetail',

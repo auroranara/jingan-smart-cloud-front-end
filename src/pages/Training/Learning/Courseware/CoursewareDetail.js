@@ -38,6 +38,7 @@ export default class LearningLayout extends PureComponent {
       width: 1026,
       height: '100vh',
     },
+    src: 'http://data.jingan-china.cn/%E6%BC%94%E7%A4%BA%E6%96%87%E6%A1%A3.pdf',
   };
 
   handleContent = () => {
@@ -47,7 +48,7 @@ export default class LearningLayout extends PureComponent {
   };
 
   render() {
-    const { pdfSrc, styles } = this.state;
+    const { pdfSrc, styles, src } = this.state;
     return (
       <PageHeaderLayout title="课件学习" breadcrumbList={breadcrumbList}>
         <Row gutter={16}>
@@ -65,7 +66,7 @@ export default class LearningLayout extends PureComponent {
               </div>
               <div className={style.detailMain}>
                 <div className={style.resource}>
-                  <Resource src={pdfSrc} styles={styles} extension="pdf" />
+                  <Resource src={src} styles={styles} extension="mp4" />
                 </div>
                 <div>
                   <h3>

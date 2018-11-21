@@ -15,14 +15,14 @@ import {
   Select,
   TreeSelect,
 } from 'antd';
-// import moment from 'moment';
+import moment from 'moment';
 
 import styles from './Article.less';
 
 const ListItem = List.Item;
 const FormItem = Form.Item;
 const Option = Select.Option;
-// const TreeNode = TreeSelect.TreeNode;
+const TreeNode = TreeSelect.TreeNode;
 
 // 默认表单值
 const defaultFormData = {
@@ -30,37 +30,21 @@ const defaultFormData = {
 };
 
 const treeData = data => {
-  // return data.map(item => {
-  //   if (item.children) {
-  //     return (
-  //       <TreeNode title={item.name} key={item.id} value={item.id}>
-  //         {treeData(item.children)}
-  //       </TreeNode>
-  //     );
-  //   }
-  //   return <TreeNode title={item.name} key={item.id} value={item.id} />;
-  // });
+  return data.map(item => {
+    if (item.children) {
+      return (
+        <TreeNode title={item.name} key={item.id} value={item.id}>
+          {treeData(item.children)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.name} key={item.id} value={item.id} />;
+  });
 };
 
-// function getTime(t) {
-//   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
-// }
-
-const data = [
-  {
-    title: '消防应急操作指南指导消防应急操作指南指导 ',
-    id: '001',
-  },
-  {
-    title: '消防应急操作指南指导fsdfvsd',
-    status: '发布',
-    id: '002',
-  },
-  {
-    title: '消防应急操作指南指导东方闪电',
-    id: '003',
-  },
-];
+function getTime(t) {
+  return moment(t).format('YYYY-MM-DD HH:mm:ss ');
+}
 
 @connect(({ learning }) => ({
   learning,
@@ -71,31 +55,40 @@ export default class ArticleList extends PureComponent {
     super(props);
     this.formData = defaultFormData;
   }
+  state = {
+    knowledgeId: null, // 点击保存的知识点id
+    selectedKeys: [],
+  };
 
   // 跳转到详情页面
   goToDetail = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/learning/article/detail`));
+    dispatch(routerRedux.push(`/training/learning/article/detail/${id}`));
   };
+
   // 挂载后
-  // componentDidMount() {
-  //   const {
-  //     dispatch,
-  //     learning: {
-  //       data: {
-  //         pagination: { pageSize },
-  //       },
-  //     },
-  //   } = this.props;
-  //   // 获取文章列表
-  //   dispatch({
-  //     type: 'learning/fetch',
-  //     payload: {
-  //       pageSize,
-  //       pageNum: 1,
-  //     },
-  //   });
-  // }
+  componentDidMount() {
+    const {
+      dispatch,
+      learning: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 获取文章列表
+    dispatch({
+      type: 'learning/fetch',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+    // 获取知识点树
+    dispatch({
+      type: 'learning/fetchTree',
+    });
+  }
 
   // 查询
   handleArticleQuery = () => {
@@ -145,16 +138,34 @@ export default class ArticleList extends PureComponent {
     });
   };
 
+  // 点击知识点
+  handleSelectTree = keys => {
+    const { dispatch } = this.props;
+    const [selected] = keys;
+    this.setState({ knowledgeId: selected, selectedKeys: keys });
+    dispatch({
+      type: 'learning/fetch',
+      payload: {
+        pageNum: 1,
+        pageSize: 5,
+        knowledgeId: selected,
+      },
+    });
+  };
+
   // 渲染
   render() {
     const {
       form: { getFieldDecorator },
-      // match: {
-      //   params: { id },
-      // },
+      learning: {
+        data: { list },
+        treeData: { knowledgeList },
+      },
     } = this.props;
 
-    const treeList = treeData();
+    const treeList = treeData(knowledgeList);
+
+    const { selectedKeys } = this.state;
 
     return (
       <div>
@@ -183,10 +194,12 @@ export default class ArticleList extends PureComponent {
                 {getFieldDecorator('knowledge')(
                   <TreeSelect
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    selectedKeys={selectedKeys}
                     allowClear
                     placeholder="请选择知识点"
+                    onSelect={this.handleSelectTree}
                   >
-                    {treeList}
+                    >{treeList}
                   </TreeSelect>
                 )}
               </FormItem>
@@ -210,45 +223,40 @@ export default class ArticleList extends PureComponent {
 
         <List
           grid={{ gutter: 16, column: 1 }}
-          dataSource={data}
+          dataSource={list}
           renderItem={item => {
-            const { title, status } = item;
-            // const { title, status, time, view, user } = item;
+            const { id, name, knowledgeId, createTime, status, totalRead, totalPerson } = item;
             return (
-              <ListItem>
+              <ListItem key={id}>
                 <Card className={styles.cardContainer}>
                   <div className={styles.firstLine}>
-                    <div className={styles.title}>{title}</div>
+                    <div className={styles.title}>{name}</div>
                   </div>
-                  <Tag className={styles.tags}>知识点一</Tag>
-                  <Tag className={styles.tags} color={status ? 'blue' : 'grey'}>
-                    {item.status ? '已发布' : '未发布'}
+                  <Tag className={styles.tags}>{knowledgeId}</Tag>
+                  <Tag className={styles.tags} color={+status === 0 ? 'blue' : 'grey'}>
+                    {+status === 0 ? '已读' : '未读'}
                   </Tag>
                   <div className={styles.introduction}>
                     <span className={styles.grey}>{' 发布于 '}</span>
-                    {/* <span>{getTime(time)}</span> */}
-                    <span>2018-11-11 13:00:00</span>
+                    <span>{getTime(createTime)}</span>
                   </div>
                   <div className={styles.statistics}>
                     <span>
                       <Icon className={styles.icon} type="eye" />
-                      {/* <span>{item.view}</span> */}
-                      {'1111'}
+                      <span>{totalRead}</span>
                     </span>
                     <Divider type="vertical" />
                     <span>
                       <Icon className={styles.icon} type="user" />
-                      {/* <span>{item.user}</span> */}
-                      {'1111'}
+                      <span>{totalPerson}</span>
                     </span>
                     <Divider type="vertical" />
                     <span>
-                      <a style={{ width: '20px' }} onClick={() => this.goToDetail()}>
+                      <a style={{ width: '20px' }} onClick={() => this.goToDetail(id)}>
                         <Icon className={styles.icon} type="read" />
                         {'开始阅读'}
                       </a>
                     </span>
-                    ,
                   </div>
                 </Card>
               </ListItem>

@@ -28,8 +28,6 @@ export default class Resource extends PureComponent {
   };
 
   renderPdf = () => {
-    const { src, extension, key, visible, styles } = this.props;
-    return <embed src={src} style={{ ...styles }} type="application/pdf" />;
     const { src, key, styles } = this.props;
     return <embed src={src} style={styles} type="application/pdf" />;
   };
