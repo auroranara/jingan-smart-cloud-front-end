@@ -1033,6 +1033,20 @@ module.exports = [
         hideInMenu: false,
         routes: [
           {
+            name: 'knowledgeSys',
+            path: '/training/knowledgeSys',
+            code: 'training.points',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/knowledgeSys',
+                code: 'training.knowledgeSys.view',
+                name: 'KnowledgeSys',
+                component: './Training/KnowledgeSys/KnowledgeSys',
+              },
+            ],
+          },
+          {
             name: 'library',
             path: '/training/library',
             code: 'training.library',
