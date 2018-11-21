@@ -1073,6 +1073,18 @@ module.exports = [
                 name: 'articleEdit',
                 component: './Training/Library/Article/ArticleAdd',
               },
+              {
+                path: '/training/library/courseware/add',
+                code: 'training.library.add',
+                name: 'coursewareAdd',
+                component: './Training/Library/Courseware/CoursewareAdd',
+              },
+              {
+                path: '/training/library/courseware/edit/:id',
+                code: 'training.library.edit',
+                name: 'coursewareEdit',
+                component: './Training/Library/Courseware/CoursewareAdd',
+              },
             ],
           },
           {
@@ -1115,6 +1127,37 @@ module.exports = [
                 code: 'training.examinationPaper.view',
                 name: 'view',
                 component: './Training/ExaminationPaper/Preview',
+              },
+            ],
+          },
+          {
+            name: 'mission',
+            path: '/training/mission',
+            code: 'training.mission',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                name: 'mission',
+                path: '/training/mission',
+                redirect: '/training/mission/list',
+              },
+              {
+                name: 'list',
+                path: '/training/mission/list',
+                code: 'training.mission.listView',
+                component: './Training/Mission/ExaminationMissionList',
+              },
+              {
+                name: 'add',
+                path: '/training/mission/add',
+                code: 'training.mission.add',
+                component: './Training/Mission/ExaminationMissionAdd',
+              },
+              {
+                name: 'edit',
+                path: '/training/mission/edit/:id',
+                code: 'training.mission.edit',
+                component: './Training/Mission/ExaminationMissionAdd',
               },
             ],
           },
