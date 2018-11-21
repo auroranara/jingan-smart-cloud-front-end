@@ -57,7 +57,7 @@ export default class ArticleList extends PureComponent {
   }
   state = {
     knowledgeId: null, // 点击保存的知识点id
-    selectedKeys: [],
+    value: [],
   };
 
   // 跳转到详情页面
@@ -139,16 +139,16 @@ export default class ArticleList extends PureComponent {
   };
 
   // 点击知识点
-  handleSelectTree = keys => {
+  handleSelectTree = value => {
     const { dispatch } = this.props;
-    const [selected] = keys;
-    this.setState({ knowledgeId: selected, selectedKeys: keys });
+    console.log(this.props);
+    this.setState({ knowledgeId: value });
     dispatch({
       type: 'learning/fetch',
       payload: {
         pageNum: 1,
         pageSize: 5,
-        knowledgeId: selected,
+        knowledgeId: value,
       },
     });
   };
@@ -164,8 +164,6 @@ export default class ArticleList extends PureComponent {
     } = this.props;
 
     const treeList = treeData(knowledgeList);
-
-    const { selectedKeys } = this.state;
 
     return (
       <div>
@@ -194,12 +192,11 @@ export default class ArticleList extends PureComponent {
                 {getFieldDecorator('knowledge')(
                   <TreeSelect
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                    selectedKeys={selectedKeys}
                     allowClear
                     placeholder="请选择知识点"
                     onSelect={this.handleSelectTree}
                   >
-                    >{treeList}
+                    {treeList}
                   </TreeSelect>
                 )}
               </FormItem>
