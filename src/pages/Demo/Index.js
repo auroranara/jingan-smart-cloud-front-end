@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
-import { Document, Page } from 'react-pdf';
 import Resource from '@/components/Resource';
 
 export default class Demo extends Component {

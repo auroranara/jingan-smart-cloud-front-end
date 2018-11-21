@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import { Player } from 'video-react';
+import 'video-react/dist/video-react.css';
 
 const offices = ['pptx', 'docx', 'xlsx', 'ppt', 'doc', 'xls'];
 export default class Resource extends PureComponent {
@@ -28,6 +30,13 @@ export default class Resource extends PureComponent {
   renderPdf = () => {
     const { src, extension, key, visible, styles } = this.props;
     return <embed src={src} style={{ ...styles }} type="application/pdf" />;
+    const { src, key, styles } = this.props;
+    return <embed src={src} style={styles} type="application/pdf" />;
+  };
+
+  renderVideo = () => {
+    const { src, poster, key, styles } = this.props;
+    return <Player playsInline poster={poster} src={src} style={styles} />;
   };
 
   render() {
@@ -37,6 +46,8 @@ export default class Resource extends PureComponent {
       result = this.renderPdf();
     } else if (offices.indexOf(extension) > -1) {
       result = this.renderOffice();
+    } else if (extension === 'mp4') {
+      result = this.renderVideo();
     }
     return <div>{result}</div>;
   }
