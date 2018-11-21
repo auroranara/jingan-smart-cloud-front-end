@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import {
   List,
   Card,
@@ -85,6 +86,11 @@ export default class CoursewareList extends PureComponent {
   //   });
   // }
 
+  // 跳转到详情
+  goToDetail = () => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/training/learning/courseware/detail`));
+  };
   /* 查询按钮点击事件 */
   handleQuery = () => {
     const {
@@ -230,7 +236,7 @@ export default class CoursewareList extends PureComponent {
                     </span>
                     <Divider type="vertical" />
                     <span>
-                      <a style={{ width: '20px' }} href="#/training/learning/courseware/detail">
+                      <a style={{ width: '20px' }} onClick={() => this.goToDetail()}>
                         <Icon className={styles.icon} type="read" />
                         {'开始学习'}
                       </a>

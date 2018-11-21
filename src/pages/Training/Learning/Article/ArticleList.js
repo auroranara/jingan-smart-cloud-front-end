@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import {
   List,
   Card,
@@ -71,6 +72,11 @@ export default class ArticleList extends PureComponent {
     this.formData = defaultFormData;
   }
 
+  // 跳转到详情页面
+  goToDetail = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/training/learning/article/detail`));
+  };
   // 挂载后
   // componentDidMount() {
   //   const {
@@ -143,6 +149,9 @@ export default class ArticleList extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      // match: {
+      //   params: { id },
+      // },
     } = this.props;
 
     const treeList = treeData();
@@ -234,7 +243,7 @@ export default class ArticleList extends PureComponent {
                     </span>
                     <Divider type="vertical" />
                     <span>
-                      <a style={{ width: '20px' }} href="#/training/learning/article/detail">
+                      <a style={{ width: '20px' }} onClick={() => this.goToDetail()}>
                         <Icon className={styles.icon} type="read" />
                         {'开始阅读'}
                       </a>
