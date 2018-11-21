@@ -12,17 +12,15 @@ const CHOICE_STYLE = { display: 'block', fontSize: 16, height: HEIGHT, lineHeigh
 
 export default class Subject extends PureComponent {
   render() {
-    const { index=0, question, choices=['是', '否'], type='single', onChange, value='', ...restProps } = this.props;
-    // const isSingle = type === 'single';
-    // const Group = isSingle ? RadioGroup : CheckboxGroup;
-    // const Choice = isSingle ? Radio : Checkbox;
+    const { index=0, question, choices=[], type='single', onChange, value=[], ...restProps } = this.props;
+    // console.log(index, type);
 
     let ccs = null;
 
     switch(type) {
       case 'single':
         ccs = (
-          <RadioGroup onChange={e => onChange(e.target.value)} value={value}>
+          <RadioGroup onChange={e => onChange([e.target.value])} value={value[0]}>
             {choices.map((c, i) => <Radio key={i} value={i} style={CHOICE_STYLE}>{`${CHOICES[i]}、${c}`}</Radio>)}
           </RadioGroup>
         );
@@ -36,7 +34,7 @@ export default class Subject extends PureComponent {
         break;
       case 'judge':
         ccs = (
-          <RadioGroup onChange={e => onChange(e.target.value)} value={value}>
+          <RadioGroup onChange={e => onChange([e.target.value])} value={value[0]}>
             {choices.map((c, i) => <Radio key={i} value={i} style={CHOICE_STYLE}>{c}</Radio>)}
           </RadioGroup>
         );
@@ -47,7 +45,7 @@ export default class Subject extends PureComponent {
 
     return (
       <div className={styles.container} {...restProps}>
-        <p className={styles.p}>{`${index + 1}、${question}：(`}<span className={styles.backspace} />)</p>
+        <p className={styles.p}>{`${index + 1}、${question}(`}<span className={styles.backspace} />)</p>
           {ccs}
       </div>
     );

@@ -20,3 +20,19 @@ export function getCounter(count, limit, startTime, serverTime, callback) {
 function fillZero(n) {
   return n > 9 ? n : `0${n}`;
 }
+
+function addType(obj) {
+  return Object.entries(obj).reduce((prev, next) => {
+    let [k, v] = next;
+    v = Array.isArray(v) ? v : [];
+    prev[k] = v.map(item => ({ ...item, type: k }));
+    return prev;
+  }, {});
+}
+
+export function concatAll(obj, keys) {
+  const newObj = addType(obj);
+  return keys.reduce((prev, next) => {
+    return prev.concat(newObj[next]);
+  }, []);
+}

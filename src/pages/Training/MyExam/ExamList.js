@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
+import moment from 'moment';
 import { Card, Input, List } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -21,6 +22,7 @@ const documentElem = document.documentElement;
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
+const TIME_FORMAT = 'YYYY-MM-DD HH:MM';
 const STATUS_MAP = {
   1: '即将开考',
   2: '开始考试',
@@ -29,12 +31,15 @@ const STATUS_MAP = {
 
 const LIST = [...Array(10).keys()].map(i => ({
   id: i,
+  paperId: i,
   status: Math.floor(Math.random() * 3) + 1,
+  statusName: '即将开考',
   name: `试卷${i}`,
-  startTime: 10,
-  endTime: 60,
+  examStartTime: 10,
+  examEndTime: 60,
   examLimit: 90,
-  percentOfPass: '50%',
+  passStatus: 1,
+  percentOfPass: 50,
 }));
 
 @connect(({ myExam, loading }) => ({ myExam, loading: loading.effects['myExam/fetchExamList'] }))
@@ -51,7 +56,7 @@ export default class ExamList extends PureComponent {
   }
 
   value = '';
-  hasMore = false;
+  hasMore = true;
   childElem = null;
   currentpageNum = 2;
 
@@ -122,10 +127,10 @@ export default class ExamList extends PureComponent {
   };
 
   render() {
-    const list = LIST;
+    // const list = LIST;
     const {
       loading,
-      // myExam: { examList: list=[] },
+      myExam: { examList: list=[] },
     } = this.props;
 
     const FIELDS = [
@@ -161,32 +166,45 @@ export default class ExamList extends PureComponent {
             renderItem={item => {
               const {
                 id,
+                // now,
+                // examId,
+                // paperId,
                 name,
-                status,
-                startTime,
-                endTime,
-                examLimit,
+                // status,
+                statusName,
+                // startTime,
+                // endTime,
+                examStartTime,
+                examEndTime,
+                examLimit=60,
+                passStatus,
                 percentOfPass,
               } = item;
 
-            const action = <Link to={`/training/my-exam/examing/${id}`}>{STATUS_MAP[status]}</Link>;
+            const action = <Link to={`/training/my-exam/examing/${id}`}>{statusName}</Link>;
 
               return (
                 <List.Item key={id}>
                   <Card className={styles.card} title={name} actions={[action]}>
                     <p>
                       考试期限：
-                      {startTime && endTime ? `${startTime} -> ${endTime}` : NO_DATA}
+                      {examStartTime && examEndTime ? `${moment(examStartTime).format(TIME_FORMAT)} 到 ${moment(examEndTime).format(TIME_FORMAT)}` : NO_DATA}
                     </p>
                     <p>
                       考试时长：
-                      {examLimit || NO_DATA}
+                      {examLimit ? `${examLimit}分钟` : NO_DATA}
                     </p>
                     <p>
                       合格率：
-                      {percentOfPass || NO_DATA}
+                      {percentOfPass ? `${percentOfPass}%` : NO_DATA}
                     </p>
-                    <img className={styles.qualified} src={Math.random() > 0.5 ? qualifiedIcon : unqualifiedIcon} alt="qualifiedIcon" />
+                    {passStatus !== undefined && passStatus !== null && (
+                      <img
+                        alt="qualifiedIcon"
+                        className={styles.qualified}
+                        src={Number.parseInt(passStatus, 10) === 1 ? qualifiedIcon : unqualifiedIcon}
+                      />
+                    )}
                   </Card>
                 </List.Item>
               );

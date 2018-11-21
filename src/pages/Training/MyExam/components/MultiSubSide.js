@@ -20,7 +20,7 @@ export default class MultiSubSide extends PureComponent {
     });
   };
 
-  render(props) {
+  render() {
     const { handleClick, colors, categories=[] } = this.props;
     const { spreadStates } = this.state;
 
@@ -28,7 +28,7 @@ export default class MultiSubSide extends PureComponent {
 
     return (
       <div className={styles.container}>
-        {categories.map(({title, size}, i) => {
+        {categories.map(({ title, size }, i) => {
           const temp = count;
           count += size;
 
