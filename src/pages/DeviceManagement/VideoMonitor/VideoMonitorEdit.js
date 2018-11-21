@@ -347,6 +347,7 @@ export default class VideoMonitorEdit extends PureComponent {
         charMode
       )
         callback();
+      else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
     } else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
   };
 
