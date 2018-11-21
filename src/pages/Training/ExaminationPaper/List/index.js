@@ -329,18 +329,24 @@ export default class App extends PureComponent {
    * 列表
    */
   renderList() {
-    const { examinationPaper: { list: { list } }, user: { currentUser: { permissionCodes } } } = this.props;
+    const { examinationPaper: { list: { list } }, user: { currentUser: { permissionCodes, unitType } } } = this.props;
+    const { company } = this.state;
     // 是否有查看详情权限
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
     // 是否有删除权限
     const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes);
+    // 是否为非企业
+    const notCompany = unitType === 2 || unitType === 3;
+    // 是否隐藏列表
+    const hideList = notCompany && !company;
 
     return (
       <List
+        locale={hideList ? { emptyText: '请先选择企业单位' } : undefined}
         className={styles.cardList}
         rowKey="id"
         grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-        dataSource={list}
+        dataSource={hideList ? [] : list}
         renderItem={({ id, name, ruleTypeName, createTimeStr, useNum, status }) => {
           const isUsed = !!+status;
           return (
@@ -388,13 +394,18 @@ export default class App extends PureComponent {
   }
 
   render() {
-    const { examinationPaper: { list: { pagination: { total, pageSize, pageNum } } }, loading } = this.props;
+    const { examinationPaper: { list: { pagination: { total, pageSize, pageNum } } }, loading, user: { currentUser: { unitType } } } = this.props;
+    const { company } = this.state;
+    // 是否为非企业
+    const notCompany = unitType === 2 || unitType === 3;
+    // 是否隐藏列表
+    const hideList = notCompany && !company;
 
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<Fragment>{this.renderSelect()}<div>试卷总数：{total}</div></Fragment>}
+        content={<Fragment>{this.renderSelect()}<div>试卷总数：{hideList ? 0 : total}</div></Fragment>}
       >
         {/* 控件 */this.renderForm()}
         <InfiniteScroll
@@ -403,7 +414,7 @@ export default class App extends PureComponent {
             // 防止多次加载
             !loading && this.handleLoadMore();
           }}
-          hasMore={pageNum * pageSize < total}
+          hasMore={hideList ? false : (pageNum * pageSize < total)}
           loader={
             <div className="loader" key={0}>
               {loading && (
