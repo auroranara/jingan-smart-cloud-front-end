@@ -8,7 +8,9 @@ const { Group: RadioGroup } = Radio;
 const CHOICES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 const HEIGHT = 40;
+const DEFAULT_HEIGHT = 32;
 const CHOICE_STYLE = { display: 'block', fontSize: 16, height: HEIGHT, lineHeight: `${HEIGHT}px`, margin: '0 0 0 20px' };
+const DEFAULT_CHOICE_STYLE = { fontSize: 16, height: DEFAULT_HEIGHT, lineHeight: `${DEFAULT_HEIGHT}px`, margin: '0 0 0 30px' };
 
 export default class Subject extends PureComponent {
   render() {
@@ -40,12 +42,17 @@ export default class Subject extends PureComponent {
         );
         break;
       default:
-        console.warn(`type[${type}] in Subject.js`);
+        ccs = (
+          <div>
+            {choices.map((c, i) => <p key={i} style={DEFAULT_CHOICE_STYLE}>{`${CHOICES[i]}、${c}`}</p>)}
+          </div>
+        )
     }
 
     return (
       <div className={styles.container} {...restProps}>
-        <p className={styles.p}>{`${index + 1}、${question}(`}<span className={styles.backspace} />)</p>
+        <p className={styles.p}>{`${index + 1}、${question}`}</p>
+        {/* <p className={styles.p}>{`${index + 1}、${question}(`}<span className={styles.backspace} />)</p> */}
           {ccs}
       </div>
     );

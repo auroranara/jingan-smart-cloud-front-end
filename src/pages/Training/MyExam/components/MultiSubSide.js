@@ -12,7 +12,7 @@ export default class MultiSubSide extends PureComponent {
   }
 
   handleSpreadClick = i => {
-    const { categories } = this.props;
+    // const { categories } = this.props;
     this.setState(({ spreadStates }) => {
       const cloned = [...spreadStates];
       cloned[i] = !spreadStates[i];

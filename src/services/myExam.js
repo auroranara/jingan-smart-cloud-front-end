@@ -20,9 +20,19 @@ export async function getQuestion(params) {
 
 // 保存答案到服务器
 export async function saveAnswer(params) {
-  console.log('params', params);
+  // console.log('params', params);
   return request(`${URL_PREFIX}/examStudentPaper/question`, {
     method: 'PUT',
     body: params,
   });
+}
+
+// 交卷
+export async function handInExam(id) {
+  return request(`${URL_PREFIX}/examStudentPaper/submitPaper/${id}`, { method: 'PUT' });
+}
+
+// 获取整张考卷
+export async function getPaper(id) {
+  return request(`${URL_PREFIX}/examStudentPaper/${id}`);
 }

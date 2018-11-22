@@ -1,20 +1,16 @@
-export function getCounter(count, limit, startTime, serverTime, callback) {
-  const endTime = startTime + limit * 1000;
-  const currentTime = serverTime + count * 1000;
-
+export function getCounter(restTime, callback) {
   // 还未从服务器获取考试开始时间和服务器时间
-  if (!startTime || !serverTime)
+  if (!restTime)
     return '00:00';
 
   // 倒计时结束时，调用回调函数
-  if (currentTime > endTime) {
+  if (restTime <= 0) {
     callback && callback();
     return '00:00';
   }
 
-  const rest = Math.floor((endTime - currentTime) / 1000);
   // console.log(endTime, currentTime);
-  return `${fillZero(Math.floor(rest / 60))}:${fillZero(rest % 60)}`;
+  return `${fillZero(Math.floor(restTime / 60000))}:${fillZero(Math.floor((restTime % 60000) / 1000))}`;
 }
 
 function fillZero(n) {
@@ -33,6 +29,18 @@ function addType(obj) {
 export function concatAll(obj, keys) {
   const newObj = addType(obj);
   return keys.reduce((prev, next) => {
-    return prev.concat(newObj[next]);
+    const arr = newObj[next];
+    return prev.concat(Array.isArray(arr) ? arr : []);
   }, []);
+}
+
+export function isRight(origin, target) {
+  if (origin.length !== target.length)
+    return false;
+
+  for (let i = 0; i < origin.length; i++)
+    if (origin[i] !== target[i])
+      return false;
+
+  return true;
 }

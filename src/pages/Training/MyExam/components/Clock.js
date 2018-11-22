@@ -7,45 +7,45 @@ import clockIcon from '../imgs/clock.png';
 export default class Clock extends PureComponent {
   state = { count: 0 };
 
-  // componentDidMount() {
-  //   const { counting } = this.props;
-  //   if (counting)
-  //     this.timer = setInterval(() => {
-  //       this.setState({ count: this.count++ });
-  //     }, 1000);
-  // }
-
   componentWillUnmount() {
     clearInterval(this.timer);
   }
 
-  started = false;
+  componentDidUpdate(prevProps, prevState) {
+    const { restTime: prevRestTime } = prevProps;
+    const { counting, restTime } = this.props;
+
+    // console.log(restTime);
+    if (!counting)
+      return;
+
+    // restTime变化时，重新开始计时
+    if (prevRestTime !== restTime) {
+      clearInterval(this.timer);
+      this.setState({ count: 0 });
+      this.timer = setInterval(() => {
+        this.setState(({ count }) => ({ count: count + 1 }));
+      }, 1000);
+    }
+  }
+
   timer = null;
-  count = 1;
-  done = false;
 
   render() {
-    const { counting, startTime, time: serverTime, limit } = this.props;
+    const { counting, restTime, handleStop } = this.props;
     const { count } = this.state;
 
-    // 还没有开始计时且已从服务器获取考试开始时间和服务器时间
-    if (!this.started && startTime && serverTime) {
-      this.started  = true;
-      if (counting)
-        this.timer = setInterval(() => this.setState({ count: this.count++ }), 1000);
-    }
+    // console.log(count);
 
     return (
       <div className={styles.container}>
         <img className={styles.img} width="23" height="24" src={clockIcon} alt="clock" />
         <span className={styles.exam}>{counting ? '正在考试': '考试用时'}</span>
-        <span className={styles.time}>{getCounter(count, limit, startTime, serverTime, () => {
-          if (!this.done) {
-            this.done = true;
-            clearInterval(this.timer);
-            console.log('done');
-          }
-        })}</span>
+        <span className={styles.time}>{counting ? getCounter(restTime - count * 1000, () => {
+          clearInterval(this.timer);
+          // console.log('done');
+          handleStop();
+        }) : getCounter(restTime)}</span>
       </div>
     );
   }

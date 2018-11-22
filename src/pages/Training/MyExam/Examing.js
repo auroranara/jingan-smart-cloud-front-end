@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Col, message, Row } from 'antd';
+import { Button, Col, message, Modal, Row } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import PersonCard from './components/PersonCard';
@@ -30,11 +30,18 @@ const breadcrumbList = [
   { title: '正在考试', name: '正在考试' },
 ];
 
+const { confirm } = Modal;
+
 // const choices = ["经验管理阶段", "现代化管理阶段", "科学管理阶段", "人治管理阶段"];
 
-@connect(({ myExam, loading }) => ({ myExam, loading: loading.models.myExam }))
+@connect(({ myExam, user, loading }) => ({ myExam, user, loading: loading.models.myExam }))
 export default class Examing extends PureComponent {
-  state = { value: [], index: 0 };
+  state = {
+    value: [],
+    index: 0,
+    showIndex: 0,
+    restTime: undefined,
+  };
 
   componentDidMount() {
     this.fetchSide(true);
@@ -62,71 +69,146 @@ export default class Examing extends PureComponent {
     this.setState({ value: v });
   };
 
-  // index改变时保存，直接点击左边序号时也要保存当前的题目的值
-  onIndexChange = i => {
-    this.setState({ index: i });
-    this.fetchQuestion(i);
-    this.fetchSide();
-  };
-
-  fetchQuestion = (index) => {
+  fetchQuestion = index => {
     const { match: { params: { id } }, dispatch } = this.props;
 
     dispatch({
       type: 'myExam/fetchQuestion',
       payload: { paperId: id,  questionId: this.list[index].questionId },
-      callback: question => {
-        let { arrTestAnswer, hasTime } = question;
-        if (hasTime <= 0)
+      callback: (code, msg, question) => {
+        if (code !== 200) {
+          message.warn(msg);
+          // msg包含以下字段时，跳转回列表页
+          if (['开始', '结束', '交卷'].map(s => msg.includes(s)).some(b => b))
+            this.backToList();
           return;
+        }
+
+        let { arrTestAnswer, hasTime } = question;
+        if (hasTime <= 0) {
+          this.handleStop();
+          return;
+        }
+
+        this.setState({ showIndex: index, restTime: hasTime });
         if (Array.isArray(arrTestAnswer))
           this.setState({ value: arrTestAnswer });
       },
     });
   }
 
-  handleSaveChoice = (prevOrNext) => {
+  // 保存当前题目的值，并获取序号为i的题目，不传i，只保存当前题目的值，不获取下一题
+  handleSaveChoice = (i, callback) => {
     const { match: { params: { id } }, dispatch, myExam: { question } } = this.props;
     const { value, index } = this.state;
-    const nextIndex = prevOrNext === 'prev' ? index - 1 : index + 1;
-    // console.log('value', value);
-    // 当前题目已经选了选项时，保存到服务器，没有选择时不进行操作
-    if (value.length)
-      dispatch({
-        type: 'myExam/putAnswer',
-        payload: { paperId: id,  questionId: this.list[index].questionId, arrTestAnswer: value.map(i => question.arrOptions[i].id) },
-        callback: (code, msg) => {
-          if (code === 200) {
-            this.setState({ value: [] });
-            this.onIndexChange(nextIndex);
-          }
-          else
-            message.warn(msg);
-        },
-      });
-    else
-      this.onIndexChange(nextIndex);
+
+    // 不需要做判断，未选择时，可能时未选择或者故意清空答案，所以未选答案时也传给后台
+    dispatch({
+      type: 'myExam/putAnswer',
+      payload: { paperId: id,  questionId: this.list[index].questionId, arrTestAnswer: value.map(i => question.arrOptions[i].id) },
+      callback: (code, msg) => {
+        if (code === 200) {
+          this.setState({ value: [] });
+          this.handleIndexChange(i);
+          callback && callback();
+        }
+        else
+          message.warn(msg);
+      },
+    });
+  };
+
+  // i为负数或不为数字类型时，默认不处理
+  handleIndexChange = i => {
+    if (typeof i !== 'number' || i < 0)
+      return;
+
+    this.setState({ index: i });
+    this.fetchQuestion(i);
+    this.fetchSide();
   };
 
   handlePrev = () => {
-    this.handleSaveChoice('prev');
+    const { index } = this.state;
+    this.handleSaveChoice(index - 1);
   };
 
   handleNext = () => {
-    this.handleSaveChoice('next');
+    const { index } = this.state;
+    this.handleSaveChoice(index + 1);
+  };
+
+  backToList = () => {
+    router.push('/training/my-exam/list');
+  };
+
+  // 交卷
+  handInExam = () => {
+    const { match: { params: { id } }, dispatch } = this.props;
+
+    // 保存完当前题目的值之后再交卷
+    this.handleSaveChoice(-1, () => {
+      dispatch({
+        type: 'myExam/handIn',
+        payload: id,
+        callback: (code, msg, data) => {
+          if (code !== 200) {
+            const isHanded = msg.includes('超时');
+            message.warn(isHanded ? msg : `${msg}，请重新提交`);
+            isHanded && this.backToList();
+          }
+          else {
+            message.success('成功交卷！');
+            console.log(id, data);
+            this.backToList();
+          }
+        },
+      });
+    });
+  };
+
+  handleClickHandIn = () => {
+    // 题目是否都已经答完，因为最后一题没有下一题，所以
+    const isAllAnswered = this.list.every(item => Number.parseInt(item.status, 10));
+
+    confirm({
+      title: '系统提示',
+      content: `${isAllAnswered ? '您' : '您还有题目未答完，'}确定要交卷吗？`,
+      onOk: () => {
+        this.handInExam();
+      },
+      onCancel: () => {
+        console.log('Cancel');
+      },
+    });
+  };
+
+  handleStop = () => {
+    Modal.info({
+      title: '系统提示',
+      content: '考试已结束，请交卷！',
+      onOk: () => {
+        this.backToList();
+      },
+    });
   };
 
   render() {
-    const { myExam: { side, question }, loading } = this.props;
-    const { value, index } = this.state;
+    const {
+      loading,
+      myExam: { side, question },
+      user: { currentUser: { userName, userTypeName } },
+    } = this.props;
+    const { value, index, showIndex, restTime } = this.state;
     const list = this.list;
     const isFirst = !index;
     const isLast = index === list.length - 1;
     // const categories = [{ title: '单项选择题', size: 20 }, { title: '多项选择题', size: 20 }, { title: '判断题', size: 20 }];
     const categories = KEYS.map(k => ({ title: KEY_CN[k], size: Array.isArray(side[k]) ? side[k].length : 0 })).filter(item => item.size);
-    // console.log('question', question);
     const choices = Array.isArray(question.arrOptions) ? question.arrOptions.map(({ desc }) => desc) : [];
     const colors = list.map(({ status }) => status === '0' ? 'white' : 'blue');
+
+    console.log('user', userName, userTypeName);
 
     return (
       <PageHeaderLayout
@@ -141,13 +223,24 @@ export default class Examing extends PureComponent {
               答题卡
             </div>
             <div className={styles.side}>
-              <PersonCard src={personIcon} name="张晓光" desc="企业安全员/企业安全负责人" />
+              <PersonCard
+                src={personIcon}
+                name={userName || NO_DATA}
+                desc={userTypeName || NO_DATA}
+              />
               <Flag color="blue">已答题目</Flag>
               <Flag color="white">未答题目</Flag>
-              <Button type="primary" style={SUBMIT_STYLE}>交<span className={styles.backspace} />卷</Button>
+              <Button
+                type="primary"
+                disabled={loading}
+                style={SUBMIT_STYLE}
+                onClick={this.handleClickHandIn}
+              >
+                  交<span className={styles.backspace} />卷
+              </Button>
               <MultiSubSide
                 categories={categories}
-                handleClick={this.onIndexChange}
+                handleClick={this.handleSaveChoice}
                 colors={colors}
               />
             </div>
@@ -157,10 +250,10 @@ export default class Examing extends PureComponent {
               <div className={styles.head}>
                 <img src={editIcon} alt="编辑" className={styles.editIcon} />
                 试卷内容
-                <Clock counting startTime={Date.now()} time={Date.now()} limit={6000} />
+                <Clock counting restTime={restTime} handleStop={this.handleStop} />
               </div>
               <Subject
-                index={index}
+                index={showIndex}
                 value={value}
                 question={question.stem || NO_DATA}
                 choices={choices}

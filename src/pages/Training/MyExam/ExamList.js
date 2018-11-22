@@ -170,18 +170,31 @@ export default class ExamList extends PureComponent {
                 // examId,
                 // paperId,
                 name,
-                // status,
+                status, // 考试状态before("1", "即将开考"),begin("2","开始考试"),goOn("3","继续考试"),commit("4","已交卷"),end("5","考试已结束")
                 statusName,
                 // startTime,
                 // endTime,
                 examStartTime,
                 examEndTime,
-                examLimit=60,
+                examLimit,
                 passStatus,
                 percentOfPass,
               } = item;
 
-            const action = <Link to={`/training/my-exam/examing/${id}`}>{statusName}</Link>;
+            const parsedStatus = Number.parseInt(status, 10);
+            let action;
+
+            switch(parsedStatus) {
+              case 2:
+              case 3:
+                action = <Link to={`/training/my-exam/examing/${id}`}>{statusName}</Link>;
+                break;
+              case 5:
+                action = <Link to={`/training/my-exam/result/${id}`}>{statusName}</Link>;
+                break;
+              default:
+                action = statusName;
+            }
 
               return (
                 <List.Item key={id}>

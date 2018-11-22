@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Button, Row, Col } from 'antd';
@@ -13,6 +13,7 @@ import Subject from './components/Subject';
 import Answer from './components/Answer';
 import SubjectCategory from './components/SubjectCategory';
 import styles from './Result.less';
+import { concatAll } from './utils';
 import editIcon from './imgs/edit.png';
 import personIcon from './imgs/person.png';
 
@@ -29,24 +30,52 @@ const breadcrumbList = [
 const choices = ["经验管理阶段", "现代化管理阶段", "科学管理阶段", "人治管理阶段"];
 const analysis = Array(50).fill('答案解析').join();
 
-export default class ExamList extends PureComponent {
-  state = { val: 0, vals: [], index: 0 };
+const NO_DATA = '暂无信息';
+const KEYS = ['singleQuestionIndex', 'multiQuestionIndex', 'judgeQuestionIndex'];
+const KEY_CN = { singleQuestionIndex: '单项选择题', multiQuestionIndex: '多项选择题', judgeQuestionIndex: '判断题' };
+// const TYPE_MAP = { singleQuestionIndex: 'single', multiQuestionIndex: 'multi', judgeQuestionIndex: 'judge' };
+const TYPE_MAP = { 1: 'single', 2: 'multi', 3: 'judge' };
+const CATEGORIES = ['singleQuestions', 'multiQuestions', 'judgeQuestions'];
+const CATEGORIES_MAP = { singleQuestions: '单项选择题', multiQuestions: '多项选择题', judgeQuestions: '判断题' };
 
-  onSingleChange = v => {
-    this.setState({ val: v });
-  };
+@connect(({ myExam, user, loading }) => ({ myExam, user, loading: loading.models.myExam }))
+export default class ExamResult extends PureComponent {
+  state = { index: 0 };
 
-  onMultiChange = vals => {
-    this.setState({ vals });
-  };
+  componentDidMount() {
+    const { match: { params: { id } }, dispatch } = this.props;
+    dispatch({
+      type: 'myExam/fetchSide',
+      payload: id,
+    });
+    dispatch({
+      type: 'myExam/fetchPaper',
+      payload: id,
+    });
+  }
 
   onIndexChange = i => {
     this.setState({ index: i });
   };
 
   render() {
-    const { val, vals, index } = this.state;
-    const colors = [...Array(60).keys()].map(i => Math.random() > 0.5 ? 'red' : 'green');
+    const {
+      loading,
+      myExam: {
+        side,
+        paper,
+      },
+      user: { currentUser: { userName, userTypeName } },
+    } = this.props;
+    const { index } = this.state;
+    const { score, passStatus, useTime, studentName, studentTypeName } = paper;
+
+    let count = 0;
+    const list = concatAll(side, KEYS);
+    const categories = KEYS.map(k => ({ title: KEY_CN[k], size: Array.isArray(side[k]) ? side[k].length : 0 })).filter(item => item.size);
+    const colors = list.map(({ status }) => Number.parseInt(status, 10) ? 'green' : 'red');
+
+    // console.log('paper', paper);
 
     return (
       <PageHeaderLayout
@@ -61,14 +90,14 @@ export default class ExamList extends PureComponent {
               答题卡
             </div>
             <div className={styles.side}>
-              <PersonCard src={personIcon} name="张晓光" desc="企业安全员/企业安全负责人" />
+              <PersonCard src={personIcon} name={studentName || NO_DATA} desc={studentTypeName || NO_DATA} />
               <Flag color="green">正确题目</Flag>
               <Flag color="red">错误题目</Flag>
-              <Accuracy>50</Accuracy>
+              <Accuracy status={Number.parseInt(passStatus, 10)}>{score}</Accuracy>
               <MultiSubSide
                 colors={colors}
                 handleClick={this.onIndexChange}
-                categories={[{ title: '单项选择题', size: 20 }, { title: '多项选择题', size: 20 }, { title: '判断题', size: 20 }]}
+                categories={categories}
               />
             </div>
           </Col>
@@ -77,18 +106,39 @@ export default class ExamList extends PureComponent {
               <div className={styles.head}>
                 <img src={editIcon} alt="编辑" className={styles.editIcon} />
                 试卷内容
-                <Clock counting startTime={Date.now()} time={Date.now()} limit={120} />
+                <Clock restTime={useTime} />
               </div>
-              <SubjectCategory title="单项选择题" quantity="30">
-                <Subject question="企业管理的发展阶段" choices={choices} onChange={this.onSingleChange} value={val} />
-              </SubjectCategory>
-              <Answer answer={['A', 'B']} analysis={analysis} />
-              <div className={styles.btnContainer}>
+              {CATEGORIES.map((c, i) => {
+                const cList = paper[c];
+
+                if (!Array.isArray(cList) || !cList.length)
+                  return null;
+
+                return (
+                  <SubjectCategory key={c} index={i} title={CATEGORIES_MAP[c]} quantity={cList.length}>
+                    {cList.map(item => {
+                      const { id, stem, arrAnswer, arrTestAnswer, arrOptions, desc } = item;
+                      const choices = arrOptions.map(({ desc }) => desc);
+                      return (
+                        <Fragment key={id}>
+                          <Subject index={count++} type="analysis" question={stem} choices={choices} />
+                          <Answer answer={[arrAnswer, arrTestAnswer]} analysis={desc} />
+                        </Fragment>
+                      );
+                    })}
+                  </SubjectCategory>
+                )
+              })}
+              {/* <SubjectCategory title="单项选择题" quantity="30">
+                <Subject type="analysis" question="企业管理的发展阶段" choices={choices} />
+                <Answer answer={['A', 'B']} analysis={analysis} />
+              </SubjectCategory> */}
+              {/* <div className={styles.btnContainer}>
                 <div className={styles.innerBtnContainer}>
                   <Button type="primary" style={{...BTN_STYLE, marginRight: 15}}>上一题</Button>
                   <Button type="primary" style={BTN_STYLE}>下一题</Button>
                 </div>
-              </div>
+              </div> */}
             </div>
           </Col>
         </Row>
