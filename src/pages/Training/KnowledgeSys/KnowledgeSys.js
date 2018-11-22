@@ -4,6 +4,8 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import EditableTree from './Components/EditableTree';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
+import { AuthA } from '@/utils/customAuth';
+import buttonCodes from '@/utils/codes';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -159,27 +161,49 @@ export default class KnowledgeSys extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           !companyId && (
-            <Input
-              onClick={() => {
-                this.setState({ visible: true });
-              }}
-              style={{ width: '300px', cursor: 'pointer' }}
-              placeholder={'请选择企业'}
-              value={this.companyName}
-            />
+            <div>
+              <Input
+                // onClick={() => {
+                //   this.setState({ visible: true });
+                // }}
+                disabled
+                style={{ width: '300px' }}
+                placeholder={'请选择单位'}
+                value={this.companyName}
+              />
+              <Button
+                type="primary"
+                style={{ marginLeft: '5px' }}
+                onClick={() => {
+                  this.setState({ visible: true });
+                }}
+              >
+                选择单位
+              </Button>
+            </div>
           )
         }
       >
         <Card
           title="知识体系分类"
           extra={
-            <a
-              onClick={() => {
-                this.treeRef.handleAdd();
-              }}
-            >
-              添加分类
-            </a>
+            this.companyId && (
+              <AuthA
+                code={buttonCodes.training.points.add}
+                onClick={() => {
+                  this.treeRef.handleAdd();
+                }}
+              >
+                添加分类
+              </AuthA>
+              // <a
+              //   onClick={() => {
+              //     this.treeRef.handleAdd();
+              //   }}
+              // >
+              //   添加分类
+              // </a>
+            )
           }
         >
           <Spin spinning={loading}>
@@ -194,6 +218,7 @@ export default class KnowledgeSys extends PureComponent {
                 this.setState(newState);
               }}
               treeData={knowledgeTree}
+              companyId={this.companyId}
             />
           </Spin>
         </Card>
