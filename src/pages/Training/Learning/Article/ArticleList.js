@@ -26,9 +26,14 @@ const TreeNode = TreeSelect.TreeNode;
 
 // 默认表单值
 const defaultFormData = {
-  title: undefined,
+  name: undefined,
+  readStatus: undefined,
 };
 
+// 阅读状态选项
+const statusRead = [{ value: '1', label: '未读' }, { value: '0', label: '已读' }];
+
+// 知识点树
 const treeData = data => {
   return data.map(item => {
     if (item.children) {
@@ -46,8 +51,9 @@ function getTime(t) {
   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
 }
 
-@connect(({ learning }) => ({
+@connect(({ learning, user }) => ({
   learning,
+  user,
 }))
 @Form.create()
 export default class ArticleList extends PureComponent {
@@ -55,6 +61,7 @@ export default class ArticleList extends PureComponent {
     super(props);
     this.formData = defaultFormData;
   }
+
   state = {
     knowledgeId: null, // 点击保存的知识点id
     value: [],
@@ -75,6 +82,9 @@ export default class ArticleList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      user: {
+        currentUser: { companyId },
+      },
     } = this.props;
     // 获取文章列表
     dispatch({
@@ -82,6 +92,8 @@ export default class ArticleList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+        type: '1',
+        companyId,
       },
     });
     // 获取知识点树
@@ -104,12 +116,18 @@ export default class ArticleList extends PureComponent {
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
+    // console.log(data);
+    // const {readStatus}=data;
+    // if(readStatus) {
+
+    // }
     // 重新请求数据
     dispatch({
       type: 'learning/fetch',
       payload: {
         pageSize,
         pageNum: 1,
+        type: '1',
         ...data,
       },
     });
@@ -134,20 +152,21 @@ export default class ArticleList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+        type: '1',
       },
     });
   };
 
-  // 点击知识点
+  // 点击知识点获取对应的文章
   handleSelectTree = value => {
     const { dispatch } = this.props;
-    console.log(this.props);
     this.setState({ knowledgeId: value });
     dispatch({
       type: 'learning/fetch',
       payload: {
         pageNum: 1,
         pageSize: 5,
+        type: '1',
         knowledgeId: value,
       },
     });
@@ -171,25 +190,28 @@ export default class ArticleList extends PureComponent {
           <Form>
             <Col span={6}>
               <FormItem>
-                {getFieldDecorator('title', {
-                  initialValue: defaultFormData.title,
+                {getFieldDecorator('name', {
+                  initialValue: defaultFormData.name,
                   getValueFromEvent: e => e.target.value.trim(),
                 })(<Input placeholder="请输入文章标题" />)}
               </FormItem>
             </Col>
             <Col span={6}>
               <FormItem>
-                {getFieldDecorator('status')(
-                  <Select placeholder="请选择阅读状态">
-                    <Option value="已读">已读</Option>
-                    <Option value="未读">未读</Option>
+                {getFieldDecorator('readStatus')(
+                  <Select allowClear placeholder="请选择阅读状态">
+                    {statusRead.map(({ value, label }) => (
+                      <Option key={value} value={value}>
+                        {label}
+                      </Option>
+                    ))}
                   </Select>
                 )}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem>
-                {getFieldDecorator('knowledge')(
+                {getFieldDecorator('knowledgeId')(
                   <TreeSelect
                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                     allowClear
@@ -222,16 +244,24 @@ export default class ArticleList extends PureComponent {
           grid={{ gutter: 16, column: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, name, knowledgeId, createTime, status, totalRead, totalPerson } = item;
+            const {
+              id,
+              name,
+              knowledgeName,
+              createTime,
+              readStatus,
+              totalRead,
+              totalPerson,
+            } = item;
             return (
               <ListItem key={id}>
                 <Card className={styles.cardContainer}>
                   <div className={styles.firstLine}>
                     <div className={styles.title}>{name}</div>
                   </div>
-                  <Tag className={styles.tags}>{knowledgeId}</Tag>
-                  <Tag className={styles.tags} color={+status === 0 ? 'blue' : 'grey'}>
-                    {+status === 0 ? '已读' : '未读'}
+                  <Tag className={styles.tags}>{knowledgeName}</Tag>
+                  <Tag className={styles.tags} color={+readStatus === 0 ? 'blue' : 'grey'}>
+                    {+readStatus === 0 ? '已读' : '未读'}
                   </Tag>
                   <div className={styles.introduction}>
                     <span className={styles.grey}>{' 发布于 '}</span>

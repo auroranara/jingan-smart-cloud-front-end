@@ -28,18 +28,28 @@ const getEmptyData = () => {
 }))
 export default class LearningLayout extends PureComponent {
   state = {
-    // visible: false,
-    numPages: null,
-    pageNumber: 1,
-    pdfSrc: 'http://data.jingan-china.cn/%E6%BC%94%E7%A4%BA%E6%96%87%E6%A1%A3.pdf',
-    pptSrc:
-      'http://data.jingan-china.cn/%E4%BD%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84X%E6%88%98%E8%AD%A62.pptx',
     styles: {
       width: 1026,
       height: '100vh',
     },
-    src: 'http://data.jingan-china.cn/%E6%BC%94%E7%A4%BA%E6%96%87%E6%A1%A3.pdf',
   };
+
+  // 挂载后
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    // 获取详情
+    dispatch({
+      type: 'learning/fetch',
+      payload: {
+        id,
+      },
+    });
+  }
 
   handleContent = () => {
     this.setState({
@@ -48,30 +58,60 @@ export default class LearningLayout extends PureComponent {
   };
 
   render() {
-    const { pdfSrc, styles, src } = this.state;
+    const {
+      match: {
+        params: { id },
+      },
+      learning: {
+        data: { list },
+      },
+    } = this.props;
+
+    const detail = list.find(d => d.id === id) || {};
+
+    const { name, createTime, totalPerson, totalRead, content, webFileUrl, webVideoCover } = detail;
+
+    const { styles } = this.state;
     return (
       <PageHeaderLayout title="课件学习" breadcrumbList={breadcrumbList}>
         <Row gutter={16}>
           <Col>
             <Card>
               <div className={style.detailFirst}>
-                <div className={style.detailTitle}>{'发自内心的文章致敬所有消防员！'}</div>
+                <div className={style.detailTitle}>{name}</div>
               </div>
               <div className={style.detailSecond}>
-                <span>发布时间 : {getTime()}</span>
+                <span>发布时间 : {getTime(createTime)}</span>
                 <Divider type="vertical" />
-                <span>阅读人数：100 人</span>
+                <span>
+                  阅读人数：
+                  {totalPerson}
+                </span>
                 <Divider type="vertical" />
-                <span>阅读次数：1000 次</span>
+                <span>
+                  阅读次数：
+                  {totalRead}
+                </span>
               </div>
               <div className={style.detailMain}>
                 <div className={style.resource}>
-                  <Resource src={src} styles={styles} extension="mp4" />
+                  {webVideoCover ? (
+                    <Resource
+                      src={webFileUrl}
+                      styles={styles}
+                      poster={webVideoCover}
+                      extension="mp4"
+                    />
+                  ) : (
+                    <Resource src={webFileUrl} styles={styles} extension="ppt" /> || (
+                      <Resource src={webFileUrl} styles={styles} extension="doc" />
+                    )
+                  )}
                 </div>
                 <div>
                   <h3>
                     详细内容：
-                    {getEmptyData()}
+                    {content || getEmptyData()}
                   </h3>
                 </div>
               </div>
