@@ -247,10 +247,9 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 输入框聚焦
+   * 选择单位按钮点击显示模态框
    */
-  handleFocus = e => {
-    e.target.blur();
+  handleShowModal = () => {
     this.setState({ visible: true });
     this.fetchCompanyList({ payload: { pageSize: 10, pageNum: 1 } });
   };
@@ -291,13 +290,15 @@ export default class App extends PureComponent {
     const notCompany = unitType === 2 || unitType === 3;
     // 当账户为政府或运营时可以选择企业
     return notCompany && (
-      <Input
-        placeholder="请选择企业单位"
-        style={{ marginBottom: 8, width: 256 }}
-        onFocus={this.handleFocus}
-        value={company && company.name}
-        readOnly
-      />
+      <div style={{ marginBottom: 8 }}>
+        <Input
+          placeholder="请选择企业单位"
+          style={{ marginRight: 16, width: 256 }}
+          value={company && company.name}
+          readOnly
+        />
+        <Button type="primary" onClick={this.handleShowModal}>选择单位</Button>
+      </div>
     );
   }
 

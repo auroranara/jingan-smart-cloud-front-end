@@ -37,11 +37,11 @@ export default class App extends PureComponent {
     // 单选框value
     radioValue: '1',
     // 单选值
-    singleValues: undefined,
+    singleValues: {},
     // 多选值
-    multipleValues: undefined,
+    multipleValues: {},
     // 判断题值
-    judgeValues: undefined,
+    judgeValues: {},
     // 是否提交中
     submitting: false,
   }
@@ -104,15 +104,7 @@ export default class App extends PureComponent {
         callback: (list) => {
           // 如果为编辑则初始化state
           if (paperId) {
-            const values = list.reduce((total, { id, selQuestionNum }) => {
-              if (selQuestionNum) {
-                if (!total) {
-                  total = {};
-                }
-                total[id] = selQuestionNum;
-              }
-              return total;
-            }, undefined);
+            const values = this.getValuesByTree(list);
             values && this.setState({ [key]: values });
           }
         },
@@ -147,6 +139,31 @@ export default class App extends PureComponent {
       }
     }
     return total;
+  }
+
+  /**
+   * 根据树获取values
+   */
+  getValuesByTree = (list) => {
+    let values = undefined;
+    list.forEach(({ id, selQuestionNum, children }) => {
+      if (children && children.length > 0) {
+        const childrenValues = this.getValuesByTree(children);
+        if (childrenValues) {
+          values = { ...values, ...childrenValues };
+        }
+      }
+      // 如果没有children，则根据selQuestionNum是否大于0来初始化对象
+      else {
+        if (selQuestionNum) {
+          if (!values) {
+            values = {};
+          }
+          values[id] = selQuestionNum;
+        }
+      }
+    });
+    return values;
   }
 
   /**
@@ -258,13 +275,13 @@ export default class App extends PureComponent {
     return data.map((item) => {
       if (item.children && item.children.length > 0) {
         return (
-          <TreeNode title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{this.getSubTotal(item, values)}</span></span>} key={item.id} dataRef={item} selectable={false}>
+          <TreeNode disabled={!+item.questionsNum} title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{this.getSubTotal(item, values)}</span></span>} key={item.id} dataRef={item} selectable={false}>
             {this.renderTree(item.children, values, key)}
           </TreeNode>
         );
       }
       // 当没有children时，才可以选择数量，并且当可选择数量为0，或values为undefined即该类型没有选中时无法选择数量
-      return <TreeNode title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}><Input value={values && values[item.id]} disabled={!values || !item.questionsNum} onChange={(e) => {this.handleChangeInput(key, item, e)}} size="small" maxLength="3" className={styles.treeNodeExtraInput} /></span></span>} key={item.id} dataRef={item} selectable={false} />;
+      return <TreeNode disabled={!+item.questionsNum} title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{+item.questionsNum ? <Input value={values && values[item.id]} disabled={!values/*  || !item.questionsNum */} onChange={(e) => {this.handleChangeInput(key, item, e)}} size="small" maxLength="3" className={styles.treeNodeExtraInput} /> : item.questionsNum}</span></span>} key={item.id} dataRef={item} selectable={false} />;
     });
   }
 
@@ -310,63 +327,30 @@ export default class App extends PureComponent {
                   <Radio value="1">知识点抽题</Radio>
                 </RadioGroup>
                 <Row gutter={24} style={{ display: 'flex', flexWrap: 'wrap' }}>
-                  <Col md={8} sm={24} style={{ paddingBottom: 24, display: 'flex' }}>
-                    <div style={{ border: '1px solid #d9d9d9', flex: '1', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ padding: '0 8px', flex: 'none' }}>
-                        <Checkbox checked={!!singleValues} onChange={(e) => {this.handleChangeCheckBox('singleValues', e);}}>单选题</Checkbox>
-                        <span style={{ float: 'right' }}>题目总数：{this.getTotal(singleValues)}</span>
-                      </div>
-                      <div style={{ display: 'flex', flex: '1', position: 'relative', transform: 'translate(0, 0)' }}>
-                        <div style={{ flex: '1', borderRight: '1px solid #d9d9d9' }}>
-                          <div style={{ textAlign: 'center', backgroundColor: '#F2F2F2' }}>知识点分类</div>
-                          <div>
-                            <Tree showLine>{this.renderTree(singleTree, singleValues, 'singleValues')}</Tree>
+                  {[
+                    { tree: singleTree, values: singleValues, key: 'singleValues', label: '单选题' },
+                    { tree: multipleTree, values: multipleValues, key: 'multipleValues', label: '多选题' },
+                    { tree: judgeTree, values: judgeValues, key: 'judgeValues', label: '判断题' },
+                  ].map(({ tree, values, key, label }) => (
+                    <Col md={8} sm={24} className={styles.col} key={key}>
+                      <div className={styles.area}>
+                        <div className={styles.areaTop}>
+                          <Checkbox checked={!!values} onChange={(e) => {this.handleChangeCheckBox(key, e);}}>{label}</Checkbox>
+                          <span style={{ float: 'right' }}>题目总数：{this.getTotal(values)}</span>
+                        </div>
+                        <div className={styles.areaCenter}>
+                          <span className={styles.areaCenterLeft}>知识点分类</span>
+                          <span className={styles.areaCenterRight}>抽题</span>
+                        </div>
+                        <div className={styles.areaBottom}>
+                          <div className={styles.areaBottomLeft}>
+                            <Tree showLine>{this.renderTree(tree, values, key)}</Tree>
                           </div>
-                        </div>
-                        <div style={{ flex: 'none', textAlign: 'center' }}>
-                          <div style={{ backgroundColor: '#F2F2F2', width: 56 }}>抽题</div>
+                          <div className={styles.areaBottomRight}></div>
                         </div>
                       </div>
-                    </div>
-                  </Col>
-                  <Col md={8} sm={24} style={{ paddingBottom: 24, display: 'flex' }}>
-                    <div style={{ border: '1px solid #d9d9d9', flex: '1', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ padding: '0 8px', flex: 'none' }}>
-                        <Checkbox checked={!!multipleValues} onChange={(e) => {this.handleChangeCheckBox('multipleValues', e);}}>多选题</Checkbox>
-                        <span style={{ float: 'right' }}>题目总数：{this.getTotal(multipleValues)}</span>
-                      </div>
-                      <div style={{ display: 'flex', flex: '1', position: 'relative', transform: 'translate(0, 0)' }}>
-                        <div style={{ flex: '1', borderRight: '1px solid #d9d9d9' }}>
-                          <div style={{ textAlign: 'center', backgroundColor: '#F2F2F2' }}>知识点分类</div>
-                          <div>
-                            <Tree showLine>{this.renderTree(multipleTree, multipleValues, 'multipleValues')}</Tree>
-                          </div>
-                        </div>
-                        <div style={{ flex: 'none', textAlign: 'center' }}>
-                          <div style={{ backgroundColor: '#F2F2F2', width: 56 }}>抽题</div>
-                        </div>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col md={8} sm={24} style={{ paddingBottom: 24, display: 'flex' }}>
-                    <div style={{ border: '1px solid #d9d9d9', flex: '1', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ padding: '0 8px', flex: 'none' }}>
-                        <Checkbox checked={!!judgeValues} onChange={(e) => {this.handleChangeCheckBox('judgeValues', e);}}>判断题</Checkbox>
-                        <span style={{ float: 'right' }}>题目总数：{this.getTotal(judgeValues)}</span>
-                      </div>
-                      <div style={{ display: 'flex', flex: '1', position: 'relative', transform: 'translate(0, 0)' }}>
-                        <div style={{ flex: '1', borderRight: '1px solid #d9d9d9' }}>
-                          <div style={{ textAlign: 'center', backgroundColor: '#F2F2F2' }}>知识点分类</div>
-                          <div>
-                            <Tree showLine>{this.renderTree(judgeTree, judgeValues, 'judgeValues')}</Tree>
-                          </div>
-                        </div>
-                        <div style={{ flex: 'none', textAlign: 'center' }}>
-                          <div style={{ backgroundColor: '#F2F2F2', width: 56 }}>抽题</div>
-                        </div>
-                      </div>
-                    </div>
-                  </Col>
+                    </Col>
+                  ))}
                 </Row>
               </FormItem>
             </Form>

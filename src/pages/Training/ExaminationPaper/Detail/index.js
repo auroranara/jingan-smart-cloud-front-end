@@ -90,13 +90,13 @@ export default class App extends PureComponent {
     return data.map((item) => {
       if (item.children && item.children.length > 0) {
         return (
-          <TreeNode title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{item.selQuestionNum}</span></span>} key={item.id} dataRef={item} selectable={false}>
+          <TreeNode disabled={!+item.questionsNum} title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{item.selQuestionNum}</span></span>} key={item.id} dataRef={item} selectable={false}>
             {this.renderTree(item.children)}
           </TreeNode>
         );
       }
       // 当没有children时，才可以选择数量，并且当可选择数量为0，或values为undefined即该类型没有选中时无法选择数量
-      return <TreeNode title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{item.selQuestionNum}</span></span>} key={item.id} dataRef={item} selectable={false} />;
+      return <TreeNode disabled={!+item.questionsNum} title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{item.selQuestionNum}</span></span>} key={item.id} dataRef={item} selectable={false} />;
     });
   }
 
@@ -117,64 +117,31 @@ export default class App extends PureComponent {
                 required
               >
                 <div style={{ marginBottom: 12 }}>{ruleTypeName}</div>
-                <Row gutter={24} style={{ display: 'flex', flexWrap: 'wrap' }}>
-                  <Col md={8} sm={24} style={{ paddingBottom: 24, display: 'flex' }}>
-                    <div style={{ border: '1px solid #d9d9d9', flex: '1', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ padding: '0 8px', flex: 'none' }}>
-                        <span>单选题</span>
-                        <span style={{ float: 'right' }}>题目总数：{this.getTotal(singleTree)}</span>
-                      </div>
-                      <div style={{ display: 'flex', flex: '1', position: 'relative', transform: 'translate(0, 0)' }}>
-                        <div style={{ flex: '1', borderRight: '1px solid #d9d9d9' }}>
-                          <div style={{ textAlign: 'center', backgroundColor: '#F2F2F2' }}>知识点分类</div>
-                          <div>
-                            <Tree showLine>{this.renderTree(singleTree)}</Tree>
+                <Row gutter={24} className={styles.row}>
+                  {[
+                    { tree: singleTree, key: 'singleValues', label: '单选题' },
+                    { tree: multipleTree, key: 'multipleValues', label: '多选题' },
+                    { tree: judgeTree, key: 'judgeValues', label: '判断题' },
+                  ].map(({ tree, key, label }) => (
+                    <Col md={8} sm={24} className={styles.col} key={key}>
+                      <div className={styles.area}>
+                        <div className={styles.areaTop}>
+                          <span>{label}</span>
+                          <span style={{ float: 'right' }}>题目总数：{this.getTotal(tree)}</span>
+                        </div>
+                        <div className={styles.areaCenter}>
+                          <span className={styles.areaCenterLeft}>知识点分类</span>
+                          <span className={styles.areaCenterRight}>抽题</span>
+                        </div>
+                        <div className={styles.areaBottom}>
+                          <div className={styles.areaBottomLeft}>
+                              <Tree showLine>{this.renderTree(tree)}</Tree>
                           </div>
-                        </div>
-                        <div style={{ flex: 'none', textAlign: 'center' }}>
-                          <div style={{ backgroundColor: '#F2F2F2', width: 56 }}>抽题</div>
+                          <div className={styles.areaBottomRight}></div>
                         </div>
                       </div>
-                    </div>
-                  </Col>
-                  <Col md={8} sm={24} style={{ paddingBottom: 24, display: 'flex' }}>
-                    <div style={{ border: '1px solid #d9d9d9', flex: '1', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ padding: '0 8px', flex: 'none' }}>
-                        <span>多选题</span>
-                        <span style={{ float: 'right' }}>题目总数：{this.getTotal(multipleTree)}</span>
-                      </div>
-                      <div style={{ display: 'flex', flex: '1', position: 'relative', transform: 'translate(0, 0)' }}>
-                        <div style={{ flex: '1', borderRight: '1px solid #d9d9d9' }}>
-                          <div style={{ textAlign: 'center', backgroundColor: '#F2F2F2' }}>知识点分类</div>
-                          <div>
-                            <Tree showLine>{this.renderTree(multipleTree)}</Tree>
-                          </div>
-                        </div>
-                        <div style={{ flex: 'none', textAlign: 'center' }}>
-                          <div style={{ backgroundColor: '#F2F2F2', width: 56 }}>抽题</div>
-                        </div>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col md={8} sm={24} style={{ paddingBottom: 24, display: 'flex' }}>
-                    <div style={{ border: '1px solid #d9d9d9', flex: '1', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ padding: '0 8px', flex: 'none' }}>
-                        <span>判断题</span>
-                        <span style={{ float: 'right' }}>题目总数：{this.getTotal(judgeTree)}</span>
-                      </div>
-                      <div style={{ display: 'flex', flex: '1', position: 'relative', transform: 'translate(0, 0)' }}>
-                        <div style={{ flex: '1', borderRight: '1px solid #d9d9d9' }}>
-                          <div style={{ textAlign: 'center', backgroundColor: '#F2F2F2' }}>知识点分类</div>
-                          <div>
-                            <Tree showLine>{this.renderTree(judgeTree)}</Tree>
-                          </div>
-                        </div>
-                        <div style={{ flex: 'none', textAlign: 'center' }}>
-                          <div style={{ backgroundColor: '#F2F2F2', width: 56 }}>抽题</div>
-                        </div>
-                      </div>
-                    </div>
-                  </Col>
+                    </Col>
+                  ))}
                 </Row>
               </FormItem>
             </Form>

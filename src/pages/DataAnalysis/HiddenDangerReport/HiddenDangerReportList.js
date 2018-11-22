@@ -106,7 +106,7 @@ export default class App extends PureComponent {
       },
       {
         title: '点位名称',
-        dataIndex: 'item_name',
+        dataIndex: 'name',
       },
       {
         title: '业务分类',
@@ -191,8 +191,8 @@ export default class App extends PureComponent {
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
       pageSize: 10,
-      query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
-      query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+      // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+      // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
     const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = payload;
     // 重置控件
@@ -258,13 +258,13 @@ export default class App extends PureComponent {
    */
   handleReset = () => {
     const { form: { setFieldsValue } } = this.props;
-    const createTime = [moment().subtract(1, 'months'), moment()];
+    // const createTime = [moment().subtract(1, 'months'), moment()];
     // 重置控件
     setFieldsValue({
       grid_id: undefined,
       company_name: undefined,
       code: undefined,
-      createTime,
+      createTime: undefined,
       source_type: undefined,
       status: undefined,
       business_type: undefined,
@@ -282,8 +282,8 @@ export default class App extends PureComponent {
     const { dispatch, user: { currentUser: { id } } } = this.props;
     // 从sessionStorage中获取存储的控件值
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
-      query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
-      query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+      // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+      // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
     dispatch({
       type: 'hiddenDangerReport/exportData',
@@ -334,8 +334,8 @@ export default class App extends PureComponent {
     const { dispatch, form: { setFieldsValue }, user: { currentUser: { id } } } = this.props;
     // 从sessionStorage中获取存储的控件值
     const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
-      query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
-      query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+      // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+      // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
     const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = fieldsValue;
     // 重置控件
