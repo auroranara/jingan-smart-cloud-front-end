@@ -62,5 +62,5 @@ export async function getPreview({ id }) {
  * 企业列表
  */
 export async function getCompanyList(params) {
-  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
+  return request(`/acloud_new/v2/baseInfo/model/companies?${stringify(params)}`);
 }
