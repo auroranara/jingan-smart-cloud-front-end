@@ -18,11 +18,10 @@ const breadcrumbList = [
 // tabs配置
 const tabsInfo = [{ label: '文章', key: 'article' }, { label: '课件', key: 'courseware' }];
 
-const PAGE_SIZE = 10;
 @connect(({ learning, user, loading }) => ({
   user,
   learning,
-  loading: loading.models.knowledgeTree,
+  loading: loading.models.learning,
 }))
 export default class LearningLayout extends PureComponent {
   constructor(props) {
@@ -44,11 +43,19 @@ export default class LearningLayout extends PureComponent {
       },
     } = this.props;
     this.companyId = companyId;
-    const payload = { pageSize: PAGE_SIZE, pageNum: 1 };
+    const payload = { pageSize: 10, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
 
     this.setState({ activeKey: type });
   }
+
+  // 显示企业弹出框
+  handleFocus = e => {
+    e.target.blur();
+    const { dispatch } = this.props;
+    this.setState({ visible: true });
+    dispatch({ type: 'learning/fetchCompanies' });
+  };
 
   // 获取企业
   fetchCompany = ({ payload }) => {
@@ -56,7 +63,7 @@ export default class LearningLayout extends PureComponent {
     dispatch({ type: 'learning/fetchCompanies', payload });
   };
 
-  // 关闭企业模态框
+  // 关闭企业弹出框
   handleClose = () => {
     this.setState({ visible: false });
   };
@@ -158,13 +165,7 @@ export default class LearningLayout extends PureComponent {
                 placeholder={'请选择单位'}
                 value={this.companyName}
               />
-              <Button
-                type="primary"
-                style={{ marginLeft: '5px' }}
-                onClick={() => {
-                  this.setState({ visible: true });
-                }}
-              >
+              <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleFocus}>
                 选择单位
               </Button>
             </div>

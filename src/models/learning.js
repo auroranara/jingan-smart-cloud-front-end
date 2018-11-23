@@ -29,11 +29,12 @@ export default {
         pageSize: 10,
       },
     },
+    searchInfo: undefined,
   },
 
   effects: {
     // 文章列表
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, success, error }, { call, put }) {
       const response = yield call(queryTrainingMaterials, payload);
       if (response.code === 200) {
         yield put({
@@ -41,6 +42,11 @@ export default {
           payload: response.data,
           params: payload,
         });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 
@@ -157,6 +163,14 @@ export default {
       return {
         ...state,
         modal: payload,
+      };
+    },
+
+    // 保存搜索条件
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload || null,
       };
     },
   },
