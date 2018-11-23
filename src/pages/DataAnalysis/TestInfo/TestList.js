@@ -379,7 +379,7 @@ export default class TestList extends PureComponent {
       fireTest: { pagination, list },
     } = this.props;
     const { pageNum, pageSize, total } = pagination;
-    console.log(this.props);
+    // console.log(this.props);
 
     return (
       <PageHeaderLayout
