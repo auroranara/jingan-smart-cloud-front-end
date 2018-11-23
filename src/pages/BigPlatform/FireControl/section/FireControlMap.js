@@ -18,7 +18,7 @@ import status1Icon from '../img/mapFire1.png';
 // import redCircle from '../img/redCircle.png';
 const { region } = global.PROJECT_CONFIG;
 const NO_DATA = '暂无信息';
-
+const ZOOMS = [3, 20];
 // const { location } = global.PROJECT_CONFIG;
 
 // 从实时火警中筛选并标记有火警的企业
@@ -354,9 +354,9 @@ export default class FireControlMap extends PureComponent {
             useAMapUI
             mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
             center={center}
+            zooms={ZOOMS}
             zoom={zoom}
             expandZoomRange
-            zooms={[3, 20]}
             events={{
               created: mapInstance => {
                 this.mapInstance = mapInstance;

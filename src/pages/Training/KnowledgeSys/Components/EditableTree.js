@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Spin, Tree, Icon, Button, Form, Input, Popconfirm } from 'antd';
+import { Row, Col, Spin, Tree, Icon, Button, Form, Input, Popconfirm, message } from 'antd';
 import styles from './EditableTree.less';
+import { AuthA } from '@/utils/customAuth';
+import buttonCodes from '@/utils/codes';
 
 const { TreeNode } = Tree;
 const FormItem = Form.Item;
@@ -90,12 +92,26 @@ class EditableTree extends PureComponent {
         {title}
         {!action.type ? (
           <span style={{ opacity: overId === id ? 1 : 0 }}>
-            <a className={styles.nodeBtn} onClick={() => this.handleAdd(item)}>
+            <AuthA
+              code={buttonCodes.training.points.add}
+              className={styles.nodeBtn}
+              onClick={() => this.handleAdd(item)}
+            >
+              <Icon type="plus" theme="outlined" />
+            </AuthA>
+            <AuthA
+              code={buttonCodes.training.points.edit}
+              className={styles.nodeBtn}
+              onClick={() => this.handleEdit(item)}
+            >
+              <Icon type="edit" theme="outlined" />
+            </AuthA>
+            {/* <a className={styles.nodeBtn} onClick={() => this.handleAdd(item)}>
               <Icon type="plus" theme="outlined" />
             </a>
             <a className={styles.nodeBtn} onClick={() => this.handleEdit(item)}>
               <Icon type="edit" theme="outlined" />
-            </a>
+            </a> */}
             <Popconfirm
               title="本操作将删除此节点及其下所有子节点"
               placement="top"
@@ -105,9 +121,12 @@ class EditableTree extends PureComponent {
                 this.handleDelete(item.id);
               }}
             >
-              <a className={styles.nodeBtn}>
+              <AuthA code={buttonCodes.training.points.delete} className={styles.nodeBtn}>
                 <Icon type="delete" theme="outlined" />
-              </a>
+              </AuthA>
+              {/* <a className={styles.nodeBtn}>
+                <Icon type="delete" theme="outlined" />
+              </a> */}
             </Popconfirm>
           </span>
         ) : null}
@@ -127,6 +146,14 @@ class EditableTree extends PureComponent {
       handleEidt,
     } = this.props;
     const data = getFieldsValue();
+    if (!data.name.trim()) {
+      message.error('输入的字段不能为空或都是空格');
+      return;
+    }
+    if (data.name.trim().length > 50) {
+      message.error('输入的字符长度不能超过50');
+      return;
+    }
     if (type === 'edit') {
       if (item.name !== data.name) handleEidt({ ...item, name: data.name });
     }
@@ -327,7 +354,7 @@ class EditableTree extends PureComponent {
       expandedKeys,
       action: { type },
     } = this.state;
-    const { loading = false } = this.props;
+    const { loading = false, companyId } = this.props;
     return (
       <div className={styles.treeMain}>
         <Spin spinning={loading}>
@@ -343,7 +370,7 @@ class EditableTree extends PureComponent {
               {this.renderTreeNodes(treeList, '')}
             </Tree>
           ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
+            <div style={{ textAlign: 'center' }}>{companyId ? '暂无数据' : '请先选择单位'}</div>
           )}
         </Spin>
       </div>
