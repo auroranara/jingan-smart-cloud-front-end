@@ -44,3 +44,20 @@ export function isRight(origin, target) {
 
   return true;
 }
+
+export function getNextSpreadStates(index, categories) {
+  let idx = categories.length - 1;
+  console.log(categories, index);
+
+  for (const [i, v] of categories.entries()) {
+    index -= v.size - 1;
+    if (index <= 0) {
+      idx = i;
+      break;
+    }
+  }
+
+  console.log('idx', idx);
+
+  return [...Array(categories.length).keys()].map(i => i === idx ? true : false);
+}

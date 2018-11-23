@@ -10,7 +10,7 @@ import MultiSubSide from './components/MultiSubSide';
 import Clock from './components/Clock';
 import Subject from './components/Subject';
 import styles from './Result.less';
-import { concatAll } from './utils';
+import { concatAll, getNextSpreadStates } from './utils';
 import editIcon from './imgs/edit.png';
 import personIcon from './imgs/person.png';
 
@@ -41,6 +41,7 @@ export default class Examing extends PureComponent {
     index: 0,
     showIndex: 0,
     restTime: undefined,
+    spreadStates: [], // 展开左边答题卡的题目列表
   };
 
   componentDidMount() {
@@ -48,19 +49,23 @@ export default class Examing extends PureComponent {
   }
 
   list = [];
+  categories = [];
 
   fetchSide = (initial=false) => {
     const { match: { params: { id } }, dispatch } = this.props;
     dispatch({
       type: 'myExam/fetchSide',
       payload: id,
-      callback: data => {
-        this.list = concatAll(data, KEYS);
+      callback: side => {
+        this.list = concatAll(side, KEYS);
+        this.categories = KEYS.map(k => ({ title: KEY_CN[k], size: Array.isArray(side[k]) ? side[k].length : 0 })).filter(item => item.size);
 
         const list = this.list;
         // console.log('list', list);
-        if (initial && list.length)
+        if (initial && list.length) {
           this.fetchQuestion(0);
+          this.setState({ spreadStates: [...Array(this.categories.length).keys()].map(i => !i) });
+        }
       },
     });
   };
@@ -69,7 +74,7 @@ export default class Examing extends PureComponent {
     this.setState({ value: v });
   };
 
-  fetchQuestion = index => {
+  fetchQuestion = (index, isSpreadStatesChange) => {
     const { match: { params: { id } }, dispatch } = this.props;
 
     dispatch({
@@ -91,14 +96,14 @@ export default class Examing extends PureComponent {
         }
 
         this.setState({ showIndex: index, restTime: hasTime });
-        if (Array.isArray(arrTestAnswer))
-          this.setState({ value: arrTestAnswer });
+        isSpreadStatesChange && this.setState({ spreadStates: getNextSpreadStates(index, this.categories) });
+        Array.isArray(arrTestAnswer) && this.setState({ value: arrTestAnswer });
       },
     });
   }
 
   // 保存当前题目的值，并获取序号为i的题目，不传i，只保存当前题目的值，不获取下一题
-  handleSaveChoice = (i, callback) => {
+  handleSaveChoice = (i, callback, isSpreadStatesChange) => {
     const { match: { params: { id } }, dispatch, myExam: { question } } = this.props;
     const { value, index } = this.state;
 
@@ -109,7 +114,7 @@ export default class Examing extends PureComponent {
       callback: (code, msg) => {
         if (code === 200) {
           this.setState({ value: [] });
-          this.handleIndexChange(i);
+          this.handleIndexChange(i, isSpreadStatesChange);
           callback && callback();
         }
         else
@@ -119,23 +124,23 @@ export default class Examing extends PureComponent {
   };
 
   // i为负数或不为数字类型时，默认不处理
-  handleIndexChange = i => {
+  handleIndexChange = (i, isSpreadStatesChange) => {
     if (typeof i !== 'number' || i < 0)
       return;
 
     this.setState({ index: i });
-    this.fetchQuestion(i);
+    this.fetchQuestion(i, isSpreadStatesChange);
     this.fetchSide();
   };
 
   handlePrev = () => {
     const { index } = this.state;
-    this.handleSaveChoice(index - 1);
+    this.handleSaveChoice(index - 1, null,  true);
   };
 
   handleNext = () => {
     const { index } = this.state;
-    this.handleSaveChoice(index + 1);
+    this.handleSaveChoice(index + 1, null, true);
   };
 
   backToList = () => {
@@ -159,7 +164,7 @@ export default class Examing extends PureComponent {
           }
           else {
             message.success('成功交卷！');
-            console.log(id, data);
+            // console.log(id, data);
             this.backToList();
           }
         },
@@ -168,8 +173,9 @@ export default class Examing extends PureComponent {
   };
 
   handleClickHandIn = () => {
-    // 题目是否都已经答完，因为最后一题没有下一题，所以
-    const isAllAnswered = this.list.every(item => Number.parseInt(item.status, 10));
+    const { index, value } = this.state;
+    // 题目是否都已经答完，当前题目已经选择，且其他题目都已经做过，则点击提交按钮时，提示都已经做完
+    const isAllAnswered = this.list.every((item, i) => i === index ? value.length : Number.parseInt(item.status, 10));
 
     confirm({
       title: '系统提示',
@@ -178,7 +184,7 @@ export default class Examing extends PureComponent {
         this.handInExam();
       },
       onCancel: () => {
-        console.log('Cancel');
+        // console.log('Cancel');
       },
     });
   };
@@ -193,28 +199,33 @@ export default class Examing extends PureComponent {
     });
   };
 
+  handleSpreadClick = i => {
+    this.setState(({ spreadStates }) => ({ spreadStates: spreadStates.map((s, index) => i === index ? !s : s) }));
+  };
+
   render() {
     const {
       loading,
       myExam: { side, question },
       user: { currentUser: { userName, userTypeName } },
     } = this.props;
-    const { value, index, showIndex, restTime } = this.state;
+    const { value, index, showIndex, restTime, spreadStates } = this.state;
     const list = this.list;
+    const categories = this.categories;
     const isFirst = !index;
     const isLast = index === list.length - 1;
-    // const categories = [{ title: '单项选择题', size: 20 }, { title: '多项选择题', size: 20 }, { title: '判断题', size: 20 }];
-    const categories = KEYS.map(k => ({ title: KEY_CN[k], size: Array.isArray(side[k]) ? side[k].length : 0 })).filter(item => item.size);
-    const choices = Array.isArray(question.arrOptions) ? question.arrOptions.map(({ desc }) => desc) : [];
     const colors = list.map(({ status }) => status === '0' ? 'white' : 'blue');
+    const choices = Array.isArray(question.arrOptions) ? question.arrOptions.map(({ desc }) => desc) : [];
+    // const categories = [{ title: '单项选择题', size: 20 }, { title: '多项选择题', size: 20 }, { title: '判断题', size: 20 }];
+    // const categories = KEYS.map(k => ({ title: KEY_CN[k], size: Array.isArray(side[k]) ? side[k].length : 0 })).filter(item => item.size);
 
-    console.log('user', userName, userTypeName);
+    // console.log('user', userName, userTypeName);
 
     return (
       <PageHeaderLayout
         title="正在考试"
         breadcrumbList={breadcrumbList}
-        // content={}
+        content={question.paperName || NO_DATA}
       >
         <Row>
           <Col span={6} style={COL_STYLE}>
@@ -239,9 +250,11 @@ export default class Examing extends PureComponent {
                   交<span className={styles.backspace} />卷
               </Button>
               <MultiSubSide
+                colors={colors}
+                states={spreadStates}
                 categories={categories}
                 handleClick={this.handleSaveChoice}
-                colors={colors}
+                handleSpreadClick={this.handleSpreadClick}
               />
             </div>
           </Col>

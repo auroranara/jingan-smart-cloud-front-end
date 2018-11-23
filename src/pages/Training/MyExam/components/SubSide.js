@@ -34,7 +34,8 @@ export default function SubSide(props) {
             key={i}
             gutter={6}
             color={colors[i]}
-            handleClick={handleClick}>
+            handleClick={handleClick}
+          >
             {i + 1}
           </Rectangle>
         ))}
