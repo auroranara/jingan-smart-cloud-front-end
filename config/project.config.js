@@ -84,7 +84,7 @@ export default {
     mail: 'jazh@jingan-china.cn',
     mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
-    projectName: '校园晶安智慧云平台',
+    projectName: '校园智慧安全云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
     // safetyGovernmentTitle: '校园晶安智慧云平台',
