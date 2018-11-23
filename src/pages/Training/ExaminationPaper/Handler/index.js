@@ -89,8 +89,7 @@ export default class App extends PureComponent {
    * 返回列表页面
    */
   goToList = () => {
-    const { match: { params: { id } } } = this.props;
-    router.push(id ? `${detailUrl}${id}` : backUrl);
+    router.push(backUrl);
   }
 
   /**
