@@ -296,6 +296,7 @@ export default class App extends PureComponent {
           style={{ marginRight: 16, width: 256 }}
           value={company && company.name}
           readOnly
+          disabled
         />
         <Button type="primary" onClick={this.handleShowModal}>选择单位</Button>
       </div>
