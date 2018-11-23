@@ -126,12 +126,12 @@ export default class App extends PureComponent {
   /**
    * 获取父节点总数
    */
-  getSubTotal({ id, children }, values) {
+  getSubTotal({ id, children }, values, key) {
     let total = 0;
     if (values) {
-      if (children) {
+      if (children && children.length > 0) {
         children.forEach(item => {
-          total += this.getSubTotal(item, values);
+          total += this.getSubTotal(item, values, key);
         });
       }
       else {
@@ -275,7 +275,7 @@ export default class App extends PureComponent {
     return data.map((item) => {
       if (item.children && item.children.length > 0) {
         return (
-          <TreeNode disabled={!+item.questionsNum} title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{this.getSubTotal(item, values)}</span></span>} key={item.id} dataRef={item} selectable={false}>
+          <TreeNode disabled={!+item.questionsNum} title={<span>{`${item.name} (${item.questionsNum})`}<span className={styles.treeNodeExtra}>{this.getSubTotal(item, values, key)}</span></span>} key={item.id} dataRef={item} selectable={false}>
             {this.renderTree(item.children, values, key)}
           </TreeNode>
         );
@@ -309,9 +309,9 @@ export default class App extends PureComponent {
                   <FormItem label="试卷名称" className={styles.formItem}>
                     {getFieldDecorator('name', {
                       initialValue: name,
-                      rules: [{ required: true, message: '请填写试卷名称不少于6个字符', whitespace: true }],
+                      rules: [{ required: true, min: 6, message: '请填写试卷名称不少于6个字符', whitespace: true }],
                     })(
-                      <Input placeholder="请填写试卷名称不少于6个字符" maxLength="255" />
+                      <Input placeholder="请填写试卷名称不少于6个字符" maxLength="30" />
                     )}
                   </FormItem>
                 </Col>

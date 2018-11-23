@@ -269,7 +269,7 @@ export default class App extends PureComponent {
     const { visible, loading } = this.state;
     return (
       <CompanyModal
-        title="选择企业单位"
+        title="选择单位"
         loading={loading}
         visible={visible}
         modal={companyList}
@@ -292,7 +292,7 @@ export default class App extends PureComponent {
     return notCompany && (
       <div style={{ marginBottom: 8 }}>
         <Input
-          placeholder="请选择企业单位"
+          placeholder="请选择单位"
           style={{ marginRight: 16, width: 256 }}
           value={company && company.name}
           readOnly
@@ -312,13 +312,15 @@ export default class App extends PureComponent {
     const hasAddAuthority = hasAuthority(addCode, permissionCodes);
     // 当账号非企业时，只有state中的company存在时，才能新增
     const notCompany = unitType === 2 || unitType === 3;
+    // 是否隐藏表单
+    const hideForm = notCompany && !company;
 
-    return (
+    return hideForm ? null : (
       <Card>
         <InlineForm
           fields={fields}
           values={values}
-          action={<Button type="primary" disabled={!hasAddAuthority || (notCompany && !company)} onClick={() => {router.push(addUrl);}}>新增</Button>}
+          action={<Button type="primary" disabled={!hasAddAuthority || hideForm} onClick={() => {router.push(addUrl);}}>新增</Button>}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
@@ -343,7 +345,7 @@ export default class App extends PureComponent {
 
     return (
       <List
-        locale={hideList ? { emptyText: '请先选择企业单位' } : undefined}
+        locale={hideList ? { emptyText: '请先选择单位' } : undefined}
         className={styles.cardList}
         rowKey="id"
         grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
@@ -356,8 +358,8 @@ export default class App extends PureComponent {
                 title={<Ellipsis tooltip lines={1} style={{ minHeight: 24 }} /* className={styles['card-title-ellipsis']} */>{name}</Ellipsis>}
                 className={styles.card}
                 actions={[
-                  <Link to={previewUrl + id} disabled={!hasDetailAuthority}>预览试卷</Link>,
-                  <Link to={detailUrl + id} disabled={!hasDetailAuthority}>试卷规则</Link>,
+                  hasDetailAuthority ? <Link to={previewUrl + id}>预览试卷</Link> : <span onClick={() => { message.warning('您没有权限访问对应页面'); }}>预览试卷</span>,
+                  hasDetailAuthority ? <Link to={detailUrl + id}>试卷规则</Link> : <span onClick={() => { message.warning('您没有权限访问对应页面'); }}>试卷规则</span>,
                 ]}
                 extra={hasDeleteAuthority && !isUsed ? (
                   <Button

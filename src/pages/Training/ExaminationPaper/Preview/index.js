@@ -21,6 +21,8 @@ const breadcrumbList = [
 ];
 /* 选项签名 */
 const signs = ['A', 'B', 'C', 'D'];
+/* serial */
+const serials = ['一', '二', '三'];
 
 @connect(({ examinationPaper, user, loading }) => ({
   examinationPaper,
@@ -61,15 +63,15 @@ export default class App extends PureComponent {
         <Spin spinning={!!loading}>
           <Card bordered={false}>
             <Collapse className={styles.collapse} bordered={false} defaultActiveKey={['1', '2', '3']}>
-              <Panel header={`一、单项选择题（共 ${singleQuestions.length} 题）`} key="1">
-                {this.renderQuestions(singleQuestions)}
-              </Panel>
-              <Panel header={`二、多项选择题（共 ${multiQuestions.length} 题）`} key="2">
-                {this.renderQuestions(multiQuestions)}
-              </Panel>
-              <Panel header={`三、判断题（共 ${judgeQuestions.length} 题）`} key="3">
-                {this.renderQuestions(judgeQuestions)}
-              </Panel>
+              {[
+                { questions: singleQuestions, label: '单项选择题', key: '1' },
+                { questions: multiQuestions, label: '多项选择题', key: '2' },
+                { questions: judgeQuestions, label: '判断题', key: '3' },
+              ].filter(({ questions }) => questions.length > 0).map(({ questions, label, key }, index) => (
+                <Panel header={`${serials[index]}、${label}（共 ${questions.length} 题）`} key={key}>
+                  {this.renderQuestions(questions)}
+                </Panel>
+              ))}
             </Collapse>
           </Card>
         </Spin>
