@@ -36,6 +36,12 @@ export default class ArticleDeatil extends PureComponent {
         id,
       },
     });
+    dispatch({
+      type: 'learning/featchReadRecord',
+      payload: {
+        trainingId: id,
+      },
+    });
   }
 
   render() {

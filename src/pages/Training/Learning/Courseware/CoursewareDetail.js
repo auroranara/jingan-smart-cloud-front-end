@@ -49,6 +49,12 @@ export default class LearningLayout extends PureComponent {
         id,
       },
     });
+    dispatch({
+      type: 'learning/featchReadRecord',
+      payload: {
+        trainingId: id,
+      },
+    });
   }
 
   handleContent = () => {

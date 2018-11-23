@@ -80,24 +80,17 @@ export default class CoursewareList extends PureComponent {
           pagination: { pageSize },
         },
       },
-      user: {
-        currentUser: { companyId },
-      },
+      // companyId,
     } = this.props;
     // 获取文章列表
-    console.log(this.props);
     dispatch({
       type: 'learning/fetchCoursewareList',
       payload: {
         pageSize,
         pageNum: 1,
         type: '2',
-        companyId,
+        // companyId,
       },
-    });
-    // 获取知识点树
-    dispatch({
-      type: 'learning/fetchTree',
     });
   }
 
@@ -117,8 +110,8 @@ export default class CoursewareList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
-
     const { timeRange: [start, end] = [], ...others } = getFieldsValue();
     const query = {
       ...others,
@@ -132,6 +125,7 @@ export default class CoursewareList extends PureComponent {
         pageNum: 1,
         pageSize,
         type: '2',
+        companyId,
         ...query,
       },
     });
@@ -147,6 +141,7 @@ export default class CoursewareList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -157,24 +152,25 @@ export default class CoursewareList extends PureComponent {
         pageSize,
         pageNum: 1,
         type: '2',
+        companyId,
       },
     });
   };
 
   // 点击知识点获取对应的课件
-  handleSelectTree = value => {
-    const { dispatch } = this.props;
-    this.setState({ knowledgeId: value });
-    dispatch({
-      type: 'learning/fetch',
-      payload: {
-        pageNum: 1,
-        pageSize: 5,
-        type: '1',
-        knowledgeId: value,
-      },
-    });
-  };
+  // handleSelectTree = value => {
+  //   const { dispatch } = this.props;
+  //   this.setState({ knowledgeId: value });
+  //   dispatch({
+  //     type: 'learning/fetch',
+  //     payload: {
+  //       pageNum: 1,
+  //       pageSize: 5,
+  //       type: '1',
+  //       knowledgeId: value,
+  //     },
+  //   });
+  // };
 
   // 渲染
   render() {
@@ -202,7 +198,7 @@ export default class CoursewareList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem>
-                {getFieldDecorator('readStatus')(
+                {getFieldDecorator('status')(
                   <Select allowClear placeholder="请选择发布状态">
                     {statusStudy.map(({ value, label }) => (
                       <Option key={value} value={value}>

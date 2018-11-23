@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Card, Row, Col, Tabs, Input, Form } from 'antd';
+import { Card, Row, Col, Tabs, Input, Button } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -8,7 +8,6 @@ import Article from './Article/ArticleList';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
 const TabPane = Tabs.TabPane;
-const FormItem = Form.Item;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -34,6 +33,7 @@ export default class LearningLayout extends PureComponent {
     };
   }
 
+  // 挂载后
   componentDidMount() {
     const {
       match: {
@@ -43,9 +43,9 @@ export default class LearningLayout extends PureComponent {
         currentUser: { companyId },
       },
     } = this.props;
+    this.companyId = companyId;
     const payload = { pageSize: PAGE_SIZE, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
-    this.fetchCompany({ payload });
 
     this.setState({ activeKey: type });
   }
@@ -56,10 +56,12 @@ export default class LearningLayout extends PureComponent {
     dispatch({ type: 'learning/fetchCompanies', payload });
   };
 
+  // 关闭企业模态框
   handleClose = () => {
     this.setState({ visible: false });
   };
 
+  // 选择企业
   handleSelect = item => {
     const {
       match: {
@@ -87,6 +89,10 @@ export default class LearningLayout extends PureComponent {
         companyId: this.companyId,
       },
     });
+    // 获取知识点树
+    dispatch({
+      type: 'learning/fetchTree',
+    });
   };
 
   // 获取课件列表
@@ -99,6 +105,10 @@ export default class LearningLayout extends PureComponent {
         companyId: this.companyId,
       },
     });
+    // 获取知识点树
+    dispatch({
+      type: 'learning/fetchTree',
+    });
   };
 
   // 切换tab
@@ -106,7 +116,6 @@ export default class LearningLayout extends PureComponent {
     this.setState({ activeKey: key }, () => {
       router.push(`/training/learning/${key}/list`);
     });
-    this.companyName = undefined;
   };
 
   // 渲染企业模态框
@@ -131,6 +140,7 @@ export default class LearningLayout extends PureComponent {
   render() {
     const { activeKey } = this.state;
     const {
+      // 判断当前用户是否有企业ID
       user: {
         currentUser: { companyId },
       },
@@ -141,38 +151,55 @@ export default class LearningLayout extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           !companyId && (
-            <FormItem>
+            <div>
               <Input
+                disabled
+                style={{ width: '300px' }}
+                placeholder={'请选择单位'}
+                value={this.companyName}
+              />
+              <Button
+                type="primary"
+                style={{ marginLeft: '5px' }}
                 onClick={() => {
                   this.setState({ visible: true });
                 }}
-                style={{ width: '300px', cursor: 'pointer' }}
-                placeholder={'请选择企业'}
-                value={this.companyName}
-              />
-            </FormItem>
+              >
+                选择单位
+              </Button>
+            </div>
           )
         }
       >
         <Row gutter={16}>
           <Col>
             <Card>
-              <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
-                {tabsInfo.map(item => (
-                  <TabPane tab={item.label} key={item.key}>
-                    {(activeKey === 'courseware' && (
-                      <Courseware handleCoursewareList={this.handleCoursewareList} />
-                    )) ||
-                      (activeKey === 'article' && (
-                        <Article handleArticleList={this.handleArticleList} />
-                      ))}
-                  </TabPane>
-                ))}
-              </Tabs>
+              {this.companyId ? (
+                <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
+                  {tabsInfo.map(item => (
+                    <TabPane tab={item.label} key={item.key}>
+                      {(activeKey === 'article' && (
+                        <Article
+                          handleArticleList={this.handleArticleList}
+                          companyId={this.companyId}
+                        />
+                      )) ||
+                        (activeKey === 'courseware' && (
+                          <Courseware
+                            handleCoursewareList={this.handleCoursewareList}
+                            companyId={this.companyId}
+                          />
+                        ))}
+                    </TabPane>
+                  ))}
+                </Tabs>
+              ) : (
+                <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
+              )}
             </Card>
           </Col>
         </Row>
-        {this.renderModal()}
+        {!companyId && this.renderModal()}
       </PageHeaderLayout>
     );
   }

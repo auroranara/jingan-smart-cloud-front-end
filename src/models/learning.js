@@ -2,6 +2,7 @@ import {
   queryTrainingMaterials,
   queryKnowledgeTree,
   queryCompanies,
+  addReadRecord,
 } from '../services/training/learning.js';
 
 export default {
@@ -31,7 +32,7 @@ export default {
   },
 
   effects: {
-    // 列表
+    // 文章列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryTrainingMaterials, payload);
       if (response.code === 200) {
@@ -43,7 +44,7 @@ export default {
       }
     },
 
-    // 列表
+    // 课件列表
     *fetchCoursewareList({ payload }, { call, put }) {
       const response = yield call(queryTrainingMaterials, payload);
       if (response.code === 200) {
@@ -82,6 +83,14 @@ export default {
         error();
       }
     },
+
+    // 文章课件增加阅读记录
+    *featchReadRecord({ payload, callback }, { call }) {
+      const response = yield call(addReadRecord, payload);
+      if (response && response.code === 200) {
+        if (callback) callback();
+      }
+    },
   },
   reducers: {
     // 文章列表
@@ -118,13 +127,14 @@ export default {
           pagination,
           pagination: { pageNum, pageSize, total },
         },
+        params,
       }
     ) {
       return {
         ...state,
         data: {
           ...state.data,
-          list,
+          list: params.status ? list.filter(data => data.status === params.status) : list,
           pagination,
           isLast: pageNum * pageSize >= total,
         },

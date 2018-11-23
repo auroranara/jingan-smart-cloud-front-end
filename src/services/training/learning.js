@@ -15,3 +15,8 @@ export async function queryKnowledgeTree(params) {
 export async function queryCompanies(params) {
   return request(`/acloud_new/v2/baseInfo/model/companies?${stringify(params)}`);
 }
+
+// 文章课件预览增加记录
+export async function addReadRecord(params) {
+  return request(`/acloud_new/v2/education/trainingMaterials/readRecord?${stringify(params)}`);
+}

@@ -82,9 +82,8 @@ export default class ArticleList extends PureComponent {
           pagination: { pageSize },
         },
       },
-      user: {
-        currentUser: { companyId },
-      },
+
+      companyId,
     } = this.props;
     // 获取文章列表
     dispatch({
@@ -95,10 +94,6 @@ export default class ArticleList extends PureComponent {
         type: '1',
         companyId,
       },
-    });
-    // 获取知识点树
-    dispatch({
-      type: 'learning/fetchTree',
     });
   }
 
@@ -112,15 +107,11 @@ export default class ArticleList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
-    // console.log(data);
-    // const {readStatus}=data;
-    // if(readStatus) {
-
-    // }
     // 重新请求数据
     dispatch({
       type: 'learning/fetch',
@@ -128,6 +119,7 @@ export default class ArticleList extends PureComponent {
         pageSize,
         pageNum: 1,
         type: '1',
+        companyId,
         ...data,
       },
     });
@@ -143,6 +135,7 @@ export default class ArticleList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -153,24 +146,25 @@ export default class ArticleList extends PureComponent {
         pageSize,
         pageNum: 1,
         type: '1',
+        companyId,
       },
     });
   };
 
   // 点击知识点获取对应的文章
-  handleSelectTree = value => {
-    const { dispatch } = this.props;
-    this.setState({ knowledgeId: value });
-    dispatch({
-      type: 'learning/fetch',
-      payload: {
-        pageNum: 1,
-        pageSize: 5,
-        type: '1',
-        knowledgeId: value,
-      },
-    });
-  };
+  // handleSelectTree = value => {
+  //   const { dispatch } = this.props;
+  //   this.setState({ knowledgeId: value });
+  //   dispatch({
+  //     type: 'learning/fetch',
+  //     payload: {
+  //       pageNum: 1,
+  //       pageSize: 5,
+  //       type: '1',
+  //       knowledgeId: value,
+  //     },
+  //   });
+  // };
 
   // 渲染
   render() {
