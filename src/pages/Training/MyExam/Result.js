@@ -140,12 +140,12 @@ export default class ExamResult extends PureComponent {
                 return (
                   <SubjectCategory key={c} index={i} title={CATEGORIES_MAP[c]} quantity={cList.length}>
                     {cList.map(item => {
-                      const { id, stem, arrAnswer, arrTestAnswer, arrOptions, desc } = item;
+                      const { id, stem, arrAnswer, arrTestAnswer, arrOptions, des } = item;
                       const choices = arrOptions.map(({ desc }) => desc);
                       return (
                         <Fragment key={id}>
                           <Subject id={`my-exam-result-${count}`} index={count++} type="analysis" question={stem} choices={choices} />
-                          <Answer answer={[arrAnswer, arrTestAnswer]} analysis={desc} />
+                          <Answer answer={[arrAnswer, arrTestAnswer]} analysis={des} />
                         </Fragment>
                       );
                     })}
