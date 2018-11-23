@@ -409,7 +409,7 @@ export default class App extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<Fragment>{this.renderSelect()}<div>试卷总数：{hideList ? 0 : total}</div></Fragment>}
+        content={<Fragment>{this.renderSelect()}{!hideList && <div>试卷总数：{hideList ? 0 : total}</div>}</Fragment>}
       >
         {/* 控件 */this.renderForm()}
         <InfiniteScroll

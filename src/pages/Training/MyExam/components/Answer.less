@@ -1,0 +1,48 @@
+@red: rgb(205, 63, 63);
+
+.container {
+  margin: 10px 20px 40px;
+  padding: 5px 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+  border-top: 1px solid rgb(46, 52, 54);
+}
+
+.answerContainer {
+  margin-bottom: 10px;
+}
+
+.correct:extend(.fontBase) {
+  margin-right: 40px;
+  color: rgb(51, 186, 105);
+}
+
+.yours:extend(.fontBase) {
+  // color: @red;
+}
+
+.fontBase {
+  font-size: 28px;
+  position: relative;
+  top: 2px;
+}
+
+.analysis {
+  display: flex;
+}
+
+.analysisTitle {
+  width: 90px;
+  flex: none;
+  margin: 0;
+  padding-top: 8px;
+}
+
+.content {
+  flex: auto;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: normal;
+  color: @red;
+  background-color: rgb(238, 238, 238);
+}
