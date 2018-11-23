@@ -44,7 +44,7 @@ export default class ToxicGas extends PureComponent {
     const vals = { date: getThisMonth() };
     this.setState({ formVals: vals });
     this.fetchData(1, vals);
-    // this.fetchCompanyInfo();
+    this.fetchCompanyInfo();
   }
 
   fetchCompanyInfo() {
