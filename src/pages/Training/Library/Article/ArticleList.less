@@ -21,6 +21,9 @@
         .icon {
           cursor: pointer;
         }
+        .disabledIcon {
+          cursor: not-allowed;
+        }
       }
     }
     &:hover {
@@ -30,6 +33,7 @@
     }
     .tags {
       margin-top: @mb;
+      font-size: 13px;
     }
     .introduction {
       margin-top: @mb;
@@ -45,5 +49,21 @@
   }
   .grey {
     color: rgba(0, 0, 0, .45);
+  }
+}
+
+.articleDrawerTitle {
+  display: flex;
+  .title {
+    flex: 1;
+    color: rgba(0, 0, 0, .65);
+    word-break: break-all;
+    padding-right: 10px;
+  }
+  .rightIcon {
+    color: rgba(0, 0, 0, .45);
+    .icon {
+      margin-right: 8px;
+    }
   }
 }

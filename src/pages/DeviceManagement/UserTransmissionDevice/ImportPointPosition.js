@@ -41,7 +41,7 @@ export default class ImportPointPosition extends PureComponent {
     const fileList = info.fileList.slice(-1);
     this.setState({ fileList });
 
-    if (info.file.status === 'uploading ') {
+    if (info.file.status === 'uploading') {
       this.setState({ loading: true });
     }
     if (info.file.response) {

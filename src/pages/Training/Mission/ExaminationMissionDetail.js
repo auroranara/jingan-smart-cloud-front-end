@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Button, Card } from 'antd';
+import { Button, Card, Spin } from 'antd';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from 'components/DescriptionList';
@@ -19,9 +19,9 @@ const breadcrumbList = [
   { title: '考试任务', name: '考试任务', href: '/training/mission/list' },
   { title, name: title },
 ];
-@connect(({ examinationMission, user }) => ({
+@connect(({ examinationMission, loading }) => ({
   examinationMission,
-  user,
+  loading: loading.models.examinationMission,
 }))
 export default class RepairRecordDetail extends PureComponent {
   /* 挂载后 */
@@ -64,6 +64,7 @@ export default class RepairRecordDetail extends PureComponent {
           endTime,
         },
       },
+      loading,
     } = this.props;
     return (
       <PageHeaderLayout
@@ -72,25 +73,27 @@ export default class RepairRecordDetail extends PureComponent {
         content={<span />}
         // extraContent={this.extraContent}
       >
-        <Card style={{ paddingLeft: '3%', paddingRight: '3%' }}>
-          <DescriptionList col={1}>
-            <Description term="考试名称">{name || getEmptyData()}</Description>
-            <Description term="考试规则">
-              {arrRuleTypeName.join(' , ') || getEmptyData()}
-            </Description>
-            <Description term="考试时长">{`${examLimit} 分钟` || getEmptyData()}</Description>
-            <Description term="合格率">{`${percentOfPass}%` || getEmptyData()}</Description>
-            <Description term="考试期限">
-              {`${moment(startTime).format('YYYY-MM-DD HH:mm:ss')} ~ ${moment(endTime).format(
-                'YYYY-MM-DD HH:mm:ss'
-              )}` || getEmptyData()}
-            </Description>
-            <Description term="试卷">{paperName || getEmptyData()}</Description>
-            <Description term="考试人员">
-              {students.map(s => s.name).join(' , ') || getEmptyData()}
-            </Description>
-          </DescriptionList>
-        </Card>
+        <Spin spinning={loading}>
+          <Card style={{ paddingLeft: '3%', paddingRight: '3%' }}>
+            <DescriptionList col={1}>
+              <Description term="考试名称">{name || getEmptyData()}</Description>
+              <Description term="考试规则">
+                {arrRuleTypeName.join(' , ') || getEmptyData()}
+              </Description>
+              <Description term="考试时长">{`${examLimit} 分钟` || getEmptyData()}</Description>
+              <Description term="合格率">{`${percentOfPass}%` || getEmptyData()}</Description>
+              <Description term="考试期限">
+                {`${moment(startTime).format('YYYY-MM-DD HH:mm:ss')} ~ ${moment(endTime).format(
+                  'YYYY-MM-DD HH:mm:ss'
+                )}` || getEmptyData()}
+              </Description>
+              <Description term="试卷">{paperName || getEmptyData()}</Description>
+              <Description term="考试人员">
+                {students.map(s => s.name).join(' , ') || getEmptyData()}
+              </Description>
+            </DescriptionList>
+          </Card>
+        </Spin>
       </PageHeaderLayout>
     );
   }
