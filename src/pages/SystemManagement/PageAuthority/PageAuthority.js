@@ -137,7 +137,7 @@ export default class PageAuthority extends Component {
       {
         title: '排序优先级',
         dataIndex: 'sort',
-        width: 100,
+        width: 120,
         align: 'center',
         editable: true,
       },
