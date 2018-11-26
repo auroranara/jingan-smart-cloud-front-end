@@ -1027,7 +1027,7 @@ module.exports = [
       },
       {
         name: 'training',
-        icon: 'database',
+        icon: 'read',
         code: 'training',
         path: '/training',
         hideInMenu: false,
