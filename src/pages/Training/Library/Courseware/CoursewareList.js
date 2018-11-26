@@ -65,7 +65,11 @@ export default class CoursewareList extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    router.push('/training/library/courseware/add')
+    const { knowledgeId } = this.props
+    router.push({
+      pathname: '/training/library/courseware/add',
+      query: { knowledgeId },
+    })
   }
 
   // 跳转到编辑页面
@@ -210,7 +214,7 @@ export default class CoursewareList extends PureComponent {
           <Col {...colWrapper}>
             <FormItem>
               {getFieldDecorator('name')(
-                <Input placeholder="请输入视频名称" />
+                <Input placeholder="请输入课件名称" />
               )}
             </FormItem>
           </Col>

@@ -15,7 +15,7 @@ const { TreeNode } = Tree
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '培训', name: '培训' },
-  { title: '题库', name: '题库' },
+  { title: '资源管理', name: '资源管理' },
 ]
 
 // 默认页大小
@@ -36,8 +36,8 @@ export default class LibraryLayout extends PureComponent {
       activeKey: null, // 当前tabs的值
       knowledgeId: null, // 点击保存的知识点id
       selectedKeys: [],   // 知识树选中的知识点keys
-      company: undefined,  // 左上角选择的企业信息
-      visible: false, // 控制选择企业弹窗显示
+      company: undefined,  // 左上角选择的单位信息
+      visible: false, // 控制选择单位弹窗显示
     }
   }
 
@@ -51,7 +51,7 @@ export default class LibraryLayout extends PureComponent {
     dispatch({ type: 'resourceManagement/fetchKnowledgeTree' })
   }
 
-  // 获取企业列表
+  // 获取单位列表
   fetchCompanyList = (action) => {
     const { dispatch } = this.props
     dispatch({ type: 'resourceManagement/fetchCompanyList', ...action })
@@ -64,13 +64,11 @@ export default class LibraryLayout extends PureComponent {
   }
 
   // 获取文章列表
-  // 获取试题列表
   fetchArticles = (action) => {
     const { dispatch } = this.props
     dispatch({ type: 'resourceManagement/fetchArticles', ...action })
   }
   // 获取课件列表
-  // 获取试题列表
   fetchCourseWare = (action) => {
     const { dispatch } = this.props
     dispatch({ type: 'resourceManagement/fetchCourseWare', ...action })
@@ -83,7 +81,7 @@ export default class LibraryLayout extends PureComponent {
     })
   }
 
-  // 选择企业
+  // 选择单位
   handleSelectCompany = (company) => {
     const { dispatch } = this.props;
     const { activeKey } = this.state
@@ -130,7 +128,7 @@ export default class LibraryLayout extends PureComponent {
   }
 
 
-  // 选择企业弹窗关闭
+  // 选择单位弹窗关闭
   handleModalCLose = () => {
     this.setState({ visible: false })
   }
@@ -239,10 +237,10 @@ export default class LibraryLayout extends PureComponent {
     const { user: { currentUser: { unitType } } } = this.props;
     const { company } = this.state;
     const notCompany = unitType === 2 || unitType === 3;
-    // 当账户为政府或运营时可以选择企业
+    // 当账户为政府或运营时可以选择单位
     return notCompany && (
       <Input
-        placeholder="请选择企业单位"
+        placeholder="请选择单位"
         style={{ marginBottom: 8, width: 256 }}
         onFocus={this.handleFocus}
         value={company && company.name}
@@ -264,10 +262,11 @@ export default class LibraryLayout extends PureComponent {
       },
     } = this.props
     const { activeKey, knowledgeId, company = {}, visible } = this.state
-    const data = { knowledgeId, companyId: company.id || null, unitType, notCompany: unitType === 2 || unitType === 3 }
+    const notCompany = unitType === 2 || unitType === 3
+    const data = { knowledgeId, companyId: company.id || null, unitType, notCompany }
     return (
       <PageHeaderLayout
-        title="题库"
+        title="资源管理"
         breadcrumbList={breadcrumbList}
         content={(
           <Fragment>
@@ -275,34 +274,36 @@ export default class LibraryLayout extends PureComponent {
           </Fragment>
         )}
       >
-        <Row gutter={16}>
-          <Col span={6}>
-            <Card title="知识点">
-              {this.renderTree()}
-            </Card>
-          </Col>
-          <Col span={18}>
-            <Card>
-              <Tabs
-                activeKey={activeKey}
-                animated={false}
-                onChange={this.handleTabChange}
-              >
-                <TabPane tab="试题" key="questions">
-                  {activeKey === 'questions' && <Questions ref="questions" {...data} />}
-                </TabPane>
-                <TabPane tab="文章" key="article">
-                  {activeKey === 'article' && <Article ref="article" {...data} />}
-                </TabPane>
-                <TabPane tab="课件" key="courseware">
-                  {activeKey === 'courseware' && <Courseware ref="courseware" {...data} />}
-                </TabPane>
-              </Tabs>
-            </Card>
-          </Col>
-        </Row>
+        {!company.id && notCompany ? (<div style={{ textAlign: 'center' }}>请先选择单位</div>) : (
+          <Row gutter={16}>
+            <Col span={6}>
+              <Card title="知识点">
+                {this.renderTree()}
+              </Card>
+            </Col>
+            <Col span={18}>
+              <Card>
+                <Tabs
+                  activeKey={activeKey}
+                  animated={false}
+                  onChange={this.handleTabChange}
+                >
+                  <TabPane tab="试题" key="questions">
+                    {activeKey === 'questions' && <Questions ref="questions" {...data} />}
+                  </TabPane>
+                  <TabPane tab="文章" key="article">
+                    {activeKey === 'article' && <Article ref="article" {...data} />}
+                  </TabPane>
+                  <TabPane tab="课件" key="courseware">
+                    {activeKey === 'courseware' && <Courseware ref="courseware" {...data} />}
+                  </TabPane>
+                </Tabs>
+              </Card>
+            </Col>
+          </Row>
+        )}
         <CompanyModal
-          title="选择企业单位"
+          title="选择单位"
           loading={companyLoading}
           visible={visible}
           modal={companyList}

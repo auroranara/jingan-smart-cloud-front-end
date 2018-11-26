@@ -32,7 +32,6 @@ const coursewareTypes = [
 export default class CoursewareAdd extends PureComponent {
 
   state = {
-    title: '新增课件',
     coverLoading: false, // 课件封面loading
     fileList: [
       /*  {
@@ -51,12 +50,12 @@ export default class CoursewareAdd extends PureComponent {
         params: { id },
       },
       form: { setFieldsValue },
+      location: { query: { knowledgeId } },
     } = this.props
     // 获取知识点树
     dispatch({ type: 'resourceManagement/fetchKnowledgeTree' })
     // 如果编辑
     if (id) {
-      this.setState({ title: '编辑课件' })
       dispatch({
         type: 'resourceManagement/fetchCourseWareDetail',
         payload: {
@@ -79,6 +78,9 @@ export default class CoursewareAdd extends PureComponent {
           })
         },
       })
+    } else {
+      // 如果新建
+      setFieldsValue({ knowledgeId })
     }
   }
 
@@ -216,6 +218,11 @@ export default class CoursewareAdd extends PureComponent {
     return sizeLimit
   }
 
+  // 点击返回
+  handleToBack = () => {
+    router.push('/training/library/courseware/list')
+  }
+
   // 渲染树节点
   renderTreeNodes = (data) => {
     return data.map(item => {
@@ -245,11 +252,12 @@ export default class CoursewareAdd extends PureComponent {
         },
       },
     } = this.props
-    const { title, coverLoading, fileList } = this.state
+    const { coverLoading, fileList } = this.state
+    const title = id ? '编辑课件' : '新增课件'
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '培训', name: '培训' },
-      { title: '题库', name: '题库', href: `/training/library/courseware/list` },
+      { title: '资源管理', name: '资源管理', href: `/training/library/courseware/list` },
       { title, name: title },
     ]
     // 课件封面地址
@@ -378,7 +386,7 @@ export default class CoursewareAdd extends PureComponent {
             </FormItem>
           </Form>
           <div style={{ textAlign: 'center' }}>
-            <Button style={{ marginRight: '24px' }}>返回</Button>
+            <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>返回</Button>
             <Button type="primary" onClick={this.handleSubmit}>提交</Button>
           </div>
         </Card>
