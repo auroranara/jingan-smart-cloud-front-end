@@ -44,11 +44,18 @@ export default class LearningLayout extends PureComponent {
       user: {
         currentUser: { companyId },
       },
+      dispatch,
     } = this.props;
     this.companyId = companyId;
     const payload = { pageSize: defaultPageSize, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
-
+    // 获取知识点树
+    dispatch({
+      type: 'learning/fetchTree',
+      payload: {
+        companyId: this.companyId,
+      },
+    });
     this.setState({ activeKey: type });
   }
 

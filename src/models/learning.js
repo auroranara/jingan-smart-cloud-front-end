@@ -140,7 +140,9 @@ export default {
         ...state,
         data: {
           ...state.data,
-          list: params.status ? list.filter(data => data.status === params.status) : list,
+          list: params.readStatus
+            ? list.filter(data => data.readStatus === params.readStatus)
+            : list,
           pagination,
           isLast: pageNum * pageSize >= total,
         },
