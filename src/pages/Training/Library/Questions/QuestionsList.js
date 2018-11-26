@@ -240,7 +240,7 @@ export default class QuestionsList extends PureComponent {
           <FormItem>
             <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
             <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-            <Button disabled={!hasAuthority(addCode, permissionCodes) || (notCompany && !companyId)} onClick={this.handleAddQuestions} type="primary">新增</Button>
+            <Button disabled={!hasAuthority(addCode, permissionCodes) || notCompany} onClick={this.handleAddQuestions} type="primary">新增</Button>
           </FormItem>
         </Col>
       </Form>

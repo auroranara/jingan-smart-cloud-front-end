@@ -239,7 +239,7 @@ export default class CoursewareList extends PureComponent {
             <FormItem>
               <Button className={styles.mr10} type="primary" onClick={this.handleQuery}>查询</Button>
               <Button className={styles.mr10} onClick={this.handleResetQuery}>重置</Button>
-              <Button disabled={!hasAuthority(addCode, permissionCodes) || (notCompany && !companyId)} onClick={this.handleToAdd} type="primary">新增</Button>
+              <Button disabled={!hasAuthority(addCode, permissionCodes) || notCompany} onClick={this.handleToAdd} type="primary">新增</Button>
             </FormItem>
           </Col>
         </Form>
