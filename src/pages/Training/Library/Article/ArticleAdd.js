@@ -36,6 +36,7 @@ export default class ArticleAdd extends PureComponent {
         params: { id },
       },
       form: { setFieldsValue },
+      location: { query: { knowledgeId } },
     } = this.props
 
     // 获取知识点树
@@ -52,6 +53,9 @@ export default class ArticleAdd extends PureComponent {
           setFieldsValue({ content: BraftEditor.createEditorState(detail.content) })
         },
       })
+    } else {
+      // 如果新增
+      setFieldsValue({ knowledgeId })
     }
   }
 
@@ -158,16 +162,19 @@ export default class ArticleAdd extends PureComponent {
         },
       },
     } = this.props
-    // const { editorState } = this.state
+    const title = id ? '编辑文章' : '新增文章'
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '培训', name: '培训' },
-      { title: '题库', name: '题库', href: `/training/library/article/list` },
-      { title: '新增文章', name: '新增文章' },
-    ];
+      { title: '资源管理', name: '资源管理', href: `/training/library/article/list` },
+      { title, name: title },
+    ]
 
     return (
-      <PageHeaderLayout title="新增文章" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+      >
         <Card>
           <Form>
             <Row gutter={12}>

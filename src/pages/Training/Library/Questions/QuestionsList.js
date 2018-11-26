@@ -74,7 +74,11 @@ export default class QuestionsList extends PureComponent {
 
   // 点击新增
   handleAddQuestions = () => {
-    router.push('/training/library/questions/add')
+    const { knowledgeId } = this.props
+    router.push({
+      pathname: '/training/library/questions/add',
+      query: { knowledgeId },
+    })
   }
 
   // 点击查询按钮

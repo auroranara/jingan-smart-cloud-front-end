@@ -48,7 +48,6 @@ export default class QuestionsAdd extends PureComponent {
     super(props)
     this.state = {
       optionsHelp: '',
-      title: '新增试题',
       keys: [], // 只是用来计数（子选项数量）
     }
   }
@@ -59,13 +58,14 @@ export default class QuestionsAdd extends PureComponent {
       match: {
         params: { id },
       },
+      location: { query: { knowledgeId } },
       form: { setFieldsValue },
     } = this.props
+
     // 获取知识点树
     dispatch({ type: 'resourceManagement/fetchKnowledgeTree' })
     // 如果是编辑的情况
     if (id) {
-      this.setState({ title: '编辑试题' })
       dispatch({
         type: 'resourceManagement/fetchQuestionDetail',
         payload: { id },
@@ -86,6 +86,9 @@ export default class QuestionsAdd extends PureComponent {
 
         },
       })
+    } else {
+      // 如果新增 设置列表页选择的知识点
+      setFieldsValue({ knowledgeId })
     }
   }
 
@@ -173,6 +176,20 @@ export default class QuestionsAdd extends PureComponent {
     })
   }
 
+  // 选项内容加偶按规则
+  optionsValidator = (rule, value, callback) => {
+    const { form: { getFieldValue } } = this.props
+    const arrOptions = getFieldValue('arrOptions')
+    if (!arrOptions || arrOptions.length === 0) {
+      callback('请选择选项内容')
+    } else callback()
+  }
+
+  // 点击返回
+  handleToBack = () => {
+    router.push('/training/library/questions/list')
+  }
+
   // 点击提交
   handleSubmit = () => {
     const {
@@ -186,7 +203,7 @@ export default class QuestionsAdd extends PureComponent {
     } = this.props
     validateFields((errors, values) => {
       if (!errors) {
-        const { arrOptions, arrAnswer, ...others } = values
+        const { arrOptions, arrAnswer, options, ...others } = values
         const newAnswers = Array.isArray(arrAnswer) ? arrAnswer : [arrAnswer]
         const newOptions = arrOptions.map(item => {
           return { desc: item }
@@ -236,14 +253,16 @@ export default class QuestionsAdd extends PureComponent {
       resourceManagement: {
         knowledgeTree,
       },
+      match: { params: { id } },
       loading,
     } = this.props
-    const { title, keys } = this.state
+    const { keys } = this.state
+    const title = id ? '编辑试题' : '新增试题'
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '培训', name: '培训' },
-      { title: '题库', name: '题库', href: `/training/library/questions/list` },
-      { title: title, name: title },
+      { title: '资源管理', name: '资源管理', href: `/training/library/questions/list` },
+      { title, name: title },
     ]
     const type = getFieldValue('type')
     return (
@@ -299,6 +318,8 @@ export default class QuestionsAdd extends PureComponent {
                     )}
                   </Form.Item>
                 </Col>
+              </Row>
+              <Row>
                 <Col {...colWrapper}>
                   <Form.Item label="难易程度" {...smallerItemLayout}>
                     {getFieldDecorator('level', {
@@ -332,27 +353,34 @@ export default class QuestionsAdd extends PureComponent {
               </Row>
               <Row>
                 <Form.Item label="选项内容"  {...formItemLayout} required>
-                  <div className={styles.optionsContainer}>
-                    {keys && keys.length > 0 && keys.map((item, index) => (
-                      <Form.Item key={index}>
-                        <span>选项{letters[index]}</span>
-                        {getFieldDecorator(`arrOptions[${index}]`, {
-                          validateTrigger: 'onBlur',
-                          rules: [
-                            { required: true, whitespace: true, message: '请输入子选项内容' },
-                          ],
-                        })(
-                          <Input style={{ width: '60%', marginRight: 8, marginLeft: 8 }} />
-                        )}
-                        <Icon
-                          className={type !== '3' ? styles.deleteButton : styles.disabledDeleteButton}
-                          type="close"
-                          theme="outlined"
-                          onClick={type !== '3' ? () => this.handleRemoveOption(index) : null}
-                        />
-                      </Form.Item>
-                    ))}
-                  </div>
+                  {getFieldDecorator('options', {
+                    validateTrigger: 'onBlur',
+                    rules: [
+                      { validator: this.optionsValidator },
+                    ],
+                  })(
+                    <div className={styles.optionsContainer}>
+                      {keys && keys.length > 0 && keys.map((item, index) => (
+                        <Form.Item key={index}>
+                          <span>选项{letters[index]}</span>
+                          {getFieldDecorator(`arrOptions[${index}]`, {
+                            validateTrigger: 'onBlur',
+                            rules: [
+                              { required: true, whitespace: true, message: '请输入子选项内容' },
+                            ],
+                          })(
+                            <Input style={{ width: '60%', marginRight: 8, marginLeft: 8 }} />
+                          )}
+                          <Icon
+                            className={type !== '3' ? styles.deleteButton : styles.disabledDeleteButton}
+                            type="close"
+                            theme="outlined"
+                            onClick={type !== '3' ? () => this.handleRemoveOption(index) : null}
+                          />
+                        </Form.Item>
+                      ))}
+                    </div>
+                  )}
                 </Form.Item>
               </Row>
               <Row>
@@ -363,7 +391,7 @@ export default class QuestionsAdd extends PureComponent {
                         { required: true, type: 'array', message: '请选择正确答案' },
                       ],
                     })(
-                      <CheckboxGroup options={keys && keys.length > 0 && keys.map((item, index) => { return { label: `选项${letters[index]}`, value: index } })} />
+                      <CheckboxGroup options={keys && keys.length > 0 ? keys.map((item, index) => { return { label: `选项${letters[index]}`, value: index } }) : []} />
                     )
                   ) : (
                       getFieldDecorator('arrAnswer', {
@@ -387,7 +415,7 @@ export default class QuestionsAdd extends PureComponent {
                 </Form.Item>
               </Row>
               <div style={{ textAlign: 'center' }}>
-                <Button style={{ marginRight: '24px' }}>
+                <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>
                   返回
               </Button>
                 <Button type="primary" onClick={this.handleSubmit} /* loading={} */>
