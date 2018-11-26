@@ -124,7 +124,7 @@ export default class LearningLayout extends PureComponent {
                 <div>
                   <h3 className={style.contentDetail}>
                     详细内容：
-                    {content || getEmptyData()}
+                    <p>{content || getEmptyData()}</p>
                   </h3>
                 </div>
               </div>
