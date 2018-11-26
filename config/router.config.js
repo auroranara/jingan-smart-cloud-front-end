@@ -1217,6 +1217,12 @@ module.exports = [
                 code: 'training.mission.edit',
                 component: './Training/Mission/ExaminationMissionAdd',
               },
+              {
+                name: 'detail',
+                path: '/training/mission/view/:id',
+                code: 'training.mission.view',
+                component: './Training/Mission/ExaminationMissionDetail',
+              },
             ],
           },
         ],
