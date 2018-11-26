@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { List, Card, Row, Button, Icon, Divider, Popconfirm, Form, Col, Input, Tag, Drawer, Select, DatePicker, Spin, message } from 'antd';
+import { List, Card, Row, Button, Icon, Divider, Popconfirm, Form, Col, Input, Tag, Drawer, Select, DatePicker, Spin, message, Tooltip } from 'antd';
 import router from 'umi/router';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -317,9 +317,9 @@ export default class ArticleList extends PureComponent {
                   <span>{item.createTime}</span>
                 </div>
                 <div className={styles.statistics}>
-                  <span><Icon className={styles.icon} type="eye" />{item.totalRead}</span>
+                  <Tooltip title="阅读次数"><span><Icon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
                   <Divider type="vertical" />
-                  <span><Icon className={styles.icon} type="user" />{item.totalPerson}</span>
+                  <Tooltip title="阅读人数"><span><Icon className={styles.icon} type="user" />{item.totalPerson}</span></Tooltip>
                 </div>
               </Card>
             </ListItem>
@@ -327,16 +327,7 @@ export default class ArticleList extends PureComponent {
         >
         </List>
         <Drawer
-          title={(
-            <div className={styles.articleDrawerTitle}>
-              <div className={styles.title}><span>{detail.name}</span></div>
-              <div className={styles.rightIcon}>
-                <span><Icon className={styles.icon} type="eye" />{detail.totalRead}</span>
-                <Divider type="vertical" />
-                <span><Icon className={styles.icon} type="user" />{detail.totalPerson}</span>
-              </div>
-            </div>
-          )}
+          title="文章预览"
           placement="right"
           closable={false}
           onClose={this.onDrawerClose}
@@ -344,6 +335,18 @@ export default class ArticleList extends PureComponent {
           destroyOnClose
           width={900}
         >
+          <div className={styles.articleViewTitle}>
+            <div className={styles.titleContainer}>
+              <span>{detail.name}</span>
+            </div>
+            <div className={styles.statistics}>
+              <span>发布于 {detail.createTime}</span>
+              <Divider type="vertical" />
+              <span>阅读次数：{detail.totalRead}</span>
+              <Divider type="vertical" />
+              <span>阅读人数：{detail.totalPerson}</span>
+            </div>
+          </div>
           <div ref="articleView"></div>
         </Drawer>
       </div>
