@@ -40,7 +40,8 @@ const statusList = [
 export default class CoursewareList extends PureComponent {
 
   state = {
-    drawerVisible: false,
+    drawerVisible: false, // 控制预览抽屉显示
+    detail: {}, // 课件预览详情
   }
 
   componentDidMount() {
@@ -171,7 +172,8 @@ export default class CoursewareList extends PureComponent {
   }
 
   // 预览课件
-  handleViewCourseWare = ({ id, type, webFileUrl }) => {
+  handleViewCourseWare = (item) => {
+    const { id, type, webFileUrl } = item
     const { dispatch } = this.props
     dispatch({
       type: 'resourceManagement/addReadRecord',
@@ -183,12 +185,14 @@ export default class CoursewareList extends PureComponent {
       fileSrc: webFileUrl[0],
       fileType: type === '2' ? 'mp4' : 'doc',
       drawerVisible: true,
+      detail: item,
     })
   }
 
   onDrawerClose = () => {
     this.setState({
       drawerVisible: false,
+      detail: {},
     })
   }
 
@@ -260,7 +264,7 @@ export default class CoursewareList extends PureComponent {
       },
       user: { currentUser: { permissionCodes } },
     } = this.props
-    const { drawerVisible, fileSrc, fileType } = this.state
+    const { drawerVisible, fileSrc, fileType, detail } = this.state
     const editDisabled = !hasAuthority(editCode, permissionCodes) || notCompany
     const delDisabled = !hasAuthority(deleteCode, permissionCodes) || notCompany
 
@@ -311,7 +315,16 @@ export default class CoursewareList extends PureComponent {
           )}
         ></List>
         <Drawer
-          title="课件预览"
+          title={(
+            <div className={styles.courseDrawerTitle}>
+              <div className={styles.title}><span>{detail.name}</span></div>
+              <div className={styles.rightIcon}>
+                <span><Icon className={styles.icon} type="eye" />{detail.totalRead}</span>
+                <Divider type="vertical" />
+                <span><Icon className={styles.icon} type="user" />{detail.totalPerson}</span>
+              </div>
+            </div>
+          )}
           placement="right"
           closable={false}
           onClose={this.onDrawerClose}
