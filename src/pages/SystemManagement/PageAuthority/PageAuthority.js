@@ -1,5 +1,6 @@
 import React, { Component, createContext } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import router from 'umi/router';
 import {
   Button,
@@ -15,7 +16,7 @@ import {
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './PageAuthority.less';
-import { TREE, renderTreeNodes } from './utils';
+import { sortTree, renderRoleTreeNodes, addProps } from './utils';
 
 const data = [];
 for (let i = 0; i < 30; i++) {
@@ -85,50 +86,51 @@ class EditableCell extends Component {
   }
 }
 
+@connect(({ pageAuth, loading }) => ({ pageAuth, loading: loading.models.pageAuth }))
 export default class PageAuthority extends Component {
   constructor(props) {
     super(props);
-    this.state = { data, editingKey: '' };
+    this.state = { data: [], editingKey: '' };
     this.columns = [
       {
         title: '编号',
         dataIndex: 'id',
-        width: 100,
-        align: 'center',
+        width: 300,
+        // align: 'center',
         // editable: true,
       },
       {
         title: '父节点编号',
         dataIndex: 'parentId',
-        width: 100,
-        align: 'center',
+        width: 300,
+        // align: 'center',
         // editable: true,
       },
       {
         title: '编码',
         dataIndex: 'code',
-        width: 200,
-        align: 'center',
+        width: 450,
+        // align: 'center',
         editable: true,
       },
       {
         title: '英文名称',
         dataIndex: 'ename',
-        width: 100,
+        width: 200,
         align: 'center',
         editable: true,
       },
       {
         title: '中文名称(参考)',
-        dataIndex: 'zName',
-        width: 150,
+        dataIndex: 'zname',
+        width: 250,
         align: 'center',
         editable: true,
       },
       {
         title: '中文名称(显示)',
-        dataIndex: 'showZName',
-        width: 150,
+        dataIndex: 'showZname',
+        width: 250,
         align: 'center',
         editable: true,
       },
@@ -156,8 +158,8 @@ export default class PageAuthority extends Component {
       {
         title: '路径',
         dataIndex: 'url',
-        width: 100,
-        align: 'center',
+        // width: 350,
+        // align: 'center',
         editable: true,
       },
       {
@@ -176,25 +178,26 @@ export default class PageAuthority extends Component {
                     {form => (
                       <a
                         // href="javascript:;"
-                        onClick={() => this.save(form, record.key)}
+                        onClick={() => this.save(form, record.id)}
                         style={{ marginRight: 8 }}
                       >
                         保存
                       </a>
                     )}
                   </EditableContext.Consumer>
-                  <Popconfirm title="确定取消？" onConfirm={() => this.cancel(record.key)}>
+                  <Popconfirm title="确定取消？" onConfirm={() => this.cancel(record.id)}>
                     <a>取消</a>
                   </Popconfirm>
                 </span>
               ) : (
                 <span>
-                  <a onClick={() => this.edit(record.key)}>编辑</a>
+                  <Link to={`/system-management/page-authority/add-or-edit/${record.id}`}>编辑</Link>
+                  {/* <a onClick={() => this.edit(record.id)}>编辑</a>
                   <Popconfirm title="确定删除？" onConfirm={null}>
                     <a onClick={null} className={styles.delete}>
                       删除
                     </a>
-                  </Popconfirm>
+                  </Popconfirm> */}
                 </span>
               )}
             </div>
@@ -204,11 +207,42 @@ export default class PageAuthority extends Component {
     ];
   }
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'pageAuth/fetchTree',
+      callback: data => {
+        addProps(data);
+        sortTree(data);
+      },
+    });
+    this.fetchList();
+  }
+
+  // componentWillUnmount() {
+  //   const { dispatch } = this.props;
+  //   dispatch({
+  //     type: 'pageAuth/saveTree',
+  //     payload: [],
+  //   });
+  // }
+
   selectedKeys = [];
   checkedKeys = [];
 
+  fetchList = (ids=[]) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'pageAuth/fetchList',
+      payload: { ids: ids.join(',') },
+      callback: list => {
+        this.setState({ data: list });
+      },
+    });
+  }
+
   isEditing = record => {
-    return record.key === this.state.editingKey;
+    return record.id === this.state.editingKey;
   };
 
   edit(key) {
@@ -221,7 +255,7 @@ export default class PageAuthority extends Component {
         return;
       }
       const newData = [...this.state.data];
-      const index = newData.findIndex(item => key === item.key);
+      const index = newData.findIndex(item => key === item.id);
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
@@ -250,6 +284,7 @@ export default class PageAuthority extends Component {
 
   onSearch = e => {
     // console.log(this.checkedKeys);
+    this.fetchList(this.checkedKeys);
   };
 
   jumpTo = id => {
@@ -257,6 +292,8 @@ export default class PageAuthority extends Component {
   };
 
   render() {
+    // console.log(this.props.pageAuth);
+    const { pageAuth: { tree=[] } } = this.props;
     const { data } = this.state;
 
     const components = {
@@ -308,7 +345,7 @@ export default class PageAuthority extends Component {
                 if (!id) {
                   notification.warn({
                     message: '友情提醒',
-                    description: '请先从权限树中选择一个项目，只支持单选',
+                    description: '请先从权限树中选择一个项目',
                   });
                   return;
                 }
@@ -321,21 +358,22 @@ export default class PageAuthority extends Component {
           </div>
           <Tree
             checkable
-            defaultExpandAll
+            // defaultExpandAll
             onSelect={this.onSelect}
             onCheck={this.onCheck}
             className={styles.tree}
           >
-            {renderTreeNodes(TREE)}
+            {renderRoleTreeNodes(tree)}
           </Tree>
-          <h3>权限树列表：</h3>
+          <h3>权限列表：</h3>
           <Table
+            rowKey="id"
             components={components}
             bordered
             dataSource={data}
             columns={columns}
             pagination={false}
-            scroll={{ x: 1500, y: 600 }}
+            scroll={{ x: 2600, y: 600 }}
             // rowClassName="editable-row"
           />
         </Card>

@@ -47,6 +47,60 @@ export const tailFormItemLayout = {
   },
 };
 
+// 遍历树
+function traverse(tree, callback, childProp='children') {
+  tree.forEach(item => {
+    callback(item);
+    if (item[childProp])
+      traverse(item[childProp], callback, childProp);
+  });
+}
+
+// 排序
+export function sortTree(tree, sortProp='sort', childrenProp='childMenus') {
+  tree.sort((n1, n2) => n1[sortProp] - n2[sortProp]);
+  tree.forEach(item => {
+    const children = item[childrenProp];
+    if (children)
+      sortTree(children, sortProp, childrenProp);
+  });
+}
+
+export function getIdMap(tree) {
+  const idMap = {};
+  const codeMap = {};
+  traverse(tree, ({ id, code, parentIds }) => {
+    codeMap[id] = code;
+    idMap[id] = parentIds.split(',').filter(id => id);
+  }, 'childMenus');
+
+  // 手动添加顶层父节点 0 对应的值
+  idMap[0] = [];
+  codeMap[0] = '';
+  return [idMap, codeMap];
+}
+
+export function addProps(tree) {
+  traverse(tree, item => {
+    item.title = item.showZname;
+    item.value = item.key = item.id;
+    item.children = item.childMenus;
+  }, 'childMenus');
+}
+
+export function renderRoleTreeNodes(data) {
+  return data.map((item) => {
+    if (item.childMenus) {
+      return (
+        <TreeNode title={item.showZname} key={item.id} dataRef={item}>
+          {renderRoleTreeNodes(item.childMenus)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.showZname} key={item.id} dataRef={item} />;
+  });
+}
+
 export function renderTreeNodes(data) {
   return data.map((item) => {
     if (item.children) {
