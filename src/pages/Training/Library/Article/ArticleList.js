@@ -44,6 +44,7 @@ export default class ArticleList extends PureComponent {
     super(props)
     this.state = {
       drawerVisible: false, // 控制预览抽屉的显示
+      detail: {}, // 文章详情
     }
   }
 
@@ -87,11 +88,13 @@ export default class ArticleList extends PureComponent {
   onDrawerClose = () => {
     this.setState({
       drawerVisible: false,
+      detail: {},
     })
   }
 
   // 打开预览抽屉
-  handleOpenDrawer = ({ id, content }) => {
+  handleOpenDrawer = (item) => {
+    const { id, content } = item
     const { dispatch } = this.props
     dispatch({
       type: 'resourceManagement/addReadRecord',
@@ -101,6 +104,7 @@ export default class ArticleList extends PureComponent {
     })
     this.setState({
       drawerVisible: true,
+      detail: item,
     }, () => {
       // 指定预览文章的内容
       this.refs.articleView.innerHTML = content
@@ -275,7 +279,7 @@ export default class ArticleList extends PureComponent {
       },
       user: { currentUser: { permissionCodes } },
     } = this.props
-    const { drawerVisible } = this.state
+    const { drawerVisible, detail } = this.state
     const editDisabled = !hasAuthority(editCode, permissionCodes) || notCompany
     const delDisabled = !hasAuthority(deleteCode, permissionCodes) || notCompany
     return (
@@ -323,7 +327,16 @@ export default class ArticleList extends PureComponent {
         >
         </List>
         <Drawer
-          title="文章预览"
+          title={(
+            <div className={styles.articleDrawerTitle}>
+              <div className={styles.title}><span>{detail.name}</span></div>
+              <div className={styles.rightIcon}>
+                <span><Icon className={styles.icon} type="eye" />{detail.totalRead}</span>
+                <Divider type="vertical" />
+                <span><Icon className={styles.icon} type="user" />{detail.totalPerson}</span>
+              </div>
+            </div>
+          )}
           placement="right"
           closable={false}
           onClose={this.onDrawerClose}
