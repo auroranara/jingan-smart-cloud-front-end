@@ -255,6 +255,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
   /* 企业选择按钮点击事件 */
   handleSelectCompany = value => {
+    console.log('111', value);
     const {
       form: { setFieldsValue },
       dispatch,

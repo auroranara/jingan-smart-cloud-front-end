@@ -119,6 +119,12 @@ export default {
       detail: 'training.examinationPaper.view',
       delete: 'training.examinationPaper.delete',
     },
+    library: {
+      list: 'training.library.listView',
+      add: 'training.library.add',
+      edit: 'training.library.edit',
+      delete: 'training.library.delete',
+    },
     points: {
       view: 'training.points.view',
       add: 'training.points.add',

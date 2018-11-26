@@ -21,6 +21,9 @@
         .icon {
           cursor: pointer;
         }
+        .disabledIcon {
+          cursor: not-allowed;
+        }
       }
     }
     &:hover {
@@ -30,6 +33,7 @@
     }
     .tags {
       margin-top: @mb;
+      font-size: 13px;
     }
     .introduction {
       margin-top: @mb;
@@ -45,5 +49,20 @@
   }
   .grey {
     color: rgba(0, 0, 0, .45);
+  }
+}
+
+.articleViewTitle {
+  .titleContainer {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 500;
+    word-break: break-all;
+    margin-bottom: 0.4em;
+  }
+  .statistics {
+    text-align: right;
+    color: rgba(0, 0, 0, .45);
+    margin-bottom: 0.4em;
   }
 }

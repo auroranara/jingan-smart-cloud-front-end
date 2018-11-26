@@ -191,7 +191,6 @@ export default class QuestionsAdd extends PureComponent {
         const newOptions = arrOptions.map(item => {
           return { desc: item }
         })
-        // console.log('value', { ...others, arrAnswer: newAnswers, arrOptions: newOptions });
 
         if (!id) {
           dispatch({
@@ -233,7 +232,6 @@ export default class QuestionsAdd extends PureComponent {
 
   render() {
     const {
-      location: { pathname },
       form: { getFieldDecorator, getFieldValue },
       resourceManagement: {
         knowledgeTree,
@@ -241,11 +239,10 @@ export default class QuestionsAdd extends PureComponent {
       loading,
     } = this.props
     const { title, keys } = this.state
-    const libraryType = pathname.split('/')[3]
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '培训', name: '培训' },
-      { title: '题库', name: '题库', href: `/training/library/${libraryType}/list` },
+      { title: '题库', name: '题库', href: `/training/library/questions/list` },
       { title: title, name: title },
     ]
     const type = getFieldValue('type')

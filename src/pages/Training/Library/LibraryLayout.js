@@ -1,18 +1,16 @@
-import React, { PureComponent } from 'react';
-import { Card, Row, Col, Tabs, Tree, Spin, AutoComplete, Form, Select } from 'antd';
+import React, { PureComponent, Fragment } from 'react';
+import { Card, Row, Col, Tabs, Tree, Spin, AutoComplete, Form, Select, Input } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Questions from './Questions/QuestionsList';
 import Article from './Article/ArticleList';
 import Courseware from './Courseware/CoursewareList';
-import debounce from 'lodash/debounce';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import styles from './LibraryLayout.less';
 
-const { TabPane } = Tabs;
-const { TreeNode } = Tree;
-const FormItem = Form.Item;
-const { Option } = Select;
+const { TabPane } = Tabs
+const { TreeNode } = Tree
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -20,18 +18,15 @@ const breadcrumbList = [
   { title: '题库', name: '题库' },
 ];
 
-// tabs配置
-const tabsInfo = [
-  { label: '试题', key: 'questions' },
-  { label: '文章', key: 'article' },
-  { label: '课件', key: 'courseware' },
-];
+// 默认页大小
+const defaultPageSize = 10;
 
 @Form.create()
 @connect(({ resourceManagement, user, loading }) => ({
   resourceManagement,
   user,
   treeLoading: loading.effects['resourceManagement/fetchKnowledgeTree'],
+  companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
 export default class LibraryLayout extends PureComponent {
   constructor(props) {
@@ -39,10 +34,10 @@ export default class LibraryLayout extends PureComponent {
     this.state = {
       activeKey: null, // 当前tabs的值
       knowledgeId: null, // 点击保存的知识点id
-      companyId: null, // 所属单位
-      selectedKeys: [],
-    };
-    this.onSearchUnits = debounce(this.onSearchUnits, 800);
+      selectedKeys: [],   // 知识树选中的知识点keys
+      company: undefined,  // 左上角选择的企业信息
+      visible: false, // 控制选择企业弹窗显示
+    }
   }
 
   componentDidMount() {
@@ -57,96 +52,132 @@ export default class LibraryLayout extends PureComponent {
     dispatch({ type: 'resourceManagement/fetchKnowledgeTree' });
   }
 
+  // 获取企业列表
+  fetchCompanyList = (action) => {
+    const { dispatch } = this.props
+    dispatch({ type: 'resourceManagement/fetchCompanyList', ...action })
+  }
+
+  // 获取试题列表
+  fetchQuestions = (action) => {
+    const { dispatch } = this.props
+    dispatch({ type: 'resourceManagement/fetchQuestions', ...action })
+  }
+
+  // 获取文章列表
+  // 获取试题列表
+  fetchArticles = (action) => {
+    const { dispatch } = this.props
+    dispatch({ type: 'resourceManagement/fetchArticles', ...action })
+  }
+  // 获取课件列表
+  // 获取试题列表
+  fetchCourseWare = (action) => {
+    const { dispatch } = this.props
+    dispatch({ type: 'resourceManagement/fetchCourseWare', ...action })
+  }
+
   // 切换tab
-  handleTabChange = key => {
+  handleTabChange = (key) => {
     this.setState({ activeKey: key }, () => {
-      router.push(`/training/library/${key}/list`);
-    });
-  };
+      router.push(`/training/library/${key}/list`)
+    })
+  }
 
-  // 单位下拉框失焦
-  handleUnitIdBlur = () => {
-    const {
-      form: { setFieldsValue, getFieldValue },
-    } = this.props;
-    const value = getFieldValue('unitId');
-
-    // 搜索后没有选择就清空所属单位
-    if (value && value.key === value.label) {
-      setFieldsValue({ unitId: undefined });
-    }
-  };
-
-  // 模糊查询单位列表
-  onSearchUnits = value => {
+  // 选择企业
+  handleSelectCompany = (company) => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'resourceManagement/fetchUnitByName',
-      payload: {
-        unitName: value && value.trim(),
-      },
-    });
-  };
-
-  // 选择所属单位
-  handleUnitIdChange = value => {
-    const { dispatch } = this.props;
-    const { activeKey } = this.state;
-    // 如果输入了搜索内容，则返回
-    if (!value || value.key === value.label) return;
-    this.setState({ companyId: value.key, selectedKeys: [], knowledgeId: null });
+    const { activeKey } = this.state
+    this.setState({ company, visible: false, selectedKeys: [], knowledgeId: null });
     // 更新知识点树
     dispatch({
       type: 'resourceManagement/fetchKnowledgeTree',
       payload: {
-        companyId: value.key,
+        companyId: company.id,
       },
     });
     if (activeKey === 'questions') {
       // 清空试题筛选数据
       this.refs.questions && this.refs.questions.resetFields();
       // 获取试题列表
-      dispatch({
-        type: 'resourceManagement/fetchQuestions',
+      this.fetchQuestions({
         payload: {
           pageNum: 1,
-          pageSize: 5,
-          companyId: value.key,
+          pageSize: defaultPageSize,
+          companyId: company.id,
         },
       });
     } else if (activeKey === 'article') {
-      this.refs.questions && this.refs.article.resetFields();
+      this.refs.questions && this.refs.article.resetFields()
+      this.fetchArticles({
+        payload: {
+          pageNum: 1,
+          pageSize: defaultPageSize,
+          type: '1', // type 1文章
+          companyId: company.id,
+        },
+      })
     } else if (activeKey === 'courseware') {
-      this.refs.questions && this.refs.courseware.resetFields();
+      this.refs.questions && this.refs.courseware.resetFields()
+      this.fetchCourseWare({
+        payload: {
+          pageNum: 1,
+          pageSize: defaultPageSize,
+          type: '2', // type '1'文章 '2' 课件
+          companyId: company.id,
+        },
+      })
     }
   };
 
+
+  // 选择企业弹窗关闭
+  handleModalCLose = () => {
+    this.setState({ visible: false })
+  }
+
   // 点击知识点
-  handleSelectTree = keys => {
-    const { activeKey, companyId } = this.state;
+  handleSelectTree = (keys) => {
+    const { activeKey, company } = this.state
     const {
-      dispatch,
       user: {
         currentUser: { unitType },
       },
-    } = this.props;
-    const [selected] = keys;
-    this.setState({ knowledgeId: selected, selectedKeys: keys });
+    } = this.props
+    const [selected] = keys
+    const notCompany = unitType === 2 || unitType === 3
+
+    this.setState({ knowledgeId: selected, selectedKeys: keys })
     if (activeKey === 'questions') {
       // 获取试题列表 Tips：user为政府人员需要传companyId，来看所有试题
-      dispatch({
-        type: 'resourceManagement/fetchQuestions',
+      this.fetchQuestions({
         payload: {
           pageNum: 1,
-          pageSize: 5,
+          pageSize: defaultPageSize,
           knowledgeId: selected,
-          companyId: unitType === 2 ? companyId : null,
+          companyId: company && notCompany ? company.id : null,
         },
       });
     } else if (activeKey === 'article') {
-      // console.log('article');
+      this.fetchArticles({
+        payload: {
+          pageNum: 1,
+          pageSize: defaultPageSize,
+          type: '1', // type 1文章
+          knowledgeId: selected,
+          companyId: company && notCompany ? company.id : null,
+        },
+      })
     } else if (activeKey === 'courseware') {
-      // console.log('courseware');
+      this.fetchCourseWare({
+        payload: {
+          pageNum: 1,
+          pageSize: defaultPageSize,
+          type: '2', // type '1'文章 '2' 课件
+          knowledgeId: selected,
+          companyId: company && notCompany ? company.id : null,
+        },
+      })
     }
   };
 
@@ -187,46 +218,54 @@ export default class LibraryLayout extends PureComponent {
       );
   };
 
+  handleFocus = e => {
+    e.target.blur();
+    this.fetchCompanyList({
+      payload: { pageNum: 1, pageSize: defaultPageSize },
+      callback: () => {
+        this.setState({ visible: true });
+      },
+    })
+  };
+
+  // 渲染单位选择
+  renderSelect = () => {
+    const { user: { currentUser: { unitType } } } = this.props;
+    const { company } = this.state;
+    const notCompany = unitType === 2 || unitType === 3;
+    // 当账户为政府或运营时可以选择企业
+    return notCompany && (
+      <Input
+        placeholder="请选择企业单位"
+        style={{ marginBottom: 8, width: 256 }}
+        onFocus={this.handleFocus}
+        value={company && company.name}
+        readOnly
+      />
+    );
+  }
+
   render() {
     const {
-      form: { getFieldDecorator },
-      resourceManagement: { units },
+      companyLoading,
+      resourceManagement: {
+        companyList,
+      },
       user: {
         currentUser: { unitType },
       },
-    } = this.props;
-    const { activeKey, knowledgeId, companyId } = this.state;
-    const data = { knowledgeId, companyId, unitType };
+    } = this.props
+    const { activeKey, knowledgeId, company = {}, visible } = this.state
+    const data = { knowledgeId, companyId: company.id || null, unitType, notCompany: unitType === 2 || unitType === 3 }
     return (
       <PageHeaderLayout
         title="题库"
         breadcrumbList={breadcrumbList}
-        content={
-          <Form className={styles.libraryLayoutForm}>
-            <FormItem>
-              {getFieldDecorator('unitId')(
-                <AutoComplete
-                  labelInValue
-                  mode="combobox"
-                  optionLabelProp="children"
-                  placeholder="请选择所属单位"
-                  notFoundContent={/* loading ? <Spin size="small" /> : */ '暂无数据'}
-                  onSearch={this.onSearchUnits}
-                  onBlur={this.handleUnitIdBlur}
-                  onChange={this.handleUnitIdChange}
-                  filterOption={false}
-                  style={{ width: 230 }}
-                >
-                  {units.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </AutoComplete>
-              )}
-            </FormItem>
-          </Form>
-        }
+        content={(
+          <Fragment>
+            {this.renderSelect()}
+          </Fragment>
+        )}
       >
         <Row gutter={16}>
           <Col span={6}>
@@ -234,18 +273,33 @@ export default class LibraryLayout extends PureComponent {
           </Col>
           <Col span={18}>
             <Card>
-              <Tabs activeKey={activeKey} animated={false} onChange={this.handleTabChange}>
-                {tabsInfo.map(item => (
-                  <TabPane tab={item.label} key={item.key}>
-                    {(activeKey === 'questions' && <Questions ref="questions" {...data} />) ||
-                      (activeKey === 'article' && <Article ref="article" {...data} />) ||
-                      (activeKey === 'courseware' && <Courseware ref="courseware" {...data} />)}
-                  </TabPane>
-                ))}
+              <Tabs
+                activeKey={activeKey}
+                animated={false}
+                onChange={this.handleTabChange}
+              >
+                <TabPane tab="试题" key="questions">
+                  {activeKey === 'questions' && <Questions ref="questions" {...data} />}
+                </TabPane>
+                <TabPane tab="文章" key="article">
+                  {activeKey === 'article' && <Article ref="article" {...data} />}
+                </TabPane>
+                <TabPane tab="课件" key="courseware">
+                  {activeKey === 'courseware' && <Courseware ref="courseware" {...data} />}
+                </TabPane>
               </Tabs>
             </Card>
           </Col>
         </Row>
+        <CompanyModal
+          title="选择企业单位"
+          loading={companyLoading}
+          visible={visible}
+          modal={companyList}
+          fetch={this.fetchCompanyList}
+          onSelect={this.handleSelectCompany}
+          onClose={this.handleModalCLose}
+        />
       </PageHeaderLayout>
     );
   }
