@@ -5,12 +5,13 @@ import 'video-react/dist/video-react.css';
 const offices = ['pptx', 'docx', 'xlsx', 'ppt', 'doc', 'xls'];
 export default class Resource extends PureComponent {
   renderOffice = () => {
-    const { src, extension, key, styles } = this.props;
+    const { src, extension, key, visible, styles } = this.props;
     return (
       <iframe
         title="office"
+        visible={visible}
         src={`https://view.officeapps.live.com/op/embed.aspx?src=${src}`}
-        frameborder="0"
+        frameBorder="0"
         style={styles}
       >
         这是嵌入{' '}
