@@ -10,7 +10,7 @@ export default class Resource extends PureComponent {
       <iframe
         title="office"
         src={`https://view.officeapps.live.com/op/embed.aspx?src=${src}`}
-        frameborder="0"
+        frameBorder="0"
         style={styles}
       >
         这是嵌入{' '}

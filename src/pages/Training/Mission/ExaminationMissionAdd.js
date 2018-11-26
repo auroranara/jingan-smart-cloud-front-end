@@ -83,8 +83,24 @@ export default class ExaminationMissionAdd extends PureComponent {
     }
   }
 
+  range = (start, end) => {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+
   disabledDate = (current) => {
-    return current && current < moment().endOf('day');
+    return current && current < moment().startOf('day');
+  }
+
+  disabledDateTime = () => {
+    return {
+      disabledHours: () => this.range(0, 24).slice(0, moment().hour()),
+      disabledMinutes: () => this.range(0, 60).slice(0, moment().minute()),
+      disabledSeconds: () => this.range(0, 60).slice(0, moment().second()),
+    };
   }
 
   // 点击返回
@@ -393,9 +409,10 @@ export default class ExaminationMissionAdd extends PureComponent {
                 })(
                   <RangePicker
                     disabledDate={this.disabledDate}
+                    disabledTime={this.disabledDateTime}
                     showTime={{
                       hideDisabledOptions: true,
-                      defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
+                      defaultValue: [moment('23:59:59', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
                     }}
                     format="YYYY-MM-DD HH:mm:ss"
                   />

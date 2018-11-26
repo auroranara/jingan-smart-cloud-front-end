@@ -26,10 +26,16 @@
         .icon {
           cursor: pointer;
         }
+        .disabledIcon {
+          cursor: not-allowed;
+        }
       }
     }
     .tags {
       margin-top: @mb;
+      &>* {
+        font-size: 13px;
+      }
     }
     .introduction {
       margin-top: @mb;
