@@ -12,7 +12,6 @@ const breadcrumbList = [
   { title: '教育培训', name: '教育培训' },
   { title: '知识体系管理', name: '知识体系管理' },
 ];
-// const companyId = 'UDy_hk40R0GHFhpchPpEtg';
 const PAGE_SIZE = 10;
 @connect(({ knowledgeTree, loading, user }) => ({
   knowledgeTree,
@@ -69,7 +68,6 @@ export default class KnowledgeSys extends PureComponent {
   };
 
   handleSelect = item => {
-    // const { setFieldsValue } = this.props.form;
     const { id, name } = item;
     this.companyId = id;
     this.companyName = name;
@@ -176,6 +174,8 @@ export default class KnowledgeSys extends PureComponent {
                 style={{ marginLeft: '5px' }}
                 onClick={() => {
                   this.setState({ visible: true });
+                  const payload = { pageSize: PAGE_SIZE, pageNum: 1 };
+                  this.fetchCompany({ payload });
                 }}
               >
                 选择单位
