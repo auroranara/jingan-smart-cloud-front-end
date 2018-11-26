@@ -269,11 +269,11 @@ export default class LibraryLayout extends PureComponent {
       <PageHeaderLayout
         title="题库"
         breadcrumbList={breadcrumbList}
-      /* content={(
-        <Fragment>
-          {this.renderSelect()}
-        </Fragment>
-      )} */
+        content={(
+          <Fragment>
+            {this.renderSelect()}
+          </Fragment>
+        )}
       >
         <Row gutter={16}>
           <Col span={6}>

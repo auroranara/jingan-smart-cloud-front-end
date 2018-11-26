@@ -255,7 +255,7 @@ export default class ArticleList extends PureComponent {
           <FormItem>
             <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
             <Button style={{ marginRight: '10px' }} onClick={this.handleResetQuery}>重置</Button>
-            <Button disabled={!hasAuthority(addCode, permissionCodes) || (notCompany && !companyId)} type="primary" onClick={this.handleAddArticle}>新增</Button>
+            <Button disabled={!hasAuthority(addCode, permissionCodes) || notCompany} type="primary" onClick={this.handleAddArticle}>新增</Button>
           </FormItem>
         </Col>
       </Row>
