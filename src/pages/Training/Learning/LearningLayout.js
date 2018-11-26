@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Card, Row, Col, Tabs, Input, Button } from 'antd';
+import { Card, Row, Col, Tabs, Input } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -14,6 +14,9 @@ const breadcrumbList = [
   { title: '教育培训', name: '教育培训' },
   { title: '学习管理', name: '学习管理' },
 ];
+
+// 默认每页显示数量
+const defaultPageSize = 10;
 
 // tabs配置
 const tabsInfo = [{ label: '文章', key: 'article' }, { label: '课件', key: 'courseware' }];
@@ -41,18 +44,11 @@ export default class LearningLayout extends PureComponent {
       user: {
         currentUser: { companyId },
       },
-      dispatch,
     } = this.props;
     this.companyId = companyId;
-    const payload = { pageSize: 10, pageNum: 1 };
+    const payload = { pageSize: defaultPageSize, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
-    // 获取知识点树
-    dispatch({
-      type: 'learning/fetchTree',
-      payload: {
-        companyId: this.companyId,
-      },
-    });
+
     this.setState({ activeKey: type });
   }
 
@@ -61,7 +57,13 @@ export default class LearningLayout extends PureComponent {
     e.target.blur();
     const { dispatch } = this.props;
     this.setState({ visible: true });
-    dispatch({ type: 'learning/fetchCompanies' });
+    dispatch({
+      type: 'learning/fetchCompanies',
+      payload: {
+        pageSize: defaultPageSize,
+        pageNum: 1,
+      },
+    });
   };
 
   // 获取企业
@@ -172,14 +174,11 @@ export default class LearningLayout extends PureComponent {
           !companyId && (
             <div>
               <Input
-                disabled
                 style={{ width: '300px' }}
                 placeholder={'请选择单位'}
                 value={this.companyName}
+                onClick={this.handleFocus}
               />
-              <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleFocus}>
-                选择单位
-              </Button>
             </div>
           )
         }
@@ -187,24 +186,28 @@ export default class LearningLayout extends PureComponent {
         <Row gutter={16}>
           <Col>
             <Card>
-              <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
-                {tabsInfo.map(item => (
-                  <TabPane tab={item.label} key={item.key}>
-                    {(activeKey === 'article' && (
-                      <Article
-                        handleArticleList={this.handleArticleList}
-                        companyId={this.companyId}
-                      />
-                    )) ||
-                      (activeKey === 'courseware' && (
-                        <Courseware
-                          handleCoursewareList={this.handleCoursewareList}
+              {this.companyId ? (
+                <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
+                  {tabsInfo.map(item => (
+                    <TabPane tab={item.label} key={item.key}>
+                      {(activeKey === 'article' && (
+                        <Article
+                          handleArticleList={this.handleArticleList}
                           companyId={this.companyId}
                         />
-                      ))}
-                  </TabPane>
-                ))}
-              </Tabs>
+                      )) ||
+                        (activeKey === 'courseware' && (
+                          <Courseware
+                            handleCoursewareList={this.handleCoursewareList}
+                            companyId={this.companyId}
+                          />
+                        ))}
+                    </TabPane>
+                  ))}
+                </Tabs>
+              ) : (
+                <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
+              )}
             </Card>
           </Col>
         </Row>
