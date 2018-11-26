@@ -14,14 +14,19 @@ import codes from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
 import router from 'umi/router';
 import Link from 'umi/link';
-import unusedIcon from '@/assets/unused.png'
-import usedIcon from '@/assets/used.png'
+import unusedIcon from '@/assets/unused.png';
+import usedIcon from '@/assets/used.png';
 
 import styles from './index.less';
 
-
-const { home: homeUrl, examinationPaper: { list: listUrl, detail: detailUrl, add: addUrl, preview: previewUrl } } = urls;
-const { home: homeTitle, examinationPaper: { list: title, menu: menuTitle } } = titles;
+const {
+  home: homeUrl,
+  examinationPaper: { list: listUrl, detail: detailUrl, add: addUrl, preview: previewUrl },
+} = urls;
+const {
+  home: homeTitle,
+  examinationPaper: { list: title, menu: menuTitle },
+} = titles;
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -30,7 +35,11 @@ const breadcrumbList = [
   { title, name: title },
 ];
 // 获取code
-const { training: { examinationPaper: { detail: detailCode, add: addCode, delete: deleteCode } } } = codes;
+const {
+  training: {
+    examinationPaper: { detail: detailCode, add: addCode, delete: deleteCode },
+  },
+} = codes;
 // controlSessionName
 const controlSessionName = 'examination_paper_list_control_';
 // scrollSessionName
@@ -74,10 +83,17 @@ export default class App extends PureComponent {
     values: null,
     company: undefined,
     visible: false,
-  }
+  };
 
   componentDidMount() {
-    const { dispatch, location: { query }, user: { currentUser: { id } } } = this.props;
+    const {
+      dispatch,
+      location: { query },
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+
     let payload, callback;
     // 如果是从详情页面返回到当前页面
     if ('back' in query) {
@@ -96,11 +112,18 @@ export default class App extends PureComponent {
       // 如果scrollTop存在的话，就将滚动条移动到对应位置
       callback = () => scrollTop && window.scrollTo(0, scrollTop);
       // 从sessionStorage中获取之前的分页信息
-      const { pageNum: realPageNum, pageSize: realPageSize } = JSON.parse(sessionStorage.getItem(`${paginationSessionName}${id}`)) || defaultPagination;
+      const { pageNum: realPageNum, pageSize: realPageSize } =
+        JSON.parse(sessionStorage.getItem(`${paginationSessionName}${id}`)) || defaultPagination;
       // 创建请求参数
-      payload = { ...values, pageNum: 1, pageSize: realPageSize*realPageNum, realPageNum, realPageSize, companyId: company ? company.id : undefined };
-    }
-    else {
+      payload = {
+        ...values,
+        pageNum: 1,
+        pageSize: realPageSize * realPageNum,
+        realPageNum,
+        realPageSize,
+        companyId: company ? company.id : undefined,
+      };
+    } else {
       // 清除session
       sessionStorage.removeItem(`${controlSessionName}${id}`);
       sessionStorage.removeItem(`${companySessionName}${id}`);
@@ -129,10 +152,10 @@ export default class App extends PureComponent {
   /**
    * 获取企业列表
    */
-  fetchCompanyList = (action) => {
+  fetchCompanyList = action => {
     const { dispatch } = this.props;
     dispatch({ type: 'examinationPaper/fetchCompanyList', ...action });
-  }
+  };
 
   /**
    * 滚动
@@ -140,7 +163,11 @@ export default class App extends PureComponent {
   @Bind()
   @Debounce(200)
   handleScroll() {
-    const { user: { currentUser: { id } } } = this.props;
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     // 将当前的scrollTop保存在sessionStorage中
     sessionStorage.setItem(`${scrollSessionName}${id}`, document.documentElement.scrollTop);
   }
@@ -148,8 +175,13 @@ export default class App extends PureComponent {
   /**
    * 查询
    */
-  handleSearch = (values) => {
-    const { dispatch, user: { currentUser: { id } } } = this.props;
+  handleSearch = values => {
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     const { company } = this.state;
     // 保存控件数据
     sessionStorage.setItem(`${controlSessionName}${id}`, JSON.stringify(values));
@@ -164,25 +196,36 @@ export default class App extends PureComponent {
         companyId: company && company.id,
       },
     });
-  }
+  };
 
   /**
    * 重置
    */
-  handleReset = (values) => {
+  handleReset = values => {
     this.handleSearch(values);
-  }
+  };
 
   /**
    * 加载列表
    */
   handleLoadMore = () => {
-    const { dispatch, examinationPaper: { list: { pagination: { pageSize, pageNum } } }, user: { currentUser: { id } } } = this.props;
+    const {
+      dispatch,
+      examinationPaper: {
+        list: {
+          pagination: { pageSize, pageNum },
+        },
+      },
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     const { company } = this.state;
     // 创建分页信息
-    const pagination = { pageNum: pageNum+1, pageSize };
+    const pagination = { pageNum: pageNum + 1, pageSize };
     // 从session中获取上次查询的表单数据
-    const values = JSON.parse(sessionStorage.getItem(`${controlSessionName}${id}`)) || getInitialValues();
+    const values =
+      JSON.parse(sessionStorage.getItem(`${controlSessionName}${id}`)) || getInitialValues();
     // 重置表单
     this.setState({ values });
     // 获取列表
@@ -196,12 +239,12 @@ export default class App extends PureComponent {
     });
     // 保存分页信息
     sessionStorage.setItem(`${paginationSessionName}${id}`, JSON.stringify(pagination));
-  }
+  };
 
   /**
    * 删除
    */
-  handleDelete = (id) => {
+  handleDelete = id => {
     Modal.confirm({
       title: '删除确认',
       content: '你确定要删除这张试卷吗？',
@@ -212,27 +255,32 @@ export default class App extends PureComponent {
         dispatch({
           type: 'examinationPaper/delete',
           payload: { id },
-          callback: (flag) => {
+          callback: flag => {
             if (flag) {
               message.success('删除成功！');
-            }
-            else {
+            } else {
               message.error('删除失败！');
             }
           },
         });
       },
     });
-  }
+  };
 
   /**
    * 选择企业
    */
-  handleSelectCompany = (company) => {
-    const { dispatch, user: { currentUser: { id } } } = this.props;
+  handleSelectCompany = company => {
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     this.setState({ company, visible: false });
     // 从session中获取上次查询的表单数据
-    const values = JSON.parse(sessionStorage.getItem(`${controlSessionName}${id}`)) || getInitialValues();
+    const values =
+      JSON.parse(sessionStorage.getItem(`${controlSessionName}${id}`)) || getInitialValues();
     // 获取该企业的第一页试卷列表
     dispatch({
       type: 'examinationPaper/fetchList',
@@ -244,7 +292,7 @@ export default class App extends PureComponent {
     });
     // 将company保存到的session中
     sessionStorage.setItem(`${companySessionName}${id}`, JSON.stringify(company));
-  }
+  };
 
   /**
    * 选择单位按钮点击显示模态框
@@ -259,13 +307,15 @@ export default class App extends PureComponent {
    */
   handleClose = () => {
     this.setState({ visible: false });
-  }
+  };
 
   /**
    * 弹出框
    */
   renderModal() {
-    const { examinationPaper: { companyList } } = this.props;
+    const {
+      examinationPaper: { companyList },
+    } = this.props;
     const { visible, loading } = this.state;
     return (
       <CompanyModal
@@ -280,12 +330,15 @@ export default class App extends PureComponent {
     );
   }
 
-
   /**
    * 企业选择框
    */
   renderSelect() {
-    const { user: { currentUser: { unitType } } } = this.props;
+    const {
+      user: {
+        currentUser: { unitType },
+      },
+    } = this.props;
     const { company } = this.state;
     const notCompany = unitType === 2 || unitType === 3;
     // 当账户为政府或运营时可以选择企业
@@ -307,7 +360,11 @@ export default class App extends PureComponent {
    * 控件
    */
   renderForm() {
-    const { user: { currentUser: { permissionCodes, unitType } } } = this.props;
+    const {
+      user: {
+        currentUser: { permissionCodes, unitType },
+      },
+    } = this.props;
     const { values, company } = this.state;
     // 是否有新增权限
     const hasAddAuthority = hasAuthority(addCode, permissionCodes);
@@ -356,25 +413,39 @@ export default class App extends PureComponent {
           return (
             <List.Item key={id}>
               <Card
-                title={<Ellipsis tooltip lines={1} style={{ minHeight: 24 }} /* className={styles['card-title-ellipsis']} */>{name}</Ellipsis>}
+                title={
+                  <Ellipsis
+                    tooltip
+                    lines={1}
+                    style={{ minHeight: 24 }} /* className={styles['card-title-ellipsis']} */
+                  >
+                    {name}
+                  </Ellipsis>
+                }
                 className={styles.card}
                 actions={[
                   hasDetailAuthority ? <Link to={previewUrl + id}>预览试卷</Link> : <span onClick={() => { message.warning('您没有权限访问对应页面'); }}>预览试卷</span>,
                   hasDetailAuthority ? <Link to={detailUrl + id}>试卷规则</Link> : <span onClick={() => { message.warning('您没有权限访问对应页面'); }}>试卷规则</span>,
                 ]}
-                extra={hasDeleteAuthority && !isUsed ? (
-                  <Button
-                    onClick={() => {
-                      this.handleDelete(id);
-                    }}
-                    shape="circle"
-                    style={{ border: 'none', fontSize: '20px' }}
-                  >
-                    <Icon type="close" />
-                  </Button>
-                ) : null}
+                extra={
+                  hasDeleteAuthority && !isUsed ? (
+                    <Button
+                      onClick={() => {
+                        this.handleDelete(id);
+                      }}
+                      shape="circle"
+                      style={{ border: 'none', fontSize: '20px' }}
+                    >
+                      <Icon type="close" />
+                    </Button>
+                  ) : null
+                }
               >
-                <div style={{ background: `url(${isUsed?usedIcon:unusedIcon}) no-repeat right center` }}>
+                <div
+                  style={{
+                    background: `url(${isUsed ? usedIcon : unusedIcon}) no-repeat right center`,
+                  }}
+                >
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                     抽题规则：
                     {ruleTypeName || getEmptyData()}
@@ -386,7 +457,15 @@ export default class App extends PureComponent {
                   </Ellipsis>
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                     被使用次数：
-                    <span style={{ fontSize: 18, lineHeight: '1', color: isUsed ? '#1890FF' : undefined }}>{useNum || 0}</span>
+                    <span
+                      style={{
+                        fontSize: 18,
+                        lineHeight: '1',
+                        color: isUsed ? '#1890FF' : undefined,
+                      }}
+                    >
+                      {useNum || 0}
+                    </span>
                   </Ellipsis>
                 </div>
               </Card>
@@ -411,7 +490,7 @@ export default class App extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={<Fragment>{this.renderSelect()}{!hideList && <div>试卷总数：{hideList ? 0 : total}</div>}</Fragment>}
       >
-        {/* 控件 */this.renderForm()}
+        {/* 控件 */ this.renderForm()}
         <InfiniteScroll
           initialLoad={false}
           loadMore={() => {
@@ -429,7 +508,7 @@ export default class App extends PureComponent {
             </div>
           }
         >
-          {/* 列表 */this.renderList()}
+          {/* 列表 */ this.renderList()}
         </InfiniteScroll>
         {this.renderModal()}
       </PageHeaderLayout>

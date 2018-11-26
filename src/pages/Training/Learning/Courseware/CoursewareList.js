@@ -37,10 +37,11 @@ const colWrapper = {
 // 默认表单值
 const defaultFormData = {
   name: undefined,
+  readStatus: undefined,
 };
 
-// 发布状态选项
-const statusStudy = [{ value: '1', label: '发布' }, { value: '0', label: '未发布' }];
+// 阅读状态选项
+const statusStudy = [{ value: '1', label: '未读' }, { value: '0', label: '已读' }];
 
 function getTime(t) {
   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
@@ -231,8 +232,8 @@ export default class CoursewareList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem>
-                {getFieldDecorator('status')(
-                  <Select allowClear placeholder="请选择发布状态">
+                {getFieldDecorator('readStatus')(
+                  <Select allowClear placeholder="请选择阅读状态">
                     {statusStudy.map(({ value, label }) => (
                       <Option key={value} value={value}>
                         {label}
@@ -307,7 +308,7 @@ export default class CoursewareList extends PureComponent {
                   </div>
                   <Tag className={styles.tags}>{knowledgeName}</Tag>
                   <Tag className={styles.tags} color={+readStatus === 0 ? 'blue' : 'grey'}>
-                    {+readStatus === 0 ? '已学习' : '未学习'}
+                    {+readStatus === 0 ? '已读' : '未读'}
                   </Tag>
                   <div className={styles.introduction}>
                     <span className={styles.grey}>{' 发布于 '}</span>
@@ -327,7 +328,7 @@ export default class CoursewareList extends PureComponent {
                     <span>
                       <a style={{ width: '20px' }} onClick={() => this.goToDetail(id)}>
                         <Icon className={styles.icon} type="read" />
-                        {'开始学习'}
+                        {'开始阅读'}
                       </a>
                     </span>
                   </div>
