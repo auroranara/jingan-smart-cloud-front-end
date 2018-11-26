@@ -82,16 +82,16 @@ export default class CoursewareList extends PureComponent {
           pagination: { pageSize },
         },
       },
-      // companyId,
+      companyId,
     } = this.props;
-    // 获取文章列表
+    // 获取课件列表
     dispatch({
       type: 'learning/fetchCoursewareList',
       payload: {
         pageSize,
         pageNum: 1,
         type: '2',
-        // companyId,
+        companyId,
       },
     });
   }
@@ -330,7 +330,6 @@ export default class CoursewareList extends PureComponent {
                         {'开始学习'}
                       </a>
                     </span>
-                    ,
                   </div>
                 </Card>
               </ListItem>

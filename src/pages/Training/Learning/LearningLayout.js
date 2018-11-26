@@ -91,8 +91,6 @@ export default class LearningLayout extends PureComponent {
       this.handleCoursewareList();
     }
     this.handleClose();
-    // 将选中的company存入session当中
-    sessionStorage.setItem('this.companyName', this.companyName);
   };
 
   // 获取文章列表

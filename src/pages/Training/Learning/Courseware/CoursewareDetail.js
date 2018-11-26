@@ -110,15 +110,15 @@ export default class LearningLayout extends PureComponent {
               </div>
               <div className={style.detailMain}>
                 <div className={style.resource}>
-                  {type === 2 ? (
+                  {+type === 3 ? (
+                    <Resource src={webFileUrl} styles={styles} extension="doc" />
+                  ) : (
                     <Resource
                       src={webFileUrl}
                       styles={styles}
                       poster={webVideoCover}
                       extension="mp4"
                     />
-                  ) : (
-                    <Resource src={webFileUrl} styles={styles} extension="doc" />
                   )}
                 </div>
                 <div>
