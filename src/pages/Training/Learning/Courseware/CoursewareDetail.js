@@ -75,7 +75,16 @@ export default class LearningLayout extends PureComponent {
 
     const detail = list.find(d => d.id === id) || {};
 
-    const { name, createTime, totalPerson, totalRead, content, webFileUrl, webVideoCover } = detail;
+    const {
+      name,
+      createTime,
+      totalPerson,
+      totalRead,
+      content,
+      type,
+      webFileUrl,
+      webVideoCover,
+    } = detail;
 
     const { styles } = this.state;
     return (
@@ -101,7 +110,7 @@ export default class LearningLayout extends PureComponent {
               </div>
               <div className={style.detailMain}>
                 <div className={style.resource}>
-                  {webVideoCover ? (
+                  {type === 2 ? (
                     <Resource
                       src={webFileUrl}
                       styles={styles}
@@ -109,13 +118,11 @@ export default class LearningLayout extends PureComponent {
                       extension="mp4"
                     />
                   ) : (
-                    <Resource src={webFileUrl} styles={styles} extension="ppt" /> || (
-                      <Resource src={webFileUrl} styles={styles} extension="doc" />
-                    )
+                    <Resource src={webFileUrl} styles={styles} extension="doc" />
                   )}
                 </div>
                 <div>
-                  <h3>
+                  <h3 className={style.contentDetail}>
                     详细内容：
                     {content || getEmptyData()}
                   </h3>

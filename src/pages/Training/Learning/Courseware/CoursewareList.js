@@ -60,9 +60,11 @@ const treeData = data => {
   });
 };
 
-@connect(({ learning, user }) => ({
+@connect(({ learning, user, loading }) => ({
   learning,
   user,
+  initLoading: loading.effects['learning/fetchCoursewareList'],
+  moreLoading: loading.effects['learning/fetchCoursewareList'],
 }))
 @Form.create()
 export default class CoursewareList extends PureComponent {
@@ -152,6 +154,37 @@ export default class CoursewareList extends PureComponent {
         pageSize,
         pageNum: 1,
         type: '2',
+        companyId,
+      },
+    });
+  };
+
+  // 点击加载更多
+  handleLoadMore = () => {
+    const {
+      dispatch,
+      companyId,
+      form: { getFieldsValue },
+      learning: {
+        data: {
+          pagination: { pageNum },
+        },
+      },
+    } = this.props;
+    const { timeRange: [start, end] = [], ...others } = getFieldsValue();
+    const query = {
+      ...others,
+      startTime: start && moment(start).format('YYYY-MM-DD HH:mm:ss.SSS'),
+      endTime: end && moment(end).format('YYYY-MM-DD HH:mm:ss.SSS'),
+    };
+    // 获取更多课件
+    dispatch({
+      type: 'learning/fetchCoursewareList',
+      payload: {
+        pageNum: pageNum + 1,
+        pageSize: 10,
+        type: '2', // type 2课件
+        ...query,
         companyId,
       },
     });

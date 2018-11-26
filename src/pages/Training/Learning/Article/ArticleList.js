@@ -14,6 +14,7 @@ import {
   Divider,
   Select,
   TreeSelect,
+  Spin,
 } from 'antd';
 import moment from 'moment';
 
@@ -29,6 +30,9 @@ const defaultFormData = {
   name: undefined,
   readStatus: undefined,
 };
+
+// 默认每页显示数量
+const defaultPageSize = 10;
 
 // 阅读状态选项
 const statusRead = [{ value: '1', label: '未读' }, { value: '0', label: '已读' }];
@@ -51,9 +55,11 @@ function getTime(t) {
   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
 }
 
-@connect(({ learning, user }) => ({
+@connect(({ learning, user, loading }) => ({
   learning,
   user,
+  initLoading: loading.effects['learning/fetch'],
+  moreLoading: loading.effects['learning/fetch'],
 }))
 @Form.create()
 export default class ArticleList extends PureComponent {
@@ -82,7 +88,6 @@ export default class ArticleList extends PureComponent {
           pagination: { pageSize },
         },
       },
-
       companyId,
     } = this.props;
     // 获取文章列表
@@ -151,6 +156,32 @@ export default class ArticleList extends PureComponent {
     });
   };
 
+  // 点击加载更多
+  handleLoadMore = () => {
+    const {
+      dispatch,
+      companyId,
+      form: { getFieldsValue },
+      learning: {
+        data: {
+          pagination: { pageNum },
+        },
+      },
+    } = this.props;
+    const data = getFieldsValue();
+    // 获取更多文章
+    dispatch({
+      type: 'learning/fetch',
+      payload: {
+        pageNum: pageNum + 1,
+        pageSize: defaultPageSize,
+        type: '1', // type 1文章
+        ...data,
+        companyId,
+      },
+    });
+  };
+
   // 点击知识点获取对应的文章
   // handleSelectTree = value => {
   //   const { dispatch } = this.props;
@@ -169,9 +200,11 @@ export default class ArticleList extends PureComponent {
   // 渲染
   render() {
     const {
+      initLoading,
+      moreLoading,
       form: { getFieldDecorator },
       learning: {
-        data: { list },
+        data: { list, isLast },
         treeData: { knowledgeList },
       },
     } = this.props;
@@ -237,6 +270,19 @@ export default class ArticleList extends PureComponent {
         <List
           grid={{ gutter: 16, column: 1 }}
           dataSource={list}
+          loading={initLoading}
+          loadMore={
+            !isLast &&
+            !initLoading && (
+              <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px' }}>
+                {!moreLoading ? (
+                  <Button onClick={this.handleLoadMore}>加载更多</Button>
+                ) : (
+                  <Spin spinning={moreLoading} />
+                )}
+              </div>
+            )
+          }
           renderItem={item => {
             const {
               id,

@@ -41,11 +41,18 @@ export default class LearningLayout extends PureComponent {
       user: {
         currentUser: { companyId },
       },
+      dispatch,
     } = this.props;
     this.companyId = companyId;
     const payload = { pageSize: 10, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
-
+    // 获取知识点树
+    dispatch({
+      type: 'learning/fetchTree',
+      payload: {
+        companyId: this.companyId,
+      },
+    });
     this.setState({ activeKey: type });
   }
 
@@ -84,6 +91,8 @@ export default class LearningLayout extends PureComponent {
       this.handleCoursewareList();
     }
     this.handleClose();
+    // 将选中的company存入session当中
+    sessionStorage.setItem('this.companyName', this.companyName);
   };
 
   // 获取文章列表
@@ -99,6 +108,9 @@ export default class LearningLayout extends PureComponent {
     // 获取知识点树
     dispatch({
       type: 'learning/fetchTree',
+      payload: {
+        companyId: this.companyId,
+      },
     });
   };
 
@@ -115,6 +127,9 @@ export default class LearningLayout extends PureComponent {
     // 获取知识点树
     dispatch({
       type: 'learning/fetchTree',
+      payload: {
+        companyId: this.companyId,
+      },
     });
   };
 
@@ -147,7 +162,6 @@ export default class LearningLayout extends PureComponent {
   render() {
     const { activeKey } = this.state;
     const {
-      // 判断当前用户是否有企业ID
       user: {
         currentUser: { companyId },
       },
@@ -175,28 +189,24 @@ export default class LearningLayout extends PureComponent {
         <Row gutter={16}>
           <Col>
             <Card>
-              {this.companyId ? (
-                <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
-                  {tabsInfo.map(item => (
-                    <TabPane tab={item.label} key={item.key}>
-                      {(activeKey === 'article' && (
-                        <Article
-                          handleArticleList={this.handleArticleList}
+              <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
+                {tabsInfo.map(item => (
+                  <TabPane tab={item.label} key={item.key}>
+                    {(activeKey === 'article' && (
+                      <Article
+                        handleArticleList={this.handleArticleList}
+                        companyId={this.companyId}
+                      />
+                    )) ||
+                      (activeKey === 'courseware' && (
+                        <Courseware
+                          handleCoursewareList={this.handleCoursewareList}
                           companyId={this.companyId}
                         />
-                      )) ||
-                        (activeKey === 'courseware' && (
-                          <Courseware
-                            handleCoursewareList={this.handleCoursewareList}
-                            companyId={this.companyId}
-                          />
-                        ))}
-                    </TabPane>
-                  ))}
-                </Tabs>
-              ) : (
-                <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
-              )}
+                      ))}
+                  </TabPane>
+                ))}
+              </Tabs>
             </Card>
           </Col>
         </Row>
