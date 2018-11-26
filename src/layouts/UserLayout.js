@@ -8,7 +8,7 @@ import logo from '../assets/logo.svg';
 import DocumentTitle from 'react-document-title';
 
 const links = [];
-console.log('PROJECT_CONFIG', global.PROJECT_CONFIG);
+// console.log('PROJECT_CONFIG', global.PROJECT_CONFIG);
 const { serviceSupport, servicePhone, projectName } = global.PROJECT_CONFIG;
 
 @connect(({ login }) => ({

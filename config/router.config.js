@@ -1027,7 +1027,7 @@ module.exports = [
       },
       {
         name: 'training',
-        icon: 'database',
+        icon: 'read',
         code: 'training',
         path: '/training',
         hideInMenu: false,
@@ -1098,6 +1098,50 @@ module.exports = [
                 code: 'training.library.edit',
                 name: 'coursewareEdit',
                 component: './Training/Library/Courseware/CoursewareAdd',
+              },
+            ],
+          },
+          // 学习管理
+          {
+            name: 'learning',
+            path: '/training/learning',
+            code: 'training.learning',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/learning',
+                name: 'list',
+                redirect: '/training/learning/article/list',
+              },
+              {
+                path: '/training/learning/:type/list',
+                code: 'training.learning.view',
+                name: 'list',
+                component: './Training/Learning/LearningLayout',
+              },
+              // {
+              //   path: '/training/learning/article/list',
+              //   code: 'training.learning.view',
+              //   name: 'view',
+              //   component: './Training/Learning/Article/ArticleList',
+              // },
+              {
+                path: '/training/learning/article/detail/:id',
+                code: 'training.learning.view',
+                name: 'article',
+                component: './Training/Learning/Article/ArticleDeatil',
+              },
+              // {
+              //   path: '/training/learning/courseware/list',
+              //   code: 'training.learning.view',
+              //   name: 'view',
+              //   component: './Training/Learning/Courseware/CoursewareList',
+              // },
+              {
+                path: '/training/learning/courseware/detail/:id',
+                code: 'training.learning.view',
+                name: 'courseware',
+                component: './Training/Learning/Courseware/CoursewareDetail',
               },
             ],
           },
