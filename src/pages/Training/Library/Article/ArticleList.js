@@ -80,10 +80,10 @@ export default class ArticleList extends PureComponent {
 
   // 点击新增文章
   handleAddArticle = () => {
-    const { companyId } = this.props
+    const { knowledgeId } = this.props
     router.push({
       pathname: '/training/library/article/add',
-      query: { companyId },
+      query: { knowledgeId },
     })
   }
 
