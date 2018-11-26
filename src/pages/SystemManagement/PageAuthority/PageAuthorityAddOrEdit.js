@@ -76,14 +76,16 @@ export default class PageAuthorityAdd extends Component {
         if (!isAdd)
           newVals.id = id;
 
-        console.log(newVals);
+        // console.log(newVals);
 
         dispatch({
           type: `pageAuth/${isAdd ? 'postAuth' :'putAuth'}`,
           payload: newVals,
           callback: (code, msg) => {
-            if (code === 200)
+            if (code === 200) {
               message.success('成功');
+              router.push('/system-management/page-authority/index');
+            }
             else
               message.warn(msg);
           },
@@ -115,7 +117,7 @@ export default class PageAuthorityAdd extends Component {
           //     layout
           //   </div>
           // }
-          action={<Button type="primary" onClick={e => router.push("/system-management/page-authority/index")}>返回</Button>}
+          // action={<Button type="primary" onClick={e => router.push("/system-management/page-authority/index")}>返回</Button>}
         >
           <Card>
             <Form onSubmit={this.handleSubmit}>

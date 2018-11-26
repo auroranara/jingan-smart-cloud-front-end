@@ -230,13 +230,13 @@ export default class PageAuthority extends Component {
   selectedKeys = [];
   checkedKeys = [];
 
-  fetchList = (ids=[]) => {
+  fetchList = (ids=[], initial=true) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'pageAuth/fetchList',
       payload: { ids: ids.join(',') },
       callback: list => {
-        this.setState({ data: list });
+        this.setState({ data: initial ? list.slice(0, 20) : list });
       },
     });
   }
@@ -284,11 +284,24 @@ export default class PageAuthority extends Component {
 
   onSearch = e => {
     // console.log(this.checkedKeys);
-    this.fetchList(this.checkedKeys);
+    this.fetchList(this.checkedKeys, false);
   };
 
   jumpTo = id => {
     router.push(`/system-management/page-authority/add-or-edit/${id}`);
+  };
+
+  handleEditClick = e => {
+    const id = this.selectedKeys[0];
+    if (!id) {
+      notification.warn({
+        message: '友情提醒',
+        description: '请先从权限树中选择一个项目',
+      });
+      return;
+    }
+
+    this.jumpTo(id);
   };
 
   render() {
@@ -328,33 +341,17 @@ export default class PageAuthority extends Component {
         //     layout
         //   </div>
         // }
-        action={
-          <Button type="primary" onClick={e => this.jumpTo()}>
-            新增
-          </Button>
-        }
+        // action={
+        //   <Button type="primary" onClick={e => this.jumpTo()}>
+        //     新增
+        //   </Button>
+        // }
       >
         <Card>
           <div className={styles.btnContainer}>
-            <Button onClick={this.onSearch} className={styles.searchBtn}>
-              搜索
-            </Button>
-            <Button
-              onClick={e => {
-                const id = this.selectedKeys[0];
-                if (!id) {
-                  notification.warn({
-                    message: '友情提醒',
-                    description: '请先从权限树中选择一个项目',
-                  });
-                  return;
-                }
-
-                this.jumpTo(id);
-              }}
-            >
-              编辑
-            </Button>
+            <Button onClick={this.onSearch} className={styles.searchBtn}>搜索</Button>
+            <Button onClick={this.handleEditClick} className={styles.editBtn}>编辑</Button>
+            <Button onClick={e => this.jumpTo()}>新增</Button>
           </div>
           <Tree
             checkable
