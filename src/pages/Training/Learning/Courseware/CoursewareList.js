@@ -93,6 +93,7 @@ export default class CoursewareList extends PureComponent {
         pageNum: 1,
         type: '2',
         companyId,
+        status: 1,
       },
     });
   }
@@ -227,7 +228,7 @@ export default class CoursewareList extends PureComponent {
                 {getFieldDecorator('name', {
                   initialValue: defaultFormData.name,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入视频名称" />)}
+                })(<Input placeholder="请输入课件名称" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>

@@ -129,6 +129,7 @@ export default class LearningLayout extends PureComponent {
       payload: {
         type: '2',
         companyId: this.companyId,
+        status: 1,
       },
     });
     // 获取知识点树
