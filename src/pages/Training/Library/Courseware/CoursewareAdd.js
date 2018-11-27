@@ -85,7 +85,11 @@ export default class CoursewareAdd extends PureComponent {
     } = this.props
     // TODO：清空上传课件
     resetFields(['videoCover', 'fileUrl'])
-    this.setState({ fileList: [] })
+    this.setState({
+      fileList: [],
+      coverLoading: false,
+      courseLoading: false,
+    })
   }
 
   // 上传课件封面之前的回调
@@ -96,7 +100,7 @@ export default class CoursewareAdd extends PureComponent {
     if (coverLoading) {
       message.error('尚未上传结束')
     }
-    if (isImage) {
+    if (!isImage) {
       message.error('请上传图片')
     }
     return isImage && !coverLoading

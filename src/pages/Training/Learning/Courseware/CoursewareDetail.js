@@ -32,6 +32,9 @@ export default class LearningLayout extends PureComponent {
       width: 1026,
       height: '100vh',
     },
+    fileSrc: null,  // 预览课件地址
+    coverSrc: null,  // 预览课件封面地址
+    fileType: null, // 课件类型
   };
 
   // 挂载后
@@ -42,11 +45,20 @@ export default class LearningLayout extends PureComponent {
         params: { id },
       },
     } = this.props;
+
     // 获取详情
     dispatch({
       type: 'learning/fetch',
       payload: {
         id,
+      },
+      success: ({ list }) => {
+        const { webFileUrl, webVideoCover, fileUrl } = list[0]
+        this.setState({
+          fileSrc: webFileUrl[0],
+          coverSrc: webVideoCover && webVideoCover.length > 0 ? webVideoCover[0] : null,
+          fileType: fileUrl.split('.').pop(),
+        })
       },
     });
     dispatch({
@@ -72,7 +84,7 @@ export default class LearningLayout extends PureComponent {
         data: { list },
       },
     } = this.props;
-
+    const { fileSrc, fileType, coverSrc, styles } = this.state
     const detail = list.find(d => d.id === id) || {};
 
     const {
@@ -82,19 +94,14 @@ export default class LearningLayout extends PureComponent {
       totalRead,
       content,
       type,
-      webFileUrl,
-      webVideoCover,
     } = detail;
 
-    const { styles } = this.state;
     return (
       <PageHeaderLayout title="课件学习" breadcrumbList={breadcrumbList}>
-        <Row gutter={16}>
+        <Row gutter={16} className={style.learningCourseWare}>
           <Col>
             <Card>
-              <div className={style.detailFirst}>
-                <div className={style.detailTitle}>{name}</div>
-              </div>
+              <div className={style.detailTitle}><span>{name}</span></div>
               <div className={style.detailSecond}>
                 <span>发布时间 : {getTime(createTime)}</span>
                 <Divider type="vertical" />
@@ -111,15 +118,15 @@ export default class LearningLayout extends PureComponent {
               <div className={style.detailMain}>
                 <div className={style.resource}>
                   {+type === 3 ? (
-                    <Resource src={webFileUrl} styles={styles} extension="doc" />
+                    <Resource src={fileSrc} styles={styles} extension={fileType} />
                   ) : (
-                    <Resource
-                      src={webFileUrl}
-                      styles={styles}
-                      poster={webVideoCover}
-                      extension="mp4"
-                    />
-                  )}
+                      <Resource
+                        src={fileSrc}
+                        styles={styles}
+                        poster={coverSrc}
+                        extension={fileType}
+                      />
+                    )}
                 </div>
                 <div>
                   <h3 className={style.contentDetail}>

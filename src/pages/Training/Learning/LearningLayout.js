@@ -195,26 +195,24 @@ export default class LearningLayout extends PureComponent {
             <Card>
               {this.companyId ? (
                 <Tabs activeKey={activeKey} onChange={this.handleTabChange}>
-                  {tabsInfo.map(item => (
-                    <TabPane tab={item.label} key={item.key}>
-                      {(activeKey === 'article' && (
-                        <Article
-                          handleArticleList={this.handleArticleList}
-                          companyId={this.companyId}
-                        />
-                      )) ||
-                        (activeKey === 'courseware' && (
-                          <Courseware
-                            handleCoursewareList={this.handleCoursewareList}
-                            companyId={this.companyId}
-                          />
-                        ))}
-                    </TabPane>
-                  ))}
+                  <TabPane tab="文章" key="article">
+                    {activeKey === 'article' && (
+                      <Article
+                        handleArticleList={this.handleArticleList}
+                        companyId={this.companyId}
+                      />)}
+                  </TabPane>
+                  <TabPane tab="课件" key="courseware">
+                    {activeKey === 'courseware' && (
+                      <Courseware
+                        handleCoursewareList={this.handleCoursewareList}
+                        companyId={this.companyId}
+                      />)}
+                  </TabPane>
                 </Tabs>
               ) : (
-                <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
-              )}
+                  <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
+                )}
             </Card>
           </Col>
         </Row>

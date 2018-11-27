@@ -58,16 +58,23 @@
 }
 
 .courseViewContainer {
+  :global {
+    .video-react .video-react-big-play-button {
+      top: calc(50% - 0.75em);
+      left: calc(50% - 1.5em);
+    }
+  }
   .titleContainer {
     text-align: center;
     font-size: 17px;
     font-weight: 500;
     word-break: break-all;
     margin-bottom: 0.4em;
+    color: rgba(0, 0, 0, .85);
   }
   .statistics {
     text-align: right;
-    color: rgba(0, 0, 0, .45);
+    color: rgba(0, 0, 0, .65);
     margin-bottom: 0.4em;
   }
   .detail {
