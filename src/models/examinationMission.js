@@ -6,7 +6,24 @@ import {
   getExam,
   editExam,
 } from '../services/examinationMission';
-
+const defaultDetail = {
+  arrRuleType: [],
+  arrRuleTypeName: [],
+  companyId: '',
+  endTime: '',
+  examLimit: 0,
+  id: '',
+  name: '',
+  now: null,
+  paperId: '',
+  percentOfPass: null,
+  remarks: null,
+  ruleType: '0',
+  startTime: '',
+  status: '',
+  statusName: '',
+  students: [],
+};
 export default {
   namespace: 'examinationMission',
   state: {
@@ -15,8 +32,9 @@ export default {
       pagination: {
         total: 0,
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 18,
       },
+      isLast: false,
     },
     examPaper: {
       list: [],
@@ -35,33 +53,50 @@ export default {
       },
     },
     detail: {
-      arrRuleType: [],
-      arrRuleTypeName: [],
-      companyId: '',
-      endTime: '',
-      examLimit: 0,
-      id: '',
-      name: '',
-      now: null,
-      paperId: '',
-      percentOfPass: null,
-      remarks: null,
-      ruleType: '0',
-      startTime: '',
-      status: '',
-      statusName: '',
-      students: [],
+      ...defaultDetail,
     },
+    searchInfo: null,
   },
   effects: {
     // 获取考试任务列表
     *fetchExamination({ payload }, { call, put }) {
+      const { companyId } = payload;
+      if (!companyId) {
+        yield put({
+          type: 'saveExamination',
+          payload: {
+            list: [],
+            pagination: {
+              total: 0,
+              pageNum: 1,
+              pageSize: 18,
+            },
+            isLast: false,
+          },
+        });
+        return;
+      }
       const response = yield call(fetchExaminationMission, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveExamination',
           payload: response.data,
         });
+      }
+    },
+    // 加载更多
+    *appendExamination({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchExaminationMission, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveAppendExamination',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
       }
     },
     // 获取试卷列表
@@ -93,6 +128,13 @@ export default {
     },
     // 获取考试
     *fetchDetail({ payload, success, error }, { call, put }) {
+      if (!payload) {
+        yield put({
+          type: 'detail',
+          payload: { ...defaultDetail },
+        });
+        return;
+      }
       const response = yield call(getExam, payload);
       if (response.code === 200) {
         yield put({
@@ -121,7 +163,11 @@ export default {
   reducers: {
     saveExamination(state, action) {
       const {
-        payload: { list = [], pagination },
+        payload: {
+          list = [],
+          pagination,
+          pagination: { total, pageNum, pageSize },
+        },
       } = action;
       return {
         ...state,
@@ -129,6 +175,29 @@ export default {
           ...state.mission,
           list,
           pagination,
+          isLast: pageNum * pageSize >= total,
+        },
+      };
+    },
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload || null,
+      };
+    },
+    saveAppendExamination(state, { payload }) {
+      const {
+        list = [],
+        pagination,
+        pagination: { total, pageNum, pageSize },
+      } = payload;
+      return {
+        ...state,
+        mission: {
+          ...state.mission,
+          list: [...state.mission.list, ...list],
+          pagination,
+          isLast: pageNum * pageSize >= total,
         },
       };
     },
