@@ -227,7 +227,7 @@ export default class CoursewareList extends PureComponent {
                 {getFieldDecorator('name', {
                   initialValue: defaultFormData.name,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入视频名称" />)}
+                })(<Input placeholder="请输入课件名称" />)}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
@@ -311,7 +311,7 @@ export default class CoursewareList extends PureComponent {
                     {+readStatus === 0 ? '已读' : '未读'}
                   </Tag>
                   <div className={styles.introduction}>
-                    <span className={styles.grey}>{' 发布于 '}</span>
+                    <span className={styles.grey}>{' 创建于 '}</span>
                     <span>{getTime(createTime)}</span>
                   </div>
                   <div className={styles.statistics}>
