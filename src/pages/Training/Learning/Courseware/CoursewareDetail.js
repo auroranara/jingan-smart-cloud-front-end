@@ -32,8 +32,8 @@ export default class LearningLayout extends PureComponent {
       width: 1026,
       height: '100vh',
     },
-    fileSrc: null,  // 预览课件地址
-    coverSrc: null,  // 预览课件封面地址
+    fileSrc: null, // 预览课件地址
+    coverSrc: null, // 预览课件封面地址
     fileType: null, // 课件类型
   };
 
@@ -53,12 +53,12 @@ export default class LearningLayout extends PureComponent {
         id,
       },
       success: ({ list }) => {
-        const { webFileUrl, webVideoCover, fileUrl } = list[0]
+        const { webFileUrl, webVideoCover, fileUrl } = list[0];
         this.setState({
           fileSrc: webFileUrl[0],
           coverSrc: webVideoCover && webVideoCover.length > 0 ? webVideoCover[0] : null,
           fileType: fileUrl.split('.').pop(),
-        })
+        });
       },
     });
     dispatch({
@@ -84,24 +84,19 @@ export default class LearningLayout extends PureComponent {
         data: { list },
       },
     } = this.props;
-    const { fileSrc, fileType, coverSrc, styles } = this.state
+    const { fileSrc, fileType, coverSrc, styles } = this.state;
     const detail = list.find(d => d.id === id) || {};
 
-    const {
-      name,
-      createTime,
-      totalPerson,
-      totalRead,
-      content,
-      type,
-    } = detail;
+    const { name, createTime, totalPerson, totalRead, content, type } = detail;
 
     return (
       <PageHeaderLayout title="课件学习" breadcrumbList={breadcrumbList}>
         <Row gutter={16} className={style.learningCourseWare}>
           <Col>
             <Card>
-              <div className={style.detailTitle}><span>{name}</span></div>
+              <div className={style.detailTitle}>
+                <span>{name}</span>
+              </div>
               <div className={style.detailSecond}>
                 <span>发布时间 : {getTime(createTime)}</span>
                 <Divider type="vertical" />
@@ -120,13 +115,13 @@ export default class LearningLayout extends PureComponent {
                   {+type === 3 ? (
                     <Resource src={fileSrc} styles={styles} extension={fileType} />
                   ) : (
-                      <Resource
-                        src={fileSrc}
-                        styles={styles}
-                        poster={coverSrc}
-                        extension={fileType}
-                      />
-                    )}
+                    <Resource
+                      src={fileSrc}
+                      styles={styles}
+                      poster={coverSrc}
+                      extension={fileType}
+                    />
+                  )}
                 </div>
                 <div>
                   <h3 className={style.contentDetail}>

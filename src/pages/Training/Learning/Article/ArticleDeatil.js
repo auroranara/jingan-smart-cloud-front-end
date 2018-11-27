@@ -10,6 +10,7 @@ function getTime(t) {
   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
 }
 
+// 面包屑
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '教育培训', name: '教育培训' },
@@ -21,7 +22,9 @@ const breadcrumbList = [
   learning,
 }))
 export default class ArticleDeatil extends PureComponent {
-  // 挂载后
+  /**
+   * 挂载后
+   */
   componentDidMount() {
     const {
       dispatch,
