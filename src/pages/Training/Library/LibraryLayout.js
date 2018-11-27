@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Row, Col, Tabs, Tree, Spin, AutoComplete, Form, Select, Input } from 'antd';
+import { Card, Row, Col, Tabs, Tree, Spin, Form, Input } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';

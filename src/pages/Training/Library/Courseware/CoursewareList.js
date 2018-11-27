@@ -42,6 +42,9 @@ export default class CoursewareList extends PureComponent {
   state = {
     drawerVisible: false, // 控制预览抽屉显示
     detail: {}, // 课件预览详情
+    fileSrc: null, // 预览文件的url
+    fileType: null, // 预览文件类型
+    coverSrc: null, // 预览文件封面url
   }
 
   componentDidMount() {
@@ -177,7 +180,7 @@ export default class CoursewareList extends PureComponent {
 
   // 预览课件
   handleViewCourseWare = (item) => {
-    const { id, type, webFileUrl } = item
+    const { id, webFileUrl, fileUrl, webVideoCover } = item
     const { dispatch } = this.props
     dispatch({
       type: 'resourceManagement/addReadRecord',
@@ -187,9 +190,10 @@ export default class CoursewareList extends PureComponent {
     })
     this.setState({
       fileSrc: webFileUrl[0],
-      fileType: type === '2' ? 'mp4' : 'doc',
+      fileType: fileUrl.split('.').pop(),
       drawerVisible: true,
       detail: item,
+      coverSrc: webVideoCover && webVideoCover.length > 0 ? webVideoCover[0] : null,
     })
   }
 
@@ -268,7 +272,7 @@ export default class CoursewareList extends PureComponent {
       },
       user: { currentUser: { permissionCodes } },
     } = this.props
-    const { drawerVisible, fileSrc, fileType, detail } = this.state
+    const { drawerVisible, fileSrc, fileType, detail, coverSrc } = this.state
     // 是否编辑和删除 没有权限或不是企业用户或已发布 不能操作
     const editDisabled = (status) => !hasAuthority(editCode, permissionCodes) || notCompany || status === '1'
     const delDisabled = (status) => !hasAuthority(deleteCode, permissionCodes) || notCompany || status === '1'
@@ -339,7 +343,7 @@ export default class CoursewareList extends PureComponent {
               <Divider type="vertical" />
               <span>阅读人数：{detail.totalPerson}</span>
             </div>
-            {fileSrc && (<Resource src={fileSrc} extension={fileType} styles={{ width: '100%', height: 800 }} />)}
+            {fileSrc && (<Resource src={fileSrc} poster={coverSrc} extension={fileType} styles={{ width: '100%', height: 800 }} />)}
             {detail.content && (
               <div className={styles.detail}>
                 <span>详细内容：</span>

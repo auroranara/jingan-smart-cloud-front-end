@@ -219,7 +219,7 @@ export default class CoursewareList extends PureComponent {
     const treeList = treeData(knowledgeList);
 
     return (
-      <div>
+      <div className={styles.learningCourseWare}>
         <Row gutter={8}>
           <Form>
             <Col {...colWrapper}>
