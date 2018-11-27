@@ -269,8 +269,9 @@ export default class CoursewareList extends PureComponent {
       user: { currentUser: { permissionCodes } },
     } = this.props
     const { drawerVisible, fileSrc, fileType, detail } = this.state
-    const editDisabled = !hasAuthority(editCode, permissionCodes) || notCompany
-    const delDisabled = !hasAuthority(deleteCode, permissionCodes) || notCompany
+    // 是否编辑和删除 没有权限或不是企业用户或已发布 不能操作
+    const editDisabled = (status) => !hasAuthority(editCode, permissionCodes) || notCompany || status === '1'
+    const delDisabled = (status) => !hasAuthority(deleteCode, permissionCodes) || notCompany || status === '1'
 
     return (
       <div className={styles.coursewareList}>
@@ -292,12 +293,12 @@ export default class CoursewareList extends PureComponent {
                 <div className={styles.firstLine}>
                   <div className={styles.title}>{item.name}</div>
                   <div className={styles.rightIcons}>
-                    <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => this.handleToEdit(item.id) : null} />
+                    <Icon className={editDisabled(item.status) ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled(item.status) ? () => this.handleToEdit(item.id) : null} />
                     <Divider type="vertical" />
                     <Icon className={styles.icon} type="eye" onClick={() => this.handleViewCourseWare(item)} />
                     <Divider type="vertical" />
-                    <Popconfirm title="确认删除该试题吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled) }}>
-                      <Icon className={delDisabled ? styles.disabledIcon : styles.icon} type="close" />
+                    <Popconfirm title="确认删除该课件吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled((item.status))) }}>
+                      <Icon className={delDisabled((item.status)) ? styles.disabledIcon : styles.icon} type="close" />
                     </Popconfirm>
                   </div>
                 </div>
@@ -306,8 +307,9 @@ export default class CoursewareList extends PureComponent {
                   <Tag color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
                 </div>
                 <div className={styles.introduction}>
-                  <span className={styles.grey}>{' 发布于 '}</span>
-                  <span>{item.createTime}</span>
+                  {item.createName && (<span>{item.createName}</span>)}
+                  <span className={styles.grey}>{' 创建于 '}</span>
+                  <span>{item.createTime ? item.createTime.split(':').slice(0, -1).join(':') : '暂无数据'}</span>
                 </div>
                 <div className={styles.statistics}>
                   <Tooltip title="阅读次数"><span><Icon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
@@ -326,19 +328,25 @@ export default class CoursewareList extends PureComponent {
           visible={drawerVisible}
           destroyOnClose
           width={900}>
-          <div className={styles.courseViewTitle}>
+          <div className={styles.courseViewContainer}>
             <div className={styles.titleContainer}>
               <span>{detail.name}</span>
             </div>
             <div className={styles.statistics}>
-              <span>发布于 {detail.createTime}</span>
+              <span>创建于 {detail.createTime}</span>
               <Divider type="vertical" />
               <span>阅读次数：{detail.totalRead}</span>
               <Divider type="vertical" />
               <span>阅读人数：{detail.totalPerson}</span>
             </div>
+            {fileSrc && (<Resource src={fileSrc} extension={fileType} styles={{ width: '100%', height: 800 }} />)}
+            {detail.content && (
+              <div className={styles.detail}>
+                <span>详细内容：</span>
+                <p className={styles.content}>&nbsp;&nbsp;{detail.content}</p>
+              </div>
+            )}
           </div>
-          {fileSrc && (<Resource src={fileSrc} extension={fileType} styles={{ width: '100%', height: 800 }} />)}
         </Drawer>
       </div>
     )
