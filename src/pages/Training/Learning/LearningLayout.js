@@ -35,7 +35,9 @@ export default class LearningLayout extends PureComponent {
     };
   }
 
-  // 挂载后
+  /**
+   * 挂载后
+   */
   componentDidMount() {
     const {
       match: {
@@ -44,9 +46,14 @@ export default class LearningLayout extends PureComponent {
       user: {
         currentUser: { companyId },
       },
+      learning: { searchInfo },
       dispatch,
     } = this.props;
     this.companyId = companyId;
+    if (searchInfo && searchInfo.companyId) {
+      this.companyId = searchInfo.companyId;
+      this.companyName = searchInfo.companyName;
+    }
     const payload = { pageSize: defaultPageSize, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
     // 获取知识点树
@@ -59,7 +66,9 @@ export default class LearningLayout extends PureComponent {
     this.setState({ activeKey: type });
   }
 
-  // 显示企业弹出框
+  /**
+   * 显示企业弹出框
+   */
   handleFocus = e => {
     e.target.blur();
     const { dispatch } = this.props;
@@ -73,36 +82,54 @@ export default class LearningLayout extends PureComponent {
     });
   };
 
-  // 获取企业
+  /**
+   * 获取企业
+   */
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
     dispatch({ type: 'learning/fetchCompanies', payload });
   };
 
-  // 关闭企业弹出框
+  /**
+   * 关闭企业弹出框
+   */
   handleClose = () => {
     this.setState({ visible: false });
   };
 
-  // 选择企业
+  /**
+   * 选择企业
+   */
   handleSelect = item => {
     const {
       match: {
         params: { type },
       },
+      dispatch,
     } = this.props;
     const { id, name } = item;
     this.companyId = id;
     this.companyName = name;
+    // 判断tabs当前类型
     if (type === 'article') {
       this.handleArticleList();
     } else {
       this.handleCoursewareList();
     }
+    // 保存企业选择框数据
+    dispatch({
+      type: 'learning/saveSearchInfo',
+      payload: {
+        companyId: id,
+        companyName: name,
+      },
+    });
     this.handleClose();
   };
 
-  // 获取文章列表
+  /**
+   * 获取文章列表
+   */
   handleArticleList = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -121,7 +148,9 @@ export default class LearningLayout extends PureComponent {
     });
   };
 
-  // 获取课件列表
+  /**
+   * 获取课件列表
+   */
   handleCoursewareList = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -141,7 +170,9 @@ export default class LearningLayout extends PureComponent {
     });
   };
 
-  // 切换tab
+  /**
+   * 切换tab
+   */
   handleTabChange = key => {
     this.setState({ activeKey: key }, () => {
       router.push(`/training/learning/${key}/list`);
@@ -167,6 +198,7 @@ export default class LearningLayout extends PureComponent {
     );
   }
 
+  // 渲染页面
   render() {
     const { activeKey } = this.state;
     const {

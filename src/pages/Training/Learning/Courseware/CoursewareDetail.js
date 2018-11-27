@@ -34,7 +34,9 @@ export default class LearningLayout extends PureComponent {
     },
   };
 
-  // 挂载后
+  /**
+   *挂载后
+   */
   componentDidMount() {
     const {
       dispatch,
@@ -57,12 +59,6 @@ export default class LearningLayout extends PureComponent {
     });
   }
 
-  handleContent = () => {
-    this.setState({
-      visible: true,
-    });
-  };
-
   render() {
     const {
       match: {
@@ -81,7 +77,7 @@ export default class LearningLayout extends PureComponent {
       totalPerson,
       totalRead,
       content,
-      type,
+      fileUrl,
       webFileUrl,
       webVideoCover,
     } = detail;
@@ -110,16 +106,12 @@ export default class LearningLayout extends PureComponent {
               </div>
               <div className={style.detailMain}>
                 <div className={style.resource}>
-                  {+type === 3 ? (
-                    <Resource src={webFileUrl} styles={styles} extension="doc" />
-                  ) : (
-                    <Resource
-                      src={webFileUrl}
-                      styles={styles}
-                      poster={webVideoCover}
-                      extension="mp4"
-                    />
-                  )}
+                  <Resource
+                    src={webFileUrl}
+                    styles={styles}
+                    poster={webVideoCover}
+                    extension={fileUrl.split('.').pop()}
+                  />
                 </div>
                 <div>
                   <h3 className={style.contentDetail}>

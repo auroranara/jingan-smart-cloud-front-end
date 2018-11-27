@@ -40,8 +40,8 @@ const defaultFormData = {
   readStatus: undefined,
 };
 
-// 阅读状态选项
-const statusStudy = [{ value: '1', label: '未读' }, { value: '0', label: '已读' }];
+// 学习状态选项
+const statusStudy = [{ value: '1', label: '未学习' }, { value: '0', label: '已学习' }];
 
 function getTime(t) {
   return moment(t).format('YYYY-MM-DD HH:mm:ss ');
@@ -74,7 +74,9 @@ export default class CoursewareList extends PureComponent {
     this.formData = defaultFormData;
   }
 
-  // 挂载后
+  /**
+   * 挂载后
+   */
   componentDidMount() {
     const {
       dispatch,
@@ -91,9 +93,9 @@ export default class CoursewareList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
-        type: '2',
+        type: '2', // 课件类型为2
+        status: '1', // 发布状态为1
         companyId,
-        status: 1,
       },
     });
   }
@@ -104,7 +106,9 @@ export default class CoursewareList extends PureComponent {
     dispatch(routerRedux.push(`/training/learning/courseware/detail/${id}`));
   };
 
-  /* 查询按钮点击事件 */
+  /**
+   * 查询
+   */
   handleQuery = () => {
     const {
       dispatch,
@@ -128,14 +132,17 @@ export default class CoursewareList extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize,
-        type: '2',
+        type: '2', // 课件类型为2
+        status: '1', // 发布状态为1
         companyId,
         ...query,
       },
     });
   };
 
-  /* 重置按钮点击事件 */
+  /**
+   * 重置
+   */
   handleReset = () => {
     const {
       dispatch,
@@ -150,18 +157,22 @@ export default class CoursewareList extends PureComponent {
     // 清除筛选条件
     resetFields();
     this.formData = defaultFormData;
+    // 重新请求
     dispatch({
       type: 'learning/fetchCoursewareList',
       payload: {
         pageSize,
         pageNum: 1,
-        type: '2',
+        type: '2', // 课件类型为2
+        status: '1', // 发布状态为1
         companyId,
       },
     });
   };
 
-  // 点击加载更多
+  /**
+   * 加载更多
+   */
   handleLoadMore = () => {
     const {
       dispatch,
@@ -185,14 +196,16 @@ export default class CoursewareList extends PureComponent {
       payload: {
         pageNum: pageNum + 1,
         pageSize: 10,
-        type: '2', // type 2课件
+        type: '2', // 课件类型为2
         ...query,
         companyId,
       },
     });
   };
 
-  // 点击知识点获取对应的课件
+  /**
+   * 点击知识点获取对应的课件
+   */
   // handleSelectTree = value => {
   //   const { dispatch } = this.props;
   //   this.setState({ knowledgeId: value });
@@ -234,7 +247,7 @@ export default class CoursewareList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem>
                 {getFieldDecorator('readStatus')(
-                  <Select allowClear placeholder="请选择阅读状态">
+                  <Select allowClear placeholder="请选择学习状态">
                     {statusStudy.map(({ value, label }) => (
                       <Option key={value} value={value}>
                         {label}
@@ -309,7 +322,7 @@ export default class CoursewareList extends PureComponent {
                   </div>
                   <Tag className={styles.tags}>{knowledgeName}</Tag>
                   <Tag className={styles.tags} color={+readStatus === 0 ? 'blue' : 'grey'}>
-                    {+readStatus === 0 ? '已读' : '未读'}
+                    {+readStatus === 0 ? '已学习' : '未学习'}
                   </Tag>
                   <div className={styles.introduction}>
                     <span className={styles.grey}>{' 发布于 '}</span>
@@ -329,7 +342,7 @@ export default class CoursewareList extends PureComponent {
                     <span>
                       <a style={{ width: '20px' }} onClick={() => this.goToDetail(id)}>
                         <Icon className={styles.icon} type="read" />
-                        {'开始阅读'}
+                        {'开始学习'}
                       </a>
                     </span>
                   </div>
