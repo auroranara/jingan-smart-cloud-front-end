@@ -96,6 +96,9 @@ export default class ExaminationMissionAdd extends PureComponent {
           pageSize: defaultPageSize,
         },
       });
+      dispatch({
+        type: 'examinationMission/fetchDetail',
+      });
       // 设置默认值 考试时长90min 合格率60% 考试规则第一项
       setFieldsValue({ arrRuleType: ['1'], examLimit: 90, percentOfPass: 60 });
     } else {
@@ -461,7 +464,7 @@ export default class ExaminationMissionAdd extends PureComponent {
             <Row>
               <Form.Item label="考试期限" {...formItemLayout}>
                 {getFieldDecorator('timeRange', {
-                  initialValue: [moment(startTime), moment(endTime)],
+                  initialValue: startTime ? [moment(startTime), moment(endTime)] : [],
                   rules: [{ required: true, message: '请选择考试期限', type: 'array' }],
                 })(
                   <RangePicker
