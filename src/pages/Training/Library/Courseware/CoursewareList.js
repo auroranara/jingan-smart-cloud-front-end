@@ -160,6 +160,24 @@ export default class CoursewareList extends PureComponent {
     })
   }
 
+  // 点击改变课件发布状态
+  handleChangeStatus = (id, oldStatus, type, auth) => {
+    const { dispatch } = this.props
+    if (!auth) {
+      message.error('您没有权限')
+    }
+    dispatch({
+      type: 'resourceManagement/changePublishStatus',
+      payload: {
+        id,
+        status: oldStatus === '1' ? '0' : '1',
+        type,
+      },
+      success: () => { message.success(`${oldStatus === '1' ? '取消发布' : '发布'}课件成功`) },
+      error: () => { message.error(`${oldStatus === '1' ? '取消发布' : '发布'}课件失败`) },
+    })
+  }
+
   // 删除课件
   handleDelete = (id, delDisabled) => {
     if (delDisabled) {
@@ -208,7 +226,6 @@ export default class CoursewareList extends PureComponent {
   renderFilter = () => {
     const {
       notCompany,
-      companyId,
       form: { getFieldDecorator },
       user: { currentUser: { permissionCodes } },
     } = this.props
@@ -276,6 +293,8 @@ export default class CoursewareList extends PureComponent {
     // 是否编辑和删除 没有权限或不是企业用户或已发布 不能操作
     const editDisabled = (status) => !hasAuthority(editCode, permissionCodes) || notCompany || status === '1'
     const delDisabled = (status) => !hasAuthority(deleteCode, permissionCodes) || notCompany || status === '1'
+    // 改变课件发布状态权限
+    const statusAuth = hasAuthority(editCode, permissionCodes) || notCompany
 
     return (
       <div className={styles.coursewareList}>
@@ -308,7 +327,9 @@ export default class CoursewareList extends PureComponent {
                 </div>
                 <div className={styles.tags}>
                   <Tag>{item.type === '2' ? '视频' : '文档'}</Tag>
-                  <Tag color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                  <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>
+                    <Tag className={statusAuth ? styles.tag : styles.disabledTag} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                  </Popconfirm>
                 </div>
                 <div className={styles.introduction}>
                   {item.createName && (<span>{item.createName}</span>)}

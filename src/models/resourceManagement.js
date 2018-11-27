@@ -242,6 +242,24 @@ export default {
         if (success) success()
       } else if (error) error()
     },
+    // 改变文章发布状态
+    *changePublishStatus({ payload, success, error }, { call, put }) {
+      const response = yield call(editArticlesOrCourseWare, payload)
+      if (response && response.code === 200) {
+        if (payload.type === '1') {
+          yield put({
+            type: 'saveNewStatusArticles',
+            payload,
+          })
+        } else if (payload.type === '2' || payload.type === '3') {
+          yield put({
+            type: 'saveNewStatusCourseWare',
+            payload,
+          })
+        }
+        if (success) success()
+      } else if (error) error()
+    },
   },
   reducers: {
     saveKnowledgeTree(state, action) {
@@ -417,6 +435,36 @@ export default {
       return {
         ...state,
         companyList: payload,
+      }
+    },
+    saveNewStatusArticles(state, { payload: { id, status } }) {
+      const newList = state.article.list.map((item) => {
+        return item.id === id ? {
+          ...item,
+          status,
+        } : item
+      })
+      return {
+        ...state,
+        article: {
+          ...state.article,
+          list: newList,
+        },
+      }
+    },
+    saveNewStatusCourseWare(state, { payload: { id, status } }) {
+      const newList = state.courseWare.list.map((item) => {
+        return item.id === id ? {
+          ...item,
+          status,
+        } : item
+      })
+      return {
+        ...state,
+        courseWare: {
+          ...state.courseWare,
+          list: newList,
+        },
       }
     },
   },
