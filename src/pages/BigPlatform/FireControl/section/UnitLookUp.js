@@ -14,7 +14,8 @@ import onJobIcon from '../img/onJobIcon.png';
 import rabbit from '../img/rabbit.png';
 import snail from '../img/snail.png';
 import timeIcon from '../img/time.png';
-import cameraIcon from '../img/videoCamera.png';
+// import cameraIcon from '../img/videoCamera.png';
+import cameraIcon from '../img/camera_new.png';
 
 
 function formatTime(t) {

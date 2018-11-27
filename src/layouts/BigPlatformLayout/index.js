@@ -1,0 +1,62 @@
+import React, { PureComponent } from 'react';
+import classNames from 'classnames';
+import moment from 'moment';
+import styles from './index.less';
+import headerBg from '@/assets/header_bg.png';
+
+const { projectName } = global.PROJECT_CONFIG;
+export default class App extends PureComponent {
+  state={
+    currentTime: '0000-00-00 星期一 00:00:00',
+  }
+
+  componentDidMount() {
+    this.myTimer = setInterval(() => {
+      this.getCurrentTime();
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.myTimer);
+  }
+
+  /**
+   * 获取当前时间
+   */
+  getCurrentTime = () => {
+    this.setState({ currentTime: moment().locale('zh-cn').format('YYYY-MM-DD dddd HH:mm:ss') });
+  }
+
+  render() {
+    const {
+      // 布局容器的类名
+      className,
+      // 布局容器的style
+      style,
+      // 标题
+      title=projectName,
+      // 标题是否添加空格
+      autoSpace=true,
+      // 头部左边的内容，如企业名称或选择框等
+      extra,
+      // 子节点
+      children,
+    } = this.props;
+    const { currentTime } = this.state;
+    // 合并以后的容器类名
+    const containerClassName = classNames(styles.container, className);
+
+    return (
+      <div className={containerClassName} style={{ backgroundImage: `url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png)`, ...style}}>
+        <div className={styles.header} style={{ backgroundImage: `url(${headerBg})` }}>
+          <div className={styles.headerTitle}>{autoSpace ? title.split('').join(' ') : title}</div>
+          <div className={styles.headerTime}>{currentTime}</div>
+          {extra && <div className={styles.headerExtra}>{extra}</div>}
+        </div>
+        <div className={styles.content}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+}

@@ -7,14 +7,14 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
 import {
-  ELECTRICITY_TYPE as TYPE,
-  ELECTRICITY_TYPE_LABEL as TYPE_LABEL,
-  ELECTRICITY_PARAMS as PARAMS,
-  ELECTRICITY_COLUMNS as COLUMNS,
+  SMOKE_DETECTOR_TYPE as TYPE,
+  SMOKE_DETECTOR_TYPE_LABEL as TYPE_LABEL,
+  SMOKE_DETECTOR_FIRE_CATEGORIES as PARAMS,
+  SMOKE_DETECTOR_COLUMNS as COLUMNS,
   PAGE_SIZE,
   getFields,
 } from './constant';
-import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
+import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -27,15 +27,15 @@ const breadcrumbList = [
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
 
-// const data = [...Array(10).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', section: '厂区九车间', location: '氯乙烷压缩机东', category: '预警', parameter: '漏电电流', value: 19.6, limit: '18', desc: '>=临界值' }));
+// const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: '19.6|mg/m3', limitValue: '18', condition: 1 }));
+// const total = list.length;
 
 @connect(({ loading, dataAnalysis }) => ({
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class Electricity extends PureComponent {
+export default class SmokeDetector extends PureComponent {
   state = {
-    // moments: null,
     formVals: null,
     currentPage: 1,
   };
@@ -65,7 +65,6 @@ export default class Electricity extends PureComponent {
     );
   }
 
-  // 先查询后才能记录form表单的状态，然后导出，不能选完就导出，那样并不会记录form表单的状态
   handleExport = () => {
     const {
       dispatch,
@@ -95,7 +94,6 @@ export default class Electricity extends PureComponent {
   };
 
   handleSearch = values => {
-    // console.log(values);
     this.setState({ formVals: values });
     this.fetchData(1, values, (code, msg) => this.setPage(code, 1, msg));
   };
@@ -134,16 +132,6 @@ export default class Electricity extends PureComponent {
     this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
 
-  // onCalendarChange = (dates, dateStrings) => {
-  //   // console.log(dates);
-  //   this.setState({ moments: dates });
-  // };
-
-  // disabledDate = (current) => {
-  //   const { moments } = this.state;
-  //   return isDateDisabled(current, moments);
-  // };
-
   render() {
     const {
       loading,
@@ -154,16 +142,11 @@ export default class Electricity extends PureComponent {
         companyInfo: { name: companyName },
         analysis: { list = [], pagination: { total } = { total: 0 } },
       },
-      // location: { num },
     } = this.props;
 
     const { currentPage } = this.state;
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
-    // const methods = {
-    //   disabledDate: this.disabledDate,
-    //   onCalendarChange: this.onCalendarChange,
-    // };
     const fields = getFields(TYPE, PARAMS);
 
     return (
@@ -198,6 +181,7 @@ export default class Electricity extends PureComponent {
             rowKey="id"
             loading={loading}
             columns={addAlign(COLUMNS)}
+            // dataSource={list}
             dataSource={handleTableData(list, indexBase)}
             onChange={this.onTableChange}
             pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}

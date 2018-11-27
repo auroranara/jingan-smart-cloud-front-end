@@ -34,7 +34,7 @@ const breadcrumbList = [
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class ToxicGas extends PureComponent {
+export default class StorageTank extends PureComponent {
   state = {
     formVals: null,
     currentPage: 1,

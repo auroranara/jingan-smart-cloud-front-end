@@ -553,6 +553,12 @@ module.exports = [
                 name: 'storageTank',
                 component: './DataAnalysis/StorageTank',
               },
+              {
+                path: '/data-analysis/IOT-abnormal-data/smoke-detector/:id/count/:count',
+                code: 'dataAnalysis.IOTAbnormalData.smokeDetector',
+                name: 'smokeDetector',
+                component: './DataAnalysis/smokeDetector',
+              },
             ],
           },
           {

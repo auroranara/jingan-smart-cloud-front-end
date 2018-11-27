@@ -1,0 +1,53 @@
+/* 当前时间和额外内容的公共样式 */
+.mixTimeAndExtra() {
+  position: absolute;
+  bottom: 0;
+  width: 21.614583%;
+  font-size: 22px;
+  line-height: 56px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 容器 */
+.container {
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  color: #fff;
+  background: no-repeat center center / 100% 100%;
+  overflow: hidden;
+
+  /* 头部 */
+  .header {
+    position: relative;
+    height: 9.62963%;
+    background: no-repeat center bottom / 100% 58px;
+
+    /* 标题 */
+    .headerTitle {
+      position: absolute;
+      top: 43.859649%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+    }
+
+    /* 右边时间容器 */
+    .headerTime {
+      .mixTimeAndExtra;
+      right: 5.989583%;
+    }
+
+    /* 左边额外内容 */
+    .headerExtra {
+      .mixTimeAndExtra;
+      left: 5.989583%;
+    }
+  }
+
+  /* 内容 */
+  .content {
+    height: 90.37037%;
+  }
+}

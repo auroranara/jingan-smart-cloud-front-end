@@ -39,7 +39,8 @@ export default function OverviewSection(props) {
       {/* <div className={styles.divider}>
         <Divider><p className={styles.title}>{titleName}</p></Divider>
       </div> */}
-      <Row style={{ marginTop: 25 }}>
+      {/* <Row style={{ marginTop: 25 }}> */}
+      <Row style={{ marginTop: 13 }}>
         <Col span={12}>
           <div className={styles.unit}>
             <OvUnit url={companyIcon} title="管辖单位" num={total} />
@@ -55,7 +56,8 @@ export default function OverviewSection(props) {
         today={todayCount}
         thisWeek={thisWeekCount}
         thisMonth={thisMonthCount}
-        style={{ height: HEIGHT, padding: PADDING, marginTop: 25 }}
+        // style={{ height: HEIGHT, padding: PADDING, marginTop: 25 }}
+        style={{ height: HEIGHT, padding: PADDING, marginTop: 20 }}
       />
       <OvDangerCards
         total={totalDanger}
