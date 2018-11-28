@@ -56,6 +56,8 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
+    dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
+    dispatch({ type: 'monitor/fetchSmokeList', payload: { companyId, type: 6 } });
     // 获取火灾自动报警监测
     dispatch({ type: 'unitFireControl/fetchFireAlarmSystem', payload: { companyId } });
 
@@ -145,6 +147,8 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
+    dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
+    dispatch({ type: 'monitor/fetchSmokeList', payload: { companyId, type: 6 } });
     // 获取火灾自动报警监测
     dispatch({ type: 'unitFireControl/fetchFireAlarmSystem', payload: { companyId } });
 
@@ -337,6 +341,7 @@ export default class App extends PureComponent {
         electricityPieces,
         chartParams,
         errorDevice,
+        smokeCount,
       },
       unitFireControl: { fireAlarmSystem },
       dispatch,
@@ -424,6 +429,7 @@ export default class App extends PureComponent {
                   fireAlarmSystem={fireAlarmSystem}
                   fetchErrorDevices={this.fetchErrorDevices}
                   errorDevice={errorDevice}
+                  smokeCountData={smokeCount}
                 />
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>

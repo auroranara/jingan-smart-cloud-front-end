@@ -26,6 +26,8 @@ export default {
     allCamera: [],
     gasCount: {},
     gasList: [],
+    smokeCount: {},
+    smokeList: [],
     tags: [],
     countAndExponent: {},
     realTimeAlarm: [],
@@ -75,6 +77,19 @@ export default {
       response = response || EMPTY_OBJECT;
       const { result = EMPTY_OBJECT } = response;
       yield put({ type: 'saveGasList', payload: result });
+    },
+    // 烟感监测
+    *fetchSmokeCount({ payload }, { call, put }) {
+      let response = yield call(getGasCount, payload);
+      response = response || EMPTY_OBJECT;
+      const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+      if (code === 200) yield put({ type: 'saveSmokeCount', payload: data });
+    },
+    *fetchSmokeList({ payload }, { call, put }) {
+      let response = yield call(getGasList, payload);
+      response = response || EMPTY_OBJECT;
+      const { result = EMPTY_OBJECT } = response;
+      yield put({ type: 'saveSmokeList', payload: result });
     },
     // 获取企业传感器列表 根据传感器类型
     *fetchCompanyDevices({ payload, callback }, { call, put }) {
@@ -219,6 +234,12 @@ export default {
     },
     saveGasList(state, action) {
       return { ...state, gasList: action.payload };
+    },
+    saveSmokeCount(state, action) {
+      return { ...state, smokeCount: action.payload };
+    },
+    saveSmokeList(state, action) {
+      return { ...state, smokeList: action.payload };
     },
     saveChartDeviceList(state, action) {
       return { ...state, chartDeviceList: action.payload };
