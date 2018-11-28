@@ -12,7 +12,7 @@ export default class Resource extends PureComponent {
         visible={visible}
         src={`https://view.officeapps.live.com/op/embed.aspx?src=${src}`}
         frameBorder="0"
-        style={styles}
+        {...styles}
       >
         这是嵌入{' '}
         <a target="_blank" href="https://office.com">
@@ -29,12 +29,12 @@ export default class Resource extends PureComponent {
 
   renderPdf = () => {
     const { src, key, styles } = this.props;
-    return <embed src={src} style={styles} type="application/pdf" />;
+    return <embed src={src} {...styles} type="application/pdf" />;
   };
 
   renderVideo = () => {
-    const { src, poster, key, styles } = this.props;
-    return <Player playsInline poster={poster} src={src} style={styles} />;
+    const { src, poster, key, fluid, styles } = this.props;
+    return <Player fluid={fluid} playsInline poster={poster} src={src} {...styles} />;
   };
 
   render() {
