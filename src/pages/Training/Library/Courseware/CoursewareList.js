@@ -358,17 +358,17 @@ export default class CoursewareList extends PureComponent {
               <span>{detail.name}</span>
             </div>
             <div className={styles.statistics}>
-              <span>创建于 {detail.createTime}</span>
+              <span>创建于 {detail.createTime ? detail.createTime.split(':').slice(0, -1).join(':') : null}</span>
               <Divider type="vertical" />
               <span>阅读次数：{detail.totalRead}</span>
               <Divider type="vertical" />
               <span>阅读人数：{detail.totalPerson}</span>
             </div>
-            {fileSrc && (<Resource src={fileSrc} poster={coverSrc} extension={fileType} styles={{ width: '100%', height: 800 }} />)}
+            {fileSrc && (<Resource src={fileSrc} fluid={false} poster={coverSrc} extension={fileType} styles={{ width: '100%', height: 500 }} />)}
             {detail.content && (
               <div className={styles.detail}>
                 <span>详细内容：</span>
-                <p className={styles.content}>&nbsp;&nbsp;{detail.content}</p>
+                <p className={styles.content}>{detail.content}</p>
               </div>
             )}
           </div>
