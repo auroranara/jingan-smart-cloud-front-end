@@ -18,6 +18,8 @@ export default class FcSection extends PureComponent {
     } = this.props;
     const newStyle = {
       padding: '0 15px',
+      // 如果title里用的是margin，需要加上，现在用的是padding，无需加上，并且加了之后，在多层滚动时，会有一像素偏差的问题，会覆盖里面的上面或下面的border
+      // 为了兼容旧代码还是保留，但在多层滚动中将其覆盖掉了
       overflow: 'hidden',
       height: '100%',
       backfaceVisibility: 'hidden',
