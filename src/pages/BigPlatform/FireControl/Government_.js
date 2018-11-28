@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Col, Modal, Row, message } from 'antd';
 
-import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { myParseInt } from './utils';
 import styles from './Government.less';
 import Head from './Head';
@@ -537,25 +536,20 @@ export default class FireControlBigPlatform extends PureComponent {
     };
 
     return (
-      <BigPlatformLayout
-        extra="xxx"
-        className={styles.root}
-      >
-      {/* <div
+      <div
         className={styles.root}
         style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
-      > */}
+      >
         {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
-        {/* <Head
+        <Head
           title={projectName.split('').join(' ')}
           dispatch={dispatch}
           data={grids}
           gridId={gridId}
         />
-        <div className={styles.empty} /> */}
+        <div className={styles.empty} />
         <Row
-          style={{ height: '100%', marginLeft: 0, marginRight: 0, padding: '15px 12px' }}
-          // style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
+          style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
           gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}
         >
           <Col span={6} style={HEIGHT_PERCNET}>
@@ -719,8 +713,7 @@ export default class FireControlBigPlatform extends PureComponent {
           position={tooltipPosition}
           offset={[23, -38]}
         />
-      {/*</div>*/}
-      </BigPlatformLayout>
+      </div>
     );
   }
 }
