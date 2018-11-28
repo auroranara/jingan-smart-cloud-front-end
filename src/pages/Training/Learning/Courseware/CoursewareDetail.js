@@ -29,8 +29,8 @@ const getEmptyData = () => {
 export default class LearningLayout extends PureComponent {
   state = {
     styles: {
-      width: 1026,
-      height: '100vh',
+      width: '100%',
+      height: 500,
     },
     fileSrc: null, // 预览课件地址
     coverSrc: null, // 预览课件封面地址
@@ -115,13 +115,14 @@ export default class LearningLayout extends PureComponent {
                   {+type === 3 ? (
                     <Resource src={fileSrc} styles={styles} extension={fileType} />
                   ) : (
-                    <Resource
-                      src={fileSrc}
-                      styles={styles}
-                      poster={coverSrc}
-                      extension={fileType}
-                    />
-                  )}
+                      <Resource
+                        src={fileSrc}
+                        styles={styles}
+                        poster={coverSrc}
+                        extension={fileType}
+                        fluid={false}
+                      />
+                    )}
                 </div>
                 <div>
                   <h3 className={style.contentDetail}>

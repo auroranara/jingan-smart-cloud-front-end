@@ -367,7 +367,7 @@ export default class ArticleList extends PureComponent {
               <span>{detail.name}</span>
             </div>
             <div className={styles.statistics}>
-              <span>创建于 {detail.createTime}</span>
+              <span>创建于 {detail.createTime ? detail.createTime.split(':').slice(0, -1).join(':') : null}</span>
               <Divider type="vertical" />
               <span>阅读次数：{detail.totalRead}</span>
               <Divider type="vertical" />
