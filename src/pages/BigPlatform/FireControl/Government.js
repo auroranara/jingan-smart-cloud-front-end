@@ -5,7 +5,8 @@ import { Col, Modal, Row, message } from 'antd';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { myParseInt } from './utils';
 import styles from './Government.less';
-import Head from './Head';
+// import Head from './Head';
+import GridSelect from './components/GridSelect';
 import FcModule from './FcModule';
 // import FcMultiRotateModule from './FcMultiRotateModule';
 import FcMultiRotateModule from './FcNewMultiRotateModule';
@@ -536,9 +537,11 @@ export default class FireControlBigPlatform extends PureComponent {
       ...offGuard,
     };
 
+    const extra = <GridSelect dispatch={dispatch} data={grids} gridId={gridId} />;
+
     return (
       <BigPlatformLayout
-        extra="xxx"
+        extra={extra}
         className={styles.root}
       >
       {/* <div

@@ -13,7 +13,7 @@ const TRANS_FRONT = `${DURATION}s ${DURATION}s opacity cubic-bezier(0.19, 1, 0.2
 const TRANS_BACK = `${DURATION}s opacity cubic-bezier(0.95, 0.05, 0.795, 0.035)`;
 
 // 在多层滚动时，会有一像素偏差的问题，会覆盖里面的上面或下面的border，所以在此，将默认样式overflow：hidden覆盖掉
-const CONTAINER_BASE_STYLE = { border: 'none', overflow: 'visible' };
+const CONTAINER_BASE_STYLE = { border: 'none', overflow: 'visible', boxShadow: 'none' };
 const CONTAINER_FRONT = { opacity: OPACITY_FRONT, transition: TRANS_FRONT, ...CONTAINER_BASE_STYLE };
 const CONTAINER_BACK = { opacity: OPACITY_BACK, transition: TRANS_BACK, ...CONTAINER_BASE_STYLE };
 
