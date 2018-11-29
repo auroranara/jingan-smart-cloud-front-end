@@ -14,9 +14,9 @@ const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
 global.PROJECT_CONFIG = configs[PROJECT_ENV] || {};
 
 // 如果是build模式
-if (process.env.NODE_ENV === 'production') {
-  window.frontjsConfig.token = '60015f494561deeb785f3e6216d779bd';
-}
+// if (process.env.NODE_ENV === 'production') {
+//   window.frontjsConfig.token = '60015f494561deeb785f3e6216d779bd';
+// }
 
 // console.log('PROJECT_ENV', PROJECT_ENV);
 // console.log('window.publicPath', window.publicPath);
