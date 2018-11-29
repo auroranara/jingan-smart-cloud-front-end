@@ -29,6 +29,7 @@ export default function OverviewSection(props) {
       rectifyNum=0,
       reviewNum=0,
     }={},
+    handleDrawerVisibleChange,
   } = props;
 
   // console.log('overview', props.data);
@@ -43,12 +44,21 @@ export default function OverviewSection(props) {
       <Row style={{ marginTop: 13 }}>
         <Col span={12}>
           <div className={styles.unit}>
-            <OvUnit url={companyIcon} title="管辖单位" num={total} />
+            <OvUnit
+              title="管辖单位"
+              url={companyIcon}
+              num={total}
+              onClick={e => handleDrawerVisibleChange('unit')}
+            />
           </div>
         </Col>
         <Col span={12}>
           <div className={styles.unit}>
-            <OvUnit url={hostIcon} title="消防主机单位" num={activeCount} />
+            <OvUnit
+              title="消防主机单位"
+              url={hostIcon}
+              num={activeCount}
+            />
           </div>
         </Col>
       </Row>

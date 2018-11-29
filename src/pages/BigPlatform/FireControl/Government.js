@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Col, Modal, Row, message } from 'antd';
+import { Col, Drawer, Modal, Row, message } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { myParseInt } from './utils';
@@ -25,6 +25,7 @@ import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
+import UnitDrawer from './section/UnitDrawer';
 
 import { getGridId } from './utils';
 
@@ -78,6 +79,7 @@ export default class FireControlBigPlatform extends PureComponent {
     tooltipName: '',
     tooltipVisible: false,
     tooltipPosition: [0, 0],
+    unitDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -476,6 +478,12 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ tooltipVisible: false });
   };
 
+  handleDrawerVisibleChange = name => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({ [stateName]: !state[stateName] }), () => console.log(this.state));
+    console.log(this.state);
+  };
+
   render() {
     const {
       // match: { params: { gridId } },
@@ -526,6 +534,7 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipName,
       tooltipVisible,
       tooltipPosition,
+      unitDrawerVisible,
     } = this.state;
 
     // console.log(user);
@@ -563,7 +572,7 @@ export default class FireControlBigPlatform extends PureComponent {
         >
           <Col span={6} style={HEIGHT_PERCNET}>
             <FcModule className={styles.overview} isRotated={showReverse}>
-              <OverviewSection data={overview} />
+              <OverviewSection data={overview} handleDrawerVisibleChange={this.handleDrawerVisibleChange} />
               <OverviewBackSection data={{ selected: mapSelected, companyOv }} />
             </FcModule>
             <div className={styles.gutter1} />
@@ -723,6 +732,10 @@ export default class FireControlBigPlatform extends PureComponent {
           offset={[23, -38]}
         />
       {/*</div>*/}
+        <UnitDrawer
+          // visible={true}
+          visible={unitDrawerVisible}
+        />
       </BigPlatformLayout>
     );
   }
