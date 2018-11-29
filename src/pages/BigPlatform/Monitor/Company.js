@@ -41,6 +41,7 @@ export default class App extends PureComponent {
     waterSelectVal: '',
     chartSelectVal: '',
     selectedDeviceType: 1,
+    smokeStatus: ALL,
   };
 
   componentDidMount() {
@@ -51,13 +52,11 @@ export default class App extends PureComponent {
       },
     } = this.props;
 
-    // console.log(companyId);
     // dispatch({ type: 'monitor/fetchCompanyInfo', payload: companyId });
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
-    dispatch({ type: 'monitor/fetchSmokeList', payload: { companyId, type: 6 } });
     // 获取火灾自动报警监测
     dispatch({ type: 'unitFireControl/fetchFireAlarmSystem', payload: { companyId } });
 
@@ -66,7 +65,6 @@ export default class App extends PureComponent {
       type: 'monitor/fetchCompanyDevices',
       payload: { companyId, type: 3 },
       callback: firstDeviceId => {
-        // console.log(firstDeviceId);
         this.setState({ waterSelectVal: firstDeviceId });
         // 获取传感器监测参数
         dispatch({ type: 'monitor/fetchDeviceConfig', payload: { deviceId: firstDeviceId } });
@@ -147,11 +145,11 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
-    dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
-    dispatch({ type: 'monitor/fetchSmokeList', payload: { companyId, type: 6 } });
     // 获取火灾自动报警监测
     dispatch({ type: 'unitFireControl/fetchFireAlarmSystem', payload: { companyId } });
-
+    // 获取独立烟感监测数据
+    dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
+    dispatch({ type: 'monitor/fetchSmokeList', payload: { companyId, deviceType: 6 } });
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
   };
@@ -195,6 +193,9 @@ export default class App extends PureComponent {
   handleGasBack = () => {
     this.setState({ gasRotated: false });
   };
+  // handleSmokeLabelClick = status => {
+  //   this.setState({ smokeStatus: status });
+  // };
 
   handleVideoShow = keyId => {
     this.setState({ videoVisible: true, videoKeyId: keyId });
@@ -242,6 +243,7 @@ export default class App extends PureComponent {
       payload: { companyId, status },
     });
   };
+
   // 查看报警历史纪录
   handleViewHistory = () => {
     const {
@@ -325,6 +327,9 @@ export default class App extends PureComponent {
   render() {
     // 从props中获取企业名称
     const {
+      match: {
+        params: { companyId },
+      },
       monitor: {
         companyInfo: { name: companyName },
         allCamera = [],
@@ -342,6 +347,7 @@ export default class App extends PureComponent {
         chartParams,
         errorDevice,
         smokeCount,
+        smokeList,
       },
       unitFireControl: { fireAlarmSystem },
       dispatch,
@@ -429,7 +435,9 @@ export default class App extends PureComponent {
                   fireAlarmSystem={fireAlarmSystem}
                   fetchErrorDevices={this.fetchErrorDevices}
                   errorDevice={errorDevice}
+                  smokeList={smokeList}
                   smokeCountData={smokeCount}
+                  companyId={companyId}
                 />
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>

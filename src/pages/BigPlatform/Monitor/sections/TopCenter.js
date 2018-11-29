@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Col, Modal, Table, Pagination, Form, Button } from 'antd';
+import { Col, Modal, Table, Pagination } from 'antd';
 import WaterWave from 'components/Charts/ScoreWaterWave';
 import styles from './TopCenter.less';
 import { connect } from 'dva';
@@ -12,12 +12,11 @@ import fireHost from '../imgs/fire-host.png';
 import smokeIcon from '../imgs/smokeIcon.png';
 import redDot from '../imgs/redDot.png';
 import SignalAnime from '../Components/SignalAnime';
+import SmokeStatusLabel from '../components/SmokeStatusLabel';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 const hDivider = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/split_h.png';
 const divider = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/split.png';
-
-const FormItem = Form.Item;
 
 const alarmColumns = [
   {
@@ -83,48 +82,69 @@ const missingColumns = [
   },
 ];
 
+// 独立烟感状态
+const LOSS = 0; //失联
+const NORMAL = 1; //正常
+const ABNORMAL = 2; // 异常
+const ALL = 3; // 全部
+
 const smokeColumns = [
   {
-    title: '监测模块',
-    key: 'modal',
-    dataIndex: 'modal',
-    align: 'center',
-  },
-  {
     title: '设备号',
-    key: '11',
-    dataIndex: '11',
+    key: 'relationDeviceId',
+    dataIndex: 'relationDeviceId',
     align: 'center',
   },
   {
     title: '设备状态',
-    key: '22',
-    dataIndex: '22',
+    key: 'status',
+    dataIndex: 'status',
     align: 'center',
+    render: val => {
+      return +val === 0 ? '失联' : +val === 1 ? '正常' : '异常';
+    },
   },
   {
     title: '区域位置',
-    key: '33',
-    dataIndex: '33',
+    key: 'areaLocation',
+    dataIndex: 'areaLocation',
     align: 'center',
+    render: (text, record) => (
+      <span>
+        {record.area}
+        {record.area && record.location && '：'}
+        {record.location}
+      </span>
+    ),
   },
   {
     title: '发生时间',
-    key: '44',
-    dataIndex: '44',
+    key: 'addTime',
+    dataIndex: 'addTime',
     align: 'center',
+    render: (text, val) => (
+      <span>
+        {+val.status === 0
+          ? val.statusTime
+          : text
+            ? moment(text).format('YYYY-MM-DD hh:mm:ss')
+            : '暂无数据'}
+      </span>
+    ),
   },
 ];
 
 @connect(({ monitor, errorDevicesLoading, loading }) => ({
   monitor,
   errorDevicesLoading: loading.effects['monitor/fetchErrorDevices'],
+  smokeListLoding: loading.effects['monitor/fetchSmokeList'],
 }))
 export default class TopCenter extends PureComponent {
   state = {
     modalTitle: '',
     modalVisible: false,
     smokeModalVisible: false,
+    status: '',
   };
 
   // 打开弹窗
@@ -162,8 +182,43 @@ export default class TopCenter extends PureComponent {
   };
 
   // 打开烟感弹窗
-  handleSmokeModal = () => {
-    this.setState({ smokeModalVisible: true });
+  handleSmokeModal = status => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'monitor/fetchSmokeList',
+      payload: {
+        companyId,
+        deviceType: 6,
+        status: status,
+      },
+    });
+    this.setState({ smokeModalVisible: true, status: status });
+  };
+
+  // 处理烟感状态按钮
+  handleLabelOnClick = s => {
+    const { dispatch, companyId } = this.props;
+    if (+s === 3) {
+      dispatch({
+        type: 'monitor/fetchSmokeList',
+        payload: {
+          companyId,
+          deviceType: 6,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'monitor/fetchSmokeList',
+        payload: {
+          companyId,
+          deviceType: 6,
+          status: s,
+        },
+      });
+    }
+    this.setState({
+      status: s,
+    });
   };
 
   // 关闭烟感弹出框
@@ -175,8 +230,24 @@ export default class TopCenter extends PureComponent {
 
   // 渲染烟感监测弹出框
   renderSmokeModal = () => {
-    const { smokeModalVisible } = this.state;
-    console.log('11', smokeModalVisible);
+    const {
+      // handleLabelOnClick,
+      smokeList: { smokeListByPage, pageNum, total, pageSize },
+      smokeListLoding,
+      smokeCountData,
+    } = this.props;
+    const { smokeModalVisible, status } = this.state;
+    const {
+      count: totals = 0,
+      normal = 0,
+      unnormal: abnormal = 0,
+      outContact: loss = 0,
+    } = smokeCountData;
+
+    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
+    const statusTotal = [totals, normal, abnormal, loss];
+    const nums = [ALL, NORMAL, ABNORMAL, LOSS].map((status, index) => [status, statusTotal[index]]);
+
     const title = (
       <div className={styles.modalTitle}>
         <div className={styles.sectionTitleIcon} />
@@ -193,32 +264,35 @@ export default class TopCenter extends PureComponent {
         onCancel={this.handleSmokeModalClose}
         footer={false}
       >
-        <Form layout="inline" style={{ marginBottom: '10px' }}>
-          <Col>
-            <FormItem>
-              <Button ghost onClick={this.handleSmokeAll}>
-                全部-10
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button ghost onClick={this.handleSmokeAll}>
-                正常-10
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button ghost onClick={this.handleSmokeAll}>
-                报警-10
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button ghost onClick={this.handleSmokeAll}>
-                失联-10
-              </Button>
-            </FormItem>
-          </Col>
-        </Form>
-        <Table rowKey="id" columns={smokeColumns} pagination={false} />
-        <div className={styles.footer} />
+        <div className={styles.labelContainer}>
+          {nums.map(([s, n]) => (
+            <SmokeStatusLabel
+              key={s}
+              num={n}
+              status={s}
+              selected={status === s}
+              onClick={() => this.handleLabelOnClick(s)}
+            />
+          ))}
+        </div>
+        <Table
+          rowKey="deviceId"
+          columns={smokeColumns}
+          dataSource={smokeListByPage}
+          pagination={false}
+          loading={smokeListLoding}
+        />
+        <div className={styles.footer}>
+          <div>
+            <span className={styles.pagesText}>
+              每页
+              {pageSize}
+              行，共计
+              {pages}页
+            </span>
+          </div>
+          <Pagination current={pageNum} total={total} onChange={this.handlePageChange} />
+        </div>
       </Modal>
     );
   };
@@ -230,6 +304,7 @@ export default class TopCenter extends PureComponent {
       errorDevice: { errorDevicesByPage, pageNum, total, pageSize },
       errorDevicesLoading,
     } = this.props;
+
     const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
     const title = (
       <div className={styles.modalTitle}>
@@ -330,6 +405,7 @@ export default class TopCenter extends PureComponent {
       unnormal: abnormal = 0,
       outContact: loss = 0,
     } = smokeCountData;
+
     return (
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
         {/* 监测指数 */}
@@ -378,6 +454,7 @@ export default class TopCenter extends PureComponent {
             </div>
           </div>
         </Col>
+
         {/* 火灾自动报警监测 */}
         <Col span={12} style={{ height: '49%', padding: '0px 6px' }}>
           <div className={styles.sectionMain}>
@@ -402,7 +479,7 @@ export default class TopCenter extends PureComponent {
                   <p>
                     火警 <span className={styles.fireCount}>{fault_state}</span>
                   </p>
-                  <p onClick={this.handleSmokeModal}>
+                  <p>
                     故障 <span className={styles.errorCount}>{fire_state}</span>
                   </p>
                 </div>
@@ -437,13 +514,13 @@ export default class TopCenter extends PureComponent {
                   <p className={styles.device}>
                     设备总数 <span className={styles.deviceCount}>{total}</span>
                   </p>
-                  <p className={styles.normal} onClick={this.handleSmokeModal}>
+                  <p className={styles.normal} onClick={() => this.handleSmokeModal(NORMAL)}>
                     正常 <span className={styles.normalCount}>{normal}</span>
                   </p>
-                  <p className={styles.unusual} onClick={this.handleSmokeModal}>
+                  <p className={styles.unusual} onClick={() => this.handleSmokeModal(ABNORMAL)}>
                     异常 <span className={styles.unusualCount}>{abnormal}</span>
                   </p>
-                  <p className={styles.missing} onClick={this.handleSmokeModal}>
+                  <p className={styles.missing} onClick={() => this.handleSmokeModal(LOSS)}>
                     失联 <span className={styles.missingCount}>{loss}</span>
                   </p>
                 </div>
