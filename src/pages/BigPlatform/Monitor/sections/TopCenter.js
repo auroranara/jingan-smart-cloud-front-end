@@ -195,6 +195,15 @@ export default class TopCenter extends PureComponent {
     this.setState({ smokeModalVisible: true, status: status });
   };
 
+  // 处理分页
+  handleSomkePageChange = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'monitor/handleSmokeListPagination',
+      payload: [],
+    });
+  };
+
   // 处理烟感状态按钮
   handleLabelOnClick = s => {
     const { dispatch, companyId } = this.props;
@@ -291,7 +300,7 @@ export default class TopCenter extends PureComponent {
               {pages}页
             </span>
           </div>
-          <Pagination current={pageNum} total={total} onChange={this.handlePageChange} />
+          <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
         </div>
       </Modal>
     );
