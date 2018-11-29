@@ -481,7 +481,6 @@ export default class FireControlBigPlatform extends PureComponent {
   handleDrawerVisibleChange = name => {
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({ [stateName]: !state[stateName] }), () => console.log(this.state));
-    console.log(this.state);
   };
 
   render() {
@@ -735,6 +734,7 @@ export default class FireControlBigPlatform extends PureComponent {
         <UnitDrawer
           // visible={true}
           visible={unitDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
       </BigPlatformLayout>
     );

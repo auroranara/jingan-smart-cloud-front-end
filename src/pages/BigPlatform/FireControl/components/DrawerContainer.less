@@ -1,8 +1,35 @@
 @color: rgb(4, 253, 255);
 
+.drawer {
+  :global {
+    // .ant-drawer-content-wrapper {
+    //   box-shadow: none;
+    // }
+
+    .ant-drawer-content {
+      // background-color: transparent;
+      background-color: rgb(3, 48, 105);
+    }
+
+    .ant-drawer-close {
+      color: #FFF;
+    }
+  }
+}
+
 .container {
-  padding: 10px;
-  border: 1px solid @color;
+  padding: 16px;
+  height: 100%;
+  // border: 1px solid @color;
+  // background-color: rgb(3, 48, 105);
+  // box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  // border-radius: 10px;
+}
+
+.title {
+  color: #FFF;
+  font-size: 18px;
+  margin-bottom: 24px;
 }
 
 .rect {
@@ -10,4 +37,7 @@
   width: 20px;
   height: 20px;
   background-color: @color;
+  margin-right: 15px;
+  position: relative;
+  top: 3px;
 }
