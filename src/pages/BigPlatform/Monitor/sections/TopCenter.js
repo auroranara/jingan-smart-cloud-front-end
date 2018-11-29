@@ -196,11 +196,11 @@ export default class TopCenter extends PureComponent {
   };
 
   // 处理分页
-  handleSomkePageChange = () => {
+  handleSomkePageChange = pageNum => {
     const { dispatch } = this.props;
     dispatch({
       type: 'monitor/handleSmokeListPagination',
-      payload: [],
+      payload: { pageNum },
     });
   };
 
