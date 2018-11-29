@@ -132,6 +132,24 @@ export default class ArticleList extends PureComponent {
     })
   }
 
+  // 点击改变发布状态
+  handleChangeStatus = (id, oldStatus, auth) => {
+    const { dispatch } = this.props
+    if (!auth) {
+      message.error('您没有权限')
+    }
+    dispatch({
+      type: 'resourceManagement/changePublishStatus',
+      payload: {
+        id,
+        status: oldStatus === '1' ? '0' : '1',
+        type: '1',
+      },
+      success: () => { message.success(`${oldStatus === '1' ? '取消发布' : '发布'}文章成功`) },
+      error: () => { message.error(`${oldStatus === '1' ? '取消发布' : '发布'}文章失败`) },
+    })
+  }
+
   // 点击查询
   handleQuery = () => {
     const {
@@ -283,8 +301,11 @@ export default class ArticleList extends PureComponent {
       user: { currentUser: { permissionCodes } },
     } = this.props
     const { drawerVisible, detail } = this.state
-    const editDisabled = !hasAuthority(editCode, permissionCodes) || notCompany
-    const delDisabled = !hasAuthority(deleteCode, permissionCodes) || notCompany
+    // 是否编辑和删除 没有权限或不是企业用户或已发布 不能操作
+    const editDisabled = (status) => !hasAuthority(editCode, permissionCodes) || notCompany || status === '1'
+    const delDisabled = (status) => !hasAuthority(deleteCode, permissionCodes) || notCompany || status === '1'
+    // 改变发布状态的权限
+    const statusAuth = hasAuthority(editCode, permissionCodes) || notCompany
     return (
       <div className={styles.articleList}>
         {this.renderFilter()}
@@ -305,19 +326,22 @@ export default class ArticleList extends PureComponent {
                 <div className={styles.firstLine}>
                   <div className={styles.title}>{item.name}</div>
                   <div className={styles.rightIcon}>
-                    <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => { this.handleToEdit(item.id) } : null} />
+                    <Icon className={editDisabled(item.status) ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled(item.status) ? () => { this.handleToEdit(item.id) } : null} />
                     <Divider type="vertical" />
                     <Icon className={styles.icon} type="eye" onClick={() => { this.handleOpenDrawer(item) }} />
                     <Divider type="vertical" />
-                    <Popconfirm title="确认删除该文章吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled) }}>
-                      <Icon className={delDisabled ? styles.disabledIcon : styles.icon} type="close" />
+                    <Popconfirm title="确认删除该文章吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled(item.status)) }}>
+                      <Icon className={delDisabled(item.status) ? styles.disabledIcon : styles.icon} type="close" />
                     </Popconfirm>
                   </div>
                 </div>
-                <Tag className={styles.tags} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}文章吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, statusAuth) }}>
+                  <Tag className={statusAuth ? styles.tags : styles.disabledTags} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                </Popconfirm>
                 <div className={styles.introduction}>
-                  <span className={styles.grey}>{' 发布于 '}</span>
-                  <span>{item.createTime}</span>
+                  {item.createName && (<span>{item.createName}</span>)}
+                  <span className={styles.grey}>{' 创建于 '}</span>
+                  <span>{item.createTime ? item.createTime.split(':').slice(0, -1).join(':') : '暂无数据'}</span>
                 </div>
                 <div className={styles.statistics}>
                   <Tooltip title="阅读次数"><span><Icon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
@@ -343,7 +367,7 @@ export default class ArticleList extends PureComponent {
               <span>{detail.name}</span>
             </div>
             <div className={styles.statistics}>
-              <span>发布于 {detail.createTime}</span>
+              <span>创建于 {detail.createTime ? detail.createTime.split(':').slice(0, -1).join(':') : null}</span>
               <Divider type="vertical" />
               <span>阅读次数：{detail.totalRead}</span>
               <Divider type="vertical" />

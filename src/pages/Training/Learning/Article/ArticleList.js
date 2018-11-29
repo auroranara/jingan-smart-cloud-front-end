@@ -73,13 +73,9 @@ export default class ArticleList extends PureComponent {
     value: [],
   };
 
-  // 跳转到详情页面
-  goToDetail = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/learning/article/detail/${id}`));
-  };
-
-  // 挂载后
+  /**
+   * 挂载后
+   */
   componentDidMount() {
     const {
       dispatch,
@@ -102,7 +98,15 @@ export default class ArticleList extends PureComponent {
     });
   }
 
-  // 查询
+  // 跳转到详情页面
+  goToDetail = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/training/learning/article/detail/${id}`));
+  };
+
+  /**
+   * 查询
+   */
   handleArticleQuery = () => {
     const {
       dispatch,
@@ -123,14 +127,16 @@ export default class ArticleList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
-        type: '1',
+        type: '1', // 文章类型为1
         companyId,
         ...data,
       },
     });
   };
 
-  // 重置
+  /**
+   * 重置
+   */
   handleArticleReset = () => {
     const {
       dispatch,
@@ -150,13 +156,15 @@ export default class ArticleList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
-        type: '1',
+        type: '1', // 文章类型为1
         companyId,
       },
     });
   };
 
-  // 点击加载更多
+  /**
+   * 加载更多
+   */
   handleLoadMore = () => {
     const {
       dispatch,
@@ -175,14 +183,16 @@ export default class ArticleList extends PureComponent {
       payload: {
         pageNum: pageNum + 1,
         pageSize: defaultPageSize,
-        type: '1', // type 1文章
+        type: '1', // type=1文章
         ...data,
         companyId,
       },
     });
   };
 
-  // 点击知识点获取对应的文章
+  /**
+   * 点击知识点获取对应的课件
+   */
   // handleSelectTree = value => {
   //   const { dispatch } = this.props;
   //   this.setState({ knowledgeId: value });

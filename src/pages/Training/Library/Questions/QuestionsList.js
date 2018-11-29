@@ -49,7 +49,7 @@ const levels = [
   resourceManagement,
   user,
   initLoading: loading.effects['resourceManagement/fetchQuestions'],
-  loading: loading.effects['resourceManagement/appendQuestions'],
+  moreLoading: loading.effects['resourceManagement/appendQuestions'],
 }))
 export default class QuestionsList extends PureComponent {
 
@@ -254,7 +254,7 @@ export default class QuestionsList extends PureComponent {
   render() {
     const {
       initLoading,
-      loading,
+      moreLoading,
       notCompany,
       resourceManagement: {
         questions: {
@@ -273,10 +273,10 @@ export default class QuestionsList extends PureComponent {
         </Row>
         <List
           loading={initLoading}
-          loadMore={(
+          loadMore={!isLast && !initLoading && (
             <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px' }}>
-              {!isLast && !initLoading && !loading ? (<Button onClick={this.handleLoadMore}>加载更多</Button>) : (
-                (list && list.length > 0 && loading && <Spin spinning={loading} />)
+              {!moreLoading ? (<Button onClick={this.handleLoadMore}>加载更多</Button>) : (
+                (<Spin spinning={moreLoading} />)
               )}
             </div>
           )}

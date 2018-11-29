@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Row, Col, Tabs, Tree, Spin, AutoComplete, Form, Select, Input } from 'antd';
+import { Card, Row, Col, Tabs, Tree, Spin, Form, Input } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -266,43 +266,45 @@ export default class LibraryLayout extends PureComponent {
           </Fragment>
         )}
       >
-        {!company.id && notCompany ? (<div style={{ textAlign: 'center' }}>请先选择单位</div>) : (
-          <Row gutter={16}>
-            <Col span={6}>
-              <Card title="知识点">
-                {this.renderTree()}
-              </Card>
-            </Col>
-            <Col span={18}>
-              <Card>
-                <Tabs
-                  activeKey={activeKey}
-                  animated={false}
-                  onChange={this.handleTabChange}
-                >
-                  <TabPane tab="试题" key="questions">
-                    {activeKey === 'questions' && <Questions ref="questions" {...data} />}
-                  </TabPane>
-                  <TabPane tab="文章" key="article">
-                    {activeKey === 'article' && <Article ref="article" {...data} />}
-                  </TabPane>
-                  <TabPane tab="课件" key="courseware">
-                    {activeKey === 'courseware' && <Courseware ref="courseware" {...data} />}
-                  </TabPane>
-                </Tabs>
-              </Card>
-            </Col>
-          </Row>
-        )}
-        <CompanyModal
-          title="选择单位"
-          loading={companyLoading}
-          visible={visible}
-          modal={companyList}
-          fetch={this.fetchCompanyList}
-          onSelect={this.handleSelectCompany}
-          onClose={this.handleModalCLose}
-        />
+        <div className={styles.libraryLayout}>
+          {!company.id && notCompany ? (<div style={{ textAlign: 'center' }}>请先选择单位</div>) : (
+            <Row gutter={16}>
+              <Col span={6}>
+                <Card title="知识点">
+                  {this.renderTree()}
+                </Card>
+              </Col>
+              <Col span={18} className={styles.libraryListContainer}>
+                <Card>
+                  <Tabs
+                    activeKey={activeKey}
+                    animated={false}
+                    onChange={this.handleTabChange}
+                  >
+                    <TabPane tab="试题" key="questions">
+                      {activeKey === 'questions' && <Questions ref="questions" {...data} />}
+                    </TabPane>
+                    <TabPane tab="文章" key="article">
+                      {activeKey === 'article' && <Article ref="article" {...data} />}
+                    </TabPane>
+                    <TabPane tab="课件" key="courseware">
+                      {activeKey === 'courseware' && <Courseware ref="courseware" {...data} />}
+                    </TabPane>
+                  </Tabs>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <CompanyModal
+            title="选择单位"
+            loading={companyLoading}
+            visible={visible}
+            modal={companyList}
+            fetch={this.fetchCompanyList}
+            onSelect={this.handleSelectCompany}
+            onClose={this.handleModalCLose}
+          />
+        </div>
       </PageHeaderLayout>
     );
   }

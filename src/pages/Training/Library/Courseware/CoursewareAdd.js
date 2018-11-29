@@ -33,14 +33,8 @@ export default class CoursewareAdd extends PureComponent {
 
   state = {
     coverLoading: false, // 课件封面loading
-    fileList: [
-      /*  {
-         uid: '1',
-         url: 'http://data.jingan-china.cn/hello/gsafe/courseWare/181122-141031-U9UK.png',
-         name: '1',
-         status: 'done',
-       }, */
-    ],
+    fileList: [],
+    courseLoading: false, // 课件上传状态
   }
 
   componentDidMount() {
@@ -63,7 +57,7 @@ export default class CoursewareAdd extends PureComponent {
         },
         callback: ({ name, webVideoCover, videoCover, webFileUrl, fileUrl }) => {
           setFieldsValue({
-            videoCover: { webUrl: webVideoCover[0], dbUrl: videoCover },
+            videoCover: videoCover ? { webUrl: webVideoCover[0], dbUrl: videoCover } : undefined,
             fileUrl: { webUrl: webFileUrl[0], dbUrl: fileUrl },
           })
           this.setState({
@@ -91,13 +85,25 @@ export default class CoursewareAdd extends PureComponent {
     } = this.props
     // TODO：清空上传课件
     resetFields(['videoCover', 'fileUrl'])
-    this.setState({ fileList: [] })
+    this.setState({
+      fileList: [],
+      coverLoading: false,
+      courseLoading: false,
+    })
   }
 
   // 上传课件封面之前的回调
   handleBeforeCoverLoad = (file) => {
     const { coverLoading } = this.state
-    if (coverLoading) return false
+    // 判断是否图片
+    const isImage = file.type === "image/jpeg" || file.type === "image/png"
+    if (coverLoading) {
+      message.error('尚未上传结束')
+    }
+    if (!isImage) {
+      message.error('请上传图片')
+    }
+    return isImage && !coverLoading
   }
 
   // 点击提交
@@ -120,7 +126,7 @@ export default class CoursewareAdd extends PureComponent {
       if (!errors) {
         const { videoCover, fileUrl, ...others } = values
         const payload = {
-          videoCover: values.type === '2' ? videoCover.dbUrl : null,
+          videoCover: values.type === '2' && videoCover ? videoCover.dbUrl : null,
           fileUrl: fileUrl.dbUrl,
           ...others,
         }
@@ -174,12 +180,15 @@ export default class CoursewareAdd extends PureComponent {
 
   // 处理上传课件
   handleFileChange = ({ file, fileList }) => {
+    const { form: { getFieldValue } } = this.props
+    const type = getFieldValue('type')
+
     const {
       form: { setFieldsValue, resetFields },
     } = this.props
     let newList = fileList.slice(-1);
     if (file.status === 'uploading') {
-      this.setState({ loading: true });
+      this.setState({ courseLoading: true });
     } else if (file.status === 'done') {
       if (file.response && file.response.code === 200) {
         const {
@@ -193,29 +202,47 @@ export default class CoursewareAdd extends PureComponent {
         message.error('上传失败')
         resetFields(['fileUrl'])
       }
-      this.setState({ loading: false });
+      this.setState({ courseLoading: false });
     } else if (file.status === 'removed') {
       resetFields(['fileUrl'])
     }
-    this.setState({ fileList: newList });
+    if ((type === '2' && file.type === "video/mp4") || (type === '3' && file.type.includes('application'))) {
+      this.setState({ fileList: newList });
+    }
   }
 
   // 上传课件（视频）之前的回调
   handleBeforeVideoLoad = (file) => {
+    const { courseLoading } = this.state
     const isLt500M = file.size / 1024 / 1024 <= 500;
+    const isMp4 = file.type === "video/mp4"
     if (!isLt500M) {
       message.error('请上传不超过500M的视频');
     }
-    return isLt500M
+    if (!isMp4) {
+      message.error('请上传mp4格式视频文件')
+    }
+    if (courseLoading) {
+      message.error('尚未上传结束')
+    }
+    return isLt500M && !courseLoading && isMp4
   }
 
   // 上传课件（文档）之前的回调
   handleBeforeWordLoad = (file) => {
+    const { courseLoading } = this.state
     const sizeLimit = file.size / 1024 / 1024 <= 10;
+    const idDoc = file.type.includes('application')
     if (!sizeLimit) {
       message.error('请上传不超过10M的文档');
     }
-    return sizeLimit
+    if (!idDoc) {
+      message.error('请上传word、ppt或pdf格式')
+    }
+    if (courseLoading) {
+      message.error('尚未上传结束')
+    }
+    return sizeLimit && !courseLoading && idDoc
   }
 
   // 点击返回
@@ -252,7 +279,7 @@ export default class CoursewareAdd extends PureComponent {
         },
       },
     } = this.props
-    const { coverLoading, fileList } = this.state
+    const { coverLoading, fileList, courseLoading } = this.state
     const title = id ? '编辑课件' : '新增课件'
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -316,9 +343,6 @@ export default class CoursewareAdd extends PureComponent {
             {type === '2' && (
               <FormItem label="课件封面" {...formItemLayout}>
                 {getFieldDecorator('videoCover', {
-                  rules: [
-                    { required: true, message: '请上传课件封面', type: 'object' },
-                  ],
                 })(
                   <Fragment>
                     <Upload
@@ -352,10 +376,11 @@ export default class CoursewareAdd extends PureComponent {
                     data={{ folder: 'courseWare' }} // 附带的参数
                     action={uploadUrl}  // 上传地址
                     onChange={this.handleFileChange}
+                    disabled={courseLoading}
                     beforeUpload={type === '2' ? this.handleBeforeVideoLoad : this.handleBeforeWordLoad}
                     fileList={fileList}>
                     <Button type="primary">
-                      <Icon type="upload" /> 浏览
+                      <Icon type={courseLoading ? 'loading' : 'upload'} /> 浏览
                         </Button>
                   </Upload>
                 </Fragment>
@@ -387,7 +412,7 @@ export default class CoursewareAdd extends PureComponent {
           </Form>
           <div style={{ textAlign: 'center' }}>
             <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>返回</Button>
-            <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+            <Button disabled={coverLoading || courseLoading} type="primary" onClick={this.handleSubmit}>提交</Button>
           </div>
         </Card>
       </PageHeaderLayout>

@@ -42,6 +42,9 @@ export default class CoursewareList extends PureComponent {
   state = {
     drawerVisible: false, // 控制预览抽屉显示
     detail: {}, // 课件预览详情
+    fileSrc: null, // 预览文件的url
+    fileType: null, // 预览文件类型
+    coverSrc: null, // 预览文件封面url
   }
 
   componentDidMount() {
@@ -157,6 +160,24 @@ export default class CoursewareList extends PureComponent {
     })
   }
 
+  // 点击改变课件发布状态
+  handleChangeStatus = (id, oldStatus, type, auth) => {
+    const { dispatch } = this.props
+    if (!auth) {
+      message.error('您没有权限')
+    }
+    dispatch({
+      type: 'resourceManagement/changePublishStatus',
+      payload: {
+        id,
+        status: oldStatus === '1' ? '0' : '1',
+        type,
+      },
+      success: () => { message.success(`${oldStatus === '1' ? '取消发布' : '发布'}课件成功`) },
+      error: () => { message.error(`${oldStatus === '1' ? '取消发布' : '发布'}课件失败`) },
+    })
+  }
+
   // 删除课件
   handleDelete = (id, delDisabled) => {
     if (delDisabled) {
@@ -177,7 +198,7 @@ export default class CoursewareList extends PureComponent {
 
   // 预览课件
   handleViewCourseWare = (item) => {
-    const { id, type, webFileUrl } = item
+    const { id, webFileUrl, fileUrl, webVideoCover } = item
     const { dispatch } = this.props
     dispatch({
       type: 'resourceManagement/addReadRecord',
@@ -187,9 +208,10 @@ export default class CoursewareList extends PureComponent {
     })
     this.setState({
       fileSrc: webFileUrl[0],
-      fileType: type === '2' ? 'mp4' : 'doc',
+      fileType: fileUrl.split('.').pop(),
       drawerVisible: true,
       detail: item,
+      coverSrc: webVideoCover && webVideoCover.length > 0 ? webVideoCover[0] : null,
     })
   }
 
@@ -204,7 +226,6 @@ export default class CoursewareList extends PureComponent {
   renderFilter = () => {
     const {
       notCompany,
-      companyId,
       form: { getFieldDecorator },
       user: { currentUser: { permissionCodes } },
     } = this.props
@@ -268,9 +289,12 @@ export default class CoursewareList extends PureComponent {
       },
       user: { currentUser: { permissionCodes } },
     } = this.props
-    const { drawerVisible, fileSrc, fileType, detail } = this.state
-    const editDisabled = !hasAuthority(editCode, permissionCodes) || notCompany
-    const delDisabled = !hasAuthority(deleteCode, permissionCodes) || notCompany
+    const { drawerVisible, fileSrc, fileType, detail, coverSrc } = this.state
+    // 是否编辑和删除 没有权限或不是企业用户或已发布 不能操作
+    const editDisabled = (status) => !hasAuthority(editCode, permissionCodes) || notCompany || status === '1'
+    const delDisabled = (status) => !hasAuthority(deleteCode, permissionCodes) || notCompany || status === '1'
+    // 改变课件发布状态权限
+    const statusAuth = hasAuthority(editCode, permissionCodes) || notCompany
 
     return (
       <div className={styles.coursewareList}>
@@ -292,22 +316,25 @@ export default class CoursewareList extends PureComponent {
                 <div className={styles.firstLine}>
                   <div className={styles.title}>{item.name}</div>
                   <div className={styles.rightIcons}>
-                    <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => this.handleToEdit(item.id) : null} />
+                    <Icon className={editDisabled(item.status) ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled(item.status) ? () => this.handleToEdit(item.id) : null} />
                     <Divider type="vertical" />
                     <Icon className={styles.icon} type="eye" onClick={() => this.handleViewCourseWare(item)} />
                     <Divider type="vertical" />
-                    <Popconfirm title="确认删除该试题吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled) }}>
-                      <Icon className={delDisabled ? styles.disabledIcon : styles.icon} type="close" />
+                    <Popconfirm title="确认删除该课件吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled((item.status))) }}>
+                      <Icon className={delDisabled((item.status)) ? styles.disabledIcon : styles.icon} type="close" />
                     </Popconfirm>
                   </div>
                 </div>
                 <div className={styles.tags}>
                   <Tag>{item.type === '2' ? '视频' : '文档'}</Tag>
-                  <Tag color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                  <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>
+                    <Tag className={statusAuth ? styles.tag : styles.disabledTag} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                  </Popconfirm>
                 </div>
                 <div className={styles.introduction}>
-                  <span className={styles.grey}>{' 发布于 '}</span>
-                  <span>{item.createTime}</span>
+                  {item.createName && (<span>{item.createName}</span>)}
+                  <span className={styles.grey}>{' 创建于 '}</span>
+                  <span>{item.createTime ? item.createTime.split(':').slice(0, -1).join(':') : '暂无数据'}</span>
                 </div>
                 <div className={styles.statistics}>
                   <Tooltip title="阅读次数"><span><Icon className={styles.icon} type="eye" />{item.totalRead}</span></Tooltip>
@@ -326,19 +353,25 @@ export default class CoursewareList extends PureComponent {
           visible={drawerVisible}
           destroyOnClose
           width={900}>
-          <div className={styles.courseViewTitle}>
+          <div className={styles.courseViewContainer}>
             <div className={styles.titleContainer}>
               <span>{detail.name}</span>
             </div>
             <div className={styles.statistics}>
-              <span>发布于 {detail.createTime}</span>
+              <span>创建于 {detail.createTime ? detail.createTime.split(':').slice(0, -1).join(':') : null}</span>
               <Divider type="vertical" />
               <span>阅读次数：{detail.totalRead}</span>
               <Divider type="vertical" />
               <span>阅读人数：{detail.totalPerson}</span>
             </div>
+            {fileSrc && (<Resource src={fileSrc} fluid={false} poster={coverSrc} extension={fileType} styles={{ width: '100%', height: 500 }} />)}
+            {detail.content && (
+              <div className={styles.detail}>
+                <span>详细内容：</span>
+                <p className={styles.content}>{detail.content}</p>
+              </div>
+            )}
           </div>
-          {fileSrc && (<Resource src={fileSrc} extension={fileType} styles={{ width: '100%', height: 800 }} />)}
         </Drawer>
       </div>
     )
