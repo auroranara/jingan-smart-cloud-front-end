@@ -58,14 +58,17 @@ export default function OverviewSection(props) {
               title="消防主机单位"
               url={hostIcon}
               num={activeCount}
+              onClick={e => handleDrawerVisibleChange('host')}
             />
           </div>
         </Col>
       </Row>
       <OvFireCards
+        isUnit={0}
         today={todayCount}
         thisWeek={thisWeekCount}
         thisMonth={thisMonthCount}
+        handleDrawerVisibleChange={handleDrawerVisibleChange}
         // style={{ height: HEIGHT, padding: PADDING, marginTop: 25 }}
         style={{ height: HEIGHT, padding: PADDING, marginTop: 20 }}
       />

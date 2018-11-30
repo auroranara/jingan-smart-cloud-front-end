@@ -1,21 +1,20 @@
 import React, { PureComponent, Fragment } from 'react';
 
-import styles from './UnitDrawer.less';
+import styles from './HostDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import DrawerSection from '../components/DrawerSection';
 import OvProgress from '../components/OvProgress';
 import GraphSwitch from '../components/GraphSwitch';
 import SearchBar from '../components/SearchBar';
 import DrawerCard from '../components/DrawerCard';
-import unitRedIcon from '../img/unitRed.png';
-import unitBlueIcon from '../img/unitBlue.png';
-import unitGreyIcon from '../img/unitGrey.png';
-import dangerIcon from '../img/cardDanger.png';
+import hostRedIcon from '../img/hostRed.png';
+import hostBlueIcon from '../img/hostBlue.png';
+import hostIcon from '../img/cardHost.png';
 
-const ICON_WIDTH = 42;
-const ICON_HEIGHT = 40;
-const ICON_BOTTOM = 5;
-const TYPE = 'unit';
+const ICON_WIDTH = 37;
+const ICON_HEIGHT = 60;
+const ICON_BOTTOM = -5;
+const TYPE = 'host';
 
 const CARDS = [...Array(10).keys()].map(i => ({
   id: i,
@@ -28,7 +27,7 @@ const CARDS = [...Array(10).keys()].map(i => ({
   statusLabels: ['正常', '报警'],
 }));
 
-export default class UnitDrawer extends PureComponent {
+export default class HostDrawer extends PureComponent {
   render() {
     const { visible, isUnit, handleDrawerVisibleChange } = this.props;
 
@@ -36,23 +35,17 @@ export default class UnitDrawer extends PureComponent {
       <Fragment>
         <DrawerSection>
           <OvProgress
-            title="报警单位"
+            title="报警主机"
             percent={50}
             strokeColor="rgb(255,72,72)"
-            iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{ backgroundImage: `url(${hostRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
 
           />
           <OvProgress
-            title="正常单位"
+            title="正常主机"
             percent={50}
             strokeColor="rgb(0,251,252)"
-            iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-          />
-          <OvProgress
-            title="未接入单位"
-            percent={50}
-            strokeColor="rgb(163,163,163)"
-            iconStyle={{ backgroundImage: `url(${unitGreyIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{ backgroundImage: `url(${hostBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
           />
         </DrawerSection>
         <DrawerSection title="隐患数量排名" extra={<GraphSwitch />}>
@@ -68,7 +61,7 @@ export default class UnitDrawer extends PureComponent {
               key={item.id}
               info={
                 <Fragment>
-                  <span className={styles.cardIcon} style={{ backgroundImage: `url(${dangerIcon})` }} />
+                  <span className={styles.cardIcon} style={{ backgroundImage: `url(${hostIcon})` }} />
                   {`隐患数量：${item.quantity}`}
                 </Fragment>
               }
@@ -80,7 +73,7 @@ export default class UnitDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="管辖单位"
+        title="消防主机单位"
         visible={visible}
         left={left}
         right={right}

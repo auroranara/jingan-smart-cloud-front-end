@@ -26,6 +26,8 @@ import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
 import UnitDrawer from './section/UnitDrawer';
+import HostDrawer from './section/HostDrawer';
+import AlarmDrawer from './section/AlarmDrawer';
 
 import { getGridId } from './utils';
 
@@ -79,7 +81,11 @@ export default class FireControlBigPlatform extends PureComponent {
     tooltipName: '',
     tooltipVisible: false,
     tooltipPosition: [0, 0],
+    isUnit: 0, // 0 所有, 1 某个单位
+    ovType: 0, // 0 -> 今日/已超期 1 -> 本周/待整改 2 -> 本月/已超期
     unitDrawerVisible: false,
+    hostDrawerVisible: false,
+    alarmDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -478,9 +484,13 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ tooltipVisible: false });
   };
 
-  handleDrawerVisibleChange = name => {
+  handleDrawerVisibleChange = (name, isUnit=0, ovType=0) => {
     const stateName = `${name}DrawerVisible`;
-    this.setState(state => ({ [stateName]: !state[stateName] }), () => console.log(this.state));
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+      isUnit,
+      ovType,
+    }));
   };
 
   render() {
@@ -533,7 +543,11 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipName,
       tooltipVisible,
       tooltipPosition,
+      isUnit,
+      ovType,
       unitDrawerVisible,
+      hostDrawerVisible,
+      alarmDrawerVisible,
     } = this.state;
 
     // console.log(user);
@@ -732,8 +746,19 @@ export default class FireControlBigPlatform extends PureComponent {
         />
       {/*</div>*/}
         <UnitDrawer
-          // visible={true}
+          isUnit={isUnit}
           visible={unitDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <HostDrawer
+          isUnit={isUnit}
+          visible={hostDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <AlarmDrawer
+          isUnit={isUnit}
+          ovType={ovType}
+          visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
       </BigPlatformLayout>

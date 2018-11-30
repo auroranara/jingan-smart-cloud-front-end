@@ -1,0 +1,25 @@
+@color: rgb(4, 253, 255);
+
+.container {
+  height: 100%;
+
+  :global {
+    .ant-input-search.ant-input-search-enter-button > .ant-input {
+      color: #FFF;
+      border: 1px solid @color;
+      background-color: transparent;
+    }
+
+    .ant-btn-primary {
+      color: @color;
+      border: 1px solid @color;
+      background-color: rgb(4, 71, 134);
+    }
+  }
+}
+
+.cardsContainer {
+  // margin-top: 12px;
+  height: calc(100% - 32px);
+  overflow: auto;
+}

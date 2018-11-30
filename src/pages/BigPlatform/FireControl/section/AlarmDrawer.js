@@ -1,21 +1,21 @@
 import React, { PureComponent, Fragment } from 'react';
+import moment from 'moment';
 
-import styles from './UnitDrawer.less';
+import styles from './AlarmDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import DrawerSection from '../components/DrawerSection';
 import OvProgress from '../components/OvProgress';
 import GraphSwitch from '../components/GraphSwitch';
 import SearchBar from '../components/SearchBar';
 import DrawerCard from '../components/DrawerCard';
-import unitRedIcon from '../img/unitRed.png';
-import unitBlueIcon from '../img/unitBlue.png';
-import unitGreyIcon from '../img/unitGrey.png';
-import dangerIcon from '../img/cardDanger.png';
+import alarmRedIcon from '../img/alarmRed.png';
+import alarmBlueIcon from '../img/alarmBlue.png';
+import clockIcon from '../img/cardClock1.png';
 
-const ICON_WIDTH = 42;
-const ICON_HEIGHT = 40;
-const ICON_BOTTOM = 5;
-const TYPE = 'unit';
+const ICON_WIDTH = 48;
+const ICON_HEIGHT = 48;
+const ICON_BOTTOM = 2;
+const TYPE = 'alarm';
 
 const CARDS = [...Array(10).keys()].map(i => ({
   id: i,
@@ -25,39 +25,34 @@ const CARDS = [...Array(10).keys()].map(i => ({
   phone: '13288888888',
   quantity: Math.floor(Math.random() * 10),
   status: Math.random() > 0.5 ? 0 : 1,
-  statusLabels: ['正常', '报警'],
+  statusLabels: ['已处理', '处理中'],
 }));
 
-export default class UnitDrawer extends PureComponent {
+export default class AlarmDrawer extends PureComponent {
   render() {
-    const { visible, isUnit, handleDrawerVisibleChange } = this.props;
+    const { visible, isUnit, ovType, handleDrawerVisibleChange } = this.props;
 
     const left = (
       <Fragment>
-        <DrawerSection>
+        <DrawerSection title="火警状态统计">
           <OvProgress
-            title="报警单位"
+            title="报警主机"
             percent={50}
             strokeColor="rgb(255,72,72)"
-            iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            style={{ marginTop: 40 }}
+            iconStyle={{ backgroundImage: `url(${alarmRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
 
           />
           <OvProgress
-            title="正常单位"
+            title="正常主机"
             percent={50}
             strokeColor="rgb(0,251,252)"
-            iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-          />
-          <OvProgress
-            title="未接入单位"
-            percent={50}
-            strokeColor="rgb(163,163,163)"
-            iconStyle={{ backgroundImage: `url(${unitGreyIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{ backgroundImage: `url(${alarmBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
           />
         </DrawerSection>
-        <DrawerSection title="隐患数量排名" extra={<GraphSwitch />}>
-        content
-      </DrawerSection>
+        <DrawerSection title="火警趋势图" titleInfo="最近12个月" extra={<GraphSwitch />}>
+          content
+        </DrawerSection>
       </Fragment>
     );
 
@@ -68,8 +63,8 @@ export default class UnitDrawer extends PureComponent {
               key={item.id}
               info={
                 <Fragment>
-                  <span className={styles.cardIcon} style={{ backgroundImage: `url(${dangerIcon})` }} />
-                  {`隐患数量：${item.quantity}`}
+                  <span className={styles.cardIcon} style={{ backgroundImage: `url(${clockIcon})` }} />
+                  {moment().format('YYYY-MM-DD HH:MM')}
                 </Fragment>
               }
               {...item}
@@ -80,7 +75,7 @@ export default class UnitDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="管辖单位"
+        title="消防主机单位"
         visible={visible}
         left={left}
         right={right}
