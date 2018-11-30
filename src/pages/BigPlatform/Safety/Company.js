@@ -1654,8 +1654,7 @@ class CompanyLayout extends PureComponent {
               </Col>
             </Row>
             <div className={scrollClassName}>
-              {legalList &&
-                legalList.length && (
+              {legalList.length !== 0 && (
                   <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
                     <div className={styles.personLabel}>单位法人</div>
                     {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
