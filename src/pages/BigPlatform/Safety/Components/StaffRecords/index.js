@@ -3,8 +3,6 @@ import { Table, Select } from 'antd'
 import moment from 'moment';
 import backIcon from 'assets/back.png';
 import Section from '@/components/Section';
-import Switcher from '@/components/Switcher'
-import HiddenDanger from '../HiddenDanger';
 
 import styles from './index.less';
 const { Option } = Select;
@@ -19,6 +17,7 @@ const defaultFieldNames = {
   time: 'time',
   point: 'point',
   result: 'result',
+  status: 'status',
 };
 /**
  * 单位巡查人员巡查记录
@@ -53,9 +52,11 @@ export default class App extends PureComponent {
       data=[],
       fieldNames,
       month,
+      // 显示隐患详情
+      handleShowDetail,
     } = this.props;
     const { hiddenDanger } = this.state;
-    const { id: idField, person: personField, time: timeField, point: pointField, result: resultField } = {...defaultFieldNames, ...fieldNames};
+    const { id: idField, person: personField, time: timeField, point: pointField, result: resultField, status: statusField } = {...defaultFieldNames, ...fieldNames};
     const total = data.length;
     const abnormal = data.filter(item => +item[resultField] !== 1).length;
     const list = hiddenDanger && hiddenDanger.map(({
@@ -103,6 +104,7 @@ export default class App extends PureComponent {
         title: '巡查点位',
         dataIndex: pointField,
         key: pointField,
+        render: (value, { card }) => <div style={{ color: '#00baff', cursor: 'pointer' }} onClick={() => {handleShowDetail({ hiddenDangerList: card});}}>{value}</div>,
       },
       {
         title: '巡查结果',
@@ -111,9 +113,15 @@ export default class App extends PureComponent {
         render: (text, { card }) => {
           const isNormal = +text === 1;
           return (
-            <div style={{ cursor: isNormal?undefined:'pointer' }} onClick={isNormal?undefined:() => this.setHiddenDanger(card)}>{isNormal ? '正常':'异常'}</div>
+            <span style={{ color: isNormal ? undefined : '#ff4848' }}>{isNormal ? '正常':'异常'}</span>
           )
         },
+      },
+      {
+        title: '隐患当前状态',
+        dataIndex: statusField,
+        key: statusField,
+        render: (value) => value ? <span style={{ color: '#ff4848' }}>{value}</span> : '---',
       },
     ];
 
@@ -146,7 +154,7 @@ export default class App extends PureComponent {
       >
         <Table
           className={styles.table}
-          rowClassName={record => +record[resultField] === 1 ? '' : styles.abnormal }
+          // rowClassName={record => +record[resultField] === 1 ? '' : styles.abnormal }
           size="small"
           dataSource={data}
           columns={columns}
@@ -154,26 +162,6 @@ export default class App extends PureComponent {
           bordered={false}
           rowKey={idField}
         />
-        {list && (
-          <Switcher
-            visible={true}
-            style={{
-              position: 'fixed',
-              bottom: '0',
-              left: '25%',
-              right: '25%',
-            }}
-            onClose={() => this.setHiddenDanger(null)}
-          >
-            {list.map(item => (
-              <HiddenDanger
-                key={item.id}
-                style={{ marginBottom: 0 }}
-                data={item}
-              />
-            ))}
-          </Switcher>
-        )}
       </Section>
     );
   }
