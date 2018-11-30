@@ -125,7 +125,7 @@ const smokeColumns = [
     render: (text, val) => (
       <span>
         {+val.status === 0
-          ? val.statusTime
+          ? val.statusTime.moment(val.statusTime).format('YYYY-MM-DD hh:mm:ss')
           : text
             ? moment(text).format('YYYY-MM-DD hh:mm:ss')
             : '暂无数据'}
@@ -240,7 +240,6 @@ export default class TopCenter extends PureComponent {
   // 渲染烟感监测弹出框
   renderSmokeModal = () => {
     const {
-      // handleLabelOnClick,
       smokeList: { smokeListByPage, pageNum, total, pageSize },
       smokeListLoding,
       smokeCountData,

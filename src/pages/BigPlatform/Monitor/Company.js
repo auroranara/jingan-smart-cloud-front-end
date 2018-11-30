@@ -192,9 +192,6 @@ export default class App extends PureComponent {
   handleGasBack = () => {
     this.setState({ gasRotated: false });
   };
-  // handleSmokeLabelClick = status => {
-  //   this.setState({ smokeStatus: status });
-  // };
 
   handleVideoShow = keyId => {
     this.setState({ videoVisible: true, videoKeyId: keyId });
