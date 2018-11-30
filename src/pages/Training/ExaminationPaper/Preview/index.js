@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
+import { initChars } from '@/utils/utils';
 
 import styles from './index.less';
 const { Panel } = Collapse;
@@ -25,8 +26,9 @@ const breadcrumbList = [
   { title: listTitle, name: listTitle, href: backUrl },
   { title, name: title },
 ];
+
 /* 选项签名 */
-const signs = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
+const signs = initChars();
 /* serial */
 const serials = ['一', '二', '三'];
 
