@@ -48,7 +48,7 @@ export default class GridSelect extends PureComponent {
 
     return (
       <div className={styles.treeContainer}>
-        {list.length > 1 ? (
+        {list.length > 0 ? (
           <TreeSelect
             style={{ width: 300, fontSize: FONT_SIZE }}
             value={treeValue}

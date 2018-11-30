@@ -10,6 +10,7 @@ export default class DrawerContainer extends PureComponent {
   render() {
     const { title, visible, onClose, left=null, right=null } = this.props;
 
+    // right不存在时，默认全部渲染left
     return (
       <Drawer
         visible={visible}
@@ -26,12 +27,14 @@ export default class DrawerContainer extends PureComponent {
             {title}
           </h3>
           <Row style={{ height: 'calc(100% - 66px)' }}>
-            <Col span={12} style={COL_STYLE}>
+            <Col span={right ? 12 : 24} style={COL_STYLE}>
               {left}
             </Col>
-            <Col span={12} style={COL_STYLE}>
-              {right}
-            </Col>
+            {right && (
+              <Col span={12} style={COL_STYLE}>
+                {right}
+              </Col>
+            )}
           </Row>
         </div>
       </Drawer>
