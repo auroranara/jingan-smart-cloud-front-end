@@ -279,13 +279,15 @@ export default class AssociatedUnit extends PureComponent {
           // 默认选取第一个类型
           unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-          unitTypes && unitTypes.length && fetchUnitsFuzzy({
-            payload: {
-              unitType: unitTypes[0].id,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
+          unitTypes &&
+            unitTypes.length &&
+            fetchUnitsFuzzy({
+              payload: {
+                unitType: unitTypes[0].id,
+                pageNum: 1,
+                pageSize: defaultPageSize,
+              },
+            });
         };
 
     // 清空权限树
@@ -309,7 +311,11 @@ export default class AssociatedUnit extends PureComponent {
           );
 
           // 初始化业务分类
-          setFieldsValue({ regulatoryClassification: regulatoryClassification ? regulatoryClassification.split(',').filter(v => v) : [] });
+          setFieldsValue({
+            regulatoryClassification: regulatoryClassification
+              ? regulatoryClassification.split(',').filter(v => v)
+              : [],
+          });
 
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
           unitType === 1 && this.getMaintenanceTree(unitId);
@@ -505,7 +511,10 @@ export default class AssociatedUnit extends PureComponent {
               regulatoryClassification && regulatoryClassification.length
                 ? regulatoryClassification.join(',')
                 : null,
-            permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap).join(','),
+            permissions: addParentKey(
+              getNoRepeat(permissions, this.permissions),
+              this.parentIdMap
+            ).join(','),
           };
           switch (
             payload.unitType //单位类型
@@ -759,18 +768,18 @@ export default class AssociatedUnit extends PureComponent {
                 })(<Input disabled={true} placeholder="请输入用户名" min={1} max={20} />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.accountStatus}>
                 {getFieldDecorator('accountStatus', {
                   initialValue: accountStatus,
                 })(
-                  <Select disabled={true} placeholder="请选择账号状态">
+                  <AutoComplete disabled={true} placeholder="请选择账号状态">
                     {accountStatuses.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.label}
                       </Option>
                     ))}
-                  </Select>
+                  </AutoComplete>
                 )}
               </Form.Item>
             </Col>
@@ -828,7 +837,7 @@ export default class AssociatedUnit extends PureComponent {
               </Form.Item>
             </Col>
             {unitTypeChecked !== 2 && (
-              <Col lg={8} md={12} sm={24}>
+              <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                 <Form.Item label={fieldLabels.unitId}>
                   {getFieldDecorator('unitId', {
                     // TODO：
@@ -910,14 +919,9 @@ export default class AssociatedUnit extends PureComponent {
             {/* 当单位类型为企事业主体（企事业主体对应id为4） */}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 4 && (
-                <Col lg={8} md={12} sm={24}>
+                <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                   <Form.Item label={fieldLabels.userType}>
                     {getFieldDecorator('userType', {
-                      // initialValue: id
-                      //   ? userType
-                      //   : userTypes.length === 0
-                      //     ? undefined
-                      //     : userTypes[0].value,
                       initialValue: userId
                         ? userType
                         : userTypes.length === 0
@@ -930,33 +934,33 @@ export default class AssociatedUnit extends PureComponent {
                         },
                       ],
                     })(
-                      <Select placeholder="请选择用户类型">
+                      <AutoComplete placeholder="请选择用户类型">
                         {userTypes.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
                           </Option>
                         ))}
-                      </Select>
+                      </AutoComplete>
                     )}
                   </Form.Item>
                 </Col>
               )}
-              {unitTypes.length !== 0 &&
+            {unitTypes.length !== 0 &&
               unitTypeChecked === 4 && (
-                <Col lg={8} md={12} sm={24}>
+                <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
                       initialValue: SUPERVISIONS_ALL,
                       // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
-                      <Select mode="multiple" placeholder="请选择业务分类">
+                      <AutoComplete mode="multiple" placeholder="请选择业务分类">
                         {Supervisions.map(item => (
                           <Option value={item.id} key={item.id}>
                             {item.label}
                           </Option>
                         ))}
-                      </Select>
+                      </AutoComplete>
                     )}
                   </Form.Item>
                 </Col>
@@ -964,7 +968,7 @@ export default class AssociatedUnit extends PureComponent {
             {/* 当单位类型为政府机构（政府机构对应id为2） */}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
-                <Col lg={8} md={12} sm={24}>
+                <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                   <Form.Item label={fieldLabels.userType}>
                     {getFieldDecorator('userType', {
                       initialValue: userType,
@@ -975,51 +979,51 @@ export default class AssociatedUnit extends PureComponent {
                         },
                       ],
                     })(
-                      <Select placeholder="请选择用户类型">
+                      <AutoComplete placeholder="请选择用户类型">
                         {gavUserTypes.map(item => (
                           <Option value={item.id} key={item.id}>
                             {item.label}
                           </Option>
                         ))}
-                      </Select>
+                      </AutoComplete>
                     )}
                   </Form.Item>
                 </Col>
               )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
-                <Col lg={8} md={12} sm={24}>
+                <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
                       initialValue: SUPERVISIONS_ALL,
                       // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
-                      <Select mode="multiple" placeholder="请选择业务分类">
+                      <AutoComplete mode="multiple" placeholder="请选择业务分类">
                         {Supervisions.map(item => (
                           <Option value={item.id} key={item.id}>
                             {item.label}
                           </Option>
                         ))}
-                      </Select>
+                      </AutoComplete>
                     )}
                   </Form.Item>
                 </Col>
               )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === 2 && (
-                <Col lg={8} md={12} sm={24}>
+                <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                   <Form.Item label={fieldLabels.documentTypeId}>
                     {getFieldDecorator('documentTypeId', {
                       initialValue: documentTypeId,
                     })(
-                      <Select allowClear placeholder="请选择执法证种类">
+                      <AutoComplete allowClear placeholder="请选择执法证种类">
                         {documentTypeIds.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
                           </Option>
                         ))}
-                      </Select>
+                      </AutoComplete>
                     )}
                   </Form.Item>
                 </Col>
@@ -1073,12 +1077,14 @@ export default class AssociatedUnit extends PureComponent {
 
   handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
     // console.log(nextTargetKeys);
-    const { dispatch, form: { setFieldsValue } } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
     setFieldsValue({ roleIds: nextTargetKeys });
 
     // 穿梭框中有值
-    if (nextTargetKeys.length)
-      this.fetchRolePermissions(nextTargetKeys);
+    if (nextTargetKeys.length) this.fetchRolePermissions(nextTargetKeys);
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
     else {
       this.permissions = [];
@@ -1087,19 +1093,29 @@ export default class AssociatedUnit extends PureComponent {
     }
   };
 
-  fetchRolePermissions = (ids) => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
+  fetchRolePermissions = ids => {
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
     dispatch({
       type: 'role/fetchRolePermissions',
       payload: { id: ids.join(',') },
       success: permissions => {
         this.permissions = permissions;
         console.log(permissions, this.authTreeCheckedKeys);
-        console.log(removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap));
-        setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap) });
+        console.log(
+          removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap)
+        );
+        setFieldsValue({
+          permissions: removeParentKey(
+            mergeArrays(permissions, this.authTreeCheckedKeys),
+            this.idMap
+          ),
+        });
       },
     });
-  }
+  };
 
   /* 渲染角色权限信息 */
   renderRolePermission() {
@@ -1156,8 +1172,10 @@ export default class AssociatedUnit extends PureComponent {
                   role={role}
                   form={form}
                   dispatch={dispatch}
-                  setIdMaps = {this.setIdMaps}
-                  handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
+                  setIdMaps={this.setIdMaps}
+                  handleChangeAuthTreeCheckedKeys={checkedKeys => {
+                    this.authTreeCheckedKeys = checkedKeys;
+                  }}
                 />
               </Form.Item>
             </Col>
