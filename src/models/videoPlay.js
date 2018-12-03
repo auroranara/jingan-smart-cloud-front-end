@@ -9,12 +9,6 @@ export default {
   },
 
   effects: {
-    // *fetchAllCamera({ payload }, { call, put }) {
-    //   const response = yield call(getAllCamera, payload);
-    //   const { list } = response;
-    //   yield put({ type: 'saveAllCamera', payload: list });
-    // },
-
     // 'http://anbao.wxjy.com.cn/hls/xsfx_jiefanglu.m3u8'
     // http://218.90.184.178:23389/hls/dangkou/test.m3u8
     *fetchStartToPlay({ payload, success, error }, { call, put, select }) {
