@@ -5,8 +5,9 @@ import PointInspectionCount from './PointInspectionCount';
 
 import styles from './index.less';
 
-import FireMonitoring from './sections/FireMonitoring';
-import FireDevice from './sections/FireDevice';
+import FireMonitoring from './Section/FireMonitoring';
+import FireDevice from './Section/FireDevice';
+import VideoMonitor from './Section/VideoMonitor';
 
 /**
  * description: 新企业消防
@@ -50,18 +51,21 @@ export default class App extends PureComponent {
               </div>
             </div>
             <div className={styles.item}>
-              <div className={styles.inner}>{/* 重点部位监控 */}</div>
+              <div className={styles.inner}>
+                {/* 重点部位监控 */}
+                <VideoMonitor />
+              </div>
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 消防设施情况 */}
-                {/* <FireDevice /> */}
+                <FireDevice />
               </div>
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 点位巡查统计 */}
-                <PointInspectionCount model={this.props.newUnitFireControl} />
+                {/* <PointInspectionCount model={this.props.newUnitFireControl} /> */}
               </div>
             </div>
             <div className={styles.item}>
