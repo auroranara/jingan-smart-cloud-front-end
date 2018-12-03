@@ -1,19 +1,46 @@
 import React, { PureComponent } from 'react';
+import { Row, Col } from 'antd';
 import { connect } from 'dva';
-import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import FourColor from './FourColor';
+import Layout from '../Components/Layout';
+
+import styles from './index.less';
 
 @connect(({ unitSafety, loading }) => ({
   unitSafety,
-  monitorDataLoading: loading.effects['bigPlatform/fetchMonitorData'],
+  // monitorDataLoading: loading.effects['bigPlatform/fetchMonitorData'],
 }))
 export default class App extends PureComponent {
 
   render() {
-    // const { unitSafety: {  } } = this.props;
-
     return (
-      <BigPlatformLayout extra={123}>
-      </BigPlatformLayout>
+      <Layout
+        extra="晶安科技有限公司"
+      >
+        <Row gutter={24} className={styles.row} style={{ margin: 0, padding: '16px 12px 24px' }}>
+          {/* 左边 */}
+          <Col span={6} className={styles.col}>
+            {/* 企业信息 */}
+            <div style={{ backgroundColor: 'white' }} className={styles.leftTop} />
+            {/* 风险点信息 */}
+            <div style={{ backgroundColor: 'white' }} className={styles.leftBottom} />
+          </Col>
+
+          {/* 中间 */}
+          <Col span={12} className={styles.col}>
+            {/* 安全风险四色图 */}
+            <FourColor className={styles.centerTop} model={this.props.unitSafety} />
+            {/* 单位巡查 */}
+            <div style={{ backgroundColor: 'white' }} className={styles.centerBottom} />
+          </Col>
+
+          {/* 右边 */}
+          <Col span={6} className={styles.col}>
+            {/* 隐患详情 */}
+            <div style={{ backgroundColor: 'white' }} className={styles.right} />
+          </Col>
+        </Row>
+      </Layout>
     );
   }
 }
