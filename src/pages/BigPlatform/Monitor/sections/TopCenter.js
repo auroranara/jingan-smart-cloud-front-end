@@ -125,7 +125,9 @@ const smokeColumns = [
     render: (text, val) => (
       <span>
         {+val.status === 0
-          ? val.statusTime.moment(val.statusTime).format('YYYY-MM-DD hh:mm:ss')
+          ? val.statusTime
+            ? moment(val.statusTime).format('YYYY-MM-DD hh:mm:ss')
+            : '暂无数据'
           : text
             ? moment(text).format('YYYY-MM-DD hh:mm:ss')
             : '暂无数据'}
@@ -252,7 +254,7 @@ export default class TopCenter extends PureComponent {
       outContact: loss = 0,
     } = smokeCountData;
 
-    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
+    const page = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
     const statusTotal = [totals, normal, abnormal, loss];
     const nums = [ALL, NORMAL, ABNORMAL, LOSS].map((status, index) => [status, statusTotal[index]]);
 
@@ -296,7 +298,7 @@ export default class TopCenter extends PureComponent {
               每页
               {pageSize}
               行，共计
-              {pages}页
+              {page}页
             </span>
           </div>
           <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
@@ -312,8 +314,12 @@ export default class TopCenter extends PureComponent {
       errorDevice: { errorDevicesByPage, pageNum, total, pageSize },
       errorDevicesLoading,
     } = this.props;
+    // console.log('失联设备', total);
+    // console.log('pageSize', pageSize);
 
-    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
+    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize);
+    // console.log('共计', pages);
+
     const title = (
       <div className={styles.modalTitle}>
         <div className={styles.sectionTitleIcon} />
