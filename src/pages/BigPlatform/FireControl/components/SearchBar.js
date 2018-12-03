@@ -11,12 +11,12 @@ export default class SearchBar extends PureComponent {
   };
 
   render() {
-    const { placeholder="请输入单位名称", hideSearch, extra, children, ...restProps } = this.props;
+    const { placeholder="请输入单位名称", hideSearch, extra, children, searchStyle, ...restProps } = this.props;
 
     return (
       <div className={styles.container} {...restProps}>
         {!hideSearch && (
-          <Row style={{ marginBottom: 12 }}>
+          <Row style={{ marginBottom: 12, ...searchStyle }}>
             <Col span={extra ? 18 : 24}>
               <Search
                 placeholder={placeholder}

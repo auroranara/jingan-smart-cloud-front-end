@@ -73,10 +73,12 @@ export default function OverviewSection(props) {
         style={{ height: HEIGHT, padding: PADDING, marginTop: 20 }}
       />
       <OvDangerCards
+        isUnit={0}
         total={totalDanger}
         overdue={overdueNum}
         rectify={rectifyNum}
         review={reviewNum}
+        handleDrawerVisibleChange={handleDrawerVisibleChange}
         style={{ height: HEIGHT, padding: PADDING }}
       />
     </FcSection>

@@ -19,13 +19,25 @@ export default function OvFireCards(props) {
           </div>
         </Col>
         <Col style={{ height: '100%'}} span={6}>
-          <OvCard title="今日" num={today} onClick={e => handleDrawerVisibleChange('alarm', isUnit, 0)} />
+          <OvCard
+            title="今日"
+            num={today}
+            onClick={e => handleDrawerVisibleChange('alarm', isUnit, 0)}
+          />
         </Col>
         <Col style={{ height: '100%' }} span={6}>
-          <OvCard title="本周" num={thisWeek} onClick={e => handleDrawerVisibleChange('alarm', isUnit, 1)} />
+          <OvCard
+            title="本周"
+            num={thisWeek}
+            onClick={e => handleDrawerVisibleChange('alarm', isUnit, 1)}
+          />
         </Col>
         <Col style={{ height: '100%' }} span={6}>
-          <OvCard title="本月" num={thisMonth} onClick={e => handleDrawerVisibleChange('alarm', isUnit, 2)} />
+          <OvCard
+            title="本月"
+            num={thisMonth}
+            onClick={e => handleDrawerVisibleChange('alarm', isUnit, 2)}
+          />
         </Col>
       </Row>
     </div>

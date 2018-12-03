@@ -1,4 +1,5 @@
 @color: rgb(4, 253, 255);
+@blue: rgb(4, 71, 134);
 
 .container {
   height: 100%;
@@ -13,8 +14,38 @@
     .ant-btn-primary {
       color: @color;
       border: 1px solid @color;
-      background-color: rgb(4, 71, 134);
+      background-color: @blue;
     }
+
+    .ant-table {
+      color: #FFF;
+    }
+
+    .ant-table-header {
+      background-color: @blue;
+    }
+
+    .ant-table-thead > tr > th {
+      color: #FFF;
+      background-color: @blue;
+      border-bottom: none;
+    }
+
+    .ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
+      background-color: rgb(3, 48, 105);
+    }
+
+    .ant-table-tbody > tr > td {
+      border-color: rgb(5, 65, 135);
+    }
+
+    .ant-table-tbody tr:hover td {
+      background-color: #063b6f;
+    }
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
   }
 }
 

@@ -19,10 +19,10 @@ const style3 = { borderRadius: '0 5px 0 0', borderLeft: 'none' };
 const styleNum3 = { borderRadius: '0 0 5px 0', borderLeft: 'none' };
 
 export default function OvDangerCards(props) {
-  const { total=0, overdue=0, rectify=0, review=0, style={} } = props;
+  const { total=0, overdue=0, rectify=0, review=0, isUnit, handleDrawerVisibleChange, ...restProps } = props;
 
   return (
-    <div className={styles.danger} style={style}>
+    <div className={styles.danger} {...restProps}>
       <Row gutter={20} style={{ margin: 0, height: '100%' }}>
         <Col style={{ height: '100%' }} span={6}>
           <div className={styles.container}>
@@ -32,7 +32,12 @@ export default function OvDangerCards(props) {
           </div>
         </Col>
         <Col style={{ height: '100%' }} span={6}>
-          <OvCard title="总数" num={total} zeroLength={3} />
+          <OvCard
+            title="总数"
+            num={total}
+            zeroLength={3}
+            onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, -1)}
+          />
         </Col>
         <Col style={{ height: '100%' }} span={12}>
           <Row style={{ height: '100%', position: 'relative' }}>
@@ -44,6 +49,7 @@ export default function OvDangerCards(props) {
                 style={style1}
                 titleContainerStyle={style1}
                 numContainerStyle={styleNum1}
+                onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, 0)}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -54,6 +60,7 @@ export default function OvDangerCards(props) {
                 style={style2}
                 titleContainerStyle={style2}
                 numContainerStyle={styleNum2}
+                onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, 1)}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -63,6 +70,7 @@ export default function OvDangerCards(props) {
                 style={style3}
                 titleContainerStyle={style3}
                 numContainerStyle={styleNum3}
+                onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, 2)}
               />
             </Col>
             {/* <span className={styles.divider} />

@@ -10,7 +10,7 @@ export default function DrawerSection(props) {
         <h4 className={styles.title}>
           {title}
           {titleInfo && <span className={styles.info}>({titleInfo})</span>}
-          {extra}
+          <div className={styles.extra}>{extra}</div>
         </h4>
       )}
       {children}

@@ -8,6 +8,7 @@ import OvProgress from '../components/OvProgress';
 import GraphSwitch from '../components/GraphSwitch';
 import SearchBar from '../components/SearchBar';
 import DrawerCard from '../components/DrawerCard';
+import OvSelect from '../components/OvSelect';
 import alarmRedIcon from '../img/alarmRed.png';
 import alarmBlueIcon from '../img/alarmBlue.png';
 import clockIcon from '../img/cardClock1.png';
@@ -16,6 +17,7 @@ const ICON_WIDTH = 48;
 const ICON_HEIGHT = 48;
 const ICON_BOTTOM = 2;
 const TYPE = 'alarm';
+const OPTIONS = ['今日', '本周', '本月'].map((d, i) => ({ value: i, desc: d }));
 
 const CARDS = [...Array(10).keys()].map(i => ({
   id: i,
@@ -32,9 +34,17 @@ export default class AlarmDrawer extends PureComponent {
   render() {
     const { visible, isUnit, ovType, handleDrawerVisibleChange } = this.props;
 
+    const select = (
+      <OvSelect options={OPTIONS} />
+    );
+
+    const searchSelect = (
+      <OvSelect cssType={1} options={OPTIONS} />
+    );
+
     const left = (
       <Fragment>
-        <DrawerSection title="火警状态统计">
+        <DrawerSection title="火警状态统计" extra={select}>
           <OvProgress
             title="报警主机"
             percent={50}
@@ -57,7 +67,7 @@ export default class AlarmDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar>
+        <SearchBar extra={searchSelect}>
           {CARDS.map(item => (
             <DrawerCard
               key={item.id}
@@ -75,7 +85,7 @@ export default class AlarmDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="消防主机单位"
+        title="火警列表"
         visible={visible}
         left={left}
         right={right}

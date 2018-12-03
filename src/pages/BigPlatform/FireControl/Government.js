@@ -28,6 +28,8 @@ import VideoPlay from './section/VideoPlay';
 import UnitDrawer from './section/UnitDrawer';
 import HostDrawer from './section/HostDrawer';
 import AlarmDrawer from './section/AlarmDrawer';
+import DangerTableDrawer from './section/DangerTableDrawer';
+import DangerDrawer from './section/DangerDrawer';
 
 import { getGridId } from './utils';
 
@@ -86,6 +88,8 @@ export default class FireControlBigPlatform extends PureComponent {
     unitDrawerVisible: false,
     hostDrawerVisible: false,
     alarmDrawerVisible: false,
+    dangerTableDrawerVisible: false,
+    dangerDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -548,6 +552,8 @@ export default class FireControlBigPlatform extends PureComponent {
       unitDrawerVisible,
       hostDrawerVisible,
       alarmDrawerVisible,
+      dangerTableDrawerVisible,
+      dangerDrawerVisible,
     } = this.state;
 
     // console.log(user);
@@ -759,6 +765,18 @@ export default class FireControlBigPlatform extends PureComponent {
           isUnit={isUnit}
           ovType={ovType}
           visible={alarmDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <DangerTableDrawer
+          isUnit={isUnit}
+          ovType={ovType}
+          visible={dangerTableDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <DangerDrawer
+          isUnit={isUnit}
+          ovType={ovType}
+          visible={dangerDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
       </BigPlatformLayout>
