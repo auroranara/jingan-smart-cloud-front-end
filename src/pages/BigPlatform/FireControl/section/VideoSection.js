@@ -55,7 +55,6 @@ export default class VideoSection extends PureComponent {
     // });
 
     const srcList = [...Array(4).keys()].map(i => srcs[i % srcs.length]).filter(item => item);
-
     const videos = srcList.map(({ name, photo, keyId }, i) => (
       <div
         key={keyId}
@@ -64,7 +63,7 @@ export default class VideoSection extends PureComponent {
           showVideo(keyId);
           this.setIndex(i);
         }}
-        style={{ backgroundImage: `url(${photo})` }}
+        style={{ backgroundImage: photo && photo !== '该设备ID不存在' ? `url(${photo})` : '' }}
       >
         <span className={styles.playIcon} style={{ backgroundImage: `url(${playIcon})` }} />
         <div className={styles.name}>{name}</div>
