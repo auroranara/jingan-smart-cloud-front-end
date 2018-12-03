@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import PointInspectionCount from './PointInspectionCount';
 
 import styles from './index.less';
 
@@ -62,6 +63,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 点位巡查统计 */}
+                <PointInspectionCount model={this.props.newUnitFireControl} />
               </div>
             </div>
             <div className={styles.item}>
