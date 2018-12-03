@@ -314,11 +314,8 @@ export default class TopCenter extends PureComponent {
       errorDevice: { errorDevicesByPage, pageNum, total, pageSize },
       errorDevicesLoading,
     } = this.props;
-    // console.log('失联设备', total);
-    // console.log('pageSize', pageSize);
 
-    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize);
-    // console.log('共计', pages);
+    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
 
     const title = (
       <div className={styles.modalTitle}>
