@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import PointInspectionCount from './PointInspectionCount';
 import VideoSurveillance from './VideoSurveillance';
+import VideoPlay from '../FireControl/section/VideoPlay';
 
 import styles from './index.less';
 
@@ -11,21 +12,49 @@ import styles from './index.less';
  * author:
  * date: 2018年12月03日
  */
-@connect(({ newUnitFireControl, loading }) => ({
+@connect(({ newUnitFireControl, monitor, loading }) => ({
   newUnitFireControl,
+  monitor,
   loading: loading.models.newUnitFireControl,
 }))
 export default class App extends PureComponent {
+
+  state = {
+    videoVisible: false, // 重点部位监控视频弹窗
+    showVideoList: false, // 是否展示视频弹窗右侧列表
+    videoKeyId: undefined,
+  }
+
   componentDidMount() {
     const {
+      dispatch,
       match: {
-        params: { id },
+        params: { unitId },
       },
     } = this.props;
-    console.log(id);
+    // 获取视频列表
+    dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: unitId } });
+  }
+
+  /**
+   *  点击播放重点部位监控
+   */
+  handleShowVideo = (keyId, showList = true) => {
+    this.setState({ videoVisible: true, videoKeyId: keyId, showVideoList: showList });
+  };
+
+  /**
+   *  关闭重点部位监控
+   */
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false, videoKeyId: undefined });
   }
 
   render() {
+    const { videoVisible, showVideoList, videoKeyId } = this.state
+    const {
+      monitor: { allCamera },
+    } = this.props
     return (
       <BigPlatformLayout title="晶安智慧云消防展示系统" extra="无锡市 新吴区 晴 12℃">
         <div className={styles.container}>
@@ -47,7 +76,10 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 重点部位监控 */}
-                <VideoSurveillance />
+                <VideoSurveillance
+                  handleShowVideo={this.handleShowVideo}
+                  data={allCamera}
+                />
               </div>
             </div>
             <div className={styles.item}>
@@ -63,6 +95,13 @@ export default class App extends PureComponent {
               <div className={styles.inner}>{/* 维保统计 */}</div>
             </div>
           </div>
+          <VideoPlay
+            showList={showVideoList}
+            videoList={allCamera}
+            visible={videoVisible}
+            keyId={videoKeyId} // keyId
+            handleVideoClose={this.handleVideoClose}
+          />
         </div>
       </BigPlatformLayout>
     );
