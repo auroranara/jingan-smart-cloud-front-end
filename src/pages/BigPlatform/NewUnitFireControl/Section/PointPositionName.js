@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Col, Row } from 'antd';
+import { Col } from 'antd';
 
 import styles from './PointPositionName.less';
 import DrawerContainer from '../components/DrawerContainer';

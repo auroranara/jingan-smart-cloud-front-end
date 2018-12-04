@@ -1,9 +1,51 @@
 .container {
   position: relative;
+  padding: 0 15%;
   height: 100%;
+}
+.wrapper {
+  position: relative;
+  height: calc(~'100% - 48px');
   background: no-repeat center center;
   background-size: 100% 100%;
 }
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+
+  .legendItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:first-child {
+      margin-right: 36px;
+    }
+
+    .legendItemIcon {
+      margin-right: 12px;
+      width: 24px;
+      height: 24px;
+      background: no-repeat center center;
+      background-size: 100% 100%;
+    }
+  }
+}
+.alarm {
+  margin-left: 10px;
+  color: #04fdff;
+  cursor: pointer;
+}
+.alarmTooltip {
+  :global {
+    .ant-tooltip-inner {
+      box-shadow: 0 0 1em red;
+    }
+  }
+}
+
 
 @keyframes myfirst
 {

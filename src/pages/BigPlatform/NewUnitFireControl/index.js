@@ -5,6 +5,8 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import VideoSurveillance from './VideoSurveillance';
 import VideoPlay from '../FireControl/section/VideoPlay';
 import PointInspectionCount from './PointInspectionCount';
+import CompanyInfo from './CompanyInfo';
+import Messages from './Messages';
 import MaintenanceCount from './MaintenanceCount';
 import FourColor from './FourColor';
 
@@ -12,8 +14,10 @@ import styles from './index.less';
 
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
-import RiskDrawer from './Section/RiskDrawer';
 import CheckingDrawer from './Section/CheckingDrawer';
+import RiskDrawer from './Section/RiskDrawer';
+import WorkOrderDrawer from './Section/WorkOrderDrawer';
+import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
 import PointPositionName from './Section/PointPositionName';
 
 const DELAY = 5 * 1000;
@@ -37,6 +41,8 @@ export default class App extends PureComponent {
     riskDrawerVisible: false, // 是否显示对应弹框
     checkDrawerVisible: false, // 检查点弹框
     pointDrawerVisible: true, // 点位名称弹框
+    workOrderDrawerVisible: false,
+    alarmDynamicDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -83,9 +89,17 @@ export default class App extends PureComponent {
       },
     });
 
+    // 获取隐患详情
+    dispatch({
+      type: 'newUnitFireControl/fetchRiskDetail',
+      payload: {
+        company_id: companyId,
+      },
+    });
+
     // 轮询
-    this.pollTimer = setInterval(this.polling, DELAY);
-    this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
+    // this.pollTimer = setInterval(this.polling, DELAY);
+    // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
 
@@ -133,7 +147,10 @@ export default class App extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
-  handleDrawerVisibleChange = name => {
+  /**
+   * 0:已超期工单,1:未超期工单,2:已完成工单
+   */
+  handleDrawerVisibleChange = (name, type) => {
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
@@ -157,6 +174,13 @@ export default class App extends PureComponent {
       videoVisible,
       showVideoList,
       videoKeyId,
+      workOrderDrawerVisible,
+      alarmDynamicDrawerVisible,
+    } = this.state;
+    const {
+      videoVisible,
+      showVideoList,
+      videoKeyId,
       riskDrawerVisible,
       checkDrawerVisible,
       pointDrawerVisible,
@@ -165,82 +189,101 @@ export default class App extends PureComponent {
       monitor: { allCamera },
     } = this.props;
     return (
-      <BigPlatformLayout title="晶安智慧云消防展示系统" extra="无锡市 新吴区 晴 12℃">
-        <div className={styles.container}>
-          <div className={styles.top}>
-            <div className={styles.item}>
-              <div className={styles.inner}>{/* 企业基本信息 */}</div>
-            </div>
-            <div className={styles.item} style={{ flex: '3' }}>
-              <div className={styles.inner}>
-                {/* 四色图 */}
-                <FourColor model={this.props.newUnitFireControl} dispatch />
+      <div className={styles.main}>
+        <BigPlatformLayout title="晶安智慧云消防展示系统">
+          <div className={styles.container}>
+            <div className={styles.top}>
+              <div className={styles.item}>
+                <div className={styles.inner}>
+                  {/* 企业基本信息 */}
+                  <CompanyInfo model={this.props.newUnitFireControl} />
+                </div>
+              </div>
+              <div className={styles.item} style={{ flex: '3' }}>
+                <div className={styles.inner}>
+                  {/* 四色图 */}
+                  <FourColor model={this.props.newUnitFireControl} dispatch />
+                </div>
+              </div>
+              <div className={styles.item}>
+                <div className={styles.inner}>
+                  {/* 实时消息 */}
+                  <Messages model={this.props.newUnitFireControl} />
+                </div>
               </div>
             </div>
-            <div className={styles.item}>
-              <div className={styles.inner}>{/* 实时消息 */}</div>
+            <div className={styles.bottom}>
+              <div className={styles.item}>
+                <div className={styles.inner}>
+                  {/* 消防主机监测 */}
+                  <FireMonitoring
+                    fire={fire_state}
+                    fault={fault_state}
+                    shield={shield_state}
+                    linkage={start_state}
+                    supervise={supervise_state}
+                    feedback={feedback_state}
+                  />
+                </div>
+              </div>
+              <div className={styles.item}>
+                <div className={styles.inner}>
+                  {/* 重点部位监控 */}
+                  <VideoSurveillance handleShowVideo={this.handleShowVideo} data={allCamera} />
+                </div>
+              </div>
+              <div className={styles.item}>
+                <div className={styles.inner}>
+                  {/* 消防设施情况 */}
+                  <FireDevice systemScore={systemScore} />
+                </div>
+              </div>
+              <div className={styles.item}>
+                <div className={styles.inner}>
+                  {/* 点位巡查统计 */}
+                  <PointInspectionCount model={this.props.newUnitFireControl} />
+                </div>
+              </div>
+              <div className={styles.item}>
+                <div className={styles.inner}>
+                  {/* 维保统计 */}
+                  <MaintenanceCount
+                    model={this.props.newUnitFireControl}
+                    handleShowOrder={this.handleDrawerVisibleChange}
+                  />
+                </div>
+              </div>
             </div>
+            <VideoPlay
+              showList={showVideoList}
+              videoList={allCamera}
+              visible={videoVisible}
+              keyId={videoKeyId} // keyId
+              handleVideoClose={this.handleVideoClose}
+            />
           </div>
-          <div className={styles.bottom}>
-            <div className={styles.item}>
-              <div className={styles.inner}>
-                {/* 消防主机监测 */}
-                <FireMonitoring
-                  fire={fire_state}
-                  fault={fault_state}
-                  shield={shield_state}
-                  linkage={start_state}
-                  supervise={supervise_state}
-                  feedback={feedback_state}
-                />
-              </div>
-            </div>
-            <div className={styles.item}>
-              <div className={styles.inner}>
-                {/* 重点部位监控 */}
-                <VideoSurveillance handleShowVideo={this.handleShowVideo} data={allCamera} />
-              </div>
-            </div>
-            <div className={styles.item}>
-              <div className={styles.inner}>
-                {/* 消防设施情况 */}
-                <FireDevice systemScore={systemScore} />
-              </div>
-            </div>
-            <div className={styles.item}>
-              <div className={styles.inner}>
-                {/* 点位巡查统计 */}
-                <PointInspectionCount model={this.props.newUnitFireControl} />
-              </div>
-            </div>
-            <div className={styles.item}>
-              <div className={styles.inner}>
-                {/* 维保统计 */}
-                <MaintenanceCount model={this.props.newUnitFireControl} />
-              </div>
-            </div>
-          </div>
-          <VideoPlay
-            showList={showVideoList}
-            videoList={allCamera}
-            visible={videoVisible}
-            keyId={videoKeyId} // keyId
-            handleVideoClose={this.handleVideoClose}
+          <WorkOrderDrawer
+            visible={workOrderDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('workOrder')}
           />
-        </div>
-        <RiskDrawer
-          visible={riskDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <CheckingDrawer
-          visible={checkDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <PointPositionName
-          visible={pointDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-      </BigPlatformLayout>
+          <RiskDrawer
+            visible={riskDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          />
+          <CheckingDrawer
+            visible={checkDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          />
+          <PointPositionName
+            visible={pointDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          />
+          <AlarmDynamicDrawer
+            visible={alarmDynamicDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+          />
+        </BigPlatformLayout>
+      </div>
     );
   }
 }

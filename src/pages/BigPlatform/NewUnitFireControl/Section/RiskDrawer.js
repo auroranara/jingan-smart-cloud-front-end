@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-// import { Col, Row } from 'antd';
+import { Col, Row } from 'antd';
 
 import styles from './RiskDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
@@ -55,9 +55,7 @@ export default class RiskDrawer extends PureComponent {
           </div>
         </div>
         <div className={styles.cards}>
-          {CARDS.map(item => (
-            <RiskCard key={item.id} {...item} />
-          ))}
+          {CARDS.map(item => <RiskCard key={item.id} {...item} />)}
         </div>
       </div>
     );

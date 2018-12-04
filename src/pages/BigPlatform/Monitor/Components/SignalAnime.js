@@ -16,7 +16,7 @@ export default class HostAnime extends PureComponent {
   }
 
   resize = () => {
-    if (this.node.parentNode) {
+    if (this.node && this.node.parentNode) {
       this.renderAnime()
     }
   }
