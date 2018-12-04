@@ -37,7 +37,7 @@ export default class App extends PureComponent {
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
     workOrderDrawerVisible: false,
-    alarmDynamicDrawerVisible: true,
+    alarmDynamicDrawerVisible: false,
   }
 
   componentDidMount() {
@@ -137,7 +137,10 @@ export default class App extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
-  handleDrawerVisibleChange = (name) => {
+  /**
+   * 0:已超期工单,1:未超期工单,2:已完成工单
+   */
+  handleDrawerVisibleChange = (name, type) => {
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
@@ -223,7 +226,7 @@ export default class App extends PureComponent {
               <div className={styles.item}>
                 <div className={styles.inner}>
                   {/* 维保统计 */}
-                  <MaintenanceCount model={this.props.newUnitFireControl} />
+                  <MaintenanceCount model={this.props.newUnitFireControl} handleShowOrder={this.handleDrawerVisibleChange} />
                 </div>
               </div>
             </div>
