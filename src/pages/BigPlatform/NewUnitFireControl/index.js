@@ -1,7 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import PointInspectionCount from './PointInspectionCount';
+import MaintenanceCount from './MaintenanceCount';
+import FourColor from './FourColor';
 
 import styles from './index.less';
 
@@ -16,8 +19,24 @@ import styles from './index.less';
 }))
 export default class App extends PureComponent {
   componentDidMount() {
-    const { match: { params: { id } } } = this.props;
-    console.log(id);
+    const { dispatch, match: { params: { unitId } } } = this.props;
+
+    // 获取企业信息
+    dispatch({
+      type: 'newUnitFireControl/fetchCompanyMessage',
+      payload: {
+        company_id: unitId,
+        month: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 获取视频列表
+    dispatch({
+      type: 'newUnitFireControl/fetchVideoList',
+      payload: {
+        company_id: unitId,
+      },
+    });
   }
 
   render() {
@@ -36,6 +55,7 @@ export default class App extends PureComponent {
             <div className={styles.item} style={{ flex: '3' }}>
               <div className={styles.inner}>
                 {/* 四色图 */}
+                <FourColor model={this.props.newUnitFireControl} dispatch />
               </div>
             </div>
             <div className={styles.item}>
@@ -69,6 +89,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 维保统计 */}
+                <MaintenanceCount model={this.props.newUnitFireControl} />
               </div>
             </div>
           </div>

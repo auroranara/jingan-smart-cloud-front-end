@@ -207,3 +207,13 @@ export async function getVideoList(params) {
 export async function getVideoLookUp(params) {
   return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
 }
+
+// 企业信息(包含人员数量四色图等)
+export async function getCompanyMessage(params) {
+  return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
+}
+
+// 视频路径
+export async function getStartToPlay(params) {
+  return request(`/acloud_new/dai/startToPlay?${stringify(params)}`);
+}
