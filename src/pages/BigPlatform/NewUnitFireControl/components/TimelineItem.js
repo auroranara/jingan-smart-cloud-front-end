@@ -7,19 +7,22 @@ const { Item } = Timeline;
 
 export default function TimelineItem(props) {
   const { label, children, containerStyle, ...restProps } = props;
+  const isHandled = !!children;
 
   return (
     <Item {...restProps}>
       <Row>
         <Col span={3}>
-          <span className={styles.label}>{label}</span>
+          <span className={isHandled ? styles.label : styles.greyLabel}>{label}</span>
         </Col>
         <Col span={21}>
-          <div className={styles.outer}>
-            <div className={styles.container} style={containerStyle}>
-              {children}
+          {isHandled && (
+            <div className={styles.outer}>
+              <div className={styles.container} style={containerStyle}>
+                {children}
+              </div>
             </div>
-          </div>
+          )}
         </Col>
       </Row>
     </Item>

@@ -36,8 +36,9 @@ export default class App extends PureComponent {
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
+    drawerType: 0,
     workOrderDrawerVisible: false,
-    alarmDynamicDrawerVisible: false,
+    alarmDynamicDrawerVisible: true,
   }
 
   componentDidMount() {
@@ -140,10 +141,11 @@ export default class App extends PureComponent {
   /**
    * 0:已超期工单,1:未超期工单,2:已完成工单
    */
-  handleDrawerVisibleChange = (name, type) => {
+  handleDrawerVisibleChange = (name, type=0) => {
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
+      drawerType: type,
     }));
   };
 
@@ -160,7 +162,14 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible } = this.state
+    const {
+      videoVisible,
+      showVideoList,
+      videoKeyId,
+      drawerType,
+      workOrderDrawerVisible,
+      alarmDynamicDrawerVisible,
+    } = this.state
     const {
       monitor: { allCamera },
     } = this.props
@@ -239,7 +248,9 @@ export default class App extends PureComponent {
             />
           </div>
           <WorkOrderDrawer
+            type={drawerType}
             visible={workOrderDrawerVisible}
+            handleLabelChange={type => this.setState({ drawerType: type })}
             onClose={() => this.handleDrawerVisibleChange('workOrder')}
           />
           <AlarmDynamicDrawer

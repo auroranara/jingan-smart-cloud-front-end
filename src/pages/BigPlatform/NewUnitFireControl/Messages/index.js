@@ -10,10 +10,10 @@ import styles from './index.less';
  * date: 2018年12月03日
  */
 const { Description } = DescriptionList;
-export default class App extends PureComponent {
-  renderMsg = () => {
+export default class Messages extends PureComponent {
+  renderMsg = (i) => {
     return (
-      <div className={styles.msgItem}>
+      <div key={i} className={styles.msgItem}>
         <a className={styles.detailBtn}>详情<Icon type="double-right" /></a>
         <div className={styles.msgTime}>11-28 09:30:21</div>
         <div className={styles.msgType}>【发生火警】</div>
@@ -29,8 +29,8 @@ export default class App extends PureComponent {
     return (
       <Section title="实时消息" style={{ height: 'auto' }}>
         <div className={styles.messages}>
-          {Array(8).fill(true).map(()=>{
-            return  this.renderMsg();
+          {[...Array(8).keys()].map(i => {
+            return  this.renderMsg(i);
           })}
         </div>
       </Section>

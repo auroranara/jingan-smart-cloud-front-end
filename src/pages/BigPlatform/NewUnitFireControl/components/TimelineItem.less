@@ -1,4 +1,5 @@
 @cyan: rgb(4, 253, 255);
+@grey: rgb(79, 103, 147);
 
 .label {
   color: @cyan;
@@ -6,6 +7,11 @@
   line-height: 1;
   border: 1px solid @cyan;
   border-radius: 5px;
+}
+
+.greyLabel:extend(.label) {
+  color: @grey;
+  border-color: @grey;
 }
 
 .outer {

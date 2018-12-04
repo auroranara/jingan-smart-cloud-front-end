@@ -73,14 +73,15 @@ export default class AlarmDynamicDrawer extends PureComponent {
                 desc="现场大量浓烟，无人员伤亡"
               />
             </TimelineItem>
-            <TimelineItem label="处理">
+            <TimelineItem label="处理" />
+            {/* <TimelineItem label="处理">
               <Handled
                 time="2018-11-29 10:00:00"
                 reporter="张三"
                 phone="13212341234"
                 feedback="现场已处理完毕"
               />
-            </TimelineItem>
+            </TimelineItem> */}
           </Timeline>
         </div>
       </div>

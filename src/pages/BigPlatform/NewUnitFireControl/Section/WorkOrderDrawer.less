@@ -54,17 +54,17 @@
   margin-left: 10px;
 }
 
-.position {
+.zero {
   color: @cyan;
-  margin-right: 4em;
-}
-
-.num:extend(.position) {
   margin-right: 1em;
 }
 
-.person:extend(.position) {
+.one:extend(.zero) {
   margin-right: 2em;
+}
+
+.two:extend(.zero) {
+  margin-right: 3em;
 }
 
 .normal {
@@ -90,9 +90,10 @@
   margin-right: 10px;
   border: 1px solid @cyan;
   border-radius: 16px;
+  cursor: pointer;
 }
 
-.selectedSpan:extend(.span) {
+.selected:extend(.span) {
   background-color: rgb(4, 59, 126);
 }
 
