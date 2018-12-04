@@ -26,7 +26,7 @@ export default class Pie extends Component {
                 fontSize: '20',
                 color: '#fff',
               },
-              formatter: '{d}%',
+              formatter: '{d}',
             },
           },
           labelLine: {
