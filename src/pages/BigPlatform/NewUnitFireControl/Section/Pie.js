@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 export default class Pie extends Component {
-  getOption = r => {
+  getOption = (r, frontColor) => {
+    const rate = Number.parseInt(r, 10);
+
     const option = {
-      color: ['#00a8ff', '#032c64'],
+      color: [frontColor, '#032c64'],
       tooltip: {
         show: false,
       },
@@ -34,14 +36,14 @@ export default class Pie extends Component {
           },
           data: [
             {
-              value: 100,
+              value: rate,
               itemStyle: {
                 shadowColor: 'rgba(0, 0, 0, 0.8)',
                 shadowBlur: 10,
               },
             },
             {
-              value: 100.0,
+              value: 100.0 - rate,
               itemStyle: { opacity: 0.6 },
               label: { show: false },
             },
@@ -53,10 +55,20 @@ export default class Pie extends Component {
   };
 
   render() {
+    const { rate } = this.props;
+    const frontColors = ['#05d2da', '#ffb650', '#ff4848'];
+    let frontColor;
+    if (+rate === 90) {
+      frontColor = frontColors[0];
+    } else if (+rate === 70) {
+      frontColor = frontColors[1];
+    } else {
+      frontColor = frontColors[2];
+    }
     return (
       <ReactEcharts
         style={{ width: '100px', height: '100px' }}
-        option={this.getOption()}
+        option={this.getOption(rate, frontColor)}
         notMerge={true}
         lazyUpdate={true}
       />

@@ -3,9 +3,24 @@
   height: 96%;
   margin: 2%;
   display: flex;
-  overflow: auto;
 }
 .pieMain {
-  height: 30%;
-  margin-left: 15px;
+  width: 100%;
+  margin-left: 8%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+//滚动条整体部分
+.pieMain::-webkit-scrollbar {
+  width: 12px;
+  background-color: rgb(13, 56, 109);
+}
+// 滚动条的轨道（里面装有Thumb）
+.pieMain::-webkit-scrollbar-track {
+  background-color: rgb(13, 56, 109);
+}
+//  滚动条里面的小方块，能向上向下移动（或向左向右移动）
+.pieMain::-webkit-scrollbar-thumb {
+  background-color: rgb(3, 82, 175);
+  border-radius: 25px;
 }
