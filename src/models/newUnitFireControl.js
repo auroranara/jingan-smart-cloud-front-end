@@ -29,6 +29,8 @@ import {
   getVideoList,
   // 获取企业信息
   getCompanyMessage,
+  // 获取点位信息
+  getRiskPointInfo,
 } from '../services/bigPlatform/fireControl';
 
 export default {
@@ -122,6 +124,8 @@ export default {
       point: [],
       // 四色图列表
       fourColorImg: [],
+      // 点位信息
+      riskPointInfo: [],
     },
   },
 
@@ -352,6 +356,17 @@ export default {
       });
       if (callback) {
         callback(companyMessage);
+      }
+    },
+    // 获取点位信息
+    *fetchRiskPointInfo({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointInfo, payload);
+      yield put({
+        type: 'save',
+        payload: { riskPointInfo: response.companyLetter },
+      });
+      if (callback) {
+        callback();
       }
     },
   },

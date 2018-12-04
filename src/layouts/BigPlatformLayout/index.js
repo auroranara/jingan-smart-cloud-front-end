@@ -41,6 +41,8 @@ export default class App extends PureComponent {
       extra,
       // 子节点
       children,
+      // 内容样式
+      contentStyle,
     } = this.props;
     const { currentTime } = this.state;
     // 合并以后的容器类名
@@ -53,7 +55,7 @@ export default class App extends PureComponent {
           <div className={styles.headerTime}>{currentTime}</div>
           {extra && <div className={styles.headerExtra}>{extra}</div>}
         </div>
-        <div className={styles.content}>
+        <div className={styles.content} style={contentStyle}>
           {children}
         </div>
       </div>

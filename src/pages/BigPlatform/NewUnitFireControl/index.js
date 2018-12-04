@@ -33,9 +33,13 @@ export default class App extends PureComponent {
     // 获取视频列表
     dispatch({
       type: 'newUnitFireControl/fetchVideoList',
-      payload: {
-        company_id: unitId,
-      },
+      payload: { company_id: unitId },
+    });
+
+    // 获取点位信息
+    dispatch({
+      type: 'newUnitFireControl/fetchRiskPointInfo',
+      payload: { company_id: unitId },
     });
   }
 

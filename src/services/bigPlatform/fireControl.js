@@ -217,3 +217,8 @@ export async function getCompanyMessage(params) {
 export async function getStartToPlay(params) {
   return request(`/acloud_new/dai/startToPlay?${stringify(params)}`);
 }
+
+// 获取风险点信息
+export async function getRiskPointInfo(params) {
+  return request(`/acloud_new/v2/sfc/selectCompanyLetter.json?${stringify(params)}`);
+}
