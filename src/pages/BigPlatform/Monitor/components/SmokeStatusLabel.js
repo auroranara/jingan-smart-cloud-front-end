@@ -7,7 +7,6 @@ const COLORS = ['rgb(198, 193, 129)', 'rgb(0, 161, 129)', 'rgb(232, 103, 103)', 
 
 export default function SmokeStatusLabel(props) {
   const { status = 0, num = 0, selected = false, ...restProps } = props;
-
   return (
     <p className={selected ? styles.labelSelected : styles.label} {...restProps}>
       <span className={styles.status}>{STATUS_CN[status]}</span>(

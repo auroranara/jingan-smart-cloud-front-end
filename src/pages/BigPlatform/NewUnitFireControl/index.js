@@ -13,6 +13,8 @@ import styles from './index.less';
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
 import RiskDrawer from './Section/RiskDrawer';
+import CheckingDrawer from './Section/CheckingDrawer';
+import PointPositionName from './Section/PointPositionName';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -28,16 +30,22 @@ const CHART_DELAY = 10 * 60 * 1000;
   loading: loading.models.newUnitFireControl,
 }))
 export default class App extends PureComponent {
-
   state = {
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
-    riskDrawerVisible: true, // 是否显示对应弹框
-  }
+    riskDrawerVisible: false, // 是否显示对应弹框
+    checkDrawerVisible: false, // 检查点弹框
+    pointDrawerVisible: true, // 点位名称弹框
+  };
 
   componentDidMount() {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
 
     // 获取企业信息
     dispatch({
@@ -125,7 +133,7 @@ export default class App extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
-  handleDrawerVisibleChange = (name) => {
+  handleDrawerVisibleChange = name => {
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
@@ -145,10 +153,17 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId, riskDrawerVisible } = this.state
+    const {
+      videoVisible,
+      showVideoList,
+      videoKeyId,
+      riskDrawerVisible,
+      checkDrawerVisible,
+      pointDrawerVisible,
+    } = this.state;
     const {
       monitor: { allCamera },
-    } = this.props
+    } = this.props;
     return (
       <BigPlatformLayout title="晶安智慧云消防展示系统" extra="无锡市 新吴区 晴 12℃">
         <div className={styles.container}>
@@ -183,10 +198,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 重点部位监控 */}
-                <VideoSurveillance
-                  handleShowVideo={this.handleShowVideo}
-                  data={allCamera}
-                />
+                <VideoSurveillance handleShowVideo={this.handleShowVideo} data={allCamera} />
               </div>
             </div>
             <div className={styles.item}>
@@ -218,6 +230,14 @@ export default class App extends PureComponent {
         </div>
         <RiskDrawer
           visible={riskDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <CheckingDrawer
+          visible={checkDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <PointPositionName
+          visible={pointDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
       </BigPlatformLayout>

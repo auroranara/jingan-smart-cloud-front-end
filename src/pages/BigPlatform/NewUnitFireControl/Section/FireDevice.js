@@ -2,8 +2,12 @@ import React from 'react';
 import { Col, Row } from 'antd';
 
 import Section from '../Section';
-import Pie from './Pie';
+// import Pie from './Pie';
 import styles from './FireDevice.less';
+
+import normal from '../imgs/normal.png';
+import fine from '../imgs/fine.png';
+import error from '../imgs/error.png';
 
 export default function FireDevice(props) {
   const {
@@ -28,7 +32,7 @@ export default function FireDevice(props) {
                     const { sysName, status } = item;
                     return (
                       <Col key={index} style={{ height: '100%' }} span={12}>
-                        <Pie
+                        {/* <Pie
                           rate={
                             +status === 1
                               ? '50'
@@ -38,7 +42,30 @@ export default function FireDevice(props) {
                                   ? '90'
                                   : null
                           }
-                        />
+                        /> */}
+                        {+status === 1 ? (
+                          <span
+                            style={{
+                              backgroundImage: `url(${error})`,
+                              backgroundRepeat: 'no-repeat',
+                            }}
+                          />
+                        ) : +status === 2 ? (
+                          <span
+                            style={{
+                              backgroundImage: `url(${normal})`,
+                              backgroundRepeat: 'no-repeat',
+                            }}
+                          />
+                        ) : +status === 3 ? (
+                          <span
+                            style={{
+                              backgroundImage: `url(${fine})`,
+                              backgroundRepeat: 'no-repeat',
+                            }}
+                          />
+                        ) : null}
+
                         <p>{sysName}</p>
                       </Col>
                     );

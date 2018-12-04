@@ -1,0 +1,72 @@
+.outer {
+  padding-right: 8px;
+  margin-bottom: 15px;
+}
+
+.card {
+  color: #fff;
+  padding: 15px 0 15px 15px;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  background-color: rgb(6, 59, 111);
+
+  p {
+    margin-bottom: 8px;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.container {
+  height: 100%;
+}
+
+.circleContainer {
+  height: 90px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid rgb(0, 168, 255);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.circleBase {
+  font-weight: bold;
+  line-height: 1;
+}
+
+.num:extend(.circleBase) {
+  color: #fff;
+  font-size: 34px;
+  margin: 10px 0 10px;
+}
+
+.total:extend(.circleBase) {
+  font-size: 18px;
+  color: rgb(0, 168, 255);
+  margin-bottom: 0;
+}
+
+.cards {
+  height: calc(100% - 110px);
+  overflow: auto;
+
+  div:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.checkBtn {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2%;
+}
