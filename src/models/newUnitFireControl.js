@@ -27,10 +27,14 @@ import {
   resetAllHosts,
   // 获取视频列表
   getVideoList,
+  // 获取企业信息
+  getCompanyMessage,
+  // 获取点位信息
+  getRiskPointInfo,
+  // 获取消防设施评分
+  getSystemScore,
 } from '../services/bigPlatform/fireControl';
 import {
-  // 企业信息(包含人员数量四色图等)
-  getCompanyMessage,
   getRiskDetail,
 } from '../services/bigPlatform/bigPlatform';
 import moment from 'moment';
@@ -118,61 +122,77 @@ export default {
     hiddenDangerRecords: [],
     // 消防数据统计
     fireControlCount: {
-      "faultAssign": 0,
-      "shield_state": 0,
-      "warn": 0,
-      "warnTrue": 0,
-      "start_state": 0,
-      "fault_state": 0,
-      "warnFalse": 0,
-      "fault": 0,
-      "feedback_state": 0,
-      "faultSelf": 0,
-      "fire_state": 0,
-      "supervise_state": 0,
+      faultAssign: 0,
+      shield_state: 0,
+      warn: 0,
+      warnTrue: 0,
+      start_state: 0,
+      fault_state: 0,
+      warnFalse: 0,
+      fault: 0,
+      feedback_state: 0,
+      faultSelf: 0,
+      fire_state: 0,
+      supervise_state: 0,
     },
     // 隐患巡查统计
-    hiddenDangerCount: {
-
-    },
+    hiddenDangerCount: {},
     // 维保情况统计
     maintenanceCount: {
-      "needRepairNum": 0,
-      "selfNoNum": 0,
-      "selfDoingNum": 0,
-      "selfFinishNum": 0,
-      "assignNoNum": 0,
-      "assignDoingNum": 0,
-      "assignFinishNum": 0,
-      "avgSelfTime": "",
-      "selfAllNum": 0,
-      "selfRate": "100%",
-      "avgAssignTime": "",
-      "assignAllNum": 0,
-      "assignRate": "100%",
+      needRepairNum: 0,
+      selfNoNum: 0,
+      selfDoingNum: 0,
+      selfFinishNum: 0,
+      assignNoNum: 0,
+      assignDoingNum: 0,
+      assignFinishNum: 0,
+      avgSelfTime: '',
+      selfAllNum: 0,
+      selfRate: '100%',
+      avgAssignTime: '',
+      assignAllNum: 0,
+      assignRate: '100%',
     },
     // 复位主机列表
     hosts: [],
     // 视频列表
     videoList: [],
-    companyMessage: {
-      companyMessage: {
-        companyName: '',
-        headOfSecurity: '',
-        headOfSecurityPhone: '',
-        countCheckItem: 0,
-        countCompanyUser: 0,
-      },
-      check_map: [],
-      hidden_danger_map: [],
-      isImportant: false,
-    },
     // 隐患详情
     riskDetailList: {
       ycq: [],
       wcq: [],
       dfc: [],
     },
+    // 企业信息
+    companyMessage: {
+      // 企业信息
+      companyMessage: {
+        // 企业名称
+        companyName: '',
+        // 安全负责人
+        headOfSecurity: '',
+        // 联系方式
+        headOfSecurityPhone: '',
+        // 风险点统计
+        countCheckItem: 0,
+        // 安全人员统计
+        countCompanyUser: 0,
+      },
+      // 巡查次数列表
+      check_map: [],
+      // 隐患数量列表
+      hidden_danger_map: [],
+      // 是否是重点单位
+      isImportant: false,
+      // 风险点列表
+      point: [],
+      // 四色图列表
+      fourColorImg: [],
+      // 点位信息
+      riskPointInfo: [],
+    },
+    // 消防设施评分
+    systemScore: {},
   },
 
   effects: {
@@ -275,18 +295,18 @@ export default {
       const response = yield call(getFireControlCount, payload);
       if (response.code === 200) {
         const fireControlCount = response.data.list[0] || {
-          "faultAssign": 0,
-          "shield_state": 0,
-          "warn": 0,
-          "warnTrue": 0,
-          "start_state": 0,
-          "fault_state": 0,
-          "warnFalse": 0,
-          "fault": 0,
-          "feedback_state": 0,
-          "faultSelf": 0,
-          "fire_state": 0,
-          "supervise_state": 0,
+          faultAssign: 0,
+          shield_state: 0,
+          warn: 0,
+          warnTrue: 0,
+          start_state: 0,
+          fault_state: 0,
+          warnFalse: 0,
+          fault: 0,
+          feedback_state: 0,
+          faultSelf: 0,
+          fire_state: 0,
+          supervise_state: 0,
         };
         yield put({
           type: 'save',
@@ -327,7 +347,7 @@ export default {
       if (response.code === 200) {
         // 移除不需要的主机并做排序
         const hosts = response.data.list.filter(({ reset }) => +reset === 1).sort((a, b) => {
-          return +b.isFire-a.isFire;
+          return +b.isFire - a.isFire;
         });
         yield put({
           type: 'save',
@@ -374,11 +394,12 @@ export default {
         callback();
       }
     },
-    // 企业信息(包含人员数量四色图等)
-    *fetchCompanyMessage({ payload, success, error }, { call, put }) {
+    // 获取企业信息
+    *fetchCompanyMessage({ payload, callback }, { call, put }) {
       const response = yield call(getCompanyMessage, payload);
-      const res = {
+      const companyMessage = {
         ...response,
+        // 移除坐标不存在的风险点
         point:
           response.point &&
           response.point.filter(
@@ -387,6 +408,7 @@ export default {
               (xNum || Number.parseFloat(xNum) === 0) &&
               (yNum || Number.parseFloat(yNum) === 0)
           ),
+        // 移除地址不合法的四色图
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
@@ -394,18 +416,14 @@ export default {
               )
             : [],
       };
-      // if (response.code === 200) {
+
       yield put({
-        type: 'companyMessage',
-        payload: res,
+        type: 'save',
+        payload: { companyMessage },
       });
-      if (success) {
-        success(res);
+      if (callback) {
+        callback(companyMessage);
       }
-      // }
-      // else if (error) {
-      //   error();
-      // }
     },
     *fetchRiskDetail({ payload, success }, { call, put }) {
       const response = yield call(getRiskDetail, payload);
@@ -437,6 +455,27 @@ export default {
       });
       if (success) {
         success();
+      }
+    },
+    // 获取点位信息
+    *fetchRiskPointInfo({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointInfo, payload);
+      yield put({
+        type: 'save',
+        payload: { riskPointInfo: response.companyLetter },
+      });
+      if (callback) {
+        callback();
+      }
+    },
+    // 获取消防设施评分
+    *fetchSystemScore({ payload }, { call, put }) {
+      const response = yield call(getSystemScore, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveSystemScore',
+          payload: response.data,
+        });
       }
     },
   },
@@ -476,18 +515,18 @@ export default {
         }),
       };
     },
-    // 企业信息(包含人员数量四色图等)
-    companyMessage(state, { payload }) {
-      return {
-        ...state,
-        companyMessage: payload,
-      };
-    },
     saveRiskDetail(state, { payload: riskDetailList }) {
       return {
         ...state,
         riskDetailList,
       };
     },
+    // 消防设施评分
+    saveSystemScore(state, { payload }) {
+      return {
+        ...state,
+        systemScore: payload || {},
+      };
+    },
   },
-}
+};
