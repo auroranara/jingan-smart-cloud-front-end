@@ -169,7 +169,7 @@ export default class ImgSlider extends PureComponent {
           <Icon
             type="close"
             onClick={this.handleCloseImg}
-            style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE }}
+            style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE, fontSize: 18 }}
           />
         </div>
       {/*</div>*/}
