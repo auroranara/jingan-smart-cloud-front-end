@@ -30,6 +30,8 @@ import HostDrawer from './section/HostDrawer';
 import AlarmDrawer from './section/AlarmDrawer';
 import DangerTableDrawer from './section/DangerTableDrawer';
 import DangerDrawer from './section/DangerDrawer';
+import SafeDrawer from './section/SafeDrawer';
+import RiskDrawer from './section/RiskDrawer';
 
 import { getGridId } from './utils';
 
@@ -90,6 +92,8 @@ export default class FireControlBigPlatform extends PureComponent {
     alarmDrawerVisible: false,
     dangerTableDrawerVisible: false,
     dangerDrawerVisible: false,
+    safeDrawerVisible: false,
+    riskDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -554,6 +558,8 @@ export default class FireControlBigPlatform extends PureComponent {
       alarmDrawerVisible,
       dangerTableDrawerVisible,
       dangerDrawerVisible,
+      safeDrawerVisible,
+      riskDrawerVisible,
     } = this.state;
 
     // console.log(user);
@@ -591,8 +597,14 @@ export default class FireControlBigPlatform extends PureComponent {
         >
           <Col span={6} style={HEIGHT_PERCNET}>
             <FcModule className={styles.overview} isRotated={showReverse}>
-              <OverviewSection data={overview} handleDrawerVisibleChange={this.handleDrawerVisibleChange} />
-              <OverviewBackSection data={{ selected: mapSelected, companyOv }} />
+              <OverviewSection
+                data={overview}
+                handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+              />
+              <OverviewBackSection
+                data={{ selected: mapSelected, companyOv }}
+                handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+              />
             </FcModule>
             <div className={styles.gutter1} />
             <FcMultiRotateModule
@@ -777,6 +789,16 @@ export default class FireControlBigPlatform extends PureComponent {
           isUnit={isUnit}
           ovType={ovType}
           visible={dangerDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <SafeDrawer
+          isUnit={isUnit}
+          visible={safeDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <RiskDrawer
+          isUnit={isUnit}
+          visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
       </BigPlatformLayout>

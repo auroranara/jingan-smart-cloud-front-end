@@ -17,7 +17,7 @@ export default class OvSelect extends PureComponent {
           dropdownClassName={styles.dropdown}
           defaultValue={0}
         >
-          {options.map(({ value, desc }) => <Option value={value}>{desc}</Option>)}
+          {options.map(({ value, desc }) => <Option value={value} key={value}>{desc}</Option>)}
         </Select>
       </div>
     );

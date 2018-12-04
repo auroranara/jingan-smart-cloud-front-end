@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { Table } from 'antd';
 
 import styles from './DangerTableDrawer.less';
@@ -75,7 +75,7 @@ export default class DangerTableDrawer extends PureComponent {
     const left = (
         <SearchBar searchStyle={{ width: 500 }}>
           <Table
-            key="id"
+            rowKey="id"
             columns={columns}
             dataSource={DATA}
             pagination={false}

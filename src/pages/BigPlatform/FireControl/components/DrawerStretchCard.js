@@ -27,7 +27,7 @@ export default class DrawerStretchCard extends PureComponent {
           </p>
           <div className={styles.spans} style={{ borderBottom: selected ? '1px solid rgb(4, 253, 255)' : 'none' }}>
             {[total, overdue, rectify, review].map((n,i) => (
-              <span className={styles.item}>
+              <span className={styles.item} key={i}>
                 {`${TITLES[i]}：`}
                 <span key={i} style={{ color: `rgb(${COLORS[i]})` }}>{n}</span>
               </span>

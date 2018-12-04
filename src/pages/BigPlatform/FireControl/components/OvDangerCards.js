@@ -36,7 +36,7 @@ export default function OvDangerCards(props) {
             title="总数"
             num={total}
             zeroLength={3}
-            onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, -1)}
+            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, -1)}
           />
         </Col>
         <Col style={{ height: '100%' }} span={12}>
@@ -49,7 +49,7 @@ export default function OvDangerCards(props) {
                 style={style1}
                 titleContainerStyle={style1}
                 numContainerStyle={styleNum1}
-                onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, 0)}
+                onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, 0)}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -60,7 +60,7 @@ export default function OvDangerCards(props) {
                 style={style2}
                 titleContainerStyle={style2}
                 numContainerStyle={styleNum2}
-                onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, 1)}
+                onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, 1)}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -70,7 +70,7 @@ export default function OvDangerCards(props) {
                 style={style3}
                 titleContainerStyle={style3}
                 numContainerStyle={styleNum3}
-                onClick={e => handleDrawerVisibleChange('dangerTable', isUnit, 2)}
+                onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, 2)}
               />
             </Col>
             {/* <span className={styles.divider} />
