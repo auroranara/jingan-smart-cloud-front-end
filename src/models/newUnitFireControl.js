@@ -27,6 +27,8 @@ import {
   resetAllHosts,
   // 获取视频列表
   getVideoList,
+  // 获取消防设施评分
+  getSystemScore,
 } from '../services/bigPlatform/fireControl';
 
 export default {
@@ -58,43 +60,43 @@ export default {
     hiddenDangerRecords: [],
     // 消防数据统计
     fireControlCount: {
-      "faultAssign": 0,
-      "shield_state": 0,
-      "warn": 0,
-      "warnTrue": 0,
-      "start_state": 0,
-      "fault_state": 0,
-      "warnFalse": 0,
-      "fault": 0,
-      "feedback_state": 0,
-      "faultSelf": 0,
-      "fire_state": 0,
-      "supervise_state": 0,
+      faultAssign: 0,
+      shield_state: 0,
+      warn: 0,
+      warnTrue: 0,
+      start_state: 0,
+      fault_state: 0,
+      warnFalse: 0,
+      fault: 0,
+      feedback_state: 0,
+      faultSelf: 0,
+      fire_state: 0,
+      supervise_state: 0,
     },
     // 隐患巡查统计
-    hiddenDangerCount: {
-
-    },
+    hiddenDangerCount: {},
     // 维保情况统计
     maintenanceCount: {
-      "needRepairNum": 0,
-      "selfNoNum": 0,
-      "selfDoingNum": 0,
-      "selfFinishNum": 0,
-      "assignNoNum": 0,
-      "assignDoingNum": 0,
-      "assignFinishNum": 0,
-      "avgSelfTime": "",
-      "selfAllNum": 0,
-      "selfRate": "100%",
-      "avgAssignTime": "",
-      "assignAllNum": 0,
-      "assignRate": "100%",
+      needRepairNum: 0,
+      selfNoNum: 0,
+      selfDoingNum: 0,
+      selfFinishNum: 0,
+      assignNoNum: 0,
+      assignDoingNum: 0,
+      assignFinishNum: 0,
+      avgSelfTime: '',
+      selfAllNum: 0,
+      selfRate: '100%',
+      avgAssignTime: '',
+      assignAllNum: 0,
+      assignRate: '100%',
     },
     // 复位主机列表
     hosts: [],
     // 视频列表
     videoList: [],
+    // 消防设施评分
+    systemScore: {},
   },
 
   effects: {
@@ -197,18 +199,18 @@ export default {
       const response = yield call(getFireControlCount, payload);
       if (response.code === 200) {
         const fireControlCount = response.data.list[0] || {
-          "faultAssign": 0,
-          "shield_state": 0,
-          "warn": 0,
-          "warnTrue": 0,
-          "start_state": 0,
-          "fault_state": 0,
-          "warnFalse": 0,
-          "fault": 0,
-          "feedback_state": 0,
-          "faultSelf": 0,
-          "fire_state": 0,
-          "supervise_state": 0,
+          faultAssign: 0,
+          shield_state: 0,
+          warn: 0,
+          warnTrue: 0,
+          start_state: 0,
+          fault_state: 0,
+          warnFalse: 0,
+          fault: 0,
+          feedback_state: 0,
+          faultSelf: 0,
+          fire_state: 0,
+          supervise_state: 0,
         };
         yield put({
           type: 'save',
@@ -249,7 +251,7 @@ export default {
       if (response.code === 200) {
         // 移除不需要的主机并做排序
         const hosts = response.data.list.filter(({ reset }) => +reset === 1).sort((a, b) => {
-          return +b.isFire-a.isFire;
+          return +b.isFire - a.isFire;
         });
         yield put({
           type: 'save',
@@ -296,6 +298,16 @@ export default {
         callback();
       }
     },
+    // 获取消防设施评分
+    *fetchSystemScore({ payload }, { call, put }) {
+      const response = yield call(getSystemScore, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveSystemScore',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -333,5 +345,12 @@ export default {
         }),
       };
     },
+    // 消防设施评分
+    saveSystemScore(state, { payload }) {
+      return {
+        ...state,
+        systemScore: payload || {},
+      };
+    },
   },
-}
+};

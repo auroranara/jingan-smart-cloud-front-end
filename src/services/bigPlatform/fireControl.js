@@ -47,7 +47,9 @@ export async function getAllCamera(params) {
 
 export async function queryAlarmHandle({ id, gridId }) {
   // console.log('fetch handleAlarm');
-  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ gridId })}`);
+  return request(
+    `${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ gridId })}`
+  );
 }
 
 export async function queryLookUp(params) {
@@ -206,4 +208,11 @@ export async function getVideoList(params) {
 
 export async function getVideoLookUp(params) {
   return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
+}
+
+/**
+ * 消防设施评分
+ */
+export async function getSystemScore(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/systemScore?${stringify(params)}`);
 }
