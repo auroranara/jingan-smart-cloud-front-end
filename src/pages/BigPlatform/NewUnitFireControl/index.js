@@ -64,7 +64,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 实时消息 */}
-                <Messages/>
+                <Messages model={this.props.newUnitFireControl} />
               </div>
             </div>
           </div>
