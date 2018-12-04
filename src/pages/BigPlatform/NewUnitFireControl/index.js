@@ -176,11 +176,6 @@ export default class App extends PureComponent {
       videoKeyId,
       workOrderDrawerVisible,
       alarmDynamicDrawerVisible,
-    } = this.state;
-    const {
-      videoVisible,
-      showVideoList,
-      videoKeyId,
       riskDrawerVisible,
       checkDrawerVisible,
       pointDrawerVisible,
