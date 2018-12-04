@@ -1,14 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-// import PointInspectionCount from './PointInspectionCount';
 import VideoSurveillance from './VideoSurveillance';
 import VideoPlay from '../FireControl/section/VideoPlay';
+import PointInspectionCount from './PointInspectionCount';
+import MaintenanceCount from './MaintenanceCount';
+import FourColor from './FourColor';
 
 import styles from './index.less';
 
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
+import RiskDrawer from './Section/RiskDrawer';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -29,15 +33,33 @@ export default class App extends PureComponent {
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
+    riskDrawerVisible: true, // 是否显示对应弹框
   }
 
   componentDidMount() {
-    const {
-      dispatch,
-      match: {
-        params: { unitId: companyId },
+    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+
+    // 获取企业信息
+    dispatch({
+      type: 'newUnitFireControl/fetchCompanyMessage',
+      payload: {
+        company_id: companyId,
+        month: moment().format('YYYY-MM'),
       },
-    } = this.props;
+    });
+
+    // 获取视频列表
+    dispatch({
+      type: 'newUnitFireControl/fetchVideoList',
+      payload: { company_id: companyId },
+    });
+
+    // 获取点位信息
+    dispatch({
+      type: 'newUnitFireControl/fetchRiskPointInfo',
+      payload: { company_id: companyId },
+    });
+
     // 获取消防主机监测
     dispatch({
       type: 'newUnitFireControl/fetchFireAlarmSystem',
@@ -101,7 +123,14 @@ export default class App extends PureComponent {
    */
   handleVideoClose = () => {
     this.setState({ videoVisible: false, videoKeyId: undefined });
-  }
+  };
+
+  handleDrawerVisibleChange = (name) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+    }));
+  };
 
   render() {
     // 从props中获取数据
@@ -116,7 +145,7 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId } = this.state
+    const { videoVisible, showVideoList, videoKeyId, riskDrawerVisible } = this.state
     const {
       monitor: { allCamera },
     } = this.props
@@ -128,7 +157,10 @@ export default class App extends PureComponent {
               <div className={styles.inner}>{/* 企业基本信息 */}</div>
             </div>
             <div className={styles.item} style={{ flex: '3' }}>
-              <div className={styles.inner}>{/* 四色图 */}</div>
+              <div className={styles.inner}>
+                {/* 四色图 */}
+                <FourColor model={this.props.newUnitFireControl} dispatch />
+              </div>
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>{/* 实时消息 */}</div>
@@ -166,11 +198,14 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 点位巡查统计 */}
-                {/* <PointInspectionCount model={this.props.newUnitFireControl} /> */}
+                <PointInspectionCount model={this.props.newUnitFireControl} />
               </div>
             </div>
             <div className={styles.item}>
-              <div className={styles.inner}>{/* 维保统计 */}</div>
+              <div className={styles.inner}>
+                {/* 维保统计 */}
+                <MaintenanceCount model={this.props.newUnitFireControl} />
+              </div>
             </div>
           </div>
           <VideoPlay
@@ -181,6 +216,10 @@ export default class App extends PureComponent {
             handleVideoClose={this.handleVideoClose}
           />
         </div>
+        <RiskDrawer
+          visible={riskDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
       </BigPlatformLayout>
     );
   }

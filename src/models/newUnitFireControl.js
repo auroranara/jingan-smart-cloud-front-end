@@ -27,6 +27,10 @@ import {
   resetAllHosts,
   // 获取视频列表
   getVideoList,
+  // 获取企业信息
+  getCompanyMessage,
+  // 获取点位信息
+  getRiskPointInfo,
   // 获取消防设施评分
   getSystemScore,
 } from '../services/bigPlatform/fireControl';
@@ -95,6 +99,34 @@ export default {
     hosts: [],
     // 视频列表
     videoList: [],
+    // 企业信息
+    companyMessage: {
+      // 企业信息
+      companyMessage: {
+        // 企业名称
+        companyName: '',
+        // 安全负责人
+        headOfSecurity: '',
+        // 联系方式
+        headOfSecurityPhone: '',
+        // 风险点统计
+        countCheckItem: 0,
+        // 安全人员统计
+        countCompanyUser: 0,
+      },
+      // 巡查次数列表
+      check_map: [],
+      // 隐患数量列表
+      hidden_danger_map: [],
+      // 是否是重点单位
+      isImportant: false,
+      // 风险点列表
+      point: [],
+      // 四色图列表
+      fourColorImg: [],
+      // 点位信息
+      riskPointInfo: [],
+    },
     // 消防设施评分
     systemScore: {},
   },
@@ -293,6 +325,47 @@ export default {
       yield put({
         type: 'save',
         payload: { videoList: response.list },
+      });
+      if (callback) {
+        callback();
+      }
+    },
+    // 获取企业信息
+    *fetchCompanyMessage({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyMessage, payload);
+      const companyMessage = {
+        ...response,
+        // 移除坐标不存在的风险点
+        point:
+          response.point &&
+          response.point.filter(
+            ({ itemId, xNum, yNum }) =>
+              itemId &&
+              (xNum || Number.parseFloat(xNum) === 0) &&
+              (yNum || Number.parseFloat(yNum) === 0)
+          ),
+        // 移除地址不合法的四色图
+        fourColorImg:
+          response.fourColorImg && response.fourColorImg.startsWith('[')
+            ? JSON.parse(response.fourColorImg).filter(
+                ({ id, webUrl }) => /^http/.test(webUrl) && id
+              )
+            : [],
+      };
+      yield put({
+        type: 'save',
+        payload: { companyMessage },
+      });
+      if (callback) {
+        callback(companyMessage);
+      }
+    },
+    // 获取点位信息
+    *fetchRiskPointInfo({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointInfo, payload);
+      yield put({
+        type: 'save',
+        payload: { riskPointInfo: response.companyLetter },
       });
       if (callback) {
         callback();
