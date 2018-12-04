@@ -33,9 +33,10 @@ export default class FireMonitoring extends PureComponent {
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: '25% 52%',
               }}
-            />
-            <div className={styles.anime}>
-              <SignalAnime />
+            >
+              <div className={styles.anime}>
+                <SignalAnime />
+              </div>
             </div>
             <div className={styles.twoTotal}>
               <p className={styles.fireTitle}>
