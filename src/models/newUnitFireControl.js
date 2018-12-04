@@ -28,6 +28,66 @@ import {
   // 获取视频列表
   getVideoList,
 } from '../services/bigPlatform/fireControl';
+import {
+  // 企业信息(包含人员数量四色图等)
+  getCompanyMessage,
+  getRiskDetail,
+} from '../services/bigPlatform/bigPlatform';
+import moment from 'moment';
+
+const getColorByRiskLevel = function(level) {
+  switch (+level) {
+    case 1:
+      return '红色';
+    case 2:
+      return '橙色';
+    case 3:
+      return '黄色';
+    case 4:
+      return '蓝色';
+    default:
+      return '';
+  }
+};
+const transformHiddenDangerFields = ({
+  id,
+  item_id,
+  desc,
+  report_user_name,
+  report_time,
+  rectify_user_name,
+  plan_rectify_time,
+  real_rectify_time,
+  review_user_name,
+  status,
+  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
+  source_type_name,
+  companyBuildingItem,
+  business_type,
+  review_time,
+}) => {
+  const { object_title, risk_level } = companyBuildingItem || {};
+  return {
+    id,
+    item_id,
+    description: desc,
+    sbr: report_user_name,
+    sbsj: moment(+report_time).format('YYYY-MM-DD'),
+    zgr: rectify_user_name,
+    plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
+    real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
+    fcr: review_user_name,
+    status: +status,
+    background: background ? background.split(',')[0] : '',
+    source:
+      (source_type_name === '网格点上报' && '监督点') ||
+      (source_type_name === '风险点上报' &&
+        `${getColorByRiskLevel(risk_level)}风险点${object_title ? `（${object_title}）` : ''}`) ||
+      source_type_name,
+    businessType: business_type,
+    fcsj: moment(+review_time).format('YYYY-MM-DD'),
+  };
+};
 
 export default {
   namespace: 'newUnitFireControl',
@@ -95,6 +155,24 @@ export default {
     hosts: [],
     // 视频列表
     videoList: [],
+    companyMessage: {
+      companyMessage: {
+        companyName: '',
+        headOfSecurity: '',
+        headOfSecurityPhone: '',
+        countCheckItem: 0,
+        countCompanyUser: 0,
+      },
+      check_map: [],
+      hidden_danger_map: [],
+      isImportant: false,
+    },
+    // 隐患详情
+    riskDetailList: {
+      ycq: [],
+      wcq: [],
+      dfc: [],
+    },
   },
 
   effects: {
@@ -296,6 +374,71 @@ export default {
         callback();
       }
     },
+    // 企业信息(包含人员数量四色图等)
+    *fetchCompanyMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getCompanyMessage, payload);
+      const res = {
+        ...response,
+        point:
+          response.point &&
+          response.point.filter(
+            ({ itemId, xNum, yNum }) =>
+              itemId &&
+              (xNum || Number.parseFloat(xNum) === 0) &&
+              (yNum || Number.parseFloat(yNum) === 0)
+          ),
+        fourColorImg:
+          response.fourColorImg && response.fourColorImg.startsWith('[')
+            ? JSON.parse(response.fourColorImg).filter(
+                ({ id, webUrl }) => /^http/.test(webUrl) && id
+              )
+            : [],
+      };
+      // if (response.code === 200) {
+      yield put({
+        type: 'companyMessage',
+        payload: res,
+      });
+      if (success) {
+        success(res);
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    *fetchRiskDetail({ payload, success }, { call, put }) {
+      const response = yield call(getRiskDetail, payload);
+      const ycq = response.hiddenDangers
+        .filter(({ status }) => +status === 7)
+        .sort((a, b) => {
+          return +a.plan_rectify_time - b.plan_rectify_time;
+        })
+        .map(transformHiddenDangerFields);
+      const wcq = response.hiddenDangers
+        .filter(({ status }) => +status === 1 || +status === 2)
+        .sort((a, b) => {
+          return +a.plan_rectify_time - b.plan_rectify_time;
+        })
+        .map(transformHiddenDangerFields);
+      const dfc = response.hiddenDangers
+        .filter(({ status }) => +status === 3)
+        .sort((a, b) => {
+          return +a.real_rectify_time - b.real_rectify_time;
+        })
+        .map(transformHiddenDangerFields);
+      yield put({
+        type: 'saveRiskDetail',
+        payload: {
+          ycq,
+          wcq,
+          dfc,
+        },
+      });
+      if (success) {
+        success();
+      }
+    },
   },
 
   reducers: {
@@ -331,6 +474,19 @@ export default {
             isReset: true,
           };
         }),
+      };
+    },
+    // 企业信息(包含人员数量四色图等)
+    companyMessage(state, { payload }) {
+      return {
+        ...state,
+        companyMessage: payload,
+      };
+    },
+    saveRiskDetail(state, { payload: riskDetailList }) {
+      return {
+        ...state,
+        riskDetailList,
       };
     },
   },

@@ -12,7 +12,17 @@ import iconCompany from '@/assets/abnormal-device.png';
 const { Description } = DescriptionList;
 export default class App extends PureComponent {
   render() {
-    const { model } = this.props;
+    const {
+      model: {
+        companyMessage: {
+          companyMessage: { companyName, headOfSecurity, headOfSecurityPhone, countCheckItem },
+        },
+        riskDetailList: { ycq = [], wcq = [], dfc = [] },
+      },
+    } = this.props;
+    const hiddenDanger = ycq.length + wcq.length + dfc.length;
+    console.log(this.props);
+
 
     return (
       <Section title="点位巡查统计" style={{ height: 'auto' }}>
@@ -26,12 +36,12 @@ export default class App extends PureComponent {
               }}
             />
             <div className={styles.infoWrapper} style={{ marginTop: '8px' }}>
-              <div className={styles.companyName}>无锡晶安智慧科技有限公司</div>
+              <div className={styles.companyName}>{companyName}</div>
               <DescriptionList col={1}>
                 <Description term="主要负责人">
-                  <div className={styles.manWrapper} style={{width: '145px'}}>
-                    张小东
-                    <span className={styles.phone}>13811110000</span>
+                  <div className={styles.manWrapper} style={{ width: '145px' }}>
+                    {headOfSecurity}
+                    <span className={styles.phone}>{headOfSecurityPhone}</span>
                   </div>
                 </Description>
               </DescriptionList>
@@ -82,7 +92,7 @@ export default class App extends PureComponent {
                   style={{ marginTop: '10px', marginLeft: '8px' }}
                 >
                   检查点
-                  <div className={styles.checkNum}>{8}</div>
+                  <div className={styles.checkNum}>{countCheckItem}</div>
                 </div>
               </div>
             </Col>
@@ -101,7 +111,7 @@ export default class App extends PureComponent {
                   style={{ marginTop: '10px', marginLeft: '8px' }}
                 >
                   当前隐患
-                  <div className={styles.checkNum}>{8}</div>
+                  <div className={styles.checkNum}>{hiddenDanger}</div>
                 </div>
               </div>
             </Col>

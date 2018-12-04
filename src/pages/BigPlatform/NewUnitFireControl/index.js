@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import moment from "moment";
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import PointInspectionCount from './PointInspectionCount';
 import CompanyInfo from './CompanyInfo';
@@ -19,6 +20,26 @@ export default class App extends PureComponent {
   componentDidMount() {
     const { match: { params: { unitId } } } = this.props;
     console.log(unitId);
+    this.handleInit();
+  }
+
+  handleInit = () => {
+    const { dispatch, match: { params: { unitId } }} = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchCompanyMessage',
+      payload: {
+        company_id: unitId,
+        month: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 获取隐患详情（右边隐患详情源数据）
+    dispatch({
+      type: 'newUnitFireControl/fetchRiskDetail',
+      payload: {
+        company_id: unitId,
+      },
+    });
   }
 
   render() {
