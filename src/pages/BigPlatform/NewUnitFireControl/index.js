@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-// import PointInspectionCount from './PointInspectionCount';
 import VideoSurveillance from './VideoSurveillance';
 import VideoPlay from '../FireControl/section/VideoPlay';
 import PointInspectionCount from './PointInspectionCount';
@@ -190,7 +189,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 点位巡查统计 */}
-                {/* <PointInspectionCount model={this.props.newUnitFireControl} /> */}
+                <PointInspectionCount model={this.props.newUnitFireControl} />
               </div>
             </div>
             <div className={styles.item}>
