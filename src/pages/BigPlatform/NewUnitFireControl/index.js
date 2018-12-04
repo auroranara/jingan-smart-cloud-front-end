@@ -2,7 +2,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import PointInspectionCount from './PointInspectionCount';
-
+import CompanyInfo from './CompanyInfo';
+import Messages from './Messages';
 import styles from './index.less';
 
 /**
@@ -16,8 +17,8 @@ import styles from './index.less';
 }))
 export default class App extends PureComponent {
   componentDidMount() {
-    const { match: { params: { id } } } = this.props;
-    console.log(id);
+    const { match: { params: { unitId } } } = this.props;
+    console.log(unitId);
   }
 
   render() {
@@ -31,6 +32,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 企业基本信息 */}
+                <CompanyInfo model={this.props.newUnitFireControl} />
               </div>
             </div>
             <div className={styles.item} style={{ flex: '3' }}>
@@ -41,6 +43,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 实时消息 */}
+                <Messages/>
               </div>
             </div>
           </div>
