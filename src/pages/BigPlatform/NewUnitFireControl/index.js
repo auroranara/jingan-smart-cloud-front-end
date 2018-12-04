@@ -12,6 +12,7 @@ import styles from './index.less';
 
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
+import RiskDrawer from './Section/RiskDrawer';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -32,6 +33,7 @@ export default class App extends PureComponent {
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
+    riskDrawerVisible: true, // 是否显示对应弹框
   }
 
   componentDidMount() {
@@ -121,7 +123,14 @@ export default class App extends PureComponent {
    */
   handleVideoClose = () => {
     this.setState({ videoVisible: false, videoKeyId: undefined });
-  }
+  };
+
+  handleDrawerVisibleChange = (name) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+    }));
+  };
 
   render() {
     // 从props中获取数据
@@ -136,7 +145,7 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId } = this.state
+    const { videoVisible, showVideoList, videoKeyId, riskDrawerVisible } = this.state
     const {
       monitor: { allCamera },
     } = this.props
@@ -207,6 +216,10 @@ export default class App extends PureComponent {
             handleVideoClose={this.handleVideoClose}
           />
         </div>
+        <RiskDrawer
+          visible={riskDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
       </BigPlatformLayout>
     );
   }
