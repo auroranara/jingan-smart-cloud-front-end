@@ -121,7 +121,7 @@ class VideoPlay extends Component {
                 onClick={() => {
                   this.handleItemClick(index, keyId);
                 }}
-                key={keyId}
+                key={item.id}
               >
                 {activeIndex === index && (
                   <Icon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
@@ -200,10 +200,10 @@ class VideoPlay extends Component {
             {loading ? (
               LOADING_COMPONENT
             ) : (
-              <Player>
-                <HLSSource isVideoChild src={videoSrc} ref="source" />
-              </Player>
-            )}
+                <Player>
+                  <HLSSource isVideoChild src={videoSrc} ref="source" />
+                </Player>
+              )}
           </div>
           {showList && (
             <div className={styles.videoList}>
@@ -226,8 +226,8 @@ class VideoPlay extends Component {
         {this.renderPan()}
       </Draggable>
     ) : (
-      this.renderPan()
-    );
+        this.renderPan()
+      );
   }
 }
 
