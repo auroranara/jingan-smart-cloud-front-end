@@ -3,7 +3,10 @@ import { Row, Col } from 'antd';
 import Section from '../Section';
 import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
-import iconCompany from '@/assets/abnormal-device.png';
+import iconCompany from '@/assets/icon-company.png';
+import iconMaintenance from '@/assets/icon-maintenance.png';
+import iconHd from '@/assets/icon-hidden-danger.png';
+import iconCheck from '@/assets/icon-check.png';
 /**
  * description: 点位巡查统计
  * author: sunkai
@@ -32,7 +35,7 @@ export default class App extends PureComponent {
               className={styles.iconInfo}
               style={{
                 background: `url(${iconCompany}) no-repeat center 8px`,
-                backgroundSize: '70% auto',
+                backgroundSize: '65% auto',
               }}
             />
             <div className={styles.infoWrapper} style={{ marginTop: '8px' }}>
@@ -48,17 +51,17 @@ export default class App extends PureComponent {
             </div>
           </div>
 
-          <div className={styles.divider} style={{ marginTop: '15px' }} />
+          <div className={styles.divider} style={{ marginTop: '20px' }} />
 
           <div className={styles.infoWrapper}>
             <div
               className={styles.iconInfo}
               style={{
-                background: `url(${iconCompany}) no-repeat center 8px`,
-                backgroundSize: '70% auto',
+                background: `url(${iconMaintenance}) no-repeat center 8px`,
+                backgroundSize: '65% auto',
               }}
             />
-            <div className={styles.infoWrapper} style={{ marginTop: '10px' }}>
+            <div className={styles.infoWrapper} style={{ marginTop: '15px', marginBottom: '5px' }}>
               <DescriptionList col={1}>
                 <Description term="维保单位">南消</Description>
                 <Description term="维保人员">
@@ -83,7 +86,7 @@ export default class App extends PureComponent {
                 <div
                   className={styles.iconInfo}
                   style={{
-                    background: `url(${iconCompany}) no-repeat center center`,
+                    background: `url(${iconCheck}) no-repeat center center`,
                     backgroundSize: '95% auto',
                   }}
                 />
@@ -102,7 +105,7 @@ export default class App extends PureComponent {
                 <div
                   className={styles.iconInfo}
                   style={{
-                    background: `url(${iconCompany}) no-repeat center center`,
+                    background: `url(${iconHd}) no-repeat center center`,
                     backgroundSize: '95% auto',
                   }}
                 />
