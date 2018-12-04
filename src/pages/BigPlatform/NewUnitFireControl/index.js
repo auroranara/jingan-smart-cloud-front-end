@@ -12,7 +12,8 @@ import styles from './index.less';
 
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
-import RiskDrawer from './Section/RiskDrawer';
+import WorkOrderDrawer from './Section/WorkOrderDrawer';
+import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -33,7 +34,8 @@ export default class App extends PureComponent {
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
-    riskDrawerVisible: true, // 是否显示对应弹框
+    workOrderDrawerVisible: false,
+    alarmDynamicDrawerVisible: true,
   }
 
   componentDidMount() {
@@ -145,7 +147,7 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId, riskDrawerVisible } = this.state
+    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible } = this.state
     const {
       monitor: { allCamera },
     } = this.props
@@ -216,9 +218,13 @@ export default class App extends PureComponent {
             handleVideoClose={this.handleVideoClose}
           />
         </div>
-        <RiskDrawer
-          visible={riskDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        <WorkOrderDrawer
+          visible={workOrderDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('workOrder')}
+        />
+        <AlarmDynamicDrawer
+          visible={alarmDynamicDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
         />
       </BigPlatformLayout>
     );
