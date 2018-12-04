@@ -73,7 +73,9 @@ export default class App extends PureComponent {
         this.showTipTimer = setInterval(this.showChartTip, 2000);
       });
       chart.on('click', (e) => {
-        this.setState({ visible: true });
+        const { handleShowInspection } = this.props;
+        // this.setState({ visible: true });
+        handleShowInspection && handleShowInspection();
       });
     }
   }
@@ -91,7 +93,28 @@ export default class App extends PureComponent {
     } = this.props;
     const { visible } = this.state;
 
+    // 获取时间轴
     const timeAxis = this.getTimeAxis();
+    // mock数据
+    const data = Array(30).fill({
+      "coverage":Math.round(Math.random()*100),
+      "unNormal":Math.round(Math.random()*100),
+      "abnormalPoint":Math.round(Math.random()*10),
+      "checkPoint":Math.round(Math.random()*10),
+      "unCheckPoint":Math.round(Math.random()*10),
+    });
+    const checkPointList=[],
+    unCheckPointList=[],
+    abnormalPointList=[],
+    coverageList=[],
+    unNormalList=[];
+    data.forEach(({ checkPoint, unCheckPoint, abnormalPoint, coverage, unNormal }) => {
+      checkPointList.push(checkPoint);
+      unCheckPointList.push(unCheckPoint);
+      abnormalPointList.push(abnormalPoint);
+      coverageList.push(coverage);
+      unNormalList.push(unNormal);
+    });
 
     const option = {
       // 时间轴
@@ -160,24 +183,24 @@ export default class App extends PureComponent {
           name: '已检查',
           type: 'bar',
           symbol: 'rect',
-          data: [...Array(30).keys()],
+          data: checkPointList,
           itemStyle: { color: '#05D2DA' },
         },
         {
           name: '未检查',
           type: 'bar',
-          data: [...Array(30).keys()],
+          data: unCheckPointList,
           itemStyle: { color: '#8C8C8C' },
         },
         {
           name: '异常点位',
           type: 'bar',
-          data: [...Array(30).keys()],
+          data: abnormalPointList,
           itemStyle: { color: '#FF4848' },
         },
         {
           name: '覆盖率',
-          data: [...Array(30).keys()],
+          data: coverageList,
           type: 'line',
           yAxisIndex: 1,
           itemStyle: {
@@ -191,7 +214,7 @@ export default class App extends PureComponent {
         },
         {
           name: '异常率',
-          data: [...Array(30).keys()],
+          data: unNormalList,
           type: 'line',
           yAxisIndex: 1,
           itemStyle: {

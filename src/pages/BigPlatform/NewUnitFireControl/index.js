@@ -74,8 +74,8 @@ export default class App extends PureComponent {
     });
 
     // 轮询
-    this.pollTimer = setInterval(this.polling, DELAY);
-    this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
+    // this.pollTimer = setInterval(this.polling, DELAY);
+    // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
 
