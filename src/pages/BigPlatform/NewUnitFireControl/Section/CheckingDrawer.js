@@ -69,7 +69,7 @@ export default class CheckingDrawer extends PureComponent {
       visible,
       checkCount,
       checkList: { checkLists },
-      // pointRecordList: { pointRecordLists = [] },
+      pointRecordList: { pointRecordLists },
       ...restProps
     } = this.props;
 
@@ -142,7 +142,7 @@ export default class CheckingDrawer extends PureComponent {
         </div>
         <PointPositionName
           visible={pointDrawerVisible}
-          // pointRecordLists={pointRecordLists}
+          pointRecordLists={pointRecordLists}
           onClose={() => {
             this.setState({
               pointDrawerVisible: false,

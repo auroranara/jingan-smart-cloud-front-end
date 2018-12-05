@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Col, Table } from 'antd';
-
+import moment from 'moment';
 import ImageCard from '@/components/ImageCard';
 
 import styles from './PointPositionName.less';
@@ -16,11 +16,14 @@ const columns = [
     dataIndex: 'check_date',
     key: 'check_date',
     align: 'center',
+    render: time => {
+      return moment(time).format('YYYY-MM-DD');
+    },
   },
   {
     title: '巡查人',
-    dataIndex: 'user',
-    key: 'user',
+    dataIndex: 'user_name',
+    key: 'user_name',
     align: 'center',
   },
   {
@@ -28,11 +31,14 @@ const columns = [
     dataIndex: 'status',
     key: 'status',
     align: 'center',
+    render: val => {
+      return +val === 1 ? '正常' : '异常';
+    },
   },
   {
     title: '处理结果',
-    dataIndex: 'result',
-    key: 'result',
+    dataIndex: 'data',
+    key: 'data',
     align: 'center',
   },
 ];
@@ -40,15 +46,8 @@ const columns = [
 export default class PointPositionName extends PureComponent {
   render() {
     const { visible, pointRecordLists, handleDrawerVisibleChange, ...restProps } = this.props;
-    console.log('pointRecordLists', pointRecordLists);
 
-    const list = [...Array(5)].map(item => ({
-      pointTitle: '消防',
-      user: '问问',
-      time: '2018-12-11',
-      pointStatus: '待检查',
-      photoUrl: '',
-    }));
+    const list = [];
 
     const cards = list.map(item => {
       const { pointTitle, user, time, pointStatus, photoUrl } = item;

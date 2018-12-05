@@ -52,6 +52,7 @@ export default class App extends PureComponent {
       checkCount,
       checkList,
       companyId,
+      pointRecordList,
     } = this.props;
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
 
@@ -157,6 +158,7 @@ export default class App extends PureComponent {
           companyId={companyId}
           checkCount={checkCount}
           checkList={checkList}
+          pointRecordList={pointRecordList}
           onClose={() => {
             this.setState({
               checkDrawerVisible: false,

@@ -518,7 +518,7 @@ export default {
       if (response && response.code === 200) {
         yield put({
           type: 'savePointRecord',
-          payload: response.data.list || [],
+          payload: response.data.result || [],
         });
       }
     },
