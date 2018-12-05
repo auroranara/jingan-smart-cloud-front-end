@@ -87,6 +87,14 @@ export default class App extends PureComponent {
       },
     });
 
+     // 获取大屏消息
+     dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+      payload: {
+        companyId,
+      },
+    });
+
     // 轮询
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);

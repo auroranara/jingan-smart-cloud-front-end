@@ -33,6 +33,8 @@ import {
   getRiskPointInfo,
   // 获取消防设施评分
   getSystemScore,
+  // 获取大屏消息
+  getScreenMessage,
 } from '../services/bigPlatform/fireControl';
 import {
   getRiskDetail,
@@ -193,6 +195,8 @@ export default {
     },
     // 消防设施评分
     systemScore: {},
+    // 获取大屏消息
+    screenMessage: [],
   },
 
   effects: {
@@ -478,6 +482,21 @@ export default {
         });
       }
     },
+    // 获取大屏消息
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -526,6 +545,12 @@ export default {
       return {
         ...state,
         systemScore: payload || {},
+      };
+    },
+    screenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: payload.list,
       };
     },
   },

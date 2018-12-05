@@ -24,8 +24,6 @@ export default class App extends PureComponent {
       },
     } = this.props;
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
-    console.log(this.props);
-
 
     return (
       <Section title="点位巡查统计" style={{ height: 'auto' }}>

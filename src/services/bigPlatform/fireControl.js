@@ -231,3 +231,8 @@ export async function getRiskPointInfo(params) {
 export async function getSystemScore(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/systemScore?${stringify(params)}`);
 }
+
+// 获取大屏消息
+export async function getScreenMessage(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/screenMessage?${stringify(params)}`);
+}
