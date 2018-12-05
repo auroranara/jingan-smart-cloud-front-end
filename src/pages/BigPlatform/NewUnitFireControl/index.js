@@ -16,6 +16,7 @@ import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
 import WorkOrderDrawer from './Section/WorkOrderDrawer';
 import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
+import MaintenanceDrawer from './Section/MaintenanceDrawer';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -38,7 +39,8 @@ export default class App extends PureComponent {
     videoKeyId: undefined,
     drawerType: 0,
     workOrderDrawerVisible: false,
-    alarmDynamicDrawerVisible: true,
+    alarmDynamicDrawerVisible: false,
+    maintenanceDrawerVisible: false,
   }
 
   componentDidMount() {
@@ -169,6 +171,7 @@ export default class App extends PureComponent {
       drawerType,
       workOrderDrawerVisible,
       alarmDynamicDrawerVisible,
+      maintenanceDrawerVisible,
     } = this.state
     const {
       monitor: { allCamera },
@@ -252,10 +255,15 @@ export default class App extends PureComponent {
             visible={workOrderDrawerVisible}
             handleLabelChange={type => this.setState({ drawerType: type })}
             onClose={() => this.handleDrawerVisibleChange('workOrder')}
+            handleCardClick={e => this.handleDrawerVisibleChange('maintenance')}
           />
           <AlarmDynamicDrawer
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+          />
+          <MaintenanceDrawer
+            visible={maintenanceDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('maintenance')}
           />
         </BigPlatformLayout>
       </div>

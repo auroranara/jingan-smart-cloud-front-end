@@ -36,11 +36,11 @@ const CARDS = [...Array(10).keys()].map(i => ({
 }));
 
 function OrderCard(props) {
-  const { type, time, status } = props;
+  const { type, time, status, ...restProps } = props;
 
   return (
     <div className={styles.outer}>
-      <div className={styles.card}>
+      <div className={styles.card} {...restProps}>
         <div className={styles.status}>
           <div style={{ backgroundImage: `url(${handlingIcon})` }} className={styles.stamp}></div>
           <p className={styles.day}>已超期3天</p>
@@ -62,7 +62,7 @@ function OrderCard(props) {
 
 export default class WorkOrderDrawer extends PureComponent {
   render() {
-    const { type, handleLabelChange } = this.props;
+    const { type, handleLabelChange, handleCardClick, ...restProps } = this.props;
 
     const left = (
       <div className={styles.container}>
@@ -78,7 +78,7 @@ export default class WorkOrderDrawer extends PureComponent {
           ))}
         </div>
         <div className={styles.cards}>
-          {CARDS.map(item => <OrderCard key={item.id} {...item} />)}
+          {CARDS.map(item => <OrderCard key={item.id} {...item} onClick={e => handleCardClick(e)} />)}
         </div>
       </div>
     );
@@ -88,7 +88,7 @@ export default class WorkOrderDrawer extends PureComponent {
         title={`${STATUS[type]}工单`}
         width={535}
         left={left}
-        {...this.props}
+        {...restProps}
       />
     );
   }
