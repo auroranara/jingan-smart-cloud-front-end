@@ -24,7 +24,7 @@ import PointPositionName from './Section/PointPositionName';
 import PointInspectionDrawer from './PointInspectionDrawer';
 
 const DELAY = 5 * 1000;
-const CHART_DELAY = 10 * 60 * 1000;
+// const CHART_DELAY = 10 * 60 * 1000;
 
 /**
  * description: 新企业消防
@@ -162,13 +162,15 @@ export default class App extends PureComponent {
         companyId,
       },
     });
+
     // 获取消防设施评分
-    dispatch({
-      type: 'newUnitFireControl/fetchSystemScore',
-      payload: {
-        companyId,
-      },
-    });
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchSystemScore',
+    //   payload: {
+    //     companyId,
+    //   },
+    // });
+
     // 获取大屏消息
     dispatch({
       type: 'newUnitFireControl/fetchScreenMessage',
@@ -301,7 +303,7 @@ export default class App extends PureComponent {
       >
         <div className={styles.container}>
           <div className={styles.top}>
-            <div className={styles.topItem} style={{ left: 0 }}>
+            <div className={styles.topItem} style={{ left: 0, zIndex: 100 }}>
               <div className={styles.inner}>
                 {/* 企业基本信息 */}
                 <CompanyInfo
@@ -316,7 +318,7 @@ export default class App extends PureComponent {
                 <FourColor model={this.props.newUnitFireControl} />
               </div>
             </div>
-            <div className={styles.topItem} style={{ right: 0 }}>
+            <div className={styles.topItem} style={{ right: 0, zIndex: 100 }}>
               <div className={styles.inner}>
                 {/* 实时消息 */}
                 <Messages model={this.props.newUnitFireControl} />
