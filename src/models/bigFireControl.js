@@ -146,11 +146,14 @@ export default {
         yield put({ type: 'saveCompanyOv', payload: { safetyOfficer, riskPointer } });
       }
     },
-    *fetchAlarm({ payload }, { call, put }) {
+    *fetchAlarm({ payload, callback }, { call, put }) {
       let response = yield call(queryAlarm, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200) yield put({ type: 'saveAlarm', payload: data });
+      if (code === 200) {
+        callback && callback(data ? data.list : []);
+        yield put({ type: 'saveAlarm', payload: data });
+      }
     },
     *fetchAlarmHistory({ payload }, { call, put }) {
       let response = yield call(queryAlarm, { ...payload, historyType: 1 });

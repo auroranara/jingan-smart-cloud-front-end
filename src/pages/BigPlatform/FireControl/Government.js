@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Col, Drawer, Modal, Row, message } from 'antd';
+import { Col, message, Modal, notification, Row } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import { myParseInt } from './utils';
+import { myParseInt, getNewAlarms } from './utils';
 import styles from './Government.less';
 // import Head from './Head';
 import GridSelect from './components/GridSelect';
@@ -114,6 +114,7 @@ export default class FireControlBigPlatform extends PureComponent {
   lookingUpTimer = null;
   mapItemList = [];
   dropdownDOM = null;
+  formerAlarmList = [];
   // isLookingUp = false; // 标记正在查岗状态
 
   getGridId = () => {
@@ -161,7 +162,22 @@ export default class FireControlBigPlatform extends PureComponent {
 
     // 只需要轮询火警相关，其他不必轮询
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { gridId } });
-    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
+    dispatch({
+      type: 'bigFireControl/fetchAlarm',
+      payload: { gridId },
+      callback: (list=[]) => {
+        // console.log(list);
+        const newAlarms = getNewAlarms(list, this.formerAlarmList);
+        if (newAlarms.length)
+          notification.warn({
+            message: '系统提示',
+            description: '有新的火警',
+            duration: null,
+          });
+
+        this.formerAlarmList = list;
+      },
+    });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
     // dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
 
