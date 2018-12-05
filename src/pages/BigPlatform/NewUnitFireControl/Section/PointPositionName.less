@@ -1,0 +1,62 @@
+.container {
+  height: 100%;
+}
+
+.circleContainer {
+  height: 90px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.currentTitle {
+  margin: 0 auto;
+  position: relative;
+  top: 45%;
+  text-align: -webkit-center;
+  color: #fff;
+  font-size: 14px;
+}
+
+.statusIcon {
+  height: 100%;
+  display: contents;
+}
+
+.icon {
+  width: 90px;
+  height: 90px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.cards {
+  height: calc(100% - 435px);
+  overflow: auto;
+
+  div:last-child {
+    margin-bottom: 0;
+  }
+
+  .cardsTitle {
+    border-left: 4px solid rgb(0, 255, 255);
+  }
+}
+
+.titleP {
+  padding-left: 10px;
+  color: #fff;
+
+  .titleSpan {
+    padding-left: 5px;
+  }
+}
+
+.record {
+  height: calc(100% -500px);
+  overflow: auto;
+  .recordTitle {
+    border-left: 4px solid rgb(0, 255, 255);
+  }
+}

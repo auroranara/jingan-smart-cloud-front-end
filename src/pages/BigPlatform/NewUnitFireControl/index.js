@@ -14,8 +14,11 @@ import styles from './index.less';
 
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
+import CheckingDrawer from './Section/CheckingDrawer';
+import RiskDrawer from './Section/RiskDrawer';
 import WorkOrderDrawer from './Section/WorkOrderDrawer';
 import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
+import PointPositionName from './Section/PointPositionName';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -31,17 +34,24 @@ const CHART_DELAY = 10 * 60 * 1000;
   loading: loading.models.newUnitFireControl,
 }))
 export default class App extends PureComponent {
-
   state = {
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
+    riskDrawerVisible: false, // 是否显示对应弹框
+    checkDrawerVisible: false, // 检查点弹框
+    pointDrawerVisible: false, // 点位名称弹框
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
-  }
+  };
 
   componentDidMount() {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
 
     // 获取企业信息
     dispatch({
@@ -160,12 +170,28 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible } = this.state
+    const {
+      videoVisible,
+      showVideoList,
+      videoKeyId,
+      workOrderDrawerVisible,
+      alarmDynamicDrawerVisible,
+      riskDrawerVisible,
+      checkDrawerVisible,
+      pointDrawerVisible,
+    } = this.state;
     const {
       monitor: { allCamera },
-    } = this.props
+    } = this.props;
     return (
-      <BigPlatformLayout title="晶安智慧云消防展示系统" headerStyle={{ fontSize: 16 }} style={{ backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg-nx1.png)' }}>
+      <BigPlatformLayout
+        title="晶安智慧云消防展示系统"
+        headerStyle={{ fontSize: 16 }}
+        style={{
+          backgroundImage:
+            'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg-nx1.png)',
+        }}
+      >
         <div className={styles.container}>
           <div className={styles.top}>
             <div className={styles.item}>
@@ -204,10 +230,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 重点部位监控 */}
-                <VideoSurveillance
-                  handleShowVideo={this.handleShowVideo}
-                  data={allCamera}
-                />
+                <VideoSurveillance handleShowVideo={this.handleShowVideo} data={allCamera} />
               </div>
             </div>
             <div className={styles.item}>
@@ -225,7 +248,10 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 维保统计 */}
-                <MaintenanceCount model={this.props.newUnitFireControl} handleShowOrder={this.handleDrawerVisibleChange} />
+                <MaintenanceCount
+                  model={this.props.newUnitFireControl}
+                  handleShowOrder={this.handleDrawerVisibleChange}
+                />
               </div>
             </div>
           </div>
@@ -236,15 +262,27 @@ export default class App extends PureComponent {
             keyId={videoKeyId} // keyId
             handleVideoClose={this.handleVideoClose}
           />
+          <RiskDrawer
+            visible={riskDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          />
+          <CheckingDrawer
+            visible={checkDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          />
+          <PointPositionName
+            visible={pointDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          />
+          <WorkOrderDrawer
+            visible={workOrderDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('workOrder')}
+          />
+          <AlarmDynamicDrawer
+            visible={alarmDynamicDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+          />
         </div>
-        <WorkOrderDrawer
-          visible={workOrderDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('workOrder')}
-        />
-        <AlarmDynamicDrawer
-          visible={alarmDynamicDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
-        />
       </BigPlatformLayout>
     );
   }

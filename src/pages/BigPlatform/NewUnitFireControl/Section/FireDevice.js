@@ -2,8 +2,12 @@ import React from 'react';
 import { Col, Row } from 'antd';
 
 import Section from '../Section';
-import Pie from './Pie';
+// import Pie from './Pie';
 import styles from './FireDevice.less';
+
+import normal from '../imgs/normal.png';
+import fine from '../imgs/fine.png';
+import error from '../imgs/error.png';
 
 export default function FireDevice(props) {
   const {
@@ -28,18 +32,29 @@ export default function FireDevice(props) {
                     const { sysName, status } = item;
                     return (
                       <Col key={index} style={{ height: '100%' }} span={12}>
-                        <Pie
-                          rate={
-                            +status === 1
-                              ? '50'
-                              : +status === 2
-                                ? '70'
-                                : +status === 3
-                                  ? '90'
-                                  : null
-                          }
-                        />
-                        <p>{sysName}</p>
+                        {+status === 1 ? (
+                          <span
+                            className={styles.icon}
+                            style={{
+                              backgroundImage: `url(${error})`,
+                            }}
+                          />
+                        ) : +status === 2 ? (
+                          <span
+                            className={styles.icon}
+                            style={{
+                              backgroundImage: `url(${normal})`,
+                            }}
+                          />
+                        ) : +status === 3 ? (
+                          <span
+                            className={styles.icon}
+                            style={{
+                              backgroundImage: `url(${fine})`,
+                            }}
+                          />
+                        ) : null}
+                        <p style={{ textAlign: 'center' }}>{sysName}</p>
                       </Col>
                     );
                   } else return null;
