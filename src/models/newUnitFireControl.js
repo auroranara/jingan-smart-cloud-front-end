@@ -37,6 +37,8 @@ import {
   getPointInspectionCount,
   // 南消：获取点位巡查列表
   // getPointInspectionList,
+  // 获取大屏消息
+  getScreenMessage,
 } from '../services/bigPlatform/fireControl';
 import {
   getRiskDetail,
@@ -201,6 +203,8 @@ export default {
     pointInspectionCount: [],
     // 点位巡查列表
     pointInspectionList: [],
+    // 获取大屏消息
+    screenMessage: [],
   },
 
   effects: {
@@ -509,6 +513,21 @@ export default {
         callback(response.data.list);
       }
     },
+    // 获取大屏消息
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -557,6 +576,12 @@ export default {
       return {
         ...state,
         systemScore: payload || {},
+      };
+    },
+    screenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: payload.list,
       };
     },
   },

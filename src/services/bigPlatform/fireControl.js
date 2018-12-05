@@ -238,3 +238,8 @@ export async function getSystemScore(params) {
 export async function getPointInspectionCount(params) {
   return request(`/acloud_new/v2/nanxiao/fire/getPointCheck?${stringify(params)}`);
 }
+
+// 获取大屏消息
+export async function getScreenMessage(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/screenMessage?${stringify(params)}`);
+}
