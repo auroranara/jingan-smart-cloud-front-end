@@ -14,7 +14,6 @@ import styles from './index.less';
 
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
-import CheckingDrawer from './Section/CheckingDrawer';
 import RiskDrawer from './Section/RiskDrawer';
 import WorkOrderDrawer from './Section/WorkOrderDrawer';
 import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
@@ -42,7 +41,6 @@ export default class App extends PureComponent {
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
     riskDrawerVisible: false, // 是否显示对应弹框
-    checkDrawerVisible: false, // 检查点弹框
     pointDrawerVisible: false, // 点位名称弹框
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
@@ -273,6 +271,9 @@ export default class App extends PureComponent {
       },
       systemScore,
       currentHiddenDanger,
+      checkCount,
+      checkList,
+      pointRecordList,
     } = this.props.newUnitFireControl;
     const {
       videoVisible,
@@ -291,6 +292,9 @@ export default class App extends PureComponent {
 
     const {
       monitor: { allCamera },
+      match: {
+        params: { unitId: companyId },
+      },
     } = this.props;
     return (
       <BigPlatformLayout
@@ -309,6 +313,10 @@ export default class App extends PureComponent {
                 <CompanyInfo
                   handleViewCurrentDanger={this.handleViewCurrentDanger}
                   model={this.props.newUnitFireControl}
+                  checkCount={checkCount}
+                  checkList={checkList}
+                  pointRecordList={pointRecordList}
+                  companyId={companyId}
                 />
               </div>
             </div>
@@ -381,14 +389,6 @@ export default class App extends PureComponent {
             visible={riskDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
-          <CheckingDrawer
-            visible={checkDrawerVisible}
-            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
-          <PointPositionName
-            visible={pointDrawerVisible}
-            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
           <WorkOrderDrawer
             visible={workOrderDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('workOrder')}
@@ -396,6 +396,10 @@ export default class App extends PureComponent {
           <AlarmDynamicDrawer
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+          />
+          <PointPositionName
+            visible={pointDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
         </div>
         <WorkOrderDrawer
