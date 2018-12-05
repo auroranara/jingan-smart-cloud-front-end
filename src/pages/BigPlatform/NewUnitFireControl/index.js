@@ -16,6 +16,7 @@ import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
 import WorkOrderDrawer from './Section/WorkOrderDrawer';
 import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
+import PointInspectionDrawer from './PointInspectionDrawer';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -38,6 +39,10 @@ export default class App extends PureComponent {
     videoKeyId: undefined,
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
+    // 点位巡查抽屉是否显示
+    pointInspectionDrawerVisible: false,
+    // 点位巡查抽屉的选中时间
+    pointInspectionDrawerSelectedDate: moment().format('YYYY-MM-DD'),
   }
 
   componentDidMount() {
@@ -58,11 +63,11 @@ export default class App extends PureComponent {
       payload: { company_id: companyId },
     });
 
-    // 获取点位信息
-    dispatch({
-      type: 'newUnitFireControl/fetchRiskPointInfo',
-      payload: { company_id: companyId },
-    });
+    // // 获取点位信息
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchRiskPointInfo',
+    //   payload: { company_id: companyId },
+    // });
 
     // 获取消防主机监测
     dispatch({
@@ -131,6 +136,23 @@ export default class App extends PureComponent {
       },
     });
   };
+
+  /**
+   * 获取点位巡查列表
+   */
+  fetchPointInspectionList = (type) => {
+    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const { pointInspectionDrawerSelectedDate } = this.state;
+    dispatch({
+      type: 'newUnitFireControl/fetchPointInspectionList',
+      payload: {
+        companyId,
+        date: pointInspectionDrawerSelectedDate,
+        type,
+      },
+    });
+  }
+
   /**
    *  点击播放重点部位监控
    */
@@ -148,12 +170,20 @@ export default class App extends PureComponent {
   /**
    * 0:已超期工单,1:未超期工单,2:已完成工单
    */
-  handleDrawerVisibleChange = (name, type) => {
+  handleDrawerVisibleChange = (name, rest) => {
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
+      ...rest,
     }));
   };
+
+  /**
+   * 修改点位巡查抽屉选中时间
+   */
+  handleChangePointInspectionDrawerSelectedDate = (date) => {
+    this.setState({ pointInspectionDrawerSelectedDate: date });
+  }
 
   render() {
     // 从props中获取数据
@@ -168,27 +198,27 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible } = this.state
+    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible, pointInspectionDrawerVisible, pointInspectionDrawerSelectedDate } = this.state
     const {
       monitor: { allCamera },
     } = this.props
     return (
-      <BigPlatformLayout title="晶安智慧云消防展示系统" headerStyle={{ fontSize: 16 }} style={{ backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg-nx1.png)' }}>
+      <BigPlatformLayout title="晶安智慧云消防展示系统" headerStyle={{ fontSize: 16 }} style={{ backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)' }}>
         <div className={styles.container}>
           <div className={styles.top}>
-            <div className={styles.item}>
+            <div className={styles.topItem} style={{ left: 0 }}>
               <div className={styles.inner}>
                 {/* 企业基本信息 */}
                 <CompanyInfo model={this.props.newUnitFireControl} />
               </div>
             </div>
-            <div className={styles.item} style={{ flex: '3' }}>
+            <div className={styles.topMain}>
               <div className={styles.inner}>
                 {/* 四色图 */}
-                <FourColor model={this.props.newUnitFireControl} dispatch />
+                <FourColor model={this.props.newUnitFireControl} />
               </div>
             </div>
-            <div className={styles.item}>
+            <div className={styles.topItem} style={{ right: 0 }}>
               <div className={styles.inner}>
                 {/* 实时消息 */}
                 <Messages model={this.props.newUnitFireControl} />
@@ -227,7 +257,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 点位巡查统计 */}
-                <PointInspectionCount model={this.props.newUnitFireControl} />
+                <PointInspectionCount model={this.props.newUnitFireControl} handleShowDrawer={this.handleDrawerVisibleChange} />
               </div>
             </div>
             <div className={styles.item}>
@@ -252,6 +282,14 @@ export default class App extends PureComponent {
         <AlarmDynamicDrawer
           visible={alarmDynamicDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+        />
+        <PointInspectionDrawer
+          date={pointInspectionDrawerSelectedDate}
+          handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
+          model={this.props.newUnitFireControl}
+          loadData={this.fetchPointInspectionList}
+          visible={pointInspectionDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('pointInspection')}
         />
       </BigPlatformLayout>
     );

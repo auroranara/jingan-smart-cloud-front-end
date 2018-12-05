@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Drawer } from 'antd';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import Section from '../Section';
-import PointInspectionDrawer from '../PointInspectionDrawer';
 
 /**
  * description: 点位巡查统计
@@ -17,11 +15,6 @@ export default class PointInspectionCount extends PureComponent {
   showTipTimer = null;
   // 当前显示的tip索引
   currentIndex = -1;
-
-  state = {
-    visible: false,
-  }
-
 
   componentDidMount() {
     // 添加曲线图显示文字定时器
@@ -78,16 +71,10 @@ export default class PointInspectionCount extends PureComponent {
       //   this.showTipTimer = setInterval(this.showChartTip, 2000);
       // });
       chart.on('click', (e) => {
-        this.setState({ visible: true });
+        const { handleShowDrawer } = this.props;
+        handleShowDrawer && handleShowDrawer('pointInspection', { pointInspectionDrawerSelectedDate: moment(e.name, 'MM-DD').format('YYYY-MM-DD') });
       });
     }
-  }
-
-  /**
-   * 关闭抽屉
-   */
-  handleClose = () => {
-    this.setState({ visible: false });
   }
 
   render() {
@@ -96,7 +83,6 @@ export default class PointInspectionCount extends PureComponent {
         pointInspectionCount=[],
       },
     } = this.props;
-    const { visible } = this.state;
 
     // 获取时间轴
     const timeAxis = this.getTimeAxis();
@@ -238,7 +224,6 @@ export default class PointInspectionCount extends PureComponent {
           onChartReady={this.handleChartReady}
           className="pointInspectionCountChart"
         />
-        <PointInspectionDrawer visible={visible} onClose={this.handleClose} />
       </Section>
     );
   }

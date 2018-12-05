@@ -100,6 +100,7 @@ export default class App extends PureComponent {
                     height: 43,
                     background: `url(${isAbnormal?newPointAbnormal:newPointNormal}) no-repeat center center / 100% 100%`,
                     cursor: 'pointer',
+                    zIndex: isAbnormal ? 2 : 1,
                   }} onClick={() => { handleShowPointDetail(itemId); }} />
                 </Tooltip>
               </Tooltip>
