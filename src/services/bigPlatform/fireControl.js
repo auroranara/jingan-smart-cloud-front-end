@@ -231,3 +231,17 @@ export async function getRiskPointInfo(params) {
 export async function getSystemScore(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/systemScore?${stringify(params)}`);
 }
+
+/**
+ * 检查点各状态数量
+ */
+export async function getCheckStatusCount(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointDataByCompanyId?${stringify(params)}`);
+}
+
+/**
+ * 各检查点具体信息
+ */
+export async function getCheckDetail(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointData?${stringify(params)}`);
+}

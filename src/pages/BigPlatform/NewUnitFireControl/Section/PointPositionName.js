@@ -1,5 +1,7 @@
-import React, { PureComponent } from 'react';
-import { Col } from 'antd';
+import React, { PureComponent, Fragment } from 'react';
+import { Col, Table } from 'antd';
+
+import ImageCard from '@/components/ImageCard';
 
 import styles from './PointPositionName.less';
 import DrawerContainer from '../components/DrawerContainer';
@@ -7,9 +9,76 @@ import PointError from '../imgs/pointError.png';
 
 const TYPE = 'point';
 
+const columns = [
+  {
+    title: '巡查日期',
+    dataIndex: 'checkDate',
+    key: 'checkDate',
+    align: 'center',
+  },
+  {
+    title: '巡查人',
+    dataIndex: 'user',
+    key: 'user',
+    align: 'center',
+  },
+  {
+    title: '巡查状态',
+    dataIndex: 'checkStatus',
+    key: 'checkStatus',
+    align: 'center',
+  },
+  {
+    title: '处理结果',
+    dataIndex: 'result',
+    key: 'result',
+    align: 'center',
+  },
+];
 export default class PointPositionName extends PureComponent {
   render() {
     const { visible, isUnit, handleDrawerVisibleChange, ...restProps } = this.props;
+
+    const list = [...Array(5)].map(item => ({
+      pointTitle: '消防',
+      user: '问问',
+      time: '2018-12-11',
+      pointStatus: '待检查',
+      photoUrl: '',
+    }));
+
+    const cards = list.map(item => {
+      const { pointTitle, user, time, pointStatus, photoUrl } = item;
+      return (
+        <ImageCard
+          style={{ marginBottom: '1em' }}
+          extraStyle={true}
+          showRightIcon={true}
+          showStatusLogo={true}
+          isCardClick={true}
+          onCardClick={() => {
+            console.log('click');
+          }}
+          contentList={[
+            { label: '点位名称', value: pointTitle },
+            {
+              label: '上次检查',
+              value: (
+                <Fragment>
+                  {user}
+                  <span style={{ marginLeft: '1em' }}>{time}</span>
+                </Fragment>
+              ),
+            },
+            {
+              label: '点位状态',
+              value: <Fragment>{pointStatus}</Fragment>,
+            },
+          ]}
+          photo={photoUrl}
+        />
+      );
+    });
 
     const left = (
       <div className={styles.container}>
@@ -22,27 +91,34 @@ export default class PointPositionName extends PureComponent {
               className={styles.icon}
               style={{
                 backgroundImage: `url(${PointError})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '100% 100%',
               }}
             />
           </Col>
         </div>
+        <div className={styles.cardsTitle}>
+          <p className={styles.titleP}>
+            当前隐患
+            <span className={styles.titleSpan}>(2)</span>
+          </p>
+        </div>
         <div className={styles.cards}>
-          <div className={styles.cardsTitle}>
-            <p className={styles.titleP}>
-              当前隐患
-              <span className={styles.titleSpan}>(2)</span>
-            </p>
+          <div className={styles.cardsMain}>
+            {list.length ? (
+              cards
+            ) : (
+              <div style={{ textAlign: 'center', color: '#fff' }}>{'暂无数据'}</div>
+            )}
           </div>
-          <div className={styles.cardsMain}>1111</div>
+        </div>
+        <div className={styles.recordTitle}>
+          <p className={styles.titleP}>
+            巡查记录
+            <span className={styles.titleSpan}>(共9次，异常2次)</span>
+          </p>
         </div>
         <div className={styles.record}>
-          <div className={styles.recordTitle}>
-            <p className={styles.titleP}>
-              巡查记录
-              <span className={styles.titleSpan}>(共9次，异常2次)</span>
-            </p>
+          <div className={styles.recordTable}>
+            <Table rowKey="id" columns={columns} dataSource={list} pageSize="5" />
           </div>
         </div>
       </div>

@@ -14,7 +14,6 @@ import styles from './index.less';
 
 import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
-import CheckingDrawer from './Section/CheckingDrawer';
 import RiskDrawer from './Section/RiskDrawer';
 import WorkOrderDrawer from './Section/WorkOrderDrawer';
 import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
@@ -39,7 +38,6 @@ export default class App extends PureComponent {
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
     riskDrawerVisible: false, // 是否显示对应弹框
-    checkDrawerVisible: false, // 检查点弹框
     pointDrawerVisible: false, // 点位名称弹框
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
@@ -169,6 +167,8 @@ export default class App extends PureComponent {
         feedback_state = 0,
       },
       systemScore,
+      checkCount,
+      checkList,
     } = this.props.newUnitFireControl;
     const {
       videoVisible,
@@ -177,12 +177,15 @@ export default class App extends PureComponent {
       workOrderDrawerVisible,
       alarmDynamicDrawerVisible,
       riskDrawerVisible,
-      checkDrawerVisible,
       pointDrawerVisible,
     } = this.state;
     const {
       monitor: { allCamera },
+      match: {
+        params: { unitId: companyId },
+      },
     } = this.props;
+    console.log('11', this.props);
     return (
       <BigPlatformLayout
         title="晶安智慧云消防展示系统"
@@ -197,7 +200,12 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 企业基本信息 */}
-                <CompanyInfo model={this.props.newUnitFireControl} />
+                <CompanyInfo
+                  model={this.props.newUnitFireControl}
+                  checkCount={checkCount}
+                  checkList={checkList}
+                  companyId={companyId}
+                />
               </div>
             </div>
             <div className={styles.item} style={{ flex: '3' }}>
@@ -264,10 +272,6 @@ export default class App extends PureComponent {
           />
           <RiskDrawer
             visible={riskDrawerVisible}
-            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
-          <CheckingDrawer
-            visible={checkDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
           <PointPositionName

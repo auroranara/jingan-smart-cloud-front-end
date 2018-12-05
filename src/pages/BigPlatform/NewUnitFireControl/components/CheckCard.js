@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import styles from './index.less';
+import styles from './CheckCard.less';
 import image from '@/assets/processing.png';
 
-export default class ImageCard extends PureComponent {
+export default class CheckCard extends PureComponent {
   static propTypes = {
     isCardClick: PropTypes.bool, // 是否可点击
     onCardClick: PropTypes.func, // 点击触发
@@ -25,23 +25,14 @@ export default class ImageCard extends PureComponent {
     const { contentList } = this.props;
     return contentList.map(({ label, value }, index) => (
       <div className={styles.line} key={index}>
-        <span className={styles.label}>{label}</span>
-        <span className={styles.colon}>：</span>
+        <span className={styles.label}>{label} :</span>
         <span className={styles.value}>{value}</span>
       </div>
     ));
   };
 
   render() {
-    const {
-      isCardClick,
-      onCardClick,
-      showStatusLogo,
-      showRightIcon,
-      cardPadding,
-      photo,
-      extraStyle = false,
-    } = this.props;
+    const { isCardClick, onCardClick, showStatusLogo, showRightIcon, cardPadding } = this.props;
     return (
       <div
         onClick={isCardClick ? onCardClick : null}
@@ -49,20 +40,7 @@ export default class ImageCard extends PureComponent {
         style={{ padding: cardPadding, cursor: isCardClick ? 'pointer' : 'default' }}
       >
         <div className={styles.contentContainer}>
-          <div className={styles.imageContainer}>
-            <div
-              className={styles.image}
-              style={{
-                background: `url(${photo})`,
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center center',
-              }}
-            />
-          </div>
-          <div className={extraStyle ? styles.extraContent : styles.content}>
-            {this.renderItem()}
-          </div>
+          <div className={styles.content}>{this.renderItem()}</div>
         </div>
         {showStatusLogo && (
           <div
@@ -71,8 +49,8 @@ export default class ImageCard extends PureComponent {
               background: `url(${image})`,
               backgroundSize: '100% 100%',
               backgroundRepeat: 'no-repeat',
-              right: '2%',
-              bottom: '6%',
+              right: '5%',
+              bottom: '21%',
             }}
           />
         )}

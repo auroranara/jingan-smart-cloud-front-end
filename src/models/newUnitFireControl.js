@@ -33,10 +33,12 @@ import {
   getRiskPointInfo,
   // 获取消防设施评分
   getSystemScore,
+  // 检查点各状态数量
+  getCheckStatusCount,
+  // 检查点具体信息
+  getCheckDetail,
 } from '../services/bigPlatform/fireControl';
-import {
-  getRiskDetail,
-} from '../services/bigPlatform/bigPlatform';
+import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import moment from 'moment';
 
 const getColorByRiskLevel = function(level) {
@@ -193,6 +195,12 @@ export default {
     },
     // 消防设施评分
     systemScore: {},
+    // 检查点状态数量
+    checkCount: {},
+    // 检查点具体信息
+    checkList: {
+      checkLists: [],
+    },
   },
 
   effects: {
@@ -478,6 +486,26 @@ export default {
         });
       }
     },
+    // 获取检查点各状态数量
+    *fetchCheckCount({ payload }, { call, put }) {
+      const response = yield call(getCheckStatusCount, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCheckCount',
+          payload: response.data,
+        });
+      }
+    },
+    // 获取检查点具体信息
+    *fetchCheckDetail({ payload }, { call, put }) {
+      const response = yield call(getCheckDetail, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCheckList',
+          payload: response.data.list || [],
+        });
+      }
+    },
   },
 
   reducers: {
@@ -526,6 +554,23 @@ export default {
       return {
         ...state,
         systemScore: payload || {},
+      };
+    },
+    // 检查点状态数量
+    saveCheckCount(state, { payload }) {
+      return {
+        ...state,
+        checkCount: payload || {},
+      };
+    },
+    // 检查点具体信息
+    saveCheckList(state, { payload }) {
+      return {
+        ...state,
+        checkList: {
+          ...state.checkList,
+          checkLists: payload || [],
+        },
       };
     },
   },

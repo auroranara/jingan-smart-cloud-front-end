@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
+import { connect } from 'dva';
+
 import Section from '../Section';
 import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
@@ -7,14 +9,39 @@ import iconCompany from '@/assets/icon-company.png';
 import iconMaintenance from '@/assets/icon-maintenance.png';
 import iconHd from '@/assets/icon-hidden-danger.png';
 import iconCheck from '@/assets/icon-check.png';
+
+import CheckingDrawer from '../Section/CheckingDrawer';
+
 /**
  * description: 点位巡查统计
  * author: sunkai
  * date: 2018年12月03日
  */
 const { Description } = DescriptionList;
+
+@connect(({ newUnitFireControl }) => ({
+  newUnitFireControl,
+}))
 export default class App extends PureComponent {
+  state = {
+    checkDrawerVisible: false, // 检查点弹框
+  };
+
+  handleCheckDrawer = () => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchCheckCount',
+      payload: {
+        companyId,
+      },
+    });
+    this.setState({
+      checkDrawerVisible: true,
+    });
+  };
+
   render() {
+    const { checkDrawerVisible } = this.state;
     const {
       model: {
         companyMessage: {
@@ -22,10 +49,11 @@ export default class App extends PureComponent {
         },
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
       },
+      checkCount,
+      checkList,
+      companyId,
     } = this.props;
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
-    console.log(this.props);
-
 
     return (
       <Section title="点位巡查统计" style={{ height: 'auto' }}>
@@ -82,7 +110,11 @@ export default class App extends PureComponent {
 
           <Row>
             <Col span={12}>
-              <div className={styles.infoWrapper} style={{ width: '120px', margin: '5px auto' }}>
+              <div
+                className={styles.infoWrapper}
+                style={{ width: '120px', margin: '5px auto', cursor: 'pointer' }}
+                onClick={() => this.handleCheckDrawer()}
+              >
                 <div
                   className={styles.iconInfo}
                   style={{
@@ -120,6 +152,17 @@ export default class App extends PureComponent {
             </Col>
           </Row>
         </div>
+        <CheckingDrawer
+          visible={checkDrawerVisible}
+          companyId={companyId}
+          checkCount={checkCount}
+          checkList={checkList}
+          onClose={() => {
+            this.setState({
+              checkDrawerVisible: false,
+            });
+          }}
+        />
       </Section>
     );
   }
