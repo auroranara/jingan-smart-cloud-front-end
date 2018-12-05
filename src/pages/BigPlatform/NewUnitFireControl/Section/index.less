@@ -1,0 +1,35 @@
+/**
+ * 容器
+ */
+.container {
+  height: 100%;
+}
+.extra {
+  float: right;
+}
+.title {
+  padding-left: 18px;
+  height: 26px;
+  line-height: 26px;
+  font-size: 16px;
+  background: no-repeat center center;
+  background-size: 100% 100%;
+}
+.content {
+  height: calc(~"100% - 26px");
+  padding: 8px 0;
+  background: no-repeat center center;
+  background-size: 100% 100%;
+}
+.scroll::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent;
+}
+.scroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(9, 103, 211, 0.5);
+}
+.scroll::-webkit-scrollbar-track {
+  // box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+  background-color: transparent;
+}

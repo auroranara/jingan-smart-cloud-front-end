@@ -1,0 +1,50 @@
+import React, { PureComponent } from 'react';
+import { Progress } from 'antd';
+import Section from '../Section';
+
+import styles from './index.less';
+
+/**
+ * description: 维保统计
+ * author: sunkai
+ * date: 2018年12月03日
+ */
+export default class App extends PureComponent {
+
+  render() {
+    const {
+      model,
+      // 显示工单
+      handleShowOrder,
+    } = this.props;
+
+    return (
+      <Section title="维保统计">
+        <div className={styles.top}>
+          <span className={styles.topName}>维保完成率</span>
+          <Progress width={100} type="circle" percent={100} strokeColor="#04fdff" status="active" format={percent => <span style={{ color: '#04fdff' }}>{percent + '%'}</span>} />
+        </div>
+        <div className={styles.bottom}>
+          <div className={styles.itemWrapper}>
+            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 0);}}>
+              <div className={styles.itemValue} style={{ color: '#ff4848' }}>1</div>
+              <div className={styles.itemLabel}>已超期工单</div>
+            </div>
+          </div>
+          <div className={styles.itemWrapper}>
+            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 1);}}>
+              <div className={styles.itemValue} style={{ color: '#04fdff' }}>7</div>
+              <div className={styles.itemLabel}>未超期工单</div>
+            </div>
+          </div>
+          <div className={styles.itemWrapper}>
+            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 2);}}>
+              <div className={styles.itemValue} style={{ color: '#04fdff' }}>60</div>
+              <div className={styles.itemLabel}>已完成工单</div>
+            </div>
+          </div>
+        </div>
+      </Section>
+    );
+  }
+}

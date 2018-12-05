@@ -1,0 +1,47 @@
+.messages {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  // height: 250px;
+  overflow-y: scroll;
+  .msgItem {
+    position: relative;
+    padding: 5px 10px;
+    .msgTime {
+      font-size: 15px;
+      line-height: 26px;
+      color: #04fdff;
+    }
+    .msgBody {
+      line-height: 24px;
+    }
+    &+.msgItem {
+      border-top: 1px solid rgba(9, 103, 211, 0.4);
+    }
+    .detailBtn {
+      position: absolute;
+      right: 5px;
+      top: 8px;
+      color: #04fdff;
+    }
+    .msgType {
+      color: #04fdff;
+      line-height: 24px;
+    }
+  }
+}
+
+.messages::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3); // background-color: #021c40;
+  background-color: transparent;
+}
+
+.messages::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent; // background-color: #021c40;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(9, 103, 211, 0.5);
+}
