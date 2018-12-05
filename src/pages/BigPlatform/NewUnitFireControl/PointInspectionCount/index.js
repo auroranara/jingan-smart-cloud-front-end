@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { Drawer } from 'antd';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import Section from '../Section';
@@ -9,7 +8,7 @@ import Section from '../Section';
  * author: sunkai
  * date: 2018年12月03日
  */
-export default class App extends PureComponent {
+export default class PointInspectionCount extends PureComponent {
   // 图表
   chart = null;
   // 显示tip定时器
@@ -17,14 +16,13 @@ export default class App extends PureComponent {
   // 当前显示的tip索引
   currentIndex = -1;
 
-  state = {
-    visible: false,
-  }
-
-
   componentDidMount() {
     // 添加曲线图显示文字定时器
     // this.showTipTimer = setInterval(this.showChartTip, 2000);
+  }
+
+  componentWillUnmount() {
+    // clearInterval(this.showTipTimer);
   }
 
   /**
@@ -64,51 +62,37 @@ export default class App extends PureComponent {
   handleChartReady = (chart) => {
     if (document.querySelector('.pointInspectionCountChart').getAttribute('_echarts_instance_') === chart.id) {
       this.chart = chart;
-      chart.on('mouseover', (e) => {
-        clearInterval(this.showTipTimer);
-      });
-      chart.on('mouseout', (e) => {
-        clearInterval(this.showTipTimer);
-        this.currentIndex = e.dataIndex;
-        this.showTipTimer = setInterval(this.showChartTip, 2000);
-      });
+      // chart.on('mouseover', (e) => {
+      //   clearInterval(this.showTipTimer);
+      // });
+      // chart.on('mouseout', (e) => {
+      //   clearInterval(this.showTipTimer);
+      //   this.currentIndex = e.dataIndex;
+      //   this.showTipTimer = setInterval(this.showChartTip, 2000);
+      // });
       chart.on('click', (e) => {
-        const { handleShowInspection } = this.props;
-        // this.setState({ visible: true });
-        handleShowInspection && handleShowInspection();
+        const { handleShowDrawer } = this.props;
+        handleShowDrawer && handleShowDrawer('pointInspection', { pointInspectionDrawerSelectedDate: moment(e.name, 'MM-DD').format('YYYY-MM-DD') });
       });
     }
   }
 
-  /**
-   * 关闭抽屉
-   */
-  handleClose = () => {
-    this.setState({ visible: false });
-  }
-
   render() {
     const {
-      model,
+      model: {
+        pointInspectionCount=[],
+      },
     } = this.props;
-    const { visible } = this.state;
 
     // 获取时间轴
     const timeAxis = this.getTimeAxis();
-    // mock数据
-    const data = Array(30).fill({
-      "coverage":Math.round(Math.random()*100),
-      "unNormal":Math.round(Math.random()*100),
-      "abnormalPoint":Math.round(Math.random()*10),
-      "checkPoint":Math.round(Math.random()*10),
-      "unCheckPoint":Math.round(Math.random()*10),
-    });
+    // 获取数据
     const checkPointList=[],
     unCheckPointList=[],
     abnormalPointList=[],
     coverageList=[],
     unNormalList=[];
-    data.forEach(({ checkPoint, unCheckPoint, abnormalPoint, coverage, unNormal }) => {
+    pointInspectionCount.forEach(({ checkPoint, unCheckPoint, abnormalPoint, coverage, unNormal }) => {
       checkPointList.push(checkPoint);
       unCheckPointList.push(unCheckPoint);
       abnormalPointList.push(abnormalPoint);
@@ -240,9 +224,6 @@ export default class App extends PureComponent {
           onChartReady={this.handleChartReady}
           className="pointInspectionCountChart"
         />
-        <Drawer visible={visible} closable={false} onClose={this.handleClose}>
-          123
-        </Drawer>
       </Section>
     );
   }
