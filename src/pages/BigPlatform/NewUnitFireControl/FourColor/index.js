@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Tooltip } from 'antd';
+import moment from 'moment';
 import VideoPlay from '../../FireControl/section/VideoPlay.js';
 
 import newPointNormal from '@/assets/new-point-normal.png';
@@ -54,54 +55,53 @@ export default class App extends PureComponent {
   render() {
     const {
       model: {
-        companyMessage: {
-          point=[],
-          // 取出第一张四色图
-          fourColorImg: [{ id, webUrl }={}]=[],
-        },
+        companyMessage: { fourColorImg: [{ id, webUrl }={}]=[] },
+        pointList=[],
         // 视频列表
         videoList,
-        // 点位信息
-        riskPointInfo,
       },
+      tips=[],
       // 显示点位信息
-      handleShowPointDetail=(itemId)=>this.setState({ [itemId]: true }),
+      handleShowPointDetail,
       // 显示点位隐患
-      handleShowHiddenDanger=(itemId)=>this.setState({ [itemId]: false }),
+      handleShowHiddenDanger,
     } = this.props;
     const { videoVisible, videoKeyId } = this.state;
     // 晒选当前四色图上的点位
-    const points = point.filter(({ fixImgId }) => fixImgId === id);
+    const points = pointList.filter(({ fix_img_id }) => fix_img_id && fix_img_id === id);
     // 筛选当前四色图上的视频
     const videos = videoList.filter(({ fix_img_id }) => fix_img_id && fix_img_id === id);
 
     return (
       <div className={styles.container}>
         <div className={styles.wrapper} style={{ backgroundImage: `url(${webUrl})` }}>
-          {points.map(({ itemId, xNum, yNum }) => {
-            const isAbnormal = Math.random() < 0.5;
+          {points.map(({ item_id, x_mum, y_mum, object_title, status, checkName, check_date, dangerCount }) => {
+            const isAbnormal = status === 2;
+            const isChecked = !!status;
+            const showTip = tips.includes(item_id);
             return (
               <Tooltip overlayClassName={styles.alarmTooltip} placement="top" title={(
-                <div>有一条新的隐患！<span className={styles.alarm} onClick={() => {handleShowHiddenDanger(itemId);}}>详情>></span></div>
-              )} key={itemId} visible={!!this.state[itemId]}>
+                <div>有一条新的隐患！<span className={styles.alarm} onClick={() => {handleShowHiddenDanger(item_id);}}>详情>></span></div>
+              )} key={item_id} visible={showTip}>
                 <Tooltip placement="rightTop" title={(
                   <div>
-                    <div>点位名称：{'点位1'}</div>
-                    <div>状<span style={{ opacity: '0' }}>隐藏</span>态：{isAbnormal?<span style={{ color: '#ff4848'}}>异常</span>:'正常'}</div>
-                    <div>最近检查：{'检查人'} {'检查时间'}</div>
-                    {isAbnormal && <div>隐患数量：{2}</div>}
+                    <div>点位名称：{object_title}</div>
+                    {isChecked && <div>状<span style={{ opacity: '0' }}>隐藏</span>态：{isAbnormal?<span style={{ color: '#ff4848'}}>异常</span>:'正常'}</div>}
+                    {/* <div>状<span style={{ opacity: '0' }}>隐藏</span>态：{isAbnormal?<span style={{ color: '#ff4848'}}>异常</span>:(isChecked ? '正常' : '暂未检查')}</div> */}
+                    {isChecked && <div>最近检查：{checkName} {moment(check_date).format('YYYY-MM-DD')}</div>}
+                    {isAbnormal && <div>隐患数量：{dangerCount}</div>}
                   </div>
-                )} key={itemId}>
-                  <div key={itemId} className={isAbnormal?styles.animated:undefined} style={{
+                )} key={item_id}>
+                  <div key={item_id} /* className={isAbnormal?styles.animated:undefined} */ style={{
                     position: 'absolute',
-                    left: `calc(${xNum * 100}% - 16px)`,
-                    bottom: `${(1 - yNum) * 100}%`,
+                    left: `calc(${x_mum * 100}% - 16px)`,
+                    bottom: `${(1 - y_mum) * 100}%`,
                     width: 33,
                     height: 43,
                     background: `url(${isAbnormal?newPointAbnormal:newPointNormal}) no-repeat center center / 100% 100%`,
                     cursor: 'pointer',
                     zIndex: isAbnormal ? 2 : 1,
-                  }} onClick={() => { handleShowPointDetail(itemId); }} />
+                  }} onClick={() => { handleShowPointDetail(item_id); }} />
                 </Tooltip>
               </Tooltip>
             );

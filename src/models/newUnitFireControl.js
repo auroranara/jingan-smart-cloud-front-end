@@ -36,7 +36,9 @@ import {
   // 南消：获取点位巡查统计
   getPointInspectionCount,
   // 南消：获取点位巡查列表
-  // getPointInspectionList,
+  getPointInspectionList,
+  // 南消：获取点位
+  getPointList,
 } from '../services/bigPlatform/fireControl';
 import {
   getRiskDetail,
@@ -200,7 +202,9 @@ export default {
     // 点位巡查统计
     pointInspectionCount: [],
     // 点位巡查列表
-    pointInspectionList: [],
+    pointInspectionList: {},
+    // 点位
+    pointList: [],
   },
 
   effects: {
@@ -499,11 +503,21 @@ export default {
     },
     // 南消：获取点位巡查列表
     *fetchPointInspectionList({ payload, callback }, { call, put }) {
-      // const response = yield call(getPointInspectionList, payload);
-      const response = {data: { list: [] }};
+      const response = yield call(getPointInspectionList, payload);
       yield put({
         type: 'save',
-        payload: { pointInspectionList: response.data.list },
+        payload: { pointInspectionList: response.data },
+      });
+      if (callback) {
+        callback(response.data);
+      }
+    },
+    // 南消：获取点位
+    *fetchPointList({ payload, callback }, { call, put }) {
+      const response = yield call(getPointList, payload);
+      yield put({
+        type: 'save',
+        payload: { pointList: response.data.list },
       });
       if (callback) {
         callback(response.data.list);

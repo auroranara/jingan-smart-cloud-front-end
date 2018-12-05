@@ -43,6 +43,8 @@ export default class App extends PureComponent {
     pointInspectionDrawerVisible: false,
     // 点位巡查抽屉的选中时间
     pointInspectionDrawerSelectedDate: moment().format('YYYY-MM-DD'),
+    // 四色图贴士
+    fourColorTips: [],
   }
 
   componentDidMount() {
@@ -100,6 +102,17 @@ export default class App extends PureComponent {
       },
     });
 
+    // 获取点位
+    dispatch({
+      type: 'newUnitFireControl/fetchPointList',
+      payload: {
+        companyId,
+      },
+    });
+
+    // 获取点位巡查列表
+    this.fetchPointInspectionList();
+
     // 轮询
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
@@ -140,15 +153,13 @@ export default class App extends PureComponent {
   /**
    * 获取点位巡查列表
    */
-  fetchPointInspectionList = (type) => {
+  fetchPointInspectionList = (date=this.state.pointInspectionDrawerSelectedDate) => {
     const { dispatch, match: { params: { unitId: companyId } } } = this.props;
-    const { pointInspectionDrawerSelectedDate } = this.state;
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionList',
       payload: {
         companyId,
-        date: pointInspectionDrawerSelectedDate,
-        type,
+        date,
       },
     });
   }
@@ -183,6 +194,7 @@ export default class App extends PureComponent {
    */
   handleChangePointInspectionDrawerSelectedDate = (date) => {
     this.setState({ pointInspectionDrawerSelectedDate: date });
+    this.fetchPointInspectionList(date);
   }
 
   render() {
@@ -198,7 +210,7 @@ export default class App extends PureComponent {
       },
       systemScore,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible, pointInspectionDrawerVisible, pointInspectionDrawerSelectedDate } = this.state
+    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible, pointInspectionDrawerVisible, pointInspectionDrawerSelectedDate, fourColorTips } = this.state
     const {
       monitor: { allCamera },
     } = this.props
@@ -215,7 +227,12 @@ export default class App extends PureComponent {
             <div className={styles.topMain}>
               <div className={styles.inner}>
                 {/* 四色图 */}
-                <FourColor model={this.props.newUnitFireControl} />
+                <FourColor
+                  model={this.props.newUnitFireControl}
+                  handleShowPointDetail={(id) => {this.handleDrawerVisibleChange('', id);}}
+                  handleShowHiddenDanger={(id) => {this.handleDrawerVisibleChange('', id);}}
+                  tips={fourColorTips}
+                />
               </div>
             </div>
             <div className={styles.topItem} style={{ right: 0 }}>
@@ -287,7 +304,6 @@ export default class App extends PureComponent {
           date={pointInspectionDrawerSelectedDate}
           handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
           model={this.props.newUnitFireControl}
-          loadData={this.fetchPointInspectionList}
           visible={pointInspectionDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('pointInspection')}
         />
