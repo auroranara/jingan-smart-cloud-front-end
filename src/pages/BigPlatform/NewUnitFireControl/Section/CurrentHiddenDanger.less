@@ -1,0 +1,53 @@
+.currentHiddenDanger {
+  width: 100%;
+  height: 100%;
+  .chartContainer {
+    width: 100%;
+    height: 30%;
+    position: relative;
+    .total {
+      position: absolute;
+      width: 68px;
+      height: 70px;
+      top: calc(41% - 35px);
+      left: calc(50% - 34px);
+      .num {
+        position: relative;
+        color: white;
+        font-size: 26px;
+        text-align: center;
+      }
+      .label {
+        position: relative;
+        color: white;
+        font-size: 16px;
+        text-align: center;
+      }
+    }
+  }
+  .mainContainer {
+    width: 100%;
+    height: 70%;
+    overflow-y: auto;
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
+      background-color: #021c40;
+    }
+    &::-webkit-scrollbar {
+      width: 7px;
+      background-color: #021c40;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #06428a;
+    }
+  }
+  .warningText {
+    margin-left: 1em;
+    color: red;
+    font-weight: 700;
+  }
+  .text {
+    margin-left: 1em;
+  }
+}

@@ -16,6 +16,8 @@ import FireMonitoring from './Section/FireMonitoring';
 import FireDevice from './Section/FireDevice';
 import WorkOrderDrawer from './Section/WorkOrderDrawer';
 import AlarmDynamicDrawer from './Section/AlarmDynamicDrawer';
+import CurrentHiddenDanger from './Section/CurrentHiddenDanger';
+import DrawerHiddenDangerDetail from './Section/DrawerHiddenDangerDetail';
 
 const DELAY = 5 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -38,6 +40,8 @@ export default class App extends PureComponent {
     videoKeyId: undefined,
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
+    currentDrawerVisible: false, // 当前隐患抽屉可见
+    dangerDetailVisible: false, // 隐患详情抽屉可见
   }
 
   componentDidMount() {
@@ -86,6 +90,20 @@ export default class App extends PureComponent {
         company_id: companyId,
       },
     });
+
+    // 获取当前隐患图表统计数据
+    dispatch({
+      type: 'newUnitFireControl/fetchHiddenDangerNum',
+      payload: { companyId },
+    })
+
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+      },
+    })
 
     // 轮询
     // this.pollTimer = setInterval(this.polling, DELAY);
@@ -147,6 +165,34 @@ export default class App extends PureComponent {
     }));
   };
 
+  /**
+   * 关闭当前隐患抽屉
+   */
+  handleCloseCurrentDrawer = () => {
+    this.setState({ currentDrawerVisible: false })
+  }
+
+  /**
+   * 关闭隐患详情
+   */
+  handleCloseDetailOfDanger = () => {
+    this.setState({ dangerDetailVisible: false })
+  }
+
+  /**
+   * 打开查看当前隐患抽屉
+  */
+  handleViewCurrentDanger = () => {
+    this.setState({ currentDrawerVisible: true })
+  }
+
+  // 点击查看隐患详情
+  handleViewDnagerDetail = (data) => {
+    this.setState({
+      dangerDetailVisible: true,
+    })
+  }
+
   render() {
     // 从props中获取数据
     const {
@@ -159,8 +205,9 @@ export default class App extends PureComponent {
         feedback_state = 0,
       },
       systemScore,
+      currentHiddenDanger,
     } = this.props.newUnitFireControl;
-    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible } = this.state
+    const { videoVisible, showVideoList, videoKeyId, workOrderDrawerVisible, alarmDynamicDrawerVisible, currentDrawerVisible, dangerDetailVisible } = this.state
     const {
       monitor: { allCamera },
     } = this.props
@@ -172,7 +219,7 @@ export default class App extends PureComponent {
               <div className={styles.item}>
                 <div className={styles.inner}>
                   {/* 企业基本信息 */}
-                  <CompanyInfo model={this.props.newUnitFireControl} />
+                  <CompanyInfo handleViewCurrentDanger={this.handleViewCurrentDanger} model={this.props.newUnitFireControl} />
                 </div>
               </div>
               <div className={styles.item} style={{ flex: '3' }}>
@@ -246,6 +293,17 @@ export default class App extends PureComponent {
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
+          {/* 当前隐患抽屉 */}
+          <CurrentHiddenDanger
+            visible={currentDrawerVisible}
+            onClose={this.handleCloseCurrentDrawer}
+            onCardClick={this.handleViewDnagerDetail}
+            {...currentHiddenDanger}
+          />
+          {/* <DrawerHiddenDangerDetail
+            visible={dangerDetailVisible}
+            onClose={this.handleCloseDetailOfDanger}
+          /> */}
         </BigPlatformLayout>
       </div>
     );

@@ -50,12 +50,12 @@ export default class ImgSlider extends PureComponent {
 
   render() {
     const {
-      // picture=[],
+      picture=[],
       height,
       // ...restProps
     } = this.props;
 
-    const picture = [b1, b2, b3, b4, b5, b6];
+    // const picture = [b1, b2, b3, b4, b5, b6];
     // const picture = [b1, b2, b3, b4];
 
     const { index, magIndex, showImg } = this.state;
@@ -106,7 +106,7 @@ export default class ImgSlider extends PureComponent {
         <div className={styles.main} style={height ? { height } : {}}>
           <Row style={{ height: '100%' }}>
             <div className={styles.bottom}>
-              <Col span={2} style={{ height: '100%' }}>
+              <Col span={1} style={{ height: '100%' }}>
                 <div
                   className={styles.arrow}
                   style={{
@@ -118,12 +118,12 @@ export default class ImgSlider extends PureComponent {
                   onClick={index ? () => this.handleLeft('index') : null}
                 />
               </Col>
-              <Col span={20} style={{ height: '100%', overflow: 'hidden' }}>
+              <Col span={22} style={{ height: '100%', overflow: 'hidden' }}>
                 <Slider index={index} length={imgLength}>
                   {imgs}
                 </Slider>
               </Col>
-              <Col span={2} style={{ height: '100%' }}>
+              <Col span={1} style={{ height: '100%' }}>
                 <div
                   className={styles.arrow}
                   style={{

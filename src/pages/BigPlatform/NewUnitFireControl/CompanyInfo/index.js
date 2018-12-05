@@ -16,6 +16,7 @@ const { Description } = DescriptionList;
 export default class App extends PureComponent {
   render() {
     const {
+      handleViewCurrentDanger,
       model: {
         companyMessage: {
           companyMessage: { companyName, headOfSecurity, headOfSecurityPhone, countCheckItem },
@@ -101,7 +102,7 @@ export default class App extends PureComponent {
             </Col>
 
             <Col span={12}>
-              <div className={styles.infoWrapper} style={{ width: '120px', margin: '5px auto' }}>
+              <div className={styles.infoWrapper} onClick={handleViewCurrentDanger} style={{ width: '120px', margin: '5px auto', cursor: 'pointer' }}>
                 <div
                   className={styles.iconInfo}
                   style={{

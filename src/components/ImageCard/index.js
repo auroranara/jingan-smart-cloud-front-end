@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import styles from './index.less';
-import image from '@/assets/processing.png';
 
 export default class ImageCard extends PureComponent {
 
@@ -12,7 +11,8 @@ export default class ImageCard extends PureComponent {
     showRightIcon: PropTypes.bool,  // 是否显示右上角图标
     cardPadding: PropTypes.string, // 外层padding
     contentList: PropTypes.array.isRequired, // 渲染图片右侧区块的列表
-    photo: PropTypes.string.isRequired, // 图片地址
+    photo: PropTypes.string, // 图片地址
+    statusLogo: PropTypes.string, // 状态logo地址
   }
 
   static defaultProps = {
@@ -41,6 +41,7 @@ export default class ImageCard extends PureComponent {
       showRightIcon,
       cardPadding,
       photo,
+      statusLogo,
     } = this.props
     return (
       <div
@@ -49,14 +50,16 @@ export default class ImageCard extends PureComponent {
         style={{ padding: cardPadding, cursor: isCardClick ? 'pointer' : 'default' }}>
         <div className={styles.contentContainer}>
           <div className={styles.imageContainer}>
-            <div className={styles.image}
-              style={{
-                background: `url(${photo})`,
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center center',
-              }}
-            ></div>
+            {photo && (
+              <div className={styles.image}
+                style={{
+                  background: `url(${photo})`,
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                }}
+              ></div>
+            )}
           </div>
           <div className={styles.content}>
             {this.renderItem()}
@@ -65,7 +68,7 @@ export default class ImageCard extends PureComponent {
         {showStatusLogo && (
           <div className={styles.statusLogo}
             style={{
-              background: `url(${image})`,
+              background: `url(${statusLogo})`,
               backgroundSize: '100% 100%',
               backgroundRepeat: 'no-repeat',
               right: '2%',

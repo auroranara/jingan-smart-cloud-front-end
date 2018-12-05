@@ -33,13 +33,18 @@ import {
   getRiskPointInfo,
   // 获取消防设施评分
   getSystemScore,
+  //  获取当前隐患图表数据
+  fetchHiddenDangerNum,
 } from '../services/bigPlatform/fireControl';
 import {
   getRiskDetail,
 } from '../services/bigPlatform/bigPlatform';
+import {
+  getHiddenDangerDetail,// 获取隐患详情
+} from '../services/hiddenDangerReport';
 import moment from 'moment';
 
-const getColorByRiskLevel = function(level) {
+const getColorByRiskLevel = function (level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -193,6 +198,19 @@ export default {
     },
     // 消防设施评分
     systemScore: {},
+    // 当前隐患
+    currentHiddenDanger: {
+      rectifyNum: 0, // 未超期
+      reviewNum: 0,  // 待复查
+      overRectifyNum: 0,  // 已超期
+      totalNum: 0,   // 总数
+      list: [], // 隐患列表
+      detail: {
+        hiddenDanger: {},
+        hiddenDangerRecord: [],
+        timeLine: [],
+      }, // 隐患详情
+    },
   },
 
   effects: {
@@ -412,8 +430,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-                ({ id, webUrl }) => /^http/.test(webUrl) && id
-              )
+              ({ id, webUrl }) => /^http/.test(webUrl) && id
+            )
             : [],
       };
 
@@ -478,6 +496,36 @@ export default {
         });
       }
     },
+    // 获取当前隐患图表统计数据
+    *fetchHiddenDangerNum({ payload }, { call, put }) {
+      const response = yield call(fetchHiddenDangerNum, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCurrentHiddenDanger',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取当前隐患列表
+    *fetchCurrentHiddenDanger({ payload }, { call, put }) {
+      const response = yield call(getHiddenDangerRecords, payload)
+      if (response && response.hiddenDangers) {
+        yield put({
+          type: 'saveHiddenDangerList',
+          payload: response.hiddenDangers,
+        })
+      }
+    },
+    // 获取隐患详情
+    *fetchHiddenDangerDetail({ payload }, { call, put }) {
+      const response = yield call(getHiddenDangerDetail, payload)
+      if (response && response.hiddenDangers) {
+        yield put({
+          type: 'saveHiddenDangerDetail',
+          payload: response.data,
+        })
+      }
+    },
   },
 
   reducers: {
@@ -527,6 +575,39 @@ export default {
         ...state,
         systemScore: payload || {},
       };
+    },
+    // 保存当前隐患内容
+    saveCurrentHiddenDanger(state, { payload }) {
+      return {
+        ...state,
+        currentHiddenDanger: {
+          ...state.currentHiddenDanger,
+          ...payload,
+        },
+      }
+    },
+    // 保存当前隐患列表
+    saveHiddenDangerList(state, { payload }) {
+      // 筛选掉已结束 1新建隐患.2待整改,3待复查,4已结束,7,超期未整改
+      const list = payload.filter(({ status }) => +status !== 4)
+      return {
+        ...state,
+        currentHiddenDanger: {
+          ...state.currentHiddenDanger,
+          list,
+        },
+      }
+    },
+    saveHiddenDangerDetail(state, { payload }) {
+      return {
+        ...state,
+        currentHiddenDanger: {
+          ...state.currentHiddenDanger,
+          detail: {
+            ...payload,
+          },
+        },
+      }
     },
   },
 };

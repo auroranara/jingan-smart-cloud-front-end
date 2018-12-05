@@ -231,3 +231,10 @@ export async function getRiskPointInfo(params) {
 export async function getSystemScore(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/systemScore?${stringify(params)}`);
 }
+
+/**
+ * 获取当前隐患图表数据
+ */
+export async function fetchHiddenDangerNum(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getHiddenDangerNum?${stringify(params)}`)
+}
