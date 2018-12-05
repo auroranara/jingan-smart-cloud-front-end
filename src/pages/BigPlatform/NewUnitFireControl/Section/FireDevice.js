@@ -32,41 +32,29 @@ export default function FireDevice(props) {
                     const { sysName, status } = item;
                     return (
                       <Col key={index} style={{ height: '100%' }} span={12}>
-                        {/* <Pie
-                          rate={
-                            +status === 1
-                              ? '50'
-                              : +status === 2
-                                ? '70'
-                                : +status === 3
-                                  ? '90'
-                                  : null
-                          }
-                        /> */}
                         {+status === 1 ? (
                           <span
+                            className={styles.icon}
                             style={{
                               backgroundImage: `url(${error})`,
-                              backgroundRepeat: 'no-repeat',
                             }}
                           />
                         ) : +status === 2 ? (
                           <span
+                            className={styles.icon}
                             style={{
                               backgroundImage: `url(${normal})`,
-                              backgroundRepeat: 'no-repeat',
                             }}
                           />
                         ) : +status === 3 ? (
                           <span
+                            className={styles.icon}
                             style={{
                               backgroundImage: `url(${fine})`,
-                              backgroundRepeat: 'no-repeat',
                             }}
                           />
                         ) : null}
-
-                        <p>{sysName}</p>
+                        <p style={{ textAlign: 'center' }}>{sysName}</p>
                       </Col>
                     );
                   } else return null;

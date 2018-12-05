@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 // import { Col, Row } from 'antd';
 
 import styles from './CheckingDrawer.less';
+
+import ImageCard from '@/components/ImageCard';
 import DrawerContainer from '../components/DrawerContainer';
 import CheckLabel from '../components/CheckLabel';
 
@@ -54,7 +56,7 @@ export default class CheckingDrawer extends PureComponent {
             />
           ))}
         </div>
-        <div className={styles.cards}>1111</div>
+        <div className={styles.cards} />
       </div>
     );
 

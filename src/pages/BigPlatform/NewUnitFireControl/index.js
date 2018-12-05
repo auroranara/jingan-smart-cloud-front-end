@@ -40,7 +40,7 @@ export default class App extends PureComponent {
     videoKeyId: undefined,
     riskDrawerVisible: false, // 是否显示对应弹框
     checkDrawerVisible: false, // 检查点弹框
-    pointDrawerVisible: true, // 点位名称弹框
+    pointDrawerVisible: false, // 点位名称弹框
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
   };
