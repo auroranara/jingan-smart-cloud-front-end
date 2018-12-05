@@ -26,7 +26,7 @@ export default class App extends PureComponent {
     } = this.props;
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
 
-    console.log(this.props.model)
+    console.log(this.props.model);
 
     return (
       <Section title="点位巡查统计" style={{ height: 'auto' }}>
@@ -102,7 +102,11 @@ export default class App extends PureComponent {
             </Col>
 
             <Col span={12}>
-              <div className={styles.infoWrapper} onClick={handleViewCurrentDanger} style={{ width: '120px', margin: '5px auto', cursor: 'pointer' }}>
+              <div
+                className={styles.infoWrapper}
+                onClick={handleViewCurrentDanger}
+                style={{ width: '120px', margin: '5px auto', cursor: 'pointer' }}
+              >
                 <div
                   className={styles.iconInfo}
                   style={{

@@ -110,7 +110,7 @@ export default class App extends PureComponent {
     dispatch({
       type: 'newUnitFireControl/fetchHiddenDangerNum',
       payload: { companyId },
-    })
+    });
 
     // 获取当前隐患列表
     dispatch({
@@ -118,7 +118,7 @@ export default class App extends PureComponent {
       payload: {
         company_id: companyId,
       },
-    })
+    });
     // 获取点位巡查统计
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionCount',
@@ -228,29 +228,29 @@ export default class App extends PureComponent {
    * 关闭当前隐患抽屉
    */
   handleCloseCurrentDrawer = () => {
-    this.setState({ currentDrawerVisible: false })
-  }
+    this.setState({ currentDrawerVisible: false });
+  };
 
   /**
    * 关闭隐患详情
    */
   handleCloseDetailOfDanger = () => {
-    this.setState({ dangerDetailVisible: false })
-  }
+    this.setState({ dangerDetailVisible: false });
+  };
 
   /**
    * 打开查看当前隐患抽屉
-  */
+   */
   handleViewCurrentDanger = () => {
-    this.setState({ currentDrawerVisible: true })
-  }
+    this.setState({ currentDrawerVisible: true });
+  };
 
   // 点击查看隐患详情
-  handleViewDnagerDetail = (data) => {
+  handleViewDnagerDetail = data => {
     this.setState({
       dangerDetailVisible: true,
-    })
-  }
+    });
+  };
   /**
    * 修改点位巡查抽屉选中时间
    */
@@ -292,7 +292,7 @@ export default class App extends PureComponent {
     } = this.props;
     return (
       <BigPlatformLayout
-        title="晶安智慧云消防展示系统"
+        title="智慧消防云平台"
         headerStyle={{ fontSize: 16 }}
         style={{
           backgroundImage:
@@ -304,7 +304,10 @@ export default class App extends PureComponent {
             <div className={styles.topItem} style={{ left: 0 }}>
               <div className={styles.inner}>
                 {/* 企业基本信息 */}
-                <CompanyInfo handleViewCurrentDanger={this.handleViewCurrentDanger} model={this.props.newUnitFireControl} />
+                <CompanyInfo
+                  handleViewCurrentDanger={this.handleViewCurrentDanger}
+                  model={this.props.newUnitFireControl}
+                />
               </div>
             </div>
             <div className={styles.topMain}>
