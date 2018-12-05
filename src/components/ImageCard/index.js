@@ -13,6 +13,7 @@ export default class ImageCard extends PureComponent {
     contentList: PropTypes.array.isRequired, // 渲染图片右侧区块的列表
     photo: PropTypes.string, // 图片地址
     statusLogo: PropTypes.string, // 状态logo地址
+    backgroundColor: PropTypes.string, // 背景色
   }
 
   static defaultProps = {
@@ -20,6 +21,7 @@ export default class ImageCard extends PureComponent {
     showRightIcon: true,
     showStatusLogo: true,
     cardPadding: '15px 20px 10px 20px',
+    backgroundColor: 'transparent',
   }
 
   renderItem = () => {
@@ -42,12 +44,17 @@ export default class ImageCard extends PureComponent {
       cardPadding,
       photo,
       statusLogo,
+      backgroundColor,
     } = this.props
     return (
       <div
         onClick={isCardClick ? onCardClick : null}
         className={styles.imageCard}
-        style={{ padding: cardPadding, cursor: isCardClick ? 'pointer' : 'default' }}>
+        style={{
+          padding: cardPadding,
+          cursor: isCardClick ? 'pointer' : 'default',
+          backgroundColor,
+        }}>
         <div className={styles.contentContainer}>
           <div className={styles.imageContainer}>
             {photo && (

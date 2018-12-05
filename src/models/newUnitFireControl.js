@@ -35,6 +35,12 @@ import {
   getSystemScore,
   //  获取当前隐患图表数据
   fetchHiddenDangerNum,
+  // 南消：获取点位巡查统计
+  getPointInspectionCount,
+  // 南消：获取点位巡查列表
+  // getPointInspectionList,
+  // 获取大屏消息
+  getScreenMessage,
 } from '../services/bigPlatform/fireControl';
 import {
   getRiskDetail,
@@ -211,6 +217,12 @@ export default {
         timeLine: [],
       }, // 隐患详情
     },
+    // 点位巡查统计
+    pointInspectionCount: [],
+    // 点位巡查列表
+    pointInspectionList: [],
+    // 获取大屏消息
+    screenMessage: [],
   },
 
   effects: {
@@ -526,6 +538,44 @@ export default {
         })
       }
     },
+    // 南消：点位巡查统计
+    *fetchPointInspectionCount({ payload, callback }, { call, put }) {
+      const response = yield call(getPointInspectionCount, payload);
+      yield put({
+        type: 'save',
+        payload: { pointInspectionCount: response.data.list },
+      });
+      if (callback) {
+        callback(response.data.list);
+      }
+    },
+    // 南消：获取点位巡查列表
+    *fetchPointInspectionList({ payload, callback }, { call, put }) {
+      // const response = yield call(getPointInspectionList, payload);
+      const response = { data: { list: [] } };
+      yield put({
+        type: 'save',
+        payload: { pointInspectionList: response.data.list },
+      });
+      if (callback) {
+        callback(response.data.list);
+      }
+    },
+    // 获取大屏消息
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -608,6 +658,12 @@ export default {
           },
         },
       }
+    },
+    screenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: payload.list,
+      };
     },
   },
 };

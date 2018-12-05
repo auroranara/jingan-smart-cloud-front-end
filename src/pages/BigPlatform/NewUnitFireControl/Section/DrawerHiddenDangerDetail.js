@@ -28,7 +28,13 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                 day={'2018-12-29'}
                 hour={'10:12:00'}
               >
-                <div className={styles.contentContainer}></div>
+                <div className={styles.contentContainer}>
+                  <div className={styles.line}>
+                    <div className={styles.label}></div>
+                    <div>：</div>
+                    <div className={styles.value}></div>
+                  </div>
+                </div>
               </TimelineItem>
               <TimelineItem
                 label="整改隐患"

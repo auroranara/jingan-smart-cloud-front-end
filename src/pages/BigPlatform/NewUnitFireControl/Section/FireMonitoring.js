@@ -23,7 +23,7 @@ export default class FireMonitoring extends PureComponent {
       feedback = 0,
     } = this.props;
     return (
-      <Section title="消防主机监测">
+      <Section title="虚拟消控主机">
         <div className={styles.contaniner}>
           <div className={styles.top}>
             <div
@@ -31,7 +31,7 @@ export default class FireMonitoring extends PureComponent {
               style={{
                 backgroundImage: `url(${fireHost})`,
                 backgroundRepeat: 'no-repeat',
-                backgroundSize: '25% 52%',
+                backgroundSize: '20% 42%',
               }}
             >
               <div className={styles.anime}>

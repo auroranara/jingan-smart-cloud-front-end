@@ -75,5 +75,5 @@ export async function fetchAlarmInfoTypes() {
 
 // 获取独立烟感列表
 export async function querySmokeList(params) {
-  return request(`/acloud_new/v2/monitor/getDevicesByType.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitor/getDevicesByType?${stringify(params)}`);
 }
