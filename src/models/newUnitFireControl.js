@@ -33,6 +33,8 @@ import {
   getRiskPointInfo,
   // 获取消防设施评分
   getSystemScore,
+  // 南消：获取点位巡查统计
+  getPointInspectionCount,
 } from '../services/bigPlatform/fireControl';
 import {
   getRiskDetail,
@@ -193,6 +195,8 @@ export default {
     },
     // 消防设施评分
     systemScore: {},
+    // 点位巡查统计
+    pointInspectionCount: [],
   },
 
   effects: {
@@ -476,6 +480,17 @@ export default {
           type: 'saveSystemScore',
           payload: response.data,
         });
+      }
+    },
+    // 南消：点位巡查统计
+    *fetchPointInspectionCount({ payload, callback }, { call, put }) {
+      const response = yield call(getPointInspectionCount, payload);
+      yield put({
+        type: 'save',
+        payload: { pointInspectionCount: response.data.list },
+      });
+      if (callback) {
+        callback(response.data.list);
       }
     },
   },

@@ -87,6 +87,14 @@ export default class App extends PureComponent {
       },
     });
 
+    // 获取点位巡查统计
+    dispatch({
+      type: 'newUnitFireControl/fetchPointInspectionCount',
+      payload: {
+        companyId,
+      },
+    });
+
     // 轮询
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);

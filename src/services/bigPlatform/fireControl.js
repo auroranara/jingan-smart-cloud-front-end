@@ -231,3 +231,10 @@ export async function getRiskPointInfo(params) {
 export async function getSystemScore(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/systemScore?${stringify(params)}`);
 }
+
+/**
+ * 南消：点位巡查统计
+ */
+export async function getPointInspectionCount(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getPointCheck?${stringify(params)}`);
+}
