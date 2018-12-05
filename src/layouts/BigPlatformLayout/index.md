@@ -5,3 +5,4 @@
 * autoSpace={false} 标题是否添加空格,默认为true
 * extra={companyName} 头部左边的内容，如企业名称或选择框等
 * contentStyle={{}} 内容样式
+* headerStyle={{}} 头部样式
