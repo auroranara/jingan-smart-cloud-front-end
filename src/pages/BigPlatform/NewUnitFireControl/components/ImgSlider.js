@@ -50,12 +50,12 @@ export default class ImgSlider extends PureComponent {
 
   render() {
     const {
-      // picture=[],
+      picture=[],
       height,
       // ...restProps
     } = this.props;
 
-    const picture = [b1, b2, b3, b4, b5, b6];
+    // const picture = [b1, b2, b3, b4, b5, b6];
     // const picture = [b1, b2, b3, b4];
 
     const { index, magIndex, showImg } = this.state;

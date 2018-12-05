@@ -231,3 +231,16 @@ export async function getRiskPointInfo(params) {
 export async function getSystemScore(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/systemScore?${stringify(params)}`);
 }
+
+
+/* 南消 */
+
+// 动态火警详情列表
+export async function queryAlarmHandleList({ companyId, gridId }) {
+  return request(`${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory?${stringify({ gridId })}`);
+}
+
+// 维保工单或维保动态详情
+export async function queryWorkOrder(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/getFaultForMaintenance?${stringify(params)}`);
+}

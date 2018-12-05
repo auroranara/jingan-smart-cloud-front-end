@@ -33,6 +33,8 @@ import {
   getRiskPointInfo,
   // 获取消防设施评分
   getSystemScore,
+  queryAlarmHandleList,
+  queryWorkOrder,
 } from '../services/bigPlatform/fireControl';
 import {
   getRiskDetail,
@@ -193,6 +195,16 @@ export default {
     },
     // 消防设施评分
     systemScore: {},
+    // 火警动态
+    alarmHandleList: [],
+    // 已完成维保工单
+    workOrderList1: [],
+    // 待处理维保工单
+    workOrderList2: [],
+    // 已超期维保工单
+    workOrderList7: [],
+    // 维保处理动态详情
+    workOrderDetail: {},
   },
 
   effects: {
@@ -478,6 +490,26 @@ export default {
         });
       }
     },
+    // 火警动态列表
+    *fetchAlarmHandleList({ payload }, { call, put }) {
+      const response = yield call(queryAlarmHandleList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveAlarmHandleList',
+          payload: response.data ? response.data.list : [],
+        });
+      }
+    },
+    // 维保工单列表或维保处理动态
+    *fetchWorkOrder({ payload }, { call, put }) {
+      const response = yield call(queryWorkOrder, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: payload.id ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
+          payload: response.data || {},
+        });
+      }
+    },
   },
 
   reducers: {
@@ -527,6 +559,21 @@ export default {
         ...state,
         systemScore: payload || {},
       };
+    },
+    saveAlarmHandleList(state, action) {
+      return { ...state, alarmHandleList: action.payload || [] };
+    },
+    saveWorkOrderList1(state, action) {
+      return { ...state, workOrderList1: action.payload && Array.isArray(action.payload.list) ? action.payload.list : [] };
+    },
+    saveWorkOrderList2(state, action) {
+      return { ...state, workOrderList2: action.payload && Array.isArray(action.payload.list) ? action.payload.list : [] };
+    },
+    saveWorkOrderList7(state, action) {
+      return { ...state, workOrderList7: action.payload && Array.isArray(action.payload.list) ? action.payload.list : [] };
+    },
+    saveWorkOrderDetail(state, action) {
+      return { ...state, workOrderDetail: action.payload };
     },
   },
 };

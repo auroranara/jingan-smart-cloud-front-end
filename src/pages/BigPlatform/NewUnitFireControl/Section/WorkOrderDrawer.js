@@ -7,7 +7,9 @@ import handlingIcon from '../imgs/handling.png';
 import handledIcon from '../imgs/handled.png';
 
 const NO_DATA = '暂无信息';
-const STATUS = ['已超期', '待完成', '已完成'];
+const STATUS = ['已超期', '待处理', '已完成'];
+const STATUS_N = [7, 2, 1];
+const STATUS_MAP = { 7: '已超期', 2: '待处理', 1: '已完成' };
 const ICONS = [handleIcon, handlingIcon, handledIcon];
 const TYPES = ['主机报障', '一键报修'];
 const ITEMS = [
@@ -62,30 +64,37 @@ function OrderCard(props) {
 
 export default class WorkOrderDrawer extends PureComponent {
   render() {
-    const { type, handleLabelChange, handleCardClick, ...restProps } = this.props;
+    const { type, handleLabelChange, handleCardClick, data, ...restProps } = this.props;
+    console.log(data, `workOrderList${type}`);
+    const list = data[`workOrderList${type}`];
 
     const left = (
       <div className={styles.container}>
         <div className={styles.spans}>
-          {STATUS.map((s, i) => (
-            <span
-              key={s}
-              className={i === type ? styles.selected : styles.span}
-              onClick={e => handleLabelChange(i)}
-            >
-              {s}-{Math.floor(Math.random() * 10)}
-            </span>
-          ))}
+          {STATUS.map((s, i) => {
+            const t = STATUS_N[i];
+
+            return (
+              <span
+                key={s}
+                className={ t === type ? styles.selected : styles.span}
+                onClick={e => handleLabelChange(t)}
+              >
+                {s}-{data[`workOrderList${t}`].length}
+              </span>
+            );
+          }
+          )}
         </div>
         <div className={styles.cards}>
-          {CARDS.map(item => <OrderCard key={item.id} {...item} onClick={e => handleCardClick(e)} />)}
+          {list.map(item => <OrderCard key={item.id} {...item} onClick={e => handleCardClick(e)} />)}
         </div>
       </div>
     );
 
     return (
       <DrawerContainer
-        title={`${STATUS[type]}工单`}
+        title={`${STATUS_MAP[type]}工单`}
         width={535}
         left={left}
         {...restProps}

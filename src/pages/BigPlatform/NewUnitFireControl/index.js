@@ -37,7 +37,8 @@ export default class App extends PureComponent {
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
-    drawerType: 0,
+    // 1 已完成   2 待处理   7 已超期
+    drawerType: 7,
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
     maintenanceDrawerVisible: false,
@@ -90,6 +91,17 @@ export default class App extends PureComponent {
       },
     });
 
+    // 获取警情动态详情
+    dispatch({
+      type: 'newUnitFireControl/fetchAlarmHandleList',
+      payload: {
+        companyId,
+      },
+    });
+
+    // 初始化维保工单
+    [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
+
     // 轮询
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
@@ -141,14 +153,24 @@ export default class App extends PureComponent {
   };
 
   /**
-   * 0:已超期工单,1:未超期工单,2:已完成工单
+   * 7:已超期工单,2:未超期工单,1:已完成工单
    */
-  handleDrawerVisibleChange = (name, type=0) => {
+  handleDrawerVisibleChange = (name, type) => {
     const stateName = `${name}DrawerVisible`;
-    this.setState(state => ({
-      [stateName]: !state[stateName],
-      drawerType: type,
-    }));
+    this.setState(state => type ? { [stateName]: !state[stateName], drawerType: type} : { [stateName]: !state[stateName] });
+  };
+
+  // 获取维保工单或维保动态详情
+  handleFetchWorkOrder = (status, id) => {
+    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchWorkOrder',
+      payload: { companyId, id, status },
+    });
+  };
+
+  handleWorkOrderLabelChange = type => {
+    this.setState({ drawerType: type });
   };
 
   render() {
@@ -163,6 +185,11 @@ export default class App extends PureComponent {
         feedback_state = 0,
       },
       systemScore,
+      alarmHandleList=[],
+      workOrderList1,
+      workOrderList2,
+      workOrderList7,
+      workOrderDetail,
     } = this.props.newUnitFireControl;
     const {
       videoVisible,
@@ -251,17 +278,20 @@ export default class App extends PureComponent {
             />
           </div>
           <WorkOrderDrawer
+            data={{ workOrderList1, workOrderList2, workOrderList7 }}
             type={drawerType}
             visible={workOrderDrawerVisible}
-            handleLabelChange={type => this.setState({ drawerType: type })}
+            handleLabelChange={this.handleWorkOrderLabelChange}
             onClose={() => this.handleDrawerVisibleChange('workOrder')}
             handleCardClick={e => this.handleDrawerVisibleChange('maintenance')}
           />
           <AlarmDynamicDrawer
+            data={alarmHandleList}
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
           <MaintenanceDrawer
+            data={workOrderDetail}
             visible={maintenanceDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('maintenance')}
           />

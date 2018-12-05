@@ -24,7 +24,7 @@ export default class App extends PureComponent {
       },
     } = this.props;
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
-    console.log(this.props);
+    // console.log(this.props);
 
 
     return (

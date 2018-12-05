@@ -26,19 +26,19 @@ export default class App extends PureComponent {
         </div>
         <div className={styles.bottom}>
           <div className={styles.itemWrapper}>
-            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 0);}}>
+            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 7);}}>
               <div className={styles.itemValue} style={{ color: '#ff4848' }}>1</div>
               <div className={styles.itemLabel}>已超期工单</div>
             </div>
           </div>
           <div className={styles.itemWrapper}>
-            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 1);}}>
+            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 2);}}>
               <div className={styles.itemValue} style={{ color: '#04fdff' }}>7</div>
               <div className={styles.itemLabel}>未超期工单</div>
             </div>
           </div>
           <div className={styles.itemWrapper}>
-            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 2);}}>
+            <div className={styles.item} onClick={()=>{handleShowOrder('workOrder', 1);}}>
               <div className={styles.itemValue} style={{ color: '#04fdff' }}>60</div>
               <div className={styles.itemLabel}>已完成工单</div>
             </div>
