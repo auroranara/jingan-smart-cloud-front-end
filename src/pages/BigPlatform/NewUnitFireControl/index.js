@@ -110,7 +110,7 @@ export default class App extends PureComponent {
       },
     });
     // 获取大屏消息
-     dispatch({
+    dispatch({
       type: 'newUnitFireControl/fetchScreenMessage',
       payload: {
         companyId,
@@ -118,7 +118,7 @@ export default class App extends PureComponent {
     });
 
     // 轮询
-    // this.pollTimer = setInterval(this.polling, DELAY);
+    this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
