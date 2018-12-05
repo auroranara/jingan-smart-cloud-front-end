@@ -37,6 +37,8 @@ import {
   getCheckStatusCount,
   // 检查点具体信息
   getCheckDetail,
+  // 巡查点异常记录
+  getPonitRecord,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import moment from 'moment';
@@ -200,6 +202,10 @@ export default {
     // 检查点具体信息
     checkList: {
       checkLists: [],
+    },
+    // 巡查点异常记录
+    pointRecordList: {
+      pointRecordLists: [],
     },
   },
 
@@ -506,6 +512,16 @@ export default {
         });
       }
     },
+    // 巡查点异常记录
+    *fetchPointRecord({ payload }, { call, put }) {
+      const response = yield call(getPonitRecord, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'savePointRecord',
+          payload: response.data.list || [],
+        });
+      }
+    },
   },
 
   reducers: {
@@ -570,6 +586,16 @@ export default {
         checkList: {
           ...state.checkList,
           checkLists: payload || [],
+        },
+      };
+    },
+    // 巡查点异常记录
+    savePointRecord(state, { payload }) {
+      return {
+        ...state,
+        pointRecordList: {
+          ...state.pointRecordList,
+          pointRecordLists: payload || [],
         },
       };
     },

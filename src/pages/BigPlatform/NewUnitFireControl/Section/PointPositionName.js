@@ -6,14 +6,15 @@ import ImageCard from '@/components/ImageCard';
 import styles from './PointPositionName.less';
 import DrawerContainer from '../components/DrawerContainer';
 import PointError from '../imgs/pointError.png';
+import PointNormal from '../imgs/PointNormal.png';
 
 const TYPE = 'point';
 
 const columns = [
   {
     title: '巡查日期',
-    dataIndex: 'checkDate',
-    key: 'checkDate',
+    dataIndex: 'check_date',
+    key: 'check_date',
     align: 'center',
   },
   {
@@ -24,8 +25,8 @@ const columns = [
   },
   {
     title: '巡查状态',
-    dataIndex: 'checkStatus',
-    key: 'checkStatus',
+    dataIndex: 'status',
+    key: 'status',
     align: 'center',
   },
   {
@@ -35,9 +36,11 @@ const columns = [
     align: 'center',
   },
 ];
+
 export default class PointPositionName extends PureComponent {
   render() {
-    const { visible, isUnit, handleDrawerVisibleChange, ...restProps } = this.props;
+    const { visible, pointRecordLists, handleDrawerVisibleChange, ...restProps } = this.props;
+    console.log('pointRecordLists', pointRecordLists);
 
     const list = [...Array(5)].map(item => ({
       pointTitle: '消防',
@@ -95,6 +98,7 @@ export default class PointPositionName extends PureComponent {
             />
           </Col>
         </div>
+
         <div className={styles.cardsTitle}>
           <p className={styles.titleP}>
             当前隐患
@@ -110,6 +114,7 @@ export default class PointPositionName extends PureComponent {
             )}
           </div>
         </div>
+
         <div className={styles.recordTitle}>
           <p className={styles.titleP}>
             巡查记录
@@ -118,7 +123,7 @@ export default class PointPositionName extends PureComponent {
         </div>
         <div className={styles.record}>
           <div className={styles.recordTable}>
-            <Table rowKey="id" columns={columns} dataSource={list} pageSize="5" />
+            <Table rowKey="id" columns={columns} dataSource={pointRecordLists} pageSize="5" />
           </div>
         </div>
       </div>

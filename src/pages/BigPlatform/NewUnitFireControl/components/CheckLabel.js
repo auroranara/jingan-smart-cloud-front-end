@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from './CheckLabel.less';
 
-const STATUS_CN = ['待检查', '超时检查', '正常', '异常'];
+const STATUS_CN = ['', '正常', '异常', '待检查', '超时检查'];
 
 export default function CheckLabel(props) {
   const { status = 0, num = 0, selected = false, ...restProps } = props;

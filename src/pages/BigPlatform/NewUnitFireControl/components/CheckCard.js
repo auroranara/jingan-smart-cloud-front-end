@@ -1,7 +1,12 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import styles from './CheckCard.less';
-import image from '@/assets/processing.png';
+// import image from '@/assets/processing.png';
+
+import ErrorCheck from '../imgs/errorCheck.png';
+import NormalCheck from '../imgs/normalCheck.png';
+import OverTime from '../imgs/overTime.png';
+import WaitTime from '../imgs/waitTime.png';
 
 export default class CheckCard extends PureComponent {
   static propTypes = {
@@ -32,7 +37,22 @@ export default class CheckCard extends PureComponent {
   };
 
   render() {
-    const { isCardClick, onCardClick, showStatusLogo, showRightIcon, cardPadding } = this.props;
+    const {
+      isCardClick,
+      onCardClick,
+      showStatusLogo,
+      showRightIcon,
+      cardPadding,
+      status,
+    } = this.props;
+
+    const statusLogo =
+      (+status === 2 && ErrorCheck) ||
+      (+status === 1 && NormalCheck) ||
+      (+status === 4 && OverTime) ||
+      (+status === 3 && WaitTime) ||
+      null;
+
     return (
       <div
         onClick={isCardClick ? onCardClick : null}
@@ -46,13 +66,12 @@ export default class CheckCard extends PureComponent {
           <div
             className={styles.statusLogo}
             style={{
-              background: `url(${image})`,
-              backgroundSize: '100% 100%',
-              backgroundRepeat: 'no-repeat',
               right: '5%',
               bottom: '21%',
             }}
-          />
+          >
+            <img src={statusLogo} style={{ width: '100%', height: '100%' }} alt="status" />
+          </div>
         )}
         {showRightIcon && (
           <div

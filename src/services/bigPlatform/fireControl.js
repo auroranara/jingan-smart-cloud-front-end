@@ -245,3 +245,10 @@ export async function getCheckStatusCount(params) {
 export async function getCheckDetail(params) {
   return request(`/acloud_new/v2/sfm/getSelfCheckPointData?${stringify(params)}`);
 }
+
+/**
+ * 巡查点异常记录
+ */
+export async function getPonitRecord(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getItemById?${stringify(params)}`);
+}

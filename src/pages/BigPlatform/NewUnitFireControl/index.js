@@ -169,6 +169,7 @@ export default class App extends PureComponent {
       systemScore,
       checkCount,
       checkList,
+      pointRecordList,
     } = this.props.newUnitFireControl;
     const {
       videoVisible,
@@ -176,8 +177,8 @@ export default class App extends PureComponent {
       videoKeyId,
       workOrderDrawerVisible,
       alarmDynamicDrawerVisible,
-      riskDrawerVisible,
       pointDrawerVisible,
+      riskDrawerVisible,
     } = this.state;
     const {
       monitor: { allCamera },
@@ -185,7 +186,6 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    console.log('11', this.props);
     return (
       <BigPlatformLayout
         title="晶安智慧云消防展示系统"
@@ -204,6 +204,7 @@ export default class App extends PureComponent {
                   model={this.props.newUnitFireControl}
                   checkCount={checkCount}
                   checkList={checkList}
+                  pointRecordList={pointRecordList}
                   companyId={companyId}
                 />
               </div>
@@ -274,10 +275,6 @@ export default class App extends PureComponent {
             visible={riskDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
-          <PointPositionName
-            visible={pointDrawerVisible}
-            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
           <WorkOrderDrawer
             visible={workOrderDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('workOrder')}
@@ -285,6 +282,10 @@ export default class App extends PureComponent {
           <AlarmDynamicDrawer
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+          />
+          <PointPositionName
+            visible={pointDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
         </div>
       </BigPlatformLayout>
