@@ -43,7 +43,7 @@ export default class App extends PureComponent {
     const newUsers = userList.slice(0, 2);
 
     return (
-      <Section title="企业基本信息" style={{ height: 'auto' }}>
+      <Section title="单位基本信息" style={{ height: 'auto' }}>
         <div className={styles.companyInfo}>
           <div className={styles.infoWrapper}>
             <div
