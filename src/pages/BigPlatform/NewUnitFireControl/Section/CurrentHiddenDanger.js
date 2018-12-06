@@ -38,7 +38,7 @@ export default class CurrentHiddenDanger extends PureComponent {
   };
 
   handleChartReady = (chart, option) => {
-    const { handleClickChat } = this.props;
+    const { onClickChat } = this.props;
     const changeHighLight = () => {
       var length = option.series[0].data.length;
       // 取消之前高亮的图形
@@ -93,7 +93,8 @@ export default class CurrentHiddenDanger extends PureComponent {
       // 添加定时器循环
       this.hiddenDangerTimer = setInterval(changeHighLight, 2000);
     });
-    chart.on('click', handleClickChat);
+    // 绑定click事件
+    chart.on('click', onClickChat);
   };
 
   render() {
@@ -121,6 +122,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         top: '82%',
         itemGap: 20,
         itemWidth: 25,
+        selectedMode: false,// 禁选
         formatter: name => `${name} ${legendInfo[name]}`,
         data: [
           { name: '已超期', icon: 'circle' },
@@ -270,13 +272,13 @@ export default class CurrentHiddenDanger extends PureComponent {
                                 </span>
                               </Fragment>
                             ) : (
-                              <Fragment>
-                                {rectify_user_name}
-                                <span className={+status === 7 ? styles.warningText : styles.text}>
-                                  {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                                </span>
-                              </Fragment>
-                            ),
+                                <Fragment>
+                                  {rectify_user_name}
+                                  <span className={+status === 7 ? styles.warningText : styles.text}>
+                                    {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                                  </span>
+                                </Fragment>
+                              ),
                         },
                         { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
                       ]}

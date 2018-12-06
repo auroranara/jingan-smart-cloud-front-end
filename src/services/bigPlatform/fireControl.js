@@ -298,6 +298,10 @@ export async function queryWorkOrder(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/getFaultForMaintenance?${stringify(params)}`);
 }
 
+// 获取火灾报警系统巡检记录
+export async function fetchCheckRecord(params) {
+  return request(`/acloud_new/v2/maintenanceCheck/getCheckRecordByType?${stringify(params)}`)
+}
 // 企业负责人和维保员信息
 export async function queryCheckUsers(params) {
   return request(`/acloud_new/v2/maintenanceCheck/getCheckUsersForNanXiao?${stringify(params)}`);

@@ -51,6 +51,7 @@ import {
   getPonitRecord,
   queryAlarmHandleList,
   queryWorkOrder,
+  fetchCheckRecord,
   queryCheckUsers,
 } from '../services/bigPlatform/fireControl';
 
@@ -304,6 +305,15 @@ export default {
     workOrderList7: [],
     // 维保处理动态详情
     workOrderDetail: [],
+    // 火灾报警系统
+    fireAlarm: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
     // 维保巡查详情
     maintenanceDetail: {},
     maintenanceCompany: {
@@ -733,6 +743,16 @@ export default {
         });
       }
     },
+    // 获取火灾报警系统巡检记录
+    *fetchCheckRecord({ payload }, { call, put }) {
+      const response = yield call(fetchCheckRecord, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCheckRecord',
+          payload: response.data,
+        })
+      }
+    },
     // 维保巡查详情
     *fetchMaintenanceDetail({ payload, success, error }, { call, put }) {
       const response = yield call(queryMaintenanceRecordDetail, payload);
@@ -913,6 +933,15 @@ export default {
     },
     saveWorkOrderDetail(state, action) {
       return { ...state, workOrderDetail: action.payload };
+    },
+    saveCheckRecord(state, { payload }) {
+      return {
+        ...state,
+        fireAlarm: {
+          ...state.fireAlarm,
+          ...payload,
+        },
+      }
     },
     maintenanceDetail(state, { payload }) {
       return {
