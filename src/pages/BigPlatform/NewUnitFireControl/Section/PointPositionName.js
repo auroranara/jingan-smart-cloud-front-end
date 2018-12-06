@@ -117,6 +117,7 @@ export default class PointPositionName extends PureComponent {
         rectify_user_name,
         item_name,
         plan_rectify_time,
+        real_rectify_time,
         status,
         hiddenDangerRecordDto,
         index,
@@ -144,15 +145,23 @@ export default class PointPositionName extends PureComponent {
               ),
             },
             {
-              label: '计划整改',
-              value: (
-                <Fragment>
-                  {rectify_user_name}
-                  <span className={+status === 7 ? styles.warningText : styles.text}>
-                    {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                  </span>
-                </Fragment>
-              ),
+              label: +status === 3 ? '实际整改' : '计划整改',
+              value:
+                +status === 3 ? (
+                  <Fragment>
+                    {rectify_user_name}
+                    <span className={styles.text}>
+                      {moment(+real_rectify_time).format('YYYY-MM-DD')}
+                    </span>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {rectify_user_name}
+                    <span className={+status === 7 ? styles.warningText : styles.text}>
+                      {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                    </span>
+                  </Fragment>
+                ),
             },
             { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
           ]}
