@@ -75,7 +75,7 @@ function getTime(time, type=0) {
     return;
 
   const m = moment(time);
-  return type ? m.format('HH:MM:SS') : m.format('YYYY-MM-DD');
+  return type ? m.format('HH:mm:ss') : m.format('YYYY-MM-DD');
 }
 
 
