@@ -62,7 +62,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
-            {installAddress}
+            {installAddress || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             回路故障号：
@@ -86,7 +86,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
-            {installAddress}
+            {installAddress || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             回路故障号：
@@ -110,7 +110,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
-            {address}
+            {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             处理人：
@@ -134,7 +134,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
-            {address}
+            {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             处理人：
@@ -158,7 +158,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
-            {address}
+            {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             维修人：
@@ -178,7 +178,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
-            {address}
+            {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             维修单位：
@@ -198,7 +198,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
-            {address}
+            {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             维修单位：
