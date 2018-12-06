@@ -43,13 +43,21 @@ export default class CompanyInfo extends PureComponent {
 
   render() {
     const { checkDrawerVisible } = this.state;
+    console.log(this.props);
+
     const {
       handleViewCurrentDanger,
       model: {
         companyMessage: {
-          companyMessage: { companyName, headOfSecurity, headOfSecurityPhone, countCheckItem },
+          companyMessage: {
+            companyName = '',
+            headOfSecurity = '',
+            headOfSecurityPhone = '',
+            countCheckItem = 0,
+          },
         },
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
+        maintenanceCompany: { name: companyNames = [], result: userList = [] },
       },
       checkCount,
       checkList,
@@ -58,6 +66,7 @@ export default class CompanyInfo extends PureComponent {
     } = this.props;
 
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
+    const newUsers = userList.splice(0, 2);
 
     return (
       <Section title="企业基本信息" style={{ height: 'auto' }}>
@@ -95,16 +104,18 @@ export default class CompanyInfo extends PureComponent {
             />
             <div className={styles.infoWrapper} style={{ marginTop: '15px', marginBottom: '5px' }}>
               <DescriptionList col={1}>
-                <Description term="维保单位">南消</Description>
+                <Description term="维保单位">
+                  {companyNames.map(data => data.name).join(',')}
+                </Description>
                 <Description term="维保人员">
-                  <div className={styles.manWrapper}>
-                    王卫国
-                    <span className={styles.phone}>13811110000</span>
-                  </div>
-                  <div className={styles.manWrapper}>
-                    刘建东
-                    <span className={styles.phone}>13811110000</span>
-                  </div>
+                  {newUsers.map(data => {
+                    return (
+                      <div className={styles.manWrapper}>
+                        {data.userName}
+                        <span className={styles.phone}>{data.phoneNumber}</span>
+                      </div>
+                    );
+                  })}
                 </Description>
               </DescriptionList>
             </div>
