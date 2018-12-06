@@ -250,7 +250,12 @@ export default class CurrentHiddenDanger extends PureComponent {
                       contentList={[
                         { label: '隐患描述', value: desc || '暂无数据' },
                         { label: '上报', value: (<Fragment>{report_user_name}<span className={styles.text}>{moment(+report_time).format('YYYY-MM-DD')}</span></Fragment>) },
-                        { label: '计划整改', value: (<Fragment>{rectify_user_name}<span className={+status === 7 ? styles.warningText : styles.text}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Fragment>) },
+                        {
+                          label: '计划整改',
+                          value: +status === 3 ? (<Fragment>{rectify_user_name}<span className={styles.text}>{moment(+real_rectify_time).format('YYYY-MM-DD')}</span></Fragment>) : (
+                            <Fragment>{rectify_user_name}<span className={+status === 7 ? styles.warningText : styles.text}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Fragment>
+                          ),
+                        },
                         { label: '检查点', value: (<span>{item_name || '暂无数据'}</span>) },
                       ]}
                       statusLogo={this.handleStatusPhoto(status)}
