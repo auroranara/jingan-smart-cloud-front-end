@@ -52,6 +52,7 @@ import {
   queryAlarmHandleList,
   queryWorkOrder,
   queryCheckUsers,
+  queryFault,
 } from '../services/bigPlatform/fireControl';
 
 import {
@@ -293,9 +294,10 @@ export default {
       pointRecordLists: [],
     },
     // 火警消息
-    alarmHandleMessage: {},
+    alarmHandleMessage: [],
     // 火警动态
     alarmHandleList: [],
+    alarmHandleHistory: [],
     // 已完成维保工单
     workOrderList1: [],
     // 待处理维保工单
@@ -310,6 +312,8 @@ export default {
       name: [],
       result: [],
     },
+    // 故障
+    faultList: [],
   },
 
   effects: {
@@ -718,7 +722,7 @@ export default {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
-          type: `saveAlarmHandle${payload.dataId ? 'Message' : 'List'}`,
+          type: `saveAlarmHandle${payload.dataId ? 'Message' : payload.historyType ? 'History' :'List'}`,
           payload: response.data ? response.data.list : [],
         });
       }
@@ -729,6 +733,15 @@ export default {
       if (response && response.code === 200) {
         yield put({
           type: payload.id ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+        });
+      }
+    },
+    *fetchFault({ payload }, { call, put }) {
+      const response = yield call(queryFault, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveFault',
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
@@ -902,6 +915,9 @@ export default {
     saveAlarmHandleList(state, action) {
       return { ...state, alarmHandleList: action.payload || [] };
     },
+    saveAlarmHandleHistory(state, action) {
+      return { ...state, alarmHandleHistory: action.payload || [] };
+    },
     saveWorkOrderList1(state, action) {
       return { ...state, workOrderList1: action.payload };
     },
@@ -913,6 +929,9 @@ export default {
     },
     saveWorkOrderDetail(state, action) {
       return { ...state, workOrderDetail: action.payload };
+    },
+    saveFault(state, action) {
+      return { ...state, faultList: action.payload };
     },
     maintenanceDetail(state, { payload }) {
       return {
