@@ -50,6 +50,13 @@ export default class App extends PureComponent {
         companyId,
       },
     });
+    // 获取四色风险点
+    dispatch({
+      type: 'bigPlatform/fetchCountDangerLocation',
+      payload: {
+        company_id: companyId,
+      },
+    });
   }
 
   render() {

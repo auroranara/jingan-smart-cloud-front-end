@@ -9,12 +9,12 @@ import {
   getVideoList,
   // 获取监控球相关数据
   getMonitorData,
+  // 企业大屏四色风险点,
+  getCountDangerLocation,
   // 企业风险点数
   getCoItemList,
   // 特种设备
   getSpecialEquipment,
-  // 企业大屏四色风险点,
-  getCountDangerLocationForCompany,
   // 隐患总数
   getHiddenDanger,
   // 获取安全人员信息
@@ -63,6 +63,16 @@ export default {
     videoList: [],
     // 监控球数据
     monitorData: { score: 0 },
+    // 四色风险点统计
+    countDangerLocation: {},
+    // countDangerLocation: {
+    //   redDangerResult: [],
+    //   orangeDangerResult: [],
+    //   yellowDangerResult: [],
+    //   blueDangerResult: [],
+    //   notRatedDangerResult: [],
+    //   countDangerLocation: [{ red: 0, orange: 0, yellow: 0, blue: 0, not_rated: 0 }],
+    // },
   },
 
   effects: {
@@ -160,6 +170,59 @@ export default {
           callback(response.data);
         }
       } else if (callback) {
+        callback();
+      }
+    },
+    // 获取四色风险点
+    *fetchCountDangerLocation({ payload, callback }, { call, put }) {
+      const response = yield call(getCountDangerLocation, payload);
+      const {
+        countDangerLocation,
+        redDangerResult,
+        orangeDangerResult,
+        yellowDangerResult,
+        blueDangerResult,
+        notRatedDangerResult = [],
+      } = response;
+      yield put({
+        type: 'save',
+        payload: {
+          countDangerLocation: {
+            countDangerLocation,
+            redDangerResult: {
+              normal: redDangerResult.filter(({ status }) => +status === 1),
+              checking: redDangerResult.filter(({ status }) => +status === 3),
+              abnormal: redDangerResult.filter(({ status }) => +status === 2),
+              over: redDangerResult.filter(({ status }) => +status === 4),
+            },
+            orangeDangerResult: {
+              normal: orangeDangerResult.filter(({ status }) => +status === 1),
+              checking: orangeDangerResult.filter(({ status }) => +status === 3),
+              abnormal: orangeDangerResult.filter(({ status }) => +status === 2),
+              over: orangeDangerResult.filter(({ status }) => +status === 4),
+            },
+            yellowDangerResult: {
+              normal: yellowDangerResult.filter(({ status }) => +status === 1),
+              checking: yellowDangerResult.filter(({ status }) => +status === 3),
+              abnormal: yellowDangerResult.filter(({ status }) => +status === 2),
+              over: yellowDangerResult.filter(({ status }) => +status === 4),
+            },
+            blueDangerResult: {
+              normal: blueDangerResult.filter(({ status }) => +status === 1),
+              checking: blueDangerResult.filter(({ status }) => +status === 3),
+              abnormal: blueDangerResult.filter(({ status }) => +status === 2),
+              over: blueDangerResult.filter(({ status }) => +status === 4),
+            },
+            unvaluedDangerResult: {
+              normal: notRatedDangerResult.filter(({ status }) => +status === 1),
+              checking: notRatedDangerResult.filter(({ status }) => +status === 3),
+              abnormal: notRatedDangerResult.filter(({ status }) => +status === 2),
+              over: notRatedDangerResult.filter(({ status }) => +status === 4),
+            },
+          },
+        },
+      });
+      if (callback) {
         callback();
       }
     },

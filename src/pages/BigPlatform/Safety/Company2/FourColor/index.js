@@ -15,6 +15,10 @@ const { Option } = Select;
  * date: 2018年12月02日
  */
 export default class FourColor extends PureComponent {
+  state = {
+    selectedFourColorImgId: undefined,
+  }
+
   /**
    * 下拉框
    */
@@ -23,12 +27,6 @@ export default class FourColor extends PureComponent {
       bigPlatform: {
         // 企业信息中获取四色图
         companyMessage: { fourColorImg = [] }={},
-        // 视频列表
-        videoList=[],
-        // 风险点信息列表
-        pointInfoList=[],
-        // 监控球数据
-        monitorData={},
       },
     } = this.props;
     const { selectedFourColorImgId } = this.state;
@@ -142,9 +140,13 @@ export default class FourColor extends PureComponent {
         companyMessage: {
           // 风险点列表
           point=[],
-          // 四色图列表
-          fourColorImg=[],
         },
+        // 视频列表
+        videoList=[],
+        // 风险点信息列表
+        pointInfoList=[],
+        // 监控球数据
+        monitorData={},
       },
     } = this.props;
     // 合并以后的容器类名
@@ -157,6 +159,7 @@ export default class FourColor extends PureComponent {
         {/* 标题 */}
         <div className={styles.title}>安全风险四色图</div>
         {/* 下拉框 */}
+        {this.renderSelect()}
         {/* 监控球 */}
         {/* 四色图 */}
         <RiskImg
