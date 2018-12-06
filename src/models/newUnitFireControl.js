@@ -51,7 +51,9 @@ import {
   getPonitRecord,
   queryAlarmHandleList,
   queryWorkOrder,
+  fetchCheckRecord,
   queryCheckUsers,
+  queryFault,
 } from '../services/bigPlatform/fireControl';
 
 import {
@@ -293,9 +295,10 @@ export default {
       pointRecordLists: [],
     },
     // 火警消息
-    alarmHandleMessage: {},
+    alarmHandleMessage: [],
     // 火警动态
     alarmHandleList: [],
+    alarmHandleHistory: [],
     // 已完成维保工单
     workOrderList1: [],
     // 待处理维保工单
@@ -304,12 +307,23 @@ export default {
     workOrderList7: [],
     // 维保处理动态详情
     workOrderDetail: [],
+    // 火灾报警系统
+    fireAlarm: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
     // 维保巡查详情
     maintenanceDetail: {},
     maintenanceCompany: {
       name: [],
       result: [],
     },
+    // 故障
+    faultList: [],
   },
 
   effects: {
@@ -718,7 +732,7 @@ export default {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
-          type: `saveAlarmHandle${payload.dataId ? 'Message' : 'List'}`,
+          type: `saveAlarmHandle${payload.dataId ? 'Message' : payload.historyType ? 'History' : 'List'}`,
           payload: response.data ? response.data.list : [],
         });
       }
@@ -729,6 +743,25 @@ export default {
       if (response && response.code === 200) {
         yield put({
           type: payload.id ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+        });
+      }
+    },
+    // 获取火灾报警系统巡检记录
+    *fetchCheckRecord({ payload }, { call, put }) {
+      const response = yield call(fetchCheckRecord, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCheckRecord',
+          payload: response.data,
+        })
+      }
+    },
+    *fetchFault({ payload }, { call, put }) {
+      const response = yield call(queryFault, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveFault',
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
@@ -902,6 +935,9 @@ export default {
     saveAlarmHandleList(state, action) {
       return { ...state, alarmHandleList: action.payload || [] };
     },
+    saveAlarmHandleHistory(state, action) {
+      return { ...state, alarmHandleHistory: action.payload || [] };
+    },
     saveWorkOrderList1(state, action) {
       return { ...state, workOrderList1: action.payload };
     },
@@ -913,6 +949,18 @@ export default {
     },
     saveWorkOrderDetail(state, action) {
       return { ...state, workOrderDetail: action.payload };
+    },
+    saveCheckRecord(state, { payload }) {
+      return {
+        ...state,
+        fireAlarm: {
+          ...state.fireAlarm,
+          ...payload,
+        },
+      }
+    },
+    saveFault(state, action) {
+      return { ...state, faultList: action.payload };
     },
     maintenanceDetail(state, { payload }) {
       return {

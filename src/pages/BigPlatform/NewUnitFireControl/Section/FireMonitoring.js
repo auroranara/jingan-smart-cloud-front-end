@@ -21,10 +21,17 @@ export default class FireMonitoring extends PureComponent {
       supervise = 0,
       // 反馈
       feedback = 0,
-      handleShowDrawer,
+      handleShowAlarm,
+      handleShowAlarmHistory,
+      handleShowFault,
     } = this.props;
+
+    const extra = (
+      <span className={styles.extra} onClick={handleShowAlarmHistory}>历史火警>></span>
+    );
+
     return (
-      <Section title="虚拟消控主机">
+      <Section title="虚拟消控主机" extra={extra}>
         <div className={styles.contaniner}>
           <div className={styles.top}>
             <div
@@ -40,10 +47,10 @@ export default class FireMonitoring extends PureComponent {
               </div>
             </div>
             <div className={styles.twoTotal}>
-              <p className={styles.fireTitle} onClick={handleShowDrawer}>
+              <p className={styles.fireTitle} onClick={fire ? handleShowAlarm : null}>
                 火警 <span className={styles.fireCount}>{fire || 0}</span>
               </p>
-              <p className={styles.errorTitle}>
+              <p className={styles.errorTitle} onClick={fault ? handleShowFault : null}>
                 故障 <span className={styles.errorCount}>{fault || 0}</span>
               </p>
             </div>
