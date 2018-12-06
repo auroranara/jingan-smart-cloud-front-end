@@ -145,6 +145,9 @@ export default class PointInspectionCount extends PureComponent {
         max: 100,
         axisLine: { lineStyle: { color: '#ddd' } },
         splitLine: { show: false },
+        axisLabel: {
+          formatter: (value) => `${value}%`,
+        },
       }],
       grid: {
         // top: 30,
