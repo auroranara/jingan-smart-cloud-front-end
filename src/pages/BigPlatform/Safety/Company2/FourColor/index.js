@@ -21,7 +21,14 @@ export default class FourColor extends PureComponent {
   renderSelect() {
     const {
       bigPlatform: {
-        companyMessage: { fourColorImg = [] },
+        // 企业信息中获取四色图
+        companyMessage: { fourColorImg = [] }={},
+        // 视频列表
+        videoList=[],
+        // 风险点信息列表
+        pointInfoList=[],
+        // 监控球数据
+        monitorData={},
       },
     } = this.props;
     const { selectedFourColorImgId } = this.state;

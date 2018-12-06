@@ -2,25 +2,23 @@ import {
   // 企业信息(包含人员数量四色图等)
   getCompanyMessage,
   // 获取风险点信息
-  getRiskPointInfo,
+  getPointInfoList,
+  // 获取隐患列表
+  getHiddenDangerList,
+  // 获取视频列表
+  getVideoList,
+  // 获取监控球相关数据
+  getMonitorData,
   // 企业风险点数
   getCoItemList,
   // 特种设备
   getSpecialEquipment,
   // 企业大屏四色风险点,
   getCountDangerLocationForCompany,
-  // 获取隐患详情
-  getRiskDetail,
   // 隐患总数
   getHiddenDanger,
   // 获取安全人员信息
   getSafetyOfficer,
-  // 视频
-  getAllCamera,
-  // 视频路径
-  getStartToPlay,
-  // 获取监控球相关数据
-  getMonitorData,
   // 获取巡查人员列表
   getStaffList,
   // 获取巡查人员记录
@@ -57,6 +55,14 @@ export default {
       // 四色图列表
       fourColorImg: [],
     },
+    // 风险点信息列表（风险告知卡列表）
+    pointInfoList: [],
+    // 隐患列表
+    hiddenDangerList: { ycq: [], wcq: [], dfc: [] },
+    // 视频列表
+    videoList: [],
+    // 监控球数据
+    monitorData: { score: 0 },
   },
 
   effects: {
@@ -88,6 +94,73 @@ export default {
       });
       if (callback) {
         callback(companyMessage);
+      }
+    },
+    // 获取风险点信息（风险告知卡列表）
+    *fetchPointInfoList({ payload, callback }, { call, put }) {
+      const response = yield call(getPointInfoList, payload);
+      yield put({
+        type: 'save',
+        payload: { pointInfoList: response.companyLetter },
+      });
+      if (callback) {
+        callback(response.companyLetter);
+      }
+    },
+    // 获取隐患列表
+    *fetchHiddenDangerList({ payload, callback }, { call, put }) {
+      const response = yield call(getHiddenDangerList, payload);
+      // 筛选已超期的隐患列表并根据计划整改时间排序
+      const ycq = response.hiddenDangers
+        .filter(({ status }) => +status === 7)
+        .sort((a, b) => {
+          return +a.plan_rectify_time - b.plan_rectify_time;
+        });
+      // 筛选未超期的隐患列表并根据计划整改时间排序
+      const wcq = response.hiddenDangers
+        .filter(({ status }) => +status === 1 || +status === 2)
+        .sort((a, b) => {
+          return +a.plan_rectify_time - b.plan_rectify_time;
+        });
+      // 筛选待复查的隐患列表并根据计划整改时间排序
+      const dfc = response.hiddenDangers
+        .filter(({ status }) => +status === 3)
+        .sort((a, b) => {
+          return +a.real_rectify_time - b.real_rectify_time;
+        });
+      yield put({
+        type: 'save',
+        payload:  {
+          hiddenDangerList : {
+            ycq,
+            wcq,
+            dfc,
+          },
+        },
+      });
+      if (callback) {
+        callback();
+      }
+    },
+    // 获取视频列表
+    *fetchVideoList({ payload, callback }, { call, put }) {
+      const response = yield call(getVideoList, payload);
+      yield put({ type: 'save', payload: { videoList: response.list } });
+      if (callback) callback(response.list);
+    },
+    // 获取监控球数据
+    *fetchMonitorData({ payload, callback }, { call, put }) {
+      const response = yield call(getMonitorData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { monitorData: response.data },
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      } else if (callback) {
+        callback();
       }
     },
   },

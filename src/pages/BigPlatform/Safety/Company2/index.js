@@ -18,7 +18,37 @@ export default class App extends PureComponent {
     // 获取企业信息
     dispatch({
       type: 'unitSafety/fetchCompanyMessage',
-      payload: { company_id: companyId },
+      payload: {
+        company_id: companyId,
+      },
+    });
+    // 获取风险点信息列表（风险告知卡）
+    dispatch({
+      type: 'bigPlatform/fetchPointInfoList',
+      payload: {
+        company_id: companyId,
+      },
+    });
+    // 获取隐患列表
+    dispatch({
+      type: 'bigPlatform/fetchHiddenDangerList',
+      payload: {
+        company_id: companyId,
+      },
+    });
+    // 获取视频列表
+    dispatch({
+      type: 'bigPlatform/fetchVideoList',
+      payload: {
+        company_id: companyId,
+      },
+    });
+    // 获取监控数据
+    dispatch({
+      type: 'bigPlatform/fetchMonitorData',
+      payload: {
+        companyId,
+      },
     });
   }
 
