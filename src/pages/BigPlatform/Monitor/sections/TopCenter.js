@@ -529,7 +529,7 @@ export default class TopCenter extends PureComponent {
                     正常 <span className={styles.normalCount}>{normal}</span>
                   </p>
                   <p className={styles.unusual} onClick={() => this.handleSmokeModal(ABNORMAL)}>
-                    异常 <span className={styles.unusualCount}>{abnormal}</span>
+                    火警 <span className={styles.unusualCount}>{abnormal}</span>
                   </p>
                   <p className={styles.missing} onClick={() => this.handleSmokeModal(LOSS)}>
                     失联 <span className={styles.missingCount}>{loss}</span>
