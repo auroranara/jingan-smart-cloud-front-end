@@ -457,7 +457,6 @@ export default class App extends PureComponent {
    * 查看点位名称
    * */
   handlePointDrawer = pointData => {
-    console.log('pointData', pointData.pointData);
     const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchPointRecord',
@@ -721,7 +720,7 @@ export default class App extends PureComponent {
                 {/* 点位巡查统计 */}
                 <PointInspectionCount
                   model={this.props.newUnitFireControl}
-                  handleShowDrawer={this.handleDrawerVisibleChange}
+                  handleShowDrawer={(name, params) => {this.handleDrawerVisibleChange(name, params);this.fetchPointInspectionList(params.pointInspectionDrawerSelectedDate);}}
                 />
               </div>
             </div>
