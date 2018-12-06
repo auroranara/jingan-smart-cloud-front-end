@@ -35,13 +35,14 @@ export default class AlarmDynamicDrawer extends PureComponent {
           <Fragment>
             <SwitchHead
               index={index}
+              title="火警"
               lastIndex={length - 1}
               handleLeftClick={this.handleLeftClick}
               handleRightClick={this.handleRightClick}
             />
             <div className={styles.sliderContainer}>
               <Slider index={index} length={length} size={1}>
-                {list.map(item => <TimelineCard key={item.id} style={{ width: `calc(100% / ${length})` }} {...item} />)}
+                {list.map((item, i) => <TimelineCard key={i} style={{ width: `calc(100% / ${length})` }} {...item} />)}
               </Slider>
             </div>
           </Fragment>

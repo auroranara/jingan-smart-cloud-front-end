@@ -76,11 +76,14 @@ export default class App extends PureComponent {
     // 1 已完成   2 待处理   7 已超期
     drawerType: 7,
     workOrderDrawerVisible: false,
+    alarmMessageDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
+    alarmHistoryDrawerVisible: false,
     maintenanceDrawerVisible: false,
     alarmMessageDrawerVisible: false,
     checkDrawerVisible: false, // 检查点抽屉是否显示
     pointDrawerVisible: false, // 点位名称抽屉是否显示
+    faultDrawerVisible: false,
     currentDrawerVisible: false, // 当前隐患抽屉可见
     dangerDetailVisible: false, // 隐患详情抽屉可见
     // 点位巡查抽屉是否显示
@@ -153,11 +156,14 @@ export default class App extends PureComponent {
       },
     });
 
-    // 获取警情动态详情
-    this.handleFetchAlarmHandle();
+    // 获取警情动态详情及历史
+    [0, 1].forEach(i => this.handleFetchAlarmHandle(0, i));
 
     // 初始化维保工单
     [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
+
+    // 获取故障
+    dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } })
 
     // 获取当前隐患图表统计数据
     dispatch({
@@ -487,7 +493,7 @@ export default class App extends PureComponent {
     this.fetchPointInspectionList(date);
   };
 
-  handleFetchAlarmHandle = (dataId = 0) => {
+  handleFetchAlarmHandle = (dataId = 0, historyType = 0) => {
     const {
       dispatch,
       match: {
@@ -497,7 +503,7 @@ export default class App extends PureComponent {
 
     dispatch({
       type: 'newUnitFireControl/fetchAlarmHandle',
-      payload: { companyId, dataId },
+      payload: { companyId, dataId, historyType },
     });
   };
 
@@ -584,11 +590,13 @@ export default class App extends PureComponent {
       pointRecordList: { pointRecordLists, abnormal: checkAbnormal, count },
       alarmHandleMessage,
       alarmHandleList,
+      alarmHandleHistory,
       workOrderList1,
       workOrderList2,
       workOrderList7,
       workOrderDetail, // 只有一个元素的数组
       fireAlarm,
+      faultList,
     } = this.props.newUnitFireControl;
 
     const {
@@ -596,7 +604,9 @@ export default class App extends PureComponent {
       showVideoList,
       videoKeyId,
       workOrderDrawerVisible,
+      alarmMessageDrawerVisible,
       alarmDynamicDrawerVisible,
+      alarmHistoryDrawerVisible,
       pointInspectionDrawerVisible,
       pointInspectionDrawerSelectedDate,
       riskDrawerVisible,
@@ -606,7 +616,6 @@ export default class App extends PureComponent {
       dangerDetailVisible,
       drawerType,
       maintenanceDrawerVisible,
-      alarmMessageDrawerVisible,
       fourColorTips,
       deletedFourColorTips,
       fireAlarmVisible,
@@ -614,6 +623,7 @@ export default class App extends PureComponent {
       checkPointName,
       checkItemId,
       maintenanceCheckDrawerVisible,
+      faultDrawerVisible,
     } = this.state;
     const {
       monitor: { allCamera },
@@ -685,7 +695,9 @@ export default class App extends PureComponent {
                   linkage={start_state}
                   supervise={supervise_state}
                   feedback={feedback_state}
-                  handleShowDrawer={e => this.handleDrawerVisibleChange('alarmDynamic')}
+                  handleShowAlarm={e => this.handleDrawerVisibleChange('alarmDynamic')}
+                  handleShowAlarmHistory={e => this.handleDrawerVisibleChange('alarmHistory')}
+                  handleShowFault={e => this.handleDrawerVisibleChange('fault')}
                 />
               </div>
             </div>
@@ -774,6 +786,16 @@ export default class App extends PureComponent {
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
+          <AlarmDynamicDrawer
+            // data={alarmHandleHistory}
+            data={alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory}
+            visible={alarmHistoryDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('alarmHistory')}
+          />
+          {/* <PointPositionName
+            visible={pointDrawerVisible}
+            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          />*/}
           <PointInspectionDrawer
             date={pointInspectionDrawerSelectedDate}
             handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
@@ -805,6 +827,7 @@ export default class App extends PureComponent {
             handleCardClick={this.handleWorkOrderCardClick}
           />
           <MaintenanceDrawer
+            title="维保处理动态"
             type={drawerType}
             data={workOrderDetail}
             visible={maintenanceDrawerVisible}
@@ -814,6 +837,13 @@ export default class App extends PureComponent {
             visible={fireAlarmVisible}
             onClose={this.handleCloseFireAlarm}
             {...fireAlarm}
+          />
+          <MaintenanceDrawer
+            title="故障处理动态"
+            type={drawerType}
+            data={faultList}
+            visible={faultDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('fault')}
           />
         </div>
         <MaintenanceCheckDrawer
