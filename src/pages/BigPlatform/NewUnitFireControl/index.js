@@ -184,6 +184,14 @@ export default class App extends PureComponent {
       },
     });
 
+    // 企业负责人和维保员信息
+    dispatch({
+      type: 'newUnitFireControl/fetchMaintenanceCompany',
+      payload: {
+        companyId,
+      },
+    });
+
     // 获取点位巡查列表
     this.fetchPointInspectionList();
 
