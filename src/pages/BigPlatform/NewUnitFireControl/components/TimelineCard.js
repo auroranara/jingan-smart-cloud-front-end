@@ -49,7 +49,7 @@ function getTime(time, type=0) {
     return;
 
   const m = moment(time);
-  return type ? m.format('HH:MM:SS') : m.format('YYYY-MM-DD');
+  return type ? m.format('HH:mm:ss') : m.format('YYYY-MM-DD');
 }
 
 const SPANS = [4, 20];
@@ -58,6 +58,8 @@ const NO_DATA = '暂无信息';
 export default function TimelineCard(props) {
   const { startMap, handleMap, finshMap: finishMap, ...restProps } = props;
   const [isStarted, isHandling, isFinished] = [startMap, handleMap, finishMap].map(m => m ? !!Object.keys(m).length : false);
+
+  console.log(startMap.startTime);
 
   return (
     <div className={styles.container} {...restProps}>
