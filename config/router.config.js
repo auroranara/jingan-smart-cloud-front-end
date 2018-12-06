@@ -78,6 +78,10 @@ module.exports = [
       },
       {
         path: '/big-platform/fire-control/company/:unitId',
+        component: './BigPlatform/UnitFireControl/UnitFireControl',
+      },
+      {
+        path: '/big-platform/fire-control/new-company/:unitId',
         component: './BigPlatform/NewUnitFireControl',
       },
       {
