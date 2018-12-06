@@ -42,8 +42,6 @@ export default class FireDevice extends PureComponent {
       }
       return total;
     }, []);
-
-    console.log(result);
     return (
       <Section title="消防设施情况">
         <div className={styles.container}>
