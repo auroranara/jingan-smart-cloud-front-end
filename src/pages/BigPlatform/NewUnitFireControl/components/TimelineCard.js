@@ -59,8 +59,6 @@ export default function TimelineCard(props) {
   const { startMap, handleMap, finshMap: finishMap, ...restProps } = props;
   const [isStarted, isHandling, isFinished] = [startMap, handleMap, finishMap].map(m => m ? !!Object.keys(m).length : false);
 
-  console.log(startMap.startTime);
-
   return (
     <div className={styles.container} {...restProps}>
       <div className={styles.head}>
