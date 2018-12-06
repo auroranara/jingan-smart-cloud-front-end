@@ -82,7 +82,7 @@ const transformHiddenDangerFields = ({
     zgr: rectify_user_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
-    fcr: +status === 4 ? operator_name : review_user_name, //review_user_name,
+    fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
     source:
