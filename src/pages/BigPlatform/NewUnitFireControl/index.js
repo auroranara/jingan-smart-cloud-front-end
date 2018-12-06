@@ -185,6 +185,7 @@ export default class App extends PureComponent {
 
   handleClickMeassge = dataId => {
     this.fetchAlarmHandle(dataId);
+    this.handleDrawerVisibleChange('alarmMessage');
   };
 
   render() {
