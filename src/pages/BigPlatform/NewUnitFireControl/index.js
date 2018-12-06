@@ -115,6 +115,7 @@ export default class App extends PureComponent {
       type: 'newUnitFireControl/fetchCurrentHiddenDanger',
       payload: {
         company_id: companyId,
+        businessType:2,
       },
     });
     // 获取点位巡查统计
