@@ -11,7 +11,7 @@ import missingDevice from '../../../../assets/missing-device.png';
 import fireHost from '../imgs/fire-host.png';
 import smokeIcon from '../imgs/smokeIcon.png';
 import redDot from '../imgs/redDot.png';
-import SignalAnime from '../components/SignalAnime';
+import SignalAnime from '../Components/SignalAnime';
 import SmokeStatusLabel from '../components/SmokeStatusLabel';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';

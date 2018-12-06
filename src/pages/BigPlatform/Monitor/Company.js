@@ -18,7 +18,7 @@ import RealTimeAlarm from './sections/RealTimeAlarm.js';
 import TopCenter from './sections/TopCenter.js';
 import AlarmHistory from './sections/AlarmHistory.js';
 
-import ElectricityCharts from './sections/ElectricityCharts';
+import ElectricityCharts from './Sections/ElectricityCharts';
 
 const DELAY = 5 * 1000;
 // const WATER_DELAY = 5 * 60 * 1000;
