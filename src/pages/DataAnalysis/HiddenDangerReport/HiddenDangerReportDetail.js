@@ -426,7 +426,7 @@ export default class App extends PureComponent {
                       <DescriptionList style={{ marginBottom: 16 }}>
                         <Description term="整改人">{operator_name || getEmptyData()}</Description>
                         <Description term="实际整改日期">{create_time_str || getEmptyData()}</Description>
-                        <Description term="整改金额">{money || getEmptyData()}</Description>
+                        <Description term="整改金额">{typeof money === 'number' ? money : 0}</Description>
                       </DescriptionList>
                       <DescriptionList style={{ marginBottom: 16 }} col={1}>
                         <Description term="整改措施">{operate_content || getEmptyData()}</Description>
