@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Select } from 'antd';
 // import { connect } from 'dva';
 import classNames from 'classnames';
-import SectionWrapper from '../Components/SectionWrapper';
+import SectionWrapper from '../components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
@@ -115,7 +115,11 @@ class ElectricityCharts extends PureComponent {
 
   getOptions = () => {
     const {
-      data: { gsmsHstData, electricityPieces, chartParams: { list=[] } },
+      data: {
+        gsmsHstData,
+        electricityPieces,
+        chartParams: { list = [] },
+      },
     } = this.props;
     const { activeTab } = this.state;
     const paramsMap = list.reduce((prev, next) => {
@@ -275,11 +279,19 @@ class ElectricityCharts extends PureComponent {
         }
         break;
       case 'temp':
-        const [t1, t2, t3, t4] = [v2List, v3List, v4List, v5List].map(list => list.filter(a => a !== '-'));
+        const [t1, t2, t3, t4] = [v2List, v3List, v4List, v5List].map(list =>
+          list.filter(a => a !== '-')
+        );
 
-        const [v2Pieces, v3Pieces, v4Pieces, v5Pieces] = ['v2', 'v3', 'v4', 'v5'].map(k => electricityPieces[k]);
-        const [v2ListNew, v3ListNew, v4ListNew, v5ListNew] = [[v2List, v2Pieces], [v3List, v3Pieces], [v4List, v4Pieces], [v5List, v5Pieces]]
-          .map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
+        const [v2Pieces, v3Pieces, v4Pieces, v5Pieces] = ['v2', 'v3', 'v4', 'v5'].map(
+          k => electricityPieces[k]
+        );
+        const [v2ListNew, v3ListNew, v4ListNew, v5ListNew] = [
+          [v2List, v2Pieces],
+          [v3List, v3Pieces],
+          [v4List, v4Pieces],
+          [v5List, v5Pieces],
+        ].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
 
         // const v2Pieces = electricityPieces['v2'];
         // const v2ListNew = v2List.map(item => {
@@ -302,7 +314,12 @@ class ElectricityCharts extends PureComponent {
           ...defaultOption,
           legend: {
             ...defaultOption.legend,
-            data: [paramsMap.v2 || 'A相温度', paramsMap.v3 || 'B相温度', paramsMap.v4 || 'C相温度', paramsMap.v5 || '零线温度'],
+            data: [
+              paramsMap.v2 || 'A相温度',
+              paramsMap.v3 || 'B相温度',
+              paramsMap.v4 || 'C相温度',
+              paramsMap.v5 || '零线温度',
+            ],
           },
           title: {
             text: this.legendFormatter([v2Pieces, v3Pieces, v4Pieces, v5Pieces], '℃'),
@@ -368,7 +385,11 @@ class ElectricityCharts extends PureComponent {
         // const ic = icList.filter(a => a !== '-');
 
         const [iaPieces, ibPieces, icPieces] = ['ia', 'ib', 'ic'].map(k => electricityPieces[k]);
-        const [iaListNew, ibListNew, icListNew] = [[iaList, iaPieces], [ibList, ibPieces], [icList, icPieces]].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
+        const [iaListNew, ibListNew, icListNew] = [
+          [iaList, iaPieces],
+          [ibList, ibPieces],
+          [icList, icPieces],
+        ].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
 
         // const iaPieces = electricityPieces['ia'];
         // const iaListNew = iaList.map(item => {
@@ -446,7 +467,11 @@ class ElectricityCharts extends PureComponent {
         // const uc = ucList.filter(a => a !== '-');
 
         const [uaPieces, ubPieces, ucPieces] = ['ua', 'ub', 'uc'].map(k => electricityPieces[k]);
-        const [uaListNew, ubListNew, ucListNew] = [[uaList, uaPieces], [ubList, ubPieces], [ucList, ucPieces]].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
+        const [uaListNew, ubListNew, ucListNew] = [
+          [uaList, uaPieces],
+          [ubList, ubPieces],
+          [ucList, ucPieces],
+        ].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
 
         // const uaPieces = electricityPieces['ua'];
         // const uaListNew = uaList.map(item => {
