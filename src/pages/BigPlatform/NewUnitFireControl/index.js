@@ -609,8 +609,8 @@ export default class App extends PureComponent {
                 {/* 四色图 */}
                 <FourColor
                   model={this.props.newUnitFireControl}
-                  handleShowPointDetail={id => {
-                    this.handleDrawerVisibleChange('check', { checkId: id });
+                  handleShowPointDetail={(checkItemId, checkStatus, checkPointName) => {
+                    this.handleDrawerVisibleChange('point', { checkItemId, checkStatus, checkPointName });
                   }}
                   handleShowHiddenDanger={(id, hiddenDangerId) => {
                     this.handleViewDangerDetail({ id: hiddenDangerId });

@@ -40,7 +40,7 @@ export default class App extends PureComponent {
     } = this.props;
 
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
-    const newUsers = userList.splice(0, 2);
+    const newUsers = userList.slice(0, 2);
 
     return (
       <Section title="企业基本信息" style={{ height: 'auto' }}>
