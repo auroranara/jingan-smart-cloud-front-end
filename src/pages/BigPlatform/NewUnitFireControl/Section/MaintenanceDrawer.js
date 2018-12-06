@@ -8,6 +8,12 @@ import TimelineItem from '../components/TimelineItem';
 import ImgSlider from '../components/ImgSlider';
 import flowImg from '../imgs/flow_m.png';
 
+const ID = 'maintenance-drawer';
+
+function getContainer() {
+  return document.querySelector(`#${ID}`);
+}
+
 function Occured(props) {
   const { position, type, safety, phone } = props;
 
@@ -31,6 +37,7 @@ function Assigned(props) {
       {position && <p>详细位置：{position}</p>}
       <p>指派人员：{man} {phone}</p>
       <p>维修单位：{company}</p>
+      {/* {imgs && !!imgs.length && <ImgSlider picture={imgs} getContainer={getContainer} />} */}
       {imgs && !!imgs.length && <ImgSlider picture={imgs} />}
     </div>
   );
@@ -57,6 +64,7 @@ function Handled(props) {
       <p>维保公司已处理完毕</p>
       <p>维修人员：{man} {phone}</p>
       <p>结果反馈：{feedback}</p>
+      {/* {imgs && !!imgs.length && <ImgSlider picture={imgs} getContainer={getContainer} />} */}
       {imgs && !!imgs.length && <ImgSlider picture={imgs} />}
     </div>
   );
@@ -192,6 +200,7 @@ export default class AlarmDynamicDrawer extends PureComponent {
 
     return (
       <DrawerContainer
+        id={ID}
         title="维保处理动态"
         width={535}
         left={left}

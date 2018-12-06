@@ -8,7 +8,7 @@ const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
   render() {
-    const { title, width, visible, onClose, left=null, right=null, ...restProps } = this.props;
+    const { title, width, visible, onClose, left=null, right=null, id, ...restProps } = this.props;
 
     // right不存在时，默认全部渲染left
     return (
@@ -21,7 +21,7 @@ export default class DrawerContainer extends PureComponent {
         // style={{ padding: '108px 0 0 1px' }}
         {...restProps}
       >
-        <div className={styles.container}>
+        <div className={styles.container} id={id}>
           <h3 className={styles.title}>
             <span className={styles.rect} />
             {title}

@@ -1,4 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
+import ReactDOM from 'react-dom';
 import { Row, Col, Icon } from 'antd';
 
 import Slider from '../components/Slider';
@@ -7,12 +8,12 @@ import styles from './ImgSlider.less';
 import arrowLeft from '../imgs/arrowLeft.png';
 import arrowRight from '../imgs/arrowRight.png';
 import cameraIcon from '../imgs/camera.png';
-import b1 from '../imgs/b1.jpg';
-import b2 from '../imgs/b2.jpg';
-import b3 from '../imgs/b3.jpg';
-import b4 from '../imgs/b4.jpg';
-import b5 from '../imgs/b5.jpg';
-import b6 from '../imgs/b6.jpg';
+// import b1 from '../imgs/b1.jpg';
+// import b2 from '../imgs/b2.jpg';
+// import b3 from '../imgs/b3.jpg';
+// import b4 from '../imgs/b4.jpg';
+// import b5 from '../imgs/b5.jpg';
+// import b6 from '../imgs/b6.jpg';
 
 // const IMG_WIDTH = 118;
 // const MAG_IMG_WIDTH = 300;
@@ -44,7 +45,7 @@ export default class ImgSlider extends PureComponent {
     this.setState({ showImg: true, magIndex: index });
   };
 
-  handleCloseImg = () => {
+  handleCloseImg = e => {
     this.setState({ showImg: false });
   };
 
@@ -52,6 +53,7 @@ export default class ImgSlider extends PureComponent {
     const {
       picture=[],
       height,
+      getContainer,
       // ...restProps
     } = this.props;
 
@@ -100,6 +102,44 @@ export default class ImgSlider extends PureComponent {
       <div className={styles.magImg} key={src} style={{ backgroundImage: `url(${src})` }} />
     ));
 
+    const magnify = (
+      <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
+          <div className={styles.center}>
+            <Slider index={magIndex} length={picLength} size={1}>
+              {magImgs}
+            </Slider>
+          </div>
+          <Icon
+            type="left"
+            style={{
+              left: 10,
+              top: '50%',
+              display: magIndex ? 'block' : 'none',
+              cursor: magIndex ? 'pointer' : 'auto',
+
+              ...ICON_STYLE,
+            }}
+            onClick={magIndex ? () => this.handleLeft('magIndex') : null}
+          />
+          <Icon
+            type="right"
+            style={{
+              right: 10,
+              top: '50%',
+              display: isMagEnd ? 'none' : 'block',
+              cursor: isMagEnd ? 'auto' : 'pointer',
+              ...ICON_STYLE,
+            }}
+            onClick={isMagEnd ? null : () => this.handleRight('magIndex')}
+          />
+          <Icon
+            type="close"
+            onClick={this.handleCloseImg}
+            style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE, fontSize: 18 }}
+          />
+        </div>
+    );
+
     return (
       <Fragment>
       {/*<div className={styles.container} {...restProps}>*/}
@@ -137,7 +177,8 @@ export default class ImgSlider extends PureComponent {
             </div>
           </Row>
         </div>
-        <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
+        {getContainer ? ReactDOM.createPortal(magnify, getContainer()) : magnify}
+        {/* <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
           <div className={styles.center}>
             <Slider index={magIndex} length={picLength} size={1}>
               {magImgs}
@@ -171,7 +212,7 @@ export default class ImgSlider extends PureComponent {
             onClick={this.handleCloseImg}
             style={{ right: 10, top: 10, cursor: 'pointer', ...ICON_STYLE, fontSize: 18 }}
           />
-        </div>
+        </div> */}
       {/*</div>*/}
       </Fragment>
     );
