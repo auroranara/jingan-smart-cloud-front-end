@@ -261,14 +261,22 @@ export default class CurrentHiddenDanger extends PureComponent {
                         },
                         {
                           label: '计划整改',
-                          value: (
-                            <Fragment>
-                              {rectify_user_name}
-                              <span className={+status === 7 ? styles.warningText : styles.text}>
-                                {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                              </span>
-                            </Fragment>
-                          ),
+                          value:
+                            +status === 3 ? (
+                              <Fragment>
+                                {rectify_user_name}
+                                <span className={styles.text}>
+                                  {moment(+real_rectify_time).format('YYYY-MM-DD')}
+                                </span>
+                              </Fragment>
+                            ) : (
+                              <Fragment>
+                                {rectify_user_name}
+                                <span className={+status === 7 ? styles.warningText : styles.text}>
+                                  {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                                </span>
+                              </Fragment>
+                            ),
                         },
                         { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
                       ]}
