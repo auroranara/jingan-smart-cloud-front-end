@@ -12,12 +12,12 @@ const { Option } = Select;
 
 const tabList = [
   {
-    desc: '漏电电流',
-    code: 'v1',
-  },
-  {
     desc: '温度',
     code: 'temp',
+  },
+  {
+    desc: '漏电电流',
+    code: 'v1',
   },
   {
     desc: '电流',
