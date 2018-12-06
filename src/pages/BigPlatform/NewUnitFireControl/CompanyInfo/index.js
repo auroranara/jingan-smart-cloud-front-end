@@ -33,6 +33,7 @@ export default class App extends PureComponent {
       type: 'newUnitFireControl/fetchCheckCount',
       payload: {
         companyId,
+        item_type: 2,
       },
     });
     this.setState({
@@ -55,6 +56,7 @@ export default class App extends PureComponent {
       companyId,
       pointRecordList,
     } = this.props;
+
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
 
     return (

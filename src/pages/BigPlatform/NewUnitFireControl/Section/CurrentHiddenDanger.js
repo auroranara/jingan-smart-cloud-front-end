@@ -11,7 +11,6 @@ const redColor = '#F6B54E';
 const yellowColor = '#2A8BD5';
 
 export default class CurrentHiddenDanger extends PureComponent {
-
   constructor(props) {
     super(props);
     // 隐患高亮索引
@@ -24,22 +23,22 @@ export default class CurrentHiddenDanger extends PureComponent {
     clearInterval(this.hiddenDangerTimer);
   }
 
-  handleStatusPhoto = (status) => {
+  handleStatusPhoto = status => {
     //2待整改   3待复查, 7  超期未整改
     switch (+status) {
       case 2:
-        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/wcq.png'
+        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/wcq.png';
       case 3:
-        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/dfc.png'
+        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/dfc.png';
       case 7:
-        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/ycq.png'
+        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/ycq.png';
       default:
-        return ''
+        return '';
     }
-  }
+  };
 
   handleChartReady = (chart, option) => {
-    const { handleClickChat } = this.props
+    const { handleClickChat } = this.props;
     const changeHighLight = () => {
       var length = option.series[0].data.length;
       // 取消之前高亮的图形
@@ -94,8 +93,8 @@ export default class CurrentHiddenDanger extends PureComponent {
       // 添加定时器循环
       this.hiddenDangerTimer = setInterval(changeHighLight, 2000);
     });
-    chart.on('click', handleClickChat)
-  }
+    chart.on('click', handleClickChat);
+  };
 
   render() {
     const {
@@ -107,12 +106,12 @@ export default class CurrentHiddenDanger extends PureComponent {
       reviewNum: dfc,
       totalNum: total,
       list = [],
-    } = this.props
+    } = this.props;
     const legendInfo = {
-      '已超期': ycq,
-      '未超期': wcq,
-      '待复查': dfc,
-    }
+      已超期: ycq,
+      未超期: wcq,
+      待复查: dfc,
+    };
     const option = {
       tooltip: {
         show: false,
@@ -145,7 +144,7 @@ export default class CurrentHiddenDanger extends PureComponent {
             show: false,
             color: '#fff',
             align: 'left',
-            formatter: (params) => `{label|${params.name}}\n{value|${params.value}}`,
+            formatter: params => `{label|${params.name}}\n{value|${params.value}}`,
             emphasis: {
               show: true,
             },
@@ -212,7 +211,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         onClose={onClose}
         width={470}
         destroyOnClose={true}
-        left={(
+        left={
           <div className={styles.currentHiddenDanger}>
             <div className={styles.chartContainer}>
               <ReactEcharts
@@ -228,18 +227,22 @@ export default class CurrentHiddenDanger extends PureComponent {
               </div>
             </div>
             <div className={styles.mainContainer}>
-              {list.map(({
-                desc,
-                report_user_name,
-                report_time,
-                rectify_user_name,
-                real_rectify_time,
-                plan_rectify_time,
-                review_user_name,
-                item_name,
-                status,
-                hiddenDangerRecordDto,
-              }, index) => (
+              {list.map(
+                (
+                  {
+                    desc,
+                    report_user_name,
+                    report_time,
+                    rectify_user_name,
+                    real_rectify_time,
+                    plan_rectify_time,
+                    review_user_name,
+                    item_name,
+                    status,
+                    hiddenDangerRecordDto,
+                  },
+                  index
+                ) => (
                   <Col key={index} style={{ padding: '5px 0' }} span={24}>
                     <ImageCard
                       showRightIcon={true}
@@ -248,19 +251,46 @@ export default class CurrentHiddenDanger extends PureComponent {
                       onCardClick={onCardClick}
                       contentList={[
                         { label: '隐患描述', value: desc || '暂无数据' },
-                        { label: '上报', value: (<Fragment>{report_user_name}<span className={styles.text}>{moment(+report_time).format('YYYY-MM-DD')}</span></Fragment>) },
-                        { label: '计划整改', value: (<Fragment>{rectify_user_name}<span className={(real_rectify_time > plan_rectify_time) ? styles.warningText : styles.text}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Fragment>) },
-                        { label: '检查点', value: (<span>{item_name || '暂无数据'}</span>) },
+                        {
+                          label: '上报',
+                          value: (
+                            <Fragment>
+                              {report_user_name}
+                              <span className={styles.text}>
+                                {moment(+report_time).format('YYYY-MM-DD')}
+                              </span>
+                            </Fragment>
+                          ),
+                        },
+                        {
+                          label: '计划整改',
+                          value: (
+                            <Fragment>
+                              {rectify_user_name}
+                              <span
+                                className={
+                                  real_rectify_time > plan_rectify_time
+                                    ? styles.warningText
+                                    : styles.text
+                                }
+                              >
+                                {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                              </span>
+                            </Fragment>
+                          ),
+                        },
+                        { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
                       ]}
                       statusLogo={this.handleStatusPhoto(status)}
                       photo={hiddenDangerRecordDto[0].fileWebUrl}
                     />
                   </Col>
-                ))}
+                )
+              )}
             </div>
           </div>
-        )}
+        }
       />
-    )
+    );
   }
 }

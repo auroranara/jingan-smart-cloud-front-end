@@ -275,6 +275,7 @@ export default class App extends PureComponent {
       checkList,
       pointRecordList,
     } = this.props.newUnitFireControl;
+
     const {
       videoVisible,
       showVideoList,
@@ -284,7 +285,6 @@ export default class App extends PureComponent {
       pointInspectionDrawerVisible,
       pointInspectionDrawerSelectedDate,
       riskDrawerVisible,
-      checkDrawerVisible,
       pointDrawerVisible,
       currentDrawerVisible,
       dangerDetailVisible,
@@ -397,10 +397,10 @@ export default class App extends PureComponent {
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
-          <PointPositionName
+          {/* <PointPositionName
             visible={pointDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
+          /> */}
         </div>
         <WorkOrderDrawer
           visible={workOrderDrawerVisible}
