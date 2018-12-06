@@ -51,12 +51,16 @@ import {
   getPonitRecord,
   queryAlarmHandleList,
   queryWorkOrder,
+  queryCheckUsers,
 } from '../services/bigPlatform/fireControl';
 
 import {
   getHiddenDangerDetail, // 获取隐患详情
 } from '../services/hiddenDangerReport';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
+import {
+  queryMaintenanceRecordDetail,
+} from '../services/maintenanceRecord.js';
 import moment from 'moment';
 
 const getColorByRiskLevel = function (level) {
@@ -300,6 +304,12 @@ export default {
     workOrderList7: [],
     // 维保处理动态详情
     workOrderDetail: [],
+    // 维保巡查详情
+    maintenanceDetail: {},
+    maintenanceCompany: {
+      name: [],
+      result: [],
+    },
   },
 
   effects: {
@@ -505,6 +515,12 @@ export default {
     *fetchCompanyMessage({ payload, callback }, { call, put }) {
       const response = yield call(getCompanyMessage, payload);
       const companyMessage = {
+        companyMessage: {
+          companyName: '',
+          headOfSecurity: '',
+          headOfSecurityPhone: '',
+          countCheckItem: 0,
+        },
         ...response,
         // 移除坐标不存在的风险点
         point:
@@ -717,6 +733,32 @@ export default {
         });
       }
     },
+    // 维保巡查详情
+    *fetchMaintenanceDetail({ payload, success, error }, { call, put }) {
+      const response = yield call(queryMaintenanceRecordDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'maintenanceDetail',
+          payload: response.data,
+        });
+        if (success) success(response);
+      } else if (error) {
+        error();
+      }
+    },
+    // 企业负责人和维保员信息
+    *fetchMaintenanceCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(queryCheckUsers, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'maintenanceCompany',
+          payload: response.data,
+        });
+        if (success) success(response);
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -871,6 +913,18 @@ export default {
     },
     saveWorkOrderDetail(state, action) {
       return { ...state, workOrderDetail: action.payload };
+    },
+    maintenanceDetail(state, { payload }) {
+      return {
+        ...state,
+        maintenanceDetail: payload,
+      };
+    },
+    maintenanceCompany(state, { payload }) {
+      return {
+        ...state,
+        maintenanceCompany: payload,
+      };
     },
   },
 };

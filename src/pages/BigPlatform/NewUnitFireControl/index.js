@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { notification } from 'antd';
 import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import VideoSurveillance from './VideoSurveillance';
@@ -23,10 +24,38 @@ import PointPositionName from './Section/PointPositionName';
 import CheckingDrawer from './Section/CheckingDrawer';
 import PointInspectionDrawer from './PointInspectionDrawer';
 import MaintenanceDrawer from './Section/MaintenanceDrawer';
+import MaintenanceCheckDrawer from './Section/MaintenanceCheckDrawer';
+
+import iconFire from '@/assets/icon-fire-msg.png';
+import iconFault from '@/assets/icon-fault-msg.png';
 
 const DELAY = 5 * 1000;
 // const CHART_DELAY = 10 * 60 * 1000;
 
+notification.config({
+  placement: 'bottomLeft',
+  duration: null,
+  bottom: 8,
+});
+
+const msgInfo = {
+  '5': {
+    title: '火警提示',
+    icon: iconFire,
+    color: '#f83329',
+    body: '发生报警，',
+    bottom: '情况危急，请立即处理！',
+    animation: styles.redShadow,
+  },
+  '6': {
+    title: '故障提示',
+    icon: iconFault,
+    color: '#f4710f',
+    body: '发生故障，',
+    bottom: '请及时维修！',
+    animation: styles.orangeShadow,
+  },
+};
 /**
  * description: 新企业消防
  * author:
@@ -67,6 +96,7 @@ export default class App extends PureComponent {
     checkStatus: '',
     // 检查点对应名称
     checkPointName: '',
+    maintenanceCheckDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -157,6 +187,17 @@ export default class App extends PureComponent {
       payload: {
         companyId,
       },
+      success: res => {
+        this.msgSuccess(res);
+      },
+    });
+
+    // 企业负责人和维保员信息
+    dispatch({
+      type: 'newUnitFireControl/fetchMaintenanceCompany',
+      payload: {
+        companyId,
+      },
     });
 
     // 获取点位巡查列表
@@ -167,6 +208,82 @@ export default class App extends PureComponent {
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
+
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return (
+      JSON.stringify(this.props.newUnitFireControl.screenMessage) !==
+      JSON.stringify(prevProps.newUnitFireControl.screenMessage)
+    );
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const {
+      newUnitFireControl: { screenMessage },
+    } = this.props;
+    if (snapshot) {
+      this.msgSuccess({ list: [...screenMessage] });
+    }
+  }
+
+  msgSuccess = res => {
+    const first = res.list[0];
+    if (!first) return;
+    const { type, messageFlag } = first;
+    if (type === 5 || type === 6) {
+      const msgItem = msgInfo[type.toString()];
+      const style = {
+        boxShadow: `0px 0px 20px ${msgItem.color}`,
+        animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
+      };
+      notification.open({
+        className: styles.notification,
+        message: this.renderNotificationTitle(first),
+        description: this.renderNotificationMsg(first),
+        style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
+        onClick: () => {
+          console.log(messageFlag);
+        },
+      });
+    }
+  };
+
+  renderNotificationTitle = item => {
+    const { type } = item;
+    const msgItem = msgInfo[type.toString()];
+    return (
+      <div className={styles.notificationTitle} style={{ color: msgItem.color }}>
+        <span className={styles.iconFire}>
+          <img src={msgItem.icon} alt="fire" />
+        </span>
+        {msgItem.title}
+      </div>
+    );
+  };
+
+  renderNotificationMsg = item => {
+    const { type, addTime, installAddress, componentType, messageFlag } = item;
+    const msgItem = msgInfo[type.toString()];
+    return (
+      <div
+        className={styles.notificationBody}
+        onClick={() => {
+          console.log(messageFlag);
+        }}
+      >
+        <div>
+          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          <span className={styles.address}>{installAddress}</span>
+        </div>
+        <div>
+          <span className={styles.device} style={{ color: msgItem.color }}>
+            【{componentType}】
+          </span>
+          {msgItem.body}
+        </div>
+        <div>{msgItem.bottom}</div>
+      </div>
+    );
+  };
 
   componentWillUnmount() {
     clearInterval(this.pollTimer);
@@ -218,6 +335,16 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         date,
+      },
+    });
+  };
+
+  fetchMaintenanceCheck = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchMaintenanceDetail',
+      payload: {
+        id,
       },
     });
   };
@@ -445,6 +572,7 @@ export default class App extends PureComponent {
       checkStatus,
       checkPointName,
       checkItemId,
+      maintenanceCheckDrawerVisible,
     } = this.state;
     const {
       monitor: { allCamera },
@@ -481,8 +609,8 @@ export default class App extends PureComponent {
                 {/* 四色图 */}
                 <FourColor
                   model={this.props.newUnitFireControl}
-                  handleShowPointDetail={id => {
-                    this.handleDrawerVisibleChange('check', { checkId: id });
+                  handleShowPointDetail={(checkItemId, checkStatus, checkPointName) => {
+                    this.handleDrawerVisibleChange('point', { checkItemId, checkStatus, checkPointName });
                   }}
                   handleShowHiddenDanger={(id, hiddenDangerId) => {
                     this.handleViewDangerDetail({ id: hiddenDangerId });
@@ -495,13 +623,19 @@ export default class App extends PureComponent {
             <div className={styles.topItem} style={{ right: 0, zIndex: 100 }}>
               <div className={styles.inner}>
                 {/* 实时消息 */}
-                <Messages model={this.props.newUnitFireControl} />
+                <Messages
+                  model={this.props.newUnitFireControl}
+                  handleParentChange={newState => {
+                    this.setState({ ...newState });
+                  }}
+                  fetchData={this.fetchMaintenanceCheck}
+                />
               </div>
             </div>
           </div>
           <div className={styles.bottom}>
             <div className={styles.item}>
-              <div className={styles.inner}>
+              <div className={styles.inner} ref={node => (this.fireNode = node)}>
                 {/* 消防主机监测 */}
                 <FireMonitoring
                   fire={fire_state}
@@ -575,12 +709,11 @@ export default class App extends PureComponent {
             pointRecordLists={pointRecordLists}
             checkAbnormal={checkAbnormal}
             currentHiddenDanger={currentHiddenDanger}
-            handleDangerCards={this.handleDangerCards}
-            handlePointDangerDetail={this.handleViewDangerDetail}
             checkStatus={checkStatus}
             checkPointName={checkPointName}
             checkItemId={checkItemId}
             count={count}
+            handlePointDangerDetail={this.handleViewDangerDetail}
             onClose={() => {
               this.setState({
                 pointDrawerVisible: false,
@@ -609,7 +742,7 @@ export default class App extends PureComponent {
           <CurrentHiddenDanger
             visible={currentDrawerVisible}
             onClose={this.handleCloseCurrentDrawer}
-            onCardClick={this.handleViewDangerDetail}
+            onCardClick={this.handleViewDangerDetailhandleViewDangerDetail}
             {...currentHiddenDanger}
           />
           {/* 隐患详情抽屉 */}
@@ -633,6 +766,11 @@ export default class App extends PureComponent {
             onClose={() => this.handleDrawerVisibleChange('maintenance')}
           />
         </div>
+        <MaintenanceCheckDrawer
+          model={this.props.newUnitFireControl}
+          visible={maintenanceCheckDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
+        />
       </BigPlatformLayout>
     );
   }

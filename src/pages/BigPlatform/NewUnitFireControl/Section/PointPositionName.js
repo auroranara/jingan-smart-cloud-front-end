@@ -6,7 +6,7 @@ import ImageCard from '@/components/ImageCard';
 
 import styles from './PointPositionName.less';
 import DrawerContainer from '../components/DrawerContainer';
-import PointError from '../imgs/PointError.png';
+import PointError from '../imgs/pointError.png';
 import lastCheckPoint from '../imgs/lastCheckPoint.png';
 import normalCheckPoint from '../imgs/normalCheckPoint.png';
 import waitCheckPoint from '../imgs/waitCheckPoint.png';
