@@ -236,8 +236,8 @@ export async function getSystemScore(params) {
 /* 南消 */
 
 // 动态火警详情列表
-export async function queryAlarmHandleList({ companyId, gridId }) {
-  return request(`${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory?${stringify({ gridId })}`);
+export async function queryAlarmHandleList({ companyId, dataId, gridId }) {
+  return request(`${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory/${dataId}?${stringify({ gridId })}`);
 }
 
 // 维保工单或维保动态详情

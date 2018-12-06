@@ -42,6 +42,7 @@ export default class App extends PureComponent {
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
     maintenanceDrawerVisible: false,
+    alarmMessageDrawerVisible: false,
   }
 
   componentDidMount() {
@@ -92,12 +93,7 @@ export default class App extends PureComponent {
     });
 
     // 获取警情动态详情
-    dispatch({
-      type: 'newUnitFireControl/fetchAlarmHandleList',
-      payload: {
-        companyId,
-      },
-    });
+    this.handleFetchAlarmHandle();
 
     // 初始化维保工单
     [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
@@ -160,6 +156,15 @@ export default class App extends PureComponent {
     this.setState(state => type ? { [stateName]: !state[stateName], drawerType: type} : { [stateName]: !state[stateName] });
   };
 
+  handleFetchAlarmHandle = (dataId=0) => {
+    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+
+    dispatch({
+      type: 'newUnitFireControl/fetchAlarmHandle',
+      payload: { companyId, dataId },
+    });
+  }
+
   // 获取维保工单或维保动态详情
   handleFetchWorkOrder = (status, id) => {
     const { dispatch, match: { params: { unitId: companyId } } } = this.props;
@@ -171,6 +176,15 @@ export default class App extends PureComponent {
 
   handleWorkOrderLabelChange = type => {
     this.setState({ drawerType: type });
+  };
+
+  handleWorkOrderCardClick = id => {
+    this.handleDrawerVisibleChange('maintenance');
+    this.handleFetchWorkOrder(undefined, id);
+  };
+
+  handleClickMeassge = dataId => {
+    this.fetchAlarmHandle(dataId);
   };
 
   render() {
@@ -185,11 +199,12 @@ export default class App extends PureComponent {
         feedback_state = 0,
       },
       systemScore,
-      alarmHandleList=[],
+      alarmHandleMessage,
+      alarmHandleList,
       workOrderList1,
       workOrderList2,
       workOrderList7,
-      workOrderDetail,
+      workOrderDetail, // 只有一个元素的数组
     } = this.props.newUnitFireControl;
     const {
       videoVisible,
@@ -199,6 +214,7 @@ export default class App extends PureComponent {
       workOrderDrawerVisible,
       alarmDynamicDrawerVisible,
       maintenanceDrawerVisible,
+      alarmMessageDrawerVisible,
     } = this.state
     const {
       monitor: { allCamera },
@@ -238,6 +254,7 @@ export default class App extends PureComponent {
                     linkage={start_state}
                     supervise={supervise_state}
                     feedback={feedback_state}
+                    handleShowDrawer={e => this.handleDrawerVisibleChange('alarmDynamic')}
                   />
                 </div>
               </div>
@@ -277,20 +294,26 @@ export default class App extends PureComponent {
               handleVideoClose={this.handleVideoClose}
             />
           </div>
-          <WorkOrderDrawer
-            data={{ workOrderList1, workOrderList2, workOrderList7 }}
-            type={drawerType}
-            visible={workOrderDrawerVisible}
-            handleLabelChange={this.handleWorkOrderLabelChange}
-            onClose={() => this.handleDrawerVisibleChange('workOrder')}
-            handleCardClick={e => this.handleDrawerVisibleChange('maintenance')}
+          <AlarmDynamicDrawer
+            data={alarmHandleMessage}
+            visible={alarmMessageDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('alarmMessage')}
           />
           <AlarmDynamicDrawer
             data={alarmHandleList}
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
+          <WorkOrderDrawer
+            data={{ workOrderList1, workOrderList2, workOrderList7 }}
+            type={drawerType}
+            visible={workOrderDrawerVisible}
+            handleLabelChange={this.handleWorkOrderLabelChange}
+            onClose={() => this.handleDrawerVisibleChange('workOrder')}
+            handleCardClick={this.handleWorkOrderCardClick}
+          />
           <MaintenanceDrawer
+            type={drawerType}
             data={workOrderDetail}
             visible={maintenanceDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('maintenance')}

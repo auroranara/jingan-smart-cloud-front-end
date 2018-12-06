@@ -1,17 +1,20 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
+import { Icon } from 'antd';
 
 import styles from './WorkOrderDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import handleIcon from '../imgs/handle.png';
+import overIcon from '../imgs/over.png';
 import handlingIcon from '../imgs/handling.png';
 import handledIcon from '../imgs/handled.png';
 
+const DAY_MS = 24 * 3600 * 1000;
 const NO_DATA = '暂无信息';
 const STATUS = ['已超期', '待处理', '已完成'];
 const STATUS_N = [7, 2, 1];
 const STATUS_MAP = { 7: '已超期', 2: '待处理', 1: '已完成' };
-const ICONS_MAP = { 7: handleIcon, 2: handlingIcon, 1: handledIcon };
+const ICONS_MAP = { 7: overIcon, '2.0': handlingIcon, '2.2': handleIcon, 1: handledIcon };
 const TYPES = ['一键报修', '主机报障'];
 const ITEMS = [
   ['systemTypeValue', 'device_name', 'device_address', 'report_desc', 'unit_name' ], // 一键报修  report_type = 2
@@ -28,6 +31,7 @@ const ITEM_MAP = {
   'assign': '指派人员',
 };
 const STYLES = ['zero', 'one', 'two'];
+const ARROW_STYLE = { color: '#0FF',position: 'absolute', top: 20, right: 20 };
 
 // const CARDS = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -43,8 +47,9 @@ function OrderCard(props) {
   const { type, data, ...restProps } = props;
 
   const {
+    status=0,
     report_type,
-    create_time,
+    create_date,
     save_time,
     plan_finish_date,
     component_no,
@@ -53,20 +58,23 @@ function OrderCard(props) {
     createByName,
     createByPhone,
   } = data;
-  const isOneKey = report_type === '2';
+  const isOneKey = report_type === '2'; // 是否为一键报修
 
   data.assign = `${createByName} ${createByPhone}`;
   data.number = `${component_region}回路${component_no}号 ${label}`;
 
+  const days = Math.floor((Date.now() - plan_finish_date) / DAY_MS);
+
   return (
     <div className={styles.outer}>
       <div className={styles.card} {...restProps}>
+        <Icon type="right" style={ARROW_STYLE} />
         <div className={styles.status}>
-          <div style={{ backgroundImage: `url(${ICONS_MAP[type]})` }} className={styles.stamp}></div>
-          <p className={styles.day}>已超期3天</p>
+          <div style={{ backgroundImage: `url(${ICONS_MAP[type === 2 ? `${type}.${status}` : type]})` }} className={styles.stamp}></div>
+          {type === 7 && <p className={styles.day}>已超期<span className={styles.days}>{days}</span>天</p>}
         </div>
         <p className={styles.time}>
-          {moment(isOneKey ? create_time : save_time).format('YYYY-MM-DD HH:MM:SS')}
+          {moment(isOneKey ? create_date : save_time).format('YYYY-MM-DD HH:MM:SS')}
           <span className={styles.info}>{TYPES[isOneKey ? 0 : 1]}</span>
         </p>
         {ITEMS[isOneKey ? 0 : 1].map(item => (
@@ -105,7 +113,7 @@ export default class WorkOrderDrawer extends PureComponent {
           )}
         </div>
         <div className={styles.cards}>
-          {list.map(item => <OrderCard key={item.id} type={type} data={item} onClick={e => handleCardClick(e)} />)}
+          {list.map(item => <OrderCard key={item.id} type={type} data={item} onClick={e => handleCardClick(item.id)} />)}
         </div>
       </div>
     );

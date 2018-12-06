@@ -1,4 +1,5 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
+import moment from 'moment';
 import { Timeline  } from 'antd';
 
 import styles from './MaintenanceDrawer.less';
@@ -20,13 +21,17 @@ function Occured(props) {
 }
 
 function Assigned(props) {
-  const { man, phone, desc, company, imgs } = props;
+  const { man, phone, desc, systemType, deviceName, position, company, imgs } = props;
 
   return (
     <div className={styles.card}>
-      <p>{desc}</p>
+      {desc && <p>{desc}</p>}
+      {systemType && <p>系统类型：{systemType}</p>}
+      {deviceName && <p>设备名称：{deviceName}</p>}
+      {position && <p>详细位置：{position}</p>}
       <p>指派人员：{man} {phone}</p>
       <p>维修单位：{company}</p>
+      {imgs && !!imgs.length && <ImgSlider picture={imgs} />}
     </div>
   );
 }
@@ -38,8 +43,8 @@ function Received(props) {
     <div className={styles.card}>
       <p>维保公司受理该维保工单</p>
       <p>维修人员：{man} {phone}</p>
-      <p>问题描述：{desc}</p>
-      <ImgSlider />
+      {/* {desc && <p>问题描述：{desc}</p>}
+      {imgs && !!imgs.length && <ImgSlider picture={imgs} />} */}
     </div>
   );
 }
@@ -52,14 +57,61 @@ function Handled(props) {
       <p>维保公司已处理完毕</p>
       <p>维修人员：{man} {phone}</p>
       <p>结果反馈：{feedback}</p>
+      {imgs && !!imgs.length && <ImgSlider picture={imgs} />}
     </div>
   );
 }
 
+// type 0 -> 日期 1 -> 时间
+function getTime(time, type=0) {
+  if (!time)
+    return;
+
+  const m = moment(time);
+  return type ? m.format('HH:MM:SS') : m.format('YYYY-MM-DD');
+}
+
+
 const SPANS = [5, 19];
+const NO_DATA = '暂无信息';
 
 export default class AlarmDynamicDrawer extends PureComponent {
   render() {
+    // type 1 已完成(处理完毕)   2 待处理(看status)   7 已超期(看status)
+    let { type, data: list, ...restProps } = this.props;
+    list = list.length ? list : [{}];
+    // status "2" -> 指派维保   "0" -> 受理中
+    const {
+      status, // '2' -> 待处理  '0' -> 处理中
+      reportPhotos,
+      sitePhotos,
+      // 一键报修
+      report_type, // '2' 一键报修
+      systemTypeValue,
+      device_name,
+      device_address,
+      report_desc,
+      // 主机报障
+      label,
+      install_address,
+      // 相同部分
+      safetyPerson,
+      safetyPhone,
+      createByName,
+      createByPhone,
+      executor_name,
+      phone,
+      unit_name,
+      disaster_desc,
+      //时间
+      save_time,
+      create_date,
+      start_date,
+      update_date,
+    } = list[0];
+
+    const isOneKey = report_type === '2'; // 是否为一键报修
+
     const left = (
       <div className={styles.container}>
         <div className={styles.head}>
@@ -67,36 +119,71 @@ export default class AlarmDynamicDrawer extends PureComponent {
         </div>
         <div className={styles.timeline}>
           <Timeline>
-            <TimelineItem spans={SPANS} label="故障发生" day="2019-1-1" hour="10:12:38">
-              <Occured
-                position="五号楼五层消防展示厅东侧"
-                type="点型烟感探测器报警"
-                safety="张三"
-                phone="13212341234"
-              />
+            {/* 主机故障时才会显示这个，一键报修时不显示 */}
+            {!isOneKey && (
+              <TimelineItem
+                spans={SPANS}
+                label="故障发生"
+                day={getTime(save_time)}
+                hour={getTime(save_time, 1)}
+              >
+                {!!list.length && (
+                  <Occured
+                    position={install_address || NO_DATA}
+                    type={label || NO_DATA}
+                    safety={safetyPerson || NO_DATA}
+                    phone={safetyPhone || NO_DATA}
+                  />
+                )}
+              </TimelineItem>
+            )}
+            <TimelineItem
+              spans={SPANS}
+              label={isOneKey ? '故障报修' : '指派维保'}
+              day={getTime(create_date)}
+              hour={getTime(create_date, 1)}
+            >
+              {!!list.length && (type === 1 || status === '2' || status === '0') && (
+                <Assigned
+                  man={createByName || NO_DATA}
+                  phone={createByPhone || NO_DATA}
+                  desc={isOneKey ? (report_desc || NO_DATA) : null}
+                  company={unit_name || NO_DATA}
+                  imgs={reportPhotos}
+                  // 一键报修时，比主机故障多显示以下信息
+                  systemType={systemTypeValue}
+                  deviceName={device_name}
+                  position={device_address}
+                />
+              )}
             </TimelineItem>
-            <TimelineItem spans={SPANS} label="指派维保" day="2019-1-1" hour="10:25:38">
-              <Assigned
-                man="张三"
-                phone="13212341234"
-                desc="维修难道较大，指派维保"
-                company="南京消防维保有限公司"
-              />
+            <TimelineItem
+              spans={SPANS}
+              label="受理中"
+              day={getTime(start_date)}
+              hour={getTime(start_date, 1)}
+            >
+              {!!list.length && (type === 1 || status === '0') && (
+                <Received
+                  man={executor_name || NO_DATA}
+                  phone={phone || NO_DATA}
+                />
+              )}
             </TimelineItem>
-            <TimelineItem spans={SPANS} label="受理中">
-              <Received
-                man="李四"
-                phone="13212341234"
-                desc="维修难道较大，指派维保"
-              />
-            </TimelineItem>
-            <TimelineItem spans={SPANS} label="处理完毕">
-              <Handled
-                time="2018-11-29 10:00:00"
-                reporter="王五"
-                phone="13212341234"
-                feedback="现场已处理完毕"
-              />
+            <TimelineItem
+              spans={SPANS}
+              label="处理完毕"
+              day={getTime(update_date)}
+              hour={getTime(update_date, 1)}
+            >
+              {!!list.length && type === 1 && (
+                <Handled
+                  man={executor_name || NO_DATA}
+                  phone={phone || NO_DATA}
+                  feedback={disaster_desc || NO_DATA}
+                  imgs={sitePhotos}
+                />
+              )}
             </TimelineItem>
           </Timeline>
         </div>
@@ -108,7 +195,7 @@ export default class AlarmDynamicDrawer extends PureComponent {
         title="维保处理动态"
         width={535}
         left={left}
-        {...this.props}
+        {...restProps}
       />
     );
   }

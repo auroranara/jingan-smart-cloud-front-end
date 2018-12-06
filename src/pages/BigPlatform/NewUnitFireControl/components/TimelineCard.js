@@ -38,7 +38,7 @@ function Handled(props) {
       <p>火警处理完毕</p>
       <p>上报人：{reporter} {phone}</p>
       <p>结果反馈：{feedback}</p>
-      {picture && picture.length && <ImgSlider picture={picture} />}
+      {picture && !!picture.length && <ImgSlider picture={picture} />}
     </div>
   );
 }
@@ -56,11 +56,11 @@ const SPANS = [4, 20];
 const NO_DATA = '暂无信息';
 
 export default function TimelineCard(props) {
-  const { startMap, handleMap, finshMap: finishMap } = props;
+  const { startMap, handleMap, finshMap: finishMap, ...restProps } = props;
   const [isStarted, isHandling, isFinished] = [startMap, handleMap, finishMap].map(m => m ? !!Object.keys(m).length : false);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} {...restProps}>
       <div className={styles.head}>
         <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
       </div>
@@ -69,8 +69,8 @@ export default function TimelineCard(props) {
           <TimelineItem
             label="报警"
             spans={SPANS}
-            day={getTime(isStarted && startMap.createTime)}
-            hour={getTime(isStarted && startMap.createTime, 1)}
+            day={getTime(isStarted && startMap.startTime)}
+            hour={getTime(isStarted && startMap.startTime, 1)}
           >
             {isStarted && (
               <Alarmed

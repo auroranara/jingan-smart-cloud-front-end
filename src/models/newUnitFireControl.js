@@ -195,6 +195,8 @@ export default {
     },
     // 消防设施评分
     systemScore: {},
+    // 火警消息
+    alarmHandleMessage: {},
     // 火警动态
     alarmHandleList: [],
     // 已完成维保工单
@@ -204,7 +206,7 @@ export default {
     // 已超期维保工单
     workOrderList7: [],
     // 维保处理动态详情
-    workOrderDetail: {},
+    workOrderDetail: [],
   },
 
   effects: {
@@ -490,12 +492,12 @@ export default {
         });
       }
     },
-    // 火警动态列表
-    *fetchAlarmHandleList({ payload }, { call, put }) {
+    // 火警动态列表或火警消息
+    *fetchAlarmHandle({ payload }, { call, put }) {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
-          type: 'saveAlarmHandleList',
+          type: `saveAlarmHandle${payload.dataId ? 'Message' : 'List'}`,
           payload: response.data ? response.data.list : [],
         });
       }
@@ -506,7 +508,7 @@ export default {
       if (response && response.code === 200) {
         yield put({
           type: payload.id ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
-          payload: response.data || {},
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
     },
@@ -560,17 +562,20 @@ export default {
         systemScore: payload || {},
       };
     },
+    saveAlarmHandleMessage(state, action) {
+      return { ...state, alarmHandleMessage: action.payload || [] };
+    },
     saveAlarmHandleList(state, action) {
       return { ...state, alarmHandleList: action.payload || [] };
     },
     saveWorkOrderList1(state, action) {
-      return { ...state, workOrderList1: action.payload && Array.isArray(action.payload.list) ? action.payload.list : [] };
+      return { ...state, workOrderList1: action.payload };
     },
     saveWorkOrderList2(state, action) {
-      return { ...state, workOrderList2: action.payload && Array.isArray(action.payload.list) ? action.payload.list : [] };
+      return { ...state, workOrderList2: action.payload };
     },
     saveWorkOrderList7(state, action) {
-      return { ...state, workOrderList7: action.payload && Array.isArray(action.payload.list) ? action.payload.list : [] };
+      return { ...state, workOrderList7: action.payload };
     },
     saveWorkOrderDetail(state, action) {
       return { ...state, workOrderDetail: action.payload };
