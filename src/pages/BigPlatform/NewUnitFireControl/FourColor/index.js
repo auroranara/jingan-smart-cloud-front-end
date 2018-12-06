@@ -58,7 +58,7 @@ export default class App extends PureComponent {
         companyMessage: { fourColorImg: [{ id, webUrl }={}]=[] },
         pointList=[],
         // 视频列表
-        videoList,
+        videoList=[],
       },
       tips=[],
       // 显示点位信息
