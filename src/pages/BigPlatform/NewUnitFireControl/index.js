@@ -57,6 +57,8 @@ export default class App extends PureComponent {
     pointInspectionDrawerSelectedDate: moment().format('YYYY-MM-DD'),
     // 四色图贴士
     fourColorTips: [],
+    // 四色图贴士对应的id
+    fourColorTipsIds: {},
   };
 
   componentDidMount() {
@@ -221,12 +223,13 @@ export default class App extends PureComponent {
       payload: {
         companyId,
       },
-      success: ({ list: [{ itemId, type } = {}] }) => {
-        const { fourColorTips } = this.state;
+      success: ({ list: [{ itemId, messageFlag, type } = {}] }) => {
+        const { fourColorTips, fourColorTipsIds } = this.state;
         // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
         if (type === 14 && fourColorTips.indexOf(itemId) === -1) {
           this.setState({
             fourColorTips: fourColorTips.concat(itemId),
+            fourColorTipsIds: {...fourColorTipsIds, [itemId]: messageFlag},
           });
         }
       },
@@ -391,6 +394,7 @@ export default class App extends PureComponent {
       maintenanceDrawerVisible,
       alarmMessageDrawerVisible,
       fourColorTips,
+      fourColorTipsIds,
     } = this.state;
     const {
       monitor: { allCamera },
@@ -434,6 +438,7 @@ export default class App extends PureComponent {
                     this.handleViewDangerDetail({ id });
                   }}
                   tips={fourColorTips}
+                  ids={fourColorTipsIds}
                 />
               </div>
             </div>
