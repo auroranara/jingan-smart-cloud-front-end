@@ -18,9 +18,9 @@ export default class PointInspectionDrawer extends PureComponent {
     showChecked: true,
   }
 
-  componentDidUpdate({ date: prevDate }) {
-    const { date } = this.props;
-    if (date !== prevDate) {
+  componentDidUpdate({ date: prevDate, visible: prevVisible }) {
+    const { date, visible } = this.props;
+    if (date !== prevDate || visible !== prevVisible) {
       this.setState({ showChecked: true });
     }
   }
@@ -95,7 +95,7 @@ export default class PointInspectionDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="待完成工单"
+        title="点位巡查详情"
         width={536}
         left={(
           <div className={styles.container}>
