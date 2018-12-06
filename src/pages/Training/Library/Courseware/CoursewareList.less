@@ -26,10 +26,22 @@
         .icon {
           cursor: pointer;
         }
+        .disabledIcon {
+          cursor: not-allowed;
+        }
       }
     }
     .tags {
       margin-top: @mb;
+      &>* {
+        font-size: 13px;
+      }
+      .tag {
+        cursor: pointer;
+      }
+      .disabledTag {
+        cursor: not-allowed;
+      }
     }
     .introduction {
       margin-top: @mb;
@@ -48,5 +60,38 @@
   }
   .grey {
     color: rgba(0, 0, 0, .45);
+  }
+}
+
+.courseViewContainer {
+  :global {
+    .video-react .video-react-big-play-button {
+      top: calc(50% - 0.75em);
+      left: calc(50% - 1.5em);
+    }
+  }
+  .titleContainer {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 500;
+    word-break: break-all;
+    margin-bottom: 0.4em;
+    color: rgba(0, 0, 0, .85);
+  }
+  .statistics {
+    text-align: right;
+    color: rgba(0, 0, 0, .65);
+    margin-bottom: 0.4em;
+  }
+  .detail {
+    margin-top: 0.4em;
+    font-size: 15px;
+    span {
+      font-weight: 600;
+    }
+    .content {
+      word-break: break-all;
+      text-indent: 2em;
+    }
   }
 }

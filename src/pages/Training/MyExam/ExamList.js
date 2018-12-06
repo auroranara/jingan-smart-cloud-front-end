@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Card, Input, List } from 'antd';
+import { Card, Input, List, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
@@ -23,24 +23,19 @@ const documentElem = document.documentElement;
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
 const TIME_FORMAT = 'YYYY-MM-DD HH:MM';
-const STATUS_MAP = {
-  1: '即将开考',
-  2: '开始考试',
-  3: '考试已结束',
-}
 
-const LIST = [...Array(10).keys()].map(i => ({
-  id: i,
-  paperId: i,
-  status: Math.floor(Math.random() * 3) + 1,
-  statusName: '即将开考',
-  name: `试卷${i}`,
-  examStartTime: 10,
-  examEndTime: 60,
-  examLimit: 90,
-  passStatus: 1,
-  percentOfPass: 50,
-}));
+// const LIST = [...Array(10).keys()].map(i => ({
+//   id: i,
+//   paperId: i,
+//   status: Math.floor(Math.random() * 3) + 1,
+//   statusName: '即将开考',
+//   name: `试卷${i}`,
+//   examStartTime: 10,
+//   examEndTime: 60,
+//   examLimit: 90,
+//   passStatus: 1,
+//   percentOfPass: 50,
+// }));
 
 @connect(({ myExam, loading }) => ({ myExam, loading: loading.effects['myExam/fetchExamList'] }))
 export default class ExamList extends PureComponent {
@@ -185,9 +180,15 @@ export default class ExamList extends PureComponent {
             let action;
 
             switch(parsedStatus) {
+              case 1:
+                action = <span onClick={e => message.warn('考试还未开始！')}>{statusName}</span>;
+                break;
               case 2:
               case 3:
                 action = <Link to={`/training/my-exam/examing/${id}`}>{statusName}</Link>;
+                break;
+              case 4:
+                action = <span onClick={e => message.warn('考试期限内，已交卷，无法查看！')}>{statusName}</span>;
                 break;
               case 5:
                 action = <Link to={`/training/my-exam/result/${id}`}>{statusName}</Link>;

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
-import { List, Card, Button, Row, Icon, Form, Input, Select, Col, Divider, Popconfirm, Tag, Spin } from 'antd';
+import { List, Card, Button, Row, Icon, Form, Input, Select, Col, Divider, Popconfirm, Tag, Spin, message } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 import styles from './QuestionsList.less';
 
 const Option = Select.Option
@@ -9,10 +11,18 @@ const FormItem = Form.Item
 const ListItem = List.Item
 const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+const {
+  training: {
+    library: { add: addCode, edit: editCode, delete: deleteCode },
+  },
+} = codes
+
 // 筛选栏grid配置
 const colWrapper = {
   xl: 8, md: 12, sm: 24, xs: 24,
 }
+
+const defaultPageSize = 10;
 
 const formWrapper = {
   wrapperCol: {
@@ -39,30 +49,36 @@ const levels = [
   resourceManagement,
   user,
   initLoading: loading.effects['resourceManagement/fetchQuestions'],
-  loading: loading.effects['resourceManagement/appendQuestions'],
+  moreLoading: loading.effects['resourceManagement/appendQuestions'],
 }))
 export default class QuestionsList extends PureComponent {
 
   componentDidMount() {
     const {
       dispatch,
-      unitType,
+      notCompany,
       companyId,
+      knowledgeId,
     } = this.props
     // 获取试题列表
     dispatch({
       type: 'resourceManagement/fetchQuestions',
       payload: {
         pageNum: 1,
-        pageSize: 5,
-        companyId: unitType === 2 ? companyId : null,
+        pageSize: defaultPageSize,
+        companyId: notCompany ? companyId : null,
+        knowledgeId,
       },
     })
   }
 
   // 点击新增
   handleAddQuestions = () => {
-    router.push('/training/library/questions/add')
+    const { knowledgeId } = this.props
+    router.push({
+      pathname: '/training/library/questions/add',
+      query: { knowledgeId },
+    })
   }
 
   // 点击查询按钮
@@ -70,7 +86,7 @@ export default class QuestionsList extends PureComponent {
     const {
       dispatch,
       knowledgeId,
-      unitType,
+      notCompany,
       companyId,
       form: { getFieldsValue },
       resourceManagement: {
@@ -86,7 +102,7 @@ export default class QuestionsList extends PureComponent {
         pageNum: 1,
         pageSize,
         knowledgeId,
-        companyId: unitType === 2 ? companyId : null,
+        companyId: notCompany ? companyId : null,
         ...values,
       },
     })
@@ -97,7 +113,7 @@ export default class QuestionsList extends PureComponent {
     const {
       dispatch,
       knowledgeId,
-      unitType,
+      notCompany,
       companyId,
       form: { getFieldsValue },
       resourceManagement: {
@@ -113,8 +129,30 @@ export default class QuestionsList extends PureComponent {
         pageNum: pageNum + 1,
         pageSize,
         knowledgeId,
-        companyId: unitType === 2 ? companyId : null,
+        companyId: notCompany ? companyId : null,
         ...values,
+      },
+    })
+  }
+
+  // 删除试题
+  handleDeleteQuestion = (id, delDisabled) => {
+    if (delDisabled) {
+      message.error('您没有权限')
+      return
+    }
+    const {
+      dispatch,
+    } = this.props
+    dispatch({
+      type: 'resourceManagement/deleteQuestion',
+      payload: { id },
+      success: () => {
+        message.success('删除成功')
+        this.handleQuery()
+      },
+      error: () => {
+        message.error('删除失败')
       },
     })
   }
@@ -123,7 +161,7 @@ export default class QuestionsList extends PureComponent {
   handleReset = () => {
     const {
       dispatch,
-      unitType,
+      notCompany,
       companyId,
       knowledgeId,
       form: { resetFields },
@@ -134,9 +172,9 @@ export default class QuestionsList extends PureComponent {
       type: 'resourceManagement/fetchQuestions',
       payload: {
         pageNum: 1,
-        pageSize: 5,
+        pageSize: defaultPageSize,
         knowledgeId,
-        companyId: unitType === 2 ? companyId : null,
+        companyId: notCompany ? companyId : null,
       },
     })
   }
@@ -154,8 +192,12 @@ export default class QuestionsList extends PureComponent {
   // 渲染筛选
   renderFilter = () => {
     const {
+      companyId,
+      notCompany,
       form: { getFieldDecorator },
+      user: { currentUser: { permissionCodes } },
     } = this.props
+
     return (
       <Form>
         <Col {...colWrapper}>
@@ -202,7 +244,7 @@ export default class QuestionsList extends PureComponent {
           <FormItem>
             <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
             <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-            <Button onClick={this.handleAddQuestions} type="primary">新增</Button>
+            <Button disabled={!hasAuthority(addCode, permissionCodes) || notCompany} onClick={this.handleAddQuestions} type="primary">新增</Button>
           </FormItem>
         </Col>
       </Form>
@@ -212,14 +254,18 @@ export default class QuestionsList extends PureComponent {
   render() {
     const {
       initLoading,
-      loading,
+      moreLoading,
+      notCompany,
       resourceManagement: {
         questions: {
           list,
           isLast,
         },
       },
+      user: { currentUser: { permissionCodes } },
     } = this.props
+    const editDisabled = !hasAuthority(editCode, permissionCodes) || notCompany
+    const delDisabled = !hasAuthority(deleteCode, permissionCodes) || notCompany
     return (
       <div className={styles.questionsList}>
         <Row>
@@ -227,10 +273,10 @@ export default class QuestionsList extends PureComponent {
         </Row>
         <List
           loading={initLoading}
-          loadMore={(
+          loadMore={!isLast && !initLoading && (
             <div style={{ textAlign: 'center', marginTop: 12, height: 32, lineHeight: '32px' }}>
-              {!isLast && !initLoading && !loading ? (<Button onClick={this.handleLoadMore}>加载更多</Button>) : (
-                (list && list.length > 0 && loading && <Spin spinning={loading} />)
+              {!moreLoading ? (<Button onClick={this.handleLoadMore}>加载更多</Button>) : (
+                (<Spin spinning={moreLoading} />)
               )}
             </div>
           )}
@@ -248,10 +294,10 @@ export default class QuestionsList extends PureComponent {
                       {item.levelName && <Tag color={colors[item.level - 1]}>{item.levelName}</Tag>}
                     </div>
                     <div className={styles.rightIcon}>
-                      <Icon className={styles.icon} type="edit" onClick={() => { router.push(`/training/library/questions/edit/${item.id}`) }} />
+                      <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => { router.push(`/training/library/questions/edit/${item.id}`) } : null} />
                       <Divider type="vertical" />
-                      <Popconfirm title="确认删除该试题吗？" onConfirm={() => { console.log('delete') }}>
-                        <Icon className={styles.icon} type="close" />
+                      <Popconfirm title="确认删除该试题吗？" onConfirm={() => this.handleDeleteQuestion(item.id, delDisabled)}>
+                        <Icon className={delDisabled ? styles.disabledIcon : styles.icon} type="close" />
                       </Popconfirm>
                     </div>
                   </div>

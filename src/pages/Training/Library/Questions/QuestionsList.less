@@ -1,6 +1,14 @@
 .questionsList {
   @mb: 0.8em;
   margin-top: 0;
+  :global {
+    .ant-card-body {
+      padding: 1.5em 1.5em 0.7em 1.5em;
+    }
+    .ant-form-item {
+      margin-bottom: @mb;
+    }
+  }
   .listFilter {
     margin-bottom: 20px;
   }
@@ -37,20 +45,15 @@
         .icon {
           cursor: pointer;
         }
+        .disabledIcon {
+          cursor: not-allowed;
+        }
       }
     }
     &:hover {
       .firstLine .rightIcon {
         visibility: visible;
       }
-    }
-  }
-  :global {
-    .ant-card-body {
-      padding: 1.5em 1.5em 0.7em 1.5em;
-    }
-    .ant-form-item {
-      margin-bottom: @mb;
     }
   }
 }

@@ -5,13 +5,14 @@ import 'video-react/dist/video-react.css';
 const offices = ['pptx', 'docx', 'xlsx', 'ppt', 'doc', 'xls'];
 export default class Resource extends PureComponent {
   renderOffice = () => {
-    const { src, extension, key, styles } = this.props;
+    const { src, extension, key, visible, styles } = this.props;
     return (
       <iframe
         title="office"
+        visible={visible}
         src={`https://view.officeapps.live.com/op/embed.aspx?src=${src}`}
-        frameborder="0"
-        style={styles}
+        frameBorder="0"
+        {...styles}
       >
         这是嵌入{' '}
         <a target="_blank" href="https://office.com">
@@ -28,12 +29,12 @@ export default class Resource extends PureComponent {
 
   renderPdf = () => {
     const { src, key, styles } = this.props;
-    return <embed src={src} style={styles} type="application/pdf" />;
+    return <embed src={src} {...styles} type="application/pdf" />;
   };
 
   renderVideo = () => {
-    const { src, poster, key, styles } = this.props;
-    return <Player playsInline poster={poster} src={src} style={styles} />;
+    const { src, poster, key, fluid, styles } = this.props;
+    return <Player fluid={fluid} playsInline poster={poster} src={src} {...styles} />;
   };
 
   render() {
