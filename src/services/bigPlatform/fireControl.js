@@ -289,11 +289,16 @@ export async function getPonitRecord(params) {
 /* 南消 */
 
 // 动态火警详情列表
-export async function queryAlarmHandleList({ companyId, dataId, gridId }) {
-  return request(`${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory/${dataId}?${stringify({ gridId })}`);
+export async function queryAlarmHandleList({ companyId, dataId, ...rest }) {
+  return request(`${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory/${dataId}?${stringify(rest)}`);
 }
 
 // 维保工单或维保动态详情
 export async function queryWorkOrder(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/getFaultForMaintenance?${stringify(params)}`);
+}
+
+// 故障列表
+export async function queryFault(params) {
+  return request(`${URL_PREFIX}/fireData/systemFaultMessage.json?${stringify(params)}`)
 }
