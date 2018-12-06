@@ -55,7 +55,7 @@ import {
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import moment from 'moment';
 
-const getColorByRiskLevel = function(level) {
+const getColorByRiskLevel = function (level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -69,6 +69,52 @@ const getColorByRiskLevel = function(level) {
       return '';
   }
 };
+/* 完善步骤条数组 */
+const formatTimeLine = function (timeLine) {
+  const list = timeLine.map((item, index) => {
+    let type = +item.type;
+    if (type === 1) {
+      type = '隐患创建';
+    }
+    else if (type === 2) {
+      // 如果index大于1，意味着必然为重新整改
+      if (index > 1) {
+        type = '重新整改';
+      }
+      else {
+        type = '隐患整改';
+      }
+    }
+    else if (type === 3) {
+      type = '隐患复查';
+    }
+    else if (type === 4) {
+      type = '隐患关闭';
+    }
+    return {
+      ...item,
+      type,
+      id: index,
+    };
+  });
+  const lastIndex = timeLine.length - 1;
+  const { type } = timeLine[lastIndex];
+  switch (+type) {
+    case 1:
+      list.push({ type: '隐患整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
+      break;
+    case 2:
+      list.push({ type: '隐患复查', id: lastIndex + 1 });
+      break;
+    case 3:
+      list.push({ type: '重新整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
+      break;
+    default:
+      break;
+  }
+  return list;
+};
+
 const transformHiddenDangerFields = ({
   id,
   item_id,
@@ -216,11 +262,7 @@ export default {
       overRectifyNum: 0, // 已超期
       totalNum: 0, // 总数
       list: [], // 隐患列表
-      detail: {
-        hiddenDanger: {},
-        hiddenDangerRecord: [],
-        timeLine: [],
-      }, // 隐患详情
+      timestampList: [], // 隐患详情
     },
     // 点位巡查统计
     pointInspectionCount: [],
@@ -457,8 +499,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-                ({ id, webUrl }) => /^http/.test(webUrl) && id
-              )
+              ({ id, webUrl }) => /^http/.test(webUrl) && id
+            )
             : [],
       };
 
@@ -574,13 +616,14 @@ export default {
       }
     },
     // 获取隐患详情
-    *fetchHiddenDangerDetail({ payload }, { call, put }) {
+    *fetchHiddenDangerDetail({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerDetail, payload);
-      if (response && response.hiddenDangers) {
+      if (response && response.code === 200) {
         yield put({
           type: 'saveHiddenDangerDetail',
           payload: response.data,
         });
+        if (callback) callback()
       }
     },
     // 南消：点位巡查统计
@@ -720,14 +763,33 @@ export default {
         },
       };
     },
-    saveHiddenDangerDetail(state, { payload }) {
+    // 保存当前隐患先详情
+    saveHiddenDangerDetail(state, { payload: {
+      hiddenDanger = {},
+      hiddenDangerRecord = [],
+      timeLine,
+    } }) {
+      const timestampList = formatTimeLine(timeLine).map((item, i) => {
+        if (i === 0) {
+          return {
+            timeLine: item,
+            ...hiddenDanger,
+          }
+        } else {
+          if (hiddenDangerRecord.length < i) return {
+            timeLine: item,
+          }
+          return {
+            timeLine: item,
+            ...hiddenDangerRecord[i - 1],
+          }
+        }
+      })
       return {
         ...state,
         currentHiddenDanger: {
           ...state.currentHiddenDanger,
-          detail: {
-            ...payload,
-          },
+          timestampList,
         },
       };
     },
