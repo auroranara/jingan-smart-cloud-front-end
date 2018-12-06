@@ -126,7 +126,7 @@ const smokeColumns = [
       <span>
         {+val.status === 0
           ? val.statusTime
-            ? moment(val.statusTime).format('YYYY-MM-DD hh:mm:ss')
+            ? moment(val.statusTime).format('YYYY-MM-DD HH:mm:ss')
             : '暂无数据'
           : text
             ? moment(text).format('YYYY-MM-DD hh:mm:ss')
@@ -292,20 +292,17 @@ export default class TopCenter extends PureComponent {
           pagination={false}
           loading={smokeListLoding}
         />
-        {smokeListByPage &&
-          smokeListByPage > 0 && (
-            <div className={styles.footer}>
-              <div>
-                <span className={styles.pagesText}>
-                  每页
-                  {pageSize}
-                  行，共计
-                  {page}页
-                </span>
-              </div>
-              <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
-            </div>
-          )}
+        <div className={styles.footer}>
+          <div>
+            <span className={styles.pagesText}>
+              每页
+              {pageSize}
+              行，共计
+              {page}页
+            </span>
+          </div>
+          <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
+        </div>
       </Modal>
     );
   };
