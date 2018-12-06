@@ -8,10 +8,10 @@ import DrawerContainer from '../components/DrawerContainer';
 import CheckLabel from '../components/CheckLabel';
 
 // 检查点状态
-const normal = 1; // 正常
-const abnormal = 2; // 异常
-const rectify = 3; // 待检查
-const overTime = 4; // 超时检查
+const normal = 2; // 正常
+const abnormal = 1; // 异常
+const rectify = 4; // 待检查
+const overTime = 3; // 超时检查
 
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
@@ -85,7 +85,7 @@ export default class CheckingDrawer extends PureComponent {
       overTime: lastTime = 0,
     } = checkCount;
 
-    const statusTotal = [anormal, error, waitTime, lastTime];
+    const statusTotal = [error, anormal, lastTime, waitTime];
     const nums = [normal, abnormal, rectify, overTime].map((status, index) => [
       status,
       statusTotal[index],
@@ -150,6 +150,7 @@ export default class CheckingDrawer extends PureComponent {
 
     return (
       <DrawerContainer
+        style={{ overflow: 'hidden' }}
         title="检查点"
         width={485}
         visible={visible}

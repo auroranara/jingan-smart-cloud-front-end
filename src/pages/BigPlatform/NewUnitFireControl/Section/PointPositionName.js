@@ -44,23 +44,23 @@ const columns = [
     width: '50',
     render: val => {
       const { finish, overTime, rectifyNum, reviewNum } = val;
-      const status = ['已超期', '待整改', '待复查', '已关闭'];
+      const resultStatus = ['已超期', '待整改', '待复查', '已关闭'];
       const nums = [overTime, rectifyNum, reviewNum, finish];
       return (
-        <div>
+        <div className={+val.status === 1 ? null : styles.resultError}>
           <Tooltip
             placement="top"
-            title={status
+            title={resultStatus
               .map((data, index) => {
-                return nums[index] ? `${data}-${nums[index]}` : '';
+                return nums[index] ? `${data}:${nums[index]}` : '';
               })
               .filter(data => data)
               .join('/')}
           >
             <Ellipsis length={5}>
-              {status
+              {resultStatus
                 .map((data, index) => {
-                  return nums[index] ? `${data}-${nums[index]}` : '';
+                  return nums[index] ? `${data}:${nums[index]}` : '';
                 })
                 .filter(data => data)
                 .join('/')}
@@ -115,9 +115,9 @@ export default class PointPositionName extends PureComponent {
         report_user_name,
         report_time,
         rectify_user_name,
-        real_rectify_time,
         item_name,
         plan_rectify_time,
+        real_rectify_time,
         status,
         hiddenDangerRecordDto,
         index,
@@ -145,24 +145,28 @@ export default class PointPositionName extends PureComponent {
               ),
             },
             {
-              label: '计划整改',
-              value: (
-                <Fragment>
-                  {rectify_user_name}
-                  <span
-                    className={
-                      real_rectify_time > plan_rectify_time ? styles.warningText : styles.text
-                    }
-                  >
-                    {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                  </span>
-                </Fragment>
-              ),
+              label: +status === 3 ? '实际整改' : '计划整改',
+              value:
+                +status === 3 ? (
+                  <Fragment>
+                    {rectify_user_name}
+                    <span className={styles.text}>
+                      {moment(+real_rectify_time).format('YYYY-MM-DD')}
+                    </span>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {rectify_user_name}
+                    <span className={+status === 7 ? styles.warningText : styles.text}>
+                      {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                    </span>
+                  </Fragment>
+                ),
             },
             { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
           ]}
           statusLogo={this.handleStatusPhoto(status)}
-          photo={hiddenDangerRecordDto[0].fileWebUrl}
+          photo={hiddenDangerRecordDto[0].fileWebUrl.split(',')[0]}
         />
       );
     });
