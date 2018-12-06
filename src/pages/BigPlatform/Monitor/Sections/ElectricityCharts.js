@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Select } from 'antd';
 // import { connect } from 'dva';
 import classNames from 'classnames';
-import SectionWrapper from '../components/SectionWrapper';
+import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
