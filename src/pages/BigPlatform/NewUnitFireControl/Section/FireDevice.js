@@ -9,22 +9,24 @@ import fine from '../imgs/fine.png';
 import error from '../imgs/error.png';
 
 export default class FireDevice extends PureComponent {
+
   getImageByStatus = (status) => {
-    switch(+status) {
+    switch (+status) {
       case 1:
-      return error;
+        return error;
       case 2:
-      return normal;
+        return normal;
       case 3:
-      return fine;
+        return fine;
       default:
-      return;
+        return;
     }
   }
 
   render() {
     const {
       systemScore: { list = [] },
+      onClick,
     } = this.props;
 
     // 移除没有状态的成员
@@ -41,22 +43,24 @@ export default class FireDevice extends PureComponent {
       return total;
     }, []);
 
+    console.log(result);
     return (
       <Section title="消防设施情况">
         <div className={styles.container}>
-          <Carousel autoplay>
+          <Carousel autoplay autoplaySpeed={5000}>
             {result.map((cols, index) => {
               const [{ sysId }] = cols;
               return (
                 <div key={sysId} className={styles.wrapper}>
                   {cols.map(({ sysId, sysName, status }) => (
-                    <div className={styles.item}>
+                    <div className={styles.item} key={sysId} onClick={() => { onClick({ sysId }) }}>
                       <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
                       <div className={styles.label}>{sysName}</div>
                     </div>
                   ))}
                 </div>
               );
+              // return <div key={index}>{index}</div>
             })}
           </Carousel>
         </div>

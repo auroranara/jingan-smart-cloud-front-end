@@ -254,7 +254,7 @@ export default class TopCenter extends PureComponent {
       outContact: loss = 0,
     } = smokeCountData;
 
-    const page = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
+    const page = total % pageSize === 0 ? total / pageSize : Math.floor(total / pageSize) + 1;
     const statusTotal = [totals, normal, abnormal, loss];
     const nums = [ALL, NORMAL, ABNORMAL, LOSS].map((status, index) => [status, statusTotal[index]]);
 
@@ -292,17 +292,20 @@ export default class TopCenter extends PureComponent {
           pagination={false}
           loading={smokeListLoding}
         />
-        <div className={styles.footer}>
-          <div>
-            <span className={styles.pagesText}>
-              每页
-              {pageSize}
-              行，共计
-              {page}页
-            </span>
-          </div>
-          <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
-        </div>
+        {smokeListByPage &&
+          smokeListByPage > 0 && (
+            <div className={styles.footer}>
+              <div>
+                <span className={styles.pagesText}>
+                  每页
+                  {pageSize}
+                  行，共计
+                  {page}页
+                </span>
+              </div>
+              <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
+            </div>
+          )}
       </Modal>
     );
   };
@@ -315,7 +318,7 @@ export default class TopCenter extends PureComponent {
       errorDevicesLoading,
     } = this.props;
 
-    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
+    const pages = total % pageSize === 0 ? total / pageSize : Math.floor(total / pageSize) + 1;
 
     const title = (
       <div className={styles.modalTitle}>
@@ -529,7 +532,7 @@ export default class TopCenter extends PureComponent {
                     正常 <span className={styles.normalCount}>{normal}</span>
                   </p>
                   <p className={styles.unusual} onClick={() => this.handleSmokeModal(ABNORMAL)}>
-                    异常 <span className={styles.unusualCount}>{abnormal}</span>
+                    火警 <span className={styles.unusualCount}>{abnormal}</span>
                   </p>
                   <p className={styles.missing} onClick={() => this.handleSmokeModal(LOSS)}>
                     失联 <span className={styles.missingCount}>{loss}</span>

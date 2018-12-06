@@ -5,7 +5,8 @@ import styles from './SwitchHead.less';
 import leftLine from '../imgs/leftLine.png';
 import rightLine from '../imgs/rightLine.png';
 
-const INDEXES = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+const INDEXES = ['一', '二', '三', '四', '五', '六', '七', '八', '九',
+  '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十'];
 const ICON_STYLE = {
   position: 'absolute',
   top: '50%',
@@ -15,14 +16,13 @@ const ICON_STYLE = {
 const OPACITY = 0.3;
 
 export default function SwitchHead(props) {
-  const { index=0, lastIndex=0, handleLeftClick, handleRightClick, ...restProps } = props;
-  const title = `火警${INDEXES[index]}`;
+  const { index=0, title, lastIndex=0, handleLeftClick, handleRightClick, ...restProps } = props;
   const isFirst = !index;
   const isLast = index === lastIndex;
 
   return (
     <div className={styles.container} {...restProps}>
-      {title}
+      {`${title}${INDEXES[index]}`}
       <span className={styles.leftLine} style={{ backgroundImage: `url(${leftLine})` }} />
       <span className={styles.rightLine} style={{ backgroundImage: `url(${rightLine})` }} />
       <Icon

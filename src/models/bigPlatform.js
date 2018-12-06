@@ -65,7 +65,7 @@ const transformHiddenDangerFields = ({
   real_rectify_time,
   review_user_name,
   status,
-  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
+  hiddenDangerRecordDto: [{ fileWebUrl: background, operator_name }] = [{}],
   source_type_name,
   companyBuildingItem,
   business_type,
@@ -81,7 +81,7 @@ const transformHiddenDangerFields = ({
     zgr: rectify_user_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
-    fcr: review_user_name,
+    fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
     source:
