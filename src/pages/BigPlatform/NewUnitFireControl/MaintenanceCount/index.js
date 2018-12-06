@@ -17,7 +17,7 @@ export default class App extends PureComponent {
       handleShowOrder,
     } = this.props;
     const total = workOrderList2.length + workOrderList1.length;
-    const percent = total === 0 ? 0 : workOrderList1.length / total;
+    const percent = total === 0 ? 0 : Math.round((workOrderList1.length / total) * 100);
 
     return (
       <Section title="维保统计">
