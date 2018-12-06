@@ -466,13 +466,13 @@ export default class TopCenter extends PureComponent {
           </div>
         </Col>
 
-        {/* 火灾自动报警监测 */}
+        {/* 消防主机监测 */}
         <Col span={12} style={{ height: '49%', padding: '0px 6px' }}>
           <div className={styles.sectionMain}>
             <div className={styles.shadowIn}>
               <div className={styles.topTitle}>
                 <div className={styles.sectionTitleIcon} />
-                火灾自动报警监测
+                消防主机监测
               </div>
               <div className={styles.fireMain}>
                 <div
