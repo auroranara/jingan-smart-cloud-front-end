@@ -12,6 +12,7 @@ import error from '../imgs/error.png';
 export default function FireDevice(props) {
   const {
     systemScore: { list: params = [] },
+    onClick,
   } = props;
 
   return (
@@ -24,7 +25,7 @@ export default function FireDevice(props) {
               const { sysName, status } = item;
               if (!status) return null;
               return (
-                <Col key={index} style={{ height: '100%' }} span={12}>
+                <Col key={index} style={{ height: '100%' }} span={12} onClick={() => onClick(item)}>
                   {+status === 1 ? (
                     <span
                       className={styles.icon}

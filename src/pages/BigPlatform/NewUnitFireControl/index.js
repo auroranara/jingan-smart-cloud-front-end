@@ -22,6 +22,7 @@ import DrawerHiddenDangerDetail from './Section/DrawerHiddenDangerDetail';
 import PointPositionName from './Section/PointPositionName';
 import PointInspectionDrawer from './PointInspectionDrawer';
 import MaintenanceDrawer from './Section/MaintenanceDrawer';
+import DrawerOfFireAlarm from './Section/DrawerOfFireAlarm';
 
 const DELAY = 5 * 1000;
 // const CHART_DELAY = 10 * 60 * 1000;
@@ -59,6 +60,7 @@ export default class App extends PureComponent {
     fourColorTips: {},
     // 四色图贴士对应的已删除id
     deletedFourColorTips: [],
+    fireAlarmVisible: false, // 火灾自动报警抽屉可见
   };
 
   componentDidMount() {
@@ -364,6 +366,42 @@ export default class App extends PureComponent {
     this.handleDrawerVisibleChange('alarmMessage');
   };
 
+  // 点击当前隐患图表进行筛选
+  handleFilterCurrentDanger = (params) => {
+
+
+  }
+
+  // 关闭火灾自动报警抽屉
+  handleCloseFireAlarm = () => {
+    this.setState({
+      fireAlarmVisible: false,
+    })
+  }
+
+  // 查看火灾自动报警抽屉
+  handleViewFireAlarm = ({ sysId }) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    dispatch({
+      type: 'newUnitFireControl/fetchCheckRecord',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        sysId,
+        companyId,
+      },
+    })
+
+    this.setState({
+      fireAlarmVisible: true,
+    })
+  }
+
   render() {
     // 从props中获取数据
     const {
@@ -387,6 +425,7 @@ export default class App extends PureComponent {
       workOrderList2,
       workOrderList7,
       workOrderDetail, // 只有一个元素的数组
+      fireAlarm,
     } = this.props.newUnitFireControl;
 
     const {
@@ -407,6 +446,7 @@ export default class App extends PureComponent {
       alarmMessageDrawerVisible,
       fourColorTips,
       deletedFourColorTips,
+      fireAlarmVisible,
     } = this.state;
     const {
       monitor: { allCamera },
@@ -485,7 +525,10 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 消防设施情况 */}
-                <FireDevice systemScore={systemScore} />
+                <FireDevice
+                  systemScore={systemScore}
+                  onClick={this.handleViewFireAlarm}
+                />
               </div>
             </div>
             <div className={styles.item}>
@@ -545,6 +588,7 @@ export default class App extends PureComponent {
             visible={currentDrawerVisible}
             onClose={this.handleCloseCurrentDrawer}
             onCardClick={this.handleViewDangerDetail}
+            onClickChat={this.handleFilterCurrentDanger}
             {...currentHiddenDanger}
           />
           {/* 隐患详情抽屉 */}
@@ -566,6 +610,11 @@ export default class App extends PureComponent {
             data={workOrderDetail}
             visible={maintenanceDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('maintenance')}
+          />
+          <DrawerOfFireAlarm
+            visible={fireAlarmVisible}
+            onClose={this.handleCloseFireAlarm}
+            {...fireAlarm}
           />
         </div>
       </BigPlatformLayout>

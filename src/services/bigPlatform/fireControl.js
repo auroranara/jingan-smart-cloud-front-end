@@ -297,3 +297,8 @@ export async function queryAlarmHandleList({ companyId, dataId, gridId }) {
 export async function queryWorkOrder(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/getFaultForMaintenance?${stringify(params)}`);
 }
+
+// 获取火灾报警系统巡检记录
+export async function fetchCheckRecord(params) {
+  return request(`/acloud_new/v2/maintenanceCheck/getCheckRecordByType?${stringify(params)}`)
+}
