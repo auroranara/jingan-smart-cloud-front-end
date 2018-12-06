@@ -45,7 +45,7 @@ export default class App extends PureComponent {
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
     currentDrawerVisible: false, // 当前隐患抽屉可见
-    dangerDetailVisible: false, // 隐患详情抽屉可见
+    dangerDetailDrawerVisible: false, // 隐患详情抽屉可见
     // 点位巡查抽屉是否显示
     pointInspectionDrawerVisible: false,
     // 点位巡查抽屉的选中时间
@@ -127,12 +127,7 @@ export default class App extends PureComponent {
       },
     });
     // 获取大屏消息
-    dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchScreenMessage(dispatch, companyId);
 
     // 获取点位
     dispatch({
@@ -183,12 +178,7 @@ export default class App extends PureComponent {
     // });
 
     // 获取大屏消息
-    dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchScreenMessage(dispatch, companyId);
   };
 
   /**
@@ -204,6 +194,37 @@ export default class App extends PureComponent {
       },
     });
   };
+
+  /**
+   * 获取大屏消息
+   */
+  fetchScreenMessage = (dispatch, companyId) => {
+    dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+      payload: {
+        companyId,
+      },
+      success: ({ list: [{ itemId, type }={}]}) => {
+        const { fourColorTips } = this.state;
+        // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+        if (type === 14 && fourColorTips.indexOf(itemId) === -1) {
+          this.setState({
+            fourColorTips: fourColorTips.concat(itemId),
+          });
+        }
+      },
+    });
+  }
+
+  /**
+   * 移除四色图隐患提示
+   */
+  removeFourColorTip = (id) => {
+    const { fourColorTips } = this.state;
+    this.setState({
+      fourColorTips: fourColorTips.filter(item => item !== id),
+    });
+  }
 
   /**
    *  点击播放重点部位监控
@@ -333,8 +354,8 @@ export default class App extends PureComponent {
                 {/* 四色图 */}
                 <FourColor
                   model={this.props.newUnitFireControl}
-                  handleShowPointDetail={(id) => {this.handleDrawerVisibleChange('', id);}}
-                  handleShowHiddenDanger={(id) => {this.handleDrawerVisibleChange('', id);}}
+                  handleShowPointDetail={(id) => {this.handleDrawerVisibleChange('check', { checkId: id });}}
+                  handleShowHiddenDanger={(id) => {this.handleDrawerVisibleChange('dangerDetail', { dangerDetailId: id });this.removeFourColorTip(id);}}
                   tips={fourColorTips}
                 />
               </div>
@@ -414,22 +435,14 @@ export default class App extends PureComponent {
             visible={pointDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
+          <PointInspectionDrawer
+            date={pointInspectionDrawerSelectedDate}
+            handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
+            model={this.props.newUnitFireControl}
+            visible={pointInspectionDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('pointInspection')}
+          />
         </div>
-        <WorkOrderDrawer
-          visible={workOrderDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('workOrder')}
-        />
-        <AlarmDynamicDrawer
-          visible={alarmDynamicDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
-        />
-        <PointInspectionDrawer
-          date={pointInspectionDrawerSelectedDate}
-          handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
-          model={this.props.newUnitFireControl}
-          visible={pointInspectionDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('pointInspection')}
-        />
         {/* 当前隐患抽屉 */}
         <CurrentHiddenDanger
           visible={currentDrawerVisible}

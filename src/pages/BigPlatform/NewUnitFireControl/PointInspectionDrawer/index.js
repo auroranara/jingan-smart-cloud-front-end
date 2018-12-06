@@ -117,54 +117,54 @@ export default class PointInspectionDrawer extends PureComponent {
                   <div className={styles.card} key={item_id}>
                     <div className={styles.cardItem}>
                       <div className={styles.cardItemLabel}>点位名称：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{object_title}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{object_title}</Ellipsis></div>
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.cardItemLabel}>巡查时间：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{moment(check_date).format('YYYY-MM-DD')}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{moment(check_date).format('YYYY-MM-DD')}</Ellipsis></div>
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.cardItemLabel}>巡查人：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{checkName}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{checkName}</Ellipsis></div>
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.cardItemLabel}>巡查状态：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{this.getLabelByStatus(status)}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{this.getLabelByStatus(status)}</Ellipsis></div>
                     </div>
                     {isAbnormal && (
                       <div className={styles.cardItem}>
                         <div className={styles.cardItemLabel}>处理结果：</div>
-                        <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{this.getResult(hiddenDangerCount)}</Ellipsis></div>
+                        <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{this.getResult(hiddenDangerCount)}</Ellipsis></div>
                       </div>
                     )}
                   </div>
                 );
-              }) : unCheckPoint.map(({ item_id, object_title, check_date, checkName, status, hiddenDangerCount }) => {
+              }) : unCheckPoint.map(({ item_id, object_title, lastCheckDate, lastCheckName }) => {
                 const isAbnormal = status === 2;
                 return (
                   <div className={styles.card} key={item_id}>
                     <div className={styles.cardItem}>
                       <div className={styles.unCheckedCardItemLabel}>点位名称：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{object_title}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{object_title}</Ellipsis></div>
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.unCheckedCardItemLabel}>上次巡查时间：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{moment(check_date).format('YYYY-MM-DD')}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{moment(lastCheckDate).format('YYYY-MM-DD')}</Ellipsis></div>
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.unCheckedCardItemLabel}>上次巡查人：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{checkName}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{lastCheckName}</Ellipsis></div>
                     </div>
-                    <div className={styles.cardItem}>
+                    {/* <div className={styles.cardItem}>
                       <div className={styles.unCheckedCardItemLabel}>上次巡查状态：</div>
-                      <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{this.getLabelByStatus(status)}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{this.getLabelByStatus(status)}</Ellipsis></div>
                     </div>
                     {isAbnormal && (
                       <div className={styles.cardItem}>
                         <div className={styles.unCheckedCardItemLabel}>处理结果：</div>
-                        <div className={styles.cardItemValue}><Ellipsis tooltip lines={1}>{this.getResult(hiddenDangerCount)}</Ellipsis></div>
+                        <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{this.getResult(hiddenDangerCount)}</Ellipsis></div>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 );
               })}

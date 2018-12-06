@@ -79,8 +79,9 @@ export default class App extends PureComponent {
             const isAbnormal = status === 2;
             const isChecked = !!status;
             const showTip = tips.includes(item_id);
+            // const showTip = true;
             return (
-              <Tooltip overlayClassName={styles.alarmTooltip} placement="top" title={(
+              <Tooltip overlayClassName={showTip?styles.alarmTooltip:undefined} placement="top" title={(
                 <div>有一条新的隐患！<span className={styles.alarm} onClick={() => {handleShowHiddenDanger(item_id);}}>详情>></span></div>
               )} key={item_id} visible={showTip}>
                 <Tooltip placement="rightTop" title={(
