@@ -261,7 +261,7 @@ export default class App extends PureComponent {
   };
 
   renderNotificationMsg = item => {
-    const { type, addTime, installAddress, componentType, messageFlag } = item;
+    const { type, addTime, installAddress, componentType, messageFlag, addTimeStr } = item;
     const msgItem = msgInfo[type.toString()];
     return (
       <div
@@ -271,7 +271,8 @@ export default class App extends PureComponent {
         }}
       >
         <div>
-          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          {/* <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '} */}
+          <span className={styles.time}>{addTimeStr}</span>{' '}
           <span className={styles.address}>{installAddress}</span>
         </div>
         <div>
