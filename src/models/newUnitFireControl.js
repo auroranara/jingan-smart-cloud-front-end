@@ -53,6 +53,9 @@ import {
   getHiddenDangerDetail, // 获取隐患详情
 } from '../services/hiddenDangerReport';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
+import {
+  queryMaintenanceRecordDetail,
+} from '../services/maintenanceRecord.js';
 import moment from 'moment';
 
 const getColorByRiskLevel = function(level) {
@@ -238,6 +241,8 @@ export default {
     pointRecordList: {
       pointRecordLists: [],
     },
+    // 维保巡查详情
+    maintenanceDetail: {},
   },
 
   effects: {
@@ -621,6 +626,19 @@ export default {
         error();
       }
     },
+    // 维保巡查详情
+    *fetchMaintenanceDetail({ payload, success, error }, { call, put }) {
+      const response = yield call(queryMaintenanceRecordDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'maintenanceDetail',
+          payload: response.data,
+        });
+        if (success) success(response);
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -735,6 +753,12 @@ export default {
       return {
         ...state,
         screenMessage: payload.list,
+      };
+    },
+    maintenanceDetail(state, { payload }) {
+      return {
+        ...state,
+        maintenanceDetail: payload,
       };
     },
   },

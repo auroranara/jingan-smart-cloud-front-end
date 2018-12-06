@@ -22,7 +22,7 @@ const { Description } = DescriptionList;
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
 }))
-export default class App extends PureComponent {
+export default class CompanyInfo extends PureComponent {
   state = {
     checkDrawerVisible: false, // 检查点弹框
   };
@@ -58,7 +58,7 @@ export default class App extends PureComponent {
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
 
     return (
-      <Section title="点位巡查统计" style={{ height: 'auto' }}>
+      <Section title="企业基本信息" style={{ height: 'auto' }}>
         <div className={styles.companyInfo}>
           <div className={styles.infoWrapper}>
             <div
