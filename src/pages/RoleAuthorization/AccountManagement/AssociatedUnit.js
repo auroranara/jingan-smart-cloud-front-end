@@ -954,13 +954,13 @@ export default class AssociatedUnit extends PureComponent {
                       // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
-                      <AutoComplete mode="multiple" placeholder="请选择业务分类">
+                      <Select mode="multiple" placeholder="请选择业务分类">
                         {Supervisions.map(item => (
                           <Option value={item.id} key={item.id}>
                             {item.label}
                           </Option>
                         ))}
-                      </AutoComplete>
+                      </Select>
                     )}
                   </Form.Item>
                 </Col>

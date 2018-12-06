@@ -183,7 +183,7 @@ class VideoPlay extends Component {
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
     return (
-      <div className={wrapperStyles} style={{ ...style }}>
+      <div className={wrapperStyles} style={{ ...style, zIndex: 1070 }}>
         <div
           id="dragBar"
           className={styles.titleBar}
@@ -200,10 +200,10 @@ class VideoPlay extends Component {
             {loading ? (
               LOADING_COMPONENT
             ) : (
-                <Player>
-                  <HLSSource isVideoChild src={videoSrc} ref="source" />
-                </Player>
-              )}
+              <Player>
+                <HLSSource isVideoChild src={videoSrc} ref="source" />
+              </Player>
+            )}
           </div>
           {showList && (
             <div className={styles.videoList}>
@@ -226,8 +226,8 @@ class VideoPlay extends Component {
         {this.renderPan()}
       </Draggable>
     ) : (
-        this.renderPan()
-      );
+      this.renderPan()
+    );
   }
 }
 

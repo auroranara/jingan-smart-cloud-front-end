@@ -6,9 +6,9 @@ import ImageCard from '@/components/ImageCard';
 import ReactEcharts from 'echarts-for-react';
 import styles from './CurrentHiddenDanger.less';
 
-const blueColor = '#E96767';
-const redColor = '#F6B54E';
-const yellowColor = '#2A8BD5';
+const redColor = '#E96767'; // 红
+const yellowColor = '#F6B54E'; // 黄
+const blueColor = '#2A8BD5'; // 蓝
 
 export default class CurrentHiddenDanger extends PureComponent {
   constructor(props) {
@@ -227,28 +227,25 @@ export default class CurrentHiddenDanger extends PureComponent {
               </div>
             </div>
             <div className={styles.mainContainer}>
-              {list.map(
-                (
-                  {
-                    desc,
-                    report_user_name,
-                    report_time,
-                    rectify_user_name,
-                    real_rectify_time,
-                    plan_rectify_time,
-                    review_user_name,
-                    item_name,
-                    status,
-                    hiddenDangerRecordDto,
-                  },
-                  index
-                ) => (
+              {list.map((item, index) => {
+                const {
+                  desc,
+                  report_user_name,
+                  report_time,
+                  rectify_user_name,
+                  real_rectify_time,
+                  plan_rectify_time,
+                  item_name,
+                  status,
+                  hiddenDangerRecordDto,
+                } = item;
+                return (
                   <Col key={index} style={{ padding: '5px 0' }} span={24}>
                     <ImageCard
                       showRightIcon={true}
                       showStatusLogo={true}
                       isCardClick={true}
-                      onCardClick={onCardClick}
+                      onCardClick={() => onCardClick(item)}
                       contentList={[
                         { label: '隐患描述', value: desc || '暂无数据' },
                         {
@@ -264,29 +261,31 @@ export default class CurrentHiddenDanger extends PureComponent {
                         },
                         {
                           label: '计划整改',
-                          value: (
-                            <Fragment>
-                              {rectify_user_name}
-                              <span
-                                className={
-                                  real_rectify_time > plan_rectify_time
-                                    ? styles.warningText
-                                    : styles.text
-                                }
-                              >
-                                {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                              </span>
-                            </Fragment>
-                          ),
+                          value:
+                            +status === 3 ? (
+                              <Fragment>
+                                {rectify_user_name}
+                                <span className={styles.text}>
+                                  {moment(+real_rectify_time).format('YYYY-MM-DD')}
+                                </span>
+                              </Fragment>
+                            ) : (
+                              <Fragment>
+                                {rectify_user_name}
+                                <span className={+status === 7 ? styles.warningText : styles.text}>
+                                  {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                                </span>
+                              </Fragment>
+                            ),
                         },
                         { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
                       ]}
                       statusLogo={this.handleStatusPhoto(status)}
-                      photo={hiddenDangerRecordDto[0].fileWebUrl}
+                      photo={hiddenDangerRecordDto[0].fileWebUrl.split(',')[0]}
                     />
                   </Col>
-                )
-              )}
+                );
+              })}
             </div>
           </div>
         }

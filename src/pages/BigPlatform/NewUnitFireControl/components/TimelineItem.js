@@ -14,8 +14,8 @@ export default function TimelineItem(props) {
       <Row>
         <Col span={spans ? spans[0] : 3}>
           <p className={styles.labelContainer}><span className={isHandled ? styles.label : styles.greyLabel}>{label}</span></p>
-          {day && <p className={styles.p}>{day}</p>}
-          {hour && <p className={styles.p}>{hour}</p>}
+          {isHandled && day && <p className={styles.p}>{day}</p>}
+          {isHandled && hour && <p className={styles.p}>{hour}</p>}
         </Col>
         <Col span={spans ? spans[1] : 21}>
           {isHandled && (

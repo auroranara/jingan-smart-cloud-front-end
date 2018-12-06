@@ -38,7 +38,20 @@
   color: #04fdff;
   cursor: pointer;
 }
+@keyframes fade {
+  from {
+      opacity: 1.0;
+  }
+  50% {
+      opacity: 0.4;
+  }
+  to {
+      opacity: 1.0;
+  }
+}
 .alarmTooltip {
+  animation: fade 0.5s 3 alternate;
+
   :global {
     .ant-tooltip-inner {
       box-shadow: 0 0 1em red;
@@ -55,3 +68,5 @@
 .animated {
   animation: myfirst 0.5s infinite alternate;
 }
+
+

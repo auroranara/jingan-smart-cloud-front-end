@@ -38,7 +38,9 @@ import {
   // 南消：获取点位巡查统计
   getPointInspectionCount,
   // 南消：获取点位巡查列表
-  // getPointInspectionList,
+  getPointInspectionList,
+  // 南消：获取点位
+  getPointList,
   // 获取大屏消息
   getScreenMessage,
   // 检查点各状态数量
@@ -47,6 +49,8 @@ import {
   getCheckDetail,
   // 巡查点异常记录
   getPonitRecord,
+  queryAlarmHandleList,
+  queryWorkOrder,
 } from '../services/bigPlatform/fireControl';
 
 import {
@@ -55,7 +59,7 @@ import {
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import moment from 'moment';
 
-const getColorByRiskLevel = function(level) {
+const getColorByRiskLevel = function (level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -69,6 +73,52 @@ const getColorByRiskLevel = function(level) {
       return '';
   }
 };
+/* 完善步骤条数组 */
+const formatTimeLine = function (timeLine) {
+  const list = timeLine.map((item, index) => {
+    let type = +item.type;
+    if (type === 1) {
+      type = '隐患创建';
+    }
+    else if (type === 2) {
+      // 如果index大于1，意味着必然为重新整改
+      if (index > 1) {
+        type = '重新整改';
+      }
+      else {
+        type = '隐患整改';
+      }
+    }
+    else if (type === 3) {
+      type = '隐患复查';
+    }
+    else if (type === 4) {
+      type = '隐患关闭';
+    }
+    return {
+      ...item,
+      type,
+      id: index,
+    };
+  });
+  const lastIndex = timeLine.length - 1;
+  const { type } = timeLine[lastIndex];
+  switch (+type) {
+    case 1:
+      list.push({ type: '隐患整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
+      break;
+    case 2:
+      list.push({ type: '隐患复查', id: lastIndex + 1 });
+      break;
+    case 3:
+      list.push({ type: '重新整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
+      break;
+    default:
+      break;
+  }
+  return list;
+};
+
 const transformHiddenDangerFields = ({
   id,
   item_id,
@@ -216,16 +266,14 @@ export default {
       overRectifyNum: 0, // 已超期
       totalNum: 0, // 总数
       list: [], // 隐患列表
-      detail: {
-        hiddenDanger: {},
-        hiddenDangerRecord: [],
-        timeLine: [],
-      }, // 隐患详情
+      timestampList: [], // 隐患详情
     },
     // 点位巡查统计
     pointInspectionCount: [],
     // 点位巡查列表
-    pointInspectionList: [],
+    pointInspectionList: {},
+    // 点位
+    pointList: [],
     // 获取大屏消息
     screenMessage: [],
     // 检查点状态数量
@@ -240,6 +288,18 @@ export default {
       count: 0,
       pointRecordLists: [],
     },
+    // 火警消息
+    alarmHandleMessage: {},
+    // 火警动态
+    alarmHandleList: [],
+    // 已完成维保工单
+    workOrderList1: [],
+    // 待处理维保工单
+    workOrderList2: [],
+    // 已超期维保工单
+    workOrderList7: [],
+    // 维保处理动态详情
+    workOrderDetail: [],
   },
 
   effects: {
@@ -459,8 +519,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-                ({ id, webUrl }) => /^http/.test(webUrl) && id
-              )
+              ({ id, webUrl }) => /^http/.test(webUrl) && id
+            )
             : [],
       };
 
@@ -579,13 +639,14 @@ export default {
       }
     },
     // 获取隐患详情
-    *fetchHiddenDangerDetail({ payload }, { call, put }) {
+    *fetchHiddenDangerDetail({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerDetail, payload);
-      if (response && response.hiddenDangers) {
+      if (response && response.code === 200) {
         yield put({
           type: 'saveHiddenDangerDetail',
           payload: response.data,
         });
+        if (callback) callback()
       }
     },
     // 南消：点位巡查统计
@@ -601,11 +662,21 @@ export default {
     },
     // 南消：获取点位巡查列表
     *fetchPointInspectionList({ payload, callback }, { call, put }) {
-      // const response = yield call(getPointInspectionList, payload);
-      const response = { data: { list: [] } };
+      const response = yield call(getPointInspectionList, payload);
       yield put({
         type: 'save',
-        payload: { pointInspectionList: response.data.list },
+        payload: { pointInspectionList: response.data },
+      });
+      if (callback) {
+        callback(response.data);
+      }
+    },
+    // 南消：获取点位
+    *fetchPointList({ payload, callback }, { call, put }) {
+      const response = yield call(getPointList, payload);
+      yield put({
+        type: 'save',
+        payload: { pointList: response.data.list },
       });
       if (callback) {
         callback(response.data.list);
@@ -624,6 +695,26 @@ export default {
         }
       } else if (error) {
         error();
+      }
+    },
+    // 火警动态列表或火警消息
+    *fetchAlarmHandle({ payload }, { call, put }) {
+      const response = yield call(queryAlarmHandleList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: `saveAlarmHandle${payload.dataId ? 'Message' : 'List'}`,
+          payload: response.data ? response.data.list : [],
+        });
+      }
+    },
+    // 维保工单列表或维保处理动态
+    *fetchWorkOrder({ payload }, { call, put }) {
+      const response = yield call(queryWorkOrder, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: payload.id ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+        });
       }
     },
   },
@@ -727,14 +818,33 @@ export default {
         },
       };
     },
-    saveHiddenDangerDetail(state, { payload }) {
+    // 保存当前隐患先详情
+    saveHiddenDangerDetail(state, { payload: {
+      hiddenDanger = {},
+      hiddenDangerRecord = [],
+      timeLine,
+    } }) {
+      const timestampList = formatTimeLine(timeLine).map((item, i) => {
+        if (i === 0) {
+          return {
+            timeLine: item,
+            ...hiddenDanger,
+          }
+        } else {
+          if (hiddenDangerRecord.length < i) return {
+            timeLine: item,
+          }
+          return {
+            timeLine: item,
+            ...hiddenDangerRecord[i - 1],
+          }
+        }
+      })
       return {
         ...state,
         currentHiddenDanger: {
           ...state.currentHiddenDanger,
-          detail: {
-            ...payload,
-          },
+          timestampList,
         },
       };
     },
@@ -743,6 +853,24 @@ export default {
         ...state,
         screenMessage: payload.list,
       };
+    },
+    saveAlarmHandleMessage(state, action) {
+      return { ...state, alarmHandleMessage: action.payload || [] };
+    },
+    saveAlarmHandleList(state, action) {
+      return { ...state, alarmHandleList: action.payload || [] };
+    },
+    saveWorkOrderList1(state, action) {
+      return { ...state, workOrderList1: action.payload };
+    },
+    saveWorkOrderList2(state, action) {
+      return { ...state, workOrderList2: action.payload };
+    },
+    saveWorkOrderList7(state, action) {
+      return { ...state, workOrderList7: action.payload };
+    },
+    saveWorkOrderDetail(state, action) {
+      return { ...state, workOrderDetail: action.payload };
     },
   },
 };

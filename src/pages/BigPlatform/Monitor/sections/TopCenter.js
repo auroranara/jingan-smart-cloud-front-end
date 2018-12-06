@@ -466,13 +466,13 @@ export default class TopCenter extends PureComponent {
           </div>
         </Col>
 
-        {/* 火灾自动报警监测 */}
+        {/* 消防主机监测 */}
         <Col span={12} style={{ height: '49%', padding: '0px 6px' }}>
           <div className={styles.sectionMain}>
             <div className={styles.shadowIn}>
               <div className={styles.topTitle}>
                 <div className={styles.sectionTitleIcon} />
-                火灾自动报警监测
+                消防主机监测
               </div>
               <div className={styles.fireMain}>
                 <div
@@ -488,10 +488,10 @@ export default class TopCenter extends PureComponent {
                 </div>
                 <div className={styles.arrContainer}>
                   <p>
-                    火警 <span className={styles.fireCount}>{fault_state}</span>
+                    火警 <span className={styles.fireCount}>{fire_state}</span>
                   </p>
                   <p>
-                    故障 <span className={styles.errorCount}>{fire_state}</span>
+                    故障 <span className={styles.errorCount}>{fault_state}</span>
                   </p>
                 </div>
               </div>

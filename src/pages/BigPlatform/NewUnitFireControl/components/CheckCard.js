@@ -16,7 +16,7 @@ export default class CheckCard extends PureComponent {
     showRightIcon: PropTypes.bool, // 是否显示右上角图标
     cardPadding: PropTypes.string, // 外层padding
     contentList: PropTypes.array.isRequired, // 渲染图片右侧区块的列表
-    photo: PropTypes.string.isRequired, // 图片地址
+    // photo: PropTypes.string.isRequired, // 图片地址
   };
 
   static defaultProps = {

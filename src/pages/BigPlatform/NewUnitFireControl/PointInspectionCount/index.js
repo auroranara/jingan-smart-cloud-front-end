@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import Section from '../Section';
+import styles from './index.less';
 
 /**
  * description: 点位巡查统计
@@ -109,13 +110,13 @@ export default class PointInspectionCount extends PureComponent {
         endValue: 29,
       }],
       // 图例
-      legend: {
-        pageIconColor: '#ddd',
-        pageIconInactiveColor: '#999',
-        pageTextStyle: { color: '#fff' },
-        type: 'scroll',
-        textStyle: { color: '#fff' },
-      },
+      // legend: {
+      //   pageIconColor: '#ddd',
+      //   pageIconInactiveColor: '#999',
+      //   pageTextStyle: { color: '#fff' },
+      //   type: 'scroll',
+      //   textStyle: { color: '#fff' },
+      // },
       xAxis: {
         type: 'category',
         // boundaryGap: false,
@@ -144,9 +145,13 @@ export default class PointInspectionCount extends PureComponent {
         max: 100,
         axisLine: { lineStyle: { color: '#ddd' } },
         splitLine: { show: false },
+        axisLabel: {
+          formatter: (value) => `${value}%`,
+        },
       }],
       grid: {
-        top: 30,
+        // top: 30,
+        top: 20,
         left: 20,
         right: 20,
         bottom: 40,
@@ -218,9 +223,31 @@ export default class PointInspectionCount extends PureComponent {
 
     return (
       <Section title="点位巡查统计">
+        <div className={styles.legendContainer}>
+          <div className={styles.legend}>
+            <div className={styles.legendIcon} style={{ backgroundColor: '#05D2DA' }}></div>
+            <div className={styles.legendLabel}>已检查</div>
+          </div>
+          <div className={styles.legend}>
+            <div className={styles.legendIcon} style={{ backgroundColor: '#8C8C8C' }}></div>
+            <div className={styles.legendLabel}>未检查</div>
+          </div>
+          <div className={styles.legend}>
+            <div className={styles.legendIcon} style={{ backgroundColor: '#FF4848' }}></div>
+            <div className={styles.legendLabel}>异常点位</div>
+          </div>
+          <div className={styles.legend}>
+            <div className={styles.legendIconLine} style={{ backgroundColor: '#05D2DA' }}><div className={styles.legendIconCircle} style={{ backgroundColor: '#05D2DA' }}></div></div>
+            <div className={styles.legendLabel}>覆盖率</div>
+          </div>
+          <div className={styles.legend}>
+            <div className={styles.legendIconLine} style={{ backgroundColor: '#FF4848' }}><div className={styles.legendIconCircle} style={{ backgroundColor: '#FF4848' }}></div></div>
+            <div className={styles.legendLabel}>异常率</div>
+          </div>
+        </div>
         <ReactEcharts
           option={option}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: 'calc(100% - 20px)' }}
           onChartReady={this.handleChartReady}
           className="pointInspectionCountChart"
         />
