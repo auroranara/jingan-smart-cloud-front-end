@@ -115,7 +115,6 @@ export default class PointPositionName extends PureComponent {
         report_user_name,
         report_time,
         rectify_user_name,
-        real_rectify_time,
         item_name,
         plan_rectify_time,
         status,
@@ -149,11 +148,7 @@ export default class PointPositionName extends PureComponent {
               value: (
                 <Fragment>
                   {rectify_user_name}
-                  <span
-                    className={
-                      real_rectify_time > plan_rectify_time ? styles.warningText : styles.text
-                    }
-                  >
+                  <span className={+status === 7 ? styles.warningText : styles.text}>
                     {moment(+plan_rectify_time).format('YYYY-MM-DD')}
                   </span>
                 </Fragment>
@@ -162,7 +157,7 @@ export default class PointPositionName extends PureComponent {
             { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
           ]}
           statusLogo={this.handleStatusPhoto(status)}
-          photo={hiddenDangerRecordDto[0].fileWebUrl}
+          photo={hiddenDangerRecordDto[0].fileWebUrl.split(',')[0]}
         />
       );
     });
