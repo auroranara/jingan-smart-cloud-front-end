@@ -6,9 +6,9 @@ import ImageCard from '@/components/ImageCard';
 import ReactEcharts from 'echarts-for-react';
 import styles from './CurrentHiddenDanger.less';
 
-const blueColor = '#E96767';
-const redColor = '#F6B54E';
-const yellowColor = '#2A8BD5';
+const redColor = '#E96767'; // 红
+const yellowColor = '#F6B54E'; // 黄
+const blueColor = '#2A8BD5'; // 蓝
 
 export default class CurrentHiddenDanger extends PureComponent {
 
@@ -239,18 +239,18 @@ export default class CurrentHiddenDanger extends PureComponent {
                   item_name,
                   status,
                   hiddenDangerRecordDto,
-                }=item
-                return(
+                } = item
+                return (
                   <Col key={index} style={{ padding: '5px 0' }} span={24}>
                     <ImageCard
                       showRightIcon={true}
                       showStatusLogo={true}
                       isCardClick={true}
-                      onCardClick={()=>onCardClick(item)}
+                      onCardClick={() => onCardClick(item)}
                       contentList={[
                         { label: '隐患描述', value: desc || '暂无数据' },
                         { label: '上报', value: (<Fragment>{report_user_name}<span className={styles.text}>{moment(+report_time).format('YYYY-MM-DD')}</span></Fragment>) },
-                        { label: '计划整改', value: (<Fragment>{rectify_user_name}<span className={(real_rectify_time > plan_rectify_time) ? styles.warningText : styles.text}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Fragment>) },
+                        { label: '计划整改', value: (<Fragment>{rectify_user_name}<span className={+status === 7 ? styles.warningText : styles.text}>{moment(+plan_rectify_time).format('YYYY-MM-DD')}</span></Fragment>) },
                         { label: '检查点', value: (<span>{item_name || '暂无数据'}</span>) },
                       ]}
                       statusLogo={this.handleStatusPhoto(status)}
