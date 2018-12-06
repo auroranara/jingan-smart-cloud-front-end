@@ -115,7 +115,7 @@ export default class App extends PureComponent {
       type: 'newUnitFireControl/fetchCurrentHiddenDanger',
       payload: {
         company_id: companyId,
-        businessType:2,
+        businessType: 2,
       },
     });
     // 获取点位巡查统计
@@ -248,6 +248,11 @@ export default class App extends PureComponent {
 
   // 点击查看隐患详情
   handleViewDnagerDetail = data => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'newUnitFireControl/fetchHiddenDangerDetail',
+      payload: { id: data.id },
+    })
     this.setState({
       dangerDetailVisible: true,
     });
@@ -272,6 +277,7 @@ export default class App extends PureComponent {
       },
       systemScore,
       currentHiddenDanger,
+      currentHiddenDanger: { timestampList },
       checkCount,
       checkList,
       pointRecordList,
@@ -426,10 +432,12 @@ export default class App extends PureComponent {
           onCardClick={this.handleViewDnagerDetail}
           {...currentHiddenDanger}
         />
-        {/* <DrawerHiddenDangerDetail
-            visible={dangerDetailVisible}
-            onClose={this.handleCloseDetailOfDanger}
-          /> */}
+        {/* 隐患详情抽屉 */}
+        <DrawerHiddenDangerDetail
+          visible={dangerDetailVisible}
+          onClose={this.handleCloseDetailOfDanger}
+          data={timestampList}
+        />
       </BigPlatformLayout>
     );
   }
