@@ -52,7 +52,7 @@ const columns = [
             placement="top"
             title={resultStatus
               .map((data, index) => {
-                return nums[index] ? `${data}-${nums[index]}` : '';
+                return nums[index] ? `${data}:${nums[index]}` : '';
               })
               .filter(data => data)
               .join('/')}
@@ -60,7 +60,7 @@ const columns = [
             <Ellipsis length={5}>
               {resultStatus
                 .map((data, index) => {
-                  return nums[index] ? `${data}-${nums[index]}` : '';
+                  return nums[index] ? `${data}:${nums[index]}` : '';
                 })
                 .filter(data => data)
                 .join('/')}
