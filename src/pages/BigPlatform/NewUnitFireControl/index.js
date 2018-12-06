@@ -50,7 +50,7 @@ export default class App extends PureComponent {
     maintenanceDrawerVisible: false,
     alarmMessageDrawerVisible: false,
     currentDrawerVisible: false, // 当前隐患抽屉可见
-    dangerDetailDrawerVisible: false, // 隐患详情抽屉可见
+    dangerDetailVisible: false, // 隐患详情抽屉可见
     // 点位巡查抽屉是否显示
     pointInspectionDrawerVisible: false,
     // 点位巡查抽屉的选中时间
@@ -290,7 +290,7 @@ export default class App extends PureComponent {
   };
 
   // 点击查看隐患详情
-  handleViewDnagerDetail = data => {
+  handleViewDangerDetail = data => {
     const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchHiddenDangerDetail',
@@ -431,8 +431,7 @@ export default class App extends PureComponent {
                     this.handleDrawerVisibleChange('check', { checkId: id });
                   }}
                   handleShowHiddenDanger={id => {
-                    this.handleDrawerVisibleChange('dangerDetail', { dangerDetailId: id });
-                    this.removeFourColorTip(id);
+                    this.handleViewDangerDetail({ id });
                   }}
                   tips={fourColorTips}
                 />
@@ -528,7 +527,7 @@ export default class App extends PureComponent {
           <CurrentHiddenDanger
             visible={currentDrawerVisible}
             onClose={this.handleCloseCurrentDrawer}
-            onCardClick={this.handleViewDnagerDetail}
+            onCardClick={this.handleViewDangerDetail}
             {...currentHiddenDanger}
           />
           {/* 隐患详情抽屉 */}
