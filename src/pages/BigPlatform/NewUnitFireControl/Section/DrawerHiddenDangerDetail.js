@@ -2,16 +2,12 @@ import React, { PureComponent } from 'react';
 import { Timeline } from 'antd';
 import TimelineItem from '../components/TimelineItem';
 import DrawerContainer from '../components/DrawerContainer';
-import styles from './drawerHiddenDangerDetail.less';
+import styles from './DrawerHiddenDangerDetail.less';
 
 export default class DrawerHiddenDangerDetail extends PureComponent {
-
   render() {
     const SPANS = [6, 18];
-    const {
-      visible,
-      onClose,
-    } = this.props
+    const { visible, onClose } = this.props;
     return (
       <DrawerContainer
         title="隐患详情"
@@ -19,39 +15,26 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
         onClose={onClose}
         width={470}
         destroyOnClose={true}
-        left={(
+        left={
           <div className={styles.drawerHiddenDangerDetail}>
             <Timeline>
-              <TimelineItem
-                label="创建隐患"
-                spans={SPANS}
-                day={'2018-12-29'}
-                hour={'10:12:00'}
-              >
+              <TimelineItem label="创建隐患" spans={SPANS} day={'2018-12-29'} hour={'10:12:00'}>
                 <div className={styles.contentContainer}>
                   <div className={styles.line}>
-                    <div className={styles.label}></div>
+                    <div className={styles.label} />
                     <div>：</div>
-                    <div className={styles.value}></div>
+                    <div className={styles.value} />
                   </div>
                 </div>
               </TimelineItem>
-              <TimelineItem
-                label="整改隐患"
-                spans={SPANS}
-                day={'2018-12-29'}
-                hour={'10:12:00'}
-              >
-                <div className={styles.contentContainer}></div>
+              <TimelineItem label="整改隐患" spans={SPANS} day={'2018-12-29'} hour={'10:12:00'}>
+                <div className={styles.contentContainer} />
               </TimelineItem>
-              <TimelineItem
-                spans={SPANS}
-                label="重新整改"
-              ></TimelineItem>
+              <TimelineItem spans={SPANS} label="重新整改" />
             </Timeline>
           </div>
-        )}
+        }
       />
-    )
+    );
   }
 }
