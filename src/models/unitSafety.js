@@ -1,14 +1,14 @@
 import {
   // 企业信息(包含人员数量四色图等)
   getCompanyMessage,
+  // 获取风险点信息
+  getRiskPointInfo,
   // 企业风险点数
   getCoItemList,
   // 特种设备
   getSpecialEquipment,
   // 企业大屏四色风险点,
   getCountDangerLocationForCompany,
-  // 获取风险点信息
-  getRiskPointInfo,
   // 获取隐患详情
   getRiskDetail,
   // 隐患总数

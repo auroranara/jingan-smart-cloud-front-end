@@ -12,6 +12,16 @@ import styles from './index.less';
 }))
 export default class App extends PureComponent {
 
+  componentDidMount() {
+    const { dispatch, match: { params: { companyId } } } = this.props;
+
+    // 获取企业信息
+    dispatch({
+      type: 'unitSafety/fetchCompanyMessage',
+      payload: { company_id: companyId },
+    });
+  }
+
   render() {
     return (
       <Layout

@@ -14,7 +14,7 @@ const { Option } = Select;
  * author: sunkai
  * date: 2018年12月02日
  */
-export default class App extends PureComponent {
+export default class FourColor extends PureComponent {
   /**
    * 下拉框
    */
@@ -131,33 +131,41 @@ export default class App extends PureComponent {
       // 容器类名
       className,
       // 模型
-      model,
+      model: {
+        companyMessage: {
+          // 风险点列表
+          point=[],
+          // 四色图列表
+          fourColorImg=[],
+        },
+      },
     } = this.props;
     // 合并以后的容器类名
     const containerClassName = classnames(styles.container, className);
     // 红，橙，黄，蓝，未评级，视频计数
-    const red = 0, orange = 0, yellow = 0, blue = 0, gray = 0, video = 0;
+    let red = 0, orange = 0, yellow = 0, blue = 0, gray = 0, video = 0;
 
     return (
       <div style={style} className={containerClassName}>
-        {/* 四色图 */}
-        <RiskImg
-          src={this.props.src}
-        >
-          {/* {list.map(item => {
-            return (
-              <RiskImgPosition
-                position={{ x: 0, y: 0 }}
-              >
-                <div>123</div>
-              </RiskImgPosition>
-            );
-          })} */}
-        </RiskImg>
         {/* 标题 */}
         <div className={styles.title}>安全风险四色图</div>
         {/* 下拉框 */}
         {/* 监控球 */}
+        {/* 四色图 */}
+        <RiskImg
+          src={this.props.src}
+        >
+          {point.map(({ itemId, xNum, yNum, fixImgId }) => {
+            return (
+              <RiskImgPosition
+                key={itemId}
+                position={{ x: xNum, y: yNum }}
+              >
+                <div>123</div>
+              </RiskImgPosition>
+            );
+          })}
+        </RiskImg>
         {/* 图例 */}
         {this.renderLegend(red, orange, yellow, blue, gray, video)}
       </div>
