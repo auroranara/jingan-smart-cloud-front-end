@@ -60,7 +60,7 @@ export default class App extends PureComponent {
               <div className={styles.itemValue} style={{ color: '#04fdff' }}>
                 {workOrderList2.length}
               </div>
-              <div className={styles.itemLabel}>未超期工单</div>
+              <div className={styles.itemLabel}>待完成工单</div>
             </div>
           </div>
           <div className={styles.itemWrapper}>

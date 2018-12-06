@@ -9,6 +9,7 @@ import fine from '../imgs/fine.png';
 import error from '../imgs/error.png';
 
 export default class FireDevice extends PureComponent {
+
   getImageByStatus = (status) => {
     switch(+status) {
       case 1:
@@ -41,10 +42,11 @@ export default class FireDevice extends PureComponent {
       return total;
     }, []);
 
+    console.log(result);
     return (
       <Section title="消防设施情况">
         <div className={styles.container}>
-          <Carousel autoplay>
+          <Carousel autoplay autoplaySpeed={5000}>
             {result.map((cols, index) => {
               const [{ sysId }] = cols;
               return (
@@ -57,6 +59,7 @@ export default class FireDevice extends PureComponent {
                   ))}
                 </div>
               );
+              // return <div key={index}>{index}</div>
             })}
           </Carousel>
         </div>
