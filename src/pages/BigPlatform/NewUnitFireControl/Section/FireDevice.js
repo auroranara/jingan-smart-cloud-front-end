@@ -47,7 +47,7 @@ export default class FireDevice extends PureComponent {
         <div className={styles.container}>
           <Carousel autoplay autoplaySpeed={5000}>
             {result.map((cols, index) => {
-              const [{ sysId }] = cols;
+              const { sysId } = cols;
               return (
                 <div key={sysId} className={styles.wrapper}>
                   {cols.map(({ sysId, sysName, status }) => (
