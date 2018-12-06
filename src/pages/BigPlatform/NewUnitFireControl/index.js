@@ -230,16 +230,14 @@ export default class App extends PureComponent {
           // 如果前一条隐患还没消失，则移除前一条隐患
           if (fourColorTips[itemId] === messageFlag) {
             return;
-          }
-          else if (fourColorTips[itemId]) {
+          } else if (fourColorTips[itemId]) {
             this.setState({
-              fourColorTips: {...fourColorTips, [itemId]: messageFlag},
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
               deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
             });
-          }
-          else {
+          } else {
             this.setState({
-              fourColorTips: {...fourColorTips, [itemId]: messageFlag},
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
             });
           }
         }
@@ -254,7 +252,7 @@ export default class App extends PureComponent {
     const { fourColorTips, deletedFourColorTips } = this.state;
     // 删除对应的tip，将隐患id存放到删除列表中
     this.setState({
-      fourColorTips: {...fourColorTips, [id]: undefined},
+      fourColorTips: { ...fourColorTips, [id]: undefined },
       deletedFourColorTips: deletedFourColorTips.concat(hiddenDangerId),
     });
   };
@@ -390,6 +388,7 @@ export default class App extends PureComponent {
       workOrderList7,
       workOrderDetail, // 只有一个元素的数组
     } = this.props.newUnitFireControl;
+
     const {
       videoVisible,
       showVideoList,
@@ -529,7 +528,7 @@ export default class App extends PureComponent {
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
-          <PointPositionName
+          {/* <PointPositionName
             visible={pointDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />

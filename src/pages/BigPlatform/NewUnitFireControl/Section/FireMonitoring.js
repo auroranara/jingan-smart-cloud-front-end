@@ -54,6 +54,7 @@ export default class FireMonitoring extends PureComponent {
               style={{
                 backgroundImage: `url(${line})`,
                 backgroundRepeat: 'no-repeat',
+                backgroundSize: '2% 100%',
               }}
             >
               <p className={styles.linkageCount}>{linkage || 0}</p>
@@ -64,6 +65,7 @@ export default class FireMonitoring extends PureComponent {
               style={{
                 backgroundImage: `url(${line})`,
                 backgroundRepeat: 'no-repeat',
+                backgroundSize: '2% 100%',
               }}
             >
               <p className={styles.regulationCount}>{supervise || 0}</p>
@@ -74,6 +76,7 @@ export default class FireMonitoring extends PureComponent {
               style={{
                 backgroundImage: `url(${line})`,
                 backgroundRepeat: 'no-repeat',
+                backgroundSize: '2% 100%',
               }}
             >
               <p className={styles.shieldCount}>{shield || 0}</p>
