@@ -210,11 +210,16 @@ export default class App extends PureComponent {
   }
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    return JSON.stringify(this.props.newUnitFireControl.screenMessage) !== JSON.stringify(prevProps.newUnitFireControl.screenMessage);
+    return (
+      JSON.stringify(this.props.newUnitFireControl.screenMessage) !==
+      JSON.stringify(prevProps.newUnitFireControl.screenMessage)
+    );
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { newUnitFireControl: { screenMessage } } = this.props;
+    const {
+      newUnitFireControl: { screenMessage },
+    } = this.props;
     if (snapshot) {
       this.msgSuccess({ list: [...screenMessage] });
     }
@@ -222,40 +227,63 @@ export default class App extends PureComponent {
 
   msgSuccess = res => {
     const first = res.list[0];
-    if(!first) return;
+    if (!first) return;
     const { type, messageFlag } = first;
-    if(type === 5 || type === 6) {
+    if (type === 5 || type === 6) {
       const msgItem = msgInfo[type.toString()];
-      const style = { boxShadow: `0px 0px 20px ${msgItem.color}`, animation: `${msgItem.animation} 2s linear 0s infinite alternate` };
+      const style = {
+        boxShadow: `0px 0px 20px ${msgItem.color}`,
+        animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
+      };
       notification.open({
         className: styles.notification,
         message: this.renderNotificationTitle(first),
         description: this.renderNotificationMsg(first),
         style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
-        onClick: () => { console.log(messageFlag); },
+        onClick: () => {
+          console.log(messageFlag);
+        },
       });
     }
-  }
+  };
 
   renderNotificationTitle = item => {
     const { type } = item;
     const msgItem = msgInfo[type.toString()];
     return (
-      <div className={styles.notificationTitle} style={{ color: msgItem.color }}><span className={styles.iconFire}><img src={msgItem.icon} alt='fire'/></span>{msgItem.title}</div>
+      <div className={styles.notificationTitle} style={{ color: msgItem.color }}>
+        <span className={styles.iconFire}>
+          <img src={msgItem.icon} alt="fire" />
+        </span>
+        {msgItem.title}
+      </div>
     );
-  }
+  };
 
   renderNotificationMsg = item => {
     const { type, addTime, installAddress, componentType, messageFlag } = item;
     const msgItem = msgInfo[type.toString()];
     return (
-      <div className={styles.notificationBody} onClick={() => { console.log(messageFlag); }}>
-        <div><span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span> <span className={styles.address}>{installAddress}</span></div>
-        <div><span className={styles.device} style={{ color: msgItem.color }}>【{componentType}】</span>{msgItem.body}</div>
+      <div
+        className={styles.notificationBody}
+        onClick={() => {
+          console.log(messageFlag);
+        }}
+      >
+        <div>
+          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          <span className={styles.address}>{installAddress}</span>
+        </div>
+        <div>
+          <span className={styles.device} style={{ color: msgItem.color }}>
+            【{componentType}】
+          </span>
+          {msgItem.body}
+        </div>
         <div>{msgItem.bottom}</div>
       </div>
     );
-  }
+  };
 
   componentWillUnmount() {
     clearInterval(this.pollTimer);
@@ -312,16 +340,14 @@ export default class App extends PureComponent {
   };
 
   fetchMaintenanceCheck = id => {
-    const {
-      dispatch,
-    } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchMaintenanceDetail',
       payload: {
         id,
       },
     });
-  }
+  };
 
   /**
    * 获取大屏消息
@@ -683,12 +709,11 @@ export default class App extends PureComponent {
             pointRecordLists={pointRecordLists}
             checkAbnormal={checkAbnormal}
             currentHiddenDanger={currentHiddenDanger}
-            handleDangerCards={this.handleDangerCards}
-            handlePointDangerDetail={this.handleViewDangerDetail}
             checkStatus={checkStatus}
             checkPointName={checkPointName}
             checkItemId={checkItemId}
             count={count}
+            handlePointDangerDetail={this.handleViewDangerDetail}
             onClose={() => {
               this.setState({
                 pointDrawerVisible: false,
@@ -717,7 +742,7 @@ export default class App extends PureComponent {
           <CurrentHiddenDanger
             visible={currentDrawerVisible}
             onClose={this.handleCloseCurrentDrawer}
-            onCardClick={this.handleViewDangerDetail}
+            onCardClick={this.handleViewDangerDetailhandleViewDangerDetail}
             {...currentHiddenDanger}
           />
           {/* 隐患详情抽屉 */}
@@ -741,7 +766,7 @@ export default class App extends PureComponent {
             onClose={() => this.handleDrawerVisibleChange('maintenance')}
           />
         </div>
-	      <MaintenanceCheckDrawer
+        <MaintenanceCheckDrawer
           model={this.props.newUnitFireControl}
           visible={maintenanceCheckDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
