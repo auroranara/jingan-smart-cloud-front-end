@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Icon } from 'antd';
+import { Icon } from 'antd';
 import Section from '../Section';
 import moment from 'moment';
 import DescriptionList from 'components/DescriptionList';
@@ -19,6 +19,7 @@ const getEmptyData = () => {
 const { Description } = DescriptionList;
 export default class Messages extends PureComponent {
   renderMsg = (msg, index) => {
+    const { handleParentChange, fetchData } = this.props;
     const {
       type,
       title,
@@ -64,9 +65,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber}
-            回路
-            {partNumber}号
+            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -90,9 +89,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber}
-            回路
-            {partNumber}号
+            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -124,8 +121,8 @@ export default class Messages extends PureComponent {
           </div>
         </div>
       );
-    } else if (type === 8) {
-      // 真实火警处理
+    } else if (type === 8 || type === 19) {
+      // 真实火警处理，误报火警处理
       msgItem = (
         <div className={styles.msgItem} key={index}>
           <a className={styles.detailBtn}>
@@ -324,7 +321,13 @@ export default class Messages extends PureComponent {
       // 维保巡检
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleParentChange({ maintenanceCheckDrawerVisible: true });
+              fetchData(messageFlag);
+            }}
+          >
             详情
             <Icon type="double-right" />
           </a>
