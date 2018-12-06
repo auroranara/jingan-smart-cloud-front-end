@@ -21,6 +21,7 @@ import CurrentHiddenDanger from './Section/CurrentHiddenDanger';
 import DrawerHiddenDangerDetail from './Section/DrawerHiddenDangerDetail';
 import PointPositionName from './Section/PointPositionName';
 import PointInspectionDrawer from './PointInspectionDrawer';
+import MaintenanceDrawer from './Section/MaintenanceDrawer';
 
 const DELAY = 5 * 1000;
 // const CHART_DELAY = 10 * 60 * 1000;
@@ -42,8 +43,12 @@ export default class App extends PureComponent {
     videoKeyId: undefined,
     riskDrawerVisible: false, // 是否显示对应弹框
     pointDrawerVisible: false, // 点位名称弹框
+    // 1 已完成   2 待处理   7 已超期
+    drawerType: 7,
     workOrderDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
+    maintenanceDrawerVisible: false,
+    alarmMessageDrawerVisible: false,
     currentDrawerVisible: false, // 当前隐患抽屉可见
     dangerDetailVisible: false, // 隐患详情抽屉可见
     // 点位巡查抽屉是否显示
@@ -103,6 +108,12 @@ export default class App extends PureComponent {
         company_id: companyId,
       },
     });
+
+    // 获取警情动态详情
+    this.handleFetchAlarmHandle();
+
+    // 初始化维保工单
+    [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
 
     // 获取当前隐患图表统计数据
     dispatch({
@@ -215,7 +226,7 @@ export default class App extends PureComponent {
   };
 
   /**
-   * 0:已超期工单,1:未超期工单,2:已完成工单
+   * 7:已超期工单,2:未超期工单,1:已完成工单
    */
   handleDrawerVisibleChange = (name, rest) => {
     const stateName = `${name}DrawerVisible`;
@@ -264,6 +275,38 @@ export default class App extends PureComponent {
     this.setState({ pointInspectionDrawerSelectedDate: date });
   };
 
+  handleFetchAlarmHandle = (dataId=0) => {
+    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+
+    dispatch({
+      type: 'newUnitFireControl/fetchAlarmHandle',
+      payload: { companyId, dataId },
+    });
+  }
+
+  // 获取维保工单或维保动态详情
+  handleFetchWorkOrder = (status, id) => {
+    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchWorkOrder',
+      payload: { companyId, id, status },
+    });
+  };
+
+  handleWorkOrderLabelChange = type => {
+    this.setState({ drawerType: type });
+  };
+
+  handleWorkOrderCardClick = id => {
+    this.handleDrawerVisibleChange('maintenance');
+    this.handleFetchWorkOrder(undefined, id);
+  };
+
+  handleClickMeassge = dataId => {
+    this.fetchAlarmHandle(dataId);
+    this.handleDrawerVisibleChange('alarmMessage');
+  };
+
   render() {
     // 从props中获取数据
     const {
@@ -281,6 +324,12 @@ export default class App extends PureComponent {
       checkCount,
       checkList,
       pointRecordList,
+      alarmHandleMessage,
+      alarmHandleList,
+      workOrderList1,
+      workOrderList2,
+      workOrderList7,
+      workOrderDetail, // 只有一个元素的数组
     } = this.props.newUnitFireControl;
     const {
       videoVisible,
@@ -291,12 +340,14 @@ export default class App extends PureComponent {
       pointInspectionDrawerVisible,
       pointInspectionDrawerSelectedDate,
       riskDrawerVisible,
-      checkDrawerVisible,
+      // checkDrawerVisible,
       pointDrawerVisible,
       currentDrawerVisible,
       dangerDetailVisible,
-    } = this.state;
-
+      drawerType,
+      maintenanceDrawerVisible,
+      alarmMessageDrawerVisible,
+    } = this.state
     const {
       monitor: { allCamera },
       match: {
@@ -351,6 +402,7 @@ export default class App extends PureComponent {
                   linkage={start_state}
                   supervise={supervise_state}
                   feedback={feedback_state}
+                  handleShowDrawer={e => this.handleDrawerVisibleChange('alarmDynamic')}
                 />
               </div>
             </div>
@@ -396,11 +448,13 @@ export default class App extends PureComponent {
             visible={riskDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
-          <WorkOrderDrawer
-            visible={workOrderDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('workOrder')}
+          <AlarmDynamicDrawer
+            data={alarmHandleMessage}
+            visible={alarmMessageDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('alarmMessage')}
           />
           <AlarmDynamicDrawer
+            data={alarmHandleList}
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
@@ -408,36 +462,42 @@ export default class App extends PureComponent {
             visible={pointDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           />
+          <PointInspectionDrawer
+            date={pointInspectionDrawerSelectedDate}
+            handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
+            model={this.props.newUnitFireControl}
+            loadData={this.fetchPointInspectionList}
+            visible={pointInspectionDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('pointInspection')}
+          />
+          {/* 当前隐患抽屉 */}
+          <CurrentHiddenDanger
+            visible={currentDrawerVisible}
+            onClose={this.handleCloseCurrentDrawer}
+            onCardClick={this.handleViewDnagerDetail}
+            {...currentHiddenDanger}
+          />
+          {/* 隐患详情抽屉 */}
+          <DrawerHiddenDangerDetail
+            visible={dangerDetailVisible}
+            onClose={this.handleCloseDetailOfDanger}
+            data={timestampList}
+          />
+          <WorkOrderDrawer
+            data={{ workOrderList1, workOrderList2, workOrderList7 }}
+            type={drawerType}
+            visible={workOrderDrawerVisible}
+            handleLabelChange={this.handleWorkOrderLabelChange}
+            onClose={() => this.handleDrawerVisibleChange('workOrder')}
+            handleCardClick={this.handleWorkOrderCardClick}
+          />
+          <MaintenanceDrawer
+            type={drawerType}
+            data={workOrderDetail}
+            visible={maintenanceDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('maintenance')}
+          />
         </div>
-        <WorkOrderDrawer
-          visible={workOrderDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('workOrder')}
-        />
-        <AlarmDynamicDrawer
-          visible={alarmDynamicDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
-        />
-        <PointInspectionDrawer
-          date={pointInspectionDrawerSelectedDate}
-          handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
-          model={this.props.newUnitFireControl}
-          loadData={this.fetchPointInspectionList}
-          visible={pointInspectionDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('pointInspection')}
-        />
-        {/* 当前隐患抽屉 */}
-        <CurrentHiddenDanger
-          visible={currentDrawerVisible}
-          onClose={this.handleCloseCurrentDrawer}
-          onCardClick={this.handleViewDnagerDetail}
-          {...currentHiddenDanger}
-        />
-        {/* 隐患详情抽屉 */}
-        <DrawerHiddenDangerDetail
-          visible={dangerDetailVisible}
-          onClose={this.handleCloseDetailOfDanger}
-          data={timestampList}
-        />
       </BigPlatformLayout>
     );
   }

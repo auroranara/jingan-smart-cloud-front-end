@@ -21,6 +21,7 @@ export default class FireMonitoring extends PureComponent {
       supervise = 0,
       // 反馈
       feedback = 0,
+      handleShowDrawer,
     } = this.props;
     return (
       <Section title="虚拟消控主机">
@@ -39,7 +40,7 @@ export default class FireMonitoring extends PureComponent {
               </div>
             </div>
             <div className={styles.twoTotal}>
-              <p className={styles.fireTitle}>
+              <p className={styles.fireTitle} onClick={handleShowDrawer}>
                 火警 <span className={styles.fireCount}>{fire || 0}</span>
               </p>
               <p className={styles.errorTitle}>

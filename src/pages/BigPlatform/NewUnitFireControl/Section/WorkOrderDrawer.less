@@ -1,4 +1,4 @@
-@cyan: rgb(76, 206, 240);
+@cyan: rgb(4, 253, 253);
 
 .outer {
   padding-right: 8px;
@@ -8,9 +8,11 @@
 .card {
   color: #FFF;
   padding: 15px 0 15px 15px;
-  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
-  background-color: rgb(4, 59, 126);
+  // box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  // background-color: rgb(4, 59, 126);
+  border: 1px solid @cyan;
   position: relative;
+  cursor: pointer;
 
   p {
     margin-bottom: 8px;
@@ -40,31 +42,36 @@
 }
 
 .day {
-  color: @cyan;
+  // color: @cyan;
+  color: #FFF;
   margin-bottom: 0;
   text-align: center;
   line-height: 1;
 }
 
+.days {
+  margin: 0 2px;
+}
+
 .info {
-  padding: 5px 15px;
+  padding: 2px 10px;
   border-radius: 15px;
   color: @cyan;
   border: 1px solid @cyan;
   margin-left: 10px;
 }
 
-.position {
+.zero {
   color: @cyan;
-  margin-right: 4em;
-}
-
-.num:extend(.position) {
   margin-right: 1em;
 }
 
-.person:extend(.position) {
+.one:extend(.zero) {
   margin-right: 2em;
+}
+
+.two:extend(.zero) {
+  margin-right: 3em;
 }
 
 .normal {
@@ -90,10 +97,11 @@
   margin-right: 10px;
   border: 1px solid @cyan;
   border-radius: 16px;
+  cursor: pointer;
 }
 
-.selectedSpan:extend(.span) {
-  background-color: rgb(4, 59, 126);
+.selected:extend(.span) {
+  background-color: rgb(3, 44, 91);
 }
 
 .cards {
