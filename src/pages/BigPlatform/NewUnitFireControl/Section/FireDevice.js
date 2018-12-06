@@ -50,7 +50,7 @@ export default class FireDevice extends PureComponent {
               return (
                 <div key={sysId} className={styles.wrapper}>
                   {cols.map(({ sysId, sysName, status }) => (
-                    <div className={styles.item}>
+                    <div className={styles.item} key={sysId}>
                       <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
                       <div className={styles.label}>{sysName}</div>
                     </div>
