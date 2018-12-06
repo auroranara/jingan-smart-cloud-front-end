@@ -50,11 +50,13 @@ export default class App extends PureComponent {
     maintenanceDrawerVisible: false,
     alarmMessageDrawerVisible: false,
     currentDrawerVisible: false, // 当前隐患抽屉可见
-    dangerDetailVisible: false, // 隐患详情抽屉可见
+    dangerDetailDrawerVisible: false, // 隐患详情抽屉可见
     // 点位巡查抽屉是否显示
     pointInspectionDrawerVisible: false,
     // 点位巡查抽屉的选中时间
     pointInspectionDrawerSelectedDate: moment().format('YYYY-MM-DD'),
+    // 四色图贴士
+    fourColorTips: [],
   };
 
   componentDidMount() {
@@ -137,12 +139,18 @@ export default class App extends PureComponent {
       },
     });
     // 获取大屏消息
+    this.fetchScreenMessage(dispatch, companyId);
+
+    // 获取点位
     dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
+      type: 'newUnitFireControl/fetchPointList',
       payload: {
         companyId,
       },
     });
+
+    // 获取点位巡查列表
+    this.fetchPointInspectionList();
 
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
@@ -182,32 +190,56 @@ export default class App extends PureComponent {
     // });
 
     // 获取大屏消息
-    dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchScreenMessage(dispatch, companyId);
   };
 
   /**
    * 获取点位巡查列表
    */
-  fetchPointInspectionList = type => {
+  fetchPointInspectionList = (date = this.state.pointInspectionDrawerSelectedDate) => {
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
     } = this.props;
-    const { pointInspectionDrawerSelectedDate } = this.state;
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionList',
       payload: {
         companyId,
-        date: pointInspectionDrawerSelectedDate,
-        type,
+        date,
       },
+    });
+  };
+
+  /**
+   * 获取大屏消息
+   */
+  fetchScreenMessage = (dispatch, companyId) => {
+    dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+      payload: {
+        companyId,
+      },
+      success: ({ list: [{ itemId, type } = {}] }) => {
+        const { fourColorTips } = this.state;
+        // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+        if (type === 14 && fourColorTips.indexOf(itemId) === -1) {
+          this.setState({
+            fourColorTips: fourColorTips.concat(itemId),
+          });
+        }
+      },
+    });
+  };
+
+  /**
+   * 移除四色图隐患提示
+   */
+  removeFourColorTip = id => {
+    const { fourColorTips } = this.state;
+    this.setState({
+      fourColorTips: fourColorTips.filter(item => item !== id),
     });
   };
 
@@ -259,11 +291,11 @@ export default class App extends PureComponent {
 
   // 点击查看隐患详情
   handleViewDnagerDetail = data => {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchHiddenDangerDetail',
       payload: { id: data.id },
-    })
+    });
     this.setState({
       dangerDetailVisible: true,
     });
@@ -273,20 +305,31 @@ export default class App extends PureComponent {
    */
   handleChangePointInspectionDrawerSelectedDate = date => {
     this.setState({ pointInspectionDrawerSelectedDate: date });
+    this.fetchPointInspectionList(date);
   };
 
-  handleFetchAlarmHandle = (dataId=0) => {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+  handleFetchAlarmHandle = (dataId = 0) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
 
     dispatch({
       type: 'newUnitFireControl/fetchAlarmHandle',
       payload: { companyId, dataId },
     });
-  }
+  };
 
   // 获取维保工单或维保动态详情
   handleFetchWorkOrder = (status, id) => {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchWorkOrder',
       payload: { companyId, id, status },
@@ -347,7 +390,8 @@ export default class App extends PureComponent {
       drawerType,
       maintenanceDrawerVisible,
       alarmMessageDrawerVisible,
-    } = this.state
+      fourColorTips,
+    } = this.state;
     const {
       monitor: { allCamera },
       match: {
@@ -381,7 +425,17 @@ export default class App extends PureComponent {
             <div className={styles.topMain}>
               <div className={styles.inner}>
                 {/* 四色图 */}
-                <FourColor model={this.props.newUnitFireControl} />
+                <FourColor
+                  model={this.props.newUnitFireControl}
+                  handleShowPointDetail={id => {
+                    this.handleDrawerVisibleChange('check', { checkId: id });
+                  }}
+                  handleShowHiddenDanger={id => {
+                    this.handleDrawerVisibleChange('dangerDetail', { dangerDetailId: id });
+                    this.removeFourColorTip(id);
+                  }}
+                  tips={fourColorTips}
+                />
               </div>
             </div>
             <div className={styles.topItem} style={{ right: 0, zIndex: 100 }}>

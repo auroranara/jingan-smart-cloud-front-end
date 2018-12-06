@@ -245,6 +245,20 @@ export async function getPointInspectionCount(params) {
   return request(`/acloud_new/v2/nanxiao/fire/getPointCheck?${stringify(params)}`);
 }
 
+/**
+ * 南消：获取点位巡查列表
+ */
+export async function getPointInspectionList(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getPointDetail?${stringify(params)}`);
+}
+
+/**
+ * 南消：获取点位
+ */
+export async function getPointList(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getPointLocation?${stringify(params)}`);
+}
+
 // 获取大屏消息
 export async function getScreenMessage(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/screenMessage?${stringify(params)}`);
