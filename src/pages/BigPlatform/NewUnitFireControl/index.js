@@ -102,6 +102,7 @@ export default class App extends PureComponent {
     // 检查点对应名称
     checkPointName: '',
     maintenanceCheckDrawerVisible: false,
+    fireAlarmTitle: '',
   };
 
   componentDidMount() {
@@ -548,7 +549,7 @@ export default class App extends PureComponent {
   }
 
   // 查看火灾自动报警抽屉
-  handleViewFireAlarm = ({ sysId }) => {
+  handleViewFireAlarm = ({ sysId, sysName }) => {
     const {
       dispatch,
       match: {
@@ -567,6 +568,7 @@ export default class App extends PureComponent {
 
     this.setState({
       fireAlarmVisible: true,
+      fireAlarmTitle: sysName,
     })
   }
 
@@ -623,6 +625,7 @@ export default class App extends PureComponent {
       checkItemId,
       maintenanceCheckDrawerVisible,
       faultDrawerVisible,
+      fireAlarmTitle,
     } = this.state;
     const {
       monitor: { allCamera },
@@ -720,7 +723,7 @@ export default class App extends PureComponent {
                 {/* 点位巡查统计 */}
                 <PointInspectionCount
                   model={this.props.newUnitFireControl}
-                  handleShowDrawer={(name, params) => {this.handleDrawerVisibleChange(name, params);this.fetchPointInspectionList(params.pointInspectionDrawerSelectedDate);}}
+                  handleShowDrawer={(name, params) => { this.handleDrawerVisibleChange(name, params); this.fetchPointInspectionList(params.pointInspectionDrawerSelectedDate); }}
                 />
               </div>
             </div>
@@ -835,6 +838,7 @@ export default class App extends PureComponent {
           <DrawerOfFireAlarm
             visible={fireAlarmVisible}
             onClose={this.handleCloseFireAlarm}
+            title={fireAlarmTitle}
             {...fireAlarm}
           />
           <MaintenanceDrawer
