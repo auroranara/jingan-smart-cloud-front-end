@@ -64,6 +64,7 @@ const transformHiddenDangerFields = ({
   plan_rectify_time,
   real_rectify_time,
   review_user_name,
+  operator_name,
   status,
   hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
   source_type_name,
@@ -81,7 +82,7 @@ const transformHiddenDangerFields = ({
     zgr: rectify_user_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
-    fcr: review_user_name,
+    fcr: +status === 4 ? operator_name : review_user_name, //review_user_name,
     status: +status,
     background: background ? background.split(',')[0] : '',
     source:
