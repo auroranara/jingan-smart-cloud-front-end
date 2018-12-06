@@ -42,18 +42,16 @@ export default class FireDevice extends PureComponent {
       }
       return total;
     }, []);
-
-    console.log(result);
     return (
       <Section title="消防设施情况">
         <div className={styles.container}>
           <Carousel autoplay autoplaySpeed={5000}>
             {result.map((cols, index) => {
-              const [{ sysId }] = cols;
+              const { sysId } = cols;
               return (
                 <div key={sysId} className={styles.wrapper}>
                   {cols.map(({ sysId, sysName, status }) => (
-                    <div className={styles.item} key={sysId} onClick={() => { onClick({ sysId }) }}>
+                    <div className={styles.item} key={sysId} onClick={() => { onClick({ sysId, sysName }) }}>
                       <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
                       <div className={styles.label}>{sysName}</div>
                     </div>

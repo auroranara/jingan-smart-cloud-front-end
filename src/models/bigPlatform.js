@@ -71,7 +71,8 @@ const transformHiddenDangerFields = ({
   business_type,
   review_time,
 }) => {
-  let background, operator_name;
+  let background,
+    operator_name = '';
   if (hiddenDangerRecordDto && hiddenDangerRecordDto.length) {
     background = hiddenDangerRecordDto[0].fileWebUrl;
     operator_name = hiddenDangerRecordDto[hiddenDangerRecordDto.length - 1].operator_name; // 取隐患最后结束的

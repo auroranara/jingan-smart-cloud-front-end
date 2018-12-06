@@ -292,17 +292,20 @@ export default class TopCenter extends PureComponent {
           pagination={false}
           loading={smokeListLoding}
         />
-        <div className={styles.footer}>
-          <div>
-            <span className={styles.pagesText}>
-              每页
-              {pageSize}
-              行，共计
-              {page}页
-            </span>
-          </div>
-          <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
-        </div>
+        {smokeListByPage &&
+          smokeListByPage > 0 && (
+            <div className={styles.footer}>
+              <div>
+                <span className={styles.pagesText}>
+                  每页
+                  {pageSize}
+                  行，共计
+                  {page}页
+                </span>
+              </div>
+              <Pagination current={pageNum} total={total} onChange={this.handleSomkePageChange} />
+            </div>
+          )}
       </Modal>
     );
   };

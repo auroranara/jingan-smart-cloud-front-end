@@ -16,6 +16,10 @@ export default class PointInspectionCount extends PureComponent {
   showTipTimer = null;
   // 当前显示的tip索引
   currentIndex = -1;
+  state = {
+    start: 0,
+    end: 100,
+  }
 
   componentDidMount() {
     // 添加曲线图显示文字定时器
@@ -75,6 +79,12 @@ export default class PointInspectionCount extends PureComponent {
         const { handleShowDrawer } = this.props;
         handleShowDrawer && handleShowDrawer('pointInspection', { pointInspectionDrawerSelectedDate: moment(e.name, 'MM-DD').format('YYYY-MM-DD') });
       });
+      chart.on('datazoom', ({ start, end }) => {
+        this.setState({
+          start,
+          end,
+        });
+      });
     }
   }
 
@@ -100,14 +110,20 @@ export default class PointInspectionCount extends PureComponent {
       coverageList.push(coverage);
       unNormalList.push(unNormal);
     });
+    const { start, end } = this.state;
 
     const option = {
       // 时间轴
       dataZoom: [{
         type: 'slider',
         textStyle: { color: '#fff' },
-        startValue: 23,
-        endValue: 29,
+        // startValue: 23,
+        // endValue: 29,
+        start,
+        end,
+        bottom: 0,
+        top: '90%',
+        // realtime: false,
       }],
       // 图例
       // legend: {
@@ -150,11 +166,10 @@ export default class PointInspectionCount extends PureComponent {
         },
       }],
       grid: {
-        // top: 30,
         top: 20,
         left: 20,
         right: 20,
-        bottom: 40,
+        bottom: '12%',
         containLabel: true,
       },
       tooltip: {

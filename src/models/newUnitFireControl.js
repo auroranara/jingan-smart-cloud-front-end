@@ -945,7 +945,9 @@ export default {
       return { ...state, workOrderList2: action.payload };
     },
     saveWorkOrderList7(state, action) {
-      return { ...state, workOrderList7: action.payload };
+      const list = action.payload;
+      list.sort((item, item1) => item.plan_finish_date - item1.plan_finish_date);
+      return { ...state, workOrderList7: list };
     },
     saveWorkOrderDetail(state, action) {
       return { ...state, workOrderDetail: action.payload };

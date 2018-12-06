@@ -89,11 +89,12 @@ export default class DrawerOfFireAlarm extends PureComponent {
       visible,
       list,
       pagination,
+      title,
     } = this.props
 
     return (
       <DrawerContainer
-        title="火灾自动报警系统"
+        title={title}
         visible={visible}
         onClose={onClose}
         width={470}
