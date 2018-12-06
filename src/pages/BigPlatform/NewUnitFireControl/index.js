@@ -531,7 +531,7 @@ export default class App extends PureComponent {
           {/* <PointPositionName
             visible={pointDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
+          />*/}
           <PointInspectionDrawer
             date={pointInspectionDrawerSelectedDate}
             handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
