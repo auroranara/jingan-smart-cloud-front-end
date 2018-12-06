@@ -17,6 +17,7 @@
     "build:changshu": "cross-env PROJECT_ENV=changshu ESLINT=none umi build",
     "build:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi build",
     "build:xuexiao": "cross-env PROJECT_ENV=xuexiao ESLINT=none umi build",
+    "build:nanxiao": "cross-env PROJECT_ENV=nanxiao ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",
     "analyze": "cross-env ESLINT=none ANALYZE=1 umi build",
     "lint:style": "stylelint \"src/**/*.less\" --syntax less",

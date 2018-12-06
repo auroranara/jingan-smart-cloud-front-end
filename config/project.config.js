@@ -94,4 +94,20 @@ export default {
       zoom: 13,
     },
   },
+  nanxiao: {
+    region: '无锡',
+    logo: '',
+    mail: 'jazh@jingan-china.cn',
+    mainWeb: 'https://www.jingan-china.cn',
+    projectKey: 'v2_test',
+    projectName: '智慧消防云平台',
+    servicePhone: '400-928-5656',
+    serviceSupport: '无锡晶安智慧科技有限公司',
+    // safetyGovernmentTitle: '校园晶安智慧云平台',
+    location: {
+      x: 120.401163,
+      y: 31.560116,
+      zoom: 13,
+    },
+  },
 };

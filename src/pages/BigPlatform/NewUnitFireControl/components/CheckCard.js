@@ -1,8 +1,14 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import styles from './index.less';
+import styles from './CheckCard.less';
+// import image from '@/assets/processing.png';
 
-export default class ImageCard extends PureComponent {
+import ErrorCheck from '../imgs/errorCheck.png';
+import NormalCheck from '../imgs/normalCheck.png';
+import OverTime from '../imgs/overTime.png';
+import WaitTime from '../imgs/waitTime.png';
+
+export default class CheckCard extends PureComponent {
   static propTypes = {
     isCardClick: PropTypes.bool, // 是否可点击
     onCardClick: PropTypes.func, // 点击触发
@@ -10,9 +16,7 @@ export default class ImageCard extends PureComponent {
     showRightIcon: PropTypes.bool, // 是否显示右上角图标
     cardPadding: PropTypes.string, // 外层padding
     contentList: PropTypes.array.isRequired, // 渲染图片右侧区块的列表
-    photo: PropTypes.string, // 图片地址
-    statusLogo: PropTypes.string, // 状态logo地址
-    backgroundColor: PropTypes.string, // 背景色
+    photo: PropTypes.string.isRequired, // 图片地址
   };
 
   static defaultProps = {
@@ -20,15 +24,13 @@ export default class ImageCard extends PureComponent {
     showRightIcon: true,
     showStatusLogo: true,
     cardPadding: '15px 20px 10px 20px',
-    backgroundColor: 'transparent',
   };
 
   renderItem = () => {
     const { contentList } = this.props;
     return contentList.map(({ label, value }, index) => (
       <div className={styles.line} key={index}>
-        <span className={styles.label}>{label}</span>
-        <span className={styles.colon}>：</span>
+        <span className={styles.label}>{label} :</span>
         <span className={styles.value}>{value}</span>
       </div>
     ));
@@ -41,47 +43,35 @@ export default class ImageCard extends PureComponent {
       showStatusLogo,
       showRightIcon,
       cardPadding,
-      photo,
-      statusLogo,
-      backgroundColor,
+      status,
     } = this.props;
+
+    const statusLogo =
+      (+status === 2 && ErrorCheck) ||
+      (+status === 1 && NormalCheck) ||
+      (+status === 4 && OverTime) ||
+      (+status === 3 && WaitTime) ||
+      null;
+
     return (
       <div
         onClick={isCardClick ? onCardClick : null}
         className={styles.imageCard}
-        style={{
-          padding: cardPadding,
-          cursor: isCardClick ? 'pointer' : 'default',
-          backgroundColor,
-        }}
+        style={{ padding: cardPadding, cursor: isCardClick ? 'pointer' : 'default' }}
       >
         <div className={styles.contentContainer}>
-          <div className={styles.imageContainer}>
-            {photo && (
-              <div
-                className={styles.image}
-                style={{
-                  background: `url(${photo})`,
-                  backgroundSize: 'contain',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center center',
-                }}
-              />
-            )}
-          </div>
           <div className={styles.content}>{this.renderItem()}</div>
         </div>
         {showStatusLogo && (
           <div
             className={styles.statusLogo}
             style={{
-              background: `url(${statusLogo})`,
-              backgroundSize: '100% 100%',
-              backgroundRepeat: 'no-repeat',
-              right: '2%',
-              bottom: '6%',
+              right: '5%',
+              bottom: '21%',
             }}
-          />
+          >
+            <img src={statusLogo} style={{ width: '100%', height: '100%' }} alt="status" />
+          </div>
         )}
         {showRightIcon && (
           <div

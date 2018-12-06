@@ -6,20 +6,25 @@ import styles from './TimelineItem.less';
 const { Item } = Timeline;
 
 export default function TimelineItem(props) {
-  const { label, children, containerStyle, ...restProps } = props;
+  const { label, day, hour, children, spans, containerStyle, ...restProps } = props;
+  const isHandled = !!children;
 
   return (
     <Item {...restProps}>
       <Row>
-        <Col span={3}>
-          <span className={styles.label}>{label}</span>
+        <Col span={spans ? spans[0] : 3}>
+          <p className={styles.labelContainer}><span className={isHandled ? styles.label : styles.greyLabel}>{label}</span></p>
+          {day && <p className={styles.p}>{day}</p>}
+          {hour && <p className={styles.p}>{hour}</p>}
         </Col>
-        <Col span={21}>
-          <div className={styles.outer}>
-            <div className={styles.container} style={containerStyle}>
-              {children}
+        <Col span={spans ? spans[1] : 21}>
+          {isHandled && (
+            <div className={styles.outer}>
+              <div className={styles.container} style={containerStyle}>
+                {children}
+              </div>
             </div>
-          </div>
+          )}
         </Col>
       </Row>
     </Item>

@@ -1,6 +1,7 @@
 .imageCard {
   padding: 15px 20px 10px 20px;
   width: 100%;
+  background-color: #043b7e;
   position: relative;
   overflow: hidden;
   border: 1px solid #04fdff;
@@ -45,40 +46,6 @@
     .content {
       flex: 1;
       height: 100%;
-      padding: 0.5em 1em;
-      .line {
-        & span {
-          font-size: 14px;
-        }
-        overflow: hidden;
-        line-height: 15px;
-        display: flex;
-        .label {
-          text-align: justify;
-          width: 4em;
-          float: left;
-          color: #04fdff;
-        }
-        .label::after {
-          content: '';
-          width: 100%;
-          display: inline-block;
-          overflow: hidden;
-          height: 0;
-        }
-        .colon {
-          color: #04fdff;
-        }
-        .value {
-          display: inline-block;
-          text-indent: 0.8em;
-          white-space: nowrap;
-          flex: 1;
-          color: white;
-        }
-      }
-    }
-    .extraContent {
       padding: 1.5em 1em;
       color: #fff;
       .line {
@@ -89,8 +56,8 @@
         line-height: 15px;
         display: flex;
         .label {
-          text-align: justify;
-          width: 4em;
+          text-align: left;
+          width: 7em;
           float: left;
           color: #04fdff;
         }
@@ -115,10 +82,11 @@
   }
   .statusLogo {
     position: absolute;
-    width: 83px;
-    height: 79px;
+    width: 100px;
+    height: 85px;
     right: 2%;
     bottom: 6%;
+    // background-size: 100% 100%;
   }
   .rightIcon {
     position: absolute;

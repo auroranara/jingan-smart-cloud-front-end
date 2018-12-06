@@ -233,6 +233,12 @@ export async function getSystemScore(params) {
 }
 
 /**
+ * 获取当前隐患图表数据
+ */
+export async function fetchHiddenDangerNum(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getHiddenDangerNum?${stringify(params)}`)
+}
+/**
  * 南消：点位巡查统计
  */
 export async function getPointInspectionCount(params) {
@@ -251,4 +257,30 @@ export async function getPointInspectionList(params) {
  */
 export async function getPointList(params) {
   return request(`/acloud_new/v2/nanxiao/fire/getPointLocation?${stringify(params)}`);
+}
+
+// 获取大屏消息
+export async function getScreenMessage(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/screenMessage?${stringify(params)}`);
+}
+
+/**
+ * 检查点各状态数量
+ */
+export async function getCheckStatusCount(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointDataByCompanyId?${stringify(params)}`);
+}
+
+/**
+ * 各检查点具体信息
+ */
+export async function getCheckDetail(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointData?${stringify(params)}`);
+}
+
+/**
+ * 巡查点异常记录
+ */
+export async function getPonitRecord(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getItemById?${stringify(params)}`);
 }

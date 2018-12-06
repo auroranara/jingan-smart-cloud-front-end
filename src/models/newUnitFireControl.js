@@ -33,16 +33,28 @@ import {
   getRiskPointInfo,
   // 获取消防设施评分
   getSystemScore,
+  //  获取当前隐患图表数据
+  fetchHiddenDangerNum,
   // 南消：获取点位巡查统计
   getPointInspectionCount,
   // 南消：获取点位巡查列表
   getPointInspectionList,
   // 南消：获取点位
   getPointList,
+  // 获取大屏消息
+  getScreenMessage,
+  // 检查点各状态数量
+  getCheckStatusCount,
+  // 检查点具体信息
+  getCheckDetail,
+  // 巡查点异常记录
+  getPonitRecord,
 } from '../services/bigPlatform/fireControl';
+
 import {
-  getRiskDetail,
-} from '../services/bigPlatform/bigPlatform';
+  getHiddenDangerDetail, // 获取隐患详情
+} from '../services/hiddenDangerReport';
+import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import moment from 'moment';
 
 const getColorByRiskLevel = function(level) {
@@ -199,12 +211,37 @@ export default {
     },
     // 消防设施评分
     systemScore: {},
+    // 当前隐患
+    currentHiddenDanger: {
+      rectifyNum: 0, // 未超期
+      reviewNum: 0, // 待复查
+      overRectifyNum: 0, // 已超期
+      totalNum: 0, // 总数
+      list: [], // 隐患列表
+      detail: {
+        hiddenDanger: {},
+        hiddenDangerRecord: [],
+        timeLine: [],
+      }, // 隐患详情
+    },
     // 点位巡查统计
     pointInspectionCount: [],
     // 点位巡查列表
     pointInspectionList: {},
     // 点位
     pointList: [],
+    // 获取大屏消息
+    screenMessage: [],
+    // 检查点状态数量
+    checkCount: {},
+    // 检查点具体信息
+    checkList: {
+      checkLists: [],
+    },
+    // 巡查点异常记录
+    pointRecordList: {
+      pointRecordLists: [],
+    },
   },
 
   effects: {
@@ -490,6 +527,66 @@ export default {
         });
       }
     },
+    // 获取检查点各状态数量
+    *fetchCheckCount({ payload }, { call, put }) {
+      const response = yield call(getCheckStatusCount, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCheckCount',
+          payload: response.data,
+        });
+      }
+    },
+    // 获取检查点具体信息
+    *fetchCheckDetail({ payload }, { call, put }) {
+      const response = yield call(getCheckDetail, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCheckList',
+          payload: response.data.list || [],
+        });
+      }
+    },
+    // 巡查点异常记录
+    *fetchPointRecord({ payload }, { call, put }) {
+      const response = yield call(getPonitRecord, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'savePointRecord',
+          payload: response.data.result || [],
+        });
+      }
+    },
+    // 获取当前隐患图表统计数据
+    *fetchHiddenDangerNum({ payload }, { call, put }) {
+      const response = yield call(fetchHiddenDangerNum, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCurrentHiddenDanger',
+          payload: response.data,
+        });
+      }
+    },
+    // 获取当前隐患列表
+    *fetchCurrentHiddenDanger({ payload }, { call, put }) {
+      const response = yield call(getHiddenDangerRecords, payload);
+      if (response && response.hiddenDangers) {
+        yield put({
+          type: 'saveHiddenDangerList',
+          payload: response.hiddenDangers,
+        });
+      }
+    },
+    // 获取隐患详情
+    *fetchHiddenDangerDetail({ payload }, { call, put }) {
+      const response = yield call(getHiddenDangerDetail, payload);
+      if (response && response.hiddenDangers) {
+        yield put({
+          type: 'saveHiddenDangerDetail',
+          payload: response.data,
+        });
+      }
+    },
     // 南消：点位巡查统计
     *fetchPointInspectionCount({ payload, callback }, { call, put }) {
       const response = yield call(getPointInspectionCount, payload);
@@ -521,6 +618,21 @@ export default {
       });
       if (callback) {
         callback(response.data.list);
+      }
+    },
+    // 获取大屏消息
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
       }
     },
   },
@@ -571,6 +683,72 @@ export default {
       return {
         ...state,
         systemScore: payload || {},
+      };
+    },
+    // 检查点状态数量
+    saveCheckCount(state, { payload }) {
+      return {
+        ...state,
+        checkCount: payload || {},
+      };
+    },
+    // 检查点具体信息
+    saveCheckList(state, { payload }) {
+      return {
+        ...state,
+        checkList: {
+          ...state.checkList,
+          checkLists: payload || [],
+        },
+      };
+    },
+    // 巡查点异常记录
+    savePointRecord(state, { payload }) {
+      return {
+        ...state,
+        pointRecordList: {
+          ...state.pointRecordList,
+          pointRecordLists: payload || [],
+        },
+      };
+    },
+    // 保存当前隐患内容
+    saveCurrentHiddenDanger(state, { payload }) {
+      return {
+        ...state,
+        currentHiddenDanger: {
+          ...state.currentHiddenDanger,
+          ...payload,
+        },
+      };
+    },
+    // 保存当前隐患列表
+    saveHiddenDangerList(state, { payload }) {
+      // 筛选掉已结束 1新建隐患.2待整改,3待复查,4已结束,7,超期未整改
+      const list = payload.filter(({ status }) => +status !== 4);
+      return {
+        ...state,
+        currentHiddenDanger: {
+          ...state.currentHiddenDanger,
+          list,
+        },
+      };
+    },
+    saveHiddenDangerDetail(state, { payload }) {
+      return {
+        ...state,
+        currentHiddenDanger: {
+          ...state.currentHiddenDanger,
+          detail: {
+            ...payload,
+          },
+        },
+      };
+    },
+    screenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: payload.list,
       };
     },
   },
