@@ -74,7 +74,8 @@ function OrderCard(props) {
           {type === 7 && <p className={styles.day}>已超期<span className={styles.days}>{days}</span>天</p>}
         </div>
         <p className={styles.time}>
-          {moment(isOneKey ? create_date : save_time).format('YYYY-MM-DD HH:MM:SS')}
+          {/* {moment(isOneKey ? create_date : save_time).format('YYYY-MM-DD HH:mm:ss')} */}
+          {moment(create_date).format('YYYY-MM-DD HH:mm:ss')}
           <span className={styles.info}>{TYPES[isOneKey ? 0 : 1]}</span>
         </p>
         {ITEMS[isOneKey ? 0 : 1].map(item => (
