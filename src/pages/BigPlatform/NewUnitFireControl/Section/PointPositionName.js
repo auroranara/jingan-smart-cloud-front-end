@@ -1,14 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Col, Table } from 'antd';
+import { Col, Table, Tooltip } from 'antd';
+import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 import ImageCard from '@/components/ImageCard';
 
 import styles from './PointPositionName.less';
 import DrawerContainer from '../components/DrawerContainer';
 import PointError from '../imgs/pointError.png';
-import PointNormal from '../imgs/PointNormal.png';
-
-const TYPE = 'point';
+import lastCheckPoint from '../imgs/lastCheckPoint.png';
+import normalCheckPoint from '../imgs/normalCheckPoint.png';
+import waitCheckPoint from '../imgs/waitCheckPoint.png';
 
 const columns = [
   {
@@ -32,7 +33,7 @@ const columns = [
     key: 'status',
     align: 'center',
     render: val => {
-      return +val === 1 ? '正常' : '异常';
+      return +val === 1 ? <span>正常</span> : <span style={{ color: '#ff4848' }}>异常</span>;
     },
   },
   {
@@ -40,19 +41,89 @@ const columns = [
     dataIndex: 'data',
     key: 'data',
     align: 'center',
+    width: '50',
+    render: val => {
+      const { finish, overTime, rectifyNum, reviewNum } = val;
+      const status = ['已超期', '待整改', '待复查', '已关闭'];
+      const nums = [overTime, rectifyNum, reviewNum, finish];
+      return (
+        <div>
+          <Tooltip
+            placement="top"
+            title={status
+              .map((data, index) => {
+                return nums[index] ? `${data}-${nums[index]}` : '';
+              })
+              .filter(data => data)
+              .join('/')}
+          >
+            <Ellipsis length={5}>
+              {status
+                .map((data, index) => {
+                  return nums[index] ? `${data}-${nums[index]}` : '';
+                })
+                .filter(data => data)
+                .join('/')}
+            </Ellipsis>
+          </Tooltip>
+        </div>
+      );
+    },
   },
 ];
 
 export default class PointPositionName extends PureComponent {
+  handleStatusPhoto = status => {
+    //2待整改   3待复查, 7  超期未整改
+    switch (+status) {
+      case 2:
+        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/wcq.png';
+      case 3:
+        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/dfc.png';
+      case 7:
+        return 'http://data.jingan-china.cn/v2/big-platform/safety/com/ycq.png';
+      default:
+        return '';
+    }
+  };
+
   render() {
-    const { visible, pointRecordLists, handleDrawerVisibleChange, ...restProps } = this.props;
+    const {
+      visible,
+      pointRecordLists,
+      checkAbnormal,
+      count,
+      checkStatus,
+      currentHiddenDanger: { list = [] },
+      itemId,
+      ...restProps
+    } = this.props;
 
-    const list = [];
+    const dangerList = list.filter(item => item.item_id === itemId);
 
-    const cards = list.map(item => {
-      const { pointTitle, user, time, pointStatus, photoUrl } = item;
+    const statusLogo =
+      (+checkStatus === 2 && PointError) ||
+      (+checkStatus === 1 && normalCheckPoint) ||
+      (+checkStatus === 4 && lastCheckPoint) ||
+      (+checkStatus === 3 && waitCheckPoint) ||
+      null;
+
+    const cards = dangerList.map(item => {
+      const {
+        desc,
+        report_user_name,
+        report_time,
+        rectify_user_name,
+        real_rectify_time,
+        item_name,
+        plan_rectify_time,
+        status,
+        hiddenDangerRecordDto,
+        index,
+      } = item;
       return (
         <ImageCard
+          key={index}
           style={{ marginBottom: '1em' }}
           extraStyle={true}
           showRightIcon={true}
@@ -62,22 +133,35 @@ export default class PointPositionName extends PureComponent {
             console.log('click');
           }}
           contentList={[
-            { label: '点位名称', value: pointTitle },
+            { label: '隐患描述', value: desc || '暂无数据' },
             {
-              label: '上次检查',
+              label: '上报',
               value: (
                 <Fragment>
-                  {user}
-                  <span style={{ marginLeft: '1em' }}>{time}</span>
+                  {report_user_name}
+                  <span className={styles.text}>{moment(+report_time).format('YYYY-MM-DD')}</span>
                 </Fragment>
               ),
             },
             {
-              label: '点位状态',
-              value: <Fragment>{pointStatus}</Fragment>,
+              label: '计划整改',
+              value: (
+                <Fragment>
+                  {rectify_user_name}
+                  <span
+                    className={
+                      real_rectify_time > plan_rectify_time ? styles.warningText : styles.text
+                    }
+                  >
+                    {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                  </span>
+                </Fragment>
+              ),
             },
+            { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
           ]}
-          photo={photoUrl}
+          statusLogo={this.handleStatusPhoto(status)}
+          photo={hiddenDangerRecordDto[0].fileWebUrl}
         />
       );
     });
@@ -92,32 +176,47 @@ export default class PointPositionName extends PureComponent {
             <div
               className={styles.icon}
               style={{
-                backgroundImage: `url(${PointError})`,
+                backgroundImage: `url(${statusLogo})`,
               }}
             />
           </Col>
         </div>
 
-        <div className={styles.cardsTitle}>
-          <p className={styles.titleP}>
-            当前隐患
-            <span className={styles.titleSpan}>(2)</span>
-          </p>
-        </div>
-        <div className={styles.cards}>
-          <div className={styles.cardsMain}>
-            {list.length ? (
-              cards
-            ) : (
-              <div style={{ textAlign: 'center', color: '#fff' }}>{'暂无数据'}</div>
-            )}
-          </div>
-        </div>
+        {+checkStatus !== 1 &&
+          dangerList &&
+          dangerList.length > 0 && (
+            <div className={styles.cardsTitle}>
+              <p className={styles.titleP}>
+                当前隐患
+                <span className={styles.titleSpan}>({dangerList.length})</span>
+              </p>
+            </div>
+          )}
+
+        {+checkStatus !== 1 &&
+          dangerList &&
+          dangerList.length > 0 && (
+            <div className={styles.cards}>
+              <div className={styles.cardsMain}>
+                {dangerList.length ? (
+                  cards
+                ) : (
+                  <div style={{ textAlign: 'center', color: '#fff' }}>{'暂无数据'}</div>
+                )}
+              </div>
+            </div>
+          )}
 
         <div className={styles.recordTitle}>
           <p className={styles.titleP}>
             巡查记录
-            <span className={styles.titleSpan}>(共9次，异常2次)</span>
+            <span className={styles.titleSpan}>
+              (共
+              {count}
+              次，异常
+              {checkAbnormal}
+              次)
+            </span>
           </p>
         </div>
         <div className={styles.record}>
@@ -135,7 +234,6 @@ export default class PointPositionName extends PureComponent {
         visible={visible}
         left={left}
         placement="right"
-        onClose={() => handleDrawerVisibleChange(TYPE)}
         {...restProps}
       />
     );

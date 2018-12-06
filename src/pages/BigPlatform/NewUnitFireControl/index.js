@@ -55,6 +55,10 @@ export default class App extends PureComponent {
     pointInspectionDrawerVisible: false,
     // 点位巡查抽屉的选中时间
     pointInspectionDrawerSelectedDate: moment().format('YYYY-MM-DD'),
+    // 四色图贴士
+    fourColorTips: {},
+    // 四色图贴士对应的已删除id
+    deletedFourColorTips: [],
   };
 
   componentDidMount() {
@@ -137,12 +141,18 @@ export default class App extends PureComponent {
       },
     });
     // 获取大屏消息
+    this.fetchScreenMessage(dispatch, companyId);
+
+    // 获取点位
     dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
+      type: 'newUnitFireControl/fetchPointList',
       payload: {
         companyId,
       },
     });
+
+    // 获取点位巡查列表
+    this.fetchPointInspectionList();
 
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
@@ -182,32 +192,68 @@ export default class App extends PureComponent {
     // });
 
     // 获取大屏消息
-    dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchScreenMessage(dispatch, companyId);
   };
 
   /**
    * 获取点位巡查列表
    */
-  fetchPointInspectionList = type => {
+  fetchPointInspectionList = (date = this.state.pointInspectionDrawerSelectedDate) => {
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
     } = this.props;
-    const { pointInspectionDrawerSelectedDate } = this.state;
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionList',
       payload: {
         companyId,
-        date: pointInspectionDrawerSelectedDate,
-        type,
+        date,
       },
+    });
+  };
+
+  /**
+   * 获取大屏消息
+   */
+  fetchScreenMessage = (dispatch, companyId) => {
+    dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+      payload: {
+        companyId,
+      },
+      success: ({ list: [{ itemId, messageFlag, type } = {}] }) => {
+        const { fourColorTips, deletedFourColorTips } = this.state;
+        // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+        if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+          // 如果前一条隐患还没消失，则移除前一条隐患
+          if (fourColorTips[itemId] === messageFlag) {
+            return;
+          } else if (fourColorTips[itemId]) {
+            this.setState({
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+              deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
+            });
+          } else {
+            this.setState({
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+            });
+          }
+        }
+      },
+    });
+  };
+
+  /**
+   * 移除四色图隐患提示
+   */
+  removeFourColorTip = (id, hiddenDangerId) => {
+    const { fourColorTips, deletedFourColorTips } = this.state;
+    // 删除对应的tip，将隐患id存放到删除列表中
+    this.setState({
+      fourColorTips: { ...fourColorTips, [id]: undefined },
+      deletedFourColorTips: deletedFourColorTips.concat(hiddenDangerId),
     });
   };
 
@@ -258,12 +304,12 @@ export default class App extends PureComponent {
   };
 
   // 点击查看隐患详情
-  handleViewDnagerDetail = data => {
-    const { dispatch } = this.props
+  handleViewDangerDetail = data => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchHiddenDangerDetail',
       payload: { id: data.id },
-    })
+    });
     this.setState({
       dangerDetailVisible: true,
     });
@@ -273,20 +319,31 @@ export default class App extends PureComponent {
    */
   handleChangePointInspectionDrawerSelectedDate = date => {
     this.setState({ pointInspectionDrawerSelectedDate: date });
+    this.fetchPointInspectionList(date);
   };
 
-  handleFetchAlarmHandle = (dataId=0) => {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+  handleFetchAlarmHandle = (dataId = 0) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
 
     dispatch({
       type: 'newUnitFireControl/fetchAlarmHandle',
       payload: { companyId, dataId },
     });
-  }
+  };
 
   // 获取维保工单或维保动态详情
   handleFetchWorkOrder = (status, id) => {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchWorkOrder',
       payload: { companyId, id, status },
@@ -331,6 +388,7 @@ export default class App extends PureComponent {
       workOrderList7,
       workOrderDetail, // 只有一个元素的数组
     } = this.props.newUnitFireControl;
+
     const {
       videoVisible,
       showVideoList,
@@ -347,7 +405,9 @@ export default class App extends PureComponent {
       drawerType,
       maintenanceDrawerVisible,
       alarmMessageDrawerVisible,
-    } = this.state
+      fourColorTips,
+      deletedFourColorTips,
+    } = this.state;
     const {
       monitor: { allCamera },
       match: {
@@ -381,7 +441,17 @@ export default class App extends PureComponent {
             <div className={styles.topMain}>
               <div className={styles.inner}>
                 {/* 四色图 */}
-                <FourColor model={this.props.newUnitFireControl} />
+                <FourColor
+                  model={this.props.newUnitFireControl}
+                  handleShowPointDetail={id => {
+                    this.handleDrawerVisibleChange('check', { checkId: id });
+                  }}
+                  handleShowHiddenDanger={(id, hiddenDangerId) => {
+                    this.handleViewDangerDetail({ id: hiddenDangerId });
+                    this.removeFourColorTip(id, hiddenDangerId);
+                  }}
+                  tips={fourColorTips}
+                />
               </div>
             </div>
             <div className={styles.topItem} style={{ right: 0, zIndex: 100 }}>
@@ -458,10 +528,10 @@ export default class App extends PureComponent {
             visible={alarmDynamicDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           />
-          <PointPositionName
+          {/* <PointPositionName
             visible={pointDrawerVisible}
             handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
+          />*/}
           <PointInspectionDrawer
             date={pointInspectionDrawerSelectedDate}
             handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
@@ -474,7 +544,7 @@ export default class App extends PureComponent {
           <CurrentHiddenDanger
             visible={currentDrawerVisible}
             onClose={this.handleCloseCurrentDrawer}
-            onCardClick={this.handleViewDnagerDetail}
+            onCardClick={this.handleViewDangerDetail}
             {...currentHiddenDanger}
           />
           {/* 隐患详情抽屉 */}

@@ -38,7 +38,9 @@ import {
   // 南消：获取点位巡查统计
   getPointInspectionCount,
   // 南消：获取点位巡查列表
-  // getPointInspectionList,
+  getPointInspectionList,
+  // 南消：获取点位
+  getPointList,
   // 获取大屏消息
   getScreenMessage,
   // 检查点各状态数量
@@ -269,7 +271,9 @@ export default {
     // 点位巡查统计
     pointInspectionCount: [],
     // 点位巡查列表
-    pointInspectionList: [],
+    pointInspectionList: {},
+    // 点位
+    pointList: [],
     // 获取大屏消息
     screenMessage: [],
     // 检查点状态数量
@@ -280,6 +284,8 @@ export default {
     },
     // 巡查点异常记录
     pointRecordList: {
+      abnormal: 0,
+      count: 0,
       pointRecordLists: [],
     },
     // 火警消息
@@ -590,13 +596,16 @@ export default {
       }
     },
     // 获取检查点具体信息
-    *fetchCheckDetail({ payload }, { call, put }) {
+    *fetchCheckDetail({ payload, callback }, { call, put }) {
       const response = yield call(getCheckDetail, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveCheckList',
           payload: response.data.list || [],
         });
+        if (callback) {
+          callback(callback);
+        }
       }
     },
     // 巡查点异常记录
@@ -605,7 +614,7 @@ export default {
       if (response && response.code === 200) {
         yield put({
           type: 'savePointRecord',
-          payload: response.data.result || [],
+          payload: response.data || {},
         });
       }
     },
@@ -653,11 +662,21 @@ export default {
     },
     // 南消：获取点位巡查列表
     *fetchPointInspectionList({ payload, callback }, { call, put }) {
-      // const response = yield call(getPointInspectionList, payload);
-      const response = { data: { list: [] } };
+      const response = yield call(getPointInspectionList, payload);
       yield put({
         type: 'save',
-        payload: { pointInspectionList: response.data.list },
+        payload: { pointInspectionList: response.data },
+      });
+      if (callback) {
+        callback(response.data);
+      }
+    },
+    // 南消：获取点位
+    *fetchPointList({ payload, callback }, { call, put }) {
+      const response = yield call(getPointList, payload);
+      yield put({
+        type: 'save',
+        payload: { pointList: response.data.list },
       });
       if (callback) {
         callback(response.data.list);
@@ -771,7 +790,9 @@ export default {
         ...state,
         pointRecordList: {
           ...state.pointRecordList,
-          pointRecordLists: payload || [],
+          pointRecordLists: payload.result || [],
+          abnormal: payload.abnormal || 0,
+          count: payload.count || 0,
         },
       };
     },
