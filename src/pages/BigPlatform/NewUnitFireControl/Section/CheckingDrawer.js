@@ -6,9 +6,6 @@ import styles from './CheckingDrawer.less';
 import CheckCard from '../components/CheckCard';
 import DrawerContainer from '../components/DrawerContainer';
 import CheckLabel from '../components/CheckLabel';
-import PointPositionName from './PointPositionName';
-
-// const TYPE = 'check';
 
 // 检查点状态
 const normal = 1; // 正常
@@ -22,13 +19,17 @@ const overTime = 4; // 超时检查
 export default class CheckingDrawer extends PureComponent {
   state = {
     status: '',
-    checkStatus: '',
-    itemId: '',
-    pointDrawerVisible: false, // 点位名称弹框
   };
 
   componentDidMount() {
     const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchCheckCount',
+      payload: {
+        companyId,
+        item_type: 2,
+      },
+    });
     dispatch({
       type: 'newUnitFireControl/fetchCheckDetail',
       payload: {
@@ -67,31 +68,13 @@ export default class CheckingDrawer extends PureComponent {
     });
   };
 
-  // 打开点位名称抽屉
-  handlePointDrawer = (id, checkStatus) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'newUnitFireControl/fetchPointRecord',
-      payload: {
-        itemId: id,
-        item_type: 2,
-      },
-    });
-    this.setState({
-      pointDrawerVisible: true,
-      checkStatus: checkStatus,
-      itemId: id,
-    });
-  };
-
   render() {
-    const { status, pointDrawerVisible, checkStatus, itemId } = this.state;
+    const { status } = this.state;
     const {
       visible,
       checkCount,
       checkList: { checkLists },
-      pointRecordList: { pointRecordLists, abnormal: checkAbnormal, count },
-      newUnitFireControl: { currentHiddenDanger },
+      handlePointDrawer,
       ...restProps
     } = this.props;
     const {
@@ -119,7 +102,7 @@ export default class CheckingDrawer extends PureComponent {
           showStatusLogo={true}
           isCardClick={true}
           onCardClick={() => {
-            this.handlePointDrawer(item_id, checkStatus);
+            handlePointDrawer(item);
           }}
           contentList={[
             { label: '点位名称', value: object_title },
@@ -162,21 +145,6 @@ export default class CheckingDrawer extends PureComponent {
             <div style={{ textAlign: 'center', color: '#fff' }}>{'暂无数据'}</div>
           )}
         </div>
-        <PointPositionName
-          visible={pointDrawerVisible}
-          pointRecordLists={pointRecordLists}
-          checkAbnormal={checkAbnormal}
-          currentHiddenDanger={currentHiddenDanger}
-          handleDangerCards={this.handleDangerCards}
-          checkStatus={checkStatus}
-          itemId={itemId}
-          count={count}
-          onClose={() => {
-            this.setState({
-              pointDrawerVisible: false,
-            });
-          }}
-        />
       </div>
     );
 
