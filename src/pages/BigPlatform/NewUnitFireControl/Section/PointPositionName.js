@@ -95,11 +95,12 @@ export default class PointPositionName extends PureComponent {
       count,
       checkStatus,
       currentHiddenDanger: { list = [] },
-      itemId,
+      checkItemId,
+      checkPointName,
+      handlePointDangerDetail,
       ...restProps
     } = this.props;
-
-    const dangerList = list.filter(item => item.item_id === itemId);
+    const dangerList = list.filter(item => item.item_id === checkItemId);
 
     const statusLogo =
       (+checkStatus === 2 && PointError) ||
@@ -130,7 +131,7 @@ export default class PointPositionName extends PureComponent {
           showStatusLogo={true}
           isCardClick={true}
           onCardClick={() => {
-            console.log('click');
+            handlePointDangerDetail(item);
           }}
           contentList={[
             { label: '隐患描述', value: desc || '暂无数据' },
@@ -229,7 +230,7 @@ export default class PointPositionName extends PureComponent {
 
     return (
       <DrawerContainer
-        title="点位名称"
+        title={checkPointName}
         width={485}
         visible={visible}
         left={left}

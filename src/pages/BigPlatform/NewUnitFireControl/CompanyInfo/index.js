@@ -10,8 +10,6 @@ import iconMaintenance from '@/assets/icon-maintenance.png';
 import iconHd from '@/assets/icon-hidden-danger.png';
 import iconCheck from '@/assets/icon-check.png';
 
-import CheckingDrawer from '../Section/CheckingDrawer';
-
 /**
  * description: 点位巡查统计
  * author: sunkai
@@ -23,38 +21,16 @@ const { Description } = DescriptionList;
   newUnitFireControl,
 }))
 export default class App extends PureComponent {
-  state = {
-    checkDrawerVisible: false, // 检查点弹框
-  };
-
-  handleCheckDrawer = () => {
-    const { dispatch, companyId } = this.props;
-    dispatch({
-      type: 'newUnitFireControl/fetchCheckCount',
-      payload: {
-        companyId,
-        item_type: 2,
-      },
-    });
-    this.setState({
-      checkDrawerVisible: true,
-    });
-  };
-
   render() {
-    const { checkDrawerVisible } = this.state;
     const {
       handleViewCurrentDanger,
+      handleCheckDrawer,
       model: {
         companyMessage: {
           companyMessage: { companyName, headOfSecurity, headOfSecurityPhone, countCheckItem },
         },
         riskDetailList: { ycq = [], wcq = [], dfc = [] },
       },
-      checkCount,
-      checkList,
-      companyId,
-      pointRecordList,
     } = this.props;
 
     const hiddenDanger = ycq.length + wcq.length + dfc.length;
@@ -117,7 +93,7 @@ export default class App extends PureComponent {
               <div
                 className={styles.infoWrapper}
                 style={{ width: '120px', margin: '5px auto', cursor: 'pointer' }}
-                onClick={() => this.handleCheckDrawer()}
+                onClick={handleCheckDrawer}
               >
                 <div
                   className={styles.iconInfo}
@@ -160,18 +136,6 @@ export default class App extends PureComponent {
             </Col>
           </Row>
         </div>
-        <CheckingDrawer
-          visible={checkDrawerVisible}
-          companyId={companyId}
-          checkCount={checkCount}
-          checkList={checkList}
-          pointRecordList={pointRecordList}
-          onClose={() => {
-            this.setState({
-              checkDrawerVisible: false,
-            });
-          }}
-        />
       </Section>
     );
   }
