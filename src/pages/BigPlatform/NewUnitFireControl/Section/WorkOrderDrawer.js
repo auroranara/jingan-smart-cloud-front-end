@@ -58,7 +58,7 @@ export default class WorkOrderDrawer extends PureComponent {
     const left = (
       <div className={styles.container}>
         <div className={styles.spans}>
-          {STATUS.map(s => <span className={styles.span}>{s}-{Math.floor(Math.random() * 10)}</span>)}
+          {STATUS.map((s,index) => <span key={index} className={styles.span}>{s}-{Math.floor(Math.random() * 10)}</span>)}
         </div>
         <div className={styles.cards}>
           {CARDS.map(item => <OrderCard key={item.id} {...item} />)}

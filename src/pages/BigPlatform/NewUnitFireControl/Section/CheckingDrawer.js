@@ -92,6 +92,7 @@ export default class CheckingDrawer extends PureComponent {
       return (
         <CheckCard
           extraStyle={true}
+          key={item_id}
           status={status}
           showRightIcon={true}
           showStatusLogo={true}
