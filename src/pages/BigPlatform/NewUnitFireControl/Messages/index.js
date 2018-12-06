@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Icon } from 'antd';
+import { Icon } from 'antd';
 import Section from '../Section';
 import moment from 'moment';
 import DescriptionList from 'components/DescriptionList';
@@ -19,6 +19,7 @@ const getEmptyData = () => {
 const { Description } = DescriptionList;
 export default class Messages extends PureComponent {
   renderMsg = (msg, index) => {
+    const { handleParentChange, fetchData } = this.props;
     const {
       type,
       title,
@@ -46,6 +47,7 @@ export default class Messages extends PureComponent {
       score,
       maintenanceCompany,
       maintenanceUser,
+      addTimeStr,
     } = msg;
     let msgItem = null;
     if (type === 1 || type === 2 || type === 3 || type === 4) {
@@ -56,7 +58,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a> */}
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -64,9 +66,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber}
-            回路
-            {partNumber}号
+            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -82,7 +82,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -90,9 +90,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber}
-            回路
-            {partNumber}号
+            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -108,7 +106,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -124,15 +122,15 @@ export default class Messages extends PureComponent {
           </div>
         </div>
       );
-    } else if (type === 8) {
-      // 真实火警处理
+    } else if (type === 8 || type === 19) {
+      // 真实火警处理，误报火警处理
       msgItem = (
         <div className={styles.msgItem} key={index}>
           <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -156,7 +154,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -176,7 +174,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -196,7 +194,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -220,7 +218,7 @@ export default class Messages extends PureComponent {
       // 安全巡查
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -244,7 +242,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -268,7 +266,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -296,7 +294,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -324,11 +322,17 @@ export default class Messages extends PureComponent {
       // 维保巡检
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleParentChange({ maintenanceCheckDrawerVisible: true });
+              fetchData(messageFlag);
+            }}
+          >
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             维保单位：
@@ -347,7 +351,7 @@ export default class Messages extends PureComponent {
     } else {
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
         </div>
       );

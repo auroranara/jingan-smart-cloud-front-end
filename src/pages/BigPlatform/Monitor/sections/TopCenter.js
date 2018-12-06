@@ -254,7 +254,7 @@ export default class TopCenter extends PureComponent {
       outContact: loss = 0,
     } = smokeCountData;
 
-    const page = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
+    const page = total % pageSize === 0 ? total / pageSize : Math.floor(total / pageSize) + 1;
     const statusTotal = [totals, normal, abnormal, loss];
     const nums = [ALL, NORMAL, ABNORMAL, LOSS].map((status, index) => [status, statusTotal[index]]);
 
@@ -315,7 +315,7 @@ export default class TopCenter extends PureComponent {
       errorDevicesLoading,
     } = this.props;
 
-    const pages = total % pageSize === 0 ? total / pageSize : Math.round(total / pageSize) + 1;
+    const pages = total % pageSize === 0 ? total / pageSize : Math.floor(total / pageSize) + 1;
 
     const title = (
       <div className={styles.modalTitle}>

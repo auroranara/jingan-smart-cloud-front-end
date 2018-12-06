@@ -26,10 +26,69 @@
   height: 31%;
 }
 .item {
+  width: 20%;
   flex: 1;
   height: 100%;
 }
 .inner {
   padding: 0 4px;
   height: 100%;
+}
+
+.notification {
+  background-color: rgba(22,22,22,0.9);
+  box-shadow: 0px 0px 20px #f83329;
+  // animation-duration: 0.5s;
+  // animation: shadows 2s linear 0s infinite alternate;
+  :global {
+    .ant-notification-notice-close {
+      color: #fff;
+    }
+    .ant-notification-close-icon {
+      font-size: 16px;
+    }
+  }
+  .notificationTitle {
+    color: #f83329;
+    font-size: 18px;
+    .iconFire {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      margin-right: 3px;
+      img {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        top: -3px;
+      }
+    }
+  }
+  .notificationBody {
+    line-height: 28px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    .address {
+      margin-left: 10px;
+    }
+    .device {
+      color: #f83329;
+    }
+  }
+}
+
+@keyframes redShadow
+{
+  0%   {box-shadow: 0px 0px 20px #f83329;}
+  50%  {box-shadow: 0px 0px 0px #f83329;}
+  100% {box-shadow: 0px 0px 20px #f83329;}
+}
+
+@keyframes orangeShadow
+{
+  0%   {box-shadow: 0px 0px 20px #f4710f;}
+  50%  {box-shadow: 0px 0px 0px #f4710f;}
+  100% {box-shadow: 0px 0px 20px #f4710f;}
 }

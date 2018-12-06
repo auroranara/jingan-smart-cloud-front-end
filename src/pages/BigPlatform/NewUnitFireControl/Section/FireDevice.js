@@ -1,61 +1,67 @@
-import React from 'react';
-import { Col, Row } from 'antd';
+import React, { PureComponent } from 'react';
+import { Carousel } from 'antd';
 
 import Section from '../Section';
-// import Pie from './Pie';
 import styles from './FireDevice.less';
 
 import normal from '../imgs/normal.png';
 import fine from '../imgs/fine.png';
 import error from '../imgs/error.png';
 
-export default function FireDevice(props) {
-  const {
-    systemScore: { list: params = [] },
-    onClick,
-  } = props;
+export default class FireDevice extends PureComponent {
+  getImageByStatus = (status) => {
+    switch (+status) {
+      case 1:
+        return error;
+      case 2:
+        return normal;
+      case 3:
+        return fine;
+      default:
+        return;
+    }
+  }
 
-  return (
-    <Section title="消防设施情况">
-      <div className={styles.contaniner}>
-        <div className={styles.pieMain}>
-          <Row gutter={24} style={{ margin: 0 }}>
-            {params.map((item, index) => {
-              if (!item) return null;
-              const { sysName, status } = item;
-              if (!status) return null;
+  render() {
+    const {
+      systemScore: { list = [] },
+      onClick,
+    } = this.props;
+
+    // 移除没有状态的成员
+    const arr = list.filter(({ status }) => status);
+    // 分为4个一组
+    const result = arr.reduce((total, item, index) => {
+      const i = Math.floor(index / 4);
+      if (index % 4 === 0) {
+        total[i] = [item];
+      }
+      else {
+        total[i].push(item);
+      }
+      return total;
+    }, []);
+
+    return (
+      <Section title="消防设施情况">
+        <div className={styles.container}>
+          <Carousel autoplay>
+            {result.map((cols, index) => {
+              const [{ sysId }] = cols;
               return (
-                <Col key={index} style={{ height: '100%' }} span={12} onClick={() => onClick(item)}>
-                  {+status === 1 ? (
-                    <span
-                      className={styles.icon}
-                      style={{
-                        backgroundImage: `url(${error})`,
-                      }}
-                    />
-                  ) : +status === 2 ? (
-                    <span
-                      className={styles.icon}
-                      style={{
-                        backgroundImage: `url(${normal})`,
-                      }}
-                    />
-                  ) : +status === 3 ? (
-                    <span
-                      className={styles.icon}
-                      style={{
-                        backgroundImage: `url(${fine})`,
-                      }}
-                    />
-                  ) : null}
-
-                  {status && <p style={{ textAlign: 'center' }}>{sysName}</p>}
-                </Col>
+                <div key={sysId} className={styles.wrapper}>
+                  {cols.map(({ sysId, sysName, status }) => (
+                    <div className={styles.item} key={sysId} onClick={() => { onClick({ sysId }) }}>
+                      <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
+                      <div className={styles.label}>{sysName}</div>
+                    </div>
+                  ))}
+                </div>
               );
             })}
-          </Row>
+          </Carousel>
         </div>
-      </div>
-    </Section>
-  );
+      </Section>
+    );
+  }
 }

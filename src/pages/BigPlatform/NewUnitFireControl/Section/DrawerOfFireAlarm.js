@@ -11,7 +11,7 @@ const getEmptyValue = () => {
 export default class DrawerOfFireAlarm extends PureComponent {
 
   // 渲染运行良好和基本正常
-  renderItem = (item) => {
+  renderItem = (item, index) => {
     const {
       id,
       checkCompanyName,
@@ -26,7 +26,7 @@ export default class DrawerOfFireAlarm extends PureComponent {
       } else return acc
     }, [])
     return (
-      <div className={styles.fireAlarmItem} key={id}>
+      <div className={styles.fireAlarmItem} key={index}>
         <div className={styles.line}>
           <div className={styles.label}>
             <span>维保单位：</span>
@@ -100,9 +100,8 @@ export default class DrawerOfFireAlarm extends PureComponent {
         destroyOnClose={true}
         left={
           <div className={styles.drawerOfFireAlarm}>
-            {list.map((item) => {
+            {list.map((item, index) => {
               const {
-                id,
                 sysStatus,
                 checkCompanyName,
                 checkDate,
@@ -119,7 +118,7 @@ export default class DrawerOfFireAlarm extends PureComponent {
               // 1 error 2  normal 3 fine
               if (+sysStatus === 1) {
                 return (
-                  <div className={styles.fireAlarmItem} key={id}>
+                  <div className={styles.fireAlarmItem} key={index}>
                     {this.renderLine('维保单位：', checkCompanyName)}
                     {this.renderLine('维保时间：', checkDate)}
                     <div className={styles.line}>
@@ -150,9 +149,9 @@ export default class DrawerOfFireAlarm extends PureComponent {
                   </div>
                 )
               } else if (+sysStatus === 2) {
-                return this.renderItem(item)
+                return this.renderItem(item, index)
               } else if (+sysStatus === 3) {
-                return this.renderItem(item)
+                return this.renderItem(item, index)
               } else return null
             })}
           </div>
