@@ -47,6 +47,7 @@ export default class Messages extends PureComponent {
       score,
       maintenanceCompany,
       maintenanceUser,
+      addTimeStr,
     } = msg;
     let msgItem = null;
     if (type === 1 || type === 2 || type === 3 || type === 4) {
@@ -57,7 +58,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a> */}
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -81,7 +82,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -105,7 +106,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -129,7 +130,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -153,7 +154,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -173,7 +174,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -193,7 +194,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -217,7 +218,7 @@ export default class Messages extends PureComponent {
       // 安全巡查
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -241,7 +242,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -265,7 +266,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -293,7 +294,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -331,7 +332,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             维保单位：
@@ -350,7 +351,7 @@ export default class Messages extends PureComponent {
     } else {
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
         </div>
       );
