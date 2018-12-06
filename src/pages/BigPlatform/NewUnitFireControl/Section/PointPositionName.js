@@ -44,13 +44,13 @@ const columns = [
     width: '50',
     render: val => {
       const { finish, overTime, rectifyNum, reviewNum } = val;
-      const status = ['已超期', '待整改', '待复查', '已关闭'];
+      const resultStatus = ['已超期', '待整改', '待复查', '已关闭'];
       const nums = [overTime, rectifyNum, reviewNum, finish];
       return (
-        <div>
+        <div className={+val.status === 1 ? null : styles.resultError}>
           <Tooltip
             placement="top"
-            title={status
+            title={resultStatus
               .map((data, index) => {
                 return nums[index] ? `${data}-${nums[index]}` : '';
               })
@@ -58,7 +58,7 @@ const columns = [
               .join('/')}
           >
             <Ellipsis length={5}>
-              {status
+              {resultStatus
                 .map((data, index) => {
                   return nums[index] ? `${data}-${nums[index]}` : '';
                 })
