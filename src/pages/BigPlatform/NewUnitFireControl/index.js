@@ -56,9 +56,9 @@ export default class App extends PureComponent {
     // 点位巡查抽屉的选中时间
     pointInspectionDrawerSelectedDate: moment().format('YYYY-MM-DD'),
     // 四色图贴士
-    fourColorTips: [],
-    // 四色图贴士对应的id
-    fourColorTipsIds: {},
+    fourColorTips: {},
+    // 四色图贴士对应的已删除id
+    deletedFourColorTips: [],
   };
 
   componentDidMount() {
@@ -224,13 +224,24 @@ export default class App extends PureComponent {
         companyId,
       },
       success: ({ list: [{ itemId, messageFlag, type } = {}] }) => {
-        const { fourColorTips, fourColorTipsIds } = this.state;
+        const { fourColorTips, deletedFourColorTips } = this.state;
         // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
-        if (type === 14 && fourColorTips.indexOf(itemId) === -1) {
-          this.setState({
-            fourColorTips: fourColorTips.concat(itemId),
-            fourColorTipsIds: {...fourColorTipsIds, [itemId]: messageFlag},
-          });
+        if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+          // 如果前一条隐患还没消失，则移除前一条隐患
+          if (fourColorTips[itemId] === messageFlag) {
+            return;
+          }
+          else if (fourColorTips[itemId]) {
+            this.setState({
+              fourColorTips: {...fourColorTips, [itemId]: messageFlag},
+              deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
+            });
+          }
+          else {
+            this.setState({
+              fourColorTips: {...fourColorTips, [itemId]: messageFlag},
+            });
+          }
         }
       },
     });
@@ -239,10 +250,12 @@ export default class App extends PureComponent {
   /**
    * 移除四色图隐患提示
    */
-  removeFourColorTip = id => {
-    const { fourColorTips } = this.state;
+  removeFourColorTip = (id, hiddenDangerId) => {
+    const { fourColorTips, deletedFourColorTips } = this.state;
+    // 删除对应的tip，将隐患id存放到删除列表中
     this.setState({
-      fourColorTips: fourColorTips.filter(item => item !== id),
+      fourColorTips: {...fourColorTips, [id]: undefined},
+      deletedFourColorTips: deletedFourColorTips.concat(hiddenDangerId),
     });
   };
 
@@ -394,7 +407,7 @@ export default class App extends PureComponent {
       maintenanceDrawerVisible,
       alarmMessageDrawerVisible,
       fourColorTips,
-      fourColorTipsIds,
+      deletedFourColorTips,
     } = this.state;
     const {
       monitor: { allCamera },
@@ -434,11 +447,11 @@ export default class App extends PureComponent {
                   handleShowPointDetail={id => {
                     this.handleDrawerVisibleChange('check', { checkId: id });
                   }}
-                  handleShowHiddenDanger={id => {
-                    this.handleViewDangerDetail({ id });
+                  handleShowHiddenDanger={(id, hiddenDangerId) => {
+                    this.handleViewDangerDetail({ id: hiddenDangerId });
+                    this.removeFourColorTip(id, hiddenDangerId);
                   }}
                   tips={fourColorTips}
-                  ids={fourColorTipsIds}
                 />
               </div>
             </div>

@@ -60,7 +60,7 @@ export default class App extends PureComponent {
         // 视频列表
         videoList=[],
       },
-      tips=[],
+      tips={},
       // 显示点位信息
       handleShowPointDetail,
       // 显示点位隐患
@@ -78,11 +78,11 @@ export default class App extends PureComponent {
           {points.map(({ item_id, x_mum, y_mum, object_title, status, checkName, check_date, dangerCount }) => {
             const isAbnormal = status === 2;
             const isChecked = !!status;
-            const showTip = tips.includes(item_id);
+            const showTip = !!tips[item_id];
             // const showTip = true;
             return (
               <Tooltip overlayClassName={showTip?styles.alarmTooltip:undefined} placement="top" title={(
-                <div>有一条新的隐患！<span className={styles.alarm} onClick={() => {handleShowHiddenDanger(item_id);}}>详情>></span></div>
+                <div>有一条新的隐患！<span className={styles.alarm} onClick={() => {handleShowHiddenDanger(item_id, tips[item_id]);}}>详情>></span></div>
               )} key={item_id} visible={showTip}>
                 <Tooltip placement="rightTop" title={(
                   <div>
