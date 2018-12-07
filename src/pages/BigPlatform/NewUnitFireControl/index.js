@@ -383,6 +383,14 @@ export default class App extends PureComponent {
 
     // 获取大屏消息
     this.fetchScreenMessage(dispatch, companyId);
+
+    // 获取点位
+    dispatch({
+      type: 'newUnitFireControl/fetchPointList',
+      payload: {
+        companyId,
+      },
+    });
   };
 
   /**
