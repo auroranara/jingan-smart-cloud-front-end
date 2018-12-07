@@ -8,7 +8,8 @@ export default function CheckLabel(props) {
   const { status = 0, num = 0, selected = false, ...restProps } = props;
   return (
     <p className={selected ? styles.labelSelected : styles.label} {...restProps}>
-      <span className={styles.status}>{STATUS_CN[status]}</span>:
+      <span className={styles.status}>{STATUS_CN[status]}</span>
+      &nbsp;
       <span className={styles.num}>{num}</span>
     </p>
   );

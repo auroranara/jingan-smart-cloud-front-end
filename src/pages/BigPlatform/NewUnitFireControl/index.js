@@ -365,11 +365,8 @@ export default class App extends PureComponent {
 
     // 获取当前隐患列表
     dispatch({
-      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
+      type: 'newUnitFireControl/fetchHiddenDangerNum',
+      payload: { companyId },
     });
 
     // 获取企业信息
@@ -525,7 +522,7 @@ export default class App extends PureComponent {
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
+    } = this.props;
     // 获取当前隐患图表统计数据
     dispatch({
       type: 'newUnitFireControl/fetchHiddenDangerNum',
@@ -684,7 +681,23 @@ export default class App extends PureComponent {
   };
 
   // 点击当前隐患图表进行筛选
-  handleFilterCurrentDanger = params => { };
+  handleFilterCurrentDanger = ({ dataIndex }) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+        status: (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null,
+      },
+    });
+  }
 
   // 关闭火灾自动报警抽屉
   handleCloseFireAlarm = () => {

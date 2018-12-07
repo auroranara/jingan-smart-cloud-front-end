@@ -19,6 +19,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
     const { visible, onClose, data = [] } = this.props;
     return (
       <DrawerContainer
+        style={{ zIndex: 2000 }}
         title="隐患详情"
         visible={visible}
         onClose={onClose}
@@ -55,7 +56,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                   },
                   index
                 ) => {
-                  const itemType = timeLineType || type
+                  const itemType = timeLineType || type;
                   const [stampDay, stampHour] = timeStamp ? timeStamp.split(' ') : [null, null];
                   const picture = files.reduce((acc, item) => {
                     if (/.jpg{1}$|.png{1}$/.test(item.web_url)) {
@@ -171,32 +172,33 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                         </div>
                       </TimelineItem>
                     );
-                  } else return (
-                    <TimelineItem
-                      key={index}
-                      label={timeLineLabel}
-                      spans={SPANS}
-                      day={stampDay}
-                      hour={stampHour}
-                    >
-                      <div className={styles.contentContainer}>
-                        <DescriptionList className={styles.lineList} col={1}>
-                          <Description className={styles.line} term="复查人">
-                            {operator_name || getEmptyData()}
-                          </Description>
-                          <Description className={styles.line} term="备注">
-                            {remark || getEmptyData()}
-                          </Description>
-                        </DescriptionList>
-                        {picture &&
-                          picture.length > 0 && (
-                            <div className={styles.iamgeContainer}>
-                              <ImgSlider picture={picture} />
-                            </div>
-                          )}
-                      </div>
-                    </TimelineItem>
-                  )
+                  } else
+                    return (
+                      <TimelineItem
+                        key={index}
+                        label={timeLineLabel}
+                        spans={SPANS}
+                        day={stampDay}
+                        hour={stampHour}
+                      >
+                        <div className={styles.contentContainer}>
+                          <DescriptionList className={styles.lineList} col={1}>
+                            <Description className={styles.line} term="复查人">
+                              {operator_name || getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="备注">
+                              {remark || getEmptyData()}
+                            </Description>
+                          </DescriptionList>
+                          {picture &&
+                            picture.length > 0 && (
+                              <div className={styles.iamgeContainer}>
+                                <ImgSlider picture={picture} />
+                              </div>
+                            )}
+                        </div>
+                      </TimelineItem>
+                    );
                 }
               )}
             </Timeline>
