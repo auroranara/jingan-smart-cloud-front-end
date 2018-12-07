@@ -17,7 +17,7 @@ export default class PointInspectionCount extends PureComponent {
   // 当前显示的tip索引
   currentIndex = -1;
   state = {
-    start: 0,
+    start: 80,
     end: 100,
   }
 
