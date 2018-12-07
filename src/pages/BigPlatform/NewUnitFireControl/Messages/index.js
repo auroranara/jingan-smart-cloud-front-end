@@ -60,10 +60,6 @@ export default class Messages extends PureComponent {
       // 发生监管\联动\反馈\屏蔽
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
-            详情
-            <Icon type="double-right" />
-          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -114,10 +110,10 @@ export default class Messages extends PureComponent {
       // 火警确认
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          {/* <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
-          </a>
+          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -138,10 +134,10 @@ export default class Messages extends PureComponent {
       // 真实火警处理，误报火警处理
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          {/* <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
-          </a>
+          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -162,10 +158,10 @@ export default class Messages extends PureComponent {
       // 开始故障维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          {/* <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
-          </a>
+          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -182,10 +178,10 @@ export default class Messages extends PureComponent {
       // 故障指派维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          {/* <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
-          </a>
+          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -202,10 +198,10 @@ export default class Messages extends PureComponent {
       // 完成故障维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          {/* <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
-          </a>
+          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -279,10 +275,10 @@ export default class Messages extends PureComponent {
       // 整改隐患, 重新整改隐患
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          {/* <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
-          </a>
+          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -307,10 +303,10 @@ export default class Messages extends PureComponent {
       // 复查隐患
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          {/* <a className={styles.detailBtn}>
             详情
             <Icon type="double-right" />
-          </a>
+          </a> */}
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
