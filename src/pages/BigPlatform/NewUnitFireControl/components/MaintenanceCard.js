@@ -115,7 +115,7 @@ function getTime(time, type=0) {
 
 const SPANS = [5, 19];
 const NO_DATA = '暂无信息';
-const HOST_FAULT_DESC = '维修难道较大，指派维保';
+const HOST_FAULT_DESC = '维修难度较大，指派维保';
 
 export default function MaintenanceCard(props) {
   // type 1 已完成(处理完毕)   2 待处理(看status)   7 已超期(看status)
