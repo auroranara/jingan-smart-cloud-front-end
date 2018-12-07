@@ -54,11 +54,8 @@ import {
   fetchCheckRecord,
   queryCheckUsers,
   queryFault,
+  fetchHiddenDangerDetail,
 } from '../services/bigPlatform/fireControl';
-
-import {
-  getHiddenDangerDetail, // 获取隐患详情
-} from '../services/hiddenDangerReport';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import {
   queryMaintenanceRecordDetail,
@@ -671,7 +668,7 @@ export default {
     },
     // 获取隐患详情
     *fetchHiddenDangerDetail({ payload, callback }, { call, put }) {
-      const response = yield call(getHiddenDangerDetail, payload);
+      const response = yield call(fetchHiddenDangerDetail, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveHiddenDangerDetail',
@@ -894,7 +891,7 @@ export default {
         },
       };
     },
-    // 保存当前隐患先详情
+    // 保存当前隐患详情
     saveHiddenDangerDetail(state, { payload: {
       hiddenDanger = {},
       hiddenDangerRecord = [],
