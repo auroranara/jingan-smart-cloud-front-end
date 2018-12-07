@@ -949,6 +949,7 @@ export default class App extends PureComponent {
           />
           <FaultMessageDrawer
             data={faultMessage}
+            model={this.props.newUnitFireControl}
             visible={faultMessageDrawerVisible}
             onClose={() => this.setState({ faultMessageDrawerVisible: false })}
           />

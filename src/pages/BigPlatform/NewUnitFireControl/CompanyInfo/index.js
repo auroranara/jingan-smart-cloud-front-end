@@ -29,15 +29,14 @@ export default class App extends PureComponent {
         companyMessage: {
           companyMessage: {
             companyName = '',
-            headOfSecurity = '',
-            headOfSecurityPhone = '',
             countCheckItem = 0,
           },
         },
         currentHiddenDanger: { totalNum },
-        maintenanceCompany: { name: companyNames = [], result: userList = [] },
+        maintenanceCompany: { name: companyNames = [], result: userList = [], PrincipalName='', PrincipalPhone='' },
       },
     } = this.props;
+console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
 
     const newUsers = userList.slice(0, 2);
 
@@ -57,8 +56,8 @@ export default class App extends PureComponent {
               <DescriptionList col={1}>
                 <Description term="主要负责人">
                   <div className={styles.manWrapper} style={{ width: '145px' }}>
-                    {headOfSecurity}
-                    <span className={styles.phone}>{headOfSecurityPhone}</span>
+                    {PrincipalName}
+                    <span className={styles.phone}>{PrincipalPhone}</span>
                   </div>
                 </Description>
               </DescriptionList>
