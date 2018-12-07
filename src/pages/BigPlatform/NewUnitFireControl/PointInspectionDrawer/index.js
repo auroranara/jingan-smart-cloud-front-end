@@ -171,7 +171,7 @@ export default class PointInspectionDrawer extends PureComponent {
             </div>
           </div>
         )}
-        style={{ backgroundColor: 'rgb(3, 44, 91)', color: '#fff' }}
+        // style={{ backgroundColor: 'rgb(3, 44, 91)', color: '#fff' }}
         visible={visible}
         onClose={onClose}
       />

@@ -50,7 +50,7 @@ function OrderCard(props) {
     status=0,
     report_type,
     create_date,
-    save_time,
+    // save_time,
     plan_finish_date,
     component_no,
     component_region,
