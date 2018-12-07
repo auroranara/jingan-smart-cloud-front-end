@@ -41,12 +41,12 @@ export default class FireDevice extends PureComponent {
         total[i].push(item);
       }
       return total;
-    }, []);
+    }, [[]]);
     return (
       <Section title="消防设施情况">
         <div className={styles.container}>
           <Carousel autoplay autoplaySpeed={5000}>
-            {result.map((cols, index) => {
+            {/* {result.map((cols, index) => {
               const [{ sysName }] = cols;
               return (
                 <div key={sysName} className={styles.wrapper}>
@@ -58,8 +58,35 @@ export default class FireDevice extends PureComponent {
                   ))}
                 </div>
               );
-              // return <div key={index}>{index}</div>
-            })}
+            })} */}
+            <div className={styles.wrapper}>
+              {result[0].map(({ sysId, sysName, status }) => (
+                <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
+                  <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
+                  <div className={styles.label}>{sysName}</div>
+                </div>
+              ))}
+            </div>
+            {result.length > 1 && (
+              <div className={styles.wrapper}>
+                {result[1].map(({ sysId, sysName, status }) => (
+                  <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
+                    <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
+                    <div className={styles.label}>{sysName}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {result.length > 2 && (
+              <div className={styles.wrapper}>
+                {result[2].map(({ sysId, sysName, status }) => (
+                  <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
+                    <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
+                    <div className={styles.label}>{sysName}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </Carousel>
         </div>
       </Section>
