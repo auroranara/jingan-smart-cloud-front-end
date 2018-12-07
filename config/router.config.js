@@ -115,7 +115,7 @@ module.exports = [
      */
     // Routes: ['src/pages/Authorized'],
     routes: [
-      { path: '/', redirect: '/dashboard/view' },
+      { path: '/', redirect: '/fire-control/maintenance-company' }, // '/dashboard/view'
       {
         path: '/dashboard',
         icon: 'home',
