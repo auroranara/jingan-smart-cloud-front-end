@@ -70,6 +70,39 @@ function Handled(props) {
   );
 }
 
+/* step 获取第几步: -> 1-4
+ * faultType 故障类型: 0 -> 主机报障(显示4步)  1 -> 一键报修(显示三步);
+ * nstatus 是否进行了维保: undefined 只显示第一步，存在的话，根据status进行判断
+ * status 进行到那一步: 2 -> 第二步 0 -> 第三步 1 -> 第四步
+ */
+function isStepShow(step, faultType, status) {
+  switch(step) {
+    case 1:
+      // 一键报修，不显示第一步，其他情况第一步都要显示
+      if (faultType)
+        return false;
+      return true;
+    case 2:
+      // status不存在，只显示第一步
+      if (!status)
+        return false;
+      else
+        return status === '2' || status === '0' || status === '1';
+    case 3:
+      if (!status)
+        return false;
+      else
+        return status === '0' || status === '1';
+    case 4:
+      if (!status)
+        return false;
+      else
+        return status === '1';
+    default:
+      return false;
+  }
+}
+
 // type 0 -> 日期 1 -> 时间
 function getTime(time, type=0) {
   if (!time)
@@ -87,9 +120,8 @@ const HOST_FAULT_DESC = '维修难道较大，指派维保';
 export default function MaintenanceCard(props) {
   // type 1 已完成(处理完毕)   2 待处理(看status)   7 已超期(看status)
   const { type, data, isMaintenance, ...restProps } = props;
-  // status "2" -> 指派维保   "0" -> 受理中
   const {
-    status, // '2' -> 待处理  '0' -> 处理中
+    nstatus, // undefined -> 第一步 '2' -> 待处理  '0' -> 处理中  '1' -> 已处理
     reportPhotos,
     sitePhotos,
     // 一键报修
@@ -117,7 +149,7 @@ export default function MaintenanceCard(props) {
     update_date,
   } = data;
 
-  const isOneKey = report_type === '2'; // 是否为一键报修
+  const isOneKey = report_type === '2' ? 1 : 0; // 0 -> 主机报障  1 -> 一键报修
 
   return (
     <div className={styles.container} {...restProps}>
@@ -129,7 +161,8 @@ export default function MaintenanceCard(props) {
       <div className={styles.timeline} style={isMaintenance ? null : { borderTop: 'none' }}>
         <Timeline>
           {/* 主机故障时才会显示这个，一键报修时不显示 */}
-          {!isOneKey && (
+          {/* {!isOneKey && ( */}
+          {isStepShow(1, isOneKey, nstatus) && (
             <TimelineItem
               spans={SPANS}
               label="故障发生"
@@ -151,7 +184,8 @@ export default function MaintenanceCard(props) {
             hour={getTime(create_date, 1)}
           >
             {/* 故障弹框时，一键报修显示，主机报障不显示；维保弹框时，进行type及status的判断 */}
-            {((!isMaintenance && isOneKey) || (isMaintenance && (type === 1 || status === '2' || status === '0'))) && (
+            {/* {((!isMaintenance && isOneKey) || (isMaintenance && (type === 1 || status === '2' || status === '0'))) && ( */}
+            {isStepShow(2, isOneKey, nstatus) && (
               <Assigned
                 man={createByName || NO_DATA}
                 phone={createByPhone || NO_DATA}
@@ -172,8 +206,8 @@ export default function MaintenanceCard(props) {
             day={getTime(start_date)}
             hour={getTime(start_date, 1)}
           >
-            {/* 维保处理动态时看状态显示，故障处理动态时不显示 */}
-            {isMaintenance && (type === 1 || status === '0') && (
+            {/* {isMaintenance && (type === 1 || status === '0') && ( */}
+            {isStepShow(3, isOneKey, nstatus) && (
               <Received
                 man={executor_name || NO_DATA}
                 phone={phone || NO_DATA}
@@ -186,8 +220,8 @@ export default function MaintenanceCard(props) {
             day={getTime(update_date)}
             hour={getTime(update_date, 1)}
           >
-            {/* 维保处理动态时看状态显示，故障处理动态时不显示 */}
-            {isMaintenance && type === 1 && (
+            {/* {isMaintenance && type === 1 && ( */}
+            {isStepShow(4, isOneKey, nstatus) && (
               <Handled
                 man={executor_name || NO_DATA}
                 phone={phone || NO_DATA}

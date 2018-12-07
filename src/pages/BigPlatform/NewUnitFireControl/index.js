@@ -652,8 +652,11 @@ export default class App extends PureComponent {
   };
 
   handleShowAlarm = e => {
+    const { monitor: { allCamera } } = this.props
+
     this.handleFetchAlarmHandle();
-    this.setState({ alarmDynamicDrawerVisible: true, videoVisible: true });
+    this.setState({ alarmDynamicDrawerVisible: true });
+    this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
   };
 
   handleShowAlarmHistory = e => {
@@ -661,10 +664,19 @@ export default class App extends PureComponent {
     this.handleDrawerVisibleChange('alarmHistory');
   };
 
+  handleShowFault = e => {
+    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+
+    dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
+    this.handleDrawerVisibleChange('fault');
+  };
+
   handleClickMessage = dataId => {
-    // console.log(dataId);
+    const { monitor: { allCamera } } = this.props
+
     this.handleFetchAlarmHandle(dataId);
-    this.setState({ alarmMessageDrawerVisible: true, videoVisible: true });
+    this.setState({ alarmMessageDrawerVisible: true });
+    this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
   };
 
   handleFaultClick = data => {
@@ -838,7 +850,7 @@ export default class App extends PureComponent {
                   feedback={feedback_state}
                   handleShowAlarm={this.handleShowAlarm}
                   handleShowAlarmHistory={this.handleShowAlarmHistory}
-                  handleShowFault={e => this.handleDrawerVisibleChange('fault')}
+                  handleShowFault={this.handleShowFault}
                 />
               </div>
             </div>
