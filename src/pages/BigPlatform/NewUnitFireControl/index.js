@@ -306,7 +306,7 @@ export default class App extends PureComponent {
         className={styles.notificationBody}
         onClick={() => {
           // console.log(messageFlag);
-          this.handleClickMeassge(messageFlag);
+          this.handleClickMessage(messageFlag);
         }}
       >
         <div>
@@ -575,9 +575,9 @@ export default class App extends PureComponent {
     this.handleFetchWorkOrder(undefined, id);
   };
 
-  handleClickMeassge = dataId => {
+  handleClickMessage = dataId => {
     // console.log(dataId);
-    this.handleFetchAlarmHandle(dataId, 1);
+    this.handleFetchAlarmHandle(dataId);
     this.setState({ alarmMessageDrawerVisible: true, videoVisible: true });
   };
 
