@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Select } from 'antd';
 import classnames from 'classnames';
+import MonitorBall from '@/components/MonitorBall';
 import RiskImg from '../../Components/RiskImg';
 import RiskImgPosition from '../../Components/RiskImgPosition';
 import videoPointIcon from '../../img/videoPoint.png';
@@ -16,7 +17,49 @@ const { Option } = Select;
  */
 export default class FourColor extends PureComponent {
   state = {
-    selectedFourColorImgId: undefined,
+    // 当前选中的四色图源数据
+    selectedFourColorImg: {},
+    // 当前四色图上的点位列表
+    points: [],
+  }
+
+  componentDidUpdate({ model: { companyMessage: { fourColorImg: prevFourColorImg } } }) {
+    const { model: { companyMessage: { fourColorImg } } } = this.props;
+    // 当四色图源数据更新后，默认获取第一个四色图作为初始值
+    if (fourColorImg !== prevFourColorImg) {
+      this.filterPointsBySelectedFourColorImg(fourColorImg[0] || {});
+    }
+  }
+
+  /**
+   * 设置选中的四色图并筛选出对应的点位
+   */
+  filterPointsBySelectedFourColorImg = (selectedFourColorImg) => {
+    const { id } = selectedFourColorImg;
+    const { selectedFourColorImg: { id: selectedFourColorImgId } } = this.state;
+    // 如果新选中的四色图与原来的一致，则不做任何操作
+    if (selectedFourColorImgId === id) {
+      return;
+    }
+    const {
+      model: {
+        companyMessage: {
+          point=[],
+        },
+      },
+    } = this.props;
+    this.setState({
+      points: id ? point.filter(({ fixImgId }) => fixImgId === id) : [],
+      selectedFourColorImg,
+    });
+  }
+
+  /**
+   * 下拉框选择事件
+   */
+  handleSelect = (id, { props: { data } }) => {
+    console.log(data);
+    this.filterPointsBySelectedFourColorImg(data);
   }
 
   /**
@@ -24,40 +67,71 @@ export default class FourColor extends PureComponent {
    */
   renderSelect() {
     const {
-      bigPlatform: {
+      model: {
         // 企业信息中获取四色图
         companyMessage: { fourColorImg = [] }={},
       },
     } = this.props;
-    const { selectedFourColorImgId } = this.state;
+    //  从state中获取当前选中的四色图id
+    const { selectedFourColorImg: { id: selectedFourColorImgId } } = this.state;
+    // 当四色图的数量大于1时才显示下拉框
     return fourColorImg.length > 1 ? (
       <Select
         value={selectedFourColorImgId}
-        onSelect={this.handleSelectFourColorImg}
+        onSelect={this.handleSelect}
         className={styles.fourColorImgSelect}
-        style={{
-          position: 'absolute',
-          top: '16px',
-          left: 0,
-          width: 150,
-        }}
         dropdownClassName={styles.fourColorImgSelectDropDown}
       >
-        {fourColorImg.map(({ id, fileName = '未命名', webUrl }) => {
+        {fourColorImg.map(item => {
+          const { id, fileName = '未命名' } = item
           const isSelected = selectedFourColorImgId === id;
-          const i = fileName.indexOf('.');
           return (
             <Option
               key={id}
               value={id}
-              url={webUrl}
+              data={item}
               style={{ backgroundColor: isSelected && '#0967D3', color: isSelected && '#fff' }}
             >
-              {i === -1 ? fileName : fileName.slice(0, i)}
+              {fileName.split('.')[0]}
             </Option>
           );
         })}
       </Select>
+    ) : null;
+  }
+
+  /**
+   * 监控球
+   */
+  renderMonitorBall() {
+    const {
+      model: {
+        // 监控球数据
+        monitorData: { score = 0, count = 0, unnormal = 0 },
+      },
+      // 监控球数据是否正在加载中
+      monitorDataLoading,
+      // 监控球点击事件
+      handleClickMonitorBall,
+    } = this.props;
+    // 当percent小于80或者报警时，显示异常颜色
+    const color = +score < 80 || +unnormal > 0 ? '#ff7863' : '#00A8FF';
+    // 当设备数为0时不显示监控球
+    return +count !== 0 && !monitorDataLoading ? (
+      <MonitorBall
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          zIndex: '9',
+          boxShadow: `0 0 1em ${color}`,
+        }}
+        height={128}
+        color={color}
+        percent={score}
+        title="安全监测"
+        onClick={handleClickMonitorBall}
+      />
     ) : null;
   }
 
@@ -137,18 +211,13 @@ export default class FourColor extends PureComponent {
       className,
       // 模型
       model: {
-        companyMessage: {
-          // 风险点列表
-          point=[],
-        },
         // 视频列表
         videoList=[],
         // 风险点信息列表
         pointInfoList=[],
-        // 监控球数据
-        monitorData={},
       },
     } = this.props;
+    const { points, selectedFourColorImg: { webUrl } } = this.state;
     // 合并以后的容器类名
     const containerClassName = classnames(styles.container, className);
     // 红，橙，黄，蓝，未评级，视频计数
@@ -161,11 +230,12 @@ export default class FourColor extends PureComponent {
         {/* 下拉框 */}
         {this.renderSelect()}
         {/* 监控球 */}
+        {this.renderMonitorBall()}
         {/* 四色图 */}
         <RiskImg
-          src={this.props.src}
+          src={webUrl}
         >
-          {point.map(({ itemId, xNum, yNum, fixImgId }) => {
+          {points.map(({ itemId, xNum, yNum }) => {
             return (
               <RiskImgPosition
                 key={itemId}

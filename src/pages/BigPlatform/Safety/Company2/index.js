@@ -8,7 +8,7 @@ import styles from './index.less';
 
 @connect(({ unitSafety, loading }) => ({
   unitSafety,
-  // monitorDataLoading: loading.effects['bigPlatform/fetchMonitorData'],
+  monitorDataLoading: loading.effects['unitSafety/fetchMonitorData'],
 }))
 export default class App extends PureComponent {
 
@@ -24,42 +24,56 @@ export default class App extends PureComponent {
     });
     // 获取风险点信息列表（风险告知卡）
     dispatch({
-      type: 'bigPlatform/fetchPointInfoList',
+      type: 'unitSafety/fetchPointInfoList',
       payload: {
         company_id: companyId,
       },
     });
     // 获取隐患列表
     dispatch({
-      type: 'bigPlatform/fetchHiddenDangerList',
+      type: 'unitSafety/fetchHiddenDangerList',
       payload: {
         company_id: companyId,
       },
     });
     // 获取视频列表
     dispatch({
-      type: 'bigPlatform/fetchVideoList',
+      type: 'unitSafety/fetchVideoList',
       payload: {
         company_id: companyId,
       },
     });
     // 获取监控数据
     dispatch({
-      type: 'bigPlatform/fetchMonitorData',
+      type: 'unitSafety/fetchMonitorData',
       payload: {
         companyId,
       },
     });
     // 获取四色风险点
     dispatch({
-      type: 'bigPlatform/fetchCountDangerLocation',
+      type: 'unitSafety/fetchCountDangerLocation',
       payload: {
         company_id: companyId,
       },
     });
   }
 
+  /**
+   * 跳转到监控大屏
+   */
+  goToMonitor = () => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    window.open(`${window.publicPath}#/big-platform/monitor/company/${companyId}`);
+  };
+
   render() {
+    const { monitorDataLoading, unitSafety } = this.props;
+
     return (
       <Layout
         extra="晶安科技有限公司"
@@ -76,7 +90,12 @@ export default class App extends PureComponent {
           {/* 中间 */}
           <Col span={12} className={styles.col}>
             {/* 安全风险四色图 */}
-            <FourColor className={styles.centerTop} model={this.props.unitSafety} />
+            <FourColor
+              className={styles.centerTop}
+              model={unitSafety}
+              monitorDataLoading={monitorDataLoading}
+              handleClickMonitorBall={this.goToMonitor}
+            />
             {/* 单位巡查 */}
             <div style={{ backgroundColor: 'white' }} className={styles.centerBottom} />
           </Col>
