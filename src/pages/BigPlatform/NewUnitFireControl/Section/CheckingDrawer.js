@@ -19,6 +19,7 @@ const overTime = 3; // 超时检查
 export default class CheckingDrawer extends PureComponent {
   state = {
     status: '',
+    isSelected: true,
     visible: true,
   };
 
@@ -45,6 +46,7 @@ export default class CheckingDrawer extends PureComponent {
     });
     this.setState({
       status: undefined,
+      isSelected: true,
     });
   };
 
@@ -62,6 +64,7 @@ export default class CheckingDrawer extends PureComponent {
     });
     this.setState({
       status: status !== s ? s : undefined,
+      isSelected: false,
     });
   };
   handleCheckDrawer = () => {
@@ -90,7 +93,8 @@ export default class CheckingDrawer extends PureComponent {
     this.setState({ checkDrawerVisible: true });
   };
   render() {
-    const { status } = this.state;
+    const { status, isSelected } = this.state;
+    console.log('isSelected', isSelected);
     const {
       visible,
       checkCount,
@@ -143,7 +147,10 @@ export default class CheckingDrawer extends PureComponent {
     const left = (
       <div className={styles.container}>
         <div className={styles.circleContainer}>
-          <div className={styles.circle} onClick={this.handleALlData}>
+          <div
+            className={isSelected ? styles.totalSelectd : styles.circle}
+            onClick={this.handleALlData}
+          >
             <p className={styles.num}>{all}</p>
             <p className={styles.total}>总计</p>
           </div>
