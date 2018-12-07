@@ -311,3 +311,10 @@ export async function queryCheckUsers(params) {
 export async function queryFault(params) {
   return request(`${URL_PREFIX}/fireData/systemFaultMessage.json?${stringify(params)}`)
 }
+
+/**
+ * 获取隐患详情
+ */
+export async function fetchHiddenDangerDetail({ id }) {
+  return request(`/acloud_new/v2/hiddenDanger/hiddenDangerInfo/${id}`);
+}
