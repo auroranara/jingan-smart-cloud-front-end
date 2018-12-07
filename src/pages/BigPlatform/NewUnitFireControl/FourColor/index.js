@@ -8,6 +8,7 @@ import newPointAbnormal from '@/assets/new-point-abnormal.png';
 import newVideo from '@/assets/new-video.png';
 import newLegendVideo from '@/assets/new-legend-video.png';
 import newLegendPoint from '@/assets/new-legend-point.png';
+import newLegendAbnormal from '@/assets/new-legend-abnormal.png';
 
 import styles from './index.less';
 
@@ -128,7 +129,11 @@ export default class App extends PureComponent {
           </div>
           <div className={styles.legendItem}>
               <div className={styles.legendItemIcon} style={{ backgroundImage: `url(${newLegendPoint})` }}></div>
-              <div>检查点</div>
+              <div>正常检查点</div>
+          </div>
+          <div className={styles.legendItem}>
+              <div className={styles.legendItemIcon} style={{ backgroundImage: `url(${newLegendAbnormal})` }}></div>
+              <div>异常检查点</div>
           </div>
         </div>
         <VideoPlay
