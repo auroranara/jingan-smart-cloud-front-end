@@ -42,13 +42,15 @@ export default class CheckingDrawer extends PureComponent {
         item_type: 2,
       },
     });
+    this.setState({
+      status: undefined,
+    });
   };
 
   // 处理标签
   handleLabelOnClick = s => {
     const { dispatch, companyId } = this.props;
     const { status } = this.state;
-    console.log('status111', status);
     dispatch({
       type: 'newUnitFireControl/fetchCheckDetail',
       payload: {
