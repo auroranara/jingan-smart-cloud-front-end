@@ -30,13 +30,6 @@ export default class CheckingDrawer extends PureComponent {
         item_type: 2,
       },
     });
-    dispatch({
-      type: 'newUnitFireControl/fetchCheckDetail',
-      payload: {
-        companyId,
-        item_type: 2,
-      },
-    });
   }
 
   // 点击总计标签获取全部数据
@@ -55,6 +48,7 @@ export default class CheckingDrawer extends PureComponent {
   handleLabelOnClick = s => {
     const { dispatch, companyId } = this.props;
     const { status } = this.state;
+    console.log('status111', status);
     dispatch({
       type: 'newUnitFireControl/fetchCheckDetail',
       payload: {
