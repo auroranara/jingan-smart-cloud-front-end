@@ -102,7 +102,7 @@ export default class PointPositionName extends PureComponent {
     } = this.props;
     const dangerList = list.filter(item => item.item_id === checkItemId);
 
-    const statusLogo =
+    const currentStatus =
       (+checkStatus === 2 && PointError) ||
       (+checkStatus === 1 && normalCheckPoint) ||
       (+checkStatus === 4 && lastCheckPoint) ||
@@ -176,11 +176,11 @@ export default class PointPositionName extends PureComponent {
           <Col span={10} className={styles.currentTitle}>
             <span>当前状态</span>
           </Col>
-          <Col span={14} className={styles.statusLogo}>
+          <Col span={14} className={styles.statusIcon}>
             <div
               className={styles.icon}
               style={{
-                backgroundImage: `url(${statusLogo})`,
+                backgroundImage: `url(${currentStatus})`,
               }}
             />
           </Col>
