@@ -80,7 +80,7 @@ export default function FaultMessageDrawer(props) {
       <div className={styles.head}>
         <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
       </div>
-      <div className={styles.timeline} style={{ borderTop: 'none' }}>
+      <div className={styles.timeline}>
         <Timeline>
           {/* 主机故障时才会显示这个，一键报修时不显示 */}
           {!isOneKey && (
