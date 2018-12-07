@@ -84,7 +84,7 @@ const NO_DATA = '暂无信息';
 
 export default function MaintenanceCard(props) {
   // type 1 已完成(处理完毕)   2 待处理(看status)   7 已超期(看status)
-  const { type, data, showFlow, ...restProps } = props;
+  const { type, data, isMaintenance, ...restProps } = props;
   // status "2" -> 指派维保   "0" -> 受理中
   const {
     status, // '2' -> 待处理  '0' -> 处理中
@@ -119,12 +119,12 @@ export default function MaintenanceCard(props) {
 
   return (
     <div className={styles.container} {...restProps}>
-      {showFlow && (
+      {isMaintenance && (
         <div className={styles.head}>
           <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
         </div>
       )}
-      <div className={styles.timeline} style={showFlow ? null : { borderTop: 'none' }}>
+      <div className={styles.timeline} style={isMaintenance ? null : { borderTop: 'none' }}>
         <Timeline>
           {/* 主机故障时才会显示这个，一键报修时不显示 */}
           {!isOneKey && (
@@ -168,7 +168,8 @@ export default function MaintenanceCard(props) {
             day={getTime(start_date)}
             hour={getTime(start_date, 1)}
           >
-            {(type === 1 || status === '0') && (
+            {/* 维保处理动态时看状态显示，故障处理动态时不显示 */}
+            {isMaintenance && (type === 1 || status === '0') && (
               <Received
                 man={executor_name || NO_DATA}
                 phone={phone || NO_DATA}
@@ -181,7 +182,8 @@ export default function MaintenanceCard(props) {
             day={getTime(update_date)}
             hour={getTime(update_date, 1)}
           >
-            {type === 1 && (
+            {/* 维保处理动态时看状态显示，故障处理动态时不显示 */}
+            {isMaintenance && type === 1 && (
               <Handled
                 man={executor_name || NO_DATA}
                 phone={phone || NO_DATA}
