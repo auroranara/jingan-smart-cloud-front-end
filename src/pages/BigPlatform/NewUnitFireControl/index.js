@@ -215,7 +215,7 @@ export default class App extends PureComponent {
         }
 
         // 记录最新的一条消息id
-        this.topId = res.list[0].messageId;
+        this.topId = res.list[0] ? res.list[0].messageId : undefined;
       },
     });
 
@@ -429,7 +429,7 @@ export default class App extends PureComponent {
         newMsg.forEach(data => {
           this.showFireMsg(data);
         });
-        this.topId = res.list[0].messageId;
+        this.topId = res.list[0] ? res.list[0].messageId : undefined;
       },
     });
   };
