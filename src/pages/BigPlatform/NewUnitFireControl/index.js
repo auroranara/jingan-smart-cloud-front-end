@@ -80,7 +80,6 @@ export default class App extends PureComponent {
     alarmDynamicDrawerVisible: false,
     alarmHistoryDrawerVisible: false,
     maintenanceDrawerVisible: false,
-    alarmMessageDrawerVisible: false,
     checkDrawerVisible: false, // 检查点抽屉是否显示
     pointDrawerVisible: false, // 点位名称抽屉是否显示
     faultDrawerVisible: false,
