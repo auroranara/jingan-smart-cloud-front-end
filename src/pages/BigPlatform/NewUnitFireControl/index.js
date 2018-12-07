@@ -188,16 +188,43 @@ export default class App extends PureComponent {
       },
     });
     // 获取大屏消息
-    this.fetchScreenMessage(dispatch, companyId);
+    // this.fetchScreenMessage(dispatch, companyId);
+
+    dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+      payload: {
+        companyId,
+      },
+      success: res => {
+        const { list: [{ itemId, messageFlag, type } = {}] } = res;
+        const { fourColorTips, deletedFourColorTips } = this.state;
+        // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+        if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+          // 如果前一条隐患还没消失，则移除前一条隐患
+          if (fourColorTips[itemId] === messageFlag) {
+            return;
+          } else if (fourColorTips[itemId]) {
+            this.setState({
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+              deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
+            });
+          } else {
+            this.setState({
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+            });
+          }
+        }
+
+        // 记录最新的一条消息id
+        this.topId = res.list[0].messageId;
+      },
+    });
 
     // 获取点位
     dispatch({
       type: 'newUnitFireControl/fetchPointList',
       payload: {
         companyId,
-      },
-      success: res => {
-        this.msgSuccess(res);
       },
     });
 
@@ -218,26 +245,26 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    return (
-      JSON.stringify(this.props.newUnitFireControl.screenMessage) !==
-      JSON.stringify(prevProps.newUnitFireControl.screenMessage)
-    );
-  }
+  // getSnapshotBeforeUpdate(prevProps, prevState) {
+  //   return (
+  //     JSON.stringify(this.props.newUnitFireControl.screenMessage) !==
+  //     JSON.stringify(prevProps.newUnitFireControl.screenMessage)
+  //   );
+  // }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const {
-      newUnitFireControl: { screenMessage },
-    } = this.props;
-    if (snapshot) {
-      this.msgSuccess({ list: [...screenMessage] });
-    }
-  }
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   const {
+  //     newUnitFireControl: { screenMessage },
+  //   } = this.props;
+  //   if (snapshot) {
+  //     this.msgSuccess({ list: [...screenMessage] });
+  //   }
+  // }
 
-  msgSuccess = res => {
-    const first = res.list[0];
-    if (!first) return;
-    const { type, messageFlag } = first;
+  showFireMsg = item => {
+    // const first = res.list[0];
+    // if (!first) return;
+    const { type, messageFlag } = item;
     if (type === 5 || type === 6) {
       const msgItem = msgInfo[type.toString()];
       const style = {
@@ -246,8 +273,8 @@ export default class App extends PureComponent {
       };
       notification.open({
         className: styles.notification,
-        message: this.renderNotificationTitle(first),
-        description: this.renderNotificationMsg(first),
+        message: this.renderNotificationTitle(item),
+        description: this.renderNotificationMsg(item),
         style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
         onClick: () => {
           console.log(messageFlag);
@@ -368,7 +395,8 @@ export default class App extends PureComponent {
       payload: {
         companyId,
       },
-      success: ({ list: [{ itemId, messageFlag, type } = {}] }) => {
+      success: res => {
+        const { list: [{ itemId, messageFlag, type } = {}] } = res;
         const { fourColorTips, deletedFourColorTips } = this.state;
         // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
         if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
@@ -386,6 +414,20 @@ export default class App extends PureComponent {
             });
           }
         }
+
+        let sameIndex = -1;
+        res.list.forEach((item, index) => {
+          if(item.messageId === this.topId) {
+            sameIndex = index;
+            return;
+          }
+        });
+        // 截取新的消息列表
+        const newMsg = sameIndex < 0 ? res.list : res.list.slice(0, sameIndex);
+        newMsg.forEach(data => {
+          this.showFireMsg(data);
+        });
+        this.topId = res.list[0].messageId;
       },
     });
   };
