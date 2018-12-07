@@ -497,6 +497,26 @@ export default class App extends PureComponent {
    * 打开查看当前隐患抽屉
    */
   handleViewCurrentDanger = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    // 获取当前隐患图表统计数据
+    dispatch({
+      type: 'newUnitFireControl/fetchHiddenDangerNum',
+      payload: { companyId },
+    });
+
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
     this.setState({ currentDrawerVisible: true });
   };
 
@@ -611,7 +631,7 @@ export default class App extends PureComponent {
   };
 
   // 点击当前隐患图表进行筛选
-  handleFilterCurrentDanger = params => {};
+  handleFilterCurrentDanger = params => { };
 
   // 关闭火灾自动报警抽屉
   handleCloseFireAlarm = () => {
@@ -934,10 +954,10 @@ export default class App extends PureComponent {
             onClose={() => this.handleDrawerVisibleChange('fault')}
           />
           <MaintenanceCheckDrawer
-          model={this.props.newUnitFireControl}
-          visible={maintenanceCheckDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
-        />
+            model={this.props.newUnitFireControl}
+            visible={maintenanceCheckDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
+          />
         </div>
       </BigPlatformLayout>
     );
