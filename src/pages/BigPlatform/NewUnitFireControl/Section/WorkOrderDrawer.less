@@ -89,6 +89,29 @@
   height: 100%;
 }
 
+.warn {
+  color: #FFF;
+  // font-size: 12px;
+  position: absolute;
+  top: 5px;
+  right: 20px;
+  padding: 2px 10px;
+  border: 1px solid @cyan;
+  border-radius: 16px;
+  cursor: pointer;
+  background-color: rgb(3, 44, 91);
+}
+
+.warn:hover {
+  background-color: rgb(0, 89, 142);
+}
+
+.warned:extend(.warn) {
+  cursor: auto;
+  color: @grey;
+  background-color: transparent;
+}
+
 .spans {
   display: flex;
   margin-bottom: 15px;

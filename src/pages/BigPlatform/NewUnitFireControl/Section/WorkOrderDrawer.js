@@ -51,6 +51,7 @@ function OrderCard(props) {
     report_type,
     create_date,
     // save_time,
+    update_date,
     plan_finish_date,
     component_no,
     component_region,
@@ -58,6 +59,7 @@ function OrderCard(props) {
     createByName,
     createByPhone,
   } = data;
+  const isHandled = type === 1;
   const isOneKey = report_type === '2'; // 是否为一键报修
 
   data.assign = `${createByName} ${createByPhone}`;
@@ -75,7 +77,7 @@ function OrderCard(props) {
         </div>
         <p className={styles.time}>
           {/* {moment(isOneKey ? create_date : save_time).format('YYYY-MM-DD HH:mm:ss')} */}
-          {moment(create_date).format('YYYY-MM-DD HH:mm:ss')}
+          {moment(isHandled ? update_date : create_date).format('YYYY-MM-DD HH:mm:ss')}
           <span className={styles.info}>{TYPES[isOneKey ? 0 : 1]}</span>
         </p>
         {ITEMS[isOneKey ? 0 : 1].map(item => (
@@ -90,13 +92,24 @@ function OrderCard(props) {
 }
 
 export default class WorkOrderDrawer extends PureComponent {
+  state = { isWarned: false };
+
   render() {
     const { type, handleLabelChange, handleCardClick, data, ...restProps } = this.props;
+    const { isWarned } = this.state;
     // console.log(data, `workOrderList${type}`);
     const list = data[`workOrderList${type}`];
 
     const left = (
       <div className={styles.container}>
+        {type === 7 && (
+          <span
+            className={isWarned ? styles.warned : styles.warn}
+            onClick={e => this.setState({ isWarned: true })}
+          >
+            {isWarned ? '已提醒' : '提醒维修'}
+          </span>
+        )}
         <div className={styles.spans}>
           {STATUS.map((s, i) => {
             const t = STATUS_N[i];
@@ -110,8 +123,7 @@ export default class WorkOrderDrawer extends PureComponent {
                 {s}-{data[`workOrderList${t}`].length}
               </span>
             );
-          }
-          )}
+          })}
         </div>
         <div className={styles.cards}>
           {list.map(item => <OrderCard key={item.id} type={type} data={item} onClick={e => handleCardClick(item.id)} />)}

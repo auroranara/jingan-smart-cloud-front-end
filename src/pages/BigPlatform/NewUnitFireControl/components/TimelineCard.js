@@ -7,6 +7,8 @@ import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
 import flowImg from '../imgs/flow.png';
 
+const STATUS = { 1: '误报火警', 2: '真实火警' };
+
 function Alarmed(props) {
   const { position, type, safety, phone } = props;
 
@@ -20,11 +22,12 @@ function Alarmed(props) {
 }
 
 function Confirmed(props) {
-  const { type, reporter, phone } = props;
+  const { status, reporter, phone } = props;
+  const isTrueAlarm = Number(status) === 2;
 
   return (
     <div className={styles.card}>
-      <p>确认该火警为：{type}</p>
+      <p>确认该火警为：<span className={isTrueAlarm ? styles.true : undefined}>{STATUS[status]}</span></p>
       <p>上报人：{reporter} {phone}</p>
     </div>
   );
@@ -89,7 +92,7 @@ export default function TimelineCard(props) {
           >
             {isHandling && (
               <Confirmed
-                type={handleMap.fireType || 0}
+                status={handleMap.fireType || 0}
                 reporter={handleMap.reportMan || NO_DATA}
                 phone={handleMap.reportPhone || NO_DATA}
               />

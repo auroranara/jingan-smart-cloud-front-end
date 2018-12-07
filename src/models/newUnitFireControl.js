@@ -941,14 +941,16 @@ export default {
       return { ...state, alarmHandleHistory: action.payload || [] };
     },
     saveWorkOrderList1(state, action) {
-      return { ...state, workOrderList1: action.payload };
+      const list = action.payload;
+      list.sort((item, item1) => item1.update_date - item.update_date); // 已完成工单，按照完成时间排序
+      return { ...state, workOrderList1: list };
     },
     saveWorkOrderList2(state, action) {
-      return { ...state, workOrderList2: action.payload };
+      return { ...state, workOrderList2: action.payload }; // 待处理工单，按照报修时间排序，后台已处理
     },
     saveWorkOrderList7(state, action) {
       const list = action.payload;
-      list.sort((item, item1) => item.plan_finish_date - item1.plan_finish_date);
+      list.sort((item, item1) => item.plan_finish_date - item1.plan_finish_date); // 已超期工单，按照超期天数排序
       return { ...state, workOrderList7: list };
     },
     saveWorkOrderDetail(state, action) {
