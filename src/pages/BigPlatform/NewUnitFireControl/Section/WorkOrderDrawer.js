@@ -11,9 +11,9 @@ import handledIcon from '../imgs/handled.png';
 
 const DAY_MS = 24 * 3600 * 1000;
 const NO_DATA = '暂无信息';
-const STATUS = ['已超期', '待处理', '已完成'];
+const STATUS = ['已超期', '待完成', '已完成'];
 const STATUS_N = [7, 2, 1];
-const STATUS_MAP = { 7: '已超期', 2: '待处理', 1: '已完成' };
+const STATUS_MAP = { 7: '已超期', 2: '待完成', 1: '已完成' };
 const ICONS_MAP = { 7: overIcon, '2.0': handlingIcon, '2.2': handleIcon, 1: handledIcon };
 const TYPES = ['一键报修', '主机报障'];
 const ITEMS = [
