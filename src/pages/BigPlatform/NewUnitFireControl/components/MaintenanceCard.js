@@ -153,12 +153,10 @@ export default function MaintenanceCard(props) {
 
   return (
     <div className={styles.container} {...restProps}>
-      {isMaintenance && (
-        <div className={styles.head}>
-          <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
-        </div>
-      )}
-      <div className={styles.timeline} style={isMaintenance ? null : { borderTop: 'none' }}>
+      <div className={styles.head}>
+        <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
+      </div>
+      <div className={styles.timeline}>
         <Timeline>
           {/* 主机故障时才会显示这个，一键报修时不显示 */}
           {/* {!isOneKey && ( */}
