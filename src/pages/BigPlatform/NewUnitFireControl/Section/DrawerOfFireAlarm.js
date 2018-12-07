@@ -133,7 +133,7 @@ export default class DrawerOfFireAlarm extends PureComponent {
                       </div>
                     </div>
                     {this.renderLine('综合评价：', evaluate)}
-                    {this.renderLine('维保意见：', opinion)}
+                    {this.renderLine('整改意见：', opinion)}
                     {picture && picture.length > 0 && (
                       <div className={styles.imageLine}>
                         <div className={styles.label}>
