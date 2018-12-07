@@ -13,8 +13,12 @@ const { Description } = DescriptionList;
 const statusColor = ['#ff4848', '#ffb650', '#04fdff'];
 export default class MaintenanceCheckDrawer extends PureComponent {
   getOption = score => {
+    let color;
+    if(+score < 60) color = statusColor[0];
+    else if(+score >= 60 && +score < 80) color = statusColor[1];
+    else color = statusColor[2];
     const option = {
-      color: ['#05d2da', '#00294a'],
+      color: [color, '#00294a'],
       tooltip: {
         show: false,
       },
@@ -23,7 +27,7 @@ export default class MaintenanceCheckDrawer extends PureComponent {
         left: 'center',
         top: 'center',
         textStyle: {
-          color: '#05d2da',
+          color: color,
           fontSize: 22,
         },
       },
