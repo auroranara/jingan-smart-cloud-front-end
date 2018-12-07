@@ -163,7 +163,7 @@ export default class App extends PureComponent {
     [0, 1].forEach(i => this.handleFetchAlarmHandle(0, i));
 
     // 初始化维保工单
-    [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
+    this.handleFetchAllWorkOrder();
 
     // 获取故障
     dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
@@ -360,6 +360,27 @@ export default class App extends PureComponent {
     //     companyId,
     //   },
     // });
+
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
+
+    // 获取企业信息
+    dispatch({
+      type: 'newUnitFireControl/fetchCompanyMessage',
+      payload: {
+        company_id: companyId,
+        month: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 获取所有工单
+    this.handleFetchAllWorkOrder();
 
     // 获取大屏消息
     this.fetchScreenMessage(dispatch, companyId);
@@ -586,6 +607,10 @@ export default class App extends PureComponent {
     });
   };
 
+  handleFetchAllWorkOrder = () => {
+    [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
+  };
+
   handleWorkOrderLabelChange = type => {
     this.setState({ drawerType: type });
   };
@@ -598,6 +623,11 @@ export default class App extends PureComponent {
   handleShowAlarm = e => {
     this.handleFetchAlarmHandle();
     this.setState({ alarmDynamicDrawerVisible: true, videoVisible: true });
+  };
+
+  handleShowAlarmHistory = e => {
+    this.handleFetchAlarmHandle(0, 1);
+    this.handleDrawerVisibleChange('alarmHistory');
   };
 
   handleClickMessage = dataId => {
@@ -776,7 +806,7 @@ export default class App extends PureComponent {
                   supervise={supervise_state}
                   feedback={feedback_state}
                   handleShowAlarm={this.handleShowAlarm}
-                  handleShowAlarmHistory={e => this.handleDrawerVisibleChange('alarmHistory')}
+                  handleShowAlarmHistory={this.handleShowAlarmHistory}
                   handleShowFault={e => this.handleDrawerVisibleChange('fault')}
                 />
               </div>
