@@ -148,7 +148,8 @@ export default function MaintenanceCard(props) {
             day={getTime(create_date)}
             hour={getTime(create_date, 1)}
           >
-            {(type === 1 || status === '2' || status === '0') && (
+            {/* 故障弹框时，一键报修显示，主机报障不显示；维保弹框时，进行type及status的判断 */}
+            {((!isMaintenance && isOneKey) || (isMaintenance && (type === 1 || status === '2' || status === '0'))) && (
               <Assigned
                 man={createByName || NO_DATA}
                 phone={createByPhone || NO_DATA}
