@@ -24,7 +24,7 @@ export default class CurrentHiddenDanger extends PureComponent {
   }
 
   handleStatusPhoto = status => {
-    //2待整改   3待复查, 7  超期未整改
+    //2未超期   3待复查, 7  已超期
     switch (+status) {
       case 2:
         return 'http://data.jingan-china.cn/v2/big-platform/safety/com/wcq.png';
@@ -262,7 +262,7 @@ export default class CurrentHiddenDanger extends PureComponent {
                           ),
                         },
                         {
-                          label: '计划整改',
+                          label: +status === 3 ? '实际整改' : '计划整改',
                           value:
                             +status === 3 ? (
                               <Fragment>

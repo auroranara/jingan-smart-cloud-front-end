@@ -1,6 +1,7 @@
-/**
- *
- */
+@cyan: rgb(4, 253, 253);
+@blue: rgb(2, 30, 61);
+@selected: rgb(3, 44, 91);
+
 .container {
   font-size: 14px;
   color: #fff;
@@ -20,7 +21,8 @@
   cursor: pointer;
 
   &.tabSelected {
-    background-color: #043b7e;
+    // background-color: #043b7e;
+    background-color: @selected;
     border-color: #04fdff;
   }
 }
@@ -31,8 +33,9 @@
   margin-bottom: 14px;
   padding: 10px 10px 10px 14px;
   line-height: 1;
-  background-color: rgba(9, 103, 211, 0.2);
-  box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+  // background-color: rgba(9, 103, 211, 0.2);
+  // box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+  border: 1px solid @cyan;
 
   &:last-child {
     margin-bottom: 0;
@@ -101,8 +104,11 @@ div.select {
 
   :global {
     .ant-select-selection {
-      background-color: #043b7e;
-      border-color: #4ccef0;
+      // background-color: #043b7e;
+      // background-color: @selected;
+      background-color: transparent;
+      // border-color: #4ccef0;
+      border-color: @cyan;
       color: #fff;
     }
     .ant-select-arrow {
@@ -112,7 +118,8 @@ div.select {
 }
 div.selectDropDown {
   padding: 4px 0;
-  background-color: #043b7e;
+  // background-color: #043b7e;
+  background-color: @blue;
 
   :global {
     .ant-select-dropdown-menu {
@@ -133,11 +140,13 @@ div.selectDropDown {
       color: #fff;
       font-weight: normal;
       border-radius: 0;
-      background-color: #043b7e;
+      // background-color: #043b7e;
+      background-color: @blue;
 
       &:hover {
         color: #04fdff;
-        background-color: #043b7e;
+        // background-color: #043b7e;
+        background-color: @selected;
       }
     }
   }
