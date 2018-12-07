@@ -215,7 +215,7 @@ export default class App extends PureComponent {
         }
 
         // 记录最新的一条消息id
-        this.topId = res.list[0].messageId;
+        this.topId = res.list[0] ? res.list[0].messageId : undefined;
       },
     });
 
@@ -244,42 +244,44 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
 
-  // getSnapshotBeforeUpdate(prevProps, prevState) {
-  //   return (
-  //     JSON.stringify(this.props.newUnitFireControl.screenMessage) !==
-  //     JSON.stringify(prevProps.newUnitFireControl.screenMessage)
-  //   );
-  // }
-
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   const {
-  //     newUnitFireControl: { screenMessage },
-  //   } = this.props;
-  //   if (snapshot) {
-  //     this.msgSuccess({ list: [...screenMessage] });
-  //   }
-  // }
-
   showFireMsg = item => {
-    // const first = res.list[0];
-    // if (!first) return;
-    const { type, messageFlag } = item;
+    const { type, messageId } = item;
     if (type === 5 || type === 6) {
+      // 5 火警， 6 故障
       const msgItem = msgInfo[type.toString()];
       const style = {
         boxShadow: `0px 0px 20px ${msgItem.color}`,
+      };
+      const styleAnimation = {
+        ...style,
         animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
       };
-      notification.open({
+      const options = {
+        key: messageId,
         className: styles.notification,
         message: this.renderNotificationTitle(item),
         description: this.renderNotificationMsg(item),
         style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
-        onClick: () => {
-          // console.log(messageFlag);
-          // this.handleClickMeassge(messageFlag);
-        },
+      };
+      notification.open({
+        ...options,
       });
+
+      setTimeout(() => {
+        // 解决加入animation覆盖notification自身显示动效时长问题
+        notification.open({
+          ...options,
+          style: this.fireNode ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 } : { ...styleAnimation },
+          onClose: () => {
+            notification.open({
+              ...options,
+            });
+            setTimeout(() => {
+              notification.close(messageId);
+            }, 200);
+          },
+        });
+      }, 2000);
     }
   };
 
@@ -308,8 +310,8 @@ export default class App extends PureComponent {
         }}
       >
         <div>
-          {/* <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '} */}
-          <span className={styles.time}>{addTimeStr}</span>{' '}
+          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles.address}>{installAddress}</span>
         </div>
         <div>
@@ -428,7 +430,7 @@ export default class App extends PureComponent {
         newMsg.forEach(data => {
           this.showFireMsg(data);
         });
-        this.topId = res.list[0].messageId;
+        this.topId = res.list[0] ? res.list[0].messageId : undefined;
       },
     });
   };
