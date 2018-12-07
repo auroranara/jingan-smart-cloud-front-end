@@ -83,27 +83,28 @@ const getColorByRiskLevel = function (level) {
 const formatTimeLine = function (timeLine) {
   const list = timeLine.map((item, index) => {
     let type = +item.type;
+    let timeLineLabel = '';
     if (type === 1) {
-      type = '隐患创建';
+      timeLineLabel = '隐患创建';
     }
     else if (type === 2) {
       // 如果index大于1，意味着必然为重新整改
       if (index > 1) {
-        type = '重新整改';
+        timeLineLabel = '重新整改';
       }
       else {
-        type = '隐患整改';
+        timeLineLabel = '隐患整改';
       }
     }
     else if (type === 3) {
-      type = '隐患复查';
+      timeLineLabel = '隐患复查';
     }
     else if (type === 4) {
-      type = '隐患关闭';
+      timeLineLabel = '隐患关闭';
     }
     return {
       ...item,
-      type,
+      timeLineLabel,
       id: index,
     };
   });
@@ -111,13 +112,13 @@ const formatTimeLine = function (timeLine) {
   const { type } = timeLine[lastIndex];
   switch (+type) {
     case 1:
-      list.push({ type: '隐患整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
+      list.push({ timeLineLabel: '隐患整改', id: lastIndex + 1 }, { timeLineLabel: '隐患复查', id: lastIndex + 2 });
       break;
     case 2:
-      list.push({ type: '隐患复查', id: lastIndex + 1 });
+      list.push({ timeLineLabel: '隐患复查', id: lastIndex + 1 });
       break;
     case 3:
-      list.push({ type: '重新整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
+      list.push({ timeLineLabel: '重新整改', id: lastIndex + 1 }, { timeLineLabel: '隐患复查', id: lastIndex + 2 });
       break;
     default:
       break;
@@ -904,6 +905,7 @@ export default {
           return {
             timeLine: item,
             ...hiddenDanger,
+            type: '1',
           }
         } else {
           if (hiddenDangerRecord.length < i) return {
