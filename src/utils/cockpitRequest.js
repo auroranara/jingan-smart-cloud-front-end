@@ -84,12 +84,12 @@ export default function request(url, options = {}) {
     .catch(e => {
       const status = e.name;
       return {};
-      if (status === 401) {
-        /* eslint-disable no-underscore-dangle */
-        window.g_app._store.dispatch({
-          type: 'login/logout',
-        });
-        return;
-      }
+      // if (status === 401) {
+      //   /* eslint-disable no-underscore-dangle */
+      //   window.g_app._store.dispatch({
+      //     type: 'login/logout',
+      //   });
+      //   return;
+      // }
     });
 }
