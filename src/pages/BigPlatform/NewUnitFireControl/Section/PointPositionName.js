@@ -109,7 +109,7 @@ export default class PointPositionName extends PureComponent {
       (+checkStatus === 3 && waitCheckPoint) ||
       null;
 
-    const cards = dangerList.map(item => {
+    const cards = dangerList.map((item, index) => {
       const {
         desc,
         report_user_name,
@@ -120,7 +120,6 @@ export default class PointPositionName extends PureComponent {
         real_rectify_time,
         status,
         hiddenDangerRecordDto,
-        index,
       } = item;
       return (
         <ImageCard
@@ -174,10 +173,10 @@ export default class PointPositionName extends PureComponent {
     const left = (
       <div className={styles.container}>
         <div className={styles.circleContainer}>
-          <Col span={12} className={styles.currentTitle}>
+          <Col span={10} className={styles.currentTitle}>
             <span>当前状态</span>
           </Col>
-          <Col span={12} className={styles.statusIcon}>
+          <Col span={14} className={styles.statusLogo}>
             <div
               className={styles.icon}
               style={{
@@ -226,7 +225,7 @@ export default class PointPositionName extends PureComponent {
         </div>
         <div className={styles.record}>
           <div className={styles.recordTable}>
-            <Table rowKey="id" columns={columns} dataSource={pointRecordLists} pageSize="5" />
+            <Table rowKey="check_id" columns={columns} dataSource={pointRecordLists} pageSize="5" />
           </div>
         </div>
       </div>

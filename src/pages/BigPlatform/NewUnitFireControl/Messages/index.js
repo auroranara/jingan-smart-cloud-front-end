@@ -19,7 +19,13 @@ const getEmptyData = () => {
 const { Description } = DescriptionList;
 export default class Messages extends PureComponent {
   renderMsg = (msg, index) => {
-    const { handleParentChange, fetchData } = this.props;
+    const {
+      handleParentChange,
+      fetchData,
+      handleViewDangerDetail,
+      handleClickMessage,
+      handleFaultClick,
+    } = this.props;
     const {
       type,
       title,
@@ -78,7 +84,13 @@ export default class Messages extends PureComponent {
       // 发生火警, 发生故障
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              if (type === 5) handleClickMessage(messageFlag);
+              else handleFaultClick({ ...msg });
+            }}
+          >
             详情
             <Icon type="double-right" />
           </a>
@@ -238,7 +250,12 @@ export default class Messages extends PureComponent {
       // 上报隐患
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleViewDangerDetail({ id: messageFlag });
+            }}
+          >
             详情
             <Icon type="double-right" />
           </a>
