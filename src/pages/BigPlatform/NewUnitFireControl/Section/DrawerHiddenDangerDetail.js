@@ -157,7 +157,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                               {remark || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="计划整改">
-                              {plan_rectify_time || getEmptyData()}
+                              {create_time_str || getEmptyData()}
                             </Description>
                           </DescriptionList>
                           {picture &&
