@@ -286,7 +286,7 @@ export default class App extends PureComponent {
             }, 200);
           },
         });
-      }, 2000);
+      }, 800);
     }
   };
 
@@ -304,7 +304,7 @@ export default class App extends PureComponent {
   };
 
   renderNotificationMsg = item => {
-    const { type, addTime, installAddress, componentType, messageFlag, addTimeStr } = item;
+    const { type, addTime, installAddress, componentType, messageFlag } = item;
     const msgItem = msgInfo[type.toString()];
     return (
       <div
