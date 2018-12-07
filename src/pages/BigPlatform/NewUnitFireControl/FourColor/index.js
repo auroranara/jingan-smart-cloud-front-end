@@ -94,16 +94,22 @@ export default class App extends PureComponent {
                     {isAbnormal && <div>隐患数量：{dangerCount}</div>}
                   </div>
                 )} key={item_id}>
-                  <div key={item_id} /* className={isAbnormal?styles.animated:undefined} */ style={{
+                  <div key={item_id} /* className={showTip?styles.animated:undefined} */ style={{
                     position: 'absolute',
-                    left: `calc(${x_mum * 100}% - 16px)`,
+                    left: `${x_mum * 100}%`,
                     bottom: `${(1 - y_mum) * 100}%`,
                     width: 33,
                     height: 43,
-                    background: `url(${isAbnormal?newPointAbnormal:newPointNormal}) no-repeat center center / 100% 100%`,
+                    transform: 'translateX(-50%)',
+                    // background: `url(${isAbnormal?newPointAbnormal:newPointNormal}) no-repeat center center / auto 100%`,
+                    // borderRadius: '50%',
                     cursor: 'pointer',
                     zIndex: isAbnormal ? 2 : 1,
-                  }} onClick={() => { handleShowPointDetail(item_id, status, object_title); }} />
+                  }} onClick={() => { handleShowPointDetail(item_id, status, object_title); }}>
+                    <img src={isAbnormal?newPointAbnormal:newPointNormal} alt="" style={{ width: '100%', height: '100%', verticalAlign: 'top' }} />
+                    <div className={showTip?styles.animated:undefined} />
+                    <div className={showTip?`${styles.animated} ${styles.delay}`:undefined} />
+                  </div>
                 </Tooltip>
               </Tooltip>
             );
@@ -112,11 +118,12 @@ export default class App extends PureComponent {
             <Tooltip placement="top" title={name} key={id}>
               <div key={id} style={{
                 position: 'absolute',
-                left: `calc(${x_num * 100}% - 16px)`,
+                left: `${x_num * 100}%`,
                 bottom: `${(1 - y_num) * 100}%`,
                 width: 33,
                 height: 43,
-                background: `url(${newVideo}) no-repeat center center / 100% 100%`,
+                transform: 'translateX(-50%)',
+                background: `url(${newVideo}) no-repeat center center / auto 100%`,
                 cursor: 'pointer',
               }} onClick={() => {this.handleShowVideo(key_id);}} />
             </Tooltip>

@@ -121,7 +121,7 @@ export default class PointInspectionDrawer extends PureComponent {
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.cardItemLabel}>巡查时间：</div>
-                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{moment(check_date).format('YYYY-MM-DD')}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{check_date && moment(check_date).format('YYYY-MM-DD HH:mm')}</Ellipsis></div>
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.cardItemLabel}>巡查人：</div>
@@ -149,7 +149,7 @@ export default class PointInspectionDrawer extends PureComponent {
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.unCheckedCardItemLabel}>上次巡查时间：</div>
-                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{moment(lastCheckDate).format('YYYY-MM-DD')}</Ellipsis></div>
+                      <div className={styles.cardItemValue}><Ellipsis style={{ height: '1em' }} tooltip lines={1}>{lastCheckDate && moment(lastCheckDate).format('YYYY-MM-DD HH:mm')}</Ellipsis></div>
                     </div>
                     <div className={styles.cardItem}>
                       <div className={styles.unCheckedCardItemLabel}>上次巡查人：</div>

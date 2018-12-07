@@ -34,12 +34,11 @@ export default class App extends PureComponent {
             countCheckItem = 0,
           },
         },
-        riskDetailList: { ycq = [], wcq = [], dfc = [] },
+        currentHiddenDanger: { totalNum },
         maintenanceCompany: { name: companyNames = [], result: userList = [] },
       },
     } = this.props;
 
-    const hiddenDanger = ycq.length + wcq.length + dfc.length;
     const newUsers = userList.slice(0, 2);
 
     return (
@@ -139,7 +138,7 @@ export default class App extends PureComponent {
                   style={{ marginTop: '10px', marginLeft: '8px' }}
                 >
                   当前隐患
-                  <div className={styles.checkNum}>{hiddenDanger}</div>
+                  <div className={styles.checkNum}>{totalNum}</div>
                 </div>
               </div>
             </Col>

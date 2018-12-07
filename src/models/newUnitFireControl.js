@@ -54,11 +54,8 @@ import {
   fetchCheckRecord,
   queryCheckUsers,
   queryFault,
+  fetchHiddenDangerDetail,
 } from '../services/bigPlatform/fireControl';
-
-import {
-  getHiddenDangerDetail, // 获取隐患详情
-} from '../services/hiddenDangerReport';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import {
   queryMaintenanceRecordDetail,
@@ -660,18 +657,19 @@ export default {
       }
     },
     // 获取当前隐患列表
-    *fetchCurrentHiddenDanger({ payload }, { call, put }) {
+    *fetchCurrentHiddenDanger({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerRecords, payload);
       if (response && response.hiddenDangers) {
         yield put({
           type: 'saveHiddenDangerList',
           payload: response.hiddenDangers,
         });
+        if (callback) callback()
       }
     },
     // 获取隐患详情
     *fetchHiddenDangerDetail({ payload, callback }, { call, put }) {
-      const response = yield call(getHiddenDangerDetail, payload);
+      const response = yield call(fetchHiddenDangerDetail, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveHiddenDangerDetail',
@@ -894,7 +892,7 @@ export default {
         },
       };
     },
-    // 保存当前隐患先详情
+    // 保存当前隐患详情
     saveHiddenDangerDetail(state, { payload: {
       hiddenDanger = {},
       hiddenDangerRecord = [],
@@ -941,14 +939,16 @@ export default {
       return { ...state, alarmHandleHistory: action.payload || [] };
     },
     saveWorkOrderList1(state, action) {
-      return { ...state, workOrderList1: action.payload };
+      const list = action.payload;
+      list.sort((item, item1) => item1.update_date - item.update_date); // 已完成工单，按照完成时间排序
+      return { ...state, workOrderList1: list };
     },
     saveWorkOrderList2(state, action) {
-      return { ...state, workOrderList2: action.payload };
+      return { ...state, workOrderList2: action.payload }; // 待处理工单，按照报修时间排序，后台已处理
     },
     saveWorkOrderList7(state, action) {
       const list = action.payload;
-      list.sort((item, item1) => item.plan_finish_date - item1.plan_finish_date);
+      list.sort((item, item1) => item.plan_finish_date - item1.plan_finish_date); // 已超期工单，按照超期天数排序
       return { ...state, workOrderList7: list };
     },
     saveWorkOrderDetail(state, action) {

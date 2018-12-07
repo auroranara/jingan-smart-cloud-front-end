@@ -26,6 +26,7 @@ import PointInspectionDrawer from './PointInspectionDrawer';
 import MaintenanceDrawer from './Section/MaintenanceDrawer';
 import DrawerOfFireAlarm from './Section/DrawerOfFireAlarm';
 import MaintenanceCheckDrawer from './Section/MaintenanceCheckDrawer';
+import FaultMessageDrawer from './Section/FaultMessageDrawer';
 
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -77,6 +78,8 @@ export default class App extends PureComponent {
     drawerType: 7,
     workOrderDrawerVisible: false,
     alarmMessageDrawerVisible: false,
+    faultMessage: {},
+    faultMessageDrawerVisible: false,
     alarmDynamicDrawerVisible: false,
     alarmHistoryDrawerVisible: false,
     maintenanceDrawerVisible: false,
@@ -160,7 +163,7 @@ export default class App extends PureComponent {
     [0, 1].forEach(i => this.handleFetchAlarmHandle(0, i));
 
     // 初始化维保工单
-    [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
+    this.handleFetchAllWorkOrder();
 
     // 获取故障
     dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
@@ -285,7 +288,7 @@ export default class App extends PureComponent {
             }, 200);
           },
         });
-      }, 2000);
+      }, 800);
     }
   };
 
@@ -303,14 +306,14 @@ export default class App extends PureComponent {
   };
 
   renderNotificationMsg = item => {
-    const { type, addTime, installAddress, componentType, messageFlag, addTimeStr } = item;
+    const { type, addTime, installAddress, componentType, messageFlag } = item;
     const msgItem = msgInfo[type.toString()];
     return (
       <div
         className={styles.notificationBody}
         onClick={() => {
-          // console.log(messageFlag);
-          this.handleClickMessage(messageFlag);
+          if (type === 5) this.handleClickMessage(messageFlag);
+          else this.handleFaultClick({ ...item });
         }}
       >
         <div>
@@ -359,6 +362,27 @@ export default class App extends PureComponent {
     //     companyId,
     //   },
     // });
+
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
+
+    // 获取企业信息
+    dispatch({
+      type: 'newUnitFireControl/fetchCompanyMessage',
+      payload: {
+        company_id: companyId,
+        month: moment().format('YYYY-MM'),
+      },
+    });
+
+    // 获取所有工单
+    this.handleFetchAllWorkOrder();
 
     // 获取大屏消息
     this.fetchScreenMessage(dispatch, companyId);
@@ -496,6 +520,26 @@ export default class App extends PureComponent {
    * 打开查看当前隐患抽屉
    */
   handleViewCurrentDanger = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    // 获取当前隐患图表统计数据
+    dispatch({
+      type: 'newUnitFireControl/fetchHiddenDangerNum',
+      payload: { companyId },
+    });
+
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
     this.setState({ currentDrawerVisible: true });
   };
 
@@ -594,6 +638,10 @@ export default class App extends PureComponent {
     });
   };
 
+  handleFetchAllWorkOrder = () => {
+    [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
+  };
+
   handleWorkOrderLabelChange = type => {
     this.setState({ drawerType: type });
   };
@@ -603,14 +651,28 @@ export default class App extends PureComponent {
     this.handleFetchWorkOrder(undefined, id);
   };
 
+  handleShowAlarm = e => {
+    this.handleFetchAlarmHandle();
+    this.setState({ alarmDynamicDrawerVisible: true, videoVisible: true });
+  };
+
+  handleShowAlarmHistory = e => {
+    this.handleFetchAlarmHandle(0, 1);
+    this.handleDrawerVisibleChange('alarmHistory');
+  };
+
   handleClickMessage = dataId => {
     // console.log(dataId);
     this.handleFetchAlarmHandle(dataId);
     this.setState({ alarmMessageDrawerVisible: true, videoVisible: true });
   };
 
+  handleFaultClick = data => {
+    this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
+  };
+
   // 点击当前隐患图表进行筛选
-  handleFilterCurrentDanger = params => {};
+  handleFilterCurrentDanger = params => { };
 
   // 关闭火灾自动报警抽屉
   handleCloseFireAlarm = () => {
@@ -683,6 +745,7 @@ export default class App extends PureComponent {
       videoKeyId,
       workOrderDrawerVisible,
       alarmMessageDrawerVisible,
+      faultMessageDrawerVisible,
       alarmDynamicDrawerVisible,
       alarmHistoryDrawerVisible,
       pointInspectionDrawerVisible,
@@ -702,6 +765,7 @@ export default class App extends PureComponent {
       maintenanceCheckDrawerVisible,
       faultDrawerVisible,
       fireAlarmTitle,
+      faultMessage,
     } = this.state;
 
     return (
@@ -753,7 +817,10 @@ export default class App extends PureComponent {
                   handleParentChange={newState => {
                     this.setState({ ...newState });
                   }}
+                  handleViewDangerDetail={this.handleViewDangerDetail}
                   fetchData={this.fetchMaintenanceCheck}
+                  handleClickMessage={this.handleClickMessage}
+                  handleFaultClick={this.handleFaultClick}
                 />
               </div>
             </div>
@@ -769,10 +836,8 @@ export default class App extends PureComponent {
                   linkage={start_state}
                   supervise={supervise_state}
                   feedback={feedback_state}
-                  handleShowAlarm={e => {
-                    this.setState({ alarmDynamicDrawerVisible: true, videoVisible: true });
-                  }}
-                  handleShowAlarmHistory={e => this.handleDrawerVisibleChange('alarmHistory')}
+                  handleShowAlarm={this.handleShowAlarm}
+                  handleShowAlarmHistory={this.handleShowAlarmHistory}
                   handleShowFault={e => this.handleDrawerVisibleChange('fault')}
                 />
               </div>
@@ -857,6 +922,11 @@ export default class App extends PureComponent {
             visible={alarmMessageDrawerVisible}
             onClose={() => this.setState({ alarmMessageDrawerVisible: false })}
           />
+          <FaultMessageDrawer
+            data={faultMessage}
+            visible={faultMessageDrawerVisible}
+            onClose={() => this.setState({ faultMessageDrawerVisible: false })}
+          />
           <AlarmDynamicDrawer
             data={alarmHandleList}
             visible={alarmDynamicDrawerVisible}
@@ -924,12 +994,12 @@ export default class App extends PureComponent {
             visible={faultDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('fault')}
           />
+          <MaintenanceCheckDrawer
+            model={this.props.newUnitFireControl}
+            visible={maintenanceCheckDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
+          />
         </div>
-        <MaintenanceCheckDrawer
-          model={this.props.newUnitFireControl}
-          visible={maintenanceCheckDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
-        />
       </BigPlatformLayout>
     );
   }

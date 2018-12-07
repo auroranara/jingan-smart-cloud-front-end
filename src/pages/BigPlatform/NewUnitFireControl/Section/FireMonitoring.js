@@ -26,9 +26,10 @@ export default class FireMonitoring extends PureComponent {
       handleShowFault,
     } = this.props;
 
-    const extra = (
-      <span className={styles.extra} onClick={handleShowAlarmHistory}>历史火警>></span>
-    );
+    const extra = null;
+    // const extra = (
+    //   <span className={styles.extra} onClick={handleShowAlarmHistory}>历史火警>></span>
+    // );
 
     return (
       <Section title="虚拟消控主机" extra={extra}>
