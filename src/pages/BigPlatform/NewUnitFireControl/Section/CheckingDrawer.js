@@ -19,6 +19,7 @@ const overTime = 3; // 超时检查
 export default class CheckingDrawer extends PureComponent {
   state = {
     status: '',
+    visible: true,
   };
 
   componentDidMount() {
@@ -42,13 +43,15 @@ export default class CheckingDrawer extends PureComponent {
         item_type: 2,
       },
     });
+    this.setState({
+      status: undefined,
+    });
   };
 
   // 处理标签
   handleLabelOnClick = s => {
     const { dispatch, companyId } = this.props;
     const { status } = this.state;
-    console.log('status111', status);
     dispatch({
       type: 'newUnitFireControl/fetchCheckDetail',
       payload: {
@@ -61,7 +64,31 @@ export default class CheckingDrawer extends PureComponent {
       status: status !== s ? s : undefined,
     });
   };
-
+  handleCheckDrawer = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    // 获取检查点列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCheckDetail',
+      payload: {
+        companyId,
+        item_type: 2,
+      },
+    });
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
+    this.setState({ checkDrawerVisible: true });
+  };
   render() {
     const { status } = this.state;
     const {
@@ -151,6 +178,13 @@ export default class CheckingDrawer extends PureComponent {
         left={left}
         placement="right"
         {...restProps}
+        onClose={() => {
+          this.props.onClose();
+          this.setState({
+            visible: false,
+            status: undefined,
+          });
+        }}
       />
     );
   }

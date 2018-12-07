@@ -276,7 +276,9 @@ export default class App extends PureComponent {
         // 解决加入animation覆盖notification自身显示动效时长问题
         notification.open({
           ...options,
-          style: this.fireNode ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 } : { ...styleAnimation },
+          style: this.fireNode
+            ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
+            : { ...styleAnimation },
           onClose: () => {
             notification.open({
               ...options,
@@ -551,11 +553,20 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
+    // 获取检查点列表
     dispatch({
       type: 'newUnitFireControl/fetchCheckDetail',
       payload: {
         companyId,
         item_type: 2,
+      },
+    });
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
       },
     });
     this.setState({ checkDrawerVisible: true });
