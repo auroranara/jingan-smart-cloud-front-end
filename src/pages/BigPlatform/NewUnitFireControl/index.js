@@ -276,7 +276,8 @@ export default class App extends PureComponent {
         description: this.renderNotificationMsg(item),
         style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
         onClick: () => {
-          console.log(messageFlag);
+          // console.log(messageFlag);
+          // this.handleClickMeassge(messageFlag);
         },
       });
     }
@@ -302,7 +303,8 @@ export default class App extends PureComponent {
       <div
         className={styles.notificationBody}
         onClick={() => {
-          console.log(messageFlag);
+          // console.log(messageFlag);
+          this.handleClickMeassge(messageFlag);
         }}
       >
         <div>
@@ -572,8 +574,9 @@ export default class App extends PureComponent {
   };
 
   handleClickMeassge = dataId => {
-    this.fetchAlarmHandle(dataId);
-    this.handleDrawerVisibleChange('alarmMessage');
+    // console.log(dataId);
+    this.handleFetchAlarmHandle(dataId, 1);
+    this.setState({ alarmMessageDrawerVisible: true, videoVisible: true });
   };
 
   // 点击当前隐患图表进行筛选
@@ -616,30 +619,36 @@ export default class App extends PureComponent {
   render() {
     // 从props中获取数据
     const {
-      fireAlarmSystem: {
-        fire_state = 0,
-        fault_state = 0,
-        start_state = 0,
-        supervise_state = 0,
-        shield_state = 0,
-        feedback_state = 0,
+      match: {
+        params: { unitId: companyId },
       },
-      systemScore,
-      currentHiddenDanger,
-      currentHiddenDanger: { timestampList },
-      checkCount,
-      checkList,
-      pointRecordList: { pointRecordLists, abnormal: checkAbnormal, count },
-      alarmHandleMessage,
-      alarmHandleList,
-      alarmHandleHistory,
-      workOrderList1,
-      workOrderList2,
-      workOrderList7,
-      workOrderDetail, // 只有一个元素的数组
-      fireAlarm,
-      faultList,
-    } = this.props.newUnitFireControl;
+      monitor: { allCamera },
+      newUnitFireControl: {
+        fireAlarmSystem: {
+          fire_state = 0,
+          fault_state = 0,
+          start_state = 0,
+          supervise_state = 0,
+          shield_state = 0,
+          feedback_state = 0,
+        },
+        systemScore,
+        currentHiddenDanger,
+        currentHiddenDanger: { timestampList },
+        checkCount,
+        checkList,
+        pointRecordList: { pointRecordLists, abnormal: checkAbnormal, count },
+        alarmHandleMessage,
+        alarmHandleList,
+        alarmHandleHistory,
+        workOrderList1,
+        workOrderList2,
+        workOrderList7,
+        workOrderDetail, // 只有一个元素的数组
+        fireAlarm,
+        faultList,
+      },
+    } = this.props;
 
     const {
       videoVisible,
@@ -659,7 +668,6 @@ export default class App extends PureComponent {
       drawerType,
       maintenanceDrawerVisible,
       fourColorTips,
-      deletedFourColorTips,
       fireAlarmVisible,
       checkStatus,
       checkPointName,
@@ -668,12 +676,7 @@ export default class App extends PureComponent {
       faultDrawerVisible,
       fireAlarmTitle,
     } = this.state;
-    const {
-      monitor: { allCamera },
-      match: {
-        params: { unitId: companyId },
-      },
-    } = this.props;
+
     return (
       <BigPlatformLayout
         title="智慧消防云平台"
@@ -738,7 +741,7 @@ export default class App extends PureComponent {
                   linkage={start_state}
                   supervise={supervise_state}
                   feedback={feedback_state}
-                  handleShowAlarm={e => this.handleDrawerVisibleChange('alarmDynamic')}
+                  handleShowAlarm={e => { this.setState({ alarmDynamicDrawerVisible: true, videoVisible: true }) }}
                   handleShowAlarmHistory={e => this.handleDrawerVisibleChange('alarmHistory')}
                   handleShowFault={e => this.handleDrawerVisibleChange('fault')}
                 />
@@ -822,7 +825,7 @@ export default class App extends PureComponent {
           <AlarmDynamicDrawer
             data={alarmHandleMessage}
             visible={alarmMessageDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('alarmMessage')}
+            onClose={() => this.setState({ alarmMessageDrawerVisible: false })}
           />
           <AlarmDynamicDrawer
             data={alarmHandleList}
