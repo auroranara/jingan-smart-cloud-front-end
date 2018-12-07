@@ -5,6 +5,7 @@ import { Timeline } from 'antd';
 import styles from './FaultMessageDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import TimelineItem from '../components/TimelineItem';
+import flowImg from '../imgs/flow_m.png';
 
 function Occured(props) {
   const {
@@ -76,6 +77,9 @@ export default function FaultMessageDrawer(props) {
 
   const left = (
     <div className={styles.container} {...restProps}>
+      <div className={styles.head}>
+        <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
+      </div>
       <div className={styles.timeline} style={{ borderTop: 'none' }}>
         <Timeline>
           {/* 主机故障时才会显示这个，一键报修时不显示 */}
