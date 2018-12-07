@@ -60,31 +60,26 @@
 
 .circleContainer {
   height: 90px;
-  position: relative;
   margin-bottom: 20px;
 }
 
 .currentTitle {
-  margin: 0 auto;
-  position: relative;
-  top: 45%;
-  text-align: -webkit-center;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #fff;
   font-size: 14px;
 }
 
-.statusIcon {
+.statusLogo {
   height: 100%;
-  display: contents;
 }
-
 .icon {
   width: 90px;
   height: 90px;
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
+  left: 0;
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
@@ -94,7 +89,7 @@
 }
 
 .cards {
-  height: calc(100% - 340px);
+  // height: calc(100% - 340px);
   overflow: auto;
 
   div:last-child {
@@ -102,6 +97,13 @@
   }
 }
 
+.twoCards {
+  height: 100%;
+}
+
+.oneCards {
+  height: 100%;
+}
 .titleP {
   padding-left: 10px;
   color: #fff;

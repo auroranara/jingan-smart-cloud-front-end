@@ -164,7 +164,7 @@ export default class App extends PureComponent {
     [1, 2, 7].forEach(s => this.handleFetchWorkOrder(s));
 
     // 获取故障
-    dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } })
+    dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
 
     // 获取当前隐患图表统计数据
     dispatch({
@@ -196,7 +196,9 @@ export default class App extends PureComponent {
         companyId,
       },
       success: res => {
-        const { list: [{ itemId, messageFlag, type } = {}] } = res;
+        const {
+          list: [{ itemId, messageFlag, type } = {}],
+        } = res;
         const { fourColorTips, deletedFourColorTips } = this.state;
         // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
         if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
@@ -396,7 +398,9 @@ export default class App extends PureComponent {
         companyId,
       },
       success: res => {
-        const { list: [{ itemId, messageFlag, type } = {}] } = res;
+        const {
+          list: [{ itemId, messageFlag, type } = {}],
+        } = res;
         const { fourColorTips, deletedFourColorTips } = this.state;
         // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
         if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
@@ -417,7 +421,7 @@ export default class App extends PureComponent {
 
         let sameIndex = -1;
         res.list.forEach((item, index) => {
-          if(item.messageId === this.topId) {
+          if (item.messageId === this.topId) {
             sameIndex = index;
             return;
           }
@@ -494,6 +498,19 @@ export default class App extends PureComponent {
    * 打开检查点抽屉
    */
   handleCheckDrawer = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchCheckDetail',
+      payload: {
+        companyId,
+        item_type: 2,
+      },
+    });
     this.setState({ checkDrawerVisible: true });
   };
   /**
@@ -578,17 +595,14 @@ export default class App extends PureComponent {
   };
 
   // 点击当前隐患图表进行筛选
-  handleFilterCurrentDanger = (params) => {
-
-
-  }
+  handleFilterCurrentDanger = params => {};
 
   // 关闭火灾自动报警抽屉
   handleCloseFireAlarm = () => {
     this.setState({
       fireAlarmVisible: false,
-    })
-  }
+    });
+  };
 
   // 查看火灾自动报警抽屉
   handleViewFireAlarm = ({ sysId, sysName }) => {
@@ -597,7 +611,7 @@ export default class App extends PureComponent {
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
+    } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchCheckRecord',
       payload: {
@@ -606,13 +620,13 @@ export default class App extends PureComponent {
         sysId,
         companyId,
       },
-    })
+    });
 
     this.setState({
       fireAlarmVisible: true,
       fireAlarmTitle: sysName,
-    })
-  }
+    });
+  };
 
   render() {
     // 从props中获取数据
@@ -693,9 +707,6 @@ export default class App extends PureComponent {
                   handleViewCurrentDanger={this.handleViewCurrentDanger}
                   handleCheckDrawer={this.handleCheckDrawer}
                   model={this.props.newUnitFireControl}
-                  checkCount={checkCount}
-                  checkList={checkList}
-                  companyId={companyId}
                 />
               </div>
             </div>
@@ -705,7 +716,11 @@ export default class App extends PureComponent {
                 <FourColor
                   model={this.props.newUnitFireControl}
                   handleShowPointDetail={(checkItemId, checkStatus, checkPointName) => {
-                    this.handleDrawerVisibleChange('point', { checkItemId, checkStatus, checkPointName });
+                    this.handleDrawerVisibleChange('point', {
+                      checkItemId,
+                      checkStatus,
+                      checkPointName,
+                    });
                   }}
                   handleShowHiddenDanger={(id, hiddenDangerId) => {
                     this.handleViewDangerDetail({ id: hiddenDangerId });
@@ -754,10 +769,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 消防设施情况 */}
-                <FireDevice
-                  systemScore={systemScore}
-                  onClick={this.handleViewFireAlarm}
-                />
+                <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} />
               </div>
             </div>
             <div className={styles.item}>
@@ -765,7 +777,10 @@ export default class App extends PureComponent {
                 {/* 点位巡查统计 */}
                 <PointInspectionCount
                   model={this.props.newUnitFireControl}
-                  handleShowDrawer={(name, params) => { this.handleDrawerVisibleChange(name, params); this.fetchPointInspectionList(params.pointInspectionDrawerSelectedDate); }}
+                  handleShowDrawer={(name, params) => {
+                    this.handleDrawerVisibleChange(name, params);
+                    this.fetchPointInspectionList(params.pointInspectionDrawerSelectedDate);
+                  }}
                 />
               </div>
             </div>
@@ -832,7 +847,9 @@ export default class App extends PureComponent {
           />
           <AlarmDynamicDrawer
             // data={alarmHandleHistory}
-            data={alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory}
+            data={
+              alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory
+            }
             visible={alarmHistoryDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('alarmHistory')}
           />
