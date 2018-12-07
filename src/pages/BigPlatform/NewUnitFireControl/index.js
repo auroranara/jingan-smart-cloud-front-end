@@ -365,11 +365,8 @@ export default class App extends PureComponent {
 
     // 获取当前隐患列表
     dispatch({
-      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
+      type: 'newUnitFireControl/fetchHiddenDangerNum',
+      payload: { companyId },
     });
 
     // 获取企业信息
@@ -525,7 +522,7 @@ export default class App extends PureComponent {
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
+    } = this.props;
     // 获取当前隐患图表统计数据
     dispatch({
       type: 'newUnitFireControl/fetchHiddenDangerNum',
