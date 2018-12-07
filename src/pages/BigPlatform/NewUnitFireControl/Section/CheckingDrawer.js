@@ -190,6 +190,7 @@ export default class CheckingDrawer extends PureComponent {
           this.setState({
             visible: false,
             status: undefined,
+            isSelected: true,
           });
         }}
       />
