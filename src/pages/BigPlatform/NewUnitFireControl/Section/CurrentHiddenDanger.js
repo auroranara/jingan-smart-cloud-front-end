@@ -37,65 +37,55 @@ export default class CurrentHiddenDanger extends PureComponent {
     }
   };
 
-  handleChartReady = (chart, option) => {
-    const { onClickChat } = this.props;
-    const changeHighLight = () => {
-      var length = option.series[0].data.length;
-      // 取消之前高亮的图形
+  onMouseOver = (params, chart) => {
+    if (this.selectedDangerIndex >= 0) {
       chart.dispatchAction({
         type: 'downplay',
         seriesIndex: 0,
-        dataIndex: this.currentHiddenDangerIndex,
+        dataIndex: this.selectedDangerIndex,
       });
-      this.currentHiddenDangerIndex = (this.currentHiddenDangerIndex + 1) % length;
-      // 高亮当前图形
+    }
+    chart.dispatchAction({
+      type: 'highlight',
+      seriesIndex: 0,
+      dataIndex: params.dataIndex,
+    });
+  }
+
+  onMouseOut = ({ dataIndex }, chart) => {
+    chart.dispatchAction({
+      type: 'downplay',
+      seriesIndex: 0,
+      dataIndex: dataIndex,
+    });
+    chart.dispatchAction({
+      type: 'highlight',
+      seriesIndex: 0,
+      dataIndex: this.selectedDangerIndex,
+    });
+  }
+
+  onChartClick = ({ dataIndex }, chart) => {
+    const { onClickChat } = this.props
+    // 如果点击已选中的区块，取消筛选
+    if (this.selectedDangerIndex === dataIndex) {
+      this.selectedDangerIndex = -1
+      onClickChat({ dataIndex: -1 })
+      chart.dispatchAction({
+        type: 'downplay',
+        seriesIndex: 0,
+        dataIndex: dataIndex,
+      });
+    } else {
+      this.selectedDangerIndex = dataIndex
+      onClickChat({ dataIndex })
       chart.dispatchAction({
         type: 'highlight',
         seriesIndex: 0,
-        dataIndex: this.currentHiddenDangerIndex,
+        dataIndex: dataIndex,
       });
-    };
-    // 立即执行高亮操作
-    changeHighLight();
-    // 添加定时器循环
-    this.hiddenDangerTimer = setInterval(changeHighLight, 2000);
-    // 绑定mouseover事件
-    chart.on('mouseover', params => {
-      clearInterval(this.hiddenDangerTimer);
-      this.hiddenDangerTimer = null;
-      if (params.dataIndex !== this.currentHiddenDangerIndex) {
-        // 取消之前高亮的图形
-        chart.dispatchAction({
-          type: 'downplay',
-          seriesIndex: 0,
-          dataIndex: this.currentHiddenDangerIndex,
-        });
-        // 高亮当前图形
-        chart.dispatchAction({
-          type: 'highlight',
-          seriesIndex: 0,
-          dataIndex: params.dataIndex,
-        });
-        this.currentHiddenDangerIndex = params.dataIndex;
-      }
-    });
-    // 绑定mouseout事件
-    chart.on('mouseout', params => {
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: this.currentHiddenDangerIndex,
-      });
-      if (this.hiddenDangerTimer) {
-        return;
-      }
-      // 添加定时器循环
-      this.hiddenDangerTimer = setInterval(changeHighLight, 2000);
-    });
-    // 绑定click事件
-    chart.on('click', onClickChat);
-  };
+    }
+  }
 
   render() {
     const {
@@ -109,16 +99,16 @@ export default class CurrentHiddenDanger extends PureComponent {
       list = [],
     } = this.props;
     const legendInfo = {
-      已超期: ycq,
-      未超期: wcq,
-      待复查: dfc,
+      '已超期': ycq,
+      '未超期': wcq,
+      '待复查': dfc,
     };
     const option = {
       tooltip: {
         show: false,
       },
       legend: {
-        left: '18%',
+        left: '13%',
         top: '82%',
         itemGap: 20,
         itemWidth: 25,
@@ -219,8 +209,10 @@ export default class CurrentHiddenDanger extends PureComponent {
               <ReactEcharts
                 style={{ width: '100%', height: '100%' }}
                 option={option}
-                onChartReady={chart => {
-                  this.handleChartReady(chart, option);
+                onEvents={{
+                  'mouseover': this.onMouseOver,
+                  'mouseout': this.onMouseOut,
+                  'click': this.onChartClick,
                 }}
               />
               <div className={styles.total}>

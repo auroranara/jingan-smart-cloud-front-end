@@ -61,7 +61,7 @@ export default class ImageCard extends PureComponent {
               <div
                 className={styles.image}
                 style={{
-                  background: `url(${photo})`,
+                  backgroundImage: `url(${photo})`,
                   backgroundSize: 'contain',
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition: 'center center',
@@ -75,7 +75,7 @@ export default class ImageCard extends PureComponent {
           <div
             className={styles.statusLogo}
             style={{
-              background: `url(${statusLogo})`,
+              backgroundImage: `url(${statusLogo})`,
               backgroundSize: '100% 100%',
               backgroundRepeat: 'no-repeat',
               right: '2%',
@@ -89,13 +89,13 @@ export default class ImageCard extends PureComponent {
             style={
               showStatusLogo
                 ? {
-                    top: '19px',
-                    right: '20px',
-                  }
+                  top: '19px',
+                  right: '20px',
+                }
                 : {
-                    top: 'calc(50% - 8px)',
-                    right: '20px',
-                  }
+                  top: 'calc(50% - 8px)',
+                  right: '20px',
+                }
             }
           />
         )}
