@@ -10,7 +10,7 @@ import styles from './DrawerHiddenDangerDetail.less';
 const { Description } = DescriptionList;
 /* 获取无数据 */
 const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+  return <span style={{ color: 'rgba(255, 250, 250, 0.45)' }}>暂无数据</span>;
 };
 
 export default class DrawerHiddenDangerDetail extends PureComponent {
@@ -31,7 +31,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                 (
                   {
                     timeLine,
-                    timeLine: { time: timeStamp, type: timeLineLabel },
+                    timeLine: { time: timeStamp, timeLineLabel, type: timeLineType },
                     level_name = null,
                     report_user_name = null,
                     desc = null,
@@ -55,6 +55,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                   },
                   index
                 ) => {
+                  const itemType = timeLineType || type
                   const [stampDay, stampHour] = timeStamp ? timeStamp.split(' ') : [null, null];
                   const picture = files.reduce((acc, item) => {
                     if (/.jpg{1}$|.png{1}$/.test(item.web_url)) {
@@ -64,7 +65,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                   if (!timeLine.time) {
                     return <TimelineItem key={index} label={timeLineLabel} spans={SPANS} />;
                   }
-                  if (index === 0) {
+                  if (+itemType === 1 && index === 0) {
                     return (
                       <TimelineItem
                         key={index}
@@ -105,8 +106,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                         </div>
                       </TimelineItem>
                     );
-                  }
-                  if (+type === 2) {
+                  } else if (+itemType === 2) {
                     return (
                       <TimelineItem
                         key={index}
@@ -139,7 +139,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                         </div>
                       </TimelineItem>
                     );
-                  } else if (+type === 3) {
+                  } else if (+itemType === 3) {
                     return (
                       <TimelineItem
                         key={index}
@@ -169,7 +169,32 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                         </div>
                       </TimelineItem>
                     );
-                  }
+                  } else return (
+                    <TimelineItem
+                      key={index}
+                      label={timeLineLabel}
+                      spans={SPANS}
+                      day={stampDay}
+                      hour={stampHour}
+                    >
+                      <div className={styles.contentContainer}>
+                        <DescriptionList className={styles.lineList} col={1}>
+                          <Description className={styles.line} term="复查人">
+                            {operator_name || getEmptyData()}
+                          </Description>
+                          <Description className={styles.line} term="备注">
+                            {remark || getEmptyData()}
+                          </Description>
+                        </DescriptionList>
+                        {picture &&
+                          picture.length > 0 && (
+                            <div className={styles.iamgeContainer}>
+                              <ImgSlider picture={picture} />
+                            </div>
+                          )}
+                      </div>
+                    </TimelineItem>
+                  )
                 }
               )}
             </Timeline>
