@@ -595,6 +595,11 @@ export default class App extends PureComponent {
     this.handleFetchWorkOrder(undefined, id);
   };
 
+  handleShowAlarm = e => {
+    this.handleFetchAlarmHandle();
+    this.setState({ alarmDynamicDrawerVisible: true, videoVisible: true });
+  };
+
   handleClickMessage = dataId => {
     // console.log(dataId);
     this.handleFetchAlarmHandle(dataId);
@@ -770,7 +775,7 @@ export default class App extends PureComponent {
                   linkage={start_state}
                   supervise={supervise_state}
                   feedback={feedback_state}
-                  handleShowAlarm={e => { this.setState({ alarmDynamicDrawerVisible: true, videoVisible: true }) }}
+                  handleShowAlarm={this.handleShowAlarm}
                   handleShowAlarmHistory={e => this.handleDrawerVisibleChange('alarmHistory')}
                   handleShowFault={e => this.handleDrawerVisibleChange('fault')}
                 />

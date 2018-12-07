@@ -26,7 +26,7 @@ function Occured(props) {
 }
 
 function Assigned(props) {
-  const { man, phone, desc, systemType, deviceName, position, company, imgs } = props;
+  const { man, phone, desc, systemType, deviceName, position, company, oneKeyDesc, imgs } = props;
 
   return (
     <div className={styles.card}>
@@ -36,6 +36,7 @@ function Assigned(props) {
       {position && <p>详细位置：{position}</p>}
       <p>指派人员：{man} {phone}</p>
       <p>维修单位：{company}</p>
+      {oneKeyDesc && <p>故障描述：{oneKeyDesc}</p>}
       {/* {imgs && !!imgs.length && <ImgSlider picture={imgs} getContainer={getContainer} />} */}
       {imgs && !!imgs.length && <ImgSlider picture={imgs} />}
     </div>
@@ -81,6 +82,7 @@ function getTime(time, type=0) {
 
 const SPANS = [5, 19];
 const NO_DATA = '暂无信息';
+const HOST_FAULT_DESC = '维修难道较大，指派维保';
 
 export default function MaintenanceCard(props) {
   // type 1 已完成(处理完毕)   2 待处理(看status)   7 已超期(看status)
@@ -153,13 +155,14 @@ export default function MaintenanceCard(props) {
               <Assigned
                 man={createByName || NO_DATA}
                 phone={createByPhone || NO_DATA}
-                desc={isOneKey ? (report_desc || NO_DATA) : null}
+                desc={isOneKey ? '' : HOST_FAULT_DESC}
                 company={unit_name || NO_DATA}
                 imgs={reportPhotos}
                 // 一键报修时，比主机故障多显示以下信息
                 systemType={systemTypeValue}
                 deviceName={device_name}
                 position={device_address}
+                oneKeyDesc={isOneKey ? report_desc : ''}
               />
             )}
           </TimelineItem>
