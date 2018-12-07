@@ -657,13 +657,14 @@ export default {
       }
     },
     // 获取当前隐患列表
-    *fetchCurrentHiddenDanger({ payload }, { call, put }) {
+    *fetchCurrentHiddenDanger({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerRecords, payload);
       if (response && response.hiddenDangers) {
         yield put({
           type: 'saveHiddenDangerList',
           payload: response.hiddenDangers,
         });
+        if (callback) callback()
       }
     },
     // 获取隐患详情
