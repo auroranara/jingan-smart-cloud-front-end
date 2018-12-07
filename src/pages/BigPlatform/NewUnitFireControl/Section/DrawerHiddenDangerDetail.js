@@ -157,11 +157,13 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                             <Description className={styles.line} term="备注">
                               {remark || getEmptyData()}
                             </Description>
-                            <Description className={styles.line} term="计划整改">
+                            {/*
+                              <Description className={styles.line} term="计划整改">
                               {plan_rectify_time
                                 ? moment(+plan_rectify_time).format('YYYY-MM-DD')
                                 : getEmptyData()}
                             </Description>
+                           */}
                           </DescriptionList>
                           {picture &&
                             picture.length > 0 && (
