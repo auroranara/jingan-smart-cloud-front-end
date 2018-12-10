@@ -46,7 +46,7 @@ export default class DangerDrawer extends PureComponent {
           <ChartRing />
         </DrawerSection>
         <DrawerSection title="隐患数量排名" extra={extra}>
-          {graph ? <ChartLine /> : <ChartBar />}
+          {graph ? <ChartBar /> : <ChartLine />}
         </DrawerSection>
       </Fragment>
     );
