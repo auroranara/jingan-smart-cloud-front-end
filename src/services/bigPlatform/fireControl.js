@@ -47,7 +47,9 @@ export async function getAllCamera(params) {
 
 export async function queryAlarmHandle({ id, gridId }) {
   // console.log('fetch handleAlarm');
-  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ gridId })}`);
+  return request(
+    `${URL_PREFIX}/fireManage/fireProcess/${id}/proceHistory?${stringify({ gridId })}`
+  );
 }
 
 export async function queryLookUp(params) {
@@ -206,4 +208,113 @@ export async function getVideoList(params) {
 
 export async function getVideoLookUp(params) {
   return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
+}
+
+// 企业信息(包含人员数量四色图等)
+export async function getCompanyMessage(params) {
+  return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
+}
+
+// 视频路径
+export async function getStartToPlay(params) {
+  return request(`/acloud_new/dai/startToPlay?${stringify(params)}`);
+}
+
+// 获取风险点信息
+export async function getRiskPointInfo(params) {
+  return request(`/acloud_new/v2/sfc/selectCompanyLetter.json?${stringify(params)}`);
+}
+
+/**
+ * 消防设施评分
+ */
+export async function getSystemScore(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/systemScore?${stringify(params)}`);
+}
+
+/**
+ * 获取当前隐患图表数据
+ */
+export async function fetchHiddenDangerNum(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getHiddenDangerNum?${stringify(params)}`)
+}
+/**
+ * 南消：点位巡查统计
+ */
+export async function getPointInspectionCount(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getPointCheck?${stringify(params)}`);
+}
+
+/**
+ * 南消：获取点位巡查列表
+ */
+export async function getPointInspectionList(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getPointDetail?${stringify(params)}`);
+}
+
+/**
+ * 南消：获取点位
+ */
+export async function getPointList(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getPointLocation?${stringify(params)}`);
+}
+
+// 获取大屏消息
+export async function getScreenMessage(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/screenMessage?${stringify(params)}`);
+}
+
+/**
+ * 检查点各状态数量
+ */
+export async function getCheckStatusCount(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointDataByCompanyId?${stringify(params)}`);
+}
+
+/**
+ * 各检查点具体信息
+ */
+export async function getCheckDetail(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointData?${stringify(params)}`);
+}
+
+/**
+ * 巡查点异常记录
+ */
+export async function getPonitRecord(params) {
+  return request(`/acloud_new/v2/nanxiao/fire/getItemById?${stringify(params)}`);
+}
+
+
+/* 南消 */
+
+// 动态火警详情列表
+export async function queryAlarmHandleList({ companyId, dataId, ...rest }) {
+  return request(`${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory/${dataId}?${stringify(rest)}`);
+}
+
+// 维保工单或维保动态详情
+export async function queryWorkOrder(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/getFaultForMaintenance?${stringify(params)}`);
+}
+
+// 获取火灾报警系统巡检记录
+export async function fetchCheckRecord(params) {
+  return request(`/acloud_new/v2/maintenanceCheck/getCheckRecordByType?${stringify(params)}`)
+}
+// 企业负责人和维保员信息
+export async function queryCheckUsers(params) {
+  return request(`/acloud_new/v2/maintenanceCheck/getCheckUsersForNanXiao?${stringify(params)}`);
+}
+
+// 故障列表
+export async function queryFault(params) {
+  return request(`${URL_PREFIX}/fireData/systemFaultMessage.json?${stringify(params)}`)
+}
+
+/**
+ * 获取隐患详情
+ */
+export async function fetchHiddenDangerDetail({ id }) {
+  return request(`/acloud_new/v2/hiddenDanger/hiddenDangerInfo/${id}`);
 }

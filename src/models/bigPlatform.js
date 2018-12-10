@@ -65,12 +65,20 @@ const transformHiddenDangerFields = ({
   real_rectify_time,
   review_user_name,
   status,
-  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
+  hiddenDangerRecordDto,
   source_type_name,
   companyBuildingItem,
   business_type,
   review_time,
 }) => {
+  let background,
+    operator_name = '';
+  if (hiddenDangerRecordDto && hiddenDangerRecordDto.length) {
+    background = hiddenDangerRecordDto[0].fileWebUrl;
+    operator_name = hiddenDangerRecordDto[hiddenDangerRecordDto.length - 1].operator_name; // 取隐患最后结束的
+  }
+  // const { fileWebUrl: background } = hiddenDangerRecordDto[0];
+
   const { object_title, risk_level } = companyBuildingItem || {};
   return {
     id,
@@ -81,7 +89,7 @@ const transformHiddenDangerFields = ({
     zgr: rectify_user_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
-    fcr: review_user_name,
+    fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
     source:

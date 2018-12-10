@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { Card, List, Button, Form, Col, Row, Input, Select, Spin } from 'antd';
+import moment from 'moment';
 import Ellipsis from '@/components/Ellipsis';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -266,7 +267,8 @@ export default class ExaminationMissionList extends PureComponent {
                 <Col span={24}>
                   <Ellipsis className={styles.ellipsisText} tooltip lines={1}>
                     考试期限：
-                    {item.startTime} 至 {item.endTime}
+                    {moment(item.startTime).format('YYYY-MM-DD hh:ss')} 至
+                    {moment(item.endTime).format('YYYY-MM-DD hh:ss')}
                   </Ellipsis>
                 </Col>
               </Row>

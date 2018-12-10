@@ -135,10 +135,10 @@ export default {
       const response = yield call(getOutOfDateNumber, payload);
       yield put({
         type: 'saveOutOfDateNumber',
-        payload: response.total,
+        payload: response.data.pagination.total,
       });
       if (success) {
-        success(response.total);
+        success(response.data.pagination.total);
       }
     },
     // 获取待整改隐患数量
@@ -146,10 +146,10 @@ export default {
       const response = yield call(getToBeRectifiedNumber, payload);
       yield put({
         type: 'saveToBeRectifiedNumber',
-        payload: response.total,
+        payload: response.data.pagination.total,
       });
       if (success) {
-        success(response.total);
+        success(response.data.pagination.total);
       }
     },
     // 获取待巡查任务数量

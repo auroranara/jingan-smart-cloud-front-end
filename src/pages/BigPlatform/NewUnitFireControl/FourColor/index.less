@@ -1,0 +1,86 @@
+.container {
+  position: relative;
+  // padding: 0 15%;
+  height: 100%;
+}
+.wrapper {
+  position: relative;
+  height: calc(~'100% - 30px');
+  background: no-repeat center center;
+  background-size: 100% 100%;
+}
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+
+  .legendItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:not(:last-child) {
+      margin-right: 36px;
+    }
+
+    .legendItemIcon {
+      margin-right: 12px;
+      width: 24px;
+      height: 24px;
+      background: no-repeat center center;
+      background-size: 100% 100%;
+    }
+  }
+}
+.alarm {
+  margin-left: 10px;
+  color: #04fdff;
+  cursor: pointer;
+}
+@keyframes fade {
+  from {
+      opacity: 1.0;
+  }
+  50% {
+      opacity: 0.4;
+  }
+  to {
+      opacity: 1.0;
+  }
+}
+.alarmTooltip {
+  animation: fade 0.5s 3 alternate;
+
+  :global {
+    .ant-tooltip-inner {
+      box-shadow: 0 0 1em red;
+    }
+  }
+}
+
+
+@keyframes myfirst
+{
+  from {width: 0; height: 0; background-color: rgba(255,0,0,0.6)}
+  to {width: 10em; height: 10em; background-color: rgba(255,0,0,0.1)}
+}
+.animated {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  // background-color: red;
+  animation: myfirst 2s infinite;
+  z-index: -1;
+  // box-shadow: 0 0 50px red
+
+  &.delay {
+    animation: myfirst 2s 1s infinite;
+  }
+}
+
+

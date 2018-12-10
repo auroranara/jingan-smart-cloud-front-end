@@ -41,6 +41,10 @@ export default class App extends PureComponent {
       extra,
       // 子节点
       children,
+      // 头部样式
+      headerStyle,
+      // 内容样式
+      contentStyle,
     } = this.props;
     const { currentTime } = this.state;
     // 合并以后的容器类名
@@ -48,12 +52,12 @@ export default class App extends PureComponent {
 
     return (
       <div className={containerClassName} style={{ backgroundImage: `url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png)`, ...style}}>
-        <div className={styles.header} style={{ backgroundImage: `url(${headerBg})` }}>
+        <div className={styles.header} style={{ backgroundImage: `url(${headerBg})`, ...headerStyle }}>
           <div className={styles.headerTitle}>{autoSpace ? title.split('').join(' ') : title}</div>
           <div className={styles.headerTime}>{currentTime}</div>
           {extra && <div className={styles.headerExtra}>{extra}</div>}
         </div>
-        <div className={styles.content}>
+        <div className={styles.content} style={contentStyle}>
           {children}
         </div>
       </div>

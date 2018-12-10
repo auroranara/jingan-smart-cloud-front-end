@@ -83,8 +83,8 @@ export default class RepairRecordDetail extends PureComponent {
               <Description term="考试时长">{`${examLimit} 分钟` || getEmptyData()}</Description>
               <Description term="合格率">{`${percentOfPass}%` || getEmptyData()}</Description>
               <Description term="考试期限">
-                {`${moment(startTime).format('YYYY-MM-DD HH:mm:ss')} ~ ${moment(endTime).format(
-                  'YYYY-MM-DD HH:mm:ss'
+                {`${moment(startTime).format('YYYY-MM-DD HH:mm')} ~ ${moment(endTime).format(
+                  'YYYY-MM-DD HH:mm'
                 )}` || getEmptyData()}
               </Description>
               <Description term="试卷">{paperName || getEmptyData()}</Description>

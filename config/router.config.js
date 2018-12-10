@@ -85,6 +85,10 @@ module.exports = [
         component: './BigPlatform/UnitFireControl/UnitFireControl',
       },
       {
+        path: '/big-platform/fire-control/new-company/:unitId',
+        component: './BigPlatform/NewUnitFireControl',
+      },
+      {
         path: '/big-platform/monitor/company/:companyId',
         component: './BigPlatform/Monitor/Company',
       },
@@ -115,7 +119,7 @@ module.exports = [
      */
     // Routes: ['src/pages/Authorized'],
     routes: [
-      { path: '/', redirect: '/dashboard/view' },
+      { path: '/', redirect: '/fire-control/maintenance-company' }, // '/dashboard/view'
       {
         path: '/dashboard',
         icon: 'home',

@@ -155,6 +155,7 @@ export default class App extends PureComponent {
       {
         title: '整改金额',
         dataIndex: 'real_rectify_money',
+        render: (value) => typeof value === 'number' ? value : 0,
       },
       {
         title: '整改后图片',
