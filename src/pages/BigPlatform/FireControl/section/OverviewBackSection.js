@@ -33,7 +33,6 @@ export default function OverviewBackSection(props) {
         reviewNum = 0,
       } = {},
     },
-    handleDrawerVisibleChange,
   } = props;
 
   return (
@@ -72,7 +71,6 @@ export default function OverviewBackSection(props) {
                 style={UNIT_STYLE}
                 iconStyle={ICON_STYLE}
                 num={safetyOfficer}
-                onClick={e => handleDrawerVisibleChange('safe')}
               />
             </div>
           </Col>
@@ -84,7 +82,6 @@ export default function OverviewBackSection(props) {
                 style={UNIT_STYLE}
                 iconStyle={ICON_STYLE}
                 num={riskPointer}
-                onClick={e => handleDrawerVisibleChange('risk')}
               />
             </div>
           </Col>
@@ -92,20 +89,16 @@ export default function OverviewBackSection(props) {
       </div>
       <div className={styles.down}>
         <OvFireCards
-          isUnit={1}
           today={todayCount}
           thisWeek={thisWeekCount}
           thisMonth={thisMonthCount}
-          handleDrawerVisibleChange={handleDrawerVisibleChange}
           style={{ height: '50%', padding: '15px 10px 8px', margin: 0 }}
         />
         <OvDangerCards
-          isUnit={1}
           total={totalDanger}
           overdue={overdueNum}
           rectify={rectifyNum}
           review={reviewNum}
-          handleDrawerVisibleChange={handleDrawerVisibleChange}
           style={{ height: '50%', border: 'none', padding: '8px 10px 15px' }}
         />
       </div>

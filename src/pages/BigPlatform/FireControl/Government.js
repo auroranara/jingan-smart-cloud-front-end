@@ -1,12 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Col, message, Modal, notification, Row } from 'antd';
+import { Col, Modal, Row, message } from 'antd';
 
-import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import { myParseInt, getNewAlarms } from './utils';
+import { myParseInt } from './utils';
 import styles from './Government.less';
-// import Head from './Head';
-import GridSelect from './components/GridSelect';
+import Head from './Head';
 import FcModule from './FcModule';
 // import FcMultiRotateModule from './FcMultiRotateModule';
 import FcMultiRotateModule from './FcNewMultiRotateModule';
@@ -25,13 +23,6 @@ import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
-import UnitDrawer from './section/UnitDrawer';
-import HostDrawer from './section/HostDrawer';
-import AlarmDrawer from './section/AlarmDrawer';
-import DangerTableDrawer from './section/DangerTableDrawer';
-import DangerDrawer from './section/DangerDrawer';
-import SafeDrawer from './section/SafeDrawer';
-import RiskDrawer from './section/RiskDrawer';
 
 import { getGridId } from './utils';
 
@@ -85,15 +76,6 @@ export default class FireControlBigPlatform extends PureComponent {
     tooltipName: '',
     tooltipVisible: false,
     tooltipPosition: [0, 0],
-    isUnit: 0, // 0 所有, 1 某个单位
-    ovType: 0, // 0 -> 今日/已超期 1 -> 本周/待整改 2 -> 本月/已超期
-    unitDrawerVisible: false,
-    hostDrawerVisible: false,
-    alarmDrawerVisible: false,
-    dangerTableDrawerVisible: false,
-    dangerDrawerVisible: false,
-    safeDrawerVisible: false,
-    riskDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -114,7 +96,6 @@ export default class FireControlBigPlatform extends PureComponent {
   lookingUpTimer = null;
   mapItemList = [];
   dropdownDOM = null;
-  formerAlarmList = [];
   // isLookingUp = false; // 标记正在查岗状态
 
   getGridId = () => {
@@ -162,22 +143,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
     // 只需要轮询火警相关，其他不必轮询
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { gridId } });
-    dispatch({
-      type: 'bigFireControl/fetchAlarm',
-      payload: { gridId },
-      callback: (list=[]) => {
-        // console.log(list);
-        const newAlarms = getNewAlarms(list, this.formerAlarmList);
-        if (newAlarms.length)
-          notification.warn({
-            message: '系统提示',
-            description: '有新的火警',
-            duration: null,
-          });
-
-        this.formerAlarmList = list;
-      },
-    });
+    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
     // dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
 
@@ -508,15 +474,6 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ tooltipVisible: false });
   };
 
-  handleDrawerVisibleChange = (name, isUnit=0, ovType=0) => {
-    const stateName = `${name}DrawerVisible`;
-    this.setState(state => ({
-      [stateName]: !state[stateName],
-      isUnit,
-      ovType,
-    }));
-  };
-
   render() {
     const {
       // match: { params: { gridId } },
@@ -567,15 +524,6 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipName,
       tooltipVisible,
       tooltipPosition,
-      isUnit,
-      ovType,
-      unitDrawerVisible,
-      hostDrawerVisible,
-      alarmDrawerVisible,
-      dangerTableDrawerVisible,
-      dangerDrawerVisible,
-      safeDrawerVisible,
-      riskDrawerVisible,
     } = this.state;
 
     // console.log(user);
@@ -587,40 +535,27 @@ export default class FireControlBigPlatform extends PureComponent {
       ...offGuard,
     };
 
-    const extra = <GridSelect dispatch={dispatch} data={grids} gridId={gridId} />;
-
     return (
-      <BigPlatformLayout
-        extra={extra}
-        className={styles.root}
-      >
-      {/* <div
+      <div
         className={styles.root}
         style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
-      > */}
+      >
         {/* <div className={styles.root} style={{ background: `url(${bg}) center center`, backgroundSize: 'cover' }}> */}
-        {/* <Head
+        <Head
           title={projectName.split('').join(' ')}
           dispatch={dispatch}
           data={grids}
           gridId={gridId}
         />
-        <div className={styles.empty} /> */}
+        <div className={styles.empty} />
         <Row
-          style={{ height: '100%', marginLeft: 0, marginRight: 0, padding: '15px 12px' }}
-          // style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
+          style={{ height: 'calc(90% - 15px)', marginLeft: 0, marginRight: 0 }}
           gutter={{ xs: 4, sm: 8, md: 12, lg: 16 }}
         >
           <Col span={6} style={HEIGHT_PERCNET}>
             <FcModule className={styles.overview} isRotated={showReverse}>
-              <OverviewSection
-                data={overview}
-                handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-              />
-              <OverviewBackSection
-                data={{ selected: mapSelected, companyOv }}
-                handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-              />
+              <OverviewSection data={overview} />
+              <OverviewBackSection data={{ selected: mapSelected, companyOv }} />
             </FcModule>
             <div className={styles.gutter1} />
             <FcMultiRotateModule
@@ -778,46 +713,7 @@ export default class FireControlBigPlatform extends PureComponent {
           position={tooltipPosition}
           offset={[23, -38]}
         />
-      {/*</div>*/}
-        <UnitDrawer
-          isUnit={isUnit}
-          visible={unitDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <HostDrawer
-          isUnit={isUnit}
-          visible={hostDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <AlarmDrawer
-          isUnit={isUnit}
-          ovType={ovType}
-          visible={alarmDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <DangerTableDrawer
-          isUnit={isUnit}
-          ovType={ovType}
-          visible={dangerTableDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <DangerDrawer
-          isUnit={isUnit}
-          ovType={ovType}
-          visible={dangerDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <SafeDrawer
-          isUnit={isUnit}
-          visible={safeDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-        <RiskDrawer
-          isUnit={isUnit}
-          visible={riskDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
-      </BigPlatformLayout>
+      </div>
     );
   }
 }

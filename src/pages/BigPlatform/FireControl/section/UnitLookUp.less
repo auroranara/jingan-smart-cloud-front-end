@@ -1,11 +1,3 @@
-.dot {
-  width: 12px;
-  height: 12px;
-  margin-right: 10px;
-  display: inline-block;
-  background-size: 100% 100%;
-}
-
 .main {
   position: relative;
   height: 100%;
@@ -13,7 +5,7 @@
   .top {
     height: 30%;
     position: relative;
-    // border-bottom: 1px solid rgb(9, 103, 211);
+    border-bottom: 1px solid rgb(9, 103, 211);
 
     .left {
       height: 100%;
@@ -50,11 +42,9 @@
       justify-content: center;
       flex-direction: column;
       .lastlookUpTime {
-        // color: #00a8ff;
+        color: #00a8ff;
         font-size: 16px;
         display: flex;
-
-        color: #FFF;
       }
       .DayTime {
         padding-top: 6px;
@@ -76,8 +66,8 @@
   }
 
   .bottom {
-    // margin-top: 4%;
-    // margin-left: 5%;
+    margin-top: 4%;
+    margin-left: 5%;
     height: 50%;
 
     // .responsetime {
@@ -88,7 +78,11 @@
 
 // 在岗率
 .jobRateWrite {
-  padding: 8px 0 0;
+  width: 100px;
+  height: 25%;
+  float: left;
+  padding-left: 10px;
+  padding-top: 30px;
   color: #fff;
   font-size: 16px;
 }
@@ -96,26 +90,19 @@
 .jobNum {
   height: 25%;
   float: left;
-  // color: #008dd8;
-
-  color: #FFF;
+  color: #008dd8;
   font-size: 16px;
   .onJob {
     padding: 0 5px;
-    // margin-top: 10px;
-    margin-top: 8px;
+    margin-top: 10px;
     .onJobIcon {
       display: inline-block;
-      // width: 16px;
-      // height: 16px;
+      width: 16px;
+      height: 16px;
       margin-right: 5px;
       position: relative;
-      // top: 2px;
-      background-size: 100% 100%;
-
-      top: 5px;
-      width: 19px;
-      height: 21px;
+      top: 2px;
+      background-repeat: no-repeat;
     }
     .personnum {
       color: #fff;
@@ -125,78 +112,61 @@
 
   .leaveJob {
     padding: 0 5px;
-    // margin-top: 10px;
-    margin-top: 8px;
+    margin-top: 10px;
     cursor: pointer;
-    color: rgb(4, 253, 255);
     .leavelJobIcon {
       display: inline-block;
-      // width: 16px;
-      // height: 16px;
+      width: 16px;
+      height: 16px;
       margin-right: 5px;
       position: relative;
-      // top: 2px;
-      background-size: 100% 100%;
-
-      top: 5px;
-      width: 19px;
-      height: 21px;
+      top: 2px;
+      background-repeat: no-repeat;
     }
     .personnum {
-      // color: #fff;
+      color: #fff;
       margin-left: 25px;
-
-      color: rgb(4, 253, 255);
     }
   }
 }
 
-// .leaveJob:hover {
-  // background-color: #15346c;
-// }
+.leaveJob:hover {
+  background-color: #15346c;
+}
 
 // 应答时间
 .timeWrite {
-  padding: 8px 0 0;
+  height: 25%;
+  float: left;
+  padding-left: 10px;
+  padding-top: 25px;
   color: #fff;
   font-size: 16px;
 }
 .timeIcon {
-  // width: 48px;
-  // height: 48px;
-  // position: absolute;
-  // top: 12px;
-  // left: 4px;
-  background-size: 100% 100%;
-  // background-repeat: no-repeat;
-
-  position: relative;
-  left: 25px;
-  top: 16px;
-  width: 52px;
-  height: 59px;
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  top: 12px;
+  left: 4px;
+  background-repeat: no-repeat;
 }
 .timeNum {
   height: 25%;
   float: left;
-  // color: #008dd8;
-  color: #FFF;
+  color: #008dd8;
   font-size: 16px;
   padding: 0 5px;
   .rabbit {
     margin-top: 10px;
     .rabbitIcon {
       display: inline-block;
-      // width: 16px;
-      // height: 16px;
+      width: 16px;
+      height: 16px;
       margin-right: 5px;
       position: relative;
-      // top: 2px;
-      background-size: 100% 100%;
-
-      top: 5px;
-      width: 22px;
-      height: 24px;
+      top: 2px;
+      background-repeat: no-repeat;
     }
     .minutes {
       color: #fff;
@@ -207,15 +177,12 @@
     margin-top: 10px;
     .snailIcon {
       display: inline-block;
-      // width: 16px;
+      width: 16px;
       height: 16px;
       margin-right: 5px;
       position: relative;
-      // top: 1px;
-      background-size: 100% 100%;
-
-      top: 2px;
-      width: 22px;
+      top: 1px;
+      background-repeat: no-repeat;
     }
     .minutes {
       color: #fff;
@@ -232,7 +199,7 @@
     .top {
       height: 30%;
       position: relative;
-      // border-bottom: 2px solid #053d83;
+      border-bottom: 2px solid #053d83;
 
       .left {
         height: 100%;
@@ -269,8 +236,7 @@
         justify-content: center;
         flex-direction: column;
         .lastlookUpTime {
-          // color: #00a8ff;
-          color: #FFF;
+          color: #00a8ff;
           font-size: 16px;
           display: flex;
         }
@@ -294,7 +260,7 @@
     }
 
     .bottom {
-      // margin-left: 5%;
+      margin-left: 5%;
       height: 55%;
     }
   }
@@ -303,7 +269,7 @@
   .jobRateWrite {
     width: 100px;
     height: 25%;
-    // float: left;
+    float: left;
     padding-left: 10px;
     padding-top: 30px;
     color: #fff;
@@ -335,7 +301,6 @@
     .leaveJob {
       margin-top: 10px;
       cursor: pointer;
-      color: rgb(4, 253, 255);
       .leavelJobIcon {
         display: inline-block;
         width: 16px;
@@ -346,10 +311,8 @@
         background-repeat: no-repeat;
       }
       .personnum {
-        // color: #fff;
+        color: #fff;
         margin-left: 25px;
-
-        color: rgb(4, 253, 255);
       }
     }
   }
@@ -373,8 +336,7 @@
   .timeNum {
     height: 25%;
     float: left;
-    // color: #008dd8;
-    color: #FFF;
+    color: #008dd8;
     font-size: 16px;
     .rabbit {
       margin-top: 10px;
@@ -417,31 +379,20 @@
   position: absolute;
   right: 13px;
   top: 13px;
-  // width: 100px;
+  width: 100px;
   height: 32px;
   line-height: 32px;
-  // padding-left: 22px;
-  // border-radius: 0 16px 16px 0;
+  padding-left: 22px;
+  border-radius: 0 16px 16px 0;
   cursor: pointer;
-  // background-color: rgba(9, 103, 211, 0.3);
-
-  width: 120px;
-  line-height: 30px;
-  padding-left: 42px;
-  border-radius: 16px;
-  border: 1px solid rgb(4, 253, 255);
+  background-color: rgba(9, 103, 211, 0.3);
 }
 
 .camera {
-  // width: 32px;
-  // height: 32px;
+  width: 32px;
+  height: 32px;
   position: absolute;
-  // left: -16px;
-  // top: 0;
+  left: -16px;
+  top: 0;
   background-size: 100% 100%;
-
-  width: 17px;
-  height: 21px;
-  top: 5px;
-  left: 16px;
 }

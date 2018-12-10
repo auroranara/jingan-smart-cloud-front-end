@@ -23,8 +23,7 @@ const ICON_STYLE = {
   position: 'absolute',
   fontSize: 25,
   // cursor: 'pointer',
-  // color: 'rgb(9,103,211)',
-  color: 'rgb(4, 253, 255)',
+  color: 'rgb(9,103,211)',
 };
 
 function getYearTime(t) {
@@ -125,44 +124,10 @@ export default class AlarmHandle extends Component {
                 reverse={this.state.reverse}
                 style={{ marginLeft: 86, marginTop: 10 }}
               >
-                {/* {!createTime && (
+                {!createTime && (
                   <Timeline.Item style={{ paddingBottom: 22 }}>
                     <div>
-                      <span className={styles.bestatus}>
-                        报警
-                      </span>
-                    </div>
-                    <div>
-                      <p className={styles.content} style={{ color: '#4f6793' }}>
-                        暂未报警
-                      </p>
-                    </div>
-                  </Timeline.Item>
-                )} */}
-
-                {createTime ? (
-                  <Timeline.Item style={{ paddingBottom: 22 }}>
-                    <span className={styles.yearTime} style={{ color: '#fff' }}>
-                      {getYearTime(createTime)}
-                    </span>
-                    <span className={styles.time} style={{ color: '#fff' }}>
-                      {getTime(createTime)}
-                    </span>
-                    <div>
-                      <span className={styles.status}>
-                        报警
-                      </span>
-                    </div>
-                    <div>
-                      <p className={styles.content} style={{ color: '#fff' }}>
-                        {unitType}
-                      </p>
-                    </div>
-                  </Timeline.Item>
-                ) : (
-                  <Timeline.Item style={{ paddingBottom: 22 }}>
-                    <div>
-                      <span className={styles.bestatus}>
+                      <span className={styles.bestatus} style={{ color: '#fff' }}>
                         报警
                       </span>
                     </div>
@@ -174,10 +139,31 @@ export default class AlarmHandle extends Component {
                   </Timeline.Item>
                 )}
 
-                {/* {!handleTime && (
+                {createTime && (
+                  <Timeline.Item style={{ paddingBottom: 22 }}>
+                    <span className={styles.yearTime} style={{ color: '#fff' }}>
+                      {getYearTime(createTime)}
+                    </span>
+                    <span className={styles.time} style={{ color: '#fff' }}>
+                      {getTime(createTime)}
+                    </span>
+                    <div>
+                      <span className={styles.status} style={{ color: '#fff' }}>
+                        报警
+                      </span>
+                    </div>
+                    <div>
+                      <p className={styles.content} style={{ color: '#fff' }}>
+                        {unitType}
+                      </p>
+                    </div>
+                  </Timeline.Item>
+                )}
+
+                {!handleTime && (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
                     <div>
-                      <span className={styles.bestatus}>
+                      <span className={styles.bestatus} style={{ color: '#fff' }}>
                         上报
                       </span>
                     </div>
@@ -187,9 +173,9 @@ export default class AlarmHandle extends Component {
                       </p>
                     </div>
                   </Timeline.Item>
-                )} */}
+                )}
 
-                {handleTime ? (
+                {handleTime && (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
                     <span className={styles.yearTime} style={{ color: '#fff' }}>
                       {getYearTime(handleTime)}
@@ -198,7 +184,7 @@ export default class AlarmHandle extends Component {
                       {getTime(handleTime)}
                     </span>
                     <div>
-                      <span className={styles.status}>
+                      <span className={styles.status} style={{ color: '#fff' }}>
                         上报
                       </span>
                     </div>
@@ -214,25 +200,12 @@ export default class AlarmHandle extends Component {
                       </p>
                     </div>
                   </Timeline.Item>
-                ) : (
-                  <Timeline.Item style={{ paddingBottom: 10 }}>
-                    <div>
-                      <span className={styles.bestatus}>
-                        上报
-                      </span>
-                    </div>
-                    <div>
-                      <p className={styles.content} style={{ color: '#4f6793' }}>
-                        暂未上报完毕
-                      </p>
-                    </div>
-                  </Timeline.Item>
                 )}
 
-                {/* {!endTime && (
+                {!endTime && (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
                     <div>
-                      <span className={styles.bestatus}>
+                      <span className={styles.bestatus} style={{ color: '#fff' }}>
                         处理
                       </span>
                     </div>
@@ -242,9 +215,9 @@ export default class AlarmHandle extends Component {
                       </p>
                     </div>
                   </Timeline.Item>
-                )} */}
+                )}
 
-                {endTime ? (
+                {endTime && (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
                     <span className={styles.yearTime} style={{ color: '#fff' }}>
                       {getYearTime(endTime)}
@@ -253,7 +226,7 @@ export default class AlarmHandle extends Component {
                       {getTime(endTime)}
                     </span>
                     <div>
-                      <span className={styles.status}>
+                      <span className={styles.status} style={{ color: '#fff' }}>
                         处理
                       </span>
                     </div>
@@ -269,19 +242,6 @@ export default class AlarmHandle extends Component {
                       </p>
                     </div>
                   </Timeline.Item>
-                ) : (
-                  <Timeline.Item style={{ paddingBottom: 10 }}>
-                    <div>
-                      <span className={styles.bestatus}>
-                        处理
-                      </span>
-                    </div>
-                    <div>
-                      <p className={styles.content} style={{ color: '#4f6793' }}>
-                        暂未处理完毕
-                      </p>
-                    </div>
-                  </Timeline.Item>
                 )}
               </Timeline>
             </div>
@@ -291,10 +251,10 @@ export default class AlarmHandle extends Component {
             <div className={styles.bottom}>
               <Col span={2} style={{ height: '100%' }}>
                 <div
-                  className={styles.arrow}
+                  className={styles.arrowLeft}
                   style={{
                     // opacity: 1,
-                    opacity: index ? 1 : 0.2,
+                    opacity: index ? 1 : 0.5,
                     cursor: index ? 'pointer' : 'auto',
                     backgroundImage: `url(${arrowLeft})`,
                   }}
@@ -308,9 +268,9 @@ export default class AlarmHandle extends Component {
               </Col>
               <Col span={2} style={{ height: '100%' }}>
                 <div
-                  className={styles.arrow}
+                  className={styles.arrowRight}
                   style={{
-                    opacity: isEnd ? 0.2 : 1,
+                    opacity: isEnd ? 0.5 : 1,
                     cursor: isEnd ? 'auto' : 'pointer',
                     backgroundImage: `url(${arrowRight})`,
                   }}

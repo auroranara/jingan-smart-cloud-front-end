@@ -12,10 +12,8 @@ const TRANS_FRONT = `${DURATION}s ${DURATION}s opacity cubic-bezier(0.19, 1, 0.2
 // easeInExpo 指数缓入，刚开始运动缓慢，结束时运动飞快，即从正面转向背面时，透明度一开始不怎么变化，快结束时飞快往0变化
 const TRANS_BACK = `${DURATION}s opacity cubic-bezier(0.95, 0.05, 0.795, 0.035)`;
 
-// 在多层滚动时，会有一像素偏差的问题，会覆盖里面的上面或下面的border，所以在此，将默认样式overflow：hidden覆盖掉
-const CONTAINER_BASE_STYLE = { border: 'none', overflow: 'visible', boxShadow: 'none' };
-const CONTAINER_FRONT = { opacity: OPACITY_FRONT, transition: TRANS_FRONT, ...CONTAINER_BASE_STYLE };
-const CONTAINER_BACK = { opacity: OPACITY_BACK, transition: TRANS_BACK, ...CONTAINER_BASE_STYLE };
+const CONTAINER_FRONT = { opacity: OPACITY_FRONT, transition: TRANS_FRONT };
+const CONTAINER_BACK = { opacity: OPACITY_BACK, transition: TRANS_BACK };
 
 export default class FcNewMultiRotateModule extends PureComponent {
   lastReverseStatus = false;
@@ -38,8 +36,7 @@ export default class FcNewMultiRotateModule extends PureComponent {
     // 而翻回来时，也不能突然出现，要在90°左右时，透明度变回可见，所以container用了缓入缓出，且变回来时用了延时
     return (
       <FcModule isRotated={showReverse} { ...restProps }>
-        {/* <FcSection style={{ ...containerStyle, padding: 0, boxShadow: 'none', background: 'transparent' }}> */}
-        <FcSection style={{ ...containerStyle, padding: 0, background: 'transparent' }}>
+        <FcSection style={{ ...containerStyle, padding: 0, boxShadow: 'none', background: 'transparent' }}>
           <FcModule isRotated={isRotated} style={{ height: '100%' }}>
             {front}
             {back}

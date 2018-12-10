@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { Button, Col, Row } from 'antd';
+import { Button, Col } from 'antd';
 
 import { fillZero } from '../utils';
 import FcSection from './FcSection';
@@ -14,20 +14,14 @@ import onJobIcon from '../img/onJobIcon.png';
 import rabbit from '../img/rabbit.png';
 import snail from '../img/snail.png';
 import timeIcon from '../img/time.png';
-// import cameraIcon from '../img/videoCamera.png';
-import cameraIcon from '../img/camera_new.png';
-import dotIcon from '../img/smallDot.png';
+import cameraIcon from '../img/videoCamera.png';
 
-const ROW_STYLE = { borderTop: '2px solid rgb(1, 152, 180)' };
-const COL_STYLE = { paddingTop: 15 };
 
 function formatTime(t) {
   const time = t || '0,0';
   const [m, s] = time.split(',');
   return `${fillZero(m)}'${fillZero(s)}"`;
 }
-
-const dot = <span className={styles.dot} style={{ backgroundImage: `url(${dotIcon})` }} />;
 
 export default class UnitLookUp extends Component {
   state = { hover: false };
@@ -130,15 +124,12 @@ export default class UnitLookUp extends Component {
           </div>
 
           <div className={styles.bottom}>
-            <Row style={ROW_STYLE}>
+            <Col span={24}>
               <div className={styles.jobRate}>
-                <Col span={6}>
-                  <div className={styles.jobRateWrite}>
-                    <span className={styles.dot} style={{ backgroundImage: `url(${dotIcon})` }} />
-                    在岗率
-                  </div>
+                <Col span={4}>
+                  <div className={styles.jobRateWrite}>在岗率</div>
                 </Col>
-                <Col span={6} style={COL_STYLE}>
+                <Col span={8}>
                   <ReactEcharts
                     style={{ width: '100%', height: '100px' }}
                     option={this.getOption(rate)}
@@ -146,7 +137,7 @@ export default class UnitLookUp extends Component {
                     lazyUpdate={true}
                   />
                 </Col>
-                <Col span={12} style={COL_STYLE}>
+                <Col span={12}>
                   <div className={styles.jobNum}>
                     <p className={styles.onJob}>
                       <span
@@ -167,20 +158,17 @@ export default class UnitLookUp extends Component {
                   </div>
                 </Col>
               </div>
-            </Row>
+            </Col>
 
-            <Row style={ROW_STYLE}>
+            <Col span={24}>
               <div className={styles.responsetime}>
                 <Col span={6}>
-                  <div className={styles.timeWrite}>
-                    <span className={styles.dot} style={{ backgroundImage: `url(${dotIcon})` }} />
-                    应答时间
-                  </div>
+                  <div className={styles.timeWrite}>应答时间</div>
                 </Col>
-                <Col span={6} style={COL_STYLE}>
+                <Col span={6}>
                   <div className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
                 </Col>
-                <Col span={12} style={COL_STYLE}>
+                <Col span={12}>
                   <div className={styles.timeNum}>
                     <p className={styles.rabbit}>
                       <span
@@ -201,7 +189,7 @@ export default class UnitLookUp extends Component {
                   </div>
                 </Col>
               </div>
-            </Row>
+            </Col>
           </div>
         </section>
         <div className={styles.video} onClick={handleClickVideoLookUp}>

@@ -1,0 +1,56 @@
+.mapSearchMain {
+  :global {
+    .rc-select {
+      .rc-select-selection {
+        // background-color: #003160;
+        background-color: rgb(6, 59, 111);
+        border: none;
+        .rc-select-selection__placeholder {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+      .rc-select-selection--single {
+        height: 36px;
+        line-height: 36px;
+        .rc-select-selection__rendered {
+          height: 36px;
+          line-height: 36px;
+        }
+      }
+      .rc-select-search__field {
+        color: #fff;
+      }
+    } // .rc-select-dropdown {
+    //   background-color: transparent;
+    //   li.rc-select-dropdown-menu-item {
+    //     background-color: rgba(1, 29, 67, 0.8);
+    //   }
+    // }
+  }
+}
+
+:global {
+  .rc-select-dropdown {
+    border: none;
+    background-color: transparent;
+    li.rc-select-dropdown-menu-item {
+      background-color: rgba(1, 29, 67, 0.8);
+      // background-color: #003160;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    li.rc-select-dropdown-menu-item-active {
+      background-color: #04498c;
+    }
+  }
+  .rc-select-dropdown:first-child {
+    overflow: hidden;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
+  }
+}
+
+.highlight {
+  color: rgb(0, 186, 255);
+}

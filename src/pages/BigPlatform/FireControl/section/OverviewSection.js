@@ -29,7 +29,6 @@ export default function OverviewSection(props) {
       rectifyNum=0,
       reviewNum=0,
     }={},
-    handleDrawerVisibleChange,
   } = props;
 
   // console.log('overview', props.data);
@@ -40,45 +39,29 @@ export default function OverviewSection(props) {
       {/* <div className={styles.divider}>
         <Divider><p className={styles.title}>{titleName}</p></Divider>
       </div> */}
-      {/* <Row style={{ marginTop: 25 }}> */}
-      <Row style={{ marginTop: 13 }}>
+      <Row style={{ marginTop: 25 }}>
         <Col span={12}>
           <div className={styles.unit}>
-            <OvUnit
-              title="管辖单位"
-              url={companyIcon}
-              num={total}
-              onClick={e => handleDrawerVisibleChange('unit')}
-            />
+            <OvUnit url={companyIcon} title="管辖单位" num={total} />
           </div>
         </Col>
         <Col span={12}>
           <div className={styles.unit}>
-            <OvUnit
-              title="消防主机单位"
-              url={hostIcon}
-              num={activeCount}
-              onClick={e => handleDrawerVisibleChange('host')}
-            />
+            <OvUnit url={hostIcon} title="消防主机单位" num={activeCount} />
           </div>
         </Col>
       </Row>
       <OvFireCards
-        isUnit={0}
         today={todayCount}
         thisWeek={thisWeekCount}
         thisMonth={thisMonthCount}
-        handleDrawerVisibleChange={handleDrawerVisibleChange}
-        // style={{ height: HEIGHT, padding: PADDING, marginTop: 25 }}
-        style={{ height: HEIGHT, padding: PADDING, marginTop: 20 }}
+        style={{ height: HEIGHT, padding: PADDING, marginTop: 25 }}
       />
       <OvDangerCards
-        isUnit={0}
         total={totalDanger}
         overdue={overdueNum}
         rectify={rectifyNum}
         review={reviewNum}
-        handleDrawerVisibleChange={handleDrawerVisibleChange}
         style={{ height: HEIGHT, padding: PADDING }}
       />
     </FcSection>

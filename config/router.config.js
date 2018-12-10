@@ -77,6 +77,10 @@ module.exports = [
         component: './BigPlatform/FireControl/Government',
       },
       {
+        path: '/big-platform/new-fire-control/government/:gridId',
+        component: './BigPlatform/NewFireControl/Government',
+      },
+      {
         path: '/big-platform/fire-control/company/:unitId',
         component: './BigPlatform/UnitFireControl/UnitFireControl',
       },

@@ -1,0 +1,148 @@
+@grey: rgb(79, 103, 147);
+
+.main {
+  height: calc(100% - 58px);
+}
+.top {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  // border-bottom: 1px solid rgb(9, 103, 211);
+
+  border-bottom: 1px solid rgb(2, 150, 177);
+
+  :global {
+    .ant-timeline-item-head {
+      width: 11px;
+      height: 11px;
+    }
+    .ant-timeline-item-tail {
+      border-color: rgba(0, 186, 255);
+    }
+  }
+}
+.yearTime {
+  position: absolute;
+  top: -6px;
+  left: -102px;
+}
+.time {
+  position: absolute;
+  top: 10px;
+  left: -94px;
+}
+.status {
+  position: absolute;
+  width: 50px;
+  height: 25px;
+  line-height: 24px;
+  text-align: center;
+  font-size: 14px;
+  border-radius: 10%;
+  margin-left: 10px;
+  border: 1px solid rgb(4, 253, 255);
+  color: rgb(4, 253, 255);
+}
+// .status:extend(.statusBase) {
+//   background-color: #0967d3 !important;
+// }
+.bestatus:extend(.status) {
+  // background-color: #95a7bc !important;
+  color: @grey;
+  border-color: @grey;
+}
+.content {
+  padding-left: 70px;
+  font-size: 15px;
+}
+.contact {
+  margin-left: 68px;
+  margin-top: -15px;
+  font-size: 13px;
+  .phone {
+    padding-left: 10px;
+  }
+}
+
+.bottom {
+  height: 100%;
+}
+
+.imgContainer {
+  padding: 10px 5px 15px;
+  // width: 118px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.imgBase {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(9, 103, 211, 0.2);
+  background-repeat: no-repeat;
+  background-position: center center;
+
+  border: 1px solid rgb(4, 253, 255);
+}
+
+.emptyImg:extend(.imgBase) {
+  background-size: 50% auto;
+}
+
+.fireImg:extend(.imgBase) {
+  background-size: contain;
+}
+
+.fireImg:visited {
+  border: 1px solid rgba(0, 186, 255);
+}
+
+// .fireImg:active {
+//   border: 1px solid rgba(0, 186, 255);
+// }
+
+.arrow {
+  height: 100%;
+  background: no-repeat center center;
+}
+
+// .arrowRight {
+//   height: 100%;
+//   background: no-repeat center center;
+// }
+
+.magnify {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(3, 36, 83, 0.8);
+}
+
+.center {
+  width: 300px;
+  height: 100%;
+  padding: 20px 0 20px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+}
+
+.magImg {
+  font-size: 120px;
+  text-align: center;
+  line-height: 400px;
+  width: 300px;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.magLeft {
+  height: 100%;
+  background: no-repeat center center;
+}

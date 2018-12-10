@@ -11,16 +11,6 @@ export function getGridId(gridId, initVal='index') {
   return !gridId || gridId === initVal ? undefined : gridId;
 }
 
-// 遍历新数组，若新数组的项目不存在于老数组中，则为新项目
-export function getNewAlarms(newList, formerList) {
-  const items = [];
-  for(const item of newList)
-    if (!formerList.find(({ id }) => item.id === id))
-      items.push(item);
-
-  return items;
-}
-
 export const TREE_DATA = [{
   title: 'Node1',
   value: '0-0',

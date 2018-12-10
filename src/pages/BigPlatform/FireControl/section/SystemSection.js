@@ -58,8 +58,7 @@ export default function SystemSection(props) {
         </Col>
       </Row>
       <div className={styles.table} style={{ height: 'calc(100% - 180px)' }}>
-        {/* <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}> */}
-        <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)', backgroundColor: 'rgba(9, 71, 146, 0.5)' }}>
+        <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
           <Col span={16}>
             <p className={styles.tableTitle}>接入单位</p>
           </Col>

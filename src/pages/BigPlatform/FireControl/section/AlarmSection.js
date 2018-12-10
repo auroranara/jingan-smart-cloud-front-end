@@ -73,15 +73,13 @@ export default class AlarmSection extends PureComponent {
                 onBlur={this.handleBlur}
                 ref={node => { this.node = node; }}
                 placeholder="请输入单位名称"
-                // style={{ background: 'rgba(9,103,211,0.2)', border: 'none', color: '#FFF' }}
-                style={{ background: 'rgb(6,59,111)', border: 'none', color: '#FFF', boxShadow: 'rgba(0, 0, 0, 0.3) 3px 3px 5px' }}
+                style={{ background: 'rgba(9,103,211,0.2)', border: 'none', color: '#FFF' }}
               />
             </Col>
             <Col span={6}>
               <Button
                 onClick={this.handleSearch}
-                // style={{ background: 'rgba(9,103,211,0.5)', border: 'none', color: '#FFF', width: '100%' }}
-                style={{ background: 'rgb(6,59,111)', border: 'none', color: '#FFF', width: '100%', boxShadow: 'rgba(0, 0, 0, 0.3) 3px 3px 5px' }}
+                style={{ background: 'rgba(9,103,211,0.5)', border: 'none', color: '#FFF', width: '100%' }}
               >
                 查询
               </Button>
