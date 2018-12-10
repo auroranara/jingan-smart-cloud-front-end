@@ -1,12 +1,22 @@
 import React, { PureComponent, Fragment } from 'react';
-import moment from 'moment';
 
 import styles from './DangerDrawer.less';
-import DrawerContainer from '../components/DrawerContainer';
-import DrawerSection from '../components/DrawerSection';
-import GraphSwitch from '../components/GraphSwitch';
-import SearchBar from '../components/SearchBar';
-import DrawerStretchCard from '../components/DrawerStretchCard';
+// import DrawerContainer from '../components/DrawerContainer';
+// import DrawerSection from '../components/DrawerSection';
+// import GraphSwitch from '../components/GraphSwitch';
+// import SearchBar from '../components/SearchBar';
+// import DrawerStretchCard from '../components/DrawerStretchCard';
+// import Ring from '../components/Ring';
+import {
+  DrawerContainer,
+  DrawerSection,
+  DrawerStretchCard,
+  GraphSwitch,
+  ChartBar,
+  ChartLine,
+  ChartRing,
+  SearchBar,
+} from '../components/Components';
 import clockIcon from '../img/cardClock1.png';
 
 const TYPE = 'danger';
@@ -18,16 +28,25 @@ const CARDS = [...Array(10).keys()].map(i => ({
 }));
 
 export default class DangerDrawer extends PureComponent {
+  state = { graph: 0 };
+
+  handleSwitch = i => {
+    this.setState({ graph: i });
+  };
+
   render() {
     const { visible, selectedIndex=0, isUnit, ovType, handleDrawerVisibleChange } = this.props;
+    const { graph } = this.state;
+
+    const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
 
     const left = (
       <Fragment>
-        <DrawerSection title="隐患状态统计">
-          circle
+        <DrawerSection title="隐患状态统计" style={{ marginBottom: 50 }}>
+          <ChartRing />
         </DrawerSection>
-        <DrawerSection title="隐患数量排名" extra={<GraphSwitch />}>
-          content
+        <DrawerSection title="隐患数量排名" extra={extra}>
+          {graph ? <ChartLine /> : <ChartBar />}
         </DrawerSection>
       </Fragment>
     );
