@@ -150,7 +150,14 @@ export default class lawDatabaseList extends PureComponent {
 
   /* 删除 */
   handleDelete = id => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      lawDatabase: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
     dispatch({
       type: 'lawDatabase/deleteLaws',
       payload: { id },
@@ -158,6 +165,10 @@ export default class lawDatabaseList extends PureComponent {
         if (response && response.code === 200) {
           dispatch({
             type: 'lawDatabase/fetch',
+            payload: {
+              pageSize,
+              pageNum: 1,
+            },
           });
           message.success('删除成功！');
         } else message.warning('该法律法规有违法行为关联关系，不予删除！');

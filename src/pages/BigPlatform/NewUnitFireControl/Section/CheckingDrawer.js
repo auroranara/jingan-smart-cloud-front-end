@@ -94,7 +94,6 @@ export default class CheckingDrawer extends PureComponent {
   };
   render() {
     const { status, isSelected } = this.state;
-    console.log('isSelected', isSelected);
     const {
       visible,
       checkCount,
@@ -179,6 +178,7 @@ export default class CheckingDrawer extends PureComponent {
     return (
       <DrawerContainer
         style={{ overflow: 'hidden' }}
+        destroyOnClose={true}
         title="检查点"
         width={485}
         visible={visible}
