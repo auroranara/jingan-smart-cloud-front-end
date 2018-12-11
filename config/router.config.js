@@ -1125,24 +1125,12 @@ module.exports = [
                 name: 'list',
                 component: './Training/Learning/LearningLayout',
               },
-              // {
-              //   path: '/training/learning/article/list',
-              //   code: 'training.learning.view',
-              //   name: 'view',
-              //   component: './Training/Learning/Article/ArticleList',
-              // },
               {
                 path: '/training/learning/article/detail/:id',
                 code: 'training.learning.view',
                 name: 'article',
                 component: './Training/Learning/Article/ArticleDeatil',
               },
-              // {
-              //   path: '/training/learning/courseware/list',
-              //   code: 'training.learning.view',
-              //   name: 'view',
-              //   component: './Training/Learning/Courseware/CoursewareList',
-              // },
               {
                 path: '/training/learning/courseware/detail/:id',
                 code: 'training.learning.view',
@@ -1259,6 +1247,38 @@ module.exports = [
                 code: 'training.myExam.listView',
                 name: 'result',
                 component: './Training/MyExam/Result',
+              },
+            ],
+          },
+          // 我的档案
+          {
+            name: 'myFile',
+            path: '/training/myFile',
+            code: 'training.myFile',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/myFile',
+                name: 'myFile',
+                redirect: '/training/myFile/myFileList',
+              },
+              {
+                path: '/training/myFile/myFileList',
+                code: 'training.myFile.view',
+                name: 'myFile',
+                component: './Training/MyFile/MyFileList',
+              },
+              {
+                path: '/training/myFile/myAnalysis',
+                code: 'training.myFile.view',
+                name: 'myAnalysis',
+                component: './Training/MyFile/MyAnalysis',
+              },
+              {
+                path: '/training/myFile/mySynthesis',
+                code: 'training.myFile.view',
+                name: 'mySynthesis',
+                component: './Training/MyFile/mySynthesis',
               },
             ],
           },
