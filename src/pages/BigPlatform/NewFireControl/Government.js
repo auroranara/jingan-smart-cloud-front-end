@@ -517,6 +517,13 @@ export default class FireControlBigPlatform extends PureComponent {
     }));
   };
 
+  handleUnitSearch = v => {
+    const { dispatch } = this.props;
+
+    const gridId = this.getGridId();
+    dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId, companyName: v } });
+  };
+
   render() {
     const {
       // match: { params: { gridId } },
@@ -780,12 +787,15 @@ export default class FireControlBigPlatform extends PureComponent {
         />
       {/*</div>*/}
         <UnitDrawer
+          data={sys}
           isUnit={isUnit}
+          handleSearch={this.handleUnitSearch}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <HostDrawer
           isUnit={isUnit}
+          data={sys}
           visible={hostDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

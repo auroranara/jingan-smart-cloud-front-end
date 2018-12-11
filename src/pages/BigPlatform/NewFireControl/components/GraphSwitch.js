@@ -12,7 +12,7 @@ export default class GraphSwitch extends PureComponent {
   handleClick = i => {
     const { handleSwitch } = this.props;
 
-    handleSwitch(i);
+    handleSwitch && handleSwitch(i);
     this.setState({ index: i });
   };
 

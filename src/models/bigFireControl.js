@@ -113,6 +113,7 @@ export default {
     lookUpCamera: [],
     mapLocation: [],
     grids: [],
+    units: {},
   },
 
   effects: {
@@ -167,9 +168,9 @@ export default {
       const response = yield call(querySys, payload);
       if (response && response.code === 200) {
         const { data = EMPTY_OBJECT } = response;
-        const { total, activeCount, titleName } = data;
+        const { total, activeCount, importCount, titleName } = data;
         yield put({ type: 'saveSys', payload: data });
-        yield put({ type: 'saveOv', payload: { total, activeCount, titleName } });
+        yield put({ type: 'saveOv', payload: { total, activeCount, importCount, titleName } });
       }
     },
     *fetchFireTrend({ payload }, { call, put }) {

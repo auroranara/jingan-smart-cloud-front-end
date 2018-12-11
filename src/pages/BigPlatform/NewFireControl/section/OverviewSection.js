@@ -20,7 +20,8 @@ export default function OverviewSection(props) {
     data: {
       titleName='暂无信息',
       total=0,
-      activeCount=0,
+      // activeCount=0,
+      importCount=0,
       todayCount=0,
       thisWeekCount=0,
       thisMonthCount=0,
@@ -55,9 +56,9 @@ export default function OverviewSection(props) {
         <Col span={12}>
           <div className={styles.unit}>
             <OvUnit
-              title="消防主机单位"
+              title="消防重点单位"
               url={hostIcon}
-              num={activeCount}
+              num={importCount}
               onClick={e => handleDrawerVisibleChange('host')}
             />
           </div>
