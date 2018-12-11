@@ -290,6 +290,7 @@ export default class QuestionsList extends PureComponent {
                 >
                   <div className={styles.firstLine}>
                     <div className={styles.tags}>
+                      {item.knowledgeName && <Tag>{item.knowledgeName}</Tag>}
                       {item.typeName && <Tag>{item.typeName}</Tag>}
                       {item.levelName && <Tag color={colors[item.level - 1]}>{item.levelName}</Tag>}
                     </div>
