@@ -1269,13 +1269,13 @@ module.exports = [
                 component: './Training/MyFile/MyFileList',
               },
               {
-                path: '/training/myFile/myAnalysis',
+                path: '/training/myFile/myAnalysis/:id',
                 code: 'training.myFile.view',
                 name: 'myAnalysis',
                 component: './Training/MyFile/MyAnalysis',
               },
               {
-                path: '/training/myFile/mySynthesis',
+                path: '/training/myFile/mySynthesis/:id',
                 code: 'training.myFile.view',
                 name: 'mySynthesis',
                 component: './Training/MyFile/mySynthesis',

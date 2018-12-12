@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Form, Card, Button, Input, Select, Table, Divider } from 'antd';
@@ -33,8 +33,15 @@ const breadcrumbList = [
 // 默认表单值
 const defaultFormData = {
   examName: undefined,
-  isQualified: undefined,
+  passStatus: undefined,
 };
+
+// 考试通过状态选项
+const passStatus = [
+  { value: '1', label: '合格' },
+  { value: '0', label: '不合格' },
+  { value: '-1', label: '弃考' },
+];
 
 const PAGE_SIZE = 10;
 
@@ -97,39 +104,51 @@ export default class myFileList extends PureComponent {
 
   // 跳转到试卷页面
   goExamDetail = id => {
-    // const { dispatch } = this.props;
-    // dispatch(routerRedux.push(`/law-enforcement/laws/detail/${id}`));
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/training/my-exam/result/${id}`));
   };
 
   // 跳转到分析报告页面
-  goAlaysisExam = () => {
+  goAlaysisExam = examId => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myAnalysis`));
+    dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}`));
   };
 
   /* 查询按钮点击事件 */
-  handleClickToQuery = () => {};
+  handleClickToQuery = () => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    // 修改表单数据
+    this.formData = data;
+    // 重新请求数据
+    dispatch({
+      type: 'myFile/fetchSelfList',
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+        ...data,
+      },
+    });
+  };
 
   /* 处理翻页 */
   handlePageChange = (pageNum, pageSize) => {
-    // const {
-    //   dispatch,
-    //   form: { getFieldsValue },
-    // } = this.props;
-    // const { checkDate, ...query } = getFieldsValue();
-    // if (checkDate && checkDate.length) {
-    //   const [start, end] = checkDate;
-    //   query.startTime = start.format('YYYY-MM-DD HH:mm:ss');
-    //   query.endTime = end.format('YYYY-MM-DD HH:mm:ss');
-    // }
-    // dispatch({
-    //   type: 'myFile/fetch',
-    //   payload: {
-    //     pageSize,
-    //     pageNum,
-    //     ...query,
-    //   },
-    // });
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'myFile/fetchSelfList',
+      payload: {
+        pageSize,
+        pageNum,
+        ...data,
+      },
+    });
   };
 
   /* 重置按钮点击事件 */
@@ -171,14 +190,15 @@ export default class myFileList extends PureComponent {
             })(<Input placeholder="请输入考试名称" />)}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('isQualified', {
-              initialValue: defaultFormData.isQualified,
-              getValueFromEvent: e => e.target.value.trim(),
+            {getFieldDecorator('passStatus', {
+              initialValue: defaultFormData.passStatus,
             })(
-              <Select style={{ width: 180 }} placeholder="是否合格">
-                <Option value="1">合格</Option>
-                <Option value="0">不合格</Option>
-                <Option value="-1">弃考</Option>
+              <Select style={{ width: 180 }} allowClear placeholder="是否合格">
+                {passStatus.map(({ value, label }) => (
+                  <Option key={value} value={value}>
+                    {label}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -228,12 +248,12 @@ export default class myFileList extends PureComponent {
       },
       {
         title: '考试期限',
-        dataIndex: 'examLimit',
-        key: 'examLimit',
+        dataIndex: 'examStartTime',
+        key: 'examStartTime',
         align: 'center',
         width: 200,
-        render: time => {
-          return `${moment(time).format('YYYY-MM-DD HH:mm')} 至 ${moment(time).format(
+        render: (val, record) => {
+          return `${moment(val).format('YYYY-MM-DD HH:mm')} 至 ${moment(record.examEndTime).format(
             'YYYY-MM-DD HH:mm'
           )}`;
         },
@@ -250,20 +270,31 @@ export default class myFileList extends PureComponent {
       },
       {
         title: '我的正确率',
-        dataIndex: 'bcheckCompanyName',
-        key: 'bcheckCompanyId',
+        dataIndex: 'score',
+        key: 'score',
         align: 'center',
         width: 120,
         render: val => {
-          return `${val}%`;
+          return `${val.toFixed(2)}%`;
         },
       },
       {
         title: '是否合格',
-        dataIndex: 'passStatus	',
-        key: 'passStatus	',
+        dataIndex: 'passStatus',
+        key: 'passStatus',
         align: 'center',
         width: 110,
+        render: val => {
+          return val === '1' ? (
+            <span style={{ color: '#008000' }}>合格 </span>
+          ) : val === '0' ? (
+            <span style={{ color: '#ff0000' }}>不合格</span>
+          ) : val === '-1' ? (
+            <span style={{ color: '#ff0000' }}>弃考</span>
+          ) : (
+            '---'
+          );
+        },
       },
       {
         title: '我的排名',
@@ -271,6 +302,9 @@ export default class myFileList extends PureComponent {
         key: 'ranking',
         align: 'center',
         width: 110,
+        render: (text, record) => {
+          return `${text}/${record.examStudentCount}`;
+        },
       },
       {
         title: '考试用时',
@@ -278,28 +312,28 @@ export default class myFileList extends PureComponent {
         key: 'useTime',
         align: 'center',
         width: 150,
-        render: text => {
-          return moment(text).format('HH:mm');
+        render: time => {
+          return time ? moment(time).format('HH:mm') : '---';
         },
       },
       {
         title: '开考时间',
-        dataIndex: 'examStartTime',
-        key: 'examStartTime',
+        dataIndex: 'startTime',
+        key: 'startTime',
         align: 'center',
         width: 200,
         render: time => {
-          return moment(time).format('YYYY-MM-DD HH:mm:ss');
+          return time ? moment(time).format('YYYY-MM-DD HH:mm:ss') : '---';
         },
       },
       {
         title: '交卷时间',
-        dataIndex: 'examEndTime',
-        key: 'examEndTime',
+        dataIndex: 'endTime',
+        key: 'endTime',
         align: 'center',
         width: 200,
         render: time => {
-          return moment(time).format('YYYY-MM-DD HH:mm:ss');
+          return time ? moment(time).format('YYYY-MM-DD HH:mm:ss') : '---';
         },
       },
       {
@@ -309,11 +343,11 @@ export default class myFileList extends PureComponent {
         fixed: 'right',
         align: 'center',
         width: 160,
-        render: (record, rows) => (
+        render: (text, rows) => (
           <span>
             <a onClick={() => this.goExamDetail(rows.id)}>试卷</a>
             <Divider type="vertical" />
-            <a onClick={() => this.goAlaysisExam(rows.id)}>分析报告</a>
+            <a onClick={() => this.goAlaysisExam(rows.examId)}>分析报告</a>
           </span>
         ),
       },

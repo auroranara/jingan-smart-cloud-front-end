@@ -1,4 +1,4 @@
-import { querySelfExamDocument } from '../services/training/myFile';
+import { querySelfExamDocument, queryExamReport } from '../services/training/myFile';
 
 export default {
   namespace: 'myFile',
@@ -12,6 +12,7 @@ export default {
         pageNum: 1,
       },
     },
+    analysisData: {},
   },
 
   effects: {
@@ -25,6 +26,17 @@ export default {
         });
       }
     },
+
+    // 考试成绩综合分析报告
+    *fetchExamReport({ payload }, { call, put }) {
+      const response = yield call(queryExamReport, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveExamReport',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -34,6 +46,13 @@ export default {
         ...state,
         list,
         data: payload,
+      };
+    },
+
+    saveExamReport(state, { payload }) {
+      return {
+        ...state,
+        analysisData: payload,
       };
     },
   },

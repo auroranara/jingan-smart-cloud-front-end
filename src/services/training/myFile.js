@@ -5,3 +5,8 @@ import request from '../../utils/request';
 export async function querySelfExamDocument(params) {
   return request(`/acloud_new/v2/education/selfExamDocument?${stringify(params)}`);
 }
+
+// 档案管理- 考试成绩综合分析报告
+export async function queryExamReport(params) {
+  return request(`/acloud_new/v2/education/studentExamReport?${stringify(params)}`);
+}
