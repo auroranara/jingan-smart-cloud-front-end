@@ -22,21 +22,21 @@ export default function OvFireCards(props) {
           <OvCard
             title="今日"
             num={today}
-            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('alarm', isUnit, 0)}
+            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('alarm', { isUnit, alarmDrawerLeftType: 0, alarmDrawerRightType: 0 })}
           />
         </Col>
         <Col style={{ height: '100%' }} span={6}>
           <OvCard
             title="本周"
             num={thisWeek}
-            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('alarm', isUnit, 1)}
+            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('alarm', { isUnit, alarmDrawerLeftType: 1, alarmDrawerRightType: 1 })}
           />
         </Col>
         <Col style={{ height: '100%' }} span={6}>
           <OvCard
             title="本月"
             num={thisMonth}
-            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('alarm', isUnit, 2)}
+            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('alarm', { isUnit, alarmDrawerLeftType: 2, alarmDrawerRightType: 2 })}
           />
         </Col>
       </Row>

@@ -26,7 +26,7 @@ import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
 import UnitDrawer from './section/UnitDrawer';
-import HostDrawer from './section/HostDrawer';
+// import HostDrawer from './section/HostDrawer';
 import AlarmDrawer from './section/AlarmDrawer';
 import DangerTableDrawer from './section/DangerTableDrawer';
 import DangerDrawer from './section/DangerDrawer';
@@ -86,10 +86,12 @@ export default class FireControlBigPlatform extends PureComponent {
     tooltipVisible: false,
     tooltipPosition: [0, 0],
     isUnit: 0, // 0 所有, 1 某个单位
-    ovType: 0, // 0 -> 今日/已超期 1 -> 本周/待整改 2 -> 本月/已超期
     unitDrawerVisible: false,
-    hostDrawerVisible: false,
+    unitDrawerLabelIndex: 0,
+    // hostDrawerVisible: false,
     alarmDrawerVisible: false,
+    alarmDrawerLeftType: 0,
+    alarmDrawerRightType: 0,
     dangerTableDrawerVisible: false,
     dangerDrawerVisible: false,
     safeDrawerVisible: false,
@@ -140,6 +142,8 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchDanger', payload: { gridId, businessType: 2 } });
+
+    dispatch({ type: 'bigFireControl/fetchDangerList', payload: { gridId, businessType: 2 } });
 
     this.fetchInitLookUp();
 
@@ -508,12 +512,11 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ tooltipVisible: false });
   };
 
-  handleDrawerVisibleChange = (name, isUnit=0, ovType=0) => {
+  handleDrawerVisibleChange = (name, rest) => {
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
-      isUnit,
-      ovType,
+      ...rest,
     }));
   };
 
@@ -524,18 +527,40 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId, companyName: v } });
   };
 
+  handleUnitDrawerLabelSwitch = i => {
+    this.setState({ unitDrawerLabelIndex: i });
+  };
+
+  handleAlarmDrawerChange = (key, val) => {
+    // console.log(key, val);
+    const keys = [];
+    const vals = [];
+    if (!Array.isArray(key)) {
+      keys[0] = key;
+      vals[0] = val;
+    }
+
+    this.setState(keys.reduce((prev, next, i) => {
+      prev[`alarmDrawer${next}Type`] = vals[i];
+      return prev;
+    }, {}));
+  };
+
   render() {
     const {
       // match: { params: { gridId } },
       bigFireControl: {
         overview,
         companyOv,
+        govAlarm, // 概况中的火警信息(政府)
+        comAlarm, // 概况中的火警信息(企业)
         alarm,
         alarmHistory,
         sys,
         trend,
         companyTrend,
         danger,
+        dangerList, // 隐患企业列表
         gridDanger,
         companyDanger,
         map,
@@ -575,10 +600,13 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       isUnit,
-      ovType,
+      dangerType,
       unitDrawerVisible,
-      hostDrawerVisible,
+      unitDrawerLabelIndex,
+      // hostDrawerVisible,
       alarmDrawerVisible,
+      alarmDrawerLeftType,
+      alarmDrawerRightType,
       dangerTableDrawerVisible,
       dangerDrawerVisible,
       safeDrawerVisible,
@@ -788,32 +816,37 @@ export default class FireControlBigPlatform extends PureComponent {
       {/*</div>*/}
         <UnitDrawer
           data={sys}
-          isUnit={isUnit}
-          handleSearch={this.handleUnitSearch}
           visible={unitDrawerVisible}
+          labelIndex={unitDrawerLabelIndex}
+          handleSearch={this.handleUnitSearch}
+          handleSwitch={this.handleUnitDrawerLabelSwitch}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
-        <HostDrawer
+        {/* <HostDrawer
           isUnit={isUnit}
           data={sys}
           visible={hostDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
+        /> */}
         <AlarmDrawer
           isUnit={isUnit}
-          ovType={ovType}
+          data={govAlarm}
           visible={alarmDrawerVisible}
+          leftType={alarmDrawerLeftType}
+          rightType={alarmDrawerRightType}
+          handleSelectChange={this.handleAlarmDrawerChange}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <DangerTableDrawer
           isUnit={isUnit}
-          ovType={ovType}
+          data={dangerList}
           visible={dangerTableDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <DangerDrawer
           isUnit={isUnit}
-          ovType={ovType}
+          data={{ overview, dangerList }}
+          dangerType={dangerType}
           visible={dangerDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

@@ -2,25 +2,29 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 const LIST = [
-  { value: 106, name: '已超期', itemStyle: { color: 'rgb(232, 103, 103)' } },
-  { value: 23, name: '待整改', itemStyle: { color: 'rgb(246, 181, 78)' } },
-  { value: 50, name: '待复查', itemStyle: { color: 'rgb(42, 139, 213)' } },
+  { value: 0, name: '已超期', itemStyle: { color: 'rgb(232, 103, 103)' } },
+  { value: 0, name: '待整改', itemStyle: { color: 'rgb(246, 181, 78)' } },
+  { value: 0, name: '待复查', itemStyle: { color: 'rgb(42, 139, 213)' } },
 ];
+
+const LABELS = ['已超期', '待整改', '待复查'];
 
 export default class ChartRing extends PureComponent {
   render() {
-    const list = LIST;
+    const { data } = this.props;
+
+    const list = LIST.map((item, i) => ({ ...item, value: data[i] }));
 
     const option = {
-      tooltip: {
-          trigger: 'item',
-          formatter: "{a} <br/>{b}: {c} ({d}%)",
-      },
+      // tooltip: {
+      //     trigger: 'item',
+      //     formatter: "{a} <br/>{b}: {c} ({d}%)",
+      // },
       legend: {
           data:[{name: '已超期', icon: 'circle'},{name: '待整改', icon: 'circle'} ,{name: '待复查', icon: 'circle'}],
           bottom: 10,
           textStyle: { color: '#FFF' },
-          formatter: name => `${name} 100`,
+          formatter: name => `${name} ${data[LABELS.indexOf(name)]}`,
       },
       series: [
           {

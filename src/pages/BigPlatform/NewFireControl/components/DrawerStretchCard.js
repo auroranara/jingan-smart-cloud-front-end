@@ -35,7 +35,7 @@ export default class DrawerStretchCard extends PureComponent {
           </div>
           {selected && (
             <div className={styles.cardContainer}>
-              {list.map((item, i) => <DangerCard {...item} style={{ marginTop: i ? 14 : 0 }} />)}
+              {list.map((item, i) => <DangerCard {...item} key={item.id} style={{ marginTop: i ? 14 : 0 }} />)}
             </div>
           )}
         </div>

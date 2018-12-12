@@ -9,13 +9,15 @@ const CLASSNAME = ['zero', 'one', 'two'];
 
 export default class OvSelect extends PureComponent {
   render() {
-    const { options, cssType=0 } = this.props;
+    const { options, cssType=0, value=0, handleChange, ...restProps } = this.props;
 
     return (
-      <div className={styles[CLASSNAME[cssType]]}>
+      <div className={styles[CLASSNAME[cssType]]} {...restProps}>
         <Select
           dropdownClassName={styles.dropdown}
-          defaultValue={0}
+          value={value}
+          // defaultValue={0}
+          onChange={handleChange}
         >
           {options.map(({ value, desc }) => <Option value={value} key={value}>{desc}</Option>)}
         </Select>

@@ -18,7 +18,7 @@ const columns = [{
   align: 'center',
 }, {
   title: '单位名称',
-  dataIndex: 'name',
+  dataIndex: 'companyName',
   align: 'center',
 }, {
   title: '隐患数量',
@@ -27,32 +27,32 @@ const columns = [{
   align: 'center',
 }, {
   title: '已超期',
-  dataIndex: 'a',
+  dataIndex: 'hasExtended',
   width: 100,
   align: 'center',
 }, {
   title: '待整改',
-  dataIndex: 'b',
+  dataIndex: 'afterRectification',
   width: 100,
   align: 'center',
 }, {
   title: '待复查',
-  dataIndex: 'c',
+  dataIndex: 'toReview',
   width: 100,
   align: 'center',
 }];
 
-const numCols = ['total', 'a', 'b', 'c'];
+const numCols = ['total', 'afterRectification', 'toReview', 'hasExtended'];
 
-const DATA = [...Array(100).keys()].map(i => ({
-  id: i,
-  index: i,
-  name: '无锡市新吴区机械制造有限公司',
-  total: rand(),
-  a: rand(),
-  b: rand(),
-  c: rand(),
-}));
+// const DATA = [...Array(100).keys()].map(i => ({
+//   id: i,
+//   index: i,
+//   name: '无锡市新吴区机械制造有限公司',
+//   total: rand(),
+//   a: rand(),
+//   b: rand(),
+//   c: rand(),
+// }));
 
 export default class DangerTableDrawer extends PureComponent {
   genCellRender = n => {
@@ -68,16 +68,16 @@ export default class DangerTableDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, isUnit, ovType, handleDrawerVisibleChange } = this.props;
+    const { visible, data, handleDrawerVisibleChange } = this.props;
 
     this.addRender(columns);
 
     const left = (
         <SearchBar searchStyle={{ width: 500 }}>
           <Table
-            rowKey="id"
+            rowKey="companyId"
             columns={columns}
-            dataSource={DATA}
+            dataSource={data}
             pagination={false}
             scroll={{ y: 600 }}
           />

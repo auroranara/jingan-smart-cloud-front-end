@@ -35,30 +35,49 @@ export default class DangerDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, selectedIndex=0, isUnit, ovType, handleDrawerVisibleChange } = this.props;
+    const {
+      visible,
+      selectedIndex=0,
+      dangerType=0,
+      handleDrawerVisibleChange,
+      data: {
+        overview: {
+          overdueNum=0,
+          rectifyNum=0,
+          reviewNum=0,
+        },
+        dangerList=[],
+      },
+    } = this.props;
     const { graph } = this.state;
 
+    const rings = [overdueNum, rectifyNum, reviewNum];
+    const list = dangerList.slice(0, 10).map(({ companyId, companyName, total }) => ({ id: companyId, name: companyName, value: total }));
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
 
     const left = (
       <Fragment>
         <DrawerSection title="隐患状态统计" style={{ marginBottom: 50 }}>
-          <ChartRing />
+          <ChartRing data={rings} />
         </DrawerSection>
         <DrawerSection title="隐患数量排名" extra={extra}>
-          {graph ? <ChartBar /> : <ChartLine />}
+          {graph ? <ChartBar data={list} /> : <ChartLine data={list} />}
         </DrawerSection>
       </Fragment>
     );
 
     const right = (
         <SearchBar>
-          {CARDS.map((item, i) => {
+          {dangerList.map(({ companyId, companyName, total=0, afterRectification=0, toReview=0, hasExtended=0 }, i) => {
             return (
               <DrawerStretchCard
-                key={item.id}
+                key={companyId}
                 selected={i === selectedIndex}
-                {...item}
+                name={companyName}
+                total={total}
+                rectify={afterRectification}
+                review={toReview}
+                overdue={hasExtended}
               />
             );
           })}

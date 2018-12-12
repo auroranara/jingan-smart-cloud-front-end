@@ -6,6 +6,7 @@ import {
   querySys,
   queryFireTrend,
   queryDanger,
+  queryDangerList,
   getCompanyFireInfo,
   queryAlarmHandle,
   queryLookUp,
@@ -77,12 +78,15 @@ export default {
     },
     overview: {},
     companyOv: {},
+    govAlarm: {}, // 概况中的火警信息
+    comAlarm: {},
     alarm: {},
     alarmHistory: {},
     sys: {},
     trend: {},
     companyTrend: {},
     danger: {},
+    dangerList: [], // 隐患企业列表
     gridDanger: {},
     companyDanger: {},
     alarmProcess: {
@@ -125,7 +129,10 @@ export default {
       let response = yield call(queryOvAlarmCounts, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200) yield put({ type: payload.companyId ? 'saveCompanyOv' : 'saveOv', payload: data });
+      if (code === 200) {
+        yield put({ type: payload.companyId ? 'saveCompanyOv' : 'saveOv', payload: data });
+        yield put({ type: payload.companyId ? 'saveComAlarm' : 'saveGovAlarm', payload: data });
+      }
     },
     *fetchOvDangerCounts({ payload }, { call, put }) {
       const response = yield call(queryOvDangerCounts, payload);
@@ -192,6 +199,10 @@ export default {
           yield put({ type: 'saveGridDanger', payload: gridPyd });
         }
       }
+    },
+    *fetchDangerList({ payload }, { call, put }) {
+      const response = yield call(queryDangerList, payload);
+      yield put({ type: 'saveDangerList', payload: response || [] });
     },
     *fetchInitLookUp({ payload, callback }, { call, put }) {
       let response = yield call(queryLookUp, payload);
@@ -289,6 +300,12 @@ export default {
       const companyOv = { ...state.companyOv, ...action.payload };
       return { ...state, companyOv };
     },
+    saveGovAlarm(state, action) {
+      return { ...state, govAlarm: action.payload };
+    },
+    saveComAlarm(state, action) {
+      return { ...state, comAlarm: action.payload };
+    },
     saveAlarm(state, action) {
       return { ...state, alarm: action.payload };
     },
@@ -306,6 +323,11 @@ export default {
     },
     saveDanger(state, action) {
       return { ...state, danger: action.payload };
+    },
+    saveDangerList(state, action) {
+      const dangerList = action.payload;
+      dangerList.forEach((item, i) => item.index = i);
+      return { ...state, dangerList };
     },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
