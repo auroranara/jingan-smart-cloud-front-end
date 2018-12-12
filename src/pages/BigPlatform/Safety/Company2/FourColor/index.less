@@ -61,6 +61,41 @@ div.fourColorImgSelectDropDown {
     }
   }
 }
+/* 四色图相关 */
+/* 点位 */
+.point {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  background: no-repeat center center;
+  background-size: 100% 100%;
+  transition: bottom 0.5s;
+  cursor: pointer;
+}
+/* 点位底座 */
+.pointBase {
+  position: absolute;
+  left: -1px;
+  bottom: 0;
+  transform: translateX(-50%);
+  background: no-repeat center center;
+  background-size: 100% 100%;
+  transition: height 0.5s;
+}
+/* tooltip */
+.tooltip {
+  :global {
+    .ant-tooltip-content {
+      .ant-tooltip-arrow {
+        border-top-color: rgb(9, 103, 211);
+      }
+      .ant-tooltip-inner {
+        background-color: rgb(9, 103, 211);
+      }
+    }
+  }
+}
 /* 图例 */
 .legendContainer {
   position: absolute;

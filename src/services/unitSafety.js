@@ -6,6 +6,11 @@ export async function getCompanyMessage(params) {
   return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
 }
 
+// 特种设备
+export async function getSpecialEquipmentCount(params) {
+  return request(`/gsafe/special_equipment/special_equipment_for_v2.do?${stringify(params)}`);
+}
+
 // 获取风险点信息
 export async function getPointInfoList(params) {
   return request(`/acloud_new/v2/sfc/selectCompanyLetter.json?${stringify(params)}`);
@@ -33,15 +38,12 @@ export async function getCountDangerLocation(params) {
   return request(`/acloud_new/v2/sfc/countDangerLocationForCompany.json?${stringify(params)}`);
 }
 
-// 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
-export async function getCoItemList(params) {
+// 风险点各检查状态统计 (正常，异常，待检查，已超时) 分开请求！？？
+export async function getStatusCount(params) {
   return request(`/acloud_new/v2/sfc/itemList.json?${stringify(params)}`);
 }
 
-// 特种设备
-export async function getSpecialEquipment(params) {
-  return request(`/gsafe/special_equipment/special_equipment_for_v2.do?${stringify(params)}`);
-}
+
 
 
 

@@ -1,0 +1,51 @@
+/* 风险点模块 */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  line-height: 1;
+}
+.top {
+  position: relative;
+  flex: none;
+  background: no-repeat center bottom;
+  background-size: 100% 2px;
+
+}
+.bottom {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 12px;
+
+  & > div {
+    flex: none;
+    width: 50%;
+    padding: 11px;
+    padding-left: 84px;
+    background: no-repeat 11px center;
+    background-size: 50px 50px;
+    border-radius: 3px;
+
+    .countLabel {
+      height: 28px;
+      line-height: 28px;
+      font-size: 16px;
+    }
+    .countValue {
+      height: 28px;
+      line-height: 28px;
+      font-size: 28px;
+    }
+  }
+
+  .hoverable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(9, 103, 211, 0.2);
+      box-shadow: 0 0 1em rgba(9, 103, 211, 1) inset;
+    }
+  }
+}

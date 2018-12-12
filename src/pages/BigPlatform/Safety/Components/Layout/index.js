@@ -5,6 +5,7 @@ import styles from './index.less';
 
 // 项目名称
 const { projectName } = global.PROJECT_CONFIG;
+// const temp = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png';
 
 /**
  * description: 企业安全大屏布局
@@ -57,7 +58,7 @@ export default class App extends PureComponent {
     const containerClassName = classnames(styles.container, className);
 
     return (
-      <div className={containerClassName} style={{ backgroundImage: `url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png)`, ...style}}>
+      <div className={containerClassName} style={{ backgroundImage: `url(http://data.jingan-china.cn/v2/big-platform/safety/com/company-bg.png)`, ...style}}>
         <div className={styles.header} style={{ backgroundImage: `url(http://data.jingan-china.cn/v2/big-platform/safety/com/title12.png)` }}>
           <div className={styles.headerTitle}>{autoSpace ? title.split('').join(' ') : title}</div>
           <div className={styles.headerTime} style={timeStyle}>{currentTime}</div>

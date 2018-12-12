@@ -1,6 +1,8 @@
 import {
   // 企业信息(包含人员数量四色图等)
   getCompanyMessage,
+  // 特种设备
+  getSpecialEquipmentCount,
   // 获取风险点信息
   getPointInfoList,
   // 获取隐患列表
@@ -11,10 +13,6 @@ import {
   getMonitorData,
   // 企业大屏四色风险点,
   getCountDangerLocation,
-  // 企业风险点数
-  getCoItemList,
-  // 特种设备
-  getSpecialEquipment,
   // 隐患总数
   getHiddenDanger,
   // 获取安全人员信息
@@ -55,8 +53,10 @@ export default {
       // 四色图列表
       fourColorImg: [],
     },
+    // 特种设备统计
+    specialEquipmentCount: 0,
     // 风险点信息列表（风险告知卡列表）
-    pointInfoList: [],
+    // pointInfoList: [],
     // 隐患列表
     hiddenDangerList: { ycq: [], wcq: [], dfc: [] },
     // 视频列表
@@ -65,31 +65,30 @@ export default {
     monitorData: { score: 0 },
     // 四色风险点统计
     countDangerLocation: {},
-    // countDangerLocation: {
-    //   redDangerResult: [],
-    //   orangeDangerResult: [],
-    //   yellowDangerResult: [],
-    //   blueDangerResult: [],
-    //   notRatedDangerResult: [],
-    //   countDangerLocation: [{ red: 0, orange: 0, yellow: 0, blue: 0, not_rated: 0 }],
-    // },
   },
 
   effects: {
     // 获取企业信息
     *fetchCompanyMessage({ payload, callback }, { call, put }) {
       const response = yield call(getCompanyMessage, payload);
+      const { companyLetter } = yield call(getPointInfoList, payload);
       const companyMessage = {
         ...response,
-        // 移除坐标不存在的风险点
+        // 移除坐标不存在的风险点并添加风险告知卡信息
         point:
-          response.point &&
+          response.point ?
           response.point.filter(
             ({ itemId, xNum, yNum }) =>
               itemId &&
               (xNum || Number.parseFloat(xNum) === 0) &&
               (yNum || Number.parseFloat(yNum) === 0)
-          ),
+          ).map((item) => {
+            const { itemId } = item;
+            return {
+              ...item,
+              info: companyLetter.filter(({ hdLetterInfo: { itemId: id } }) => itemId === id)[0],
+            };
+          }) : [],
         // 移除地址不合法的四色图
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
@@ -106,17 +105,28 @@ export default {
         callback(companyMessage);
       }
     },
-    // 获取风险点信息（风险告知卡列表）
-    *fetchPointInfoList({ payload, callback }, { call, put }) {
-      const response = yield call(getPointInfoList, payload);
+    // 特种设备统计
+    *fetchSpecialEquipmentCount({ payload, callback }, { call, put }) {
+      const response = yield call(getSpecialEquipmentCount, payload);
       yield put({
         type: 'save',
-        payload: { pointInfoList: response.companyLetter },
+        payload: { specialEquipmentCount: response.total },
       });
       if (callback) {
-        callback(response.companyLetter);
+        callback(response.total);
       }
     },
+    // // 获取风险点信息（风险告知卡列表）
+    // *fetchPointInfoList({ payload, callback }, { call, put }) {
+    //   const response = yield call(getPointInfoList, payload);
+    //   yield put({
+    //     type: 'savePointInfoList',
+    //     payload: response.companyLetter,
+    //   });
+    //   if (callback) {
+    //     callback(response.companyLetter);
+    //   }
+    // },
     // 获取隐患列表
     *fetchHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
@@ -177,48 +187,55 @@ export default {
     *fetchCountDangerLocation({ payload, callback }, { call, put }) {
       const response = yield call(getCountDangerLocation, payload);
       const {
-        countDangerLocation,
+        countDangerLocation: [count],
         redDangerResult,
         orangeDangerResult,
         yellowDangerResult,
         blueDangerResult,
         notRatedDangerResult = [],
       } = response;
+      const redList = {
+        normal: redDangerResult.filter(({ status }) => +status === 1),
+        checking: redDangerResult.filter(({ status }) => +status === 3),
+        abnormal: redDangerResult.filter(({ status }) => +status === 2),
+        over: redDangerResult.filter(({ status }) => +status === 4),
+      };
+      const orangeList = {
+        normal: orangeDangerResult.filter(({ status }) => +status === 1),
+        checking: orangeDangerResult.filter(({ status }) => +status === 3),
+        abnormal: orangeDangerResult.filter(({ status }) => +status === 2),
+        over: orangeDangerResult.filter(({ status }) => +status === 4),
+      };
+      const yellowList = {
+        normal: yellowDangerResult.filter(({ status }) => +status === 1),
+        checking: yellowDangerResult.filter(({ status }) => +status === 3),
+        abnormal: yellowDangerResult.filter(({ status }) => +status === 2),
+        over: yellowDangerResult.filter(({ status }) => +status === 4),
+      };
+      const blueList = {
+        normal: blueDangerResult.filter(({ status }) => +status === 1),
+        checking: blueDangerResult.filter(({ status }) => +status === 3),
+        abnormal: blueDangerResult.filter(({ status }) => +status === 2),
+        over: blueDangerResult.filter(({ status }) => +status === 4),
+      };
+      const notRatedList = {
+        normal: notRatedDangerResult.filter(({ status }) => +status === 1),
+        checking: notRatedDangerResult.filter(({ status }) => +status === 3),
+        abnormal: notRatedDangerResult.filter(({ status }) => +status === 2),
+        over: notRatedDangerResult.filter(({ status }) => +status === 4),
+      };
+      // 获取各状态统计
+      const getCount = (key) => redList[key].length + orangeList[key].length + yellowList[key].length + blueList[key].length + notRatedList[key].length;
       yield put({
         type: 'save',
         payload: {
           countDangerLocation: {
-            countDangerLocation,
-            redDangerResult: {
-              normal: redDangerResult.filter(({ status }) => +status === 1),
-              checking: redDangerResult.filter(({ status }) => +status === 3),
-              abnormal: redDangerResult.filter(({ status }) => +status === 2),
-              over: redDangerResult.filter(({ status }) => +status === 4),
-            },
-            orangeDangerResult: {
-              normal: orangeDangerResult.filter(({ status }) => +status === 1),
-              checking: orangeDangerResult.filter(({ status }) => +status === 3),
-              abnormal: orangeDangerResult.filter(({ status }) => +status === 2),
-              over: orangeDangerResult.filter(({ status }) => +status === 4),
-            },
-            yellowDangerResult: {
-              normal: yellowDangerResult.filter(({ status }) => +status === 1),
-              checking: yellowDangerResult.filter(({ status }) => +status === 3),
-              abnormal: yellowDangerResult.filter(({ status }) => +status === 2),
-              over: yellowDangerResult.filter(({ status }) => +status === 4),
-            },
-            blueDangerResult: {
-              normal: blueDangerResult.filter(({ status }) => +status === 1),
-              checking: blueDangerResult.filter(({ status }) => +status === 3),
-              abnormal: blueDangerResult.filter(({ status }) => +status === 2),
-              over: blueDangerResult.filter(({ status }) => +status === 4),
-            },
-            unvaluedDangerResult: {
-              normal: notRatedDangerResult.filter(({ status }) => +status === 1),
-              checking: notRatedDangerResult.filter(({ status }) => +status === 3),
-              abnormal: notRatedDangerResult.filter(({ status }) => +status === 2),
-              over: notRatedDangerResult.filter(({ status }) => +status === 4),
-            },
+            countDangerLocation: { ...count, normal: getCount('normal'), checking: getCount('checking'), abnormal: getCount('abnormal'), over: getCount('over') },
+            redDangerResult: redList,
+            orangeDangerResult: orangeList,
+            yellowDangerResult: yellowList,
+            blueDangerResult: blueList,
+            notRatedDangerResult: notRatedList,
           },
         },
       });
