@@ -92,6 +92,7 @@ export default class AlarmDrawer extends PureComponent {
           {rightList.map(({ id, companyId, companyName, searchArea, safetyName, safetyPhone, status, saveTime }) => (
             <DrawerCard
               key={id}
+              hover
               name={companyName || NO_DATA}
               location={searchArea || NO_DATA}
               person={safetyName || NO_DATA}

@@ -5,9 +5,10 @@ import DrawerContainer from '../components/DrawerContainer';
 import SwitchHead from '../components/SwitchHead';
 import DrawerSection from '../components/DrawerSection';
 import OvProgress from '../components/OvProgress';
-import GraphSwitch from '../components/GraphSwitch';
+// import GraphSwitch from '../components/GraphSwitch';
 import SearchBar from '../components/SearchBar';
 import DrawerCard from '../components/DrawerCard';
+import ChartBar from '../components/ChartBar';
 import unitRedIcon from '../img/unitRed.png';
 import unitBlueIcon from '../img/unitBlue.png';
 import unitGreyIcon from '../img/unitGrey.png';
@@ -19,7 +20,10 @@ const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
-const STATUS_LABELS = ['正常', '异常'];
+// const STATUS_LABELS = ['正常', '异常'];
+const STATUS = ['正常', '--', '报警'];
+const STATUS_CLASS = ['normal', 'not', 'fire']
+const FIRE = '2';
 const SWITCH_LABELS = ['管辖单位', '重点单位'];
 
 // const CARDS = [...Array(10).keys()].map(i => ({
@@ -39,12 +43,21 @@ export default function UnitDrawer(props) {
     labelIndex=0,
     handleSearch,
     handleSwitch,
+    handleShowDangerClick,
     handleDrawerVisibleChange,
-    data: { allCompanyList: list=[], fireNum=0, commonNum=0, noAccessNum=0 },
+    data: {
+      sys: { allCompanyList=[], importCompanyList=[], fireNum=0, commonNum=0, noAccessNum=0, impFireNum=0, impCommonNum=0, impNoAccessNum=0 },
+      dangerList,
+    },
   } = props;
 
+  const isImpUnit = !!labelIndex;
+  const list = [allCompanyList, importCompanyList][labelIndex];
+  const chartList = dangerList.slice(0, 10).map(({ companyId, companyName, total }) => ({ id: companyId, name: companyName, value: total }));
   const total = fireNum + commonNum + noAccessNum;
-  const [firePercent, commonPercent, noAccessPercent] = [fireNum, commonNum, noAccessNum].map(n => total ? Math.round(n / total * 100) : 0);
+  const [firePercent, commonPercent, noAccessPercent] = [fireNum, commonNum, noAccessNum].map(n => total ? n / total * 100 : 0);
+  const impTotal = impFireNum + impCommonNum + impNoAccessNum;
+  const [impFirePercent, impCommonPercent, impNoAccessPercent] = [impFireNum, impCommonNum, impNoAccessNum].map(n => impTotal ? n / impTotal * 100 : 0);
 
   const top = (
     <SwitchHead value={labelIndex} labels={SWITCH_LABELS} onSwitch={handleSwitch} />
@@ -55,36 +68,40 @@ export default function UnitDrawer(props) {
       <DrawerSection title="消防主机单位情况">
         <OvProgress
           title="报警单位"
-          percent={firePercent}
+          percent={isImpUnit ? impFirePercent : firePercent}
+          quantity={isImpUnit ? impFireNum : fireNum}
           strokeColor="rgb(255,72,72)"
           style={{ marginTop: 40 }}
           iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
         />
         <OvProgress
           title="正常单位"
-          percent={commonPercent}
+          percent={isImpUnit ? impCommonPercent : commonPercent}
+          quantity={isImpUnit ? impCommonNum : commonNum}
           strokeColor="rgb(0,251,252)"
           iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
         />
         <OvProgress
           title="未接入单位"
-          percent={noAccessPercent}
+          percent={isImpUnit ? impNoAccessPercent : noAccessPercent}
+          quantity={isImpUnit ? impNoAccessNum : noAccessNum}
           strokeColor="rgb(163,163,163)"
           iconStyle={{ backgroundImage: `url(${unitGreyIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
         />
       </DrawerSection>
-      <DrawerSection title="隐患数量排名" extra={<GraphSwitch />}>
-        content
+      <DrawerSection title="隐患数量排名">
+        <ChartBar data={chartList} />
       </DrawerSection>
     </Fragment>
   );
 
   const right = (
       <SearchBar
+        key={labelIndex}
         onSearch={handleSearch}
         // style={{ paddingTop: 50 }}
       >
-        {list.map(({ companyId, name, address, safetyMan, safetyPhone, hiddenCount, isFire }) => (
+        {list.map(({ companyId, name, address, safetyMan, safetyPhone, itemCount, hiddenCount, isFire }) => (
           <DrawerCard
             key={companyId}
             name={name || NO_DATA}
@@ -92,7 +109,8 @@ export default function UnitDrawer(props) {
             person={safetyMan || NO_DATA}
             phone={safetyPhone || NO_DATA}
             // status={isFire}
-            statusLabels={STATUS_LABELS}
+            // statusLabels={STATUS_LABELS}
+            style={{ cursor: 'auto' }}
             // info={
             //   <Fragment>
             //     <span className={styles.cardIcon} style={{ backgroundImage: `url(${dangerIcon})` }} />
@@ -101,9 +119,23 @@ export default function UnitDrawer(props) {
             // }
             more={
               <p className={styles.more}>
-                <span className={styles.point} style={{ backgroundImage: `url(${pointIcon})` }} />检查点位：{6}
-                <span className={styles.danger} style={{ backgroundImage: `url(${dangerIcon})` }} />隐患数量：{hiddenCount}
-                <span className={styles.status}>主机状态：<span className={isFire ? styles.fire : styles.normal}>{isFire ? '报警' : '正常'}</span></span>
+                <span className={styles.point} style={{ backgroundImage: `url(${pointIcon})` }} />
+                检查点位：{itemCount || 0}
+                <span
+                  className={hiddenCount ? styles.hiddenDanger : styles.hiddenDangerZero}
+                  onClick={e => handleShowDangerClick(companyId)}
+                >
+                  <span className={styles.danger} style={{ backgroundImage: `url(${dangerIcon})` }} />
+                  隐患数量：
+                  {/* <span className={styles.dangerDesc}>隐患数量：</span> */}
+                  {hiddenCount || 0}
+                </span>
+                <span className={styles.status}>
+                  主机状态：
+                  <span className={styles[STATUS_CLASS[isFire]]}>
+                    {STATUS[isFire]}
+                  </span>
+                </span>
               </p>
             }
           />)

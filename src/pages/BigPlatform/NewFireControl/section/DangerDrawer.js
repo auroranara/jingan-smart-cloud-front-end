@@ -17,15 +17,15 @@ import {
   ChartRing,
   SearchBar,
 } from '../components/Components';
-import clockIcon from '../img/cardClock1.png';
+// import clockIcon from '../img/cardClock1.png';
 
 const TYPE = 'danger';
 
-const CARDS = [...Array(10).keys()].map(i => ({
-  id: i,
-  name: '无锡市新吴区机械制造有限公司',
-  total: 10,
-}));
+// const CARDS = [...Array(10).keys()].map(i => ({
+//   id: i,
+//   name: '无锡市新吴区机械制造有限公司',
+//   total: 10,
+// }));
 
 export default class DangerDrawer extends PureComponent {
   state = { graph: 0 };
@@ -47,6 +47,7 @@ export default class DangerDrawer extends PureComponent {
           reviewNum=0,
         },
         dangerList=[],
+        dangerRecords=[],
       },
     } = this.props;
     const { graph } = this.state;
@@ -78,6 +79,7 @@ export default class DangerDrawer extends PureComponent {
                 rectify={afterRectification}
                 review={toReview}
                 overdue={hasExtended}
+                list={dangerRecords}
               />
             );
           })}

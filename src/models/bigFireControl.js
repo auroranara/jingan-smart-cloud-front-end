@@ -7,6 +7,7 @@ import {
   queryFireTrend,
   queryDanger,
   queryDangerList,
+  getHiddenDangerRecords,
   getCompanyFireInfo,
   queryAlarmHandle,
   queryLookUp,
@@ -87,6 +88,7 @@ export default {
     companyTrend: {},
     danger: {},
     dangerList: [], // 隐患企业列表
+    dangerRecords: [], // 隐患巡查记录
     gridDanger: {},
     companyDanger: {},
     alarmProcess: {
@@ -203,6 +205,11 @@ export default {
     *fetchDangerList({ payload }, { call, put }) {
       const response = yield call(queryDangerList, payload);
       yield put({ type: 'saveDangerList', payload: response || [] });
+    },
+    *fetchDangerRecords({ payload }, { call, put }) {
+      const response = yield call(getHiddenDangerRecords, payload);
+      if (response && Array.isArray(response.hiddenDangers))
+        yield put({ type: 'saveDangerRecords', payload: response.hiddenDangers });
     },
     *fetchInitLookUp({ payload, callback }, { call, put }) {
       let response = yield call(queryLookUp, payload);
@@ -326,8 +333,11 @@ export default {
     },
     saveDangerList(state, action) {
       const dangerList = action.payload;
-      dangerList.forEach((item, i) => item.index = i);
+      dangerList.forEach((item, i) => item.index = i + 1);
       return { ...state, dangerList };
+    },
+    saveDangerRecords(state, action) {
+      return { ...state, dangerRecords: action.payload };
     },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };

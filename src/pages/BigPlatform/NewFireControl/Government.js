@@ -26,6 +26,7 @@ import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
 import UnitDrawer from './section/UnitDrawer';
+import UnitDangerDrawer from './section/UnitDangerDrawer';
 // import HostDrawer from './section/HostDrawer';
 import AlarmDrawer from './section/AlarmDrawer';
 import DangerTableDrawer from './section/DangerTableDrawer';
@@ -88,6 +89,7 @@ export default class FireControlBigPlatform extends PureComponent {
     isUnit: 0, // 0 所有, 1 某个单位
     unitDrawerVisible: false,
     unitDrawerLabelIndex: 0,
+    unitDangerDrawerVisible: false,
     // hostDrawerVisible: false,
     alarmDrawerVisible: false,
     alarmDrawerLeftType: 0,
@@ -118,6 +120,7 @@ export default class FireControlBigPlatform extends PureComponent {
   dropdownDOM = null;
   formerAlarmList = [];
   // isLookingUp = false; // 标记正在查岗状态
+  companyId = '';
 
   getGridId = () => {
     const {
@@ -522,13 +525,16 @@ export default class FireControlBigPlatform extends PureComponent {
 
   handleUnitSearch = v => {
     const { dispatch } = this.props;
-
     const gridId = this.getGridId();
     dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId, companyName: v } });
   };
 
   handleUnitDrawerLabelSwitch = i => {
+    const { dispatch } = this.props;
+    const gridId = this.getGridId();
+
     this.setState({ unitDrawerLabelIndex: i });
+    dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
   };
 
   handleAlarmDrawerChange = (key, val) => {
@@ -546,6 +552,28 @@ export default class FireControlBigPlatform extends PureComponent {
     }, {}));
   };
 
+  fetchDangerRecords = companyId => {
+    const { dispatch } = this.props;
+    this.companyId = companyId;
+
+    dispatch({
+      type: 'bigFireControl/fetchDangerRecords',
+      payload: { company_id: companyId, businessType: 2 },
+    });
+  };
+
+  handleShowUnitDangerClick = companyId => {
+    this.fetchDangerRecords(companyId);
+    this.handleDrawerVisibleChange('unitDanger');
+  };
+
+  handleUnitDangerLabelClick = (index, companyId) => {
+    this.setState({ unitDangerLabelIndex: index });
+
+    if (companyId && companyId !== this.companyId)
+      this.fetchDangerRecords(companyId);
+  };
+
   render() {
     const {
       // match: { params: { gridId } },
@@ -561,6 +589,7 @@ export default class FireControlBigPlatform extends PureComponent {
         companyTrend,
         danger,
         dangerList, // 隐患企业列表
+        dangerRecords, // 对应企业的隐患列表
         gridDanger,
         companyDanger,
         map,
@@ -603,6 +632,8 @@ export default class FireControlBigPlatform extends PureComponent {
       dangerType,
       unitDrawerVisible,
       unitDrawerLabelIndex,
+      unitDangerDrawerVisible,
+      unitDangerLabelIndex,
       // hostDrawerVisible,
       alarmDrawerVisible,
       alarmDrawerLeftType,
@@ -815,11 +846,20 @@ export default class FireControlBigPlatform extends PureComponent {
         />
       {/*</div>*/}
         <UnitDrawer
-          data={sys}
+          data={{ sys, dangerList }}
           visible={unitDrawerVisible}
           labelIndex={unitDrawerLabelIndex}
           handleSearch={this.handleUnitSearch}
+          handleShowDangerClick={this.handleShowUnitDangerClick}
           handleSwitch={this.handleUnitDrawerLabelSwitch}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <UnitDangerDrawer
+          labelIndex={unitDangerLabelIndex}
+          companyId={this.companyId}
+          data={{ dangerList, dangerRecords }}
+          visible={unitDangerDrawerVisible}
+          handleLabelClick={this.handleUnitDangerLabelClick}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         {/* <HostDrawer
@@ -845,7 +885,7 @@ export default class FireControlBigPlatform extends PureComponent {
         />
         <DangerDrawer
           isUnit={isUnit}
-          data={{ overview, dangerList }}
+          data={{ overview, dangerList, dangerRecords }}
           dangerType={dangerType}
           visible={dangerDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}

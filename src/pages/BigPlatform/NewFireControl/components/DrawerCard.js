@@ -5,13 +5,13 @@ import locationIcon from '../img/cardLocation.png';
 import personIcon from '../img/cardPerson.png';
 
 export default function DrawerCard(props) {
-  const { name, location, person, phone, status, statusLabels, info, more, ...restProps } = props;
+  const { name, location, person, phone, status, statusLabels, info, more, hover, ...restProps } = props;
   // 0 -> 正常  1 -> 不正常
   const isNormal = !status;
 
   return (
     <div className={styles.outer}>
-      <div className={styles.container} {...restProps}>
+      <div className={hover ? styles.container : styles.containerNoHover} {...restProps}>
         <p className={styles.company}>
           {name}
         </p>
