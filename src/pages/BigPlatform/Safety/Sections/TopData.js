@@ -23,6 +23,7 @@ class TopData extends PureComponent {
       checkedCompanyInfo,
       handleParentChange,
       fetchCheckMsgs,
+      selfCheckPointTotal,
     } = this.props;
 
     return (
@@ -35,7 +36,7 @@ class TopData extends PureComponent {
                   <div
                     className={styles.itemActive}
                     onClick={() => {
-                      goComponent('companyIn');
+                      handleParentChange({ comInDrawer: true });
                     }}
                   >
                     <div className={styles.topName}>重点/所有单位</div>
@@ -51,10 +52,11 @@ class TopData extends PureComponent {
                   <div
                     className={styles.itemActive}
                     onClick={() => {
-                      goComponent('fullStaff');
+                      // goComponent('fullStaff');
+                      handleParentChange({ fullStaffDrawer: true });
                     }}
                   >
-                    <div className={styles.topName}>专职人员</div>
+                    <div className={styles.topName}>监管人员</div>
                     <div className={styles.topNum} style={{ color: '#00baff' }}>
                       {fulltimeWorker}
                     </div>
@@ -67,7 +69,8 @@ class TopData extends PureComponent {
                   <div
                     className={styles.itemActive}
                     onClick={() => {
-                      goComponent('overHd');
+                      // goComponent('overHd');
+                      handleParentChange({ overHdCom: true });
                     }}
                   >
                     <div className={styles.topName}>已超期隐患</div>
@@ -78,7 +81,7 @@ class TopData extends PureComponent {
                 </Tooltip>
               </div>
 
-              <div className={styles.topItem}>
+              {/* <div className={styles.topItem}>
                 <Tooltip placement="bottom" title={'已超时风险点数量'}>
                   <div
                     className={styles.itemActive}
@@ -92,22 +95,44 @@ class TopData extends PureComponent {
                     </div>
                   </div>
                 </Tooltip>
+              </div> */}
+
+              <div className={styles.topItem}>
+                <Tooltip placement="bottom" title={'风险点数量'}>
+                  <div
+                    className={styles.itemActive}
+                    onClick={() => {
+                      // goComponent('riskPoint')
+                      handleParentChange({ riskPoint: true });
+                    }}
+                  >
+                    <div className={styles.topName}>风险点</div>
+                    <div className={styles.topNum} style={{ color: '#00baff' }}>
+                      {selfCheckPointTotal}
+                    </div>
+                  </div>
+                </Tooltip>
               </div>
 
               <div className={styles.topItem}>
-                <Tooltip placement="bottom" title={'本月监督检查的数量'}>
+                <Tooltip placement="bottom" title={'本月安全检查的数量'}>
                   <div
                     className={styles.itemActive}
                     onClick={() => {
                       const thisMonth = moment().format('YYYY-MM');
                       handleParentChange({
+                        checkDrawer: true,
                         checksMonth: thisMonth,
                       });
                       fetchCheckMsgs(thisMonth);
-                      goComponent('checks');
+                      // handleParentChange({
+                      //   checksMonth: thisMonth,
+                      // });
+                      // fetchCheckMsgs(thisMonth);
+                      // goComponent('checks');
                     }}
                   >
-                    <div className={styles.topName}>本月监督检查</div>
+                    <div className={styles.topName}>本月安全检查</div>
                     <div className={styles.topNum} style={{ color: '#00baff' }}>
                       {checkedCompanyInfo}
                     </div>

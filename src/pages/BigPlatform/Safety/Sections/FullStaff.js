@@ -27,7 +27,7 @@ class FullStaff extends PureComponent {
         <div className={styles.sectionWrapperIn}>
           <div className={styles.sectionTitle}>
             <span className={styles.titleBlock} />
-            专职人员
+            监管人员
           </div>
           <div
             className={styles.backBtn}
@@ -40,7 +40,7 @@ class FullStaff extends PureComponent {
               <div className={styles.tableTitleWrapper}>
                 <span className={styles.tableTitle}>
                   {' '}
-                  专职人员（
+                  监管人员（
                   {fulltimeWorker}）
                 </span>
               </div>

@@ -90,7 +90,7 @@ class CheckInfo extends PureComponent {
         <div className={styles.sectionWrapperIn}>
           <div className={styles.sectionTitle}>
             <span className={styles.titleBlock} />
-            监督检查
+            安全检查
           </div>
           <div
             style={{
@@ -191,7 +191,7 @@ class CheckInfo extends PureComponent {
               <div className={styles.tableTitleWrapper}>
                 <span className={styles.tableTitle}>
                   {' '}
-                  专职人员检查（
+                  监管人员检查（
                   {listData.length}）
                 </span>
               </div>
