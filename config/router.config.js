@@ -1282,6 +1282,38 @@ module.exports = [
               },
             ],
           },
+          // 综合档案
+          {
+            name: 'generalFile',
+            path: '/training/generalFile',
+            code: 'training.generalFile',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/generalFile',
+                name: 'list',
+                redirect: '/training/generalFile/examFile/list',
+              },
+              {
+                path: '/training/generalFile/:type/list',
+                code: 'training.generalFile.view',
+                name: 'list',
+                component: './Training/GeneralFile/GeneralFileLayout',
+              },
+              {
+                path: '/training/generalFile/examDetailList/:id',
+                code: 'training.generalFile.view',
+                name: 'examDetailList',
+                component: './Training/GeneralFile/ExamFile/ExamDetailList',
+              },
+              {
+                path: '/training/generalFile/examReport/:id',
+                code: 'training.generalFile.view',
+                name: 'examReport',
+                component: './Training/GeneralFile/ExamFile/ExamReport',
+              },
+            ],
+          },
         ],
       },
     ],

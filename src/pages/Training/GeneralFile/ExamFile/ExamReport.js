@@ -4,7 +4,7 @@ import { Card, Row, Col, Button } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import styles from './MyFile.less';
+import styles from '../GeneralFile.less';
 
 function KnowledgeList(props) {
   const { index, knowledgeName, questionCount, rightCount, rightPercent } = props;
@@ -23,7 +23,7 @@ function KnowledgeList(props) {
 }
 
 // 标题
-const title = '成绩分析报告';
+const title = '综合分析报告';
 
 //面包屑
 const breadcrumbList = [
@@ -37,36 +37,35 @@ const breadcrumbList = [
     name: '教育培训',
   },
   {
-    title: '我的档案',
-    name: '我的档案',
-    href: '/training/myFile/myFileList',
+    title: '综合档案',
+    name: '综合档案',
+    href: '/training/generalFile/examFile/list',
   },
   {
     title,
-    name: '成绩分析报告',
+    name: '综合分析报告',
   },
 ];
 
-@connect(({ myFile }) => ({
-  myFile,
+@connect(({ generalFile }) => ({
+  generalFile,
 }))
-export default class MyAnalysis extends PureComponent {
-  /**
-   * 挂载后
-   */
+export default class ExamReport extends PureComponent {
+  // 挂载后
   componentDidMount() {
-    const {
-      dispatch,
-      match: {
-        params: { id },
-      },
-    } = this.props;
-    dispatch({
-      type: 'myFile/fetchExamReport',
-      payload: {
-        examId: id,
-      },
-    });
+    // const {
+    //   dispatch,
+    //   match: {
+    //     params: { id },
+    //   },
+    // } = this.props;
+    // // 获取报告详情
+    // dispatch({
+    //   type: 'generalFile/fetchExamReport',
+    //   payload: {
+    //     examId: id,
+    //   },
+    // });
   }
 
   getOption = knowledgeReports => {
@@ -88,14 +87,14 @@ export default class MyAnalysis extends PureComponent {
       },
       series: [
         {
-          name: '',
+          name: '预算 vs 开销（Budget vs spending）',
           type: 'radar',
           data: [
             {
               value: knowledgeReports.map(data => {
                 return { value: data.rightPercent };
               }),
-              name: '',
+              name: '预算分配（Allocated Budget）',
             },
           ],
         },
@@ -109,22 +108,18 @@ export default class MyAnalysis extends PureComponent {
 
   render() {
     const {
-      myFile: {
-        analysisData: {
-          studentName,
+      generalFile: {
+        reportData: {
           shouldCount,
           actualCount,
           giveUpCount,
           maxScore,
           minScore,
           meanScore,
-          myScore,
-          myRanking,
-          myPassStatus,
           passCount,
           noPassCount,
-          // examPercent,
           passPercent,
+          name,
           knowledgeReports = [],
         },
       },
@@ -132,7 +127,7 @@ export default class MyAnalysis extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="成绩分析报告"
+        title="综合分析报告"
         breadcrumbList={breadcrumbList}
         content={<div />}
         extraContent={
@@ -147,12 +142,6 @@ export default class MyAnalysis extends PureComponent {
               <div className={styles.detailFirst}>
                 <div className={styles.detailTitle}>考试成绩综合分析报告</div>
               </div>
-              <div className={styles.detailSecond}>
-                <span>
-                  考生：
-                  {studentName}
-                </span>
-              </div>
               <div className={styles.detailMain}>
                 <div className={styles.grade}>
                   <h3>一、考试成绩分析</h3>
@@ -166,12 +155,9 @@ export default class MyAnalysis extends PureComponent {
                       人，缺考人数：
                       {giveUpCount}
                       人， 考试最高正确率：
-                      {maxScore}
-                      %，最低正确率：
-                      {minScore}
-                      %，平均正确率：
-                      {meanScore}% ，我的正确率为：
-                      {myScore}%
+                      {maxScore}({name.map(k => k.knowledgeName).join('、')}) %，最低正确率：
+                      {minScore}({name.map(k => k.knowledgeName).join('、')}) %，平均正确率：
+                      {meanScore}%
                     </strong>
                     。
                   </p>
@@ -184,33 +170,38 @@ export default class MyAnalysis extends PureComponent {
                     <strong>
                       合格人数：
                       {passCount}
-                      人，不合格人数：
+                      人，占比为：
+                      {}
+                      %，不合格人数：
                       {noPassCount}
-                      人，我的成绩：
-                      {myPassStatus === '1' ? '合格' : myPassStatus === '-1' ? '弃考' : '不合格'}
-                      ，排名为：第 {myRanking}名
+                      人(
+                      {name.map(k => k.knowledgeName).join('、')}
+                      )，占比为：
+                      {}%
                     </strong>
                     。
                   </p>
                   <p>
-                    3、考试知识点分为：
+                    3、本次考试试题知识点分为：
                     <strong>
                       {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
                       {knowledgeReports.length}项
                     </strong>
-                    ，我的知识点考试正确率：
+                    ，其中
                     {knowledgeReports.map(item => {
-                      const { knowledgeName, questionCount, rightCount, rightPercent } = item;
+                      const { knowledgeName, questionCount } = item;
                       return (
                         <span>
-                          {knowledgeName}共{questionCount}
-                          题，答对
-                          {rightCount}题 ，正确率为：
-                          {rightPercent}
-                          %；
+                          {knowledgeName}
+                          比例为：
+                          {questionCount}，
                         </span>
                       );
                     })}
+                  </p>
+                  <p>
+                    4、本次考试题量：50道，其中，单项选择题：30道，多项选择题：15道，判断题：5道。考试总
+                    时长：90分钟，最快完成答题用时：45分钟，最慢完成答题用时：87分钟。
                   </p>
                 </div>
                 <div className={styles.knowledge}>
