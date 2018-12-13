@@ -94,7 +94,7 @@ export default class CheckingDrawer extends PureComponent {
   };
   render() {
     const { status, isSelected } = this.state;
-    console.log('isSelected', isSelected);
+    // console.log('isSelected', isSelected);
     const {
       visible,
       checkCount,
