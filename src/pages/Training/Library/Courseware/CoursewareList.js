@@ -326,6 +326,7 @@ export default class CoursewareList extends PureComponent {
                   </div>
                 </div>
                 <div className={styles.tags}>
+                  {item.knowledgeName && <Tag>{item.knowledgeName}</Tag>}
                   <Tag>{item.type === '2' ? '视频' : '文档'}</Tag>
                   <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>
                     <Tag className={statusAuth ? styles.tag : styles.disabledTag} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>

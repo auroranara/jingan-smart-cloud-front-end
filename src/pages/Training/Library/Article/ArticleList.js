@@ -336,6 +336,7 @@ export default class ArticleList extends PureComponent {
                   </div>
                 </div>
                 <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}文章吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, statusAuth) }}>
+                  {item.knowledgeName && <Tag>{item.knowledgeName}</Tag>}
                   <Tag className={statusAuth ? styles.tags : styles.disabledTags} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
                 </Popconfirm>
                 <div className={styles.introduction}>

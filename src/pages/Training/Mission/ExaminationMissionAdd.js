@@ -455,7 +455,7 @@ export default class ExaminationMissionAdd extends PureComponent {
                   validateTrigger: 'onBlur',
                   rules: [
                     { required: true, message: '请输入合格率' },
-                    { type: 'number', min: 0, max: 100, message: '请输入0-100以内的整数' },
+                    { type: 'number', min: 1, max: 100, message: '请输入0-100以内的整数' },
                   ],
                   getValueFromEvent: e => {
                     const value = e.target.value;

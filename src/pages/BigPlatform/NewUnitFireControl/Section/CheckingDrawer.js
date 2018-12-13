@@ -179,6 +179,7 @@ export default class CheckingDrawer extends PureComponent {
     return (
       <DrawerContainer
         style={{ overflow: 'hidden' }}
+        destroyOnClose={true}
         title="检查点"
         width={485}
         visible={visible}

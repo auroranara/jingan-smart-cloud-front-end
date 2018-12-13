@@ -596,6 +596,18 @@ export default class App extends PureComponent {
     });
   };
 
+  //获取巡查记录
+  handlePointRecordList = checkItemId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchPointRecord',
+      payload: {
+        itemId: checkItemId,
+        item_type: 2,
+      },
+    });
+  };
+
   // 点击查看隐患详情
   handleViewDangerDetail = data => {
     const { dispatch } = this.props;
@@ -657,7 +669,9 @@ export default class App extends PureComponent {
   };
 
   handleShowAlarm = e => {
-    const { monitor: { allCamera } } = this.props
+    const {
+      monitor: { allCamera },
+    } = this.props;
 
     this.handleFetchAlarmHandle();
     this.setState({ alarmDynamicDrawerVisible: true });
@@ -670,14 +684,21 @@ export default class App extends PureComponent {
   };
 
   handleShowFault = e => {
-    const { dispatch, match: { params: { unitId: companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
 
     dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
     this.handleDrawerVisibleChange('fault');
   };
 
   handleClickMessage = dataId => {
-    const { monitor: { allCamera } } = this.props
+    const {
+      monitor: { allCamera },
+    } = this.props;
 
     this.handleFetchAlarmHandle(dataId);
     this.setState({ alarmMessageDrawerVisible: true });
@@ -695,17 +716,18 @@ export default class App extends PureComponent {
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
+    } = this.props;
     // 获取当前隐患列表
     dispatch({
       type: 'newUnitFireControl/fetchCurrentHiddenDanger',
       payload: {
         company_id: companyId,
         businessType: 2,
-        status: (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null,
+        status:
+          (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null,
       },
     });
-  }
+  };
 
   // 关闭火灾自动报警抽屉
   handleCloseFireAlarm = () => {
@@ -828,6 +850,7 @@ export default class App extends PureComponent {
                 <FourColor
                   model={this.props.newUnitFireControl}
                   handleShowPointDetail={(checkItemId, checkStatus, checkPointName) => {
+                    this.handlePointRecordList(checkItemId);
                     this.handleDrawerVisibleChange('point', {
                       checkItemId,
                       checkStatus,
