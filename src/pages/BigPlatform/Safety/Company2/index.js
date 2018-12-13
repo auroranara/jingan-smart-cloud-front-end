@@ -1,14 +1,20 @@
 import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import Translate from '@/components/Translate';
+import Rotate from '@/components/Rotate';
 import CompanyInfo from './CompanyInfo';
 import PointInfo from './PointInfo';
 import FourColor from './FourColor';
 import InspectionInfo from './InspectionInfo';
 import HiddenDangerDetail from './HiddenDangerDetail';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
+import SafetyOfficer from './SafetyOfficer';
+import RiskPoint from './RiskPoint';
 import Layout from '../Components/Layout';
+import StaffList from '../Components/StaffList';
+import StaffRecords from '../Components/StaffRecords';
 
 import styles from './index.less';
 
@@ -31,7 +37,7 @@ import styles from './index.less';
 export default class App extends PureComponent {
   state = {
     // 安全人员弹出框是否显示
-    safetyPersonVisible: false,
+    safetyOfficerVisible: false,
     // 风险点弹出框是否显示
     riskPointVisible: false,
     // 风险点弹出框的参数
@@ -46,6 +52,14 @@ export default class App extends PureComponent {
     prevSelectedPointIndex: undefined,
     // 鼠标是否移入隐患详情
     isMouseEnter: false,
+    // 单位巡查显示的模块索引
+    inspectionIndex: 0,
+    // 当前选中的人员列表的月份
+    selectedStaffListMonth: '2018-09',
+    // 当前选中的人员记录的月份
+    selectedStaffRecordsMonth: '2018-09',
+    // 选中的人员id
+    checkUserId: null,
   }
 
   componentDidMount() {
@@ -93,6 +107,13 @@ export default class App extends PureComponent {
         company_id: companyId,
       },
     });
+    // 获取安全人员信息（安全人员信息卡片源数据）
+    dispatch({
+      type: 'unitSafety/fetchSafetyOfficer',
+      payload: {
+        company_id: companyId,
+      },
+    });
   }
 
   /**
@@ -134,10 +155,74 @@ export default class App extends PureComponent {
     this.setState(params);
   }
 
+  /**
+   * 修改单位巡查索引
+   */
+  handleResetInspectionIndex = (index, checkUserId) => {
+    const { inspectionIndex, selectedStaffListMonth } = this.state;
+    // 从单位巡查切换到人员列表
+    if (index === 1 && inspectionIndex === 0) {
+      this.handleSelectStaffList(moment().format('YYYY-MM'));
+    }
+    // 切换到人员记录
+    else if (index === 2) {
+      this.handleSelectStaffRecords(selectedStaffListMonth, checkUserId);
+    }
+    this.setState({
+      inspectionIndex: index,
+      checkUserId,
+    });
+  }
+
+  /**
+   * 根据月份获取人员列表
+   */
+  handleSelectStaffList = month => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchStaffList',
+      payload: {
+        company_id: companyId,
+        month,
+      },
+    });
+    this.setState({
+      selectedStaffListMonth: month,
+    });
+  };
+
+  /**
+   * 根据月份获取人员记录
+   */
+  handleSelectStaffRecords = (month, checkUserId = this.state.checkUserId) => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchStaffRecords',
+      payload: {
+        company_id: companyId,
+        month,
+        checkUserId,
+      },
+    });
+    this.setState({
+      selectedStaffRecordsMonth: month,
+    });
+  };
+
   render() {
     const { monitorDataLoading, unitSafety } = this.props;
-    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={} } = unitSafety;
-    const { currentHiddenDangerVisible, selectedPointIndex, points, prevSelectedPointIndex, isMouseEnter } = this.state;
+    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords } = unitSafety;
+    const { safetyOfficerVisible, riskPointVisible, riskPointType, currentHiddenDangerVisible, selectedPointIndex, points, prevSelectedPointIndex, isMouseEnter, inspectionIndex, selectedStaffListMonth, selectedStaffRecordsMonth } = this.state;
 
     return (
       <Layout
@@ -146,20 +231,38 @@ export default class App extends PureComponent {
         <Row gutter={24} className={styles.row} style={{ margin: 0, padding: '16px 12px 24px' }}>
           {/* 左边 */}
           <Col span={6} className={styles.col}>
-            {/* 企业信息 */}
-            <CompanyInfo
-              className={styles.leftTop}
-              model={unitSafety}
-              handleClickUnitName={this.handleClickUnitName}
-              handleClickCount={(name) =>  {this.handleChange(name);}}
-              currentHiddenDangerVisible={currentHiddenDangerVisible}
-            />
-            {/* 风险点信息 */}
-            <PointInfo
-              className={styles.leftBottom}
-              model={unitSafety}
-              handleClickCount={(name) =>  {this.handleChange(name);}}
-            />
+            <Translate
+              queue={safetyOfficerVisible ? [0, 1] : (riskPointVisible ? [0, 2] : [0])}
+              offset={{ right: 10, bottom: 10 }}
+            >
+              <div style={{ height: '100%' }}>
+                {/* 企业信息 */}
+                <CompanyInfo
+                  className={styles.leftTop}
+                  model={unitSafety}
+                  handleClickUnitName={this.handleClickUnitName}
+                  handleClickCount={this.handleChange}
+                  currentHiddenDangerVisible={currentHiddenDangerVisible}
+                />
+                {/* 风险点信息 */}
+                <PointInfo
+                  className={styles.leftBottom}
+                  model={unitSafety}
+                  handleClickCount={this.handleChange}
+                />
+              </div>
+              {/* 安全人员 */}
+              <SafetyOfficer
+                model={unitSafety}
+                onClose={() => {this.handleChange('safetyOfficer');}}
+              />
+              {/* 风险点 */}
+              <RiskPoint
+                model={unitSafety}
+                onClose={() => {this.handleChange('riskPoint');}}
+                riskPointType={riskPointType}
+              />
+            </Translate>
           </Col>
 
           {/* 中间 */}
@@ -177,11 +280,54 @@ export default class App extends PureComponent {
               isMouseEnter={isMouseEnter}
               currentHiddenDangerVisible={currentHiddenDangerVisible}
             />
-            {/* 单位巡查 */}
-            <InspectionInfo
+            <Rotate
+              axis="x"
+              frontIndex={inspectionIndex}
               className={styles.centerBottom}
-              model={unitSafety}
-            />
+            >
+              {/* 单位巡查 */}
+              <InspectionInfo
+                model={unitSafety}
+                inspectionIndex={inspectionIndex}
+                onClick={() => {this.handleResetInspectionIndex(1)}}
+              />
+              {/* 人员列表 */}
+              <StaffList
+                data={staffList}
+                month={selectedStaffListMonth}
+                fieldNames={{
+                  id: 'check_user_id',
+                  person: 'user_name',
+                  total: 'totalCheck',
+                  abnormal: 'abnormal',
+                }}
+                onBack={() => {
+                  this.handleResetInspectionIndex(0);
+                }}
+                onClick={checkUserId => {
+                  this.handleResetInspectionIndex(2, checkUserId);
+                }}
+                onSelect={this.handleSelectStaffList}
+              />
+              {/* 人员记录 */}
+              <StaffRecords
+                data={staffRecords}
+                month={selectedStaffRecordsMonth}
+                fieldNames={{
+                  id: 'check_id',
+                  person: 'user_name',
+                  time: 'check_date',
+                  point: 'object_title',
+                  result: 'fireCheckStatus',
+                  status: 'currentStatus',
+                }}
+                onBack={() => {
+                  this.handleResetInspectionIndex(1);
+                }}
+                onSelect={this.handleSelectStaffRecords}
+                // handleShowDetail={this.handleShowPatrolPointDrawer}
+              />
+            </Rotate>
           </Col>
 
           {/* 右边 */}

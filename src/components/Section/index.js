@@ -372,6 +372,8 @@ export default class App extends PureComponent {
       children,
       // 固定内容样式
       fixedContentStyle,
+      // 标题栏样式
+      titleStyle,
     } = this.props;
     // 外部容器类名
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
@@ -383,7 +385,7 @@ export default class App extends PureComponent {
         <div className={styles.inner}>
           {/* 标题栏 */
             title && (
-              <div className={styles.title}>
+              <div className={styles.title} style={titleStyle}>
                 <div className={styles.titleIcon}></div>
                 <div className={styles.titleContent}>{title}</div>
                 {/* 关闭按钮 */

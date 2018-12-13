@@ -6,9 +6,11 @@ import noHiddenDanger from '../../img/noHiddenDanger.png';
 import styles from './index.less';
 
 /**
- * 当前隐患
+ * description: 当前隐患
+ * author: sunkai
+ * date: 2018年12月12日
  */
-export default class App extends PureComponent {
+export default class CurrentHiddenDanger extends PureComponent {
   render() {
     const {
       closable=true,

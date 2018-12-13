@@ -10,3 +10,4 @@
 * fixedContent 标题栏下方的固定元素
 * fixedContentStyle 固定元素样式
 * hackHeight 未知
+* titleStyle 标题栏样式

@@ -97,7 +97,7 @@ export default class CompanyInfo extends PureComponent {
             <div
               className={isPersonCountClickable ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${peopleIcon})` }}
-              onClick={isPersonCountClickable ? () => {handleClickCount('safetyPerson');} : undefined}
+              onClick={isPersonCountClickable ? () => {handleClickCount('safetyOfficer');} : undefined}
             >
               <div className={styles.countLabel}><Ellipsis lines={1} /* tooltip */>安全人员</Ellipsis></div>
               <div className={styles.countValue}><Ellipsis lines={1} /* tooltip */>{countCompanyUser}</Ellipsis></div>
@@ -106,7 +106,7 @@ export default class CompanyInfo extends PureComponent {
             <div
               className={isPointCountClickable ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${checkIcon})` }}
-              onClick={isPointCountClickable ? () => {handleClickCount('riskPoint', { riskPointType: {} });} : undefined}
+              onClick={isPointCountClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'status' } });} : undefined}
             >
               <div className={styles.countLabel}><Ellipsis lines={1} /* tooltip */>风险点</Ellipsis></div>
               <div className={styles.countValue}><Ellipsis lines={1} /* tooltip */>{countCheckItem}</Ellipsis></div>

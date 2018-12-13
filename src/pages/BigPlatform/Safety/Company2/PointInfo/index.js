@@ -99,7 +99,7 @@ export default class PointInfo extends PureComponent {
     // 饼图点击事件
     chart.on('click', ({ name }) => {
       const { handleClickCount } = this.props;
-      handleClickCount && handleClickCount('riskPoint', { riskPointType: { key: 'status', value: name } });
+      handleClickCount && handleClickCount('riskPoint', { riskPointType: { key: 'level', value: name } });
     });
   }
 
@@ -214,7 +214,7 @@ export default class PointInfo extends PureComponent {
     };
 
     return (
-      <Section className={className} style={style} title="风险点">
+      <Section className={className} style={style} title="风险点" titleStyle={{ marginBottom: 0 }}>
         <div className={styles.container}>
           <div className={styles.top} style={{ backgroundImage: `url(${splitLine})`, height: '50%' }}>
             {/* 饼图 */}
@@ -235,7 +235,7 @@ export default class PointInfo extends PureComponent {
             <div
               className={isNormalClickable ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${normalIcon})` }}
-              onClick={isNormalClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'level', value: 'normal' } });} : undefined}
+              onClick={isNormalClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'status', value: '正常' } });} : undefined}
             >
               <div className={styles.countLabel} style={{ color: 'rgb(0, 161, 129)' }}><Ellipsis lines={1} /* tooltip */>正常</Ellipsis></div>
               <div className={styles.countValue}><Ellipsis lines={1} /* tooltip */>{normal}</Ellipsis></div>
@@ -244,7 +244,7 @@ export default class PointInfo extends PureComponent {
             <div
               className={isCheckingClickable ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${checkingIcon})` }}
-              onClick={isCheckingClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'level', value: 'checking' } });} : undefined}
+              onClick={isCheckingClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'status', value: '待检查' } });} : undefined}
             >
               <div className={styles.countLabel} style={{ color: 'rgb(94, 190, 255)' }}><Ellipsis lines={1} /* tooltip */>待检查</Ellipsis></div>
               <div className={styles.countValue}><Ellipsis lines={1} /* tooltip */>{checking}</Ellipsis></div>
@@ -253,7 +253,7 @@ export default class PointInfo extends PureComponent {
             <div
               className={isAbnormalClickable ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${abnormalIcon})` }}
-              onClick={isAbnormalClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'level', value: 'abnormal' } });} : undefined}
+              onClick={isAbnormalClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'status', value: '异常' } });} : undefined}
             >
               <div className={styles.countLabel} style={{ color: 'rgb(255, 72, 72)' }}><Ellipsis lines={1} /* tooltip */>异常</Ellipsis></div>
               <div className={styles.countValue}><Ellipsis lines={1} /* tooltip */>{abnormal}</Ellipsis></div>
@@ -262,7 +262,7 @@ export default class PointInfo extends PureComponent {
             <div
               className={isOverClickable ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${overIcon})` }}
-              onClick={isOverClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'level', value: 'over' } });} : undefined}
+              onClick={isOverClickable ? () => {handleClickCount('riskPoint', { riskPointType: { key: 'status', value: '已超时' } });} : undefined}
             >
               <div className={styles.countLabel} style={{ color: 'rgb(255, 72, 72)' }}><Ellipsis lines={1} /* tooltip */>已超时</Ellipsis></div>
               <div className={styles.countValue}><Ellipsis lines={1} /* tooltip */>{over}</Ellipsis></div>

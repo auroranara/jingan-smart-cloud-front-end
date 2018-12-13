@@ -63,7 +63,7 @@ const getIconByBusinessType = function(businessType) {
  * author: sunkai
  * date: 2018年12月12日
  */
-export default class App extends PureComponent {
+export default class HiddenDanger extends PureComponent {
   render() {
     const {
       style,

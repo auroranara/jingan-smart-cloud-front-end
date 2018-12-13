@@ -59,33 +59,33 @@ export default class App extends PureComponent {
     const { id: idField, person: personField, time: timeField, point: pointField, result: resultField, status: statusField } = {...defaultFieldNames, ...fieldNames};
     const total = data.length;
     const abnormal = data.filter(item => +item[resultField] !== 1).length;
-    const list = hiddenDanger && hiddenDanger.map(({
-      _id,
-      _desc,
-      _report_user_name,
-      _report_time,
-      _rectify_user_name,
-      _plan_rectify_time,
-      _real_rectify_time,
-      _review_user_name,
-      _review_time,
-      hiddenStatus,
-      _path,
-      business_type,
-    }) => ({
-      id: _id,
-      description: _desc,
-      sbr: _report_user_name,
-      sbsj: moment(+_report_time).format('YYYY-MM-DD'),
-      zgr: _rectify_user_name,
-      plan_zgsj: moment(+_plan_rectify_time).format('YYYY-MM-DD'),
-      real_zgsj: moment(+_real_rectify_time).format('YYYY-MM-DD'),
-      fcr: _review_user_name,
-      fcsj: _review_time && moment(+_review_time).format('YYYY-MM-DD'),
-      status: +hiddenStatus,
-      background: _path,
-      businessType: business_type,
-    }));
+    // const list = hiddenDanger && hiddenDanger.map(({
+    //   _id,
+    //   _desc,
+    //   _report_user_name,
+    //   _report_time,
+    //   _rectify_user_name,
+    //   _plan_rectify_time,
+    //   _real_rectify_time,
+    //   _review_user_name,
+    //   _review_time,
+    //   hiddenStatus,
+    //   _path,
+    //   business_type,
+    // }) => ({
+    //   id: _id,
+    //   description: _desc,
+    //   sbr: _report_user_name,
+    //   sbsj: moment(+_report_time).format('YYYY-MM-DD'),
+    //   zgr: _rectify_user_name,
+    //   plan_zgsj: moment(+_plan_rectify_time).format('YYYY-MM-DD'),
+    //   real_zgsj: moment(+_real_rectify_time).format('YYYY-MM-DD'),
+    //   fcr: _review_user_name,
+    //   fcsj: _review_time && moment(+_review_time).format('YYYY-MM-DD'),
+    //   status: +hiddenStatus,
+    //   background: _path,
+    //   businessType: business_type,
+    // }));
 
     /* 表头 */
     const columns = [

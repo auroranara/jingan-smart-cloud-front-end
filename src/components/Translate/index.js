@@ -46,8 +46,11 @@ export default class App extends PureComponent {
 
     return (
       <div className={containerClassName}  style={{
-        margin: `-${top}px -${right}px -${bottom}px -${left}px`,
+        top: -top,
+        left: -left,
         padding: `${top}px ${right}px ${bottom}px ${left}px`,
+        width: `calc(100% + ${left + right}px)`,
+        height: `calc(100% + ${top + bottom}px)`,
         ...style,
       }}>
         {/* 如果children是数组，则遍历，否则原样返回 */
@@ -63,6 +66,8 @@ export default class App extends PureComponent {
                 className={styles.child}
                 style={{
                   ...this.getPositionStyle(direction, isInner, left, right, top, bottom),
+                  width: `calc(100% - ${left + right}px)`,
+                  height: `calc(100% - ${top + bottom}px)`,
                   opacity: isInner && !isTop ? '0' : '1',
                   transition: `opacity ${duration}s, ${direction} ${duration}s`,
                   zIndex: `${index+1}`,

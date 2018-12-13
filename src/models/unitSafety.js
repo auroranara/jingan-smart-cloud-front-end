@@ -13,14 +13,14 @@ import {
   getMonitorData,
   // 企业大屏四色风险点,
   getCountDangerLocation,
-  // 隐患总数
-  getHiddenDanger,
-  // 获取安全人员信息
-  getSafetyOfficer,
   // 获取巡查人员列表
   getStaffList,
   // 获取巡查人员记录
   getStaffRecords,
+  // 隐患总数
+  getHiddenDanger,
+  // 获取安全人员信息
+  getSafetyOfficer,
 } from '../services/unitSafety';
 
 export default {
@@ -65,6 +65,12 @@ export default {
     monitorData: { score: 0 },
     // 四色风险点统计
     countDangerLocation: {},
+    // 人员巡查列表
+    staffList: [],
+    // 人员记录
+    staffRecords: [],
+    // 安全人员信息
+    safetyOfficer: {},
   },
 
   effects: {
@@ -241,6 +247,43 @@ export default {
       });
       if (callback) {
         callback();
+      }
+    },
+    // 巡查人员列表
+    *fetchStaffList({ payload, callback }, { call, put }) {
+      const response = yield call(getStaffList, payload);
+      yield put({
+        type: 'save',
+        payload: { staffList: response.personCheck },
+      });
+      if (callback) {
+        callback(response.personCheck);
+      }
+    },
+    // 巡查人员列表
+    *fetchStaffRecords({ payload, callback }, { call, put }) {
+      const response = yield call(getStaffRecords, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { staffRecords: response.data.list },
+        });
+        if (callback) {
+          callback(response.data.list);
+        }
+      } else if (callback) {
+        callback();
+      }
+    },
+    // 安全人员
+    *fetchSafetyOfficer({ payload, callback }, { call, put }) {
+      const response = yield call(getSafetyOfficer, payload);
+      yield put({
+        type: 'save',
+        payload: { safetyOfficer: response },
+      });
+      if (callback) {
+        callback(response);
       }
     },
   },

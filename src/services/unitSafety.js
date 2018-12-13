@@ -43,24 +43,6 @@ export async function getStatusCount(params) {
   return request(`/acloud_new/v2/sfc/itemList.json?${stringify(params)}`);
 }
 
-
-
-
-
-
-
-// 隐患总数
-export async function getHiddenDanger(params) {
-  return request(`/acloud_new/v2/sfc/hiddenDanger.json?${stringify(params)}`);
-}
-
-// 获取安全人员信息
-export async function getSafetyOfficer(params) {
-  return request(`/acloud_new/v2/sfc/showSafePerson.json?${stringify(params)}`);
-}
-
-
-
 /**
  * 获取巡查人员列表
  */
@@ -74,3 +56,23 @@ export async function getStaffList(params) {
 export async function getStaffRecords(params) {
   return request(`/acloud_new/v2/sfc/companyCheckDataByPerson.json?${stringify(params)}`);
 }
+
+// 获取安全人员信息
+export async function getSafetyOfficer(params) {
+  return request(`/acloud_new/v2/sfc/showSafePerson.json?${stringify(params)}`);
+}
+
+
+
+
+
+
+// 隐患总数
+export async function getHiddenDanger(params) {
+  return request(`/acloud_new/v2/sfc/hiddenDanger.json?${stringify(params)}`);
+}
+
+
+
+
+
