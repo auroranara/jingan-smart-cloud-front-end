@@ -79,12 +79,18 @@ export default class App extends PureComponent {
       callback: firstDeviceId => {
         this.setState({ chartSelectVal: firstDeviceId });
         // 获取传感器历史
-        dispatch({
-          type: 'monitor/fetchGsmsHstData',
-          payload: { deviceId: firstDeviceId },
-        });
+        // dispatch({
+        //   type: 'monitor/fetchGsmsHstData',
+        //   payload: { deviceId: firstDeviceId },
+        // });
         // 获取上下线的区块
         this.fetchPieces(firstDeviceId);
+
+        // 获取实时警报信息
+        dispatch({
+          type: 'monitor/fetchDeviceDataHistory',
+          payload: { deviceId: firstDeviceId },
+        });
       },
     });
 
@@ -166,11 +172,15 @@ export default class App extends PureComponent {
     const { chartSelectVal } = this.state;
 
     if (!chartSelectVal) return;
-
+    // 获取实时警报信息
     dispatch({
-      type: 'monitor/fetchGsmsHstData',
+      type: 'monitor/fetchDeviceDataHistory',
       payload: { deviceId: chartSelectVal },
     });
+    // dispatch({
+    //   type: 'monitor/fetchGsmsHstData',
+    //   payload: { deviceId: chartSelectVal },
+    // });
     dispatch({
       type: 'monitor/fetchPieces',
       payload: { deviceId: chartSelectVal, code: 'v1' },
@@ -215,12 +225,23 @@ export default class App extends PureComponent {
     const { dispatch } = this.props;
     this.setState({ chartSelectVal: value });
     // 获取传感器历史
+    // dispatch({
+    //   type: 'monitor/fetchGsmsHstData',
+    //   payload: { deviceId: value },
+    //   error: () => {
+    //     dispatch({
+    //       type: 'monitor/gsmsHstData',
+    //       payload: {},
+    //     });
+    //   },
+    // });
+    // 获取实时警报信息
     dispatch({
-      type: 'monitor/fetchGsmsHstData',
+      type: 'monitor/fetchDeviceDataHistory',
       payload: { deviceId: value },
       error: () => {
         dispatch({
-          type: 'monitor/gsmsHstData',
+          type: 'monitor/deviceDataHistory',
           payload: {},
         });
       },
@@ -347,6 +368,7 @@ export default class App extends PureComponent {
         errorDevice,
         smokeCount,
         smokeList,
+        deviceDataHistory,
       },
       unitFireControl: { fireAlarmSystem },
       dispatch,
@@ -444,7 +466,13 @@ export default class App extends PureComponent {
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts
-                      data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams }}
+                      data={{
+                        chartDeviceList,
+                        gsmsHstData,
+                        electricityPieces,
+                        chartParams,
+                        deviceDataHistory,
+                      }}
                       selectVal={chartSelectVal}
                       handleSelect={this.handleChartSelect}
                     />

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Select } from 'antd';
-// import { connect } from 'dva';
 import classNames from 'classnames';
+import moment from 'moment';
 import SectionWrapper from '../Components/SectionWrapper';
 import ReactEcharts from 'echarts-for-react';
 
@@ -28,76 +28,53 @@ const tabList = [
     code: 'volte',
   },
 ];
-// @connect(({ monitorCompany }) => ({
-//   monitorCompany,
-// }))
+
+const calcItemColor = (item, pieces) => {
+  const value = item.value[1];
+  if (!pieces || pieces.length <= 0 || value === undefined) return item;
+  pieces.forEach(p => {
+    if (
+      (p.condition === '1' && value >= p.limitValue) ||
+      (p.condition === '2' && value <= p.limitValue)
+    ) {
+      item = {
+        ...item,
+        itemStyle: {
+          color: '#e01919',
+        },
+      };
+    }
+  });
+  return item;
+};
+
 class ElectricityCharts extends PureComponent {
   state = {
     activeTab: 0,
   };
 
-  // componentDidMount() {
-  //   const { dispatch } = this.props;
-  //   // 获取传感器历史
-  //   dispatch({
-  //     type: 'monitorCompany/fetchGsmsHstData',
-  //     payload: {
-  //       deviceId: '0DNDTtrpRomhqSCSapzm9A', // need to get device id 1st
-  //     },
-  //   });
-  //   // 获取上下线的区块
-  //   dispatch({
-  //     type: 'monitorCompany/fetchPieces',
-  //     payload: {
-  //       deviceId: '0DNDTtrpRomhqSCSapzm9A', // need to get device id 1st
-  //       code: 'v1',
-  //     },
-  //   });
-  // }
-
   componentWillUnmount() {
     clearInterval(this.echartAnimate);
   }
 
-  calcItemColor = (value, pieces) => {
-    let item = {
-      value,
-    };
-    if (!pieces || pieces.length <= 0) return item;
-    pieces.forEach(p => {
-      if (
-        (p.condition === '1' && value >= p.limitValue) ||
-        (p.condition === '2' && value <= p.limitValue)
-      ) {
-        item = {
-          ...item,
-          itemStyle: {
-            color: '#e01919',
-          },
-        };
-      }
-    });
-    return item;
-  };
-
   tootipFormatter = params => {
     if (Array.isArray(params)) {
       return (
-        `${params[0].name}<br/>` +
+        `${moment(params[0].name).format('HH:mm')}<br/>` +
         params
           .map(item => {
             return `${item.marker}<span style="color: ${
               item.color === '#e01919' ? '#e01919' : '#fff'
-            }">${item.seriesName}：${item.value}</span>`;
+            }">${item.seriesName}：${item.value[1]}</span>`;
           })
           .join('<br/>')
       );
     } else {
       return (
-        `${params.name}<br/>` +
+        `${moment(params.name).format('HH:mm')}<br/>` +
         `${params.marker}<span style="color: ${params.color === '#e01919' ? '#e01919' : '#fff'}">${
           params.seriesName
-        }：${params.value}</span><br/>`
+        }：${params.value[1]}</span><br/>`
       );
     }
   };
@@ -116,18 +93,70 @@ class ElectricityCharts extends PureComponent {
   getOptions = () => {
     const {
       data: {
-        gsmsHstData,
         electricityPieces,
         chartParams: { list = [] },
+        deviceDataHistory,
       },
     } = this.props;
+    let iaList = [],
+      ibList = [],
+      icList = [],
+      uaList = [],
+      ubList = [],
+      ucList = [],
+      v1List = [],
+      v2List = [],
+      v3List = [],
+      v4List = [],
+      v5List = [];
+    const dataList = [
+      iaList,
+      ibList,
+      icList,
+      uaList,
+      ubList,
+      ucList,
+      v1List,
+      v2List,
+      v3List,
+      v4List,
+      v5List,
+    ];
+    deviceDataHistory.forEach(item => {
+      const { createTime, ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5 } = item;
+      const data = [ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5];
+      const strList = ['ia', 'ib', 'ic', 'ua', 'ub', 'uc', 'v1', 'v2', 'v3', 'v4', 'v5'];
+      dataList.forEach((d, i) => {
+        d.push(
+          calcItemColor(
+            { name: createTime, value: [createTime, +data[i]] },
+            electricityPieces[strList[i]]
+          )
+        );
+      });
+    });
+    const [
+      iaLast,
+      ibLast,
+      icLast,
+      uaLast,
+      ubLast,
+      ucLast,
+      v1Last,
+      v2Last,
+      v3Last,
+      v4Last,
+      v5Last,
+    ] = dataList.map(list =>
+      list.filter(item => item.value[1] !== undefined && !isNaN(item.value[1]))
+    );
+
     const { activeTab } = this.state;
     const paramsMap = list.reduce((prev, next) => {
       const { code, desc } = next;
       prev[code] = desc;
       return prev;
     }, {});
-    // console.log(paramsMap.v1);
     const noData = {
       title: {
         show: true,
@@ -142,21 +171,7 @@ class ElectricityCharts extends PureComponent {
       },
     };
     let option = {};
-    if (!gsmsHstData.today) return { ...option, ...noData };
-    const {
-      timeList: xData,
-      iaList,
-      ibList,
-      icList,
-      uaList,
-      ubList,
-      ucList,
-      v1List,
-      v2List,
-      v3List,
-      v4List,
-      v5List,
-    } = gsmsHstData.today;
+    if (!deviceDataHistory.length) return { ...option, ...noData };
     const defaultOption = {
       color: ['#5ebeff', '#f7e68a', '#e38b3d', '#9893ff'],
       grid: {
@@ -187,6 +202,7 @@ class ElectricityCharts extends PureComponent {
         },
         backgroundColor: 'rgba(32,54,77,0.8)',
         padding: [8, 12],
+        extraCssText: 'z-index: 996;',
       },
       xAxis: {
         axisLine: {
@@ -199,8 +215,15 @@ class ElectricityCharts extends PureComponent {
         axisLabel: {
           color: '#fff',
           fontSize: 14,
+          formatter: name => {
+            return moment(name).format('HH:mm');
+          },
         },
-        data: xData,
+        splitLine: {
+          show: false,
+        },
+        splitNumber: 12,
+        type: 'time',
       },
       yAxis: {
         scale: true,
@@ -231,10 +254,6 @@ class ElectricityCharts extends PureComponent {
     switch (tabList[activeTab].code) {
       case 'v1':
         const v1Pieces = electricityPieces['v1'];
-        const v1 = v1List.filter(a => a !== '-');
-        const v1ListNew = v1List.map(item => {
-          return this.calcItemColor(item, v1Pieces);
-        });
         option = {
           ...defaultOption,
           title: {
@@ -267,11 +286,11 @@ class ElectricityCharts extends PureComponent {
               name: paramsMap.v1 || '漏电电流',
               smooth: true,
               symbolSize: 5,
-              data: v1ListNew,
+              data: v1Last,
             },
           ],
         };
-        if (v1.length === 0) {
+        if (v1Last.length === 0) {
           option = {
             ...option,
             ...noData,
@@ -279,36 +298,9 @@ class ElectricityCharts extends PureComponent {
         }
         break;
       case 'temp':
-        const [t1, t2, t3, t4] = [v2List, v3List, v4List, v5List].map(list =>
-          list.filter(a => a !== '-')
-        );
-
         const [v2Pieces, v3Pieces, v4Pieces, v5Pieces] = ['v2', 'v3', 'v4', 'v5'].map(
           k => electricityPieces[k]
         );
-        const [v2ListNew, v3ListNew, v4ListNew, v5ListNew] = [
-          [v2List, v2Pieces],
-          [v3List, v3Pieces],
-          [v4List, v4Pieces],
-          [v5List, v5Pieces],
-        ].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
-
-        // const v2Pieces = electricityPieces['v2'];
-        // const v2ListNew = v2List.map(item => {
-        //   return this.calcItemColor(item, v2Pieces);
-        // });
-        // const v3Pieces = electricityPieces['v3'];
-        // const v3ListNew = v3List.map(item => {
-        //   return this.calcItemColor(item, v3Pieces);
-        // });
-        // const v4Pieces = electricityPieces['v4'];
-        // const v4ListNew = v4List.map(item => {
-        //   return this.calcItemColor(item, v4Pieces);
-        // });
-        // const v5Pieces = electricityPieces['v5'];
-        // const v5ListNew = v5List.map(item => {
-        //   return this.calcItemColor(item, v5Pieces);
-        // });
 
         option = {
           ...defaultOption,
@@ -347,32 +339,37 @@ class ElectricityCharts extends PureComponent {
               name: paramsMap.v2 || 'A相温度',
               smooth: true,
               symbolSize: 5,
-              data: v2ListNew,
+              data: v2Last,
             },
             {
               type: 'line',
               name: paramsMap.v3 || 'B相温度',
               smooth: true,
               symbolSize: 5,
-              data: v3ListNew,
+              data: v3Last,
             },
             {
               type: 'line',
               name: paramsMap.v4 || 'C相温度',
               smooth: true,
               symbolSize: 5,
-              data: v4ListNew,
+              data: v4Last,
             },
             {
               type: 'line',
               name: paramsMap.v5 || '零线温度',
               smooth: true,
               symbolSize: 5,
-              data: v5ListNew,
+              data: v5Last,
             },
           ],
         };
-        if (t1.length === 0 && t2.length === 0 && t3.length === 0 && t4.length === 0) {
+        if (
+          v2Last.length === 0 &&
+          v3Last.length === 0 &&
+          v4Last.length === 0 &&
+          v5Last.length === 0
+        ) {
           option = {
             ...option,
             ...noData,
@@ -380,30 +377,7 @@ class ElectricityCharts extends PureComponent {
         }
         break;
       case 'ampere':
-        const [ia, ib, ic] = [iaList, ibList, icList].map(list => list.filter(a => a !== '-'));
-        // const ib = ibList.filter(a => a !== '-');
-        // const ic = icList.filter(a => a !== '-');
-
         const [iaPieces, ibPieces, icPieces] = ['ia', 'ib', 'ic'].map(k => electricityPieces[k]);
-        const [iaListNew, ibListNew, icListNew] = [
-          [iaList, iaPieces],
-          [ibList, ibPieces],
-          [icList, icPieces],
-        ].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
-
-        // const iaPieces = electricityPieces['ia'];
-        // const iaListNew = iaList.map(item => {
-        //   return this.calcItemColor(item, iaPieces);
-        // });
-        // const ibPieces = electricityPieces['ib'];
-        // const ibListNew = ibList.map(item => {
-        //   return this.calcItemColor(item, ibPieces);
-        // });
-        // const icPieces = electricityPieces['ic'];
-        // const icListNew = icList.map(item => {
-        //   return this.calcItemColor(item, icPieces);
-        // });
-
         option = {
           ...defaultOption,
           legend: {
@@ -436,25 +410,25 @@ class ElectricityCharts extends PureComponent {
               name: paramsMap.ia || 'A相电流',
               smooth: true,
               symbolSize: 5,
-              data: iaListNew,
+              data: iaLast,
             },
             {
               type: 'line',
               name: paramsMap.ib || 'B相电流',
               smooth: true,
               symbolSize: 5,
-              data: ibListNew,
+              data: ibLast,
             },
             {
               type: 'line',
               name: paramsMap.ic || 'C相电流',
               smooth: true,
               symbolSize: 5,
-              data: icListNew,
+              data: icLast,
             },
           ],
         };
-        if (ia.length === 0 && ib.length === 0 && ic.length === 0) {
+        if (iaLast.length === 0 && ibLast.length === 0 && icLast.length === 0) {
           option = {
             ...option,
             ...noData,
@@ -462,30 +436,7 @@ class ElectricityCharts extends PureComponent {
         }
         break;
       case 'volte':
-        const [ua, ub, uc] = [uaList, ubList, ucList].map(list => list.filter(a => a !== '-'));
-        // const ub = ubList.filter(a => a !== '-');
-        // const uc = ucList.filter(a => a !== '-');
-
         const [uaPieces, ubPieces, ucPieces] = ['ua', 'ub', 'uc'].map(k => electricityPieces[k]);
-        const [uaListNew, ubListNew, ucListNew] = [
-          [uaList, uaPieces],
-          [ubList, ubPieces],
-          [ucList, ucPieces],
-        ].map(([list, pieces]) => list.map(item => this.calcItemColor(item, pieces)));
-
-        // const uaPieces = electricityPieces['ua'];
-        // const uaListNew = uaList.map(item => {
-        //   return this.calcItemColor(item, uaPieces);
-        // });
-        // const ubPieces = electricityPieces['ub'];
-        // const ubListNew = ubList.map(item => {
-        //   return this.calcItemColor(item, ubPieces);
-        // });
-        // const ucPieces = electricityPieces['uc'];
-        // const ucListNew = ucList.map(item => {
-        //   return this.calcItemColor(item, ucPieces);
-        // });
-
         option = {
           ...defaultOption,
           legend: {
@@ -518,25 +469,25 @@ class ElectricityCharts extends PureComponent {
               name: paramsMap.ua || 'A相电压',
               smooth: true,
               symbolSize: 5,
-              data: uaListNew,
+              data: uaLast,
             },
             {
               type: 'line',
               name: paramsMap.ub || 'B相电压',
               smooth: true,
               symbolSize: 5,
-              data: ubListNew,
+              data: ubLast,
             },
             {
               type: 'line',
               name: paramsMap.uc || 'C相电压',
               smooth: true,
               symbolSize: 5,
-              data: ucListNew,
+              data: ucLast,
             },
           ],
         };
-        if (ua.length === 0 && ub.length === 0 && uc.length === 0) {
+        if (uaLast.length === 0 && ubLast.length === 0 && ucLast.length === 0) {
           option = {
             ...option,
             ...noData,

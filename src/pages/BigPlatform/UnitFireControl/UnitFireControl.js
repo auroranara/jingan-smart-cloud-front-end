@@ -234,8 +234,13 @@ export default class App extends PureComponent {
       callback: firstDeviceId => {
         this.setState({ chartSelectVal: firstDeviceId });
         // 获取传感器历史
+        // dispatch({
+        //   type: 'monitor/fetchGsmsHstData',
+        //   payload: { deviceId: firstDeviceId },
+        // });
+        // 获取实时警报信息
         dispatch({
-          type: 'monitor/fetchGsmsHstData',
+          type: 'monitor/fetchDeviceDataHistory',
           payload: { deviceId: firstDeviceId },
         });
         // 获取上下线的区块
@@ -884,17 +889,28 @@ export default class App extends PureComponent {
   handleChartSelect = value => {
     const { dispatch } = this.props;
     this.setState({ chartSelectVal: value });
-    // 获取传感器历史
+    // 获取实时警报信息
     dispatch({
-      type: 'monitor/fetchGsmsHstData',
+      type: 'monitor/fetchDeviceDataHistory',
       payload: { deviceId: value },
       error: () => {
         dispatch({
-          type: 'monitor/gsmsHstData',
+          type: 'monitor/deviceDataHistory',
           payload: {},
         });
       },
     });
+    // 获取传感器历史
+    // dispatch({
+    //   type: 'monitor/fetchGsmsHstData',
+    //   payload: { deviceId: value },
+    //   error: () => {
+    //     dispatch({
+    //       type: 'monitor/gsmsHstData',
+    //       payload: {},
+    //     });
+    //   },
+    // });
     // 获取上下线的区块
     this.fetchPieces(value);
   };
@@ -1198,7 +1214,7 @@ export default class App extends PureComponent {
         // 视频列表
         videoList,
       },
-      monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams },
+      monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory },
     } = this.props;
     const {
       videoVisible,
@@ -1246,7 +1262,7 @@ export default class App extends PureComponent {
                 <Col span={16} style={{ height: '100%' }}>
                   {/* 用电安全监测 */}
                   <ElectricityCharts
-                    data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams }}
+                    data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory }}
                     selectVal={chartSelectVal}
                     handleSelect={this.handleChartSelect}
                   />

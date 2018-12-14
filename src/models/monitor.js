@@ -14,6 +14,7 @@ import {
   fetchErrorDevices,
   fetchAlarmInfoTypes,
   querySmokeList,
+  getDeviceDataHistory,
 } from '../services/bigPlatform/monitor';
 
 const DEFAULT_CODE = 500;
@@ -58,6 +59,7 @@ export default {
       pageSize: 10,
       total: 0,
     },
+    deviceDataHistory: [],
   },
 
   effects: {
@@ -235,6 +237,21 @@ export default {
         });
       }
     },
+    // 获取传感器历史数据
+    *fetchDeviceDataHistory({ payload, success, error }, { call, put }) {
+      const response = yield call(getDeviceDataHistory, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'deviceDataHistory',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -401,6 +418,12 @@ export default {
           ...state.historyAlarm,
           alarmTypes: action.payload,
         },
+      };
+    },
+    deviceDataHistory(state, { payload }) {
+      return {
+        ...state,
+        deviceDataHistory: payload.list,
       };
     },
   },
