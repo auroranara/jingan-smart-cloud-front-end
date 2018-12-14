@@ -45,36 +45,6 @@ const positionRedIcon = `${prefix}fire_position_red.png`;
 const splitIcon = `${prefix}split.png`;
 const splitHIcon = `${prefix}split_h.png`;
 
-/* 待处理信息项 */
-const PendingInfoItem = ({ data, onClick }) => {
-  const { id, t, install_address, component_region, component_no, label, pendingInfoType } = data;
-  const isFire = pendingInfoType === '火警';
-  return (
-    <div
-      key={id}
-      className={styles.pendingInfoItem}
-      style={{ color: isFire ? '#FF6464' : '#00ADFF' }}
-    >
-      <div style={{ backgroundImage: `url(${isFire ? fireIcon : faultIcon})` }}>
-        {pendingInfoType}
-        <div className={styles.pendingInfoItemTime}>{t}</div>
-      </div>
-      <div>
-        {component_region}
-        回路
-        {component_no}号
-      </div>
-      <div>{label}</div>
-      <div style={{ backgroundImage: `url(${isFire ? positionRedIcon : positionBlueIcon})` }}>
-        {install_address}
-      </div>
-      <div className={styles.videoPlayButton} onClick={onClick}>
-        <img src={videoIcon} alt="" />
-      </div>
-    </div>
-  );
-};
-
 /**
  * 复位主机
  */
@@ -122,12 +92,13 @@ const getPendingInfoType = ({
   supervise_state = null,
   shield_state = null,
   feedback_state = null,
+  type = null,
 }, returnType = 'title') => {
   let value = '';
   if (+report_type === 2) {
     value = (returnType === 'title' && '一键报修') || (returnType === 'icon' && 'baoxiu');
   } else if (+fire_state === 1) {
-    value = (returnType === 'title' && '火警') || (returnType === 'icon' && 'huojing');
+    value = (returnType === 'title' && ((+type === 1 && '误报火警') || (+type === 2 && '真实火警') || '火警')) || (returnType === 'icon' && 'huojing');
   } else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
     value = (returnType === 'title' && '故障') || (returnType === 'icon' && 'guzhang');
   } else if (+start_state === 1) {
@@ -1049,6 +1020,7 @@ export default class App extends PureComponent {
         selfRate = '100%',
         avgAssignTime = '',
         assignRate = '100%',
+        unitName,
       },
     } = this.props.unitFireControl;
     const { maintenanceType } = this.state;
@@ -1058,7 +1030,7 @@ export default class App extends PureComponent {
         type={maintenanceType}
         onSwitch={this.handleSwitchMaintenanceType}
         maintenance={{
-          name: '维保单位',
+          name: unitName && unitName.length > 0 ? unitName[0].name : '维保单位',
           total: assignAllNum,
           repaired: assignFinishNum,
           unrepaired: assignNoNum,
