@@ -6,7 +6,6 @@ import Link from 'umi/link';
 import styles from './index.less';
 import BaseMenu, { getMenuMatches } from './BaseMenu';
 import { urlToList } from '../_utils/pathTools';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 const { Sider } = Layout;
 
@@ -87,22 +86,6 @@ export default class SiderMenu extends PureComponent {
     });
   };
 
-  /**
-   * 修改滚动条颜色
-   */
-  renderThumb({ style, ...props }) {
-    const thumbStyle = {
-      backgroundColor: `rgba(255, 255, 255, 0.65)`,
-      borderRadius: '10px',
-    };
-    return (
-      <div
-        style={{ ...style, ...thumbStyle }}
-        {...props}
-      />
-    );
-  }
-
   render() {
     const { logo, collapsed, onCollapse, fixSiderbar, theme } = this.props;
     const { openKeys } = this.state;
@@ -134,16 +117,14 @@ export default class SiderMenu extends PureComponent {
             <h1>晶安智慧云</h1>
           </Link>
         </div>
-        <Scrollbars style={{ width: '100%', height: 'calc(100vh - 64px)' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
-          <BaseMenu
-            {...this.props}
-            mode="inline"
-            handleOpenChange={this.handleOpenChange}
-            onOpenChange={this.handleOpenChange}
-            style={{ padding: '16px 0', width: '100%', height: 'auto', overflow: 'visible' }}
-            {...defaultProps}
-          />
-      </Scrollbars>
+        <BaseMenu
+          {...this.props}
+          mode="inline"
+          handleOpenChange={this.handleOpenChange}
+          onOpenChange={this.handleOpenChange}
+          style={{ padding: '16px 0', width: '100%' }}
+          {...defaultProps}
+        />
       </Sider>
     );
   }
