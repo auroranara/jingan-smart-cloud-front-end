@@ -43,17 +43,16 @@ export default function UnitDrawer(props) {
     labelIndex=0,
     handleSearch,
     handleSwitch,
-    handleShowDangerClick,
+    handleShowUnitDanger,
     handleDrawerVisibleChange,
-    data: {
-      sys: { allCompanyList=[], importCompanyList=[], fireNum=0, commonNum=0, noAccessNum=0, impFireNum=0, impCommonNum=0, impNoAccessNum=0 },
-      dangerList,
-    },
+    data: { allCompanyList=[], importCompanyList=[], fireNum=0, commonNum=0, noAccessNum=0, impFireNum=0, impCommonNum=0, impNoAccessNum=0 },
   } = props;
 
   const isImpUnit = !!labelIndex;
   const list = [allCompanyList, importCompanyList][labelIndex];
-  const chartList = dangerList.slice(0, 10).map(({ companyId, companyName, total }) => ({ id: companyId, name: companyName, value: total }));
+  const newList = list.map(item => ({ ...item }));
+  newList.sort((item, item1) => item1.hiddenCount - item.hiddenCount);
+  const chartList = newList.slice(0, 10).map(({ companyId, name, hiddenCount }) => ({ id: companyId, name, value: hiddenCount }));
   const total = fireNum + commonNum + noAccessNum;
   const [firePercent, commonPercent, noAccessPercent] = [fireNum, commonNum, noAccessNum].map(n => total ? n / total * 100 : 0);
   const impTotal = impFireNum + impCommonNum + impNoAccessNum;
@@ -123,7 +122,7 @@ export default function UnitDrawer(props) {
                 检查点位：{itemCount || 0}
                 <span
                   className={hiddenCount ? styles.hiddenDanger : styles.hiddenDangerZero}
-                  onClick={e => handleShowDangerClick(companyId)}
+                  onClick={e => handleShowUnitDanger(companyId)}
                 >
                   <span className={styles.danger} style={{ backgroundImage: `url(${dangerIcon})` }} />
                   隐患数量：

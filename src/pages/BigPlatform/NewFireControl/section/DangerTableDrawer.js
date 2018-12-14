@@ -11,37 +11,6 @@ function rand() {
 
 const TYPE = 'dangerTable';
 
-const columns = [{
-  title: '序号',
-  dataIndex: 'index',
-  width: 100,
-  align: 'center',
-}, {
-  title: '单位名称',
-  dataIndex: 'companyName',
-  align: 'center',
-}, {
-  title: '隐患数量',
-  dataIndex: 'total',
-  width: 100,
-  align: 'center',
-}, {
-  title: '已超期',
-  dataIndex: 'hasExtended',
-  width: 100,
-  align: 'center',
-}, {
-  title: '待整改',
-  dataIndex: 'afterRectification',
-  width: 100,
-  align: 'center',
-}, {
-  title: '待复查',
-  dataIndex: 'toReview',
-  width: 100,
-  align: 'center',
-}];
-
 const numCols = ['total', 'afterRectification', 'toReview', 'hasExtended'];
 
 // const DATA = [...Array(100).keys()].map(i => ({
@@ -55,22 +24,55 @@ const numCols = ['total', 'afterRectification', 'toReview', 'hasExtended'];
 // }));
 
 export default class DangerTableDrawer extends PureComponent {
-  genCellRender = n => {
-    const { handleDrawerVisibleChange } = this.props;
-    return <span className={styles.cell} onClick={e => handleDrawerVisibleChange('danger')}>{n}</span>
+  genCellRender = lableIndex => (n, record) => {
+    const { handleShowDanger } = this.props;
+    return <span className={styles.cell} onClick={e => handleShowDanger(record.companyId, lableIndex)}>{n}</span>
   };
 
-  addRender = cols => {
-    cols.forEach(c => {
-      if (numCols.includes(c.dataIndex))
-        c.render = this.genCellRender;
-    });
-  };
+  // addRender = cols => {
+  //   cols.forEach(c => {
+  //     if (numCols.includes(c.dataIndex))
+  //       c.render = this.genCellRender;
+  //   });
+  // };
 
   render() {
     const { visible, data, handleDrawerVisibleChange } = this.props;
 
-    this.addRender(columns);
+    const columns = [{
+      title: '序号',
+      dataIndex: 'index',
+      width: 100,
+      align: 'center',
+    }, {
+      title: '单位名称',
+      dataIndex: 'companyName',
+      align: 'center',
+    }, {
+      title: '隐患数量',
+      dataIndex: 'total',
+      width: 100,
+      align: 'center',
+      render: this.genCellRender(0),
+    }, {
+      title: '已超期',
+      dataIndex: 'hasExtended',
+      width: 100,
+      align: 'center',
+      render: this.genCellRender(1),
+    }, {
+      title: '待整改',
+      dataIndex: 'afterRectification',
+      width: 100,
+      align: 'center',
+      render: this.genCellRender(2),
+    }, {
+      title: '待复查',
+      dataIndex: 'toReview',
+      width: 100,
+      align: 'center',
+      render: this.genCellRender(3),
+    }];
 
     const left = (
         <SearchBar searchStyle={{ width: 500 }}>

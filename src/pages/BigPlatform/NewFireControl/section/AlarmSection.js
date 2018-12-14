@@ -52,8 +52,8 @@ export default class AlarmSection extends PureComponent {
     const { data: { list = [] }, isBack = false, title, backTitle, handleRotate, handleClick } = this.props;
 
     const cards = list.map((item) => {
-      const { id, name, searchArea, saveTime } = item;
-      return <AlarmCard key={id} company={name} address={searchArea} time={saveTime} onClick={() => handleClick(item)} />
+      const { id } = item;
+      return <AlarmCard key={id} data={item} onClick={() => handleClick(item)} />
     });
     const noCard = <div className={styles.noCard} />;
     // const noCard = <div className={styles.noCard} style={{ backgroundImage: `url(${noAlarm})`}} />;

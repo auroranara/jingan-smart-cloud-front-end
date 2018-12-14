@@ -21,6 +21,22 @@ export function getNewAlarms(newList, formerList) {
   return items;
 }
 
+export function getUrl(arr) {
+  if (!Array.isArray(arr) || !arr.length)
+    return '';
+
+  for (const { fileWebUrl } of arr) {
+    if (typeof fileWebUrl !== 'string')
+      continue;
+
+    const url = fileWebUrl.split(',').filter(u => u);
+    if (url.length)
+      return url[0];
+  }
+
+  return '';
+}
+
 export const TREE_DATA = [{
   title: 'Node1',
   value: '0-0',

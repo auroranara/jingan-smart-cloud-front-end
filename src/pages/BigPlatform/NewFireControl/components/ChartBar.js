@@ -18,7 +18,8 @@ export default class ChartBar extends PureComponent {
 
     const option = {
       textStyle: { color: '#FFF' },
-      grid: { left: '8%', right: '12%' },
+      grid: { left: 0, right: '12%', top: 40, containLabel: true },
+      tooltip: { show: true },
       xAxis: {
           type: 'category',
           data: xData,
@@ -29,6 +30,14 @@ export default class ChartBar extends PureComponent {
           type: 'value',
           axisLine: { lineStyle: LINE_STYLE },
           splitLine: { lineStyle: { color: 'rgb(64, 95, 135)' } },
+          // 小数标签不显示
+        axisLabel: {
+          formatter: function (value, index) {
+            if (Number.parseInt(value, 10) !== value)
+              return "";
+            return Number.parseInt(value, 10);
+          },
+        },
       },
       series: [{
           type: 'bar',
@@ -43,6 +52,7 @@ export default class ChartBar extends PureComponent {
       chartComponent = (
         <ReactEcharts
           option={option}
+          style={{ height: 400 }}
           // style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: -1 }}
           onChartReady={chart => { this.chart = chart; }}
         />

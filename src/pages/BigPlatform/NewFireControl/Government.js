@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Col, message, Modal, notification, Row } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import { myParseInt, getNewAlarms } from './utils';
+import { myParseInt, getNewAlarms, getGridId } from './utils';
 import styles from './Government.less';
 // import Head from './Head';
 import GridSelect from './components/GridSelect';
@@ -34,7 +34,6 @@ import DangerDrawer from './section/DangerDrawer';
 import SafeDrawer from './section/SafeDrawer';
 import RiskDrawer from './section/RiskDrawer';
 
-import { getGridId } from './utils';
 
 const { location, region, projectName } = global.PROJECT_CONFIG;
 
@@ -61,6 +60,7 @@ message.config({
   bigFireControl,
   user,
   offGuardWarnLoading: loading.effects['bigFireControl/offGuardWarn'],
+  dangerCardLoading: loading.effects['bigFireControl/fetchDangerRecords'],
 }))
 export default class FireControlBigPlatform extends PureComponent {
   state = {
@@ -104,7 +104,7 @@ export default class FireControlBigPlatform extends PureComponent {
     // const { match: { params: { gridId } } } = this.props;
 
     this.initFetch();
-    this.timer = setInterval(this.polling, DELAY);
+    // this.timer = setInterval(this.polling, DELAY);
   }
 
   componentWillUnmount() {
@@ -562,15 +562,46 @@ export default class FireControlBigPlatform extends PureComponent {
     });
   };
 
-  handleShowUnitDangerClick = companyId => {
+  handleShowDangerBase = (companyId, labelIndex, type='danger') => {
     this.fetchDangerRecords(companyId);
-    this.handleDrawerVisibleChange('unitDanger');
+    this.handleDrawerVisibleChange(type);
+    this.setState({ [`${type}LabelIndex`]: labelIndex });
   };
 
-  handleUnitDangerLabelClick = (index, companyId) => {
-    this.setState({ unitDangerLabelIndex: index });
+  handleShowUnitDanger = companyId => {
+    this.handleShowDangerBase(companyId, 0, 'unitDanger');
 
-    if (companyId && companyId !== this.companyId)
+    // this.fetchDangerRecords(companyId);
+    // this.handleDrawerVisibleChange('unitDanger');
+    // this.setState({ unitDangerLabelIndex: 0 });
+  };
+
+  handleShowDanger = (companyId, labelIndex) => {
+    this.handleShowDangerBase(companyId, labelIndex);
+
+    // this.fetchDangerRecords(companyId);
+    // this.handleDrawerVisibleChange('danger');
+    // this.setState({ dangerLabelIndex: labelIndex });
+  };
+
+  handleUnitDangerLabelClick = index => {
+    this.setState({ unitDangerLabelIndex: index });
+  };
+
+  handleDangerLabelClick = (index, companyId) => {
+    if (!companyId)
+      return;
+
+    const formerCompanyId = this.companyId;
+    const { dangerLabelIndex: formerLabelIndex } = this.state;
+    // 如果在原选中标签上点击，则将当前选中标签去掉，并将隐患列表收上去
+    if (formerCompanyId === companyId && index === formerLabelIndex) {
+      this.setState({ dangerLabelIndex: -1 });
+      return;
+    }
+
+    this.setState({ dangerLabelIndex: index });
+    if (companyId !== formerCompanyId)
       this.fetchDangerRecords(companyId);
   };
 
@@ -605,6 +636,7 @@ export default class FireControlBigPlatform extends PureComponent {
       },
       dispatch,
       offGuardWarnLoading,
+      dangerCardLoading,
     } = this.props;
 
     const {
@@ -629,7 +661,6 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       isUnit,
-      dangerType,
       unitDrawerVisible,
       unitDrawerLabelIndex,
       unitDangerDrawerVisible,
@@ -639,6 +670,7 @@ export default class FireControlBigPlatform extends PureComponent {
       alarmDrawerLeftType,
       alarmDrawerRightType,
       dangerTableDrawerVisible,
+      dangerLabelIndex,
       dangerDrawerVisible,
       safeDrawerVisible,
       riskDrawerVisible,
@@ -846,15 +878,16 @@ export default class FireControlBigPlatform extends PureComponent {
         />
       {/*</div>*/}
         <UnitDrawer
-          data={{ sys, dangerList }}
+          data={sys}
           visible={unitDrawerVisible}
           labelIndex={unitDrawerLabelIndex}
           handleSearch={this.handleUnitSearch}
-          handleShowDangerClick={this.handleShowUnitDangerClick}
+          handleShowUnitDanger={this.handleShowUnitDanger}
           handleSwitch={this.handleUnitDrawerLabelSwitch}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <UnitDangerDrawer
+          loading={dangerCardLoading}
           labelIndex={unitDangerLabelIndex}
           companyId={this.companyId}
           data={{ dangerList, dangerRecords }}
@@ -869,8 +902,8 @@ export default class FireControlBigPlatform extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         /> */}
         <AlarmDrawer
-          isUnit={isUnit}
-          data={govAlarm}
+          // isUnit={isUnit}
+          data={{ alarm: govAlarm, trend }}
           visible={alarmDrawerVisible}
           leftType={alarmDrawerLeftType}
           rightType={alarmDrawerRightType}
@@ -881,13 +914,16 @@ export default class FireControlBigPlatform extends PureComponent {
           isUnit={isUnit}
           data={dangerList}
           visible={dangerTableDrawerVisible}
+          handleShowDanger={this.handleShowDanger}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <DangerDrawer
-          isUnit={isUnit}
+          cardLoading={dangerCardLoading}
+          selectedCompanyId={this.companyId}
           data={{ overview, dangerList, dangerRecords }}
-          dangerType={dangerType}
+          labelIndex={dangerLabelIndex}
           visible={dangerDrawerVisible}
+          handleLabelClick={this.handleDangerLabelClick}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <SafeDrawer

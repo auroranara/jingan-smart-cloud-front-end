@@ -11,15 +11,14 @@ import {
   DrawerContainer,
   DrawerSection,
   DrawerStretchCard,
-  GraphSwitch,
   ChartBar,
-  ChartLine,
   ChartRing,
   SearchBar,
 } from '../components/Components';
 // import clockIcon from '../img/cardClock1.png';
 
 const TYPE = 'danger';
+const STATUS = ['-1', ['7'], ['1', '2'], ['3']];
 
 // const CARDS = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -28,17 +27,13 @@ const TYPE = 'danger';
 // }));
 
 export default class DangerDrawer extends PureComponent {
-  state = { graph: 0 };
-
-  handleSwitch = i => {
-    this.setState({ graph: i });
-  };
-
   render() {
     const {
       visible,
-      selectedIndex=0,
-      dangerType=0,
+      cardLoading,
+      selectedCompanyId='',
+      labelIndex=0,
+      handleLabelClick,
       handleDrawerVisibleChange,
       data: {
         overview: {
@@ -50,36 +45,37 @@ export default class DangerDrawer extends PureComponent {
         dangerRecords=[],
       },
     } = this.props;
-    const { graph } = this.state;
 
     const rings = [overdueNum, rectifyNum, reviewNum];
     const list = dangerList.slice(0, 10).map(({ companyId, companyName, total }) => ({ id: companyId, name: companyName, value: total }));
-    const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
+    const filteredRecords = labelIndex && labelIndex !== -1 ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
 
     const left = (
       <Fragment>
         <DrawerSection title="隐患状态统计" style={{ marginBottom: 50 }}>
           <ChartRing data={rings} />
         </DrawerSection>
-        <DrawerSection title="隐患数量排名" extra={extra}>
-          {graph ? <ChartBar data={list} /> : <ChartLine data={list} />}
+        <DrawerSection title="隐患数量排名">
+          <ChartBar data={list} />
         </DrawerSection>
       </Fragment>
     );
 
     const right = (
         <SearchBar>
-          {dangerList.map(({ companyId, companyName, total=0, afterRectification=0, toReview=0, hasExtended=0 }, i) => {
+          {dangerList.map((item, i) => {
+            const { companyId } = item;
+            // console.log(companyId, selectedCompanyId);
+
             return (
               <DrawerStretchCard
+                loading={cardLoading}
                 key={companyId}
-                selected={i === selectedIndex}
-                name={companyName}
-                total={total}
-                rectify={afterRectification}
-                review={toReview}
-                overdue={hasExtended}
-                list={dangerRecords}
+                labelIndex={labelIndex}
+                selected={companyId === selectedCompanyId}
+                data={item}
+                list={filteredRecords}
+                handleLabelClick={handleLabelClick}
               />
             );
           })}

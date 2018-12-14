@@ -9,6 +9,8 @@ import GraphSwitch from '../components/GraphSwitch';
 import SearchBar from '../components/SearchBar';
 import DrawerCard from '../components/DrawerCard';
 import OvSelect from '../components/OvSelect';
+import ChartBar from '../components/ChartBar';
+import ChartLine from '../components/ChartLine';
 import alarmRedIcon from '../img/alarmRed.png';
 import alarmBlueIcon from '../img/alarmBlue.png';
 import clockIcon from '../img/cardClock1.png';
@@ -20,7 +22,7 @@ const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
 const STATUS_LABELS = ['已处理', '处理中'];
 const OPTIONS = ['今日', '本周', '本月'].map((d, i) => ({ value: i, desc: d }));
-const HANDLING = '处理中';
+const HANDLED = '处理完';
 
 // const CARDS = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -34,26 +36,41 @@ const HANDLING = '处理中';
 // }));
 
 export default class AlarmDrawer extends PureComponent {
+  state = { graph: 0 };
+
+  handleSwitch = i => {
+    this.setState({ graph: i });
+  };
+
   render() {
     const {
       visible,
-      isUnit,
       leftType=0,
       rightType=0,
-      data: { todayList=[], thisWeekList=[], thisMonthList=[] },
+      data: {
+        alarm: { todayList=[], thisWeekList=[], thisMonthList=[] },
+        trend={},
+      },
       handleSelectChange,
       handleDrawerVisibleChange,
     } = this.props;
+    const { graph } = this.state;
+
     const lists = [todayList, thisWeekList, thisMonthList];
     const leftList = lists[leftType];
     const rightList = lists[rightType];
-    const handledQuantity = leftList.filter(({ status }) => status === HANDLING).length;
+    const totalQuantity = leftList.length;
+    const handledQuantity = leftList.filter(({ status }) => status === HANDLED).length;
+    const handlingQuantity = totalQuantity - handledQuantity;
     let handledPercent = 0;
     let handlingPercent = 0;
-    if (leftList.length){
-      handledPercent = Math.round(handledQuantity / leftList.length * 100);
+    if (totalQuantity){
+      handledPercent = handledQuantity / totalQuantity * 100;
       handlingPercent = 100 - handledPercent;
     }
+
+    const trendList = trend && Array.isArray(trend.list) ? trend.list : [];
+    const list = trendList.map(({ dateTime, warnTrueCount }) => ({ name: dateTime, value: warnTrueCount }));
 
     const select = (
       <OvSelect options={OPTIONS} value={leftType} handleChange={v => handleSelectChange('Left', v)} />
@@ -63,12 +80,15 @@ export default class AlarmDrawer extends PureComponent {
       <OvSelect cssType={1} options={OPTIONS} value={rightType} handleChange={v => handleSelectChange('Right', v)} />
     );
 
+    const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
+
     const left = (
       <Fragment>
         <DrawerSection title="火警状态统计" extra={select}>
           <OvProgress
             title="处理中"
-            percent={handledPercent}
+            percent={handlingPercent}
+            quantity={handlingQuantity}
             strokeColor="rgb(255,72,72)"
             style={{ marginTop: 40 }}
             iconStyle={{ backgroundImage: `url(${alarmRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
@@ -76,13 +96,14 @@ export default class AlarmDrawer extends PureComponent {
           />
           <OvProgress
             title="已处理"
-            percent={handlingPercent}
+            percent={handledPercent}
+            quantity={handledQuantity}
             strokeColor="rgb(0,251,252)"
             iconStyle={{ backgroundImage: `url(${alarmBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
           />
         </DrawerSection>
-        <DrawerSection title="火警趋势图" titleInfo="最近12个月" extra={<GraphSwitch />}>
-          content
+        <DrawerSection title="火警趋势图" titleInfo="最近12个月" extra={extra}>
+          {graph ? <ChartBar data={list} /> : <ChartLine data={list} />}
         </DrawerSection>
       </Fragment>
     );
@@ -97,7 +118,7 @@ export default class AlarmDrawer extends PureComponent {
               location={searchArea || NO_DATA}
               person={safetyName || NO_DATA}
               phone={safetyPhone || NO_DATA}
-              status={status === HANDLING ? 1 : 0 }
+              status={status === HANDLED ? 0 : 1 }
               statusLabels={STATUS_LABELS}
               info={
                 <Fragment>

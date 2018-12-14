@@ -14,20 +14,20 @@ function rand(n) {
   return Math.floor(Math.random() * n);
 }
 
-const data = [...Array(12).keys()].map(i => {
-  let m = i + 9;
-  // let y = 17;
-  // if (m > 12)
-  //     y = 18;
-  m = m % 12;
-  const dateTime = `${m + 1}月`;
+// const data = [...Array(12).keys()].map(i => {
+//   let m = i + 9;
+//   // let y = 17;
+//   // if (m > 12)
+//   //     y = 18;
+//   m = m % 12;
+//   const dateTime = `${m + 1}月`;
 
-  // const dateTime = `${y}-${m}`;
-  const warnTrueCount = rand(100);
-  const warnFalseCount = rand(100);
-  const percent = (warnTrueCount / ( warnTrueCount + warnFalseCount ));
-  return { dateTime, warnTrueCount, warnFalseCount, percent };
-});
+//   // const dateTime = `${y}-${m}`;
+//   const warnTrueCount = rand(100);
+//   const warnFalseCount = rand(100);
+//   const percent = (warnTrueCount / ( warnTrueCount + warnFalseCount ));
+//   return { dateTime, warnTrueCount, warnFalseCount, percent };
+// });
 
 function handleSource(list) {
   list.reverse();
@@ -126,11 +126,11 @@ export default class TrendSection extends PureComponent {
         // 小数标签不显示
         axisLabel: {
           formatter: function (value, index) {
-              if (myParseInt(value) != value)
+              if (myParseInt(value) !== value)
                 return "";
               return myParseInt(value);
           },
-      },
+        },
       }, {
         type: 'value',
         min: 0,

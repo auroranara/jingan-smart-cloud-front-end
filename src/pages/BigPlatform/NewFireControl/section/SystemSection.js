@@ -7,7 +7,7 @@ import styles from './SystemSection.less';
 import hostIcon from '../img/host.png';
 
 function UnitCard(props) {
-  const { comanyId, companyName, hostNum } = props;
+  const { comanyId, companyName, hostNum, isFire } = props;
   return (
     <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}>
       <Col span={16}>
@@ -22,8 +22,11 @@ function UnitCard(props) {
           </a>
         </p>
       </Col>
-      <Col span={8}>
+      <Col span={4}>
         <p className={styles.unitCard}>{hostNum}</p>
+      </Col>
+      <Col span={4}>
+        <p className={styles[isFire ? 'fire' : 'unitCard']}>{isFire ? '报警' : '正常'}</p>
       </Col>
     </Row>
   );
@@ -63,13 +66,16 @@ export default function SystemSection(props) {
           <Col span={16}>
             <p className={styles.tableTitle}>接入单位</p>
           </Col>
-          <Col span={8}>
+          <Col span={4}>
             <p className={styles.tableTitle}>主机数量</p>
+          </Col>
+          <Col span={4}>
+            <p className={styles.tableTitle}>状态</p>
           </Col>
         </Row>
         <div style={{ overflow: 'auto', height: 'calc(100% - 42px)' }}>
-          {companyList.map(({ companyId, name, count }, index) => (
-            <UnitCard key={index} companyName={name} hostNum={count} comanyId={companyId} />
+          {companyList.map(({ companyId, name, count, isFire }, index) => (
+            <UnitCard key={index} companyName={name} hostNum={count} comanyId={companyId} isFire={Number(isFire)} />
           ))}
         </div>
       </div>
