@@ -244,7 +244,7 @@ export default class QuestionsList extends PureComponent {
           <FormItem>
             <Button style={{ marginRight: '10px' }} type="primary" onClick={this.handleQuery}>查询</Button>
             <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-            <Button disabled={!hasAuthority(addCode, permissionCodes) || notCompany} onClick={this.handleAddQuestions} type="primary">新增</Button>
+            <Button disabled={!hasAuthority(addCode, permissionCodes)} onClick={this.handleAddQuestions} type="primary">新增</Button>
           </FormItem>
         </Col>
       </Form>
@@ -264,8 +264,8 @@ export default class QuestionsList extends PureComponent {
       },
       user: { currentUser: { permissionCodes } },
     } = this.props
-    const editDisabled = !hasAuthority(editCode, permissionCodes) || notCompany
-    const delDisabled = !hasAuthority(deleteCode, permissionCodes) || notCompany
+    const editDisabled = !hasAuthority(editCode, permissionCodes)
+    const delDisabled = !hasAuthority(deleteCode, permissionCodes)
     return (
       <div className={styles.questionsList}>
         <Row>
@@ -297,9 +297,12 @@ export default class QuestionsList extends PureComponent {
                     <div className={styles.rightIcon}>
                       <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => { router.push(`/training/library/questions/edit/${item.id}`) } : null} />
                       <Divider type="vertical" />
-                      <Popconfirm title="确认删除该试题吗？" onConfirm={() => this.handleDeleteQuestion(item.id, delDisabled)}>
-                        <Icon className={delDisabled ? styles.disabledIcon : styles.icon} type="close" />
-                      </Popconfirm>
+                      {editDisabled ? (
+                        <Icon className={styles.disabledIcon} type="close" />
+                      ) : (
+                          <Popconfirm title="确认删除该试题吗？" onConfirm={() => this.handleDeleteQuestion(item.id, delDisabled)}>
+                            <Icon className={styles.icon} type="close" />
+                          </Popconfirm>)}
                     </div>
                   </div>
                   {this.renderQuestionItem({ label: '试题题干：', content: item.stem })}
