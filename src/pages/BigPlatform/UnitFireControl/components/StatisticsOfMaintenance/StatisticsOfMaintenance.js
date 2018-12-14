@@ -33,7 +33,7 @@ export default class App extends PureComponent {
       <div className={styles.switcherContainer}>
         {list.map(({ label, value }, index) => {
           const isSelected = type === value;
-          return <Switcher style={{ top: index*56, zIndex: isSelected?5:(4-index) }} isSelected={isSelected} content={label} key={label} onClick={() => {onSwitch(value);}} />;
+          return <Switcher style={{ top: index * 56, zIndex: isSelected ? 5 : (4 - index) }} isSelected={isSelected} content={label} key={label} onClick={() => { onSwitch(value); }} />;
         })}
       </div>
     );
@@ -42,21 +42,21 @@ export default class App extends PureComponent {
   render() {
     const {
       maintenance: {
-        name: maintenanceName="维保单位",
-        total: maintenanceTotal=0,
-        repaired: maintenanceRepaired=0,
-        unrepaired: maintenanceUnrepaired=0,
-        repairing: maintenanceRepairing=0,
-        duration: maintenanceDuration=0,
-        rate: maintenanceRate=0,
+        name: maintenanceName,
+        total: maintenanceTotal = 0,
+        repaired: maintenanceRepaired = 0,
+        unrepaired: maintenanceUnrepaired = 0,
+        repairing: maintenanceRepairing = 0,
+        duration: maintenanceDuration = 0,
+        rate: maintenanceRate = 0,
       } = {},
       local: {
-        total: localTotal=0,
-        repaired: localRepaired=0,
-        unrepaired: localUnrepaired=0,
-        repairing: localRepairing=0,
-        duration: localDuration=0,
-        rate: localRate=0,
+        total: localTotal = 0,
+        repaired: localRepaired = 0,
+        unrepaired: localUnrepaired = 0,
+        repairing: localRepairing = 0,
+        duration: localDuration = 0,
+        rate: localRate = 0,
       } = {},
     } = this.props;
 

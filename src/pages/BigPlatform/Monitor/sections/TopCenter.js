@@ -38,7 +38,7 @@ const alarmColumns = [
     key: 'unormalParams',
     dataIndex: 'unormalParams',
     align: 'center',
-    render: (text, record) => <Ellipsis lines={1}>{text}</Ellipsis>,
+    render: (text, record) => <Ellipsis lines={1} tooltip>{text}</Ellipsis>,
   },
   {
     title: '区域位置',

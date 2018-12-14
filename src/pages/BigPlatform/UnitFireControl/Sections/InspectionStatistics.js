@@ -62,15 +62,15 @@ export default class InspectionStatistics extends PureComponent {
       backgroundPosition: 'center center',
     }
     const total = abnormal + normal
-    const normalRate = total ? (normal / total).toFixed(1) * 100 : 0
-    const abnormalRate = total ? (abnormal / total).toFixed(1) * 100 : 0
+    const normalRate = total ? (normal / total).toFixed(2) * 100 : 0
+    const abnormalRate = total ? (abnormal / total).toFixed(2) * 100 : 0
     return (
       <Section title="巡查统计" fixedContent={(
         <Fragment>
           <div className={styles.inspectionStatics}>
             <div><div style={{ background: `url(${iconPeople})`, ...style }}></div><span>巡查人数：{personNum}</span></div>
             <div><div style={{ background: `url(${iconTotal})`, ...style }}></div><span>巡查总次数：{totalCheckNum}</span></div>
-            <div><div style={{ background: `url(${iconAverage})`, ...style }}></div><span>人均巡查次数：{totalCheckNum ? Math.round(totalCheckNum / personNum) : 0}</span></div>
+            <div><div style={{ background: `url(${iconAverage})`, ...style }}></div><span>人均巡查次数：{personNum ? Math.floor(totalCheckNum / personNum) : 0}</span></div>
             <div><div style={{ background: `url(${iconRate})`, ...style }}></div><span>巡查正常率：{normalRate}%</span></div>
           </div>
           {this.renderSwitchers()}
@@ -81,7 +81,7 @@ export default class InspectionStatistics extends PureComponent {
           <div className={styles.statusItem}>
             <div className={styles.statistic}>
               <div className={styles.title}><span>正常</span></div>
-              <span className={styles.number} onClick={()=>onClick('normal')} style={{ color: '#00ABCA',cursor:'pointer' }}>{normal}</span>
+              <span className={styles.number} onClick={() => onClick('normal')} style={{ color: '#00ABCA', cursor: 'pointer' }}>{normal}</span>
             </div>
             <div className={styles.barItem}>
               <div className={styles.barContainer}>
@@ -92,7 +92,7 @@ export default class InspectionStatistics extends PureComponent {
           <div className={styles.statusItem}>
             <div className={styles.statistic}>
               <div className={styles.title}><span>异常</span></div>
-              <span className={styles.number}  onClick={()=>onClick('abnormal')} style={{ color: '#E86766',cursor:'pointer' }}>{abnormal}</span>
+              <span className={styles.number} onClick={() => onClick('abnormal')} style={{ color: '#E86766', cursor: 'pointer' }}>{abnormal}</span>
             </div>
             <div className={styles.barItem}>
               <div className={styles.barContainer}>
