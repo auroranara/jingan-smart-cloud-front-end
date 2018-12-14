@@ -12,6 +12,7 @@ import HiddenDangerDetail from './HiddenDangerDetail';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
 import SafetyOfficer from './SafetyOfficer';
 import RiskPoint from './RiskPoint';
+import InspectionPoint from './InspectionPoint';
 import Layout from '../Components/Layout';
 import StaffList from '../Components/StaffList';
 import StaffRecords from '../Components/StaffRecords';
@@ -60,6 +61,10 @@ export default class App extends PureComponent {
     selectedStaffRecordsMonth: '2018-09',
     // 选中的人员id
     checkUserId: null,
+    // 巡查点位抽屉数据
+    inspectionPointData: {},
+    // 右边的显示队列
+    rightQueue: [0],
   }
 
   componentDidMount() {
@@ -141,6 +146,26 @@ export default class App extends PureComponent {
   }
 
   /**
+   * 点击显示当前隐患
+   */
+  handleShowCurrentHiddenDanger = () => {
+    this.setState(({ rightQueue }) => ({
+      rightQueue: rightQueue.concat(1),
+      currentHiddenDangerVisible: true,
+    }));
+  }
+
+  /**
+   * 点击隐藏当前隐患
+   */
+  handleHideCurrentHiddenDanger = () => {
+    this.setState(({ rightQueue }) => ({
+      rightQueue: rightQueue.slice(0, -1),
+      currentHiddenDangerVisible: false,
+    }));
+  }
+
+  /**
    * 修改弹出框显示或隐藏
    */
   handleChange = (name, rest) => {
@@ -219,10 +244,43 @@ export default class App extends PureComponent {
     });
   };
 
+  /**
+   * 显示巡查点位
+   */
+  handleShowInspectionPoint = (data) => {
+    this.setState(({ rightQueue }) => ({
+      rightQueue: rightQueue.concat(2),
+      inspectionPointData: data,
+    }));
+  }
+
+  /**
+   * 隐藏巡查点位
+   */
+  handleHideInspectionPoint = () => {
+    this.setState(({ rightQueue }) => ({
+      rightQueue: rightQueue.slice(0, -1),
+    }));
+  }
+
   render() {
     const { monitorDataLoading, unitSafety } = this.props;
     const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords } = unitSafety;
-    const { safetyOfficerVisible, riskPointVisible, riskPointType, currentHiddenDangerVisible, selectedPointIndex, points, prevSelectedPointIndex, isMouseEnter, inspectionIndex, selectedStaffListMonth, selectedStaffRecordsMonth } = this.state;
+    const {
+      safetyOfficerVisible,
+      riskPointVisible,
+      riskPointType,
+      currentHiddenDangerVisible,
+      selectedPointIndex,
+      points,
+      prevSelectedPointIndex,
+      isMouseEnter,
+      inspectionIndex,
+      selectedStaffListMonth,
+      selectedStaffRecordsMonth,
+      inspectionPointData,
+      rightQueue,
+    } = this.state;
 
     return (
       <Layout
@@ -242,6 +300,7 @@ export default class App extends PureComponent {
                   model={unitSafety}
                   handleClickUnitName={this.handleClickUnitName}
                   handleClickCount={this.handleChange}
+                  handleClickCurrentHiddenDanger={this.handleShowCurrentHiddenDanger}
                   currentHiddenDangerVisible={currentHiddenDangerVisible}
                 />
                 {/* 风险点信息 */}
@@ -325,7 +384,7 @@ export default class App extends PureComponent {
                   this.handleResetInspectionIndex(1);
                 }}
                 onSelect={this.handleSelectStaffRecords}
-                // handleShowDetail={this.handleShowPatrolPointDrawer}
+                handleShowDetail={this.handleShowInspectionPoint}
               />
             </Rotate>
           </Col>
@@ -335,7 +394,7 @@ export default class App extends PureComponent {
             {fourColorImg.length > 0 ? (
               <Translate
                 direction="left"
-                queue={currentHiddenDangerVisible ? [0, 1] : [0]}
+                queue={rightQueue}
                 offset={{ right: 10, bottom: 10 }}
               >
                 {/* 隐患详情 */}
@@ -351,7 +410,12 @@ export default class App extends PureComponent {
                 {/* 当前隐患 */}
                 <CurrentHiddenDanger
                   model={unitSafety}
-                  onClose={() => {this.handleChange('currentHiddenDanger');}}
+                  onClose={this.handleHideCurrentHiddenDanger}
+                />
+                {/* 点位巡查详情 */}
+                <InspectionPoint
+                  onClose={this.handleHideInspectionPoint}
+                  data={inspectionPointData}
                 />
               </Translate>
             ) : (

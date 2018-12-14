@@ -57,6 +57,8 @@ export default class CompanyInfo extends PureComponent {
       handleClickCount,
       // 当前隐患弹出框是否可见
       currentHiddenDangerVisible,
+      // 点击当前隐患统计
+      handleClickCurrentHiddenDanger,
     } = this.props;
     // 计算当前隐患总数
     const hiddenDangerCount = ycq.length + wcq.length + dfc.length;
@@ -120,7 +122,7 @@ export default class CompanyInfo extends PureComponent {
             <div
               className={isHiddenDangerCountClickable ? styles.hoverable : undefined}
               style={{ backgroundImage: `url(${hdIcon})` }}
-              onClick={isHiddenDangerCountClickable ? () => {handleClickCount('currentHiddenDanger');} : undefined}
+              onClick={isHiddenDangerCountClickable ? handleClickCurrentHiddenDanger : undefined}
             >
               <div className={styles.countLabel}><Ellipsis lines={1} /* tooltip */>当前隐患</Ellipsis></div>
               <div className={styles.countValue}><Ellipsis lines={1} /* tooltip */>{hiddenDangerCount}</Ellipsis></div>
