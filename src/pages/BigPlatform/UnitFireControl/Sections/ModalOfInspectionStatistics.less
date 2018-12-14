@@ -1,0 +1,23 @@
+.modalOfInspection {
+  @dark-white: #dfdbdb;
+  width: 100%;
+  position: relative;
+  :global {
+    .ant-table-bordered.ant-table-empty .ant-table-placeholder {
+      border-bottom-width: 1px;
+    }
+  }
+  .footer {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    .pagesText {
+      line-height: 32px;
+      color: @dark-white;
+    }
+  }
+  .dangerCard {
+    position: fixed;
+  }
+}

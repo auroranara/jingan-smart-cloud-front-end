@@ -5,9 +5,9 @@ import styles from './TopCenter.less';
 import { connect } from 'dva';
 // import classNames from 'classnames';
 
-import abnormalDevice from '../../../../assets/abnormal-device.png';
-import deviceTotalNumber from '../../../../assets/device-total-number.png';
-import missingDevice from '../../../../assets/missing-device.png';
+import abnormalDevice from '@/assets/abnormal-device.png';
+import deviceTotalNumber from '@/assets/device-total-number.png';
+import missingDevice from '@/assets/missing-device.png';
 import fireHost from '../imgs/fire-host.png';
 import smokeIcon from '../imgs/smokeIcon.png';
 import redDot from '../imgs/redDot.png';

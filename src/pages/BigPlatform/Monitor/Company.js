@@ -385,7 +385,9 @@ export default class App extends PureComponent {
               >
                 <div className={styles.realTimeAlarmContainer}>
                   <RealTimeAlarm
-                    realTimeAlarm={realTimeAlarm}
+                    title="实时报警"
+                    showTotal={true}
+                    list={realTimeAlarm}
                     handleClick={this.handleAlarmCardClick}
                     handleViewHistory={this.handleViewHistory}
                   />
@@ -414,7 +416,8 @@ export default class App extends PureComponent {
                 }}
               >
                 <AlarmHistory
-                  historyAlarm={historyAlarm}
+                  title="历史报警"
+                  data={historyAlarm}
                   loading={historyAlarmLoading}
                   handleLoadMore={this.handleLoadMore}
                   handleFilterHistory={this.handleFilterHistory}

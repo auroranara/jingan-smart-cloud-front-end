@@ -2,20 +2,29 @@ import React, { PureComponent } from 'react';
 import styles from './RealTimeAlarm.less'
 import classNames from 'classnames';
 import { Row, Col, Icon } from 'antd'
+import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 
-// import iconLight from '../../../../assets/icon-light.png' // 电
-// import iconFire from '../../../../assets/icon-fire.png' // 可燃气体
-// import iconWater from '../../../../assets/icon-water.png' // 废水
-// import iconGas from '../../../../assets/icon-gas.png'// 废气
-import noAlarm from '../../../../assets/no-alarm.png'
+import noAlarm from '@/assets/no-alarm.png'
 import videoIcon from '@/assets/videoCamera.png';
 
 export default class RealTimeAlarm extends PureComponent {
 
+  static propTypes = {
+    list: PropTypes.array.isRequired, // 展示的数组
+    handleClick: PropTypes.func.isRequired, // 点击播放视频图标
+    handleViewHistory: PropTypes.func.isRequired,  // 点击查看历史记录
+    title: PropTypes.string.isRequired,  // 标题
+    showTotal: PropTypes.bool,  // 是否展示标题旁的统计数量
+  }
+
+  static defaultProps = {
+    showTotal: true,
+  }
+
   renderAlarmList = () => {
-    const { realTimeAlarm, handleClick } = this.props
-    return realTimeAlarm.map((item, i) => (
+    const { list, handleClick } = this.props
+    return list.map((item, i) => (
       <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
         <div className={styles.innerItem}>
           <div className={styles.alarmTitle}>
@@ -42,25 +51,27 @@ export default class RealTimeAlarm extends PureComponent {
             </span>
           </div>
         </div>
-        <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt=""/></div>
+        <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>
       </Col>
     ))
   }
 
   render() {
-    const { realTimeAlarm, handleViewHistory } = this.props
+    const { list, handleViewHistory, title, showTotal } = this.props
     return (
       <div className={styles.sectionMain}>
         <div className={styles.shadowIn}>
           <div className={styles.sectionTitle}>
             <div className={styles.sectionTitleIcon} />
-            实时报警
-            <div className={styles.count}>共计 <span style={{ color: '#FF5256' }}>
-              {(realTimeAlarm && realTimeAlarm.length) ? realTimeAlarm.length : 0}
-            </span> 条</div>
+            {title}
+            {showTotal && (
+              <div className={styles.count}>
+                共计 <span style={{ color: '#FF5256' }}>{(list && list.length) ? list.length : 0}</span>条
+              </div>
+            )}
             <div className={styles.history} onClick={handleViewHistory}>历史报警>></div>
           </div>
-          {realTimeAlarm && realTimeAlarm.length ? (
+          {list && list.length ? (
             <Row className={styles.sectionContent}>
               {this.renderAlarmList()}
             </Row>

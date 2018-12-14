@@ -1,0 +1,49 @@
+.modalOfFireHost {
+  @border-color: #0967D3;
+  @dark-white: #dfdbdb;
+  :global {
+    .ant-modal-body * {
+      border-color: @border-color  !important;
+    }
+    .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+      background: @border-color;
+      & span {
+        color: @dark-white;
+      }
+    }
+    .ant-radio-button-wrapper {
+      background-color: #062756;
+      color: @dark-white;
+      border-color: @border-color;
+    }
+    .ant-radio-button-wrapper:not(:first-child) {
+      &::before {
+        background-color: @border-color;
+      }
+    }
+    .ant-radio-button-wrapper-checked {
+      background-color: @border-color;
+      box-shadow: none;
+      &:hover {
+        box-shadow: none;
+      }
+      &::before {
+        background-color: @border-color  !important;
+        opacity: 1;
+      }
+    }
+    .ant-table-bordered.ant-table-empty .ant-table-placeholder {
+      border: none;
+    }
+  }
+  .footer {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    .pagesText {
+      line-height: 32px;
+      color: @dark-white;
+    }
+  }
+}

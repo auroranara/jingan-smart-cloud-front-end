@@ -1,21 +1,21 @@
 import React, { PureComponent } from 'react';
-import styles from './AlarmHistory.less';
+import styles from './InformationHistory.less';
 import { Icon, Row, Col, Spin } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import noAlarm from '@/assets/no-alarm.png'
+import noPendingInfo from '../images/noPendingInfo.png';
 
-export default class AlarmHistory extends PureComponent {
+export default class InformationHistory extends PureComponent {
 
   static propTypes = {
     title: PropTypes.string.isRequired, // 模块标题
     selectedDeviceType: PropTypes.number, // 当前筛选栏选中的key
-    handleFilterHistory: PropTypes.func.isRequired, // 点击筛选栏筛选
+    handleFilterHistory: PropTypes.func, // 点击筛选栏筛选
     data: PropTypes.shape({
       list: PropTypes.array.isRequired,  // 列表数组
-      alarmTypes: PropTypes.array.isRequired, // 筛选栏所需数组
+      alarmTypes: PropTypes.array, // 筛选栏所需数组
     }),
     handleClose: PropTypes.func.isRequired, // 点击右上角关闭历史记录
     loading: PropTypes.bool.isRequired, // 是否正在加载数据
@@ -36,43 +36,83 @@ export default class AlarmHistory extends PureComponent {
     handleFilterHistory(selectedDeviceType)
   }
 
+  // 监听滚动
+  handleOnScroll = () => {
+    const { loading, handleLoadMore, isLast } = this.props
+    if (isLast || loading || (this.historyList.scrollHeight - this.historyList.scrollTop - this.historyList.clientHeight) > 250) { return }
+    handleLoadMore()
+  }
+
   renderAlarmHistory = (list) => {
-    return list.map((item, i) => (
-      <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
+    return list.map(({ id, component_region = null, deviceAddress = null, devideName = null, systemTypeValue = null, component_no = null, label = null, install_address = null, pendingInfoType = null, t, icon, ntype = null }, i) => pendingInfoType === '一键报修' ? (
+      <Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
         <div className={styles.innerItem}>
           <div className={styles.alarmTitle}>
             <div className={styles.title}>
               <div className={styles.icon} style={{
-                backgroundImage: `url(${item.icon})`,
+                backgroundImage: `url(${icon})`,
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center center',
                 backgroundSize: '65% 65%',
               }}></div>
-              <div className={styles.remarks}>{item.remarks || '暂无数据'}</div>
+              <div className={styles.remarks}>{pendingInfoType}</div>
             </div>
-            <span style={{ textAlign: 'right', color: '#516895' }}>{item.warningTime}</span>
           </div>
+          {systemTypeValue && <div className={styles.alarmDetail}>{systemTypeValue}</div>}
           <div className={styles.alarmDetail}>
             <Ellipsis lines={1} tooltip>
-              <span>{item.messageContent}</span>
+              <span>{devideName}</span>
             </Ellipsis>
           </div>
-          <div className={styles.location}>
-            <span>
-              <Icon type="environment" theme="outlined" />
-              {item.area}{item.area && item.location && '：'}{item.location}
-            </span>
+          <div className={styles.lastLine}>
+            <div className={styles.location}>
+              <span><Icon type="environment" theme="outlined" />{deviceAddress}</span>
+            </div>
+            <div className={styles.time}><span>{t}</span></div>
           </div>
         </div>
+        <div className={styles.topRightPurpleTag}>指派维保</div>)
+        {/* <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div> */}
       </Col>
-    ))
+    ) : (<Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
+      <div className={styles.innerItem}>
+        <div className={styles.alarmTitle}>
+          <div className={styles.title}>
+            <div className={styles.icon} style={{
+              backgroundImage: `url(${icon})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center center',
+              backgroundSize: '65% 65%',
+            }}></div>
+            <div className={styles.remarks}>{pendingInfoType}</div>
+          </div>
+        </div>
+        <div className={styles.alarmDetail}>
+          {component_region}回路{component_no}号
+          </div>
+        <div className={styles.alarmDetail}>
+          <Ellipsis lines={1} tooltip>
+            <span>{label}</span>
+          </Ellipsis>
+        </div>
+        <div className={styles.lastLine}>
+          <div className={styles.location}>
+            <span><Icon type="environment" theme="outlined" />{install_address}</span>
+          </div>
+          <div className={styles.time}><span>{t}</span></div>
+        </div>
+      </div>
+      {ntype && ntype === '4' && (<div className={styles.topRightPurpleTag}>指派维保</div>)}
+      {ntype && ntype === '3' && (<div className={styles.topRightBlueTag}>自处理</div>)}
+      {/* <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div> */}
+    </Col>
+      ))
   }
   render() {
     const {
-      data: { list, alarmTypes },
+      data: { list, alarmTypes = [] },
       handleClose,
       loading,
-      handleLoadMore,
       selectedDeviceType,
       title,
     } = this.props
@@ -89,7 +129,7 @@ export default class AlarmHistory extends PureComponent {
               </div>
             </div>
             <Row className={styles.sectionFilter}>
-              {alarmTypes.map((item) => (
+              {alarmTypes && alarmTypes.map((item) => (
                 <Col span={8} className={styles.filter} key={item.deviceType}>
                   <div className={selectedDeviceType === item.deviceType ? styles.activeFilter : styles.inActiveFilter}
                     onClick={() => this.handleFilter({ selectedDeviceType: item.deviceType })}>
@@ -102,9 +142,7 @@ export default class AlarmHistory extends PureComponent {
               <div
                 className={styles.historyContent}
                 ref={historyList => { this.historyList = historyList }}
-                onScroll={() => {
-                  !loading && (this.historyList.scrollHeight - this.historyList.scrollTop - this.historyList.clientHeight) < 220 && handleLoadMore({ deviceType: selectedDeviceType })
-                }}>
+                onScroll={this.handleOnScroll}>
                 {this.renderAlarmHistory(list)}
                 {loading && (
                   <div style={{ paddingTop: '50px', textAlign: 'center' }}>
@@ -115,7 +153,7 @@ export default class AlarmHistory extends PureComponent {
             ) : (
                 <div className={styles.noAlarmContainer}
                   style={{
-                    background: `url(${noAlarm})`,
+                    background: `url(${noPendingInfo})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center center',
                     backgroundSize: '40% 25%',
