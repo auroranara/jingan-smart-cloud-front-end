@@ -8,7 +8,7 @@ const FormItem = Form.Item;
 
 // 默认表单值
 const defaultFormData = {
-  name: undefined,
+  studentName: undefined,
 };
 
 // 默认每页显示数量
@@ -54,13 +54,13 @@ export default class PersonFileList extends PureComponent {
   // 跳转到考试档案页面
   goMyExamList = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/generalFile/article/detail/${id}`));
+    dispatch(routerRedux.push(`/training/myFile/myFileList?studentId=${id}`));
   };
 
   // 跳转到人员分析报告页面
   goMyAlaysisReport = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/generalFile/article/detail/${id}`));
+    dispatch(routerRedux.push(`/training/myFile/mySynthesis?studentId=${id}`));
   };
 
   handleTableData = (list = [], indexBase) => {
@@ -114,6 +114,25 @@ export default class PersonFileList extends PureComponent {
     });
   };
 
+  /**
+   * 处理翻页
+   * */
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'generalFile/fetchPersonalList',
+      payload: {
+        pageSize,
+        pageNum,
+        ...data,
+      },
+    });
+  };
+
   // 渲染
   render() {
     const {
@@ -144,21 +163,18 @@ export default class PersonFileList extends PureComponent {
         dataIndex: 'name',
         key: 'name',
         align: 'center',
-        width: 150,
       },
       {
         title: '考试次数',
         dataIndex: 'examCount',
         key: 'examCount',
         align: 'center',
-        width: 200,
       },
       {
         title: '合格次数',
         dataIndex: 'passCount',
         key: 'passCount',
         align: 'center',
-        width: 120,
         render: val => {
           return `${val}%`;
         },
@@ -168,23 +184,20 @@ export default class PersonFileList extends PureComponent {
         dataIndex: 'noPassCount',
         key: 'noPassCount',
         align: 'center',
-        width: 120,
       },
       {
         title: '弃考次数',
         dataIndex: 'giveUpCount',
         key: 'giveUpCount',
         align: 'center',
-        width: 110,
       },
       {
         title: '最高正确率',
         dataIndex: 'maxScore',
         key: 'maxScore',
         align: 'center',
-        width: 110,
         render: val => {
-          return `${val.toFixed(2)}%`;
+          return val ? `${val.toFixed(2)}%` : '---';
         },
       },
       {
@@ -192,9 +205,9 @@ export default class PersonFileList extends PureComponent {
         dataIndex: 'minScore',
         key: 'minScore',
         align: 'center',
-        width: 150,
+        // width: 150,
         render: val => {
-          return `${val.toFixed(2)}%`;
+          return val ? `${val.toFixed(2)}%` : '---';
         },
       },
       {
@@ -203,12 +216,12 @@ export default class PersonFileList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 160,
+        width: 240,
         render: (text, rows) => (
           <span>
             <a onClick={() => this.goMyExamList(rows.id)}>考试档案</a>
             <Divider type="vertical" />
-            <a onClick={() => this.goMyAlaysisReport(rows.examId)}>人员分析</a>
+            <a onClick={() => this.goMyAlaysisReport(rows.id)}>人员分析</a>
           </span>
         ),
       },
@@ -219,8 +232,8 @@ export default class PersonFileList extends PureComponent {
           <Form>
             <Col span={6}>
               <FormItem>
-                {getFieldDecorator('name', {
-                  initialValue: defaultFormData.name,
+                {getFieldDecorator('studentName', {
+                  initialValue: defaultFormData.studentName,
                   getValueFromEvent: e => e.target.value.trim(),
                 })(<Input placeholder="请输入姓名" />)}
               </FormItem>
@@ -238,7 +251,7 @@ export default class PersonFileList extends PureComponent {
           </Col>
         </Row>
 
-        <Card title="考试记录列表" style={{ marginTop: '20px' }}>
+        <Card title="人员汇总" style={{ marginTop: '20px' }}>
           {list && list.length ? (
             <Table
               loading={tableLoading}

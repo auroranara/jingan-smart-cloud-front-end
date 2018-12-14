@@ -70,6 +70,9 @@ export default class myFileList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      location: {
+        query: { studentId },
+      },
     } = this.props;
     // 获取个人档案列表
     dispatch({
@@ -77,15 +80,10 @@ export default class myFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+        studentId: studentId,
       },
     });
   }
-
-  extraContent = (
-    <Button className={styles.backBtn} onClick={() => this.goToMySynthesis()}>
-      综合分析报告
-    </Button>
-  );
 
   handleTableData = (list = [], indexBase) => {
     return list.map((item, index) => {
@@ -97,9 +95,9 @@ export default class myFileList extends PureComponent {
   };
 
   // 跳转到综合分析报告
-  goToMySynthesis = () => {
+  goToMySynthesis = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/mySynthesis`));
+    dispatch(routerRedux.push(`/training/myFile/mySynthesis?studentId=${id}`));
   };
 
   // 跳转到试卷页面
@@ -109,9 +107,9 @@ export default class myFileList extends PureComponent {
   };
 
   // 跳转到分析报告页面
-  goAlaysisExam = examId => {
+  goAlaysisExam = (studentId, examId) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}`));
+    dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
   };
 
   /* 查询按钮点击事件 */
@@ -275,7 +273,7 @@ export default class myFileList extends PureComponent {
         align: 'center',
         width: 120,
         render: val => {
-          return `${val.toFixed(2)}%`;
+          return val ? `${val.toFixed(2)}%` : '---';
         },
       },
       {
@@ -303,7 +301,7 @@ export default class myFileList extends PureComponent {
         align: 'center',
         width: 110,
         render: (text, record) => {
-          return `${text}/${record.examStudentCount}`;
+          return record.passStatus === '-1' ? '---' : `${text}/${record.examStudentCount}`;
         },
       },
       {
@@ -347,7 +345,7 @@ export default class myFileList extends PureComponent {
           <span>
             <a onClick={() => this.goExamDetail(rows.id)}>试卷</a>
             <Divider type="vertical" />
-            <a onClick={() => this.goAlaysisExam(rows.examId)}>分析报告</a>
+            <a onClick={() => this.goAlaysisExam(rows.studentId, rows.examId)}>分析报告</a>
           </span>
         ),
       },
@@ -390,6 +388,9 @@ export default class myFileList extends PureComponent {
           pagination: { total },
         },
       },
+      user: {
+        currentUser: { userId },
+      },
     } = this.props;
 
     return (
@@ -402,7 +403,13 @@ export default class myFileList extends PureComponent {
             {total}{' '}
           </div>
         }
-        extraContent={this.extraContent}
+        extraContent={
+          <div>
+            <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
+              综合分析报告
+            </Button>
+          </div>
+        }
       >
         {this.renderForm()}
         {this.renderTable()}

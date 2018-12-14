@@ -1,4 +1,8 @@
-import { querySelfExamDocument, queryExamReport } from '../services/training/myFile';
+import {
+  querySelfExamDocument,
+  queryExamReport,
+  queryMySelfReport,
+} from '../services/training/myFile';
 
 export default {
   namespace: 'myFile',
@@ -13,6 +17,7 @@ export default {
       },
     },
     analysisData: {},
+    myselfData: {},
   },
 
   effects: {
@@ -37,6 +42,17 @@ export default {
         });
       }
     },
+
+    // 个人综合分析报告
+    *fetchMySelfReport({ payload }, { call, put }) {
+      const response = yield call(queryMySelfReport, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveMySelfReport',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -53,6 +69,13 @@ export default {
       return {
         ...state,
         analysisData: payload,
+      };
+    },
+
+    saveMySelfReport(state, { payload }) {
+      return {
+        ...state,
+        myselfData: payload,
       };
     },
   },

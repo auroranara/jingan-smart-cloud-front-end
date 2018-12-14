@@ -23,9 +23,9 @@ const breadcrumbList = [
     name: '教育培训',
   },
   {
-    title: '考试档案',
-    name: '考试档案',
-    href: '',
+    title: '综合档案',
+    name: '综合档案',
+    href: '/training/generalFile/examFile/list',
   },
   {
     title,
@@ -35,7 +35,7 @@ const breadcrumbList = [
 
 // 默认表单值
 const defaultFormData = {
-  name: undefined,
+  studentName: undefined,
   passStatus: undefined,
 };
 
@@ -65,7 +65,29 @@ export default class ExamDetailList extends PureComponent {
   };
 
   // 挂载后
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+      generalFile: {
+        examData: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    // 获取考试列表
+    dispatch({
+      type: 'generalFile/fetchExamDetail',
+      payload: {
+        examId: id,
+        pageSize,
+        pageNum: 1,
+        orderByField: 'score asc',
+      },
+    });
+  }
 
   handleTableData = (list = [], indexBase) => {
     return list.map((item, index) => {
@@ -83,19 +105,77 @@ export default class ExamDetailList extends PureComponent {
   };
 
   // 跳转到分析报告页面
-  goAlaysisExam = examId => {
+  goAlaysisExam = (studentId, examId) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/generalFile/myAnalysis/${examId}`));
+    dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
   };
 
   /* 查询按钮点击事件 */
-  handleClickToQuery = () => {};
+  handleClickToQuery = () => {
+    const {
+      match: {
+        params: { id },
+      },
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    // 修改表单数据
+    this.formData = data;
+    // 重新请求数据
+    dispatch({
+      type: 'generalFile/fetchExamDetail',
+      payload: {
+        examId: id,
+        pageSize: 10,
+        pageNum: 1,
+        ...data,
+      },
+    });
+  };
 
   /* 处理翻页 */
-  handlePageChange = (pageNum, pageSize) => {};
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      match: {
+        params: { id },
+      },
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'generalFile/fetchExamDetail',
+      payload: {
+        examId: id,
+        pageSize,
+        pageNum,
+        ...data,
+      },
+    });
+  };
 
   /* 重置按钮点击事件 */
-  handleClickToReset = () => {};
+  handleClickToReset = () => {
+    const {
+      match: {
+        params: { id },
+      },
+      dispatch,
+      form: { resetFields },
+    } = this.props;
+    // 清除筛选条件
+    resetFields();
+    this.formData = defaultFormData;
+    dispatch({
+      type: 'generalFile/fetchExamDetail',
+      payload: {
+        examId: id,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  };
 
   /* 渲染form表单 */
   renderForm() {
@@ -107,10 +187,10 @@ export default class ExamDetailList extends PureComponent {
       <Card>
         <Form layout="inline">
           <FormItem>
-            {getFieldDecorator('name', {
-              initialValue: defaultFormData.name,
+            {getFieldDecorator('studentName', {
+              initialValue: defaultFormData.studentName,
               getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入考试名称" />)}
+            })(<Input placeholder="请输入学生姓名" />)}
           </FormItem>
           <FormItem>
             {getFieldDecorator('passStatus', {
@@ -143,7 +223,7 @@ export default class ExamDetailList extends PureComponent {
     const {
       tableLoading,
       generalFile: {
-        data: {
+        examDetailData: {
           list,
           pagination: { total, pageSize, pageNum },
         },
@@ -164,32 +244,35 @@ export default class ExamDetailList extends PureComponent {
       },
       {
         title: '姓名',
-        dataIndex: 'examName',
-        key: 'examName',
+        dataIndex: 'studentName',
+        key: 'studentName',
         align: 'center',
         width: 150,
       },
       {
         title: '名次',
-        dataIndex: 'examStartTime',
-        key: 'examStartTime',
+        dataIndex: 'ranking',
+        key: 'ranking',
         align: 'center',
-        width: 200,
+        width: 90,
+        render: (val, record) => {
+          return record.passStatus === '-1' ? '---' : val;
+        },
       },
       {
         title: '正确率',
-        dataIndex: 'percentOfPass',
-        key: 'percentOfPass',
+        dataIndex: 'score',
+        key: 'score',
         align: 'center',
         width: 120,
         render: val => {
-          return `${val.toFixed(2)}%`;
+          return val ? `${val.toFixed(2)}%` : '---';
         },
       },
       {
         title: '是否合格',
-        dataIndex: 'score',
-        key: 'score',
+        dataIndex: 'passStatus',
+        key: 'passStatus',
         align: 'center',
         width: 120,
         render: val => {
@@ -198,7 +281,7 @@ export default class ExamDetailList extends PureComponent {
           ) : val === '0' ? (
             <span style={{ color: '#ff0000' }}>不合格</span>
           ) : val === '-1' ? (
-            <span style={{ color: '#ff0000' }}>弃考</span>
+            <span style={{ color: '#990000' }}>弃考</span>
           ) : (
             '---'
           );
@@ -206,10 +289,13 @@ export default class ExamDetailList extends PureComponent {
       },
       {
         title: '考试用时',
-        dataIndex: 'passStatus',
-        key: 'passStatus',
+        dataIndex: 'useTime',
+        key: 'useTime',
         align: 'center',
         width: 110,
+        render: time => {
+          return time ? moment(time).format('mm分钟ss秒') : '---';
+        },
       },
       {
         title: '开考时间',
@@ -242,7 +328,7 @@ export default class ExamDetailList extends PureComponent {
           <span>
             <a onClick={() => this.goToExam(rows.id)}>试卷</a>
             <Divider type="vertical" />
-            <a onClick={() => this.goAlaysisExam(rows.examId)}>分析报告</a>
+            <a onClick={() => this.goAlaysisExam(rows.studentId, rows.examId)}>分析报告</a>
           </span>
         ),
       },
@@ -279,14 +365,49 @@ export default class ExamDetailList extends PureComponent {
   }
 
   render() {
+    const {
+      generalFile: {
+        examDetailData: { list = [] },
+      },
+    } = this.props;
+
+    let examName = '暂无信息';
+    let examStartTime = '暂无信息';
+    let examEndTime = '暂无信息';
+    let examLimit = '暂无信息';
+    let percentOfPass = '暂无信息';
+
+    if (list.length) {
+      examName = list[0].examName;
+      examStartTime = list[0].examStartTime;
+      examEndTime = list[0].examEndTime;
+      examLimit = list[0].examLimit;
+      percentOfPass = list[0].percentOfPass;
+    }
+
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <p>试卷标题一</p>
-            <p>考试期限：</p>
+            <p>{examName || '暂无数据'}</p>
+            <p>
+              <span>
+                考试期限：
+                {moment(examStartTime).format('YYYY-MM-DD HH:mm')} 至{' '}
+                {moment(examEndTime).format('YYYY-MM-DD HH:mm')}
+              </span>
+              <span style={{ paddingLeft: 30 }}>
+                考试时长：
+                {examLimit}
+                分钟
+              </span>
+              <span style={{ paddingLeft: 30 }}>
+                合格率：
+                {percentOfPass}%
+              </span>
+            </p>
           </div>
         }
       >

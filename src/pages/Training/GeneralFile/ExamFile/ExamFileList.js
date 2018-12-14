@@ -116,8 +116,22 @@ export default class ExamFileList extends PureComponent {
 
   /**
    * 处理翻页
-   */
-  handlePageChange = () => {};
+   * */
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    dispatch({
+      type: 'generalFile/fetchExamList',
+      payload: {
+        pageSize,
+        pageNum,
+        ...data,
+      },
+    });
+  };
 
   // 渲染
   render() {
@@ -149,14 +163,14 @@ export default class ExamFileList extends PureComponent {
         dataIndex: 'name',
         key: 'name',
         align: 'center',
-        width: 150,
+        width: 200,
       },
       {
         title: '应考人数',
         dataIndex: 'shouldCount',
         key: 'shouldCount',
         align: 'center',
-        width: 200,
+        width: 120,
       },
       {
         title: '实考人数',
@@ -172,7 +186,7 @@ export default class ExamFileList extends PureComponent {
         align: 'center',
         width: 120,
         render: val => {
-          return `${val}%`;
+          return `${val.toFixed(2)}%`;
         },
       },
       {
@@ -180,7 +194,7 @@ export default class ExamFileList extends PureComponent {
         dataIndex: 'percentOfPass',
         key: 'percentOfPass',
         align: 'center',
-        width: 110,
+        width: 140,
         render: val => {
           return `${val}%`;
         },
@@ -204,7 +218,7 @@ export default class ExamFileList extends PureComponent {
         dataIndex: 'passPercent',
         key: 'passPercent',
         align: 'center',
-        width: 200,
+        width: 130,
         render: val => {
           return `${val.toFixed(2)}%`;
         },
@@ -214,7 +228,7 @@ export default class ExamFileList extends PureComponent {
         dataIndex: 'examLimit',
         key: 'examLimit',
         align: 'center',
-        width: 200,
+        width: 140,
         render: time => {
           return `${time}分钟`;
         },
@@ -224,7 +238,7 @@ export default class ExamFileList extends PureComponent {
         dataIndex: 'startTime',
         key: 'startTime',
         align: 'center',
-        width: 200,
+        width: 250,
         render: (val, record) => {
           return `${moment(val).format('YYYY-MM-DD HH:mm')} 至 ${moment(record.endTime).format(
             'YYYY-MM-DD HH:mm'
@@ -237,7 +251,7 @@ export default class ExamFileList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 160,
+        width: 140,
         render: (text, rows) => (
           <span>
             <a onClick={() => this.goExamDetail(rows.id)}>查看</a>
@@ -272,7 +286,7 @@ export default class ExamFileList extends PureComponent {
           </Col>
         </Row>
 
-        <Card title="考试记录列表" style={{ marginTop: '20px' }}>
+        <Card title="成绩汇总" style={{ marginTop: '20px' }}>
           {list && list.length ? (
             <Table
               loading={tableLoading}

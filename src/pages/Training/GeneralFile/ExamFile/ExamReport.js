@@ -53,26 +53,25 @@ const breadcrumbList = [
 export default class ExamReport extends PureComponent {
   // 挂载后
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   match: {
-    //     params: { id },
-    //   },
-    // } = this.props;
-    // // 获取报告详情
-    // dispatch({
-    //   type: 'generalFile/fetchExamReport',
-    //   payload: {
-    //     examId: id,
-    //   },
-    // });
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    // 获取报告详情
+    dispatch({
+      type: 'generalFile/fetchMultipleReport',
+      payload: {
+        examId: id,
+      },
+    });
   }
 
   getOption = knowledgeReports => {
     const option = {
       radar: {
         radius: 170,
-        tooltip: {},
         name: {
           textStyle: {
             color: '#fff',
@@ -87,14 +86,14 @@ export default class ExamReport extends PureComponent {
       },
       series: [
         {
-          name: '预算 vs 开销（Budget vs spending）',
+          name: '知识点综合分析图',
           type: 'radar',
           data: [
             {
               value: knowledgeReports.map(data => {
                 return { value: data.rightPercent };
               }),
-              name: '预算分配（Allocated Budget）',
+              name: '知识点综合分析图',
             },
           ],
         },
@@ -109,17 +108,28 @@ export default class ExamReport extends PureComponent {
   render() {
     const {
       generalFile: {
-        reportData: {
+        multipleData: {
           shouldCount,
           actualCount,
           giveUpCount,
-          maxScore,
-          minScore,
-          meanScore,
+          examMaxScore,
+          examMinScore,
+          examMeanScore,
           passCount,
           noPassCount,
+          percentOfPass,
           passPercent,
-          name,
+          noPassPercent,
+          singleCount,
+          multiCount,
+          judgeCount,
+          examMinUseTime,
+          examMaxUseTime,
+          giveUpUsers,
+          maxScoreUsers,
+          minScoreUsers,
+          noPassUsers,
+          name = [],
           knowledgeReports = [],
         },
       },
@@ -154,16 +164,20 @@ export default class ExamReport extends PureComponent {
                       {actualCount}
                       人，缺考人数：
                       {giveUpCount}
-                      人， 考试最高正确率：
-                      {maxScore}({name.map(k => k.knowledgeName).join('、')}) %，最低正确率：
-                      {minScore}({name.map(k => k.knowledgeName).join('、')}) %，平均正确率：
-                      {meanScore}%
+                      人(
+                      {giveUpUsers.length > 0 ? giveUpUsers.join('、') : ''}
+                      )， 考试最高正确率：
+                      {examMaxScore ? examMaxScore : 0}% (
+                      {maxScoreUsers.length > 0 ? maxScoreUsers.join('、') : ''}) ，最低正确率：
+                      {examMinScore ? examMinScore : 0}% (
+                      {minScoreUsers.length > 0 ? maxScoreUsers.join('、') : ''}) ，平均正确率：
+                      {examMeanScore ? examMeanScore : 0}%
                     </strong>
                     。
                   </p>
                   <p>
                     2、本次考试试题设定合格率为
-                    {passPercent}
+                    {percentOfPass}
                     %，本次实际参加考试人数：
                     {actualCount}
                     人，
@@ -171,13 +185,12 @@ export default class ExamReport extends PureComponent {
                       合格人数：
                       {passCount}
                       人，占比为：
-                      {}
+                      {passPercent}
                       %，不合格人数：
                       {noPassCount}
                       人(
-                      {name.map(k => k.knowledgeName).join('、')}
-                      )，占比为：
-                      {}%
+                      {noPassUsers.length > 0 ? noPassUsers.join('、') : ''}) ，占比为：
+                      {noPassPercent}%
                     </strong>
                     。
                   </p>
@@ -189,9 +202,9 @@ export default class ExamReport extends PureComponent {
                     </strong>
                     ，其中
                     {knowledgeReports.map(item => {
-                      const { knowledgeName, questionCount } = item;
+                      const { knowledgeId, knowledgeName, questionCount } = item;
                       return (
-                        <span>
+                        <span key={knowledgeId}>
                           {knowledgeName}
                           比例为：
                           {questionCount}，
@@ -200,21 +213,31 @@ export default class ExamReport extends PureComponent {
                     })}
                   </p>
                   <p>
-                    4、本次考试题量：50道，其中，单项选择题：30道，多项选择题：15道，判断题：5道。考试总
-                    时长：90分钟，最快完成答题用时：45分钟，最慢完成答题用时：87分钟。
+                    4、本次考试题量： 道，其中，单项选择题：
+                    {singleCount}
+                    道，多项选择题：
+                    {multiCount}
+                    道，判断题：
+                    {judgeCount}
+                    道。考试总 时长：90分钟，最快完成答题用时：
+                    {examMinUseTime}
+                    分钟，最慢完成答题用时：
+                    {examMaxUseTime}
+                    分钟。
                   </p>
                 </div>
                 <div className={styles.knowledge}>
                   <h3>二、知识点综合分析</h3>
-                  <p>
+                  {knowledgeReports.length > 2 && (
                     <ReactEcharts
                       style={{ height: '450px' }}
                       option={this.getOption(knowledgeReports)}
                       notMerge={true}
                       lazyUpdate={true}
                     />
-                  </p>
-                  <p>
+                  )}
+
+                  <span>
                     {knowledgeReports.map((item, index) => {
                       const {
                         knowledgeId,
@@ -234,7 +257,7 @@ export default class ExamReport extends PureComponent {
                         />
                       );
                     })}
-                  </p>
+                  </span>
                 </div>
               </div>
             </Card>

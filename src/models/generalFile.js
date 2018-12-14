@@ -1,4 +1,9 @@
-import { queryGeneralList, queryPersonList } from '../services/training/generalFile';
+import {
+  queryGeneralList,
+  queryPersonList,
+  queryExamDetail,
+  queryMultipleReport,
+} from '../services/training/generalFile';
 
 export default {
   namespace: 'generalFile',
@@ -20,7 +25,15 @@ export default {
         pageNum: 1,
       },
     },
-    reportData: {},
+    examDetailData: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    },
+    multipleData: {},
   },
 
   effects: {
@@ -45,6 +58,28 @@ export default {
         });
       }
     },
+
+    // 综合档案---考试详情
+    *fetchExamDetail({ payload }, { call, put }) {
+      const response = yield call(queryExamDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveExamDetail',
+          payload: response.data,
+        });
+      }
+    },
+
+    // 考试成绩综合分析报告
+    *fetchMultipleReport({ payload }, { call, put }) {
+      const response = yield call(queryMultipleReport, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveMultipleReport',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -64,11 +99,18 @@ export default {
         personalData: payload,
       };
     },
-
-    saveExamReport(state, { payload }) {
+    saveExamDetail(state, { payload }) {
+      const { list } = payload;
       return {
         ...state,
-        reportData: payload,
+        list,
+        examDetailData: payload,
+      };
+    },
+    saveMultipleReport(state, { payload }) {
+      return {
+        ...state,
+        multipleData: payload,
       };
     },
   },

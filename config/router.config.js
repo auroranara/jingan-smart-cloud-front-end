@@ -1275,7 +1275,7 @@ module.exports = [
                 component: './Training/MyFile/MyAnalysis',
               },
               {
-                path: '/training/myFile/mySynthesis/:id',
+                path: '/training/myFile/mySynthesis',
                 code: 'training.myFile.view',
                 name: 'mySynthesis',
                 component: './Training/MyFile/mySynthesis',

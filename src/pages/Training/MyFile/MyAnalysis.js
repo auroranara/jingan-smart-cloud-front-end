@@ -60,20 +60,24 @@ export default class MyAnalysis extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { studentId },
+      },
     } = this.props;
     dispatch({
       type: 'myFile/fetchExamReport',
       payload: {
         examId: id,
+        studentId: studentId,
       },
     });
   }
 
   getOption = knowledgeReports => {
     const option = {
+      tooltip: {},
       radar: {
         radius: 170,
-        tooltip: {},
         name: {
           textStyle: {
             color: '#fff',
@@ -82,20 +86,20 @@ export default class MyAnalysis extends PureComponent {
             padding: [3, 5],
           },
         },
-        indicator: knowledgeReports.map(data => {
-          return { name: data.knowledgeName, max: 100 };
+        indicator: knowledgeReports.map(k => {
+          return { name: k.knowledgeName, max: 100 };
         }),
       },
       series: [
         {
-          name: '',
+          name: '知识点综合分析图',
           type: 'radar',
           data: [
             {
               value: knowledgeReports.map(data => {
                 return { value: data.rightPercent };
               }),
-              name: '',
+              name: '知识点综合分析图',
             },
           ],
         },
@@ -200,9 +204,15 @@ export default class MyAnalysis extends PureComponent {
                     </strong>
                     ，我的知识点考试正确率：
                     {knowledgeReports.map(item => {
-                      const { knowledgeName, questionCount, rightCount, rightPercent } = item;
+                      const {
+                        knowledgeId,
+                        knowledgeName,
+                        questionCount,
+                        rightCount,
+                        rightPercent,
+                      } = item;
                       return (
-                        <span>
+                        <span key={knowledgeId}>
                           {knowledgeName}共{questionCount}
                           题，答对
                           {rightCount}题 ，正确率为：
@@ -215,15 +225,17 @@ export default class MyAnalysis extends PureComponent {
                 </div>
                 <div className={styles.knowledge}>
                   <h3>二、知识点综合分析</h3>
-                  <p>
+
+                  {knowledgeReports.length > 2 && (
                     <ReactEcharts
                       style={{ height: '450px' }}
                       option={this.getOption(knowledgeReports)}
                       notMerge={true}
                       lazyUpdate={true}
                     />
-                  </p>
-                  <p>
+                  )}
+
+                  <span>
                     {knowledgeReports.map((item, index) => {
                       const {
                         knowledgeId,
@@ -243,7 +255,7 @@ export default class MyAnalysis extends PureComponent {
                         />
                       );
                     })}
-                  </p>
+                  </span>
                 </div>
               </div>
             </Card>
