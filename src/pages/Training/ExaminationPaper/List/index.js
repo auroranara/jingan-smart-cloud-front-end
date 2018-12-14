@@ -101,12 +101,14 @@ export default class App extends PureComponent {
       router.push(listUrl);
       // 从sessionStorage中获取之前的控件数据
       const values = JSON.parse(sessionStorage.getItem(`${controlSessionName}${id}`));
-      // 如果控件数据存在的话，就将数据重置到控件中
-      values && this.setState({ values });
       // 从sessionStorage中获取之前的企业选择数据
       const company = JSON.parse(sessionStorage.getItem(`${companySessionName}${id}`));
+      // 注意：必须确保company为truthy时先渲染出控件再重置values
       // 如果company存在的话，就将数据重置到输入框中
-      company && this.setState({ company });
+      company ? this.setState({ company }, () => {
+        // 如果控件数据存在的话，就将数据重置到控件中
+        values && this.setState({ values });
+      }) : (values && this.setState({ values }));
       // 从sessionStorage中获取之前的scrollTop
       const scrollTop = sessionStorage.getItem(`${scrollSessionName}${id}`);
       // 如果scrollTop存在的话，就将滚动条移动到对应位置

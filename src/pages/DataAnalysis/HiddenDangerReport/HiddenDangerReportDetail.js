@@ -7,6 +7,7 @@ import Lightbox from 'react-images';
 import classNames from 'classnames';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import DescriptionList from '@/components/DescriptionList';
+import Ellipsis from '@/components/Ellipsis';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
 import hiddenIcon from '@/assets/hiddenIcon.png';
@@ -349,16 +350,16 @@ export default class App extends PureComponent {
               </Card>
               <Card title="隐患信息" className={styles.card} bordered={false}>
                 <DescriptionList style={{ marginBottom: 16 }}>
-                  <Description term="隐患来源">{source_type_name || getEmptyData()}</Description>
-                  <Description term="点位名称">{item_name || getEmptyData()}</Description>
-                  <Description term="业务分类">{business_type ? getLabelByBusinessType(business_type) : getEmptyData()}</Description>
-                  <Description term="隐患等级">{level_name || getEmptyData()}</Description>
-                  <Description term="检查人">{report_user_name || getEmptyData()}</Description>
-                  <Description term="创建日期">{report_time ? moment(+report_time).format('YYYY-MM-DD') : getEmptyData()}</Description>
+                  <Description term="隐患来源"><Ellipsis tooltip={!!source_type_name} lines={1} style={{ height: 22 }}>{source_type_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="点位名称"><Ellipsis tooltip={!!item_name} lines={1} style={{ height: 22 }}>{item_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="业务分类"><Ellipsis tooltip={!!business_type} lines={1} style={{ height: 22 }}>{business_type ? getLabelByBusinessType(business_type) : getEmptyData()}</Ellipsis></Description>
+                  <Description term="隐患等级"><Ellipsis tooltip={!!level_name} lines={1} style={{ height: 22 }}>{level_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="检查人"><Ellipsis tooltip={!!report_user_name} lines={1} style={{ height: 22 }}>{report_user_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="创建日期"><Ellipsis tooltip={!!report_time} lines={1} style={{ height: 22 }}>{report_time ? moment(+report_time).format('YYYY-MM-DD') : getEmptyData()}</Ellipsis></Description>
                 </DescriptionList>
                 <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                  <Description term="检查内容">{flow_name || getEmptyData()}</Description>
-                  <Description term="隐患描述">{desc || getEmptyData()}</Description>
+                  <Description term="检查内容"><Ellipsis tooltip={!!flow_name} lines={1} style={{ height: 22 }}>{flow_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="隐患描述"><Ellipsis tooltip={!!desc} lines={1} style={{ height: 22 }}>{desc || getEmptyData()}</Ellipsis></Description>
                   <Description term="隐患图片">{images.length > 0 ? (
                     images.map(({ key, src }, index) => (
                       <img
@@ -383,12 +384,12 @@ export default class App extends PureComponent {
                   )}
                 </DescriptionList>
                 <DescriptionList style={{ marginBottom: 16 }}>
-                  <Description term="指定整改人">{rectify_user_name || getEmptyData()}</Description>
-                  <Description term="计划整改日期">{plan_rectify_time ? moment(+plan_rectify_time).format('YYYY-MM-DD') : getEmptyData()}</Description>
+                  <Description term="指定整改人"><Ellipsis tooltip={!!rectify_user_name} lines={1} style={{ height: 22 }}>{rectify_user_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="计划整改日期"><Ellipsis tooltip={!!plan_rectify_time} lines={1} style={{ height: 22 }}>{plan_rectify_time ? moment(+plan_rectify_time).format('YYYY-MM-DD') : getEmptyData()}</Ellipsis></Description>
                 </DescriptionList>
                 {report_user_name !== review_user_name && (
                   <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                    <Description term="指定复查人">{review_user_name || getEmptyData()}</Description>
+                    <Description term="指定复查人"><Ellipsis tooltip={!!review_user_name} lines={1} style={{ height: 22 }}>{review_user_name || getEmptyData()}</Ellipsis></Description>
                   </DescriptionList>
                 )}
               </Card>
@@ -424,12 +425,12 @@ export default class App extends PureComponent {
                   return (
                     <Card title="整改信息" className={styles.card} bordered={false} key={id}>
                       <DescriptionList style={{ marginBottom: 16 }}>
-                        <Description term="整改人">{operator_name || getEmptyData()}</Description>
-                        <Description term="实际整改日期">{create_time_str || getEmptyData()}</Description>
-                        <Description term="整改金额">{typeof money === 'number' ? money : 0}</Description>
+                        <Description term="整改人"><Ellipsis tooltip={!!operator_name} lines={1} style={{ height: 22 }}>{operator_name || getEmptyData()}</Ellipsis></Description>
+                        <Description term="实际整改日期"><Ellipsis tooltip={!!create_time_str} lines={1} style={{ height: 22 }}>{create_time_str || getEmptyData()}</Ellipsis></Description>
+                        <Description term="整改金额"><Ellipsis tooltip lines={1} style={{ height: 22 }}>{typeof money === 'number' ? money : 0}</Ellipsis></Description>
                       </DescriptionList>
                       <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                        <Description term="整改措施">{operate_content || getEmptyData()}</Description>
+                        <Description term="整改措施"><Ellipsis tooltip={!!operate_content} lines={1} style={{ height: 22 }}>{operate_content || getEmptyData()}</Ellipsis></Description>
                         <Description term="整改图片">{images.length > 0 ? (
                           images.map(({ key, src }, index) => (
                             <img
@@ -460,11 +461,11 @@ export default class App extends PureComponent {
                   return (
                     <Card title="复查信息" className={styles.card} bordered={false} key={id}>
                       <DescriptionList style={{ marginBottom: 16 }}>
-                        <Description term="复查人">{operator_name || getEmptyData()}</Description>
-                        <Description term="复查日期">{create_time_str || getEmptyData()}</Description>
+                        <Description term="复查人"><Ellipsis tooltip={!!operator_name} lines={1} style={{ height: 22 }}>{operator_name || getEmptyData()}</Ellipsis></Description>
+                        <Description term="复查日期"><Ellipsis tooltip={!!create_time_str} lines={1} style={{ height: 22 }}>{create_time_str || getEmptyData()}</Ellipsis></Description>
                       </DescriptionList>
                       <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                        <Description term="备注">{remark || getEmptyData()}</Description>
+                        <Description term="备注"><Ellipsis tooltip={!!remark} lines={1} style={{ height: 22 }}>{remark || getEmptyData()}</Ellipsis></Description>
                         <Description term="复查图片">{images.length > 0 ? (
                           images.map(({ key, src }, index) => (
                             <img
