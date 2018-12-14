@@ -78,24 +78,21 @@ export default class ExaminationMissionAdd extends PureComponent {
       match: {
         params: { id },
       },
+      user: { currentUser: { id: userId } },
     } = this.props;
+    // 从session中获取companyId
+    const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
+    // 获取当前企业的考试人员列表
     dispatch({
       type: 'examinationMission/fetchExamStudents',
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
+        companyId: id || companyId,
       },
     });
     // 如果新增
     if (!id) {
-      // 获取考试人员列表 TODO
-      dispatch({
-        type: 'examinationMission/fetchExamStudents',
-        payload: {
-          pageNum: 1,
-          pageSize: defaultPageSize,
-        },
-      });
       dispatch({
         type: 'examinationMission/fetchDetail',
       });

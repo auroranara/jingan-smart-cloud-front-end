@@ -28,7 +28,7 @@ export default class AlarmDetailSection extends PureComponent {
             if (key === 'status')
               v = <span className={styles.abnormal}>异常</span>
             else if (key.toLowerCase().includes('time'))
-              v = moment(val).format('YYYY-MM-DD HH:MM');
+              v = moment(val).format('YYYY-MM-DD HH:mm');
 
             return (
               <tr key={key}>

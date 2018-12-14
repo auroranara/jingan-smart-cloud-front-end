@@ -155,7 +155,7 @@ export default class ExaminationMissionList extends PureComponent {
   };
 
   handleSelect = item => {
-    const { dispatch } = this.props;
+    const { dispatch, user: { currentUser: { id: userId } } } = this.props;
     const { id, name } = item;
     this.companyId = id;
     this.companyName = name;
@@ -167,6 +167,8 @@ export default class ExaminationMissionList extends PureComponent {
         companyName: name,
       },
     });
+    // 将选中的企业id保存在session中以备不时之需
+    sessionStorage.setItem(`examination_mission_list_company_${userId}`, JSON.stringify({ id }));
     this.handleClose();
   };
 

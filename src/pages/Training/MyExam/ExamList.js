@@ -22,7 +22,7 @@ const documentElem = document.documentElement;
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
-const TIME_FORMAT = 'YYYY-MM-DD HH:MM';
+const TIME_FORMAT = 'YYYY-MM-DD HH:mm';
 
 // const LIST = [...Array(10).keys()].map(i => ({
 //   id: i,
