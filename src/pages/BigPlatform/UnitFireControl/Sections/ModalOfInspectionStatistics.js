@@ -80,7 +80,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
       render: (val, record) => {
         if (val === '已关闭') {
           return (<span style={{ color: '#999999', cursor: 'pointer' }} onClick={() => this.handleViewDanger(record)}>{val}</span>)
-        } else if (val === '已超时') {
+        } else if (val === '已超期') {
           return (<span style={{ color: 'red', cursor: 'pointer' }} onClick={() => this.handleViewDanger(record)}>{val}</span>)
         } else return (<span style={{ cursor: 'pointer' }} onClick={() => this.handleViewDanger(record)}>{val}</span>)
       },

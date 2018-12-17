@@ -92,23 +92,22 @@ const getPendingInfoType = ({
   supervise_state = null,
   shield_state = null,
   feedback_state = null,
-  type = null,
 }, returnType = 'title') => {
   let value = '';
   if (+report_type === 2) {
-    value = (returnType === 'title' && '一键报修') || (returnType === 'icon' && 'baoxiu');
+    value = (returnType === 'title' && '一键报修') || (returnType === 'icon' && `${prefix}blue-baoxiu.png`);
   } else if (+fire_state === 1) {
-    value = (returnType === 'title' && ((+type === 1 && '误报火警') || (+type === 2 && '真实火警') || '火警')) || (returnType === 'icon' && 'huojing');
+    value = (returnType === 'title' && '火警') || (returnType === 'icon' && `${prefix}huojing.png`);
   } else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
-    value = (returnType === 'title' && '故障') || (returnType === 'icon' && 'guzhang');
+    value = (returnType === 'title' && '故障') || (returnType === 'icon' && `${prefix}blue-guzhang.png`);
   } else if (+start_state === 1) {
-    value = (returnType === 'title' && '联动') || (returnType === 'icon' && 'liandong');
+    value = (returnType === 'title' && '联动') || (returnType === 'icon' && `${prefix}blue-liandong.png`);
   } else if (+supervise_state === 1) {
-    value = (returnType === 'title' && '监管') || (returnType === 'icon' && 'jianguan');
+    value = (returnType === 'title' && '监管') || (returnType === 'icon' && `${prefix}blue-jianguan.png`);
   } else if (+shield_state === 1) {
-    value = (returnType === 'title' && '屏蔽') || (returnType === 'icon' && 'pingbi');
+    value = (returnType === 'title' && '屏蔽') || (returnType === 'icon' && `${prefix}blue-pingbi.png`);
   } else if (+feedback_state === 1) {
-    value = (returnType === 'title' && '反馈') || (returnType === 'icon' && 'fankui');
+    value = (returnType === 'title' && '反馈') || (returnType === 'icon' && `${prefix}blue-fankui.png`);
   }
   return value;
 };
@@ -161,6 +160,7 @@ export default class App extends PureComponent {
         total: 0,
       },
       dangerCardVisible: false,       // 巡查统计数据下钻显示的隐患卡片
+      hiddenDnagerType: '',            // 点击隐患统计时保存类型（已超期、待复查、未超期）
     };
     // 轮询定时器
     this.pollingTimer = null;
@@ -591,19 +591,28 @@ export default class App extends PureComponent {
       },
     } = this.props
     const { pendingInfoStatus } = this.state
-    const pendingInfoList = list.map(item => {
-      return {
+    let fire = []
+    let other = []
+    list.forEach((item) => {
+      const newItem = {
         ...item,
         pendingInfoType: getPendingInfoType(item, 'title'),
-        icon: `${prefix}${getPendingInfoType(item, 'icon')}.png`,
+        icon: getPendingInfoType(item, 'icon'),
       };
-    });
+      // 如果是火警
+      if (item.fire_state && +item.fire_state === 1) {
+        fire.push(newItem)
+      } else {
+        other.push(newItem)
+      }
+    })
+
     return (
       <PendingInformation
-        title="待处理信息"
+        title="待办事项"
         showTotal={false}
         status={pendingInfoStatus}
-        list={pendingInfoList}
+        list={[...fire, ...other]}
         handleClick={this.handleVideoOpen}
         handleViewHistory={this.handleViewHistory}
         onFilterChange={this.handlePendingFilterChnage}
@@ -650,7 +659,7 @@ export default class App extends PureComponent {
   * 点击隐患图表显示详情抽屉
   */
   handleClickChat = (params) => {
-    const { data: { status = null, source_type = null } } = params
+    const { data: { status = null, source_type = null, name = null } } = params
     const {
       dispatch,
       match: {
@@ -668,12 +677,12 @@ export default class App extends PureComponent {
         month: hiddenDangerType === 'realTime' ? null : hiddenDangerType,
       },
     });
-    this.setState({ hiddenDangerVisible: true })
+    this.setState({ hiddenDangerVisible: true, hiddenDnagerType: name })
   }
 
   // 关闭隐患详情抽屉
   closeDrawerOfHiddenDanger = () => {
-    this.setState({ hiddenDangerVisible: false })
+    this.setState({ hiddenDangerVisible: false, hiddenDnagerType: '' })
   }
 
   /**
@@ -905,14 +914,9 @@ export default class App extends PureComponent {
             fireHost: { list = [] },
           },
         } = this.props
-        const currentFireHosts = list.filter(item => item.typeName === type).slice(0, 1 * defaultPageSize)
+        const currentFireHosts = list.filter(item => item.typeName === type)
         this.setState({
           currentFireHostType: type,
-          fireHostPagination: {
-            pageNum: 1,
-            pageSize: defaultPageSize,
-            total: list && list.length ? list.length : 0,
-          },
           currentFireHosts,
           fireHostVisible: true,
           fireHostLoading: true,
@@ -928,37 +932,36 @@ export default class App extends PureComponent {
   }
 
   // 消防主机翻页
-  handleFireHostPageChange = (pageNum, pageSize) => {
-    const {
-      unitFireControl: {
-        fireHost: { list = [] },
-      },
-    } = this.props
-    const { currentFireHostType } = this.state
-    const currentFireHosts = list.filter(item => item.typeName === currentFireHostType).slice((pageNum - 1) * pageSize, pageNum * pageSize)
-    this.setState({
-      fireHostPagination: {
-        ...this.state.fireHostPagination,
-        pageNum,
-      },
-      currentFireHosts,
-      fireHostLoading: true,
-    })
-    setTimeout(() => {
-      this.setState({
-        fireHostLoading: false,
-      })
-    }, 500);
-  }
+  // handleFireHostPageChange = (pageNum, pageSize) => {
+  //   const {
+  //     unitFireControl: {
+  //       fireHost: { list = [] },
+  //     },
+  //   } = this.props
+  //   const { currentFireHostType } = this.state
+  //   const currentFireHosts = list.filter(item => item.typeName === currentFireHostType).slice((pageNum - 1) * pageSize, pageNum * pageSize)
+  //   this.setState({
+  //     fireHostPagination: {
+  //       ...this.state.fireHostPagination,
+  //       pageNum,
+  //     },
+  //     currentFireHosts,
+  //     fireHostLoading: true,
+  //   })
+  //   setTimeout(() => {
+  //     this.setState({
+  //       fireHostLoading: false,
+  //     })
+  //   }, 500);
+  // }
 
   // 消防主机筛选
-  handleFireHostFilter = (e) => {
+  handleFireHostFilter = (value) => {
     const {
       unitFireControl: {
         fireHost: { list = [] },
       },
     } = this.props
-    const value = e.target.value
     const currentFireHosts = list.filter(item => item.typeName === value).slice(0, 1 * defaultPageSize)
     this.setState({
       currentFireHostType: value,
@@ -1060,20 +1063,28 @@ export default class App extends PureComponent {
         informationHistory: { list },
       },
     } = this.props;
-    const historyInfoList = list.map(item => {
-      return {
+    let fire = []
+    let other = []
+    list.forEach((item) => {
+      const newItem = {
         ...item,
         pendingInfoType: getPendingInfoType(item, 'title'),
-        icon: `${prefix}${getPendingInfoType(item, 'icon')}.png`,
+        icon: getPendingInfoType(item, 'icon'),
       };
-    });
+      // 如果是火警
+      if (item.fire_state && +item.fire_state === 1) {
+        fire.push(newItem)
+      } else {
+        other.push(newItem)
+      }
+    })
     return (
       <div
         ref={InformationHistory => { this.InformationHistory = InformationHistory }}
         style={{ width: '100%', height: '100%', position: 'absolute', top: 0, right: '110%', transition: 'all 0.5s' }}>
         <InformationHistory
-          title="历史信息"
-          data={{ list: historyInfoList, alarmTypes: [] }}
+          title="历史消息"
+          data={{ list: [...fire, ...other], alarmTypes: [] }}
           loading={pendingInfoLoading}
           handleLoadMore={this.handleMorePendingInfo}
           handleClose={() => this.handleCloseInfoHistory()}
@@ -1202,6 +1213,7 @@ export default class App extends PureComponent {
       inspectionCurrentList,
       inspectionPagination,
       dangerCardVisible,
+      hiddenDnagerType,
     } = this.state;
 
     return (
@@ -1265,6 +1277,7 @@ export default class App extends PureComponent {
         /> */}
         {/* 隐患统计数据下钻抽屉 */}
         <DrawerOfHiddenDanger
+          title={hiddenDnagerType}
           visible={hiddenDangerVisible}
           onClose={this.closeDrawerOfHiddenDanger}
           data={{ hiddenDangerRecords }}
@@ -1274,7 +1287,7 @@ export default class App extends PureComponent {
           visible={fireHostVisible}
           loading={fireHostLoading}
           onCancel={this.handleCloseModalOfFireHost}
-          handlePageChange={this.handleFireHostPageChange}
+          // handlePageChange={this.handleFireHostPageChange}
           currentFireHostType={currentFireHostType}
           onFilterChange={this.handleFireHostFilter}
           pagination={fireHostPagination}

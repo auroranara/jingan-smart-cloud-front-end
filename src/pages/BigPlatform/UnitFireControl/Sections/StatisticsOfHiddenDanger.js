@@ -359,7 +359,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
           </Col>
           <Col span={8} className={styles.legendContainer}>
             {legendInfo.map(({ label, value, iconColor, status }, i) => (
-              <div key={i} className={styles.line} onClick={() => handleClickChat({ data: { status } })}>
+              <div key={i} className={styles.line} onClick={() => handleClickChat({ data: { status, name: label } })}>
                 <div className={styles.icon} style={{ backgroundColor: iconColor }}></div>
                 <div className={styles.label}>{label}</div>
                 <div className={styles.value}>{value}</div>

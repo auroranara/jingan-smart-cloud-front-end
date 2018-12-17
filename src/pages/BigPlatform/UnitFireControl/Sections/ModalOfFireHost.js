@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Table, Pagination, Radio } from 'antd';
+import { Table, Pagination, Radio, Row, Col, Icon } from 'antd';
 import NewModal from '../components/NewModal';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './ModalOfFireHost.less';
 
 const columns = [
@@ -43,7 +44,7 @@ export default class ModalOfFireHost extends PureComponent {
     const {
       visible,
       onCancel,
-      handlePageChange,
+      // handlePageChange,
       onFilterChange,
       loading,
       list,
@@ -62,12 +63,17 @@ export default class ModalOfFireHost extends PureComponent {
         onCancel={onCancel}
       >
         <div className={styles.modalOfFireHost}>
-          <Radio.Group value={currentFireHostType} buttonStyle="solid" style={{ marginBottom: '10px' }} onChange={onFilterChange}>
-            {options.map((item, i) => {
-              return (<Radio.Button key={i} value={item}>{item}</Radio.Button>)
-            })}
-          </Radio.Group>
-          <Table
+          <Row className={styles.sectionFilter}>
+            {options && options.map((item, i) => (
+              <Col span={4} className={styles.filter} key={i}>
+                <div className={currentFireHostType === item ? styles.activeFilter : styles.inActiveFilter}
+                  onClick={() => onFilterChange(item)}>
+                  {item}
+                </div>
+              </Col>
+            ))}
+          </Row>
+          {/* <Table
             rowKey="id"
             showHeader={false}
             dataSource={list}
@@ -75,10 +81,45 @@ export default class ModalOfFireHost extends PureComponent {
             columns={columns}
             pagination={false}
             bordered
-          />
-          <div className={styles.footer}>
+          /> */}
+          {/* <div className={styles.footer}>
             <Pagination current={pageNum} pageSize={pageSize} total={total} onChange={handlePageChange} />
-          </div>
+          </div> */}
+          {list && list.length > 0 ? (
+            <div className={styles.listContainer}>
+              {list.map(({ typeName, component_region, component_no, label, install_address, t, icon = null }, i) => (
+                <Col key={i} span={12} className={styles.cardContainer}>
+                  <div className={styles.cardItem}>
+                    <div className={styles.innerItem}>
+                      <div className={styles.titleContainer}>
+                        <div className={styles.title}>
+                          <div className={styles.icon} style={{
+                            backgroundImage: `url(${icon})`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'center center',
+                            backgroundSize: '65% 65%',
+                          }}></div>
+                          <div className={styles.remarks}>{typeName}</div>
+                        </div>
+                      </div>
+                      <div className={styles.line}>{`${component_region}回路${component_no}号`}</div>
+                      <div className={styles.line}>
+                        <Ellipsis lines={1} tooltip>
+                          <span>{label}</span>
+                        </Ellipsis>
+                      </div>
+                      <div className={styles.lastLine}>
+                        <div className={styles.location}>
+                          <span><Icon type="environment" theme="outlined" />{install_address}</span>
+                        </div>
+                        <div className={styles.time}><span>{t}</span></div>
+                      </div>
+                    </div>
+                    {/* <div className={styles.topRightGreenTag}>处理中</div> */}
+                  </div>
+                </Col>
+              ))}
+            </div>) : (<div className={styles.noContent}><span>暂无数据</span></div>)}
         </div>
       </NewModal>
     )

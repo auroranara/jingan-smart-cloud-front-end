@@ -297,7 +297,7 @@ export default class QuestionsList extends PureComponent {
                     <div className={styles.rightIcon}>
                       <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => { router.push(`/training/library/questions/edit/${item.id}`) } : null} />
                       <Divider type="vertical" />
-                      {editDisabled ? (
+                      {delDisabled ? (
                         <Icon className={styles.disabledIcon} type="close" />
                       ) : (
                           <Popconfirm title="确认删除该试题吗？" onConfirm={() => this.handleDeleteQuestion(item.id, delDisabled)}>
