@@ -27,7 +27,7 @@ import AlarmHandle from './section/AlarmHandle';
 import VideoPlay from './section/VideoPlay';
 import UnitDrawer from './section/UnitDrawer';
 import UnitDangerDrawer from './section/UnitDangerDrawer';
-// import HostDrawer from './section/HostDrawer';
+import HostDrawer from './section/HostDrawer';
 import AlarmDrawer from './section/AlarmDrawer';
 import DangerTableDrawer from './section/DangerTableDrawer';
 import DangerDrawer from './section/DangerDrawer';
@@ -86,16 +86,17 @@ export default class FireControlBigPlatform extends PureComponent {
     tooltipName: '',
     tooltipVisible: false,
     tooltipPosition: [0, 0],
-    isUnit: 0, // 0 所有, 1 某个单位
     unitDrawerVisible: false,
-    unitDrawerLabelIndex: 0,
+    unitDrawerLabelIndex: 0, // unitDrawer的最顶部标签的切换
     unitDangerDrawerVisible: false,
-    // hostDrawerVisible: false,
+    unitDangerLabelIndex: 0, // 单位隐患列表中的小标签切换
+    hostDrawerVisible: false,
     alarmDrawerVisible: false,
     alarmDrawerLeftType: 0,
     alarmDrawerRightType: 0,
     dangerTableDrawerVisible: false,
     dangerDrawerVisible: false,
+    dangerLabelIndex: 0, // 企业隐患列表(由隐患排名表格点击的抽屉)的小标签切换
     safeDrawerVisible: false,
     riskDrawerVisible: false,
   };
@@ -431,6 +432,7 @@ export default class FireControlBigPlatform extends PureComponent {
       type: 'bigFireControl/fetchDanger',
       payload: { company_id: id, gridId, businessType: 2 },
     });
+    dispatch({ type: 'bigFireControl/fetchRiskPoints', payload: { company_id: id } });
 
     // 点击火警或地图中的企业时，获取视频相关信息
     this.handleVideoSelect(id);
@@ -568,8 +570,8 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ [`${type}LabelIndex`]: labelIndex });
   };
 
-  handleShowUnitDanger = companyId => {
-    this.handleShowDangerBase(companyId, 0, 'unitDanger');
+  handleShowUnitDanger = (companyId, labelIndex=0) => {
+    this.handleShowDangerBase(companyId, labelIndex, 'unitDanger');
 
     // this.fetchDangerRecords(companyId);
     // this.handleDrawerVisibleChange('unitDanger');
@@ -605,6 +607,33 @@ export default class FireControlBigPlatform extends PureComponent {
       this.fetchDangerRecords(companyId);
   };
 
+  // 正面的概况模块的单位抽屉中点击主机状态的报警
+  handleUnitDrawerAlarmClick = (companyId, drawer='unit') => {
+    const { bigFireControl: { alarm: { list=[] } } } = this.props;
+    const alarmDetail = list.find(item => item.companyId === companyId) || {};
+    this.handleAlarmClick(alarmDetail);
+    this.handleDrawerVisibleChange(drawer);
+  };
+
+  // 正面的概况模块的火警抽屉中点击警情卡片
+  handleAlarmDrawerCardClick = id => {
+    const { bigFireControl: { alarmHistory: { list=[] } } } = this.props;
+    const alarmDetail = list.find(item => item.id === id) || {};
+    this.handleAlarmClick(alarmDetail);
+    this.handleDrawerVisibleChange('alarm');
+  };
+
+  // 反面的概况模块的火警抽屉中点击警情卡片
+  handleUnitAlarmDrawerCardClick = id => {
+    const { dispatch, bigFireControl: { alarmHistory: { list=[] } } } = this.props;
+    const gridId = this.getGridId();
+    const alarmDetail = list.find(item => item.id === id) || {};
+
+    this.setState({ alarmDetail });
+    this.handleDrawerVisibleChange('alarm');
+    dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: alarmDetail.id, gridId } });
+  };
+
   render() {
     const {
       // match: { params: { gridId } },
@@ -633,6 +662,7 @@ export default class FireControlBigPlatform extends PureComponent {
         lookUpCamera,
         mapLocation,
         grids,
+        riskPoints,
       },
       dispatch,
       offGuardWarnLoading,
@@ -660,12 +690,11 @@ export default class FireControlBigPlatform extends PureComponent {
       tooltipName,
       tooltipVisible,
       tooltipPosition,
-      isUnit,
       unitDrawerVisible,
       unitDrawerLabelIndex,
       unitDangerDrawerVisible,
       unitDangerLabelIndex,
-      // hostDrawerVisible,
+      hostDrawerVisible,
       alarmDrawerVisible,
       alarmDrawerLeftType,
       alarmDrawerRightType,
@@ -717,6 +746,7 @@ export default class FireControlBigPlatform extends PureComponent {
               />
               <OverviewBackSection
                 data={{ selected: mapSelected, companyOv }}
+                handleShowUnitDanger={this.handleShowUnitDanger}
                 handleDrawerVisibleChange={this.handleDrawerVisibleChange}
               />
             </FcModule>
@@ -850,7 +880,7 @@ export default class FireControlBigPlatform extends PureComponent {
             </div>
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
-              <SystemSection data={sys} />
+              <SystemSection data={sys} handleClick={e => this.handleDrawerVisibleChange('host')} />
               <VideoSection
                 data={allCamera}
                 showVideo={this.handleVideoShow}
@@ -883,6 +913,7 @@ export default class FireControlBigPlatform extends PureComponent {
           labelIndex={unitDrawerLabelIndex}
           handleSearch={this.handleUnitSearch}
           handleShowUnitDanger={this.handleShowUnitDanger}
+          handleAlarmClick={this.handleUnitDrawerAlarmClick}
           handleSwitch={this.handleUnitDrawerLabelSwitch}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
@@ -895,23 +926,22 @@ export default class FireControlBigPlatform extends PureComponent {
           handleLabelClick={this.handleUnitDangerLabelClick}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
-        {/* <HostDrawer
-          isUnit={isUnit}
-          data={sys}
+        <HostDrawer
+          data={{ sys }}
           visible={hostDrawerVisible}
+          handleCardClick={this.handleUnitDrawerAlarmClick}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        /> */}
+        />
         <AlarmDrawer
-          // isUnit={isUnit}
-          data={{ alarm: govAlarm, trend }}
+          data={{ alarm: showReverse ? comAlarm : govAlarm, trend }}
           visible={alarmDrawerVisible}
           leftType={alarmDrawerLeftType}
           rightType={alarmDrawerRightType}
           handleSelectChange={this.handleAlarmDrawerChange}
+          handleCardClick={this[`handle${showReverse ? 'Unit' : ''}AlarmDrawerCardClick`]}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <DangerTableDrawer
-          isUnit={isUnit}
           data={dangerList}
           visible={dangerTableDrawerVisible}
           handleShowDanger={this.handleShowDanger}
@@ -927,12 +957,11 @@ export default class FireControlBigPlatform extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <SafeDrawer
-          isUnit={isUnit}
           visible={safeDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <RiskDrawer
-          isUnit={isUnit}
+          data={riskPoints}
           visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

@@ -65,7 +65,6 @@ export default function OverviewSection(props) {
         </Col>
       </Row>
       <OvFireCards
-        isUnit={0}
         today={todayCount}
         thisWeek={thisWeekCount}
         thisMonth={thisMonthCount}
@@ -74,12 +73,11 @@ export default function OverviewSection(props) {
         style={{ height: HEIGHT, padding: PADDING, marginTop: 20 }}
       />
       <OvDangerCards
-        isUnit={0}
         total={totalDanger}
         overdue={overdueNum}
         rectify={rectifyNum}
         review={reviewNum}
-        handleDrawerVisibleChange={handleDrawerVisibleChange}
+        handleClick={i => handleDrawerVisibleChange('dangerTable')}
         style={{ height: HEIGHT, padding: PADDING }}
       />
     </FcSection>

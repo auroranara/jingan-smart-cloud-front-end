@@ -19,7 +19,7 @@ const style3 = { borderRadius: '0 5px 0 0', borderLeft: 'none' };
 const styleNum3 = { borderRadius: '0 0 5px 0', borderLeft: 'none' };
 
 export default function OvDangerCards(props) {
-  const { total=0, overdue=0, rectify=0, review=0, isUnit, handleDrawerVisibleChange, ...restProps } = props;
+  const { total=0, overdue=0, rectify=0, review=0, isUnit, handleClick, ...restProps } = props;
 
   return (
     <div className={styles.danger} {...restProps}>
@@ -36,7 +36,7 @@ export default function OvDangerCards(props) {
             title="总数"
             num={total}
             zeroLength={3}
-            onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, -1)}
+            onClick={e => handleClick && handleClick(0)}
           />
         </Col>
         <Col style={{ height: '100%' }} span={12}>
@@ -49,7 +49,7 @@ export default function OvDangerCards(props) {
                 style={style1}
                 titleContainerStyle={style1}
                 numContainerStyle={styleNum1}
-                onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, 0)}
+                onClick={e => handleClick && handleClick(1)}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -60,7 +60,7 @@ export default function OvDangerCards(props) {
                 style={style2}
                 titleContainerStyle={style2}
                 numContainerStyle={styleNum2}
-                onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, 1)}
+                onClick={e => handleClick && handleClick(2)}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -70,7 +70,7 @@ export default function OvDangerCards(props) {
                 style={style3}
                 titleContainerStyle={style3}
                 numContainerStyle={styleNum3}
-                onClick={e => handleDrawerVisibleChange && handleDrawerVisibleChange('dangerTable', isUnit, 2)}
+                onClick={e => handleClick && handleClick(3)}
               />
             </Col>
             {/* <span className={styles.divider} />

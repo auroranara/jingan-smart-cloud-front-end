@@ -19,6 +19,7 @@ import {
   getVideoLookUp,
   getMapLocation,
   getGrids,
+  getRiskPoints,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -67,6 +68,17 @@ function handleDanger(response, isCompany = false) {
 //     return { ...item, hasFire: isFire === NORMAL ? false: true, status: isFire };
 //   });
 // }
+
+function handleRiskPoints(pointsObj) {
+  if (!pointsObj)
+    return [];
+
+  return ['red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
+    const prop = `${next}DangerResult`;
+    const arr = Array.isArray(pointsObj[prop]) ? pointsObj[prop] : [];
+    return prev.concat(arr);
+  }, []);
+}
 
 export default {
   namespace: 'bigFireControl',
@@ -120,6 +132,7 @@ export default {
     mapLocation: [],
     grids: [],
     units: {},
+    riskPoints: [],
   },
 
   effects: {
@@ -293,6 +306,12 @@ export default {
         callback && callback(data);
       }
     },
+    // 获取风险点
+    *fetchRiskPoints({ payload }, { call, put }) {
+      let response = yield call(getRiskPoints, payload);
+      if (response)
+        yield put({ type: 'saveRiskPoints', payload: response });
+    },
   },
 
   reducers: {
@@ -379,6 +398,9 @@ export default {
     },
     saveGrids(state, action) {
       return { ...state, grids: action.payload };
+    },
+    saveRiskPoints(state, action) {
+      return { ...state, riskPoints: handleRiskPoints(action.payload) }
     },
   },
 };

@@ -89,6 +89,11 @@ export async function getGrids(params) {
   return request(`${URL_PREFIX}/sfc/getGridData.json`);
 }
 
+// 获取风险点
+export async function getRiskPoints(params) {
+  return request(`${URL_PREFIX}/sfc/countDangerLocationForCompany.json?${stringify(params)}`);
+}
+
 /************************************** 单位消防 ************************************************/
 /**
  * 获取待处理信息

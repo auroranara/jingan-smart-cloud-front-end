@@ -52,6 +52,7 @@ export default class AlarmDrawer extends PureComponent {
         trend={},
       },
       handleSelectChange,
+      handleCardClick,
       handleDrawerVisibleChange,
     } = this.props;
     const { graph } = this.state;
@@ -120,10 +121,11 @@ export default class AlarmDrawer extends PureComponent {
               phone={safetyPhone || NO_DATA}
               status={status === HANDLED ? 0 : 1 }
               statusLabels={STATUS_LABELS}
+              onClick={e => handleCardClick(id)}
               info={
                 <Fragment>
                   <span className={styles.cardIcon} style={{ backgroundImage: `url(${clockIcon})` }} />
-                  {moment(saveTime).format('YYYY-MM-DD HH:MM')}
+                  {moment(saveTime).format('YYYY-MM-DD HH:mm')}
                 </Fragment>
               }
             />)

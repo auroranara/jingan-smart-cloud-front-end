@@ -44,6 +44,7 @@ export default function UnitDrawer(props) {
     handleSearch,
     handleSwitch,
     handleShowUnitDanger,
+    handleAlarmClick,
     handleDrawerVisibleChange,
     data: { allCompanyList=[], importCompanyList=[], fireNum=0, commonNum=0, noAccessNum=0, impFireNum=0, impCommonNum=0, impNoAccessNum=0 },
   } = props;
@@ -131,7 +132,7 @@ export default function UnitDrawer(props) {
                 </span>
                 <span className={styles.status}>
                   主机状态：
-                  <span className={styles[STATUS_CLASS[isFire]]}>
+                  <span className={styles[STATUS_CLASS[isFire]]} onClick={isFire === FIRE ? e => handleAlarmClick(companyId) : null}>
                     {STATUS[isFire]}
                   </span>
                 </span>
