@@ -134,7 +134,7 @@ export default class SiderMenu extends PureComponent {
             <h1>晶安智慧云</h1>
           </Link>
         </div>
-        <Scrollbars style={{ width: '100%', height: 'calc(100vh - 64px)' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
+        <Scrollbars style={{ width: '100%', height: 'calc(100vh - 64px)' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb} autoHide>
           <BaseMenu
             {...this.props}
             mode="inline"
