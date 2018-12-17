@@ -311,7 +311,7 @@ export default class myFileList extends PureComponent {
         align: 'center',
         width: 150,
         render: time => {
-          return time ? moment(time).format('HH:mm') : '---';
+          return time ? moment(time).format('mm分钟ss秒') : '---';
         },
       },
       {
@@ -391,6 +391,9 @@ export default class myFileList extends PureComponent {
       user: {
         currentUser: { userId },
       },
+      location: {
+        query: { studentId },
+      },
     } = this.props;
 
     return (
@@ -405,7 +408,10 @@ export default class myFileList extends PureComponent {
         }
         extraContent={
           <div>
-            <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
+            <Button
+              className={styles.backBtn}
+              onClick={() => this.goToMySynthesis(studentId ? studentId : userId)}
+            >
               综合分析报告
             </Button>
           </div>

@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Row, Button, Form, Col, Input, Card, Divider, Select, Table } from 'antd';
-import moment from 'moment';
+import { Row, Button, Form, Col, Input, Card, Divider, Table } from 'antd';
 
 const FormItem = Form.Item;
 

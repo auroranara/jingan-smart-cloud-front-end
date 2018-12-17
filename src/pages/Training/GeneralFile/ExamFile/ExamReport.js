@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { Card, Row, Col, Button } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from '../GeneralFile.less';
@@ -125,11 +126,11 @@ export default class ExamReport extends PureComponent {
           judgeCount,
           examMinUseTime,
           examMaxUseTime,
-          giveUpUsers,
-          maxScoreUsers,
-          minScoreUsers,
-          noPassUsers,
-          name = [],
+          examLimitTime,
+          giveUpUsers = [],
+          maxScoreUsers = [],
+          minScoreUsers = [],
+          noPassUsers = [],
           knowledgeReports = [],
         },
       },
@@ -170,7 +171,7 @@ export default class ExamReport extends PureComponent {
                       {examMaxScore ? examMaxScore : 0}% (
                       {maxScoreUsers.length > 0 ? maxScoreUsers.join('、') : ''}) ，最低正确率：
                       {examMinScore ? examMinScore : 0}% (
-                      {minScoreUsers.length > 0 ? maxScoreUsers.join('、') : ''}) ，平均正确率：
+                      {minScoreUsers.length > 0 ? minScoreUsers.join('、') : ''}) ，平均正确率：
                       {examMeanScore ? examMeanScore : 0}%
                     </strong>
                     。
@@ -200,30 +201,37 @@ export default class ExamReport extends PureComponent {
                       {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
                       {knowledgeReports.length}项
                     </strong>
-                    ，其中
+                    。 其中
                     {knowledgeReports.map(item => {
                       const { knowledgeId, knowledgeName, questionCount } = item;
+                      const total = knowledgeReports
+                        .map(t => t.questionCount)
+                        .reduce(function(prev, curr) {
+                          return prev + curr;
+                        });
                       return (
                         <span key={knowledgeId}>
                           {knowledgeName}
                           比例为：
-                          {questionCount}，
+                          {((questionCount / total) * 100).toFixed(2)}
+                          %。
                         </span>
                       );
                     })}
                   </p>
                   <p>
-                    4、本次考试题量： 道，其中，单项选择题：
+                    4、本次考试题量：
+                    {singleCount + multiCount + judgeCount} 道，其中，单项选择题：
                     {singleCount}
                     道，多项选择题：
                     {multiCount}
                     道，判断题：
                     {judgeCount}
-                    道。考试总 时长：90分钟，最快完成答题用时：
-                    {examMinUseTime}
-                    分钟，最慢完成答题用时：
-                    {examMaxUseTime}
-                    分钟。
+                    道。考试总时长： {moment(examLimitTime).format('mm分钟')}
+                    ，最快完成答题用时：
+                    {examMinUseTime ? moment(examMinUseTime).format('mm分钟') : '00分钟'}
+                    ，最慢完成答题用时：
+                    {examMaxUseTime ? moment(examMaxUseTime).format('mm分钟') : '00分钟'}。
                   </p>
                 </div>
                 <div className={styles.knowledge}>

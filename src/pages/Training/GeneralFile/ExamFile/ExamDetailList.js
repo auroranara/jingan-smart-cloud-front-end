@@ -84,7 +84,7 @@ export default class ExamDetailList extends PureComponent {
         examId: id,
         pageSize,
         pageNum: 1,
-        orderByField: 'score asc',
+        orderByField: 'score desc',
       },
     });
   }
@@ -148,6 +148,7 @@ export default class ExamDetailList extends PureComponent {
       type: 'generalFile/fetchExamDetail',
       payload: {
         examId: id,
+        orderByField: 'score desc',
         pageSize,
         pageNum,
         ...data,

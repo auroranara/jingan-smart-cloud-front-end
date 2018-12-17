@@ -25,28 +25,6 @@ function KnowledgeList(props) {
 // 标题
 const title = '成绩分析报告';
 
-//面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '教育培训',
-    name: '教育培训',
-  },
-  {
-    title: '我的档案',
-    name: '我的档案',
-    href: '/training/myFile/myFileList',
-  },
-  {
-    title,
-    name: '成绩分析报告',
-  },
-];
-
 @connect(({ myFile }) => ({
   myFile,
 }))
@@ -113,6 +91,9 @@ export default class MyAnalysis extends PureComponent {
 
   render() {
     const {
+      location: {
+        query: { studentId },
+      },
       myFile: {
         analysisData: {
           studentName,
@@ -133,6 +114,28 @@ export default class MyAnalysis extends PureComponent {
         },
       },
     } = this.props;
+
+    //面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+      {
+        title: '教育培训',
+        name: '教育培训',
+      },
+      {
+        title: '我的档案',
+        name: '我的档案',
+        href: `/training/myFile/myFileList?studentId=${studentId}`,
+      },
+      {
+        title,
+        name: '成绩分析报告',
+      },
+    ];
 
     return (
       <PageHeaderLayout
@@ -192,7 +195,8 @@ export default class MyAnalysis extends PureComponent {
                       {noPassCount}
                       人，我的成绩：
                       {myPassStatus === '1' ? '合格' : myPassStatus === '-1' ? '弃考' : '不合格'}
-                      ，排名为：第 {myRanking}名
+                      ，排名为：第
+                      {myRanking}名
                     </strong>
                     。
                   </p>
@@ -217,7 +221,7 @@ export default class MyAnalysis extends PureComponent {
                           题，答对
                           {rightCount}题 ，正确率为：
                           {rightPercent}
-                          %；
+                          %。
                         </span>
                       );
                     })}
