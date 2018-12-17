@@ -156,13 +156,14 @@ export default class DrawerOfHiddenDanger extends PureComponent {
     const {
       visible,
       onClose,
+      title,
       data: {
         hiddenDangerRecords,
       },
     } = this.props
     return (
       <DrawerContainer
-        title="隐患统计详情"
+        title={title}
         visible={visible}
         placement="left"
         destroyOnClose

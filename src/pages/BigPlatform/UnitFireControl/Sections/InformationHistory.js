@@ -44,7 +44,7 @@ export default class InformationHistory extends PureComponent {
   }
 
   renderAlarmHistory = (list) => {
-    return list.map(({ id, component_region = null, deviceAddress = null, devideName = null, systemTypeValue = null, component_no = null, label = null, install_address = null, pendingInfoType = null, t, icon, ntype = null }, i) => pendingInfoType === '一键报修' ? (
+    return list.map(({ id, component_region = null, device_address = null, device_name = null, systemTypeValue = null, component_no = null, label = null, install_address = null, pendingInfoType = null, t, icon, ntype = null, fire_state = null }, i) => pendingInfoType === '一键报修' ? (
       <Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
         <div className={styles.innerItem}>
           <div className={styles.alarmTitle}>
@@ -55,24 +55,23 @@ export default class InformationHistory extends PureComponent {
                 backgroundPosition: 'center center',
                 backgroundSize: '65% 65%',
               }}></div>
-              <div className={styles.remarks}>{pendingInfoType}</div>
+              <div className={styles.blueText}>{pendingInfoType}</div>
             </div>
           </div>
           {systemTypeValue && <div className={styles.alarmDetail}>{systemTypeValue}</div>}
           <div className={styles.alarmDetail}>
             <Ellipsis lines={1} tooltip>
-              <span>{devideName}</span>
+              <span>{device_name}</span>
             </Ellipsis>
           </div>
           <div className={styles.lastLine}>
             <div className={styles.location}>
-              <span><Icon type="environment" theme="outlined" />{deviceAddress}</span>
+              <span><Icon type="environment" theme="outlined" />{device_address}</span>
             </div>
             <div className={styles.time}><span>{t}</span></div>
           </div>
         </div>
-        <div className={styles.topRightPurpleTag}>指派维保</div>)
-        {/* <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div> */}
+        <div className={styles.topRightPurpleTag}>指派维保</div>
       </Col>
     ) : (<Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
       <div className={styles.innerItem}>
@@ -84,7 +83,11 @@ export default class InformationHistory extends PureComponent {
               backgroundPosition: 'center center',
               backgroundSize: '65% 65%',
             }}></div>
-            <div className={styles.remarks}>{pendingInfoType}</div>
+            {+fire_state === 1 ? (
+              <div className={styles.redText}>{(+ntype === 1 && '误报火警') || (+ntype === 2 && '真实火警')}</div>
+            ) : (
+                <div className={styles.blueText}>{pendingInfoType}</div>
+              )}
           </div>
         </div>
         <div className={styles.alarmDetail}>
@@ -104,7 +107,6 @@ export default class InformationHistory extends PureComponent {
       </div>
       {ntype && ntype === '4' && (<div className={styles.topRightPurpleTag}>指派维保</div>)}
       {ntype && ntype === '3' && (<div className={styles.topRightBlueTag}>自处理</div>)}
-      {/* <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div> */}
     </Col>
       ))
   }
