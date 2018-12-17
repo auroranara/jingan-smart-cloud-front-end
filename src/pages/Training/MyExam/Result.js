@@ -113,7 +113,7 @@ export default class ExamResult extends PureComponent {
                 <PersonCard src={personIcon} name={studentName || NO_DATA} desc={studentTypeName || NO_DATA} />
                 <Flag color="green">正确题目</Flag>
                 <Flag color="red">错误题目</Flag>
-                <Accuracy status={Number.parseInt(passStatus, 10)}>{score}</Accuracy>
+                <Accuracy status={Number.parseInt(passStatus, 10)}>{score || 0}</Accuracy>
                 <MultiSubSide
                   colors={colors}
                   categories={categories}

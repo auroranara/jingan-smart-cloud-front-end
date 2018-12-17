@@ -269,8 +269,8 @@ export default class ExaminationMissionList extends PureComponent {
                 <Col span={24}>
                   <Ellipsis className={styles.ellipsisText} tooltip lines={1}>
                     考试期限：
-                    {moment(item.startTime).format('YYYY-MM-DD hh:ss')} 至
-                    {moment(item.endTime).format('YYYY-MM-DD hh:ss')}
+                    {moment(item.startTime).format('YYYY-MM-DD HH:mm')} 至
+                    {moment(item.endTime).format('YYYY-MM-DD HH:mm')}
                   </Ellipsis>
                 </Col>
               </Row>
@@ -299,10 +299,13 @@ export default class ExaminationMissionList extends PureComponent {
         },
       },
       user: {
-        currentUser: { companyId },
+        currentUser: { companyId, permissionCodes },
       },
       loading,
     } = this.props;
+
+    // 是否有新增权限
+    const hasAddAuthority = permissionCodes.includes('training.mission.add');
 
     return (
       <PageHeaderLayout
@@ -367,7 +370,7 @@ export default class ExaminationMissionList extends PureComponent {
                       <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                         重置
                       </Button>
-                      <Button type="primary" onClick={this.handleToAdd}>
+                      <Button type="primary" onClick={this.handleToAdd} disabled={!hasAddAuthority}>
                         新增
                       </Button>
                     </FormItem>

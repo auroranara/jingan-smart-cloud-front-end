@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
+import Ellipsis from '@/components/Ellipsis';
 import { Card, Input, List, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -11,11 +12,12 @@ import styles from './ExamList.less';
 import qualifiedIcon from './imgs/qualified.png';
 import unqualifiedIcon from './imgs/unqualified.png';
 
+// 标题
+const title = '我的考试';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '教育培训', name: '教育培训' },
-  { title: '我的考试', name: '我的考试' },
-  { title: '考试列表', name: '考试列表' },
+  { title, name: title },
 ];
 
 const documentElem = document.documentElement;
@@ -140,7 +142,7 @@ export default class ExamList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="考试列表"
+        title={title}
         breadcrumbList={breadcrumbList}
         // content={}
       >
@@ -199,18 +201,18 @@ export default class ExamList extends PureComponent {
 
               return (
                 <List.Item key={id}>
-                  <Card className={styles.card} title={name} actions={[action]}>
+                  <Card className={styles.card} title={<Ellipsis lines={1} tooltip style={{ height: 24 }}>{name}</Ellipsis>} actions={[action]}>
                     <p>
                       考试期限：
                       {examStartTime && examEndTime ? `${moment(examStartTime).format(TIME_FORMAT)} 到 ${moment(examEndTime).format(TIME_FORMAT)}` : NO_DATA}
                     </p>
                     <p>
                       考试时长：
-                      {examLimit ? `${examLimit}分钟` : NO_DATA}
+                      {examLimit || examLimit === 0 ? `${examLimit}分钟` : NO_DATA}
                     </p>
                     <p>
                       合格率：
-                      {percentOfPass ? `${percentOfPass}%` : NO_DATA}
+                      {percentOfPass || percentOfPass === 0 ? `${percentOfPass}%` : NO_DATA}
                     </p>
                     {passStatus !== undefined && passStatus !== null && (
                       <img

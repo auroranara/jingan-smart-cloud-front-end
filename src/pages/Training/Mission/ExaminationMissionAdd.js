@@ -88,7 +88,7 @@ export default class ExaminationMissionAdd extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
-        companyId: id || companyId,
+        companyId,
       },
     });
     // 如果新增
@@ -159,9 +159,12 @@ export default class ExaminationMissionAdd extends PureComponent {
       match: {
         params: { id },
       },
+      user: { currentUser: { id: userId } },
     } = this.props;
     validateFields((errors, values) => {
       if (!errors) {
+        // 从session中获取companyId
+        const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
         // 新增 TODO：企业id 企业人员新增不需要companyId
         const {
           timeRange: [start, end],
@@ -174,6 +177,7 @@ export default class ExaminationMissionAdd extends PureComponent {
           startTime: moment(start).format('YYYY/MM/DD HH:mm:ss'),
           endTime: moment(end).format('YYYY/MM/DD HH:mm:ss'),
           paperId: paperId.key,
+          companyId,
         };
         if (!id) {
           dispatch({
@@ -217,13 +221,16 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   // 点击选择按钮
   handleViewPaperModal = () => {
-    const { dispatch } = this.props;
+    const { dispatch, user: { currentUser: { id: userId } } } = this.props;
+    // 从session中获取companyId
+    const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
     // 获取试卷列表
     dispatch({
       type: 'examinationMission/fetchExamPaper',
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
+        companyId,
       },
     });
     this.setState({
@@ -256,13 +263,16 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   // 试卷列表翻页
   handlePaperPageChange = (pageNum, pageSize) => {
-    const { dispatch } = this.props;
+    const { dispatch, user: { currentUser: { id: userId } } } = this.props;
+    // 从session中获取companyId
+    const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
     // 获取试卷列表
     dispatch({
       type: 'examinationMission/fetchExamPaper',
       payload: {
         pageNum,
         pageSize,
+        companyId,
       },
     });
   };
