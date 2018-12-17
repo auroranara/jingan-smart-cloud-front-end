@@ -521,7 +521,7 @@ class ElectricityCharts extends PureComponent {
         if (chartSeries[0].data[this.currentIndex] !== '-') break;
       }
       chartSeries.forEach(series => {
-        if (series.data[series.data.length - 1].itemStyle) this.currentIndex = dataLen - 1;
+        if (series.data[series.data.length - 1]) this.currentIndex = dataLen - 1;
       });
       // 高亮当前图形
       chart.dispatchAction({

@@ -61,7 +61,6 @@ export default class ExaminationMissionAdd extends PureComponent {
   constructor() {
     super();
     this.state = {
-      title: '新增考试任务',
       paperModalVisible: false, // 控制选择试卷弹窗可见
       studentsModalVisible: false, // 控制选择考生弹窗可见
       selectedRowKeys: [], // 勾选的试卷key
@@ -78,10 +77,13 @@ export default class ExaminationMissionAdd extends PureComponent {
       match: {
         params: { id },
       },
-      user: { currentUser: { id: userId } },
+      user: {
+        currentUser: { id: userId },
+      },
     } = this.props;
     // 从session中获取companyId
-    const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
+    const { id: companyId } =
+      JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
     // 获取当前企业的考试人员列表
     dispatch({
       type: 'examinationMission/fetchExamStudents',
@@ -89,6 +91,10 @@ export default class ExaminationMissionAdd extends PureComponent {
         pageNum: 1,
         pageSize: defaultPageSize,
         companyId,
+        examId: id,
+      },
+      success: res => {
+        this.students = res.list;
       },
     });
     // 如果新增
@@ -100,7 +106,6 @@ export default class ExaminationMissionAdd extends PureComponent {
       setFieldsValue({ arrRuleType: ['1'], examLimit: 90, percentOfPass: 60 });
     } else {
       // 如果编辑
-      // this.setState({ title: '编辑考试任务' });
       dispatch({
         type: 'examinationMission/fetchDetail',
         payload: {
@@ -108,6 +113,7 @@ export default class ExaminationMissionAdd extends PureComponent {
         },
         success: response => {
           const { arrRuleType, paperId, paperName, students } = response;
+          this.students = [...students, ...this.students];
           setFieldsValue({
             arrRuleType,
             paperId: { key: paperId, label: paperName },
@@ -159,12 +165,15 @@ export default class ExaminationMissionAdd extends PureComponent {
       match: {
         params: { id },
       },
-      user: { currentUser: { id: userId } },
+      user: {
+        currentUser: { id: userId },
+      },
     } = this.props;
     validateFields((errors, values) => {
       if (!errors) {
         // 从session中获取companyId
-        const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
+        const { id: companyId } =
+          JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
         // 新增 TODO：企业id 企业人员新增不需要companyId
         const {
           timeRange: [start, end],
@@ -221,9 +230,15 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   // 点击选择按钮
   handleViewPaperModal = () => {
-    const { dispatch, user: { currentUser: { id: userId } } } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { id: userId },
+      },
+    } = this.props;
     // 从session中获取companyId
-    const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
+    const { id: companyId } =
+      JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
     // 获取试卷列表
     dispatch({
       type: 'examinationMission/fetchExamPaper',
@@ -263,9 +278,15 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   // 试卷列表翻页
   handlePaperPageChange = (pageNum, pageSize) => {
-    const { dispatch, user: { currentUser: { id: userId } } } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { id: userId },
+      },
+    } = this.props;
     // 从session中获取companyId
-    const { id: companyId } = JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
+    const { id: companyId } =
+      JSON.parse(sessionStorage.getItem(`examination_mission_list_company_${userId}`)) || {};
     // 获取试卷列表
     dispatch({
       type: 'examinationMission/fetchExamPaper',
@@ -279,7 +300,6 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   // 打开选择考试人员弹窗
   handleViewStudentsModal = () => {
-    const { dispatch } = this.props;
     this.setState({ studentsModalVisible: true });
   };
 
@@ -349,13 +369,7 @@ export default class ExaminationMissionAdd extends PureComponent {
   // 渲染选择人员
   renderSelectStudents = () => {
     const { studentsModalVisible, targetKeys } = this.state;
-    const {
-      form: { getFieldValue },
-      examinationMission: {
-        examStudents: { list },
-      },
-    } = this.props;
-    // const selectedStudents = getFieldValue('students')
+
     return (
       <Modal
         title="选择人员"
@@ -367,11 +381,12 @@ export default class ExaminationMissionAdd extends PureComponent {
         onOk={this.handleConfirmStudents}
       >
         <Transfer
-          dataSource={list} // 数据源（左侧）
-          titles={['已选择人员', '未选择人员']}
+          dataSource={this.students} // 数据源（左侧）
+          titles={['未选择人员', '已选择人员']}
           targetKeys={targetKeys} // 右侧数据的key集合
           onChange={this.handleTransferChange}
           render={item => item.name}
+          rowKey={record => record.studentId}
         />
       </Modal>
     );
@@ -379,12 +394,16 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   render() {
     const {
-      form: { getFieldDecorator, getFieldValue, setFieldsValue },
+      form: { getFieldDecorator, getFieldValue },
       examinationMission: {
         detail: { name, percentOfPass, examLimit, startTime, endTime },
       },
+      match: {
+        params: { id },
+      },
     } = this.props;
-    const { title } = this.state;
+    const { studentsModalVisible } = this.state;
+    const title = id ? '编辑考试任务' : '新增考试任务';
     const arrRuleType = getFieldValue('arrRuleType') || [];
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -541,7 +560,7 @@ export default class ExaminationMissionAdd extends PureComponent {
           </Form>
         </Card>
         {this.renderSelectPaper()}
-        {this.renderSelectStudents()}
+        {studentsModalVisible && this.renderSelectStudents()}
       </PageHeaderLayout>
     );
   }

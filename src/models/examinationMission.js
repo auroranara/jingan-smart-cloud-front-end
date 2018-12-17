@@ -110,13 +110,16 @@ export default {
       }
     },
     // 获取考试人员列表
-    *fetchExamStudents({ payload }, { call, put }) {
+    *fetchExamStudents({ payload, success, error }, { call, put }) {
       const response = yield call(fetchExamStudents, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveExamStudents',
           payload: response.data,
         });
+        if (success) success(response.data);
+      } else if (error) {
+        error();
       }
     },
     // 新增考试
