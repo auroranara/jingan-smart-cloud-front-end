@@ -1,6 +1,11 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { Card, Row, Col, Button } from 'antd';
+import {
+  Card,
+  Row,
+  Col,
+  // Button,
+} from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -142,11 +147,11 @@ export default class MyAnalysis extends PureComponent {
         title="成绩分析报告"
         breadcrumbList={breadcrumbList}
         content={<div />}
-        extraContent={
-          <Button className={styles.backBtn} onClick={this.reportDownload}>
-            下载
-          </Button>
-        }
+        // extraContent={
+        //   <Button className={styles.backBtn} onClick={this.reportDownload}>
+        //     下载
+        //   </Button>
+        // }
       >
         <Row gutter={16}>
           <Col>

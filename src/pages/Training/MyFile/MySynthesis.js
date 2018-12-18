@@ -1,6 +1,11 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { Card, Row, Col, Button } from 'antd';
+import {
+  Card,
+  Row,
+  Col,
+  // Button,
+} from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
@@ -133,11 +138,11 @@ export default class MySynthesis extends PureComponent {
         title="综合分析报告"
         breadcrumbList={breadcrumbList}
         content={<div />}
-        extraContent={
-          <Button className={styles.backBtn} onClick={this.synthesisDownLoad}>
-            下载
-          </Button>
-        }
+        // extraContent={
+        //   // <Button className={styles.backBtn} onClick={this.synthesisDownLoad}>
+        //   //   下载
+        //   // </Button>
+        // }
       >
         <Row gutter={16}>
           <Col>
@@ -205,13 +210,11 @@ export default class MySynthesis extends PureComponent {
                               {knowledgeName}共{questionCount}
                               题，答对
                               {rightCount}题 ，正确率为：
-                              {rightPercent}
-                              %；
+                              {rightPercent}% 。
                             </span>
                           );
                         })
                       : '无'}
-                    。
                   </p>
                   {/* <p>
                     4、本次考试题量：
