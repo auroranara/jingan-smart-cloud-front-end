@@ -54,19 +54,19 @@ const getPendingInfoType = ({
 }, returnType = 'title') => {
   let value = '';
   if (+report_type === 2) {
-    value = (returnType === 'title' && '一键报修') || (returnType === 'icon' && `${prefix}blue-baoxiu.png`);
+    value = (returnType === 'title' && '一键报修') || (returnType === 'icon' && `${prefix}baoxiu.png`);
   } else if (+fire_state === 1) {
     value = (returnType === 'title' && '火警') || (returnType === 'icon' && `${prefix}huojing.png`);
   } else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
-    value = (returnType === 'title' && '故障') || (returnType === 'icon' && `${prefix}blue-guzhang.png`);
+    value = (returnType === 'title' && '故障') || (returnType === 'icon' && `${prefix}guzhang.png`);
   } else if (+start_state === 1) {
-    value = (returnType === 'title' && '联动') || (returnType === 'icon' && `${prefix}blue-liandong.png`);
+    value = (returnType === 'title' && '联动') || (returnType === 'icon' && `${prefix}liandong.png`);
   } else if (+supervise_state === 1) {
-    value = (returnType === 'title' && '监管') || (returnType === 'icon' && `${prefix}blue-jianguan.png`);
+    value = (returnType === 'title' && '监管') || (returnType === 'icon' && `${prefix}jianguan.png`);
   } else if (+shield_state === 1) {
-    value = (returnType === 'title' && '屏蔽') || (returnType === 'icon' && `${prefix}blue-pingbi.png`);
+    value = (returnType === 'title' && '屏蔽') || (returnType === 'icon' && `${prefix}pingbi.png`);
   } else if (+feedback_state === 1) {
-    value = (returnType === 'title' && '反馈') || (returnType === 'icon' && `${prefix}blue-fankui.png`);
+    value = (returnType === 'title' && '反馈') || (returnType === 'icon' && `${prefix}fankui.png`);
   }
   return value;
 };

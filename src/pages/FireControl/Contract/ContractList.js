@@ -286,22 +286,25 @@ export default class ContractList extends PureComponent {
       contract: { statusList },
       goToAdd,
       user: {
-        currentUser: { permissionCodes },
+        currentUser: {
+          permissionCodes,
+          // companyBasicInfo: { isBranch } = {}
+        },
       },
     } = this.props;
     /* 表单字段 */
     const fields = [
       {
-        id: 'name',
+        id: 'maintenanceName',
         render() {
-          return <Input placeholder="请输入单位名称" />;
+          return <Input placeholder="请输入维保单位名称" />;
         },
         transform,
       },
       {
-        id: 'searchArea',
+        id: 'name',
         render() {
-          return <Input placeholder="请输入单位地址" />;
+          return <Input placeholder="请输入服务单位名称" />;
         },
         transform,
       },
@@ -370,7 +373,10 @@ export default class ContractList extends PureComponent {
         data: { list },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: {
+          permissionCodes,
+          // companyBasicInfo: { isBranch } = {},
+        },
       },
       goToDetail,
     } = this.props;
@@ -394,6 +400,7 @@ export default class ContractList extends PureComponent {
               startTime,
               endTime,
               contractStatus,
+              maintenanceName,
               companyBasicInfo: { name, safetyName, safetyPhone, searchArea },
             } = item;
             const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) ||
@@ -445,6 +452,11 @@ export default class ContractList extends PureComponent {
                     }
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      维保单位：
+                      {maintenanceName || getEmptyData()}
+                    </Ellipsis>
+
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       服务单位：
                       {name || getEmptyData()}

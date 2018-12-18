@@ -14,7 +14,7 @@ import {
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import { arrayify } from 'tslint/lib/utils';
-import { AuthButton, AuthA } from '@/utils/customAuth'
+import { AuthButton, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
 const { TreeNode } = TreeSelect;
@@ -151,11 +151,11 @@ export default class DepartmentList extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'department/saveDepartment',
       payload: [],
-    })
+    });
   }
 
   // 获取部门列表
@@ -186,7 +186,7 @@ export default class DepartmentList extends PureComponent {
 
   // 部门搜索
   handleQuery = async () => {
-    let results = []
+    let results = [];
     const {
       form: { getFieldValue },
       department: {
@@ -194,7 +194,7 @@ export default class DepartmentList extends PureComponent {
       },
     } = this.props;
     const name = getFieldValue('name');
-    await this.hasName(name, list, results)
+    await this.hasName(name, list, results);
     this.setState({ searchName: name });
     if (name && results.length === 0) {
       message.error('未查询到所需数据！');
@@ -209,12 +209,11 @@ export default class DepartmentList extends PureComponent {
   hasName(name, list, results) {
     for (const item of list) {
       if (item.name.includes(name)) {
-        results.push(item.name)
+        results.push(item.name);
         return;
-      }
-      else if (item.children) this.hasName(name, item.children, results);
+      } else if (item.children) this.hasName(name, item.children, results);
     }
-  };
+  }
 
   // generateExpended = (name, list, temp) => {
   //   for (const item of list) {
@@ -274,7 +273,7 @@ export default class DepartmentList extends PureComponent {
   handleDelete = rows => {
     const { dispatch } = this.props;
     if (rows.allUserCount > 0) {
-      message.error('该部门拥有下属用户，不可删除！')
+      message.error('该部门拥有下属用户，不可删除！');
     } else {
       dispatch({
         type: 'department/deleteDepartment',
@@ -324,7 +323,7 @@ export default class DepartmentList extends PureComponent {
         if (response && response.code === 200) {
           this.handleCloseModal();
           this.getDepartments();
-          message.success('新建成功！');
+          message.success('编辑成功！');
         } else message.error(response.msg);
       },
     });
@@ -360,7 +359,11 @@ export default class DepartmentList extends PureComponent {
             <Button onClick={this.resetQuery}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <AuthButton onClick={() => this.handleShowModal('add')} type="primary" code={codes.company.department.add}>
+            <AuthButton
+              onClick={() => this.handleShowModal('add')}
+              type="primary"
+              code={codes.company.department.add}
+            >
               新增
             </AuthButton>
           </FormItem>
@@ -393,8 +396,8 @@ export default class DepartmentList extends PureComponent {
               {val.substr(index + searchName.length)}
             </span>
           ) : (
-              <span>{val}</span>
-            );
+            <span>{val}</span>
+          );
         },
       },
       {
@@ -410,9 +413,19 @@ export default class DepartmentList extends PureComponent {
         align: 'center',
         render: (val, rows) => (
           <Fragment>
-            <AuthA code={codes.company.department.add} onClick={() => this.handleShowModal('addUnder', rows)}>添加</AuthA>
+            <AuthA
+              code={codes.company.department.add}
+              onClick={() => this.handleShowModal('addUnder', rows)}
+            >
+              添加
+            </AuthA>
             <Divider type="vertical" />
-            <AuthA code={codes.company.department.edit} onClick={() => this.handleShowModal('edit', rows)}>编辑</AuthA>
+            <AuthA
+              code={codes.company.department.edit}
+              onClick={() => this.handleShowModal('edit', rows)}
+            >
+              编辑
+            </AuthA>
             <Divider type="vertical" />
             <Popconfirm title="确认要删除该部门吗？" onConfirm={() => this.handleDelete(rows)}>
               <AuthA code={codes.company.department.delete}>删除</AuthA>
@@ -433,8 +446,8 @@ export default class DepartmentList extends PureComponent {
             defaultExpandAllRows={true}
           />
         ) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
       </Card>
     );
   }
@@ -461,8 +474,8 @@ export default class DepartmentList extends PureComponent {
           {total}
         </span>
       ) : (
-          <span>部门总数：0</span>
-        );
+        <span>部门总数：0</span>
+      );
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={content}>
         {this.renderQuery()}
