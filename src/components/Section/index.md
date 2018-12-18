@@ -9,5 +9,5 @@
 * title 标题栏，当不传时不显示标题栏，同时关闭按钮无效
 * fixedContent 标题栏下方的固定元素
 * fixedContentStyle 固定元素样式
-* hackHeight 未知
 * titleStyle 标题栏样式
+* skip 组件更新时，是否跳过验证，强制判断滚动条的显示，使用场景：当children的长度不变但实际内容发生变化时

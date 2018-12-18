@@ -184,7 +184,7 @@ export default class App extends PureComponent {
             <div className={styles.jumpButton} onClick={onBack}><img src={backIcon} alt="" /></div>
           </Fragment>
         }
-        hackHeight={data.length > 0 ? (38 * data.length + 37) : 38}
+        skip
         isScroll
       >
         <Table

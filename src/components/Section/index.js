@@ -58,16 +58,16 @@ export default class App extends PureComponent {
    * 组件更新
    */
   componentDidUpdate({ children: prevChildren, hackHeight: prevHackHeight }) {
-    const { children, hackHeight } = this.props;
+    const { children, hackHeight, skip } = this.props;
     // 当内容发生变化时，重新计算内容高度是否超出容器以显示或隐藏滚动条，由于技术所限，暂时通过length判断
-    if (prevChildren.length !== children.length || this.getChildrenLength(children) !== this.getChildrenLength(prevChildren)) {
+    if (prevChildren.length !== children.length || this.getChildrenLength(children) !== this.getChildrenLength(prevChildren) || skip) {
       this.resize();
     }
-    else if (hackHeight !== prevHackHeight) {
-      this.setState({
-        isOverflow: hackHeight > this.container.offsetHeight,
-      });
-    }
+    // else if (hackHeight !== prevHackHeight) {
+    //   this.setState({
+    //     isOverflow: hackHeight > this.container.offsetHeight,
+    //   });
+    // }
   }
 
   /**

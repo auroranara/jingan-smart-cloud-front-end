@@ -27,6 +27,7 @@ export default class InspectionPoint extends PureComponent {
         title="巡查点位详情"
         titleStyle={{ marginBottom: 0 }}
         onClose={onClose}
+        skip
       >
         <div className={styles.title}>风险点详情</div>
         {data.length > 0 ? (

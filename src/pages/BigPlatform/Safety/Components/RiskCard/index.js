@@ -54,10 +54,16 @@ export default class App extends PureComponent {
         style={style}
       >
         <div className={styles.titleContainer}>
-          <div className={styles.title}><Ellipsis lines={1} tooltip>风险点名称：{name || '暂无风险点名称'}</Ellipsis></div>
+          {/* 标题 */}
+          <div className={styles.title}>
+            <div className={styles.titleLabel}>风险点名称：</div>
+            <div className={styles.titleValue}>{name || '暂无风险点名称'}</div>
+          </div>
+          {/* 风险等级：当未评级时，不显示风险等级 */}
           {riskName && <div className={styles.level}>等级：<span style={{ color: color[riskName] }}>{riskName}</span></div>}
         </div>
         <div className={styles.content}>
+          {/* 图片 */}
           <div className={styles.avatarContainer}>
             {isValid ? (
               <div className={styles.avatar} style={{ backgroundImage: `url(${webUrl})` }} />
@@ -70,38 +76,38 @@ export default class App extends PureComponent {
               <Fragment>
                 <div className={styles.info}>
                   <div className={styles.infoName}>场所/环节/部位</div>
-                  <div className={styles.infoValue}><Ellipsis lines={1} tooltip>{area_name}</Ellipsis></div>
+                  <div className={styles.infoValue}>{area_name}</div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>易导致（风险）</div>
-                  <div className={styles.infoValue}><Ellipsis lines={1} tooltip>{accidentTypeName}</Ellipsis></div>
+                  <div className={styles.infoValue}>{accidentTypeName}</div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>检查状态</div>
-                  <div className={styles.infoValue} style={{ color: isAlert ? '#ff4848' : undefined }}><Ellipsis lines={1} tooltip>{statusLabel[status]}</Ellipsis></div>
+                  <div className={styles.infoValue} style={{ color: isAlert ? '#ff4848' : undefined }}>{statusLabel[status]}</div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查人</div>
-                  <div className={styles.infoValue}><Ellipsis lines={1} tooltip>{user_name} {moment && moment(check_date).format('YYYY-MM-DD ')}</Ellipsis></div>
+                  <div className={styles.infoValue}>{user_name} {moment && moment(check_date).format('YYYY-MM-DD ')}</div>
                 </div>
               </Fragment>
             ) : (
               <Fragment>
                 <div className={styles.info}>
                   <div className={styles.infoName}>点位编号</div>
-                  <div className={styles.infoValue}><Ellipsis lines={1} tooltip>{location_code}</Ellipsis></div>
+                  <div className={styles.infoValue}>{location_code}</div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>检查状态</div>
-                  <div className={styles.infoValue} style={{ color: isAlert ? '#ff4848' : undefined }}><Ellipsis lines={1} tooltip>{statusLabel[status]}</Ellipsis></div>
+                  <div className={styles.infoValue} style={{ color: isAlert ? '#ff4848' : undefined }}>{statusLabel[status]}</div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查人</div>
-                  <div className={styles.infoValue}><Ellipsis lines={1} tooltip>{user_name}</Ellipsis></div>
+                  <div className={styles.infoValue}>{user_name}</div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查时间</div>
-                  <div className={styles.infoValue}><Ellipsis lines={1} tooltip>{moment && moment(check_date).format('YYYY-MM-DD ')}</Ellipsis></div>
+                  <div className={styles.infoValue}>{moment && moment(check_date).format('YYYY-MM-DD ')}</div>
                 </div>
               </Fragment>
             )}
