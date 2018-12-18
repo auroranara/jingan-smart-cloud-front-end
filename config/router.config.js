@@ -1275,10 +1275,10 @@ module.exports = [
                 component: './Training/MyFile/MyAnalysis',
               },
               {
-                path: '/training/myFile/mySynthesis',
+                path: '/training/myFile/MySynthesis',
                 code: 'training.myFile.view',
                 name: 'mySynthesis',
-                component: './Training/MyFile/mySynthesis',
+                component: './Training/MyFile/MySynthesis',
               },
             ],
           },
