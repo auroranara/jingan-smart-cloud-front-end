@@ -77,3 +77,8 @@ export async function fetchAlarmInfoTypes() {
 export async function querySmokeList(params) {
   return request(`/acloud_new/v2/monitor/getDevicesByType?${stringify(params)}`);
 }
+
+// 获取传感器历史数据
+export async function getDeviceDataHistory(params) {
+  return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
+}

@@ -9,8 +9,8 @@ const CHOICES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 const HEIGHT = 40;
 const DEFAULT_HEIGHT = 32;
-const CHOICE_STYLE = { display: 'block', fontSize: 16, height: HEIGHT, lineHeight: `${HEIGHT}px`, margin: '0 0 0 20px' };
-const DEFAULT_CHOICE_STYLE = { fontSize: 16, height: DEFAULT_HEIGHT, lineHeight: `${DEFAULT_HEIGHT}px`, margin: '0 0 0 30px' };
+const CHOICE_STYLE = { display: 'block', fontSize: 16, lineHeight: `${HEIGHT}px`, margin: '0 0 0 20px', paddingRight: 30, whiteSpace: 'normal' };
+const DEFAULT_CHOICE_STYLE = { fontSize: 16, lineHeight: `${DEFAULT_HEIGHT}px`, margin: '0 0 0 30px', paddingRight: 30 };
 
 export default class Subject extends PureComponent {
   render() {

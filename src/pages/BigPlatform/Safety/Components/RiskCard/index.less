@@ -1,0 +1,88 @@
+.container {
+  margin-bottom: 16px;
+  font-size: 16px;
+  line-height: 1;
+  color: #fff;
+  background-color: rgba(7, 43, 93, 0.702);
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.004);
+  border: 1px solid #00A8FF;
+
+  /* 标题容器 */
+  .titleContainer {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    min-height: 48px;
+
+    /* 标题 */
+    .title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+
+      .titleLabel {
+        flex: none;
+      }
+      .titleValue {
+        flex: 1;
+      }
+    }
+
+    /* 风险等级 */
+    .level {
+      flex: none;
+    }
+  }
+
+  /* 内容 */
+  .content {
+    display: flex;
+
+    /* 图片容器 */
+    .avatarContainer {
+      flex: 6;
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid #00A8FF;
+      border-right: 1px solid #00A8FF;
+
+      /* 图片 */
+      .avatar {
+        flex: 1;
+        background: no-repeat center center;
+        background-size: contain;
+      }
+    }
+
+    /* 信息容器 */
+    .infoContainer {
+      flex: 14;
+
+      /* 信息 */
+      .info {
+        display: flex;
+        border-top: 1px solid #00A8FF;
+
+        /* 信息名称 */
+        .infoName {
+          flex: 5;
+          display: flex;
+          align-items: center;
+          padding: 8px 12px;
+          min-height: 48px;
+          color: #00A8FF;
+        }
+
+        /* 信息值 */
+        .infoValue {
+          flex: 9;
+          display: flex;
+          align-items: center;
+          padding: 8px 12px;
+          min-height: 48px;
+          border-left: 1px solid #00A8FF;
+        }
+      }
+    }
+  }
+}

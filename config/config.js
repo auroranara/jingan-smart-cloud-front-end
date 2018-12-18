@@ -38,7 +38,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.ct}`,
+      target: `http://${hosts.sj}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

@@ -205,6 +205,9 @@ export default class CoursewareAdd extends PureComponent {
       this.setState({ courseLoading: false });
     } else if (file.status === 'removed') {
       resetFields(['fileUrl'])
+      this.setState({
+        courseLoading: false,
+      })
     }
     if ((type === '2' && file.type === "video/mp4") || (type === '3' && file.type.includes('application'))) {
       this.setState({ fileList: newList });

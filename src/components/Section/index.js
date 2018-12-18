@@ -58,16 +58,16 @@ export default class App extends PureComponent {
    * 组件更新
    */
   componentDidUpdate({ children: prevChildren, hackHeight: prevHackHeight }) {
-    const { children, hackHeight } = this.props;
-    // 比较源数据的key是否发生变化，如果发生变化就重新计算内容高度
-    if (this.getChildrenLength(children) !== this.getChildrenLength(prevChildren)) {
+    const { children, hackHeight, skip } = this.props;
+    // 当内容发生变化时，重新计算内容高度是否超出容器以显示或隐藏滚动条，由于技术所限，暂时通过length判断
+    if (prevChildren.length !== children.length || this.getChildrenLength(children) !== this.getChildrenLength(prevChildren) || skip) {
       this.resize();
     }
-    else if (hackHeight !== prevHackHeight) {
-      this.setState({
-        isOverflow: hackHeight > this.container.offsetHeight,
-      });
-    }
+    // else if (hackHeight !== prevHackHeight) {
+    //   this.setState({
+    //     isOverflow: hackHeight > this.container.offsetHeight,
+    //   });
+    // }
   }
 
   /**
@@ -372,6 +372,8 @@ export default class App extends PureComponent {
       children,
       // 固定内容样式
       fixedContentStyle,
+      // 标题栏样式
+      titleStyle,
     } = this.props;
     // 外部容器类名
     const outerClassName = className ? `${styles.outer} ${className}` : styles.outer;
@@ -383,7 +385,7 @@ export default class App extends PureComponent {
         <div className={styles.inner}>
           {/* 标题栏 */
             title && (
-              <div className={styles.title}>
+              <div className={styles.title} style={titleStyle}>
                 <div className={styles.titleIcon}></div>
                 <div className={styles.titleContent}>{title}</div>
                 {/* 关闭按钮 */

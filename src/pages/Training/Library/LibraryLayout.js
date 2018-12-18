@@ -7,6 +7,7 @@ import Questions from './Questions/QuestionsList';
 import Article from './Article/ArticleList';
 import Courseware from './Courseware/CoursewareList';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './LibraryLayout.less';
 
 const { TabPane } = Tabs
@@ -184,11 +185,11 @@ export default class LibraryLayout extends PureComponent {
     return data.map(item => {
       if (item.children && Array.isArray(item.children)) {
         return (
-          <TreeNode title={item.name} key={item.id}>
+          <TreeNode title={(<Ellipsis length={10} tooltip>{item.name}</Ellipsis>)} key={item.id}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
-      } else return <TreeNode title={item.name} key={item.id} />;
+      } else return <TreeNode title={(<Ellipsis length={10} tooltip>{item.name}</Ellipsis>)} key={item.id} />;
     });
   };
 

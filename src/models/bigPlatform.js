@@ -21,7 +21,7 @@ import {
   getSearchAllCompany,
   getDangerLocationCompanyData,
   getAllCamera,
-  getStartToPlay,
+  // getStartToPlay,
   getMonitorData,
   getHiddenDangerCompany,
   getCheckInfo,
@@ -37,6 +37,11 @@ import {
   getMapLocation,
   getCompanyCheckCount,
   getDangerLocationCompanyNotRatedData,
+  getselfCheckPoint,
+  getSelfCheckPointData,
+  getSelfCheckPointDataByCompanyId,
+  getListForMapForHidden,
+  getSecurityCheck,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -231,6 +236,23 @@ export default {
       companyNum: 0,
       fireCheckCompanyCount: 0,
     },
+    risksCompany: [],
+    selfCheckPoint: {
+      total: 0,
+      abnormal: 0,
+      overTime: 0,
+      list: [],
+    },
+    selfCheckPointData: {
+      all: 0,
+      abnormal: 0,
+      overTime: 0,
+      rectify: 0,
+      normal: 0,
+      list: [],
+    },
+    listForMapForHidden: [],
+    securityCheck: [],
   },
 
   effects: {
@@ -511,7 +533,11 @@ export default {
         },
       });
       if (success) {
-        success();
+        success({
+          ycq,
+          wcq,
+          dfc,
+        });
       }
     },
     // *fetchHiddenDanger({ payload, success }, { call, put }) {
@@ -860,6 +886,109 @@ export default {
         error();
       }
     },
+    *fetchRisksCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getCountDangerLocationForCompany, payload);
+      // if (response.code === 200) {
+      const {
+        redDangerResult,
+        orangeDangerResult,
+        yellowDangerResult,
+        blueDangerResult,
+        notRatedDangerResult = [],
+      } = response;
+      yield put({
+        type: 'risksCompany',
+        payload: [
+          ...redDangerResult,
+          ...orangeDangerResult,
+          ...yellowDangerResult,
+          ...blueDangerResult,
+          ...notRatedDangerResult,
+        ],
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    // 企业风险点
+    *fetchSelfCheckPoint({ payload, success, error }, { call, put }) {
+      const response = yield call(getselfCheckPoint, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'selfCheckPoint',
+          payload: response.data || {},
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 各风险点具体信息
+    *fetchSelfCheckPointData({ payload, success, error }, { call, put }) {
+      const response = yield call(getSelfCheckPointData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'selfCheckPointData',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 公司各风险点数量
+    *fetchSelfCheckPointDataByCompanyId({ payload, success, error }, { call, put }) {
+      const response = yield call(getSelfCheckPointDataByCompanyId, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'selfCheckPointDataByCompanyId',
+          payload: response.data || {},
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 隐患饼图下钻接口
+    *fetchListForMapForHidden({ payload, success, error }, { call, put }) {
+      const response = yield call(getListForMapForHidden, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'listForMapForHidden',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 12迭代 安全检查柱状图
+    *fetchSecurityCheck({ payload, success, error }, { call, put }) {
+      const response = yield call(getSecurityCheck, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'securityCheck',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -1131,6 +1260,42 @@ export default {
       return {
         ...state,
         companyCheckCount: payload,
+      };
+    },
+    risksCompany(state, { payload }) {
+      return {
+        ...state,
+        risksCompany: payload,
+      };
+    },
+    selfCheckPoint(state, { payload }) {
+      return {
+        ...state,
+        selfCheckPoint: payload,
+      };
+    },
+    selfCheckPointData(state, { payload }) {
+      return {
+        ...state,
+        selfCheckPointData: { ...state.selfCheckPointData, list: payload.list },
+      };
+    },
+    selfCheckPointDataByCompanyId(state, { payload }) {
+      return {
+        ...state,
+        selfCheckPointData: { ...state.selfCheckPointData, ...payload },
+      };
+    },
+    listForMapForHidden(state, { payload }) {
+      return {
+        ...state,
+        listForMapForHidden: payload.list,
+      };
+    },
+    securityCheck(state, { payload }) {
+      return {
+        ...state,
+        securityCheck: payload.list,
       };
     },
   },

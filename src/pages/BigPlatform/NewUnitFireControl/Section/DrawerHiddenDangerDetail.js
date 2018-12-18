@@ -19,7 +19,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
     const { visible, onClose, data = [] } = this.props;
     return (
       <DrawerContainer
-        style={{ zIndex: 2000 }}
+        zIndex={2000}
         title="隐患详情"
         visible={visible}
         onClose={onClose}

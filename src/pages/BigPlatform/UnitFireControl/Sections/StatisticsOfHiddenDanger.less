@@ -1,4 +1,5 @@
 /* 消防数据统计模块开关容器 */
+
 .switcherContainer {
   position: absolute;
   top: 36px;
@@ -6,32 +7,64 @@
 }
 
 /* 隐患巡查统计 */
+
 .hiddenDangerChartContainer {
   padding-bottom: 92px;
   height: 100%;
+  .legendContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .line {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 0.7em;
+      & * {
+        font-size: 14px;
+      }
+      .icon {
+        width: 10px;
+        height: 10px;
+        background-color: #D16772;
+        border-radius: 50%;
+        margin-right: 0.5em;
+      }
+      .label {
+        flex: none;
+        width: 5em;
+      }
+      .value {
+        flex: 1;
+      }
+    }
+  }
 }
+
 /* 隐患巡查统计图表图例 */
+
 .hiddenDangerChartLegend {
   display: flex;
+  flex-direction: column;
   position: absolute;
   left: 6px;
   right: 6px;
   bottom: 6px;
   padding: 4px 12px 8px;
   font-size: 14px;
-  background-color: rgba(0,0,0,0.3);
-
+  background-color: rgba(0, 0, 0, 0.3);
   .hiddenDangerChartLegendLeft {
     flex: 1;
     padding-right: 12px;
     border-right: 2px solid #0097E7;
-
-    & > :first-child {
+    &> :first-child {
       display: flex;
       align-items: center;
       padding: 8px 0;
-
-      & > :first-child {
+      &> :first-child {
         flex: none;
         margin-right: 8px;
         width: 14px;
@@ -39,27 +72,26 @@
         background: transparent no-repeat center;
         background-size: 100% 100%;
       }
-      & > :nth-child(2) {
+      &> :nth-child(2) {
         flex: 1;
         color: #00A8FF;
       }
     }
-    & > :nth-child(2) {
-      & > div {
+    &> :nth-child(2) {
+      &>div {
         display: flex;
         align-items: center;
         padding: 8px 0;
-
-        & > :first-child {
+        &> :first-child {
           flex: none;
           margin-right: 12px;
           width: 12px;
           height: 12px;
         }
-        & > :nth-child(2) {
+        &> :nth-child(2) {
           flex: none;
         }
-        & > :nth-child(3) {
+        &> :nth-child(3) {
           flex: 1;
           text-align: right;
         }
@@ -68,13 +100,11 @@
   }
   .hiddenDangerChartLegendRight {
     flex: 2;
-
-    & > :first-child {
+    &> :first-child {
       display: flex;
       align-items: center;
       padding: 8px 12px;
-
-      & > :first-child {
+      &> :first-child {
         flex: none;
         margin-right: 8px;
         width: 14px;
@@ -82,34 +112,89 @@
         background: transparent no-repeat center;
         background-size: 100% 100%;
       }
-      & > :nth-child(2) {
+      &> :nth-child(2) {
         flex: 1;
         color: #00A8FF;
       }
     }
-    & > :nth-child(2) {
+    &> :nth-child(2) {
       overflow: hidden;
-
-      & > div {
+      &>div {
         display: flex;
         align-items: center;
         float: left;
         padding: 8px 0 8px 12px;
         width: 50%;
-
-        & > :first-child {
+        &> :first-child {
           flex: none;
           margin-right: 12px;
           width: 12px;
           height: 12px;
           border-radius: 50%;
         }
-        & > :nth-child(2) {
+        &> :nth-child(2) {
           flex: none;
         }
-        & > :nth-child(3) {
+        &> :nth-child(3) {
           flex: 1;
           text-align: right;
+        }
+      }
+    }
+  }
+  .firstLine {
+    display: flex;
+    align-items: center;
+    & div:first-child {
+      margin-right: 8px;
+      width: 14px;
+      height: 14px;
+    }
+    & div:last-child {
+      color: #0097E7;
+    }
+  }
+  .content {
+    padding: 5px;
+    display: flex;
+    overflow: hidden;
+    & div:last-child {
+      border: none;
+    }
+    .item {
+      padding: 5px;
+      flex: 1;
+      border-right: 2px solid #0097E7;
+      .iconContainer {
+        width: 100%;
+        padding: 0 0 10px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .blueIcon {
+          width: 33px;
+          height: 15px;
+          border-radius: 12px;
+          background: #298BD4;
+        }
+        .redIcon {
+          width: 33px;
+          height: 15px;
+          border-radius: 12px;
+          background: #E96663;
+        }
+        .ligntBlueIcon {
+          width: 33px;
+          height: 15px;
+          border-radius: 12px;
+          background: #00ABC9;
+        }
+      }
+      .text {
+        display: flex;
+        &>* {
+          flex: 1;
+          text-align: center;
         }
       }
     }
@@ -125,23 +210,19 @@
   .hiddenDangerChartLegend {
     padding: 4px 10px 8px;
     font-size: 12px;
-
     .hiddenDangerChartLegendLeft {
       padding-right: 10px;
-
-      & > :first-child {
+      &> :first-child {
         padding: 6px 0;
-
-        & > :first-child {
+        &> :first-child {
           width: 12px;
           height: 12px;
         }
       }
-      & > :nth-child(2) {
-        & > div {
+      &> :nth-child(2) {
+        &>div {
           padding: 6px 0;
-
-          & > :first-child {
+          &> :first-child {
             margin-right: 10px;
             width: 10px;
             height: 10px;
@@ -150,19 +231,17 @@
       }
     }
     .hiddenDangerChartLegendRight {
-      & > :first-child {
+      &> :first-child {
         padding: 6px 10px;
-
-        & > :first-child {
+        &> :first-child {
           width: 12px;
           height: 12px;
         }
       }
-      & > :nth-child(2) {
-        & > div {
+      &> :nth-child(2) {
+        &>div {
           padding: 6px 0 6px 10px;
-
-          & > :first-child {
+          &> :first-child {
             margin-right: 10px;
             width: 10px;
             height: 10px;
@@ -182,23 +261,19 @@
   .hiddenDangerChartLegend {
     padding: 4px 8px 8px;
     font-size: 12px;
-
     .hiddenDangerChartLegendLeft {
       padding-right: 8px;
-
-      & > :first-child {
+      &> :first-child {
         padding: 4px 0;
-
-        & > :first-child {
+        &> :first-child {
           width: 12px;
           height: 12px;
         }
       }
-      & > :nth-child(2) {
-        & > div {
+      &> :nth-child(2) {
+        &>div {
           padding: 4px 0;
-
-          & > :first-child {
+          &> :first-child {
             margin-right: 8px;
             width: 10px;
             height: 10px;
@@ -207,19 +282,17 @@
       }
     }
     .hiddenDangerChartLegendRight {
-      & > :first-child {
+      &> :first-child {
         padding: 4px 8px;
-
-        & > :first-child {
+        &> :first-child {
           width: 12px;
           height: 12px;
         }
       }
-      & > :nth-child(2) {
-        & > div {
+      &> :nth-child(2) {
+        &>div {
           padding: 4px 0 4px 8px;
-
-          & > :first-child {
+          &> :first-child {
             margin-right: 8px;
             width: 10px;
             height: 10px;

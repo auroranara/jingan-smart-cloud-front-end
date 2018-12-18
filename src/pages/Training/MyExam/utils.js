@@ -35,7 +35,7 @@ export function concatAll(obj, keys) {
 }
 
 export function isRight(origin, target) {
-  if (origin.length !== target.length)
+  if (origin.length !== (target && target.length))
     return false;
 
   for (let i = 0; i < origin.length; i++)

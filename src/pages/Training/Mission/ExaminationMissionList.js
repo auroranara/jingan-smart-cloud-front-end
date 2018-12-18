@@ -40,7 +40,7 @@ const companyPageSize = 10;
 const PAGE_SIZE = 18;
 
 /* 暂无数据 */
-const getEmptyData = () => <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+// const getEmptyData = () => <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 
 @Form.create()
 @connect(({ examinationMission, user, knowledgeTree, loading }) => ({
@@ -74,7 +74,9 @@ export default class ExaminationMissionList extends PureComponent {
     }
     const payload = { pageSize: companyPageSize, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
-    searchInfo && setFieldsValue(searchInfo);
+    setTimeout(() => {
+      searchInfo && setFieldsValue({ name: searchInfo.name, statusQuery: searchInfo.statusQuery });
+    }, 100);
     this.getExamList();
   }
 
@@ -102,7 +104,7 @@ export default class ExaminationMissionList extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    router.push('/training/mission/add');
+    router.push(`/training/mission/add`);
   };
 
   handleSearch = () => {
@@ -133,6 +135,7 @@ export default class ExaminationMissionList extends PureComponent {
   handleReset = () => {
     const {
       dispatch,
+      examinationMission: { searchInfo },
       form: { resetFields },
     } = this.props;
     // 清空筛选数据
@@ -147,6 +150,11 @@ export default class ExaminationMissionList extends PureComponent {
     });
     dispatch({
       type: 'examinationMission/saveSearchInfo',
+      payload: {
+        ...searchInfo,
+        name: undefined,
+        statusQuery: undefined,
+      },
     });
   };
 
@@ -155,7 +163,12 @@ export default class ExaminationMissionList extends PureComponent {
   };
 
   handleSelect = item => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { id: userId },
+      },
+    } = this.props;
     const { id, name } = item;
     this.companyId = id;
     this.companyName = name;
@@ -167,6 +180,8 @@ export default class ExaminationMissionList extends PureComponent {
         companyName: name,
       },
     });
+    // 将选中的企业id保存在session中以备不时之需
+    sessionStorage.setItem(`examination_mission_list_company_${userId}`, JSON.stringify({ id }));
     this.handleClose();
   };
 
@@ -267,8 +282,8 @@ export default class ExaminationMissionList extends PureComponent {
                 <Col span={24}>
                   <Ellipsis className={styles.ellipsisText} tooltip lines={1}>
                     考试期限：
-                    {moment(item.startTime).format('YYYY-MM-DD hh:ss')} 至
-                    {moment(item.endTime).format('YYYY-MM-DD hh:ss')}
+                    {moment(item.startTime).format('YYYY-MM-DD HH:mm')} 至
+                    {moment(item.endTime).format('YYYY-MM-DD HH:mm')}
                   </Ellipsis>
                 </Col>
               </Row>
@@ -297,10 +312,13 @@ export default class ExaminationMissionList extends PureComponent {
         },
       },
       user: {
-        currentUser: { companyId },
+        currentUser: { companyId, permissionCodes },
       },
       loading,
     } = this.props;
+
+    // 是否有新增权限
+    const hasAddAuthority = permissionCodes.includes('training.mission.add');
 
     return (
       <PageHeaderLayout
@@ -365,7 +383,7 @@ export default class ExaminationMissionList extends PureComponent {
                       <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                         重置
                       </Button>
-                      <Button type="primary" onClick={this.handleToAdd}>
+                      <Button type="primary" onClick={this.handleToAdd} disabled={!hasAddAuthority}>
                         新增
                       </Button>
                     </FormItem>

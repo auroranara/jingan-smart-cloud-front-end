@@ -1,5 +1,19 @@
 import React, { PureComponent } from 'react';
-import { Card, Form, Row, Col, Input, Select, Cascader, Upload, Button, Icon, message, AutoComplete, Spin } from 'antd';
+import {
+  Card,
+  Form,
+  Row,
+  Col,
+  Input,
+  Select,
+  Cascader,
+  Upload,
+  Button,
+  Icon,
+  message,
+  AutoComplete,
+  Spin,
+} from 'antd';
 import { getToken } from '@/utils/authority';
 
 const { Option } = Select;
@@ -20,7 +34,7 @@ export default class App extends PureComponent {
   /**
    * 去除数据左右空格
    */
-  handleTrim = e => e.target.value.trim()
+  handleTrim = e => e.target.value.trim();
 
   /* 上传单位平面图 */
   handleUpload = ({ fileList, file }) => {
@@ -90,8 +104,14 @@ export default class App extends PureComponent {
   /**
    * 总公司输入框失焦事件
    */
-  handleClearParentId = (value) => {
-    const { handleSearchParentIdList, form: { setFieldsValue, validateFields }, model: { modal: { list } } } = this.props;
+  handleClearParentId = value => {
+    const {
+      handleSearchParentIdList,
+      form: { setFieldsValue, validateFields },
+      model: {
+        modal: { list },
+      },
+    } = this.props;
     if (value && value.key === value.label) {
       handleSearchParentIdList.cancel();
       // 从数组中筛选出与value.label相等的数据
@@ -104,8 +124,7 @@ export default class App extends PureComponent {
             label: maintenance.name,
           },
         });
-      }
-      else {
+      } else {
         // 否则清空维保单位输入框
         setFieldsValue({
           parentId: undefined,
@@ -116,7 +135,7 @@ export default class App extends PureComponent {
         handleSearchParentIdList();
       }
     }
-  }
+  };
 
   render() {
     const {
@@ -141,7 +160,7 @@ export default class App extends PureComponent {
             // companyStatus,
             // industryCategory,
             companyIchnography,
-          }={},
+          } = {},
           // 是否为分公司
           isBranch,
           // 总公司
@@ -162,13 +181,9 @@ export default class App extends PureComponent {
         // 是否为分公司列表
         isBranchList,
         // 总公司列表
-        modal: {
-          list: parentIdList,
-        },
+        modal: { list: parentIdList },
       },
-      form: {
-        getFieldDecorator,
-      },
+      form: { getFieldDecorator },
       styles,
       fieldLabels,
       // // 是否是一般企业
@@ -190,28 +205,30 @@ export default class App extends PureComponent {
       // 查询总公司列表
       handleSearchParentIdList,
       // 是否为维保人员
-      isMaintenanceUser=false,
+      isMaintenanceUser = false,
       // 默认总公司对象
       defaultParentCompany,
     } = this.props;
 
     // 修改平面图字段的格式
     let companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-    companyIchnographyList = Array.isArray(companyIchnographyList) ? companyIchnographyList.map((item, index) => ({
-      ...item,
-      uid: index,
-      status: 'done',
-    })) : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
-      ...item,
-      uid: index,
-      status: 'done',
-    }));
+    companyIchnographyList = Array.isArray(companyIchnographyList)
+      ? companyIchnographyList.map((item, index) => ({
+          ...item,
+          uid: index,
+          status: 'done',
+        }))
+      : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
+          ...item,
+          uid: index,
+          status: 'done',
+        }));
 
     return (
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.name}>
                 {getFieldDecorator('name', {
                   initialValue: name,
@@ -271,10 +288,15 @@ export default class App extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.isBranch}>
                 {getFieldDecorator('isBranch', {
-                  initialValue: isMaintenanceUser ? '1'  : (isBranch ? isBranch+'' : '0'),
+                  initialValue: isMaintenanceUser ? '1' : isBranch ? isBranch + '' : '0',
                   rules: [{ required: true, message: '请选择是否为分公司' }],
                 })(
-                  <Select placeholder="请选择是否为分公司" getPopupContainer={getRootChild} onChange={handleChangeIsBranch} disabled={isMaintenanceUser}>
+                  <Select
+                    placeholder="请选择是否为分公司"
+                    getPopupContainer={getRootChild}
+                    onChange={handleChangeIsBranch}
+                    disabled={isMaintenanceUser}
+                  >
                     {isBranchList.map(item => (
                       <Option value={item.key} key={item.key}>
                         {item.value}
@@ -288,12 +310,14 @@ export default class App extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.parentId}>
                   {getFieldDecorator('parentId', {
-                    initialValue: isMaintenanceUser ? defaultParentCompany: (parentId && parentUnitName
+                    initialValue: isMaintenanceUser
+                      ? defaultParentCompany
+                      : parentId && parentUnitName
                         ? {
                             key: parentId,
                             label: parentUnitName,
                           }
-                        : undefined),
+                        : undefined,
                     rules: [
                       {
                         required: true,
@@ -317,9 +341,7 @@ export default class App extends PureComponent {
                       disabled={isMaintenanceUser}
                     >
                       {parentIdList.map(item => (
-                        <Option key={item.id}>
-                          {item.name}
-                        </Option>
+                        <Option key={item.id}>{item.name}</Option>
                       ))}
                     </AutoComplete>
                   )}

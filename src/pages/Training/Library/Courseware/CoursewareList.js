@@ -121,6 +121,7 @@ export default class CoursewareList extends PureComponent {
       form: { getFieldsValue },
       notCompany,
       companyId,
+      knowledgeId,
     } = this.props
     const { timeRange: [start, end] = [], ...others } = getFieldsValue()
     const query = {
@@ -136,6 +137,7 @@ export default class CoursewareList extends PureComponent {
         type: '2', // type 1文章
         ...query,
         companyId: notCompany ? companyId : null,
+        knowledgeId,
       },
     })
   }
@@ -268,7 +270,7 @@ export default class CoursewareList extends PureComponent {
             <FormItem>
               <Button className={styles.mr10} type="primary" onClick={this.handleQuery}>查询</Button>
               <Button className={styles.mr10} onClick={this.handleResetQuery}>重置</Button>
-              <Button disabled={!hasAuthority(addCode, permissionCodes) || notCompany} onClick={this.handleToAdd} type="primary">新增</Button>
+              <Button disabled={!hasAuthority(addCode, permissionCodes)} onClick={this.handleToAdd} type="primary">新增</Button>
             </FormItem>
           </Col>
         </Form>
@@ -291,10 +293,10 @@ export default class CoursewareList extends PureComponent {
     } = this.props
     const { drawerVisible, fileSrc, fileType, detail, coverSrc } = this.state
     // 是否编辑和删除 没有权限或不是企业用户或已发布 不能操作
-    const editDisabled = (status) => !hasAuthority(editCode, permissionCodes) || notCompany || status === '1'
-    const delDisabled = (status) => !hasAuthority(deleteCode, permissionCodes) || notCompany || status === '1'
+    const editDisabled = (status) => !hasAuthority(editCode, permissionCodes) || status === '1'
+    const delDisabled = (status) => !hasAuthority(deleteCode, permissionCodes) || status === '1'
     // 改变课件发布状态权限
-    const statusAuth = hasAuthority(editCode, permissionCodes) || notCompany
+    const statusAuth = hasAuthority(editCode, permissionCodes)
 
     return (
       <div className={styles.coursewareList}>
@@ -320,16 +322,25 @@ export default class CoursewareList extends PureComponent {
                     <Divider type="vertical" />
                     <Icon className={styles.icon} type="eye" onClick={() => this.handleViewCourseWare(item)} />
                     <Divider type="vertical" />
-                    <Popconfirm title="确认删除该课件吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled((item.status))) }}>
-                      <Icon className={delDisabled((item.status)) ? styles.disabledIcon : styles.icon} type="close" />
-                    </Popconfirm>
+                    {delDisabled(item.status) ? (
+                      <Icon className={styles.disabledIcon} type="close" />
+                    ) : (
+                        <Popconfirm title="确认删除该课件吗？" onConfirm={() => { this.handleDelete(item.id, delDisabled(item.status)) }}>
+                          <Icon className={styles.icon} type="close" />
+                        </Popconfirm>
+                      )}
                   </div>
                 </div>
                 <div className={styles.tags}>
+                  {item.knowledgeName && <Tag>{item.knowledgeName}</Tag>}
                   <Tag>{item.type === '2' ? '视频' : '文档'}</Tag>
-                  <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>
-                    <Tag className={statusAuth ? styles.tag : styles.disabledTag} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
-                  </Popconfirm>
+                  {statusAuth ? (
+                    <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>
+                      <Tag className={styles.tag} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                    </Popconfirm>
+                  ) : (
+                      <Tag className={styles.disabledTag} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>
+                    )}
                 </div>
                 <div className={styles.introduction}>
                   {item.createName && (<span>{item.createName}</span>)}

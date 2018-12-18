@@ -57,12 +57,11 @@ import {
   fetchHiddenDangerDetail,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
-import {
-  queryMaintenanceRecordDetail,
-} from '../services/maintenanceRecord.js';
+import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
 import moment from 'moment';
+import { connect } from '../webscokets/newFireControlWS';
 
-const getColorByRiskLevel = function (level) {
+const getColorByRiskLevel = level => {
   switch (+level) {
     case 1:
       return '红色';
@@ -77,26 +76,22 @@ const getColorByRiskLevel = function (level) {
   }
 };
 /* 完善步骤条数组 */
-const formatTimeLine = function (timeLine) {
+const formatTimeLine = function(timeLine) {
   const list = timeLine.map((item, index) => {
     let type = +item.type;
     let timeLineLabel = '';
     if (type === 1) {
       timeLineLabel = '隐患创建';
-    }
-    else if (type === 2) {
+    } else if (type === 2) {
       // 如果index大于1，意味着必然为重新整改
       if (index > 1) {
         timeLineLabel = '重新整改';
-      }
-      else {
+      } else {
         timeLineLabel = '隐患整改';
       }
-    }
-    else if (type === 3) {
+    } else if (type === 3) {
       timeLineLabel = '隐患复查';
-    }
-    else if (type === 4) {
+    } else if (type === 4) {
       timeLineLabel = '隐患关闭';
     }
     return {
@@ -109,13 +104,19 @@ const formatTimeLine = function (timeLine) {
   const { type } = timeLine[lastIndex];
   switch (+type) {
     case 1:
-      list.push({ timeLineLabel: '隐患整改', id: lastIndex + 1 }, { timeLineLabel: '隐患复查', id: lastIndex + 2 });
+      list.push(
+        { timeLineLabel: '隐患整改', id: lastIndex + 1 },
+        { timeLineLabel: '隐患复查', id: lastIndex + 2 }
+      );
       break;
     case 2:
       list.push({ timeLineLabel: '隐患复查', id: lastIndex + 1 });
       break;
     case 3:
-      list.push({ timeLineLabel: '重新整改', id: lastIndex + 1 }, { timeLineLabel: '隐患复查', id: lastIndex + 2 });
+      list.push(
+        { timeLineLabel: '重新整改', id: lastIndex + 1 },
+        { timeLineLabel: '隐患复查', id: lastIndex + 2 }
+      );
       break;
     default:
       break;
@@ -322,6 +323,15 @@ export default {
     },
     // 故障
     faultList: [],
+  },
+
+  subscriptions: {
+    initWebScoket: ({ dispatch, history }) => {
+      if (location.hash.indexOf('big-platform/fire-control/new-company') > -1) {
+        // 链接webscoket
+        // connect();
+      }
+    },
   },
 
   effects: {
@@ -547,8 +557,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-              ({ id, webUrl }) => /^http/.test(webUrl) && id
-            )
+                ({ id, webUrl }) => /^http/.test(webUrl) && id
+              )
             : [],
       };
 
@@ -664,7 +674,7 @@ export default {
           type: 'saveHiddenDangerList',
           payload: response.hiddenDangers,
         });
-        if (callback) callback()
+        if (callback) callback();
       }
     },
     // 获取隐患详情
@@ -675,7 +685,7 @@ export default {
           type: 'saveHiddenDangerDetail',
           payload: response.data,
         });
-        if (callback) callback()
+        if (callback) callback();
       }
     },
     // 南消：点位巡查统计
@@ -731,7 +741,9 @@ export default {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
-          type: `saveAlarmHandle${payload.dataId ? 'Message' : payload.historyType ? 'History' : 'List'}`,
+          type: `saveAlarmHandle${
+            payload.dataId ? 'Message' : payload.historyType ? 'History' : 'List'
+          }`,
           payload: response.data ? response.data.list : [],
         });
       }
@@ -748,12 +760,12 @@ export default {
     },
     // 获取火灾报警系统巡检记录
     *fetchCheckRecord({ payload }, { call, put }) {
-      const response = yield call(fetchCheckRecord, payload)
+      const response = yield call(fetchCheckRecord, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveCheckRecord',
           payload: response.data,
-        })
+        });
       }
     },
     *fetchFault({ payload }, { call, put }) {
@@ -893,28 +905,30 @@ export default {
       };
     },
     // 保存当前隐患详情
-    saveHiddenDangerDetail(state, { payload: {
-      hiddenDanger = {},
-      hiddenDangerRecord = [],
-      timeLine,
-    } }) {
+    saveHiddenDangerDetail(
+      state,
+      {
+        payload: { hiddenDanger = {}, hiddenDangerRecord = [], timeLine },
+      }
+    ) {
       const timestampList = formatTimeLine(timeLine).map((item, i) => {
         if (i === 0) {
           return {
             timeLine: item,
             ...hiddenDanger,
             type: '1',
-          }
+          };
         } else {
-          if (hiddenDangerRecord.length < i) return {
-            timeLine: item,
-          }
+          if (hiddenDangerRecord.length < i)
+            return {
+              timeLine: item,
+            };
           return {
             timeLine: item,
             ...hiddenDangerRecord[i - 1],
-          }
+          };
         }
-      })
+      });
       return {
         ...state,
         currentHiddenDanger: {
@@ -961,7 +975,7 @@ export default {
           ...state.fireAlarm,
           ...payload,
         },
-      }
+      };
     },
     saveFault(state, action) {
       return { ...state, faultList: action.payload };

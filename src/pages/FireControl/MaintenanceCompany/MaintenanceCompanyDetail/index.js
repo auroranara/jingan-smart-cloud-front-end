@@ -313,13 +313,13 @@ export default class App extends PureComponent {
     const {
       maintenanceCompany: {
         detail: {
+          principalName,
+          principalPhone,
+          principalEmail,
           companyBasicInfo: {
             legalName,
             legalPhone,
             legalEmail,
-            /* principalName,
-            principalPhone,
-            principalEmail, */
             safetyName,
             safetyPhone,
             safetyEmail,
@@ -342,13 +342,13 @@ export default class App extends PureComponent {
         </DescriptionList>
         <DescriptionList title="主要负责人" col={3} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.principalName}>
-            {safetyName || getEmptyData()}
+            {principalName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.principalPhone}>
-            {safetyPhone || getEmptyData()}
+            {principalPhone || getEmptyData()}
           </Description>
           <Description term={fieldLabels.principalEmail}>
-            {safetyEmail || getEmptyData()}
+            {principalEmail || getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>

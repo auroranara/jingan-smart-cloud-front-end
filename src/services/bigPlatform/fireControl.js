@@ -210,6 +210,61 @@ export async function getVideoLookUp(params) {
   return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
 }
 
+/**
+ * 待处理信息模块-获取未处理信息列表
+ */
+export async function fetchUnPendingInfo(params) {
+  return request(`/acloud_new/v2/fireData/dangerMessage.json?${stringify(params)}`)
+}
+
+/**
+ * 待处理信息模块-获取处理中、已处理信息列表
+ */
+export async function fetchPendingInfo(params) {
+  return request(`/acloud_new/v2/fireData/dangerMessageAlready.json?${stringify(params)}`)
+}
+
+/**
+ *  获取巡查统计模块的数据
+ */
+export async function fetchInspectionStatistics(params) {
+  return request(`/acloud_new/v2/hdf/getFirePatrolStatistics.json?${stringify(params)}`)
+}
+
+/**
+ *  获取隐患统计数据
+ */
+export async function fetchDangerStatistics(params) {
+  return request(`/acloud_new/v2/hdf/dangerStatistics.json?${stringify(params)}`)
+}
+
+/**
+ *  获取隐患列表
+ */
+export async function fetchHiddenDangerRecords(params) {
+  return request(`/acloud_new/v2/hdf/list_forNew.json?${stringify(params)}`)
+}
+
+/**
+ * 获取消防主机列表
+ */
+export async function fetchFireHosts(params) {
+  return request(`/acloud_new/v2/fireData/systemMessage.json?${stringify(params)}`)
+}
+
+/**
+ * 获取巡查统计-正常
+ */
+export async function fetchNormalPatrol(params) {
+  return request(`/acloud_new/v2/hdf/getNormalFirePatrol?${stringify(params)}`)
+}
+
+/**
+ * 获取巡查统计-异常
+ */
+export async function fetchAbnormalPatrol(params) {
+  return request(`/acloud_new/v2/hdf/getAbnormalFirePatrol?${stringify(params)}`)
+}
 // 企业信息(包含人员数量四色图等)
 export async function getCompanyMessage(params) {
   return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
