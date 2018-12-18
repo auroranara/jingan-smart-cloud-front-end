@@ -94,6 +94,16 @@ export async function getRiskPoints(params) {
   return request(`${URL_PREFIX}/sfc/countDangerLocationForCompany.json?${stringify(params)}`);
 }
 
+// 获取安全人员
+export async function getSafeMan(params) {
+  return request(`${URL_PREFIX}/sfc/showSafePerson.json?${stringify(params)}`);
+}
+
+// 获取最近十二个月主机报警数量
+export async function getHostAlarmTrend(params) {
+  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getEveryMonthFireNum?${stringify(params)}`);
+}
+
 /************************************** 单位消防 ************************************************/
 /**
  * 获取待处理信息

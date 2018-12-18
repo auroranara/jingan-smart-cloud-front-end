@@ -5,13 +5,13 @@ import styles from './DangerTableDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import SearchBar from '../components/SearchBar';
 
-function rand() {
-  return Math.floor(Math.random() * 100);
-}
+// function rand() {
+//   return Math.floor(Math.random() * 100);
+// }
 
 const TYPE = 'dangerTable';
 
-const numCols = ['total', 'afterRectification', 'toReview', 'hasExtended'];
+// const numCols = ['total', 'afterRectification', 'toReview', 'hasExtended'];
 
 // const DATA = [...Array(100).keys()].map(i => ({
 //   id: i,
@@ -23,7 +23,17 @@ const numCols = ['total', 'afterRectification', 'toReview', 'hasExtended'];
 //   c: rand(),
 // }));
 
+function genSorter(prop) {
+  return (a, b) => a[prop] - b[prop];
+}
+
 export default class DangerTableDrawer extends PureComponent {
+  state = { searchValue: '' };
+
+  handleSearch = v => {
+    this.setState({ searchValue: v });
+  };
+
   genCellRender = lableIndex => (n, record) => {
     const { handleShowDanger } = this.props;
     return <span className={styles.cell} onClick={e => handleShowDanger(record.companyId, lableIndex)}>{n}</span>
@@ -38,6 +48,8 @@ export default class DangerTableDrawer extends PureComponent {
 
   render() {
     const { visible, data, handleDrawerVisibleChange } = this.props;
+    const { searchValue } = this.state;
+    const list = Array.isArray(data) ? data.filter(({ companyName }) => companyName.includes(searchValue)) : [];
 
     const columns = [{
       title: '序号',
@@ -51,35 +63,42 @@ export default class DangerTableDrawer extends PureComponent {
     }, {
       title: '隐患数量',
       dataIndex: 'total',
-      width: 100,
+      width: 120,
       align: 'center',
       render: this.genCellRender(0),
+      sorter: genSorter('total'),
     }, {
       title: '已超期',
       dataIndex: 'hasExtended',
       width: 100,
       align: 'center',
       render: this.genCellRender(1),
+      sorter: genSorter('hasExtended'),
     }, {
       title: '待整改',
       dataIndex: 'afterRectification',
       width: 100,
       align: 'center',
       render: this.genCellRender(2),
+      sorter: genSorter('afterRectification'),
     }, {
       title: '待复查',
       dataIndex: 'toReview',
       width: 100,
       align: 'center',
       render: this.genCellRender(3),
+      sorter: genSorter('toReview'),
     }];
 
     const left = (
-        <SearchBar searchStyle={{ width: 500 }}>
+        <SearchBar
+          searchStyle={{ width: 500 }}
+          onSearch={this.handleSearch}
+        >
           <Table
             rowKey="companyId"
             columns={columns}
-            dataSource={data}
+            dataSource={list}
             pagination={false}
             scroll={{ y: 600 }}
           />

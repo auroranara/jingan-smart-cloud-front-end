@@ -8,7 +8,7 @@ const { Search } = Input;
 export default class SearchBar extends PureComponent {
   handleSearch = value => {
     const { onSearch } = this.props;
-    onSearch(value);
+    onSearch && onSearch(value);
   };
 
   render() {

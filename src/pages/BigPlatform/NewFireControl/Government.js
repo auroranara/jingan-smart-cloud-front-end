@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import moment from 'moment';
 import { connect } from 'dva';
 import { Col, message, Modal, notification, Row } from 'antd';
 
@@ -105,7 +106,7 @@ export default class FireControlBigPlatform extends PureComponent {
     // const { match: { params: { gridId } } } = this.props;
 
     this.initFetch();
-    // this.timer = setInterval(this.polling, DELAY);
+    this.timer = setInterval(this.polling, DELAY);
   }
 
   componentWillUnmount() {
@@ -148,6 +149,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchDanger', payload: { gridId, businessType: 2 } });
 
     dispatch({ type: 'bigFireControl/fetchDangerList', payload: { gridId, businessType: 2 } });
+    dispatch({ type: 'bigFireControl/fetchHostAlarmTrend', payload: { gridId } });
 
     this.fetchInitLookUp();
 
@@ -177,11 +179,25 @@ export default class FireControlBigPlatform extends PureComponent {
         // console.log(list);
         const newAlarms = getNewAlarms(list, this.formerAlarmList);
         if (newAlarms.length)
-          notification.warn({
-            message: '系统提示',
-            description: '有新的火警',
-            duration: null,
-          });
+          for (let i = 0; i < newAlarms.length; i++) {
+            const { id, name, saveTimeStamp } = newAlarms[i];
+            notification.warning({
+              key: id,
+              className: styles.note,
+              message: moment(saveTimeStamp).format('YYYY-MM-DD HH:mm:ss'),
+              description: (
+                <span
+                  className={styles.desc}
+                  onClick={e => {
+                    this.handleReverseById(id);
+                    notification.close(id);
+                  }}>
+                  {`${name}发生火警，请查看！`}
+                </span>
+              ),
+              duration: null,
+            });
+          }
 
         this.formerAlarmList = list;
       },
@@ -193,6 +209,13 @@ export default class FireControlBigPlatform extends PureComponent {
     // dispatch({ type: 'bigFireControl/fetchSys' });
     // dispatch({ type: 'bigFireControl/fetchFireTrend' });
     // dispatch({ type: 'bigFireControl/fetchDanger' });
+  };
+
+  // 在实时警情中根据id或companyId获取符合条件的最新的火警，然后翻转卡片
+  handleReverseById = (id, prop='id') => {
+    const { bigFireControl: { alarm: { list=[] } } } = this.props;
+    const alarmDetail = list.find(item => item[prop] === id) || {};
+    this.handleAlarmClick(alarmDetail);
   };
 
   fetchInitLookUp = () => {
@@ -433,6 +456,7 @@ export default class FireControlBigPlatform extends PureComponent {
       payload: { company_id: id, gridId, businessType: 2 },
     });
     dispatch({ type: 'bigFireControl/fetchRiskPoints', payload: { company_id: id } });
+    dispatch({ type: 'bigFireControl/fetchSafeMan', payload: { company_id: id } });
 
     // 点击火警或地图中的企业时，获取视频相关信息
     this.handleVideoSelect(id);
@@ -525,6 +549,7 @@ export default class FireControlBigPlatform extends PureComponent {
     }));
   };
 
+  // 概况中单位弹框的搜索
   handleUnitSearch = v => {
     const { dispatch } = this.props;
     const gridId = this.getGridId();
@@ -663,6 +688,8 @@ export default class FireControlBigPlatform extends PureComponent {
         mapLocation,
         grids,
         riskPoints,
+        safeMan,
+        hostAlarmTrend,
       },
       dispatch,
       offGuardWarnLoading,
@@ -927,7 +954,7 @@ export default class FireControlBigPlatform extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <HostDrawer
-          data={{ sys }}
+          data={{ sys, hostAlarmTrend }}
           visible={hostDrawerVisible}
           handleCardClick={this.handleUnitDrawerAlarmClick}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
@@ -957,6 +984,7 @@ export default class FireControlBigPlatform extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <SafeDrawer
+          data={safeMan}
           visible={safeDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

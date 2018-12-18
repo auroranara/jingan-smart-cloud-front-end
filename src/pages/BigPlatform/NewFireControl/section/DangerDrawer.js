@@ -15,6 +15,7 @@ import {
   ChartRing,
   SearchBar,
 } from '../components/Components';
+import { fillZero } from '../utils';
 // import clockIcon from '../img/cardClock1.png';
 
 const TYPE = 'danger';
@@ -27,6 +28,12 @@ const STATUS = ['-1', ['7'], ['1', '2'], ['3']];
 // }));
 
 export default class DangerDrawer extends PureComponent {
+  state = { searchValue: '' };
+
+  handleSearch = v => {
+    this.setState({ searchValue: v });
+  };
+
   render() {
     const {
       visible,
@@ -45,15 +52,21 @@ export default class DangerDrawer extends PureComponent {
         dangerRecords=[],
       },
     } = this.props;
+    const { searchValue } = this.state;
 
     const rings = [overdueNum, rectifyNum, reviewNum];
     const list = dangerList.slice(0, 10).map(({ companyId, companyName, total }) => ({ id: companyId, name: companyName, value: total }));
+    const filteredList = dangerList.filter(({ companyName }) => companyName.includes(searchValue));
     const filteredRecords = labelIndex && labelIndex !== -1 ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
 
     const left = (
       <Fragment>
-        <DrawerSection title="隐患状态统计" style={{ marginBottom: 50 }}>
+        <DrawerSection title="隐患状态统计" style={{ marginBottom: 50, position: 'relative' }}>
           <ChartRing data={rings} />
+          <div className={styles.total}>
+            <p className={styles.num}>{fillZero(rings.reduce((prev, next) => prev + next), 3)}</p>
+            <p className={styles.text}>总数</p>
+          </div>
         </DrawerSection>
         <DrawerSection title="隐患数量排名">
           <ChartBar data={list} />
@@ -62,8 +75,8 @@ export default class DangerDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar>
-          {dangerList.map((item, i) => {
+        <SearchBar onSearch={this.handleSearch}>
+          {filteredList.map((item, i) => {
             const { companyId } = item;
             // console.log(companyId, selectedCompanyId);
 

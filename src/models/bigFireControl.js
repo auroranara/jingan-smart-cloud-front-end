@@ -20,6 +20,8 @@ import {
   getMapLocation,
   getGrids,
   getRiskPoints,
+  getSafeMan,
+  getHostAlarmTrend,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -133,6 +135,8 @@ export default {
     grids: [],
     units: {},
     riskPoints: [],
+    safeMan: {},
+    hostAlarmTrend: {},
   },
 
   effects: {
@@ -312,6 +316,20 @@ export default {
       if (response)
         yield put({ type: 'saveRiskPoints', payload: response });
     },
+    // 获取安全员
+    *fetchSafeMan({ payload }, { call, put }) {
+      let response = yield call(getSafeMan, payload);
+      if (response)
+        yield put({ type: 'saveSafeMan', payload: response });
+    },
+    // 获取最近十二个月的主机报警数量
+    *fetchHostAlarmTrend({ payload }, { call, put }) {
+      let response = yield call(getHostAlarmTrend, payload);
+      response = response || {};
+      const { code=DEFAULT_CODE, data={} } = response;
+      if (code === 200)
+        yield put({ type: 'saveHostAlarmTrend', payload: data || {} });
+    },
   },
 
   reducers: {
@@ -401,6 +419,12 @@ export default {
     },
     saveRiskPoints(state, action) {
       return { ...state, riskPoints: handleRiskPoints(action.payload) }
+    },
+    saveSafeMan(state, action) {
+      return { ...state, safeMan: action.payload };
+    },
+    saveHostAlarmTrend(state, action) {
+      return { ...state, hostAlarmTrend: action.payload };
     },
   },
 };

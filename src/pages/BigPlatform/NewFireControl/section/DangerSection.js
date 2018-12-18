@@ -9,16 +9,16 @@ import EmptyChart from '../components/EmptyChart';
 
 const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/fire-control/gov/noDanger.png';
 
-function rand(n) {
-  return Math.floor(Math.random() * n);
-}
+// function rand(n) {
+//   return Math.floor(Math.random() * n);
+// }
 
-function genSource() {
-  const source = [['时间', '巡查次数', '隐患数量']];
-  for (let n = 0; n < 31; n++)
-      source.push([`7/${n + 1}`, rand(20), rand(20)]);
-  return source;
-}
+// function genSource() {
+//   const source = [['时间', '巡查次数', '隐患数量']];
+//   for (let n = 0; n < 31; n++)
+//       source.push([`7/${n + 1}`, rand(20), rand(20)]);
+//   return source;
+// }
 
 function handleSource(list) {
   const source = [['时间', '巡查次数', '隐患数量']];

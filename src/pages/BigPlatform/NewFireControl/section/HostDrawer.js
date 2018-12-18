@@ -7,6 +7,8 @@ import OvProgress from '../components/OvProgress';
 import GraphSwitch from '../components/GraphSwitch';
 import SearchBar from '../components/SearchBar';
 import DrawerCard from '../components/DrawerCard';
+import ChartBar from '../components/ChartBar';
+import ChartLine from '../components/ChartLine';
 import hostRedIcon from '../img/hostRed.png';
 import hostBlueIcon from '../img/hostBlue.png';
 import hostIcon from '../img/cardHost.png';
@@ -30,14 +32,27 @@ const STATUS_LABELS = ['正常', '报警'];
 // }));
 
 export default class HostDrawer extends PureComponent {
+  state = { graph: 0, searchValue: '' };
+
+  handleSwitch = i => {
+    this.setState({ graph: i });
+  };
+
+  handleSearch = v => {
+    this.setState({ searchValue: v });
+  };
+
   render() {
     const {
       visible,
-      data: { sys },
+      data: { sys, hostAlarmTrend },
       handleCardClick,
       handleDrawerVisibleChange,
     } = this.props;
+    const { graph, searchValue } = this.state;
+
     let list = Array.isArray(sys.companyList) ? sys.companyList : [];
+    const filteredList = list.filter(({ name }) => name.includes(searchValue))
     const total = list.length;
     const normal = list.filter(({ isFire }) => isFire === '0').length;
     const fire = total - normal;
@@ -47,6 +62,11 @@ export default class HostDrawer extends PureComponent {
       normalPercent = normal / total * 100;
       firePercent = 100 - normalPercent;
     }
+
+    const hostList = Array.isArray(hostAlarmTrend.list) ?
+      hostAlarmTrend.list.map(({ year, month, fireNum }) => ({ name: `${year}/${month}`, value: fireNum })) : [];
+
+    const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
 
     const left = (
       <Fragment>
@@ -67,15 +87,15 @@ export default class HostDrawer extends PureComponent {
             iconStyle={{ backgroundImage: `url(${hostBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
           />
         </DrawerSection>
-        <DrawerSection title="隐患数量排名" extra={<GraphSwitch />}>
-        content
-      </DrawerSection>
+        <DrawerSection title="报警趋势图" extra={extra}>
+          {graph ? <ChartBar data={hostList} /> : <ChartLine data={hostList} />}
+        </DrawerSection>
       </Fragment>
     );
 
     const right = (
-        <SearchBar>
-          {list.map(({ companyId, name, address, safetyMan, safetyPhone, count, isFire }) => {
+        <SearchBar onSearch={this.handleSearch}>
+          {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, count, isFire }) => {
             const alarmed = isFire === FIRE;
 
             return (

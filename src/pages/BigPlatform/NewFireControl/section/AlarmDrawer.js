@@ -36,10 +36,14 @@ const HANDLED = '处理完';
 // }));
 
 export default class AlarmDrawer extends PureComponent {
-  state = { graph: 0 };
+  state = { graph: 0, searchValue: '' };
 
   handleSwitch = i => {
     this.setState({ graph: i });
+  };
+
+  handleSearch = v => {
+    this.setState({ searchValue: v });
   };
 
   render() {
@@ -55,11 +59,11 @@ export default class AlarmDrawer extends PureComponent {
       handleCardClick,
       handleDrawerVisibleChange,
     } = this.props;
-    const { graph } = this.state;
+    const { graph, searchValue } = this.state;
 
     const lists = [todayList, thisWeekList, thisMonthList];
     const leftList = lists[leftType];
-    const rightList = lists[rightType];
+    const rightList = lists[rightType].filter(({ companyName }) => companyName.includes(searchValue));
     const totalQuantity = leftList.length;
     const handledQuantity = leftList.filter(({ status }) => status === HANDLED).length;
     const handlingQuantity = totalQuantity - handledQuantity;
@@ -110,7 +114,7 @@ export default class AlarmDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar extra={searchSelect}>
+        <SearchBar extra={searchSelect} onSearch={this.handleSearch}>
           {rightList.map(({ id, companyId, companyName, searchArea, safetyName, safetyPhone, status, saveTime }) => (
             <DrawerCard
               key={id}
