@@ -85,6 +85,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
         } else return (<span style={{ cursor: 'pointer' }} onClick={() => this.handleViewDanger(record)}>{val}</span>)
       },
     }
+    const background = detail.hiddenDangerRecordDto ? detail.hiddenDangerRecordDto[0].files[0].web_url : null
     return (
       <NewModal
         title={type === 'normal' ? '巡查统计-正常' : '巡查统计-异常'}
@@ -103,9 +104,10 @@ export default class ModalOfInspectionStatistics extends PureComponent {
             pagination={false}
             bordered
           />
-          <div className={styles.footer}>
-            <Pagination current={pageNum} pageSize={pageSize} total={total} onChange={handlePageChange} />
-          </div>
+          {total > 0 && (
+            <div className={styles.footer}>
+              <Pagination current={pageNum} pageSize={pageSize} total={total} onChange={handlePageChange} />
+            </div>)}
           {cardVisible && (
             <Switcher
               visible={true}
@@ -130,8 +132,8 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                   real_zgsj: moment(+detail.real_rectify_time).format('YYYY-MM-DD'),
                   fcr: detail.review_user_name,
                   fcsj: detail.review_time && moment(+detail.review_time).format('YYYY-MM-DD'),
-                  status: +status,
-                  background: detail.path,
+                  status: +detail.status,
+                  background: background,
                   businessType: detail.business_type,
                 }}
               />
