@@ -36,8 +36,6 @@ const columns = [
   },
 ]
 
-const options = ['火警', '故障', '联动', '监管', '屏蔽', '反馈']
-
 export default class ModalOfFireHost extends PureComponent {
 
   render() {
@@ -45,16 +43,33 @@ export default class ModalOfFireHost extends PureComponent {
       visible,
       onCancel,
       // handlePageChange,
-      onFilterChange,
+      onFilterChange,  // 点击分类筛选
       loading,
-      list,
-      currentFireHostType,
+      list,  // 当前分类展示的数组
+      // 每个分类的数量统计
+      statistics: {
+        fire_state = 0,   // 火警
+        fault_state = 0,  // 故障
+        start_state = 0,  //  联动
+        supervise_state = 0, // 监管
+        shield_state = 0,    // 屏蔽
+        feedback_state = 0, // 反馈
+      },
+      currentFireHostType,  // 当前选中的分类
       pagination: {
         pageNum = 1,
         pageSize = 10,
         total = 0,
       },
     } = this.props
+    const options = [
+      { label: '火警', num: fire_state },
+      { label: '故障', num: fault_state },
+      { label: '联动', num: start_state },
+      { label: '监管', num: supervise_state },
+      { label: '屏蔽', num: shield_state },
+      { label: '反馈', num: feedback_state },
+    ]
     return (
       <NewModal
         title="消防主机监测"
@@ -64,11 +79,11 @@ export default class ModalOfFireHost extends PureComponent {
       >
         <div className={styles.modalOfFireHost}>
           <Row className={styles.sectionFilter}>
-            {options && options.map((item, i) => (
+            {options && options.map(({ label, num }, i) => (
               <Col span={4} className={styles.filter} key={i}>
-                <div className={currentFireHostType === item ? styles.activeFilter : styles.inActiveFilter}
-                  onClick={() => onFilterChange(item)}>
-                  {item}
+                <div className={currentFireHostType === label ? styles.activeFilter : styles.inActiveFilter}
+                  onClick={() => onFilterChange(label)}>
+                  {label}-{num}
                 </div>
               </Col>
             ))}

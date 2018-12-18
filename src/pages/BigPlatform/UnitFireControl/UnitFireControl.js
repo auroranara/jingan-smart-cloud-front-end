@@ -160,7 +160,7 @@ export default class App extends PureComponent {
         total: 0,
       },
       dangerCardVisible: false,       // 巡查统计数据下钻显示的隐患卡片
-      hiddenDnagerType: '',            // 点击隐患统计时保存类型（已超期、待复查、未超期）
+      hiddenDangerLabel: '',            // 点击隐患统计时保存类型（已超期、待复查、未超期）
     };
     // 轮询定时器
     this.pollingTimer = null;
@@ -622,7 +622,7 @@ export default class App extends PureComponent {
 
 
   /**
-   * 渲染消防数据统计块（未完成）
+   * 渲染消防数据统计块
    */
   renderStatisticsOfFireControl() {
     const {
@@ -671,18 +671,18 @@ export default class App extends PureComponent {
     dispatch({
       type: 'unitFireControl/fetchHiddenDangerRecords',
       payload: {
-        company_id: companyId,
+        companyId: companyId,
         businessType: 2,
         _status: status,
         month: hiddenDangerType === 'realTime' ? null : hiddenDangerType,
       },
     });
-    this.setState({ hiddenDangerVisible: true, hiddenDnagerType: name })
+    this.setState({ hiddenDangerVisible: true, hiddenDangerLabel: name })
   }
 
   // 关闭隐患详情抽屉
   closeDrawerOfHiddenDanger = () => {
-    this.setState({ hiddenDangerVisible: false, hiddenDnagerType: '' })
+    this.setState({ hiddenDangerVisible: false, hiddenDangerLabel: '' })
   }
 
   /**
@@ -1196,6 +1196,7 @@ export default class App extends PureComponent {
         hiddenDangerRecords,
         // 视频列表
         videoList,
+        fireAlarmSystem,
       },
       monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory },
     } = this.props;
@@ -1213,7 +1214,7 @@ export default class App extends PureComponent {
       inspectionCurrentList,
       inspectionPagination,
       dangerCardVisible,
-      hiddenDnagerType,
+      hiddenDangerLabel,
     } = this.state;
 
     return (
@@ -1246,6 +1247,7 @@ export default class App extends PureComponent {
                 <Col span={16} style={{ height: '100%' }}>
                   {/* 用电安全监测 */}
                   <ElectricityCharts
+                    title="电气火灾监测"
                     data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory }}
                     selectVal={chartSelectVal}
                     handleSelect={this.handleChartSelect}
@@ -1277,7 +1279,7 @@ export default class App extends PureComponent {
         /> */}
         {/* 隐患统计数据下钻抽屉 */}
         <DrawerOfHiddenDanger
-          title={hiddenDnagerType}
+          title={hiddenDangerLabel}
           visible={hiddenDangerVisible}
           onClose={this.closeDrawerOfHiddenDanger}
           data={{ hiddenDangerRecords }}
@@ -1292,6 +1294,7 @@ export default class App extends PureComponent {
           onFilterChange={this.handleFireHostFilter}
           pagination={fireHostPagination}
           list={currentFireHosts}
+          statistics={fireAlarmSystem}
         />
         {/* 巡查统计数据下钻 */}
         <ModalOfInspectionStatistics

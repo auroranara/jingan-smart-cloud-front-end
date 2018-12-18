@@ -78,10 +78,10 @@ export default class InspectionStatistics extends PureComponent {
       )}
       >
         <div className={styles.inspectionContainer}>
-          <div className={styles.statusItem}>
+          <div className={styles.statusItem} onClick={() => onClick('normal')}>
             <div className={styles.statistic}>
               <div className={styles.title}><span>正常</span></div>
-              <span className={styles.number} onClick={() => onClick('normal')} style={{ color: '#00ABCA', cursor: 'pointer' }}>{normal}</span>
+              <span className={styles.number} style={{ color: '#00ABCA' }}>{normal}</span>
             </div>
             <div className={styles.barItem}>
               <div className={styles.barContainer}>
@@ -89,10 +89,10 @@ export default class InspectionStatistics extends PureComponent {
               </div>
             </div>
           </div>
-          <div className={styles.statusItem}>
+          <div className={styles.statusItem} onClick={() => onClick('abnormal')}>
             <div className={styles.statistic}>
               <div className={styles.title}><span>异常</span></div>
-              <span className={styles.number} onClick={() => onClick('abnormal')} style={{ color: '#E86766', cursor: 'pointer' }}>{abnormal}</span>
+              <span className={styles.number} style={{ color: '#E86766' }}>{abnormal}</span>
             </div>
             <div className={styles.barItem}>
               <div className={styles.barContainer}>

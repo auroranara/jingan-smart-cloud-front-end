@@ -466,6 +466,7 @@ export default class App extends PureComponent {
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts
+                      title="电气火灾监测"
                       data={{
                         chartDeviceList,
                         gsmsHstData,
