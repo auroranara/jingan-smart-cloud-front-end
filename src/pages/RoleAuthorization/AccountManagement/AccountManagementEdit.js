@@ -249,17 +249,19 @@ export default class accountManagementEdit extends PureComponent {
     const success = id
       ? undefined
       : ({ unitType: unitTypes }) => {
-        // 默认选取第一个类型
-        unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
-        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        unitTypes && unitTypes.length && fetchUnitsFuzzy({
-          payload: {
-            unitType: unitTypes[0].id,
-            pageNum: 1,
-            pageSize: defaultPageSize,
-          },
-        });
-      };
+          // 默认选取第一个类型
+          unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
+          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+          unitTypes &&
+            unitTypes.length &&
+            fetchUnitsFuzzy({
+              payload: {
+                unitType: unitTypes[0].id,
+                pageNum: 1,
+                pageSize: defaultPageSize,
+              },
+            });
+        };
 
     // 清空权限树
     dispatch({ type: 'account/saveMaintenanceTree', payload: {} });
@@ -272,12 +274,15 @@ export default class accountManagementEdit extends PureComponent {
           id,
         },
         success: ({ unitType, unitId }) => {
-          this.setState({
-            unitTypeChecked: unitType,
-          }, () => {
-            // 若为维保单位，则获取维保权限树
-            // unitType === 1 && this.getMaintenanceTree(unitId);
-          });
+          this.setState(
+            {
+              unitTypeChecked: unitType,
+            },
+            () => {
+              // 若为维保单位，则获取维保权限树
+              // unitType === 1 && this.getMaintenanceTree(unitId);
+            }
+          );
 
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           // fetchUnitsFuzzy({
@@ -300,7 +305,6 @@ export default class accountManagementEdit extends PureComponent {
           goToException();
         },
       });
-
     } else {
       clearDetail();
       // 获取角色列表
@@ -336,7 +340,7 @@ export default class accountManagementEdit extends PureComponent {
   };
 
   //获取维保权限树
-  getMaintenanceTree = (companyId) => {
+  getMaintenanceTree = companyId => {
     const { dispatch } = this.props;
     dispatch({
       type: 'account/fetchMaintenanceTree',
@@ -449,7 +453,10 @@ export default class accountManagementEdit extends PureComponent {
                 regulatoryClassification && regulatoryClassification.length
                   ? regulatoryClassification.join(',')
                   : null,
-              permissions: addParentKey(getNoRepeat(permissions, this.permissions), this.parentIdMap).join(','),
+              permissions: addParentKey(
+                getNoRepeat(permissions, this.permissions),
+                this.parentIdMap
+              ).join(','),
             };
             switch (payload.unitType) {
               // 维保企业
@@ -495,8 +502,7 @@ export default class accountManagementEdit extends PureComponent {
           setFieldsValue({ userType: undefined });
         }
 
-        if (id === 4 || id === 2)
-          setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
+        if (id === 4 || id === 2) setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
       }
     );
   };
@@ -697,7 +703,7 @@ export default class accountManagementEdit extends PureComponent {
       <Card title="账号基本信息" className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.loginName}>
                 {getFieldDecorator('loginName', {
                   initialValue: loginName,
@@ -716,13 +722,13 @@ export default class accountManagementEdit extends PureComponent {
                   id ? (
                     <span>{loginName}</span>
                   ) : (
-                      <Input placeholder="请输入用户名" min={1} max={20} />
-                    )
+                    <Input placeholder="请输入用户名" min={1} max={20} />
+                  )
                 )}
               </Form.Item>
             </Col>
             {id ? null : (
-              <Col lg={8} md={12} sm={24}>
+              <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                 <Form.Item label={fieldLabels.password}>
                   {getFieldDecorator('password', {
                     rules: [
@@ -772,7 +778,7 @@ export default class accountManagementEdit extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.userName}>
                 {getFieldDecorator('userName', {
                   initialValue: userName,
@@ -788,7 +794,7 @@ export default class accountManagementEdit extends PureComponent {
                 })(<Input placeholder="请输入姓名" min={1} max={10} />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.phoneNumber}>
                 {getFieldDecorator('phoneNumber', {
                   initialValue: phoneNumber,
@@ -809,7 +815,11 @@ export default class accountManagementEdit extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.unitType}>
                   {getFieldDecorator('unitType', {
-                    initialValue: id ? unitType : unitTypes.length === 0 ? undefined : unitTypes[0].id,
+                    initialValue: id
+                      ? unitType
+                      : unitTypes.length === 0
+                        ? undefined
+                        : unitTypes[0].id,
                     rules: [
                       {
                         required: true,
@@ -1056,14 +1066,14 @@ export default class accountManagementEdit extends PureComponent {
     );
   }
 
-  onCheck = (checkedKeys) => {
+  onCheck = checkedKeys => {
     const { setFieldsValue } = this.props.form;
 
     // console.log('onCheck', checkedKeys);
     setFieldsValue({ maintenacePermissions: checkedKeys });
   };
 
-  onExpand = (expandedKeys) => {
+  onExpand = expandedKeys => {
     this.setState({
       expandedKeys,
       autoExpandParent: false,
@@ -1071,7 +1081,11 @@ export default class accountManagementEdit extends PureComponent {
   };
 
   onTreeSearch = e => {
-    const { account: { maintenanceTree: { list: treeList = [] } } } = this.props;
+    const {
+      account: {
+        maintenanceTree: { list: treeList = [] },
+      },
+    } = this.props;
 
     const value = e.target.value;
     const expandedKeys = getParentKeys(treeList, value);
@@ -1085,7 +1099,10 @@ export default class accountManagementEdit extends PureComponent {
 
   handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
     // console.log(nextTargetKeys);
-    const { dispatch, form: { setFieldsValue } } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
     setFieldsValue({ roleIds: nextTargetKeys });
 
     // 穿梭框中有值
@@ -1095,7 +1112,12 @@ export default class accountManagementEdit extends PureComponent {
         payload: { id: nextTargetKeys.join(',') },
         success: permissions => {
           this.permissions = permissions;
-          setFieldsValue({ permissions: removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap) });
+          setFieldsValue({
+            permissions: removeParentKey(
+              mergeArrays(permissions, this.authTreeCheckedKeys),
+              this.idMap
+            ),
+          });
         },
       });
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
@@ -1161,8 +1183,10 @@ export default class accountManagementEdit extends PureComponent {
                   role={role}
                   form={form}
                   dispatch={dispatch}
-                  setIdMaps = {this.setIdMaps}
-                  handleChangeAuthTreeCheckedKeys={checkedKeys => { this.authTreeCheckedKeys = checkedKeys; } }
+                  setIdMaps={this.setIdMaps}
+                  handleChangeAuthTreeCheckedKeys={checkedKeys => {
+                    this.authTreeCheckedKeys = checkedKeys;
+                  }}
                 />
               </Form.Item>
             </Col>
@@ -1210,9 +1234,9 @@ export default class accountManagementEdit extends PureComponent {
                       expandedKeys={expandedKeys}
                       autoExpandParent={autoExpandParent}
                       onCheck={this.onCheck}
-                    // checkedKeys={this.state.checkedKeys}
-                    // onSelect={this.onSelect}
-                    // selectedKeys={this.state.selectedKeys}
+                      // checkedKeys={this.state.checkedKeys}
+                      // onSelect={this.onSelect}
+                      // selectedKeys={this.state.selectedKeys}
                     >
                       {renderSearchedTreeNodes(treeList, searchValue)}
                     </Tree>

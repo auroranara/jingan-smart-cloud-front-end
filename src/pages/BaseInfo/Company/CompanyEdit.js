@@ -342,7 +342,9 @@ export default class CompanyDetail extends PureComponent {
 
   // 在safety组件中同步gridTree
   setGridTree = (gridTree, idMap) => {
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
 
     this.idMap = idMap;
     // 若gridId已获取，则在此设置gridId值，未获取，则在获取详情后设置值
@@ -612,14 +614,18 @@ export default class CompanyDetail extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { map: { point: { longitude, latitude } } } = this.state;
+    const {
+      map: {
+        point: { longitude, latitude },
+      },
+    } = this.state;
     // 将选中点的坐标放入输入框
     setFieldsValue({
       coordinate: `${longitude},${latitude}`,
     });
     // 隐藏地图模态框
     this.handleHideMap();
-  }
+  };
 
   /**
    * 重置地图
@@ -634,12 +640,12 @@ export default class CompanyDetail extends PureComponent {
         point: coord,
       },
     }));
-  }
+  };
 
   /**
    * 搜索地图
    */
-  handleSearchMap = (point) => {
+  handleSearchMap = point => {
     this.setState(({ map }) => ({
       map: {
         ...map,
@@ -647,19 +653,19 @@ export default class CompanyDetail extends PureComponent {
         point,
       },
     }));
-  }
+  };
 
   /**
    * 点击地图
    */
-  handleClickMap = (point) => {
+  handleClickMap = point => {
     this.setState(({ map }) => ({
       map: {
         ...map,
         point,
       },
     }));
-  }
+  };
 
   /* 上传文件按钮 */
   renderUploadButton = ({ fileList, onChange }) => {
@@ -754,7 +760,9 @@ export default class CompanyDetail extends PureComponent {
 
   /* 渲染地图 */
   renderMap() {
-    const { map: { visible, center, point } } = this.state;
+    const {
+      map: { visible, center, point },
+    } = this.state;
 
     return (
       <MapModal
@@ -806,7 +814,7 @@ export default class CompanyDetail extends PureComponent {
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.name}>
                 {getFieldDecorator('name', {
                   initialValue: name,
@@ -859,9 +867,7 @@ export default class CompanyDetail extends PureComponent {
                   // initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
                   initialValue: gridId ? this.idMap[gridId] : undefined,
                   rules: [{ required: true, message: '请选择所属网格' }],
-                })(
-                  <Cascader options={gridTree} placeholder="请输入所属网格" changeOnSelect />
-                )}
+                })(<Cascader options={gridTree} placeholder="请输入所属网格" changeOnSelect />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={8} sm={24}>
@@ -1000,7 +1006,9 @@ export default class CompanyDetail extends PureComponent {
         },
       },
       form: { getFieldDecorator },
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
     } = this.props;
 
     return (
