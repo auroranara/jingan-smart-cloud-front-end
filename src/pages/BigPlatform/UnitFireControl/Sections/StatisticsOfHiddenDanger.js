@@ -175,20 +175,19 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
       dfc = 0,
       dzg = 0,
       ygb = 0,
+      type,
       handleClickChat,
     } = this.props;
-    /*     const legendInfo = {
-          '超期未整改': cqwzg,
-          '待复查': dfc,
-          '待整改': dzg,
-          '已关闭': ygb,
-        } */
-    const legendInfo = [
+    const legendInfo = type === 'realTime' ? [
       { label: '已超期', value: cqwzg, iconColor: '#D16772', status: 7 },
       { label: '待复查', value: dfc, iconColor: '#2787D5', status: 3 },
       { label: '未超期', value: dzg, iconColor: '#DEAD5C', status: 2 },
-      // { label: '已关闭', value: ygb, iconColor: '#A9B2BE', status: 4 },
-    ]
+    ] : [
+        { label: '已超期', value: cqwzg, iconColor: '#D16772', status: 7 },
+        { label: '待复查', value: dfc, iconColor: '#2787D5', status: 3 },
+        { label: '未超期', value: dzg, iconColor: '#DEAD5C', status: 2 },
+        { label: '已关闭', value: ygb, iconColor: '#A9B2BE', status: 4 },
+      ]
     const option = {
       /* legend: {
         selectedMode:false,
@@ -247,12 +246,16 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
               color: '#fff',
             },
           },
-          data: [
+          data: type === 'realTime' ? [
             { value: cqwzg, name: '已超期', itemStyle: { color: '#D16772' }, status: 7 },
             { value: dfc, name: '待复查', itemStyle: { color: '#2787D5' }, status: 3 },
             { value: dzg, name: '未超期', itemStyle: { color: '#DEAD5C' }, status: 2 },
-            // { value: ygb, name: '已关闭', itemStyle: { color: '#A9B2BE' }, status: 4 },
-          ],
+          ] : [
+              { value: cqwzg, name: '已超期', itemStyle: { color: '#D16772' }, status: 7 },
+              { value: dfc, name: '待复查', itemStyle: { color: '#2787D5' }, status: 3 },
+              { value: dzg, name: '未超期', itemStyle: { color: '#DEAD5C' }, status: 2 },
+              { value: ygb, name: '已关闭', itemStyle: { color: '#A9B2BE' }, status: 4 },
+            ],
         },
         {
           type: 'pie',

@@ -12,7 +12,7 @@ import safety from '@/assets/safety.png';
 import fireControl from '@/assets/fire-control.png';
 import environment from '@/assets/environment.png';
 import hygiene from '@/assets/hygiene.png';
-import noHiddenDangerRecords from '../images/noHiddenDangerRecords.png';
+import isEmptyImg from '../images/noHiddenDanger.png';
 
 /**
  * 根据status获取对应的标记
@@ -177,10 +177,18 @@ export default class DrawerOfHiddenDanger extends PureComponent {
                 return <HiddenDangerRecord key={id} data={item} />;
               })
             ) : (
-                <div
-                  className={styles.noPendingInfo}
-                  style={{ backgroundImage: `url(${noHiddenDangerRecords})` }}
-                />
+                <div className={styles.exptyContainer}>
+                  <div
+                    style={{
+                      backgroundImage: `url(${isEmptyImg})`,
+                      backgroundSize: '100% 100%',
+                      backgroundPosition: 'center center',
+                      backgroundRepeat: 'noRepeat',
+                      width: '350px',
+                      height: '350px',
+                    }}
+                  ></div>
+                </div>
               )}
           </div>
         )}
