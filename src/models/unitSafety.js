@@ -17,8 +17,8 @@ import {
   getStaffList,
   // 获取巡查人员记录
   getStaffRecords,
-  // 隐患总数
-  getHiddenDanger,
+  // 获取巡查记录详情
+  getInspectionPointData,
   // 获取安全人员信息
   getSafetyOfficer,
 } from '../services/unitSafety';
@@ -71,6 +71,10 @@ export default {
     staffRecords: [],
     // 安全人员信息
     safetyOfficer: {},
+    // 巡查点位数据
+    inspectionPointData: {
+
+    },
   },
 
   effects: {
@@ -284,6 +288,21 @@ export default {
       });
       if (callback) {
         callback(response);
+      }
+    },
+    // 获取巡查记录数据
+    *fetchInspectionPointData({ payload, callback }, { call, put }) {
+      const response = yield call(getInspectionPointData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { inspectionPointData: response.data },
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      } else if (callback) {
+        callback();
       }
     },
   },

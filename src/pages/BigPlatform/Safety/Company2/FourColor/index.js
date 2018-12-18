@@ -9,6 +9,13 @@ import VideoPlay from '../../../FireControl/section/VideoPlay';
 import videoPointIcon from '../../img/videoPoint.png';
 import gray from '@/assets/gray_new.png';
 import exceptionGray from '@/assets/exception_gray.png';
+import pointIcon from '@/assets/card-name.png';
+import statusIcon from '@/assets/card-status.png';
+import checkPersonIcon from '@/assets/card-check-person.png';
+import checkTimeIcon from '@/assets/card-check-time.png';
+import areaIcon from '@/assets/card-area.png';
+import accidentTypeIcon from '@/assets/card-type.png';
+import riskLevelIcon from '@/assets/card-level.png';
 
 import styles from './index.less';
 const { Option } = Select;
@@ -25,11 +32,6 @@ const exceptionOrange = `${iconPrefix}exception_orange.png`;
 const exceptionYellow = `${iconPrefix}exception_yellow.png`;
 const exceptionBlue = `${iconPrefix}exception_blue.png`;
 const selected = `${iconPrefix}selected.png`;
-const pointIcon = `${iconPrefix}point.png`;
-const areaIcon = `${iconPrefix}area.png`;
-const accidentTypeIcon = `${iconPrefix}accidentType.png`;
-const riskLevelIcon = `${iconPrefix}riskLevel.png`;
-const statusIcon = `${iconPrefix}status.png`;
 /* 风险告知卡背景 */
 const infoBg = `${iconPrefix}info_border.png`;
 
@@ -97,13 +99,13 @@ const RiskCard = function({
             <Avatar src={pointIcon} size="small" style={{ flex: 'none', marginRight: '10px' }} title="风险点名称" />
             <Ellipsis lines={1} tooltip style={{ flex: 1 }}>{data.hdLetterInfo.pointName}</Ellipsis>
           </div>
-          {(!isGray || data.hdLetterInfo.areaName) && (
+          {!isGray  && (
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', padding: '6px 0' }}>
               <Avatar src={areaIcon} size="small" style={{ flex: 'none', marginRight: '10px' }} title="场所/环节/部位名称" />
               <Ellipsis lines={1} tooltip style={{ flex: 1 }}>{data.hdLetterInfo.areaName}</Ellipsis>
             </div>
           )}
-          {(!isGray || data.hdLetterInfo.accidentTypeName) && (
+          {!isGray && (
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', padding: '6px 0' }}>
               <Avatar src={accidentTypeIcon} size="small" style={{ flex: 'none', marginRight: '10px' }} title="易导致后果（风险）" />
               <Ellipsis lines={1} tooltip style={{ flex: 1 }}>{data.hdLetterInfo.accidentTypeName}</Ellipsis>
@@ -117,6 +119,18 @@ const RiskCard = function({
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', padding: '6px 0' }}>
               <Avatar src={riskLevelIcon} size="small" style={{ flex: 'none', marginRight: '10px' }} title="风险等级" />
               <Ellipsis lines={1} tooltip style={{ flex: 1 }}>{data.hdLetterInfo.riskLevelName.desc}</Ellipsis>
+            </div>
+          )}
+          {isGray && (
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', padding: '6px 0' }}>
+              <Avatar src={checkPersonIcon} size="small" style={{ flex: 'none', marginRight: '10px' }} title="最近巡查人" />
+              <Ellipsis lines={1} tooltip style={{ flex: 1 }}>{data.hdLetterInfo.lastCheckName}</Ellipsis>
+            </div>
+          )}
+          {isGray && (
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', padding: '6px 0' }}>
+              <Avatar src={checkTimeIcon} size="small" style={{ flex: 'none', marginRight: '10px' }} title="最近巡查时间" />
+              <Ellipsis lines={1} tooltip style={{ flex: 1 }}>{data.hdLetterInfo.lastCheckDate && data.hdLetterInfo.lastCheckDate.slice(0, 10)}</Ellipsis>
             </div>
           )}
         </div>

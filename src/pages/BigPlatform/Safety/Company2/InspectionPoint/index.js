@@ -15,11 +15,10 @@ export default class InspectionPoint extends PureComponent {
     const {
       onClose,
       data: {
-        riskCardList=[{ id: 1 }],
-        hiddenDangerList=[],
+        data=[],
+        hiddenData=[],
       }={},
     } = this.props;
-    console.log(hiddenDangerList);
 
     return (
       <Section
@@ -29,33 +28,55 @@ export default class InspectionPoint extends PureComponent {
         titleStyle={{ marginBottom: 0 }}
         onClose={onClose}
       >
-          <div className={styles.list}>
-            <div className={styles.title}>风险点详情</div>
-            {riskCardList.length > 0 ? (
-              <div className={styles.content}>
-                {riskCardList.map(item => (
-                  <RiskCard
-                    key={item.id}
-                    data={item}
-                  />
-                ))}
-              </div>
-            ) : <div style={{ textAlign: 'center' }}>暂无风险点</div>}
+        <div className={styles.title}>风险点详情</div>
+        {data.length > 0 ? (
+          <div className={styles.content}>
+            {data.map(item => (
+              <RiskCard
+                key={item.id}
+                data={item}
+              />
+            ))}
           </div>
-          <div className={styles.list}>
-            <div className={styles.title}>隐患详情 ({hiddenDangerList.length})</div>
-            {hiddenDangerList.length > 0 ? (
-              <div className={styles.content}>
-                {hiddenDangerList.map(item => (
-                  <HiddenDanger
-                    key={item.id}
-                    data={item}
-                    isSourceShow
-                  />
-                ))}
-              </div>
-            ) : <div style={{ textAlign: 'center' }}>暂无隐患</div>}
+        ) : <div style={{ textAlign: 'center' }}>暂无风险点</div>}
+        <div className={styles.title}>隐患详情 ({hiddenData.length})</div>
+        {hiddenData.length > 0 ? (
+          <div className={styles.content}>
+            {hiddenData.map(({
+              _id,
+              _report_user_name,
+              _report_time,
+              _rectify_user_name,
+              _plan_rectify_time,
+              _review_user_name,
+              business_type,
+              _desc,
+              path,
+              _real_rectify_time,
+              _review_time,
+              typeName,
+            }) => (
+              <HiddenDanger
+                key={_id}
+                data={{
+                  report_user_name: _report_user_name,
+                  report_time: _report_time,
+                  rectify_user_name: _rectify_user_name,
+                  real_rectify_time: _real_rectify_time,
+                  plan_rectify_time: _plan_rectify_time,
+                  review_user_name: _review_user_name,
+                  review_time: _review_time,
+                  source_type_name: typeName,
+                  desc: _desc,
+                  business_type,
+                  status,
+                  hiddenDangerRecordDto: [{ fileWebUrl: path }],
+                }}
+                isSourceShow
+              />
+            ))}
           </div>
+        ) : <div style={{ textAlign: 'center' }}>暂无隐患</div>}
       </Section>
     );
   }

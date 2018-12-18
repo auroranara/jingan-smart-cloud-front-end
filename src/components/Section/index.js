@@ -59,8 +59,8 @@ export default class App extends PureComponent {
    */
   componentDidUpdate({ children: prevChildren, hackHeight: prevHackHeight }) {
     const { children, hackHeight } = this.props;
-    // 比较源数据的key是否发生变化，如果发生变化就重新计算内容高度
-    if (this.getChildrenLength(children) !== this.getChildrenLength(prevChildren)) {
+    // 当内容发生变化时，重新计算内容高度是否超出容器以显示或隐藏滚动条，由于技术所限，暂时通过length判断
+    if (prevChildren.length !== children.length || this.getChildrenLength(children) !== this.getChildrenLength(prevChildren)) {
       this.resize();
     }
     else if (hackHeight !== prevHackHeight) {

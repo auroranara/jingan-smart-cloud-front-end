@@ -61,8 +61,6 @@ export default class App extends PureComponent {
     selectedStaffRecordsMonth: '2018-09',
     // 选中的人员id
     checkUserId: null,
-    // 巡查点位抽屉数据
-    inspectionPointData: {},
     // 右边的显示队列
     rightQueue: [0],
   }
@@ -247,11 +245,34 @@ export default class App extends PureComponent {
   /**
    * 显示巡查点位
    */
-  handleShowInspectionPoint = (data) => {
-    this.setState(({ rightQueue }) => ({
-      rightQueue: rightQueue.concat(2),
-      inspectionPointData: data,
-    }));
+  handleShowInspectionPoint = (checkId) => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
+    const payload = {
+      companyId,
+      checkId,
+      month,
+      checkUserId,
+    };
+    dispatch({
+      type: 'unitSafety/fetchInspectionPointData',
+      payload,
+      callback: () => {
+        const { rightQueue } = this.state;
+        // 如果巡查点位详情已经显示，则不做任何操作
+        if (rightQueue.includes(2)) {
+          return;
+        }
+        this.setState(({ rightQueue }) => ({
+          rightQueue: rightQueue.concat(2),
+        }));
+      },
+    });
   }
 
   /**
@@ -265,7 +286,7 @@ export default class App extends PureComponent {
 
   render() {
     const { monitorDataLoading, unitSafety } = this.props;
-    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords } = unitSafety;
+    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords, inspectionPointData } = unitSafety;
     const {
       safetyOfficerVisible,
       riskPointVisible,
@@ -278,7 +299,6 @@ export default class App extends PureComponent {
       inspectionIndex,
       selectedStaffListMonth,
       selectedStaffRecordsMonth,
-      inspectionPointData,
       rightQueue,
     } = this.state;
 
@@ -378,7 +398,6 @@ export default class App extends PureComponent {
                   time: 'check_date',
                   point: 'object_title',
                   result: 'fireCheckStatus',
-                  status: 'currentStatus',
                 }}
                 onBack={() => {
                   this.handleResetInspectionIndex(1);

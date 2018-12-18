@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
+import { Progress } from 'antd';
 import Section from '@/components/Section';
 import Ellipsis from '@/components/Ellipsis';
-import importantIcon from '../../img/importantCompany.png';
+// import importantIcon from '../../img/importantCompany.png';
 
 import styles from './index.less';
 
@@ -70,29 +71,43 @@ export default class CompanyInfo extends PureComponent {
     const isHiddenDangerCountClickable = +hiddenDangerCount !== 0 && fourColorImg.length > 0 && !currentHiddenDangerVisible;
 
     return (
-      <Section className={className} style={style}>
+      <Section className={className} style={style} fixedContent={isImportant && (
+        <div className={styles.importantUnit}>重点单位</div>
+      )}>
         <div className={styles.container}>
           {/* 企业基本信息 */}
-          <div className={styles.top} style={{ backgroundImage: `url(${unitIcon})` }}>
+          <div className={styles.top} style={{ position: 'relative', backgroundImage: `url(${unitIcon})` }}>
             <div onClick={handleClickUnitName}>
               <Ellipsis lines={1} /* tooltip */>{companyName}</Ellipsis>
             </div>
-            <div>
+            <div style={{ paddingRight: 90 }}>
               <Ellipsis lines={1} /* tooltip */>
                 <span className={styles.fieldName} style={{ flex: 'none' }}>安全负责人：</span>
                 {headOfSecurity}
               </Ellipsis>
             </div>
-            <div style={{ position: 'relative' }}>
+            <div style={{ paddingRight: 90 }}>
               <Ellipsis lines={1} /* tooltip */>
                 <span className={styles.fieldName}>联系方式：</span>
                 {headOfSecurityPhone}
               </Ellipsis>
-              {/* 是否是重点单位 */}
-              {isImportant && (
-                <div className={styles.importantUnit} style={{ backgroundImage: `url(${importantIcon})` }} />
-              )}
             </div>
+            {/* 安全指数 */}
+            <Progress
+              width={90}
+              type="circle"
+              percent={80}
+              strokeColor="#00a8ff"
+              trailColor="#021C41"
+              status="active"
+              style={{
+                position: 'absolute',
+                right: 0,
+                bottom: 0,
+                height: 80,
+              }}
+              format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 24 }}>{percent}</div><div style={{ fontSize: 16 }}>安全指数</div></div>}
+            />
           </div>
           {/* 统计信息 */}
           <div className={styles.bottom}>
