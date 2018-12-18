@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Icon, Select } from 'antd';
+import { Row, Col, Icon, Select, Drawer } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import classNames from 'classnames';
@@ -16,6 +16,9 @@ import RiskDetail from './Components/RiskDetail.js';
 import CurrentHiddenDanger from './Components/CurrentHiddenDanger';
 import StaffList from './Components/StaffList';
 import StaffRecords from './Components/StaffRecords';
+import RiskPointPieLegend from './Components/RiskPointPieLegend';
+import RiskPointDrawer from './Components/RiskPointDrawer';
+import PatrolPointDrawer from './Components/PatrolPointDrawer';
 import Header from '../UnitFireControl/components/Header/Header';
 import VideoPlay from '../FireControl/section/VideoPlay.js';
 
@@ -29,6 +32,7 @@ import abnormalIcon from './img/abnormalIcon.png';
 import overIcon from './img/overIcon.png';
 import gray from '@/assets/gray_new.png';
 import exceptionGray from '@/assets/exception_gray.png';
+import splitLine from '@/assets/split-line.png';
 
 const { Option } = Select;
 const { projectName } = global.PROJECT_CONFIG;
@@ -248,6 +252,14 @@ class CompanyLayout extends PureComponent {
       selectedStaffRecordsMonth: '2018-09',
       // 选中的人员id
       selectedUserId: null,
+      // 风险点抽屉是否显示
+      riskPointDrawerVisible: false,
+      // 风险点抽屉显示等级
+      riskPointDrawerLevel: '',
+      // 巡查点位抽屉是否显示
+      patrolPointDrawerVisible: false,
+      // 巡查点位抽屉数据
+      patrolPointDrawerData: {},
     };
     this.myTimer = null;
     this.currentPieIndex = -1;
@@ -256,6 +268,8 @@ class CompanyLayout extends PureComponent {
     this.showTipTimer = null;
     // 曲线图元素
     this.lineChart = null;
+    // 饼图元素
+    this.pieChart = null;
   }
 
   /**
@@ -340,6 +354,8 @@ class CompanyLayout extends PureComponent {
 
     // 添加曲线图显示文字定时器
     this.showTipTimer = setInterval(this.showLineChartTip, 2000);
+    // 添加定时器循环
+    this.highLightTimer = setInterval(this.showPieChartTip, 2000);
   }
 
   /**
@@ -402,6 +418,29 @@ class CompanyLayout extends PureComponent {
     });
   };
 
+  /**
+   * 显示饼图的文字
+   */
+  showPieChartTip = () => {
+    if (!this.lineChart) {
+      return;
+    }
+    var length = this.pieChart.getOption().series[0].data.length;
+    // 取消之前高亮的图形
+    this.pieChart.dispatchAction({
+      type: 'downplay',
+      seriesIndex: 0,
+      dataIndex: this.currentPieIndex,
+    });
+    this.currentPieIndex = (this.currentPieIndex + 1) % length;
+    // 高亮当前图形
+    this.pieChart.dispatchAction({
+      type: 'highlight',
+      seriesIndex: 0,
+      dataIndex: this.currentPieIndex,
+    });
+  }
+
   // 显示视频弹框
   handleVideoShow = keyId => {
     this.setState({ videoVisible: true, videoKeyId: keyId });
@@ -416,30 +455,14 @@ class CompanyLayout extends PureComponent {
    * 环形图加载完毕
    */
   handlePieChartReady = chart => {
-    const changeHighLight = () => {
-      var length = chart.getOption().series[0].data.length;
-      // 取消之前高亮的图形
-      chart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: 0,
-        dataIndex: this.currentPieIndex,
-      });
-      this.currentPieIndex = (this.currentPieIndex + 1) % length;
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: this.currentPieIndex,
-      });
-    };
-    // 立即执行高亮操作
-    changeHighLight();
-    // 添加定时器循环
-    this.highLightTimer = setInterval(changeHighLight, 2000);
+    if (document.querySelector('.domPieChart').getAttribute('_echarts_instance_') !== chart.id) {
+      return;
+    }
+    this.pieChart = chart;
     // 绑定mouseover事件
     chart.on('mouseover', params => {
-      clearInterval(this.highLightTimer);
-      this.highLightTimer = null;
+      // clearInterval(this.highLightTimer);
+      // this.highLightTimer = null;
       if (params.dataIndex !== this.currentPieIndex) {
         // 取消之前高亮的图形
         chart.dispatchAction({
@@ -468,7 +491,14 @@ class CompanyLayout extends PureComponent {
         return;
       }
       // 添加定时器循环
-      this.highLightTimer = setInterval(changeHighLight, 2000);
+      // this.highLightTimer = setInterval(this.showPieChartTip, 2000);
+    });
+    // 饼图点击事件
+    chart.on('click', ({ name }) => {
+      this.setState({
+        riskPointDrawerVisible: true,
+        riskPointDrawerLevel: name,
+      });
     });
   };
 
@@ -650,6 +680,16 @@ class CompanyLayout extends PureComponent {
   };
 
   /**
+   * 显示巡查点位抽屉
+   */
+  handleShowPatrolPointDrawer = (data) => {
+    this.setState({
+      patrolPointDrawerVisible: true,
+      patrolPointDrawerData: data,
+    });
+  }
+
+  /**
    * 单位巡查人员列表
    */
   renderStaffList() {
@@ -701,11 +741,13 @@ class CompanyLayout extends PureComponent {
           time: 'check_date',
           point: 'object_title',
           result: 'fireCheckStatus',
+          status: 'currentStatus',
         }}
         onBack={() => {
           this.handleSwitchUnitInspection(1);
         }}
         onSelect={this.handleSelectStaffRecords}
+        handleShowDetail={this.handleShowPatrolPointDrawer}
       />
     );
   }
@@ -1008,32 +1050,90 @@ class CompanyLayout extends PureComponent {
     const isCheckingValued = +status3 !== 0;
     const isAbnormalValued = +status2 !== 0;
     const isOverValued = +status4 !== 0;
-    let data;
+    let data, legendData;
     if (red === 0 && orange === 0 && yellow === 0 && blue === 0) {
       data = [{ value: unvalued, name: '总计', itemStyle: { color: '#4F6793' } }];
+      legendData = [
+        {
+          label: '未评级',
+          color: '#4F6793',
+          value: unvalued,
+        },
+      ];
     } else {
       const valuedData = [
-        { value: red, name: '红', itemStyle: { color: '#BF6C6D' } },
-        { value: orange, name: '橙', itemStyle: { color: '#CC964B' } },
-        { value: yellow, name: '黄', itemStyle: { color: '#C6C181' } },
-        { value: blue, name: '蓝', itemStyle: { color: '#4CA1DE' } },
+        { value: red, name: '红', itemStyle: { color: '#E86767' } },
+        { value: orange, name: '橙', itemStyle: { color: '#FFB650' } },
+        { value: yellow, name: '黄', itemStyle: { color: '#F7E68A' } },
+        { value: blue, name: '蓝', itemStyle: { color: '#5EBEFF' } },
       ];
       if (unvalued === 0) {
         data = valuedData;
+        legendData = [
+          {
+            label: '红',
+            color: '#E86767',
+            value: red,
+          },
+          {
+            label: '橙',
+            color: '#FFB650',
+            value: orange,
+          },
+          {
+            label: '黄',
+            color: '#F7E68A',
+            value: yellow,
+          },
+          {
+            label: '蓝',
+            color: '#5EBEFF',
+            value: blue,
+          },
+        ];
       } else {
         const unvaluedData = [{ value: unvalued, name: '未评级', itemStyle: { color: '#4F6793' } }];
         data = valuedData.concat(unvaluedData);
+        legendData = [
+          {
+            label: '红',
+            color: '#E86767',
+            value: red,
+          },
+          {
+            label: '橙',
+            color: '#FFB650',
+            value: orange,
+          },
+          {
+            label: '黄',
+            color: '#F7E68A',
+            value: yellow,
+          },
+          {
+            label: '蓝',
+            color: '#5EBEFF',
+            value: blue,
+          },
+          {
+            label: '未评级',
+            color: '#4F6793',
+            value: unvalued,
+          },
+        ];
       }
     }
     // 图表选项
     const option = {
-      // color: ['#BF6C6D', '#CC964B', '#C6C181', '#4CA1DE'],
       series: [
         {
           type: 'pie',
+          // 设置中心点
+          center: ['30%', '50%'],
           radius: ['50%', '80%'],
           hoverOffset: 5,
           avoidLabelOverlap: false,
+          legendHoverLink: false,
           label: {
             normal: {
               show: false,
@@ -1077,9 +1177,14 @@ class CompanyLayout extends PureComponent {
                 option={option}
                 style={{ height: '100%' }}
                 onChartReady={this.handlePieChartReady}
+                className="domPieChart"
+              />
+              <RiskPointPieLegend
+                style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}
+                data={legendData}
               />
             </div>
-
+            <div style={{ position: 'absolute', bottom: '42%', left: 0, right: 0, height: 2, background: `url(${splitLine}) no-repeat center center / 100% 100%` }} />
             <div className={styles.summaryBottom} style={{ height: '42%' }}>
               <div
                 className={
@@ -1436,6 +1541,14 @@ class CompanyLayout extends PureComponent {
     });
 
     const option = {
+      dataZoom: [{
+          type: 'inside',
+      }, {
+          type: 'slider',
+          textStyle: {
+            color: '#fff',
+          },
+      }],
       xAxis: {
         type: 'category',
         boundaryGap: false,
@@ -1476,7 +1589,7 @@ class CompanyLayout extends PureComponent {
         top: 30,
         left: 20,
         right: 20,
-        bottom: 10,
+        bottom: 40,
         containLabel: true,
       },
       tooltip: {
@@ -2114,6 +2227,36 @@ class CompanyLayout extends PureComponent {
     );
   }
 
+  /* 风险点抽屉 */
+  renderRiskPointDrawer() {
+    const { bigPlatform: { countDangerLocationForCompany } } = this.props;
+    const { riskPointDrawerVisible, riskPointDrawerLevel } = this.state;
+    return (
+      <RiskPointDrawer
+        drawerProps={{
+          visible: riskPointDrawerVisible,
+          onClose: () => { this.setState({ riskPointDrawerVisible: false }) },
+        }}
+        levelName={riskPointDrawerLevel}
+        data={countDangerLocationForCompany}
+      />
+    );
+  }
+
+  /* 巡查点位抽屉 */
+  renderPatrolPointDrawer() {
+    const { patrolPointDrawerVisible, patrolPointDrawerData } = this.state;
+    return (
+      <PatrolPointDrawer
+        drawerProps={{
+          visible: patrolPointDrawerVisible,
+          onClose: () => { this.setState({ patrolPointDrawerVisible: false }) },
+        }}
+        data={patrolPointDrawerData}
+      />
+    );
+  }
+
   render() {
     const {
       dispatch,
@@ -2172,6 +2315,12 @@ class CompanyLayout extends PureComponent {
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
         />
+        {/* 风险点抽屉 */
+          this.renderRiskPointDrawer()
+        }
+        {/* 巡查点位抽屉 */
+          this.renderPatrolPointDrawer()
+        }
       </div>
     );
   }

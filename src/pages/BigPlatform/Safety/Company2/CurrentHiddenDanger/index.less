@@ -1,0 +1,31 @@
+/******************** 当前隐患 **********************/
+.countList {
+  display: flex;
+  padding-bottom: 16px;
+
+  .countItem {
+    flex: 1;
+
+    :first-child {
+      font-size: 24px;
+      text-align: center;
+    }
+    :nth-child(2) {
+      text-align: center;
+      color: #00a8ff;
+    }
+  }
+}
+/* 缺省图 */
+.noHiddenDanger {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 50%;
+  height: 50%;
+  background: transparent no-repeat center center;
+  background-size: contain;
+}
