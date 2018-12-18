@@ -476,7 +476,7 @@ export default class FourColor extends PureComponent {
     return (
       <div style={style} className={containerClassName}>
         {/* 标题 */}
-        <div className={styles.title}>安全风险四色图</div>
+        <div className={styles.title}>安全点位图</div>
         {/* 下拉框 */}
         {this.renderSelect()}
         {/* 监控球 */}
