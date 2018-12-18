@@ -104,6 +104,8 @@ export default class InspectionInfo extends PureComponent {
         },
         top: '90%',
         bottom: 0,
+        left: 45,
+        right: 45,
       }],
       xAxis: {
         type: 'category',
