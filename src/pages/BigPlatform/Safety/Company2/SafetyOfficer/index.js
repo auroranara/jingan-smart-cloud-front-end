@@ -36,6 +36,7 @@ export default class SafetyOfficer extends PureComponent {
         title="安全人员"
         closable
         isScroll
+        skip
         onClose={onClose}
         titleStyle={{ marginBottom: 0 }}
         fixedContent={(

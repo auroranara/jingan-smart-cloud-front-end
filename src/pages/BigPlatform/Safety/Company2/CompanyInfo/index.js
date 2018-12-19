@@ -51,6 +51,8 @@ export default class CompanyInfo extends PureComponent {
         specialEquipmentCount,
         // 隐患列表
         hiddenDangerList: { ycq = [], wcq = [], dfc = [] },
+        // 安全指数
+        safetyIndex,
       },
       // 点击企业名称
       handleClickUnitName,
@@ -96,7 +98,7 @@ export default class CompanyInfo extends PureComponent {
             <Progress
               width={90}
               type="circle"
-              percent={80}
+              percent={safetyIndex}
               strokeColor="#00a8ff"
               trailColor="#021C41"
               status="active"
