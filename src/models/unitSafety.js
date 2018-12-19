@@ -78,7 +78,7 @@ export default {
 
     },
     // 安全指数
-    safetyIndex: 100,
+    safetyIndex: undefined,
   },
 
   effects: {
