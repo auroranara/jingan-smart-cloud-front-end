@@ -70,7 +70,7 @@ export default {
           success();
         }
       } else if (error) {
-        error();
+        error(response);
       }
     },
     *edit({ payload, success, error }, { call, put }) {

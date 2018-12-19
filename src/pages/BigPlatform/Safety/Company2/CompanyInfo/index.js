@@ -95,21 +95,23 @@ export default class CompanyInfo extends PureComponent {
               </Ellipsis>
             </div>
             {/* 安全指数 */}
-            <Progress
-              width={90}
-              type="circle"
-              percent={safetyIndex}
-              strokeColor="#00a8ff"
-              trailColor="#021C41"
-              status="active"
-              style={{
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-                height: 80,
-              }}
-              format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 24 }}>{percent}</div><div style={{ fontSize: 16 }}>安全指数</div></div>}
-            />
+            {safetyIndex !== undefined && (
+              <Progress
+                width={90}
+                type="circle"
+                percent={safetyIndex}
+                strokeColor="#00a8ff"
+                trailColor="#021C41"
+                status="active"
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 0,
+                  height: 80,
+                }}
+                format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 24 }}>{percent}</div><div style={{ fontSize: 16 }}>安全指数</div></div>}
+              />
+            )}
           </div>
           {/* 统计信息 */}
           <div className={styles.bottom}>
