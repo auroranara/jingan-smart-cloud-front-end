@@ -44,10 +44,10 @@ export default class CoursewareAdd extends PureComponent {
         params: { id },
       },
       form: { setFieldsValue },
-      location: { query: { knowledgeId } },
+      location: { query: { knowledgeId, companyId } },
     } = this.props
     // 获取知识点树
-    dispatch({ type: 'resourceManagement/fetchKnowledgeTree' })
+    dispatch({ type: 'resourceManagement/fetchKnowledgeTree', payload: { companyId } })
     // 如果编辑
     if (id) {
       dispatch({

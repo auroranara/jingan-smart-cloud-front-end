@@ -309,7 +309,7 @@ export default {
       const response = yield call(fetchHiddenDangerRecords, payload);
       yield put({
         type: 'saveHiddenDangerRecords',
-        payload: response.data.rows,
+        payload: { list: response.data.rows, isYCQ: +payload._status === 7 },
       });
       if (success) {
         success(response.data.rows);
@@ -582,10 +582,17 @@ export default {
       };
     },
     // 隐患巡查记录
-    saveHiddenDangerRecords(state, { payload: hiddenDangerRecords }) {
+    saveHiddenDangerRecords(state, { payload: { list = [], isYCQ } }) {
+      if (isYCQ) {
+        const newList = list.sort((a, b) => a.plan_rectify_time - b.plan_rectify_time)
+        return {
+          ...state,
+          hiddenDangerRecords: newList,
+        };
+      }
       return {
         ...state,
-        hiddenDangerRecords,
+        hiddenDangerRecords: list,
       };
     },
     // 消防数据统计
