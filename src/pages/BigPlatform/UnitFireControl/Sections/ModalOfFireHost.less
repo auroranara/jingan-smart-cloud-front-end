@@ -80,12 +80,13 @@
     width: 100%;
     height: 450px;
     overflow-y: auto;
-    &>div:nth-child(2n+1) {
+    padding-right: 2px;
+    /* &>div:nth-child(2n+1) {
       padding-right: 10px;
     }
     &>div:nth-child(2n) {
       padding-left: 10px;
-    }
+    } */
     &::-webkit-scrollbar-track {
       box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
       background-color: #021c40;
@@ -99,6 +100,12 @@
       background-color: #06428a;
     }
     .cardContainer {
+      &:nth-child(2n+1) {
+        padding-right: 10px;
+      }
+      &:nth-child(2n) {
+        padding-left: 10px;
+      }
       .cardItem {
         box-shadow: 1px 1px 1px 0 #101147;
         margin-bottom: 20px;
@@ -129,7 +136,7 @@
                 display: inline-block;
                 flex: none;
               }
-              .remarks {
+              .redText {
                 font-size: 16px;
                 font-weight: 500;
                 height: 30px;
@@ -137,6 +144,17 @@
                 display: inline-block;
                 flex: 1;
                 overflow: hidden;
+                color: #E14848;
+              }
+              .blueText {
+                font-size: 16px;
+                font-weight: 500;
+                height: 30px;
+                line-height: 30px;
+                display: inline-block;
+                flex: 1;
+                overflow: hidden;
+                color: #00a8ff;
               }
             }
           }

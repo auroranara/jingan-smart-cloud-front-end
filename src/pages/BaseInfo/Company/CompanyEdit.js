@@ -14,6 +14,7 @@ import {
   Icon,
   message,
   Upload,
+  Radio,
   Spin,
   Modal,
 } from 'antd';
@@ -27,6 +28,7 @@ import { phoneReg, emailReg } from '@/utils/validate';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
 import { getToken } from '@/utils/authority';
+import { getCompanyType, getImportantTypes } from '../utils';
 
 import styles from './Company.less';
 import Safety from './Safety';
@@ -34,6 +36,19 @@ import Safety from './Safety';
 const { TextArea } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
+const { Group: RadioGroup } = Radio;
+
+const itemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 12 },
+  },
+};
+
 const {
   home: homeUrl,
   company: { list: listUrl, edit: editUrl },
@@ -70,6 +85,8 @@ const fieldLabels = {
   principalEmail: '邮箱',
   companyNature: '单位性质',
   gridId: '所属网格',
+  importantSafety: '安监重点单位',
+  importantHost: '消防重点单位',
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
@@ -224,12 +241,15 @@ export default class CompanyDetail extends PureComponent {
           companyIchnography,
           companyNatureLabel,
           gridId,
+          companyType,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
 
           // 若idMap已获取则设值，未获取时则在获取idMap后设值
           this.gridId = gridId;
           Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
+          const [importantHost, importantSafety] = getImportantTypes(companyType);
+          setFieldsValue({ importantHost, importantSafety });
 
           // console.log(companyIchnographyList);
           // 初始化上传文件
@@ -429,6 +449,8 @@ export default class CompanyDetail extends PureComponent {
           industryCategory,
           coordinate,
           gridId,
+          importantHost,
+          importantSafety,
           ...restFields
         }
       ) => {
@@ -457,6 +479,7 @@ export default class CompanyDetail extends PureComponent {
             longitude,
             latitude,
             gridId: gridId[gridId.length - 1],
+            companyType: getCompanyType(importantHost, importantSafety),
           };
           // 成功回调
           const success = companyId => {
@@ -968,6 +991,34 @@ export default class CompanyDetail extends PureComponent {
                   </Form.Item>
                 </Col>
               </Row>
+            </Col>
+          </Row>
+          <Row>
+            <Col lg={12} md={12} sm={24}>
+              <Form.Item label={fieldLabels.importantHost} {...itemLayout}>
+                {getFieldDecorator('importantHost', {
+                  initialValue: '0',
+                  rules: [{ required: true, message: '请选择消防重点单位' }],
+                })(
+                  <RadioGroup>
+                    <Radio value="1">是</Radio>
+                    <Radio value="0">否</Radio>
+                  </RadioGroup>
+                )}
+              </Form.Item>
+            </Col>
+            <Col lg={12} md={12} sm={24}>
+              <Form.Item label={fieldLabels.importantSafety} {...itemLayout}>
+                {getFieldDecorator('importantSafety', {
+                  initialValue: '0',
+                  rules: [{ required: true, message: '请选择安监重点单位' }],
+                })(
+                  <RadioGroup>
+                    <Radio value="1">是</Radio>
+                    <Radio value="0">否</Radio>
+                  </RadioGroup>
+                )}
+              </Form.Item>
             </Col>
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>

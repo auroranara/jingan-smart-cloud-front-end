@@ -118,7 +118,6 @@ export default class InformationHistory extends PureComponent {
       selectedDeviceType,
       title,
     } = this.props
-
     return (
       <div className={styles.AlarmHistory}>
         <div className={styles.sectionMain}>
@@ -140,7 +139,7 @@ export default class InformationHistory extends PureComponent {
                 </Col>
               ))}
             </Row>
-            {list && list.length ? (
+            {list && list.length > 0 ? (
               <div
                 className={styles.historyContent}
                 ref={historyList => { this.historyList = historyList }}
@@ -153,14 +152,13 @@ export default class InformationHistory extends PureComponent {
                 )}
               </div>
             ) : (
-                <div className={styles.noAlarmContainer}
-                  style={{
+                <div className={styles.noAlarmContainer}>
+                  <div style={{
                     background: `url(${noPendingInfo})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center center',
-                    backgroundSize: '40% 25%',
-                  }}
-                >
+                    backgroundSize: '100% 100%',
+                  }}></div>
                 </div>
               )}
           </div>

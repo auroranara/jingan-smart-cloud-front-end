@@ -4,6 +4,7 @@ import moment from 'moment';
 import Switcher from '@/components/Switcher'
 import NewModal from '../components/NewModal';
 import HiddenDanger from '../../Safety/Components/HiddenDanger';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './ModalOfInspectionStatistics.less';
 
 const columns = [
@@ -73,8 +74,8 @@ export default class ModalOfInspectionStatistics extends PureComponent {
     } = this.state
     const item = {
       title: '隐患状态',
-      key: 'danger_status',
-      dataIndex: 'danger_status',
+      key: 'dangerStatus',
+      dataIndex: 'dangerStatus',
       align: 'center',
       width: 200,
       render: (val, record) => {

@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
 import styles from './PendingInformation.less'
 import classNames from 'classnames';
-import { Row, Col, Icon, Radio } from 'antd'
+import { Row, Col, Icon, Radio, Spin } from 'antd'
 import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 
-import noAlarm from '@/assets/no-alarm.png'
+import noPendingInfo from '../images/noPendingInfo.png';
 import videoIcon from '@/assets/videoCamera.png';
 
 export default class PendingInformation extends PureComponent {
@@ -93,7 +93,7 @@ export default class PendingInformation extends PureComponent {
   }
 
   render() {
-    const { list, handleViewHistory, title, showTotal, onFilterChange, status } = this.props
+    const { list, handleViewHistory, title, showTotal, onFilterChange, status, loading } = this.props
     return (
       <div className={styles.sectionMain}>
         <div className={styles.shadowIn}>
@@ -113,19 +113,18 @@ export default class PendingInformation extends PureComponent {
               <Radio.Button value="处理中">处理中</Radio.Button>
             </Radio.Group>
           </div>
-          {list && list.length ? (
-            <Row className={styles.sectionContent}>
+          {list && list.length > 0 ? (
+            <Spin wrapperClassName={styles.sectionContent} spinning={loading}>
               {this.renderAlarmList()}
-            </Row>
+            </Spin>
           ) : (
-              <div className={styles.noAlarmContainer}
-                style={{
-                  background: `url(${noAlarm})`,
+              <div className={styles.noAlarmContainer}>
+                <div style={{
+                  background: `url(${noPendingInfo})`,
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition: 'center center',
-                  backgroundSize: '40% 55%',
-                }}
-              >
+                  backgroundSize: '100% 100%',
+                }}></div>
               </div>
             )}
         </div>
