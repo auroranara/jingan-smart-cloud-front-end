@@ -33,10 +33,10 @@ const dspItems = [
     name: 'validity',
     cName: '服务有效期',
   },
-  {
-    name: 'companyType',
-    cName: '安监重点单位',
-  },
+  // {
+  //   name: 'companyType',
+  //   cName: '安监重点单位',
+  // },
 ];
 
 const dspItems1 = [
@@ -104,9 +104,9 @@ function renderDsp(items, detail, menus) {
           if (!list.length)
             val = '暂无信息';
           break;
-        case 'companyType':
-          val = v === '1' ? '是' : '否';
-          break;
+        // case 'companyType':
+        //   val = v === '1' ? '是' : '否';
+        //   break;
         default:
           // console.log(name, menus[name], detail[name], menus[name].find(item => item.value === detail[name]));
           const menu = menus[name].find(item => item.value === detail[name]);
