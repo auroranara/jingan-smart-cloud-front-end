@@ -100,7 +100,7 @@ export default class DangerTableDrawer extends PureComponent {
             columns={columns}
             dataSource={list}
             pagination={false}
-            scroll={{ y: 600 }}
+            // scroll={{ y: 600 }}
           />
         </SearchBar>
     );

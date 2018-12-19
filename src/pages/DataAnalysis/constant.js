@@ -19,13 +19,20 @@ export const SMOKE_DETECTOR_TYPE = 6;
 export const SMOKE_DETECTOR_TYPE_LABEL = '独立烟感异常数据分析';
 
 export const PAGE_SIZE = 10;
-export const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
-export const STATUS_COLOR_MAP = { '-1': 'rgba(0,0,0,0.65)', 1: 'orange', 2: 'red' };
+const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
+const SMOKE_STATUS_MAP = { '-1': '失联', 2: '火警' };
+const STATUS_COLOR_MAP = { '-1': 'rgba(0,0,0,0.65)', 1: 'orange', 2: 'red' };
 
-export const OPTIONS = [
+const OPTIONS = [
   { name: '全部', key: 0 },
   { name: '预警', key: 1 },
   { name: '告警', key: 2 },
+  { name: '失联', key: -1 },
+];
+
+const SMOKE_OPTIONS = [
+  { name: '全部', key: 0 },
+  { name: '火警', key: 2 },
   { name: '失联', key: -1 },
 ];
 
@@ -370,12 +377,12 @@ export const STORAGE_TANK_COLUMNS = [
   },
 ];
 
-export const SMOKE_DETECTOR_FIRE_CATEGORIES = [
-  { name: '全部', key: 0 },
-  { name: '真实', key: 1 },
-  { name: '误报', key: 2 },
-  { name: '待确认', key: 3 },
-];
+// export const SMOKE_DETECTOR_FIRE_CATEGORIES = [
+//   { name: '全部', key: 0 },
+//   { name: '真实', key: 1 },
+//   { name: '误报', key: 2 },
+//   { name: '待确认', key: 3 },
+// ];
 
 export const SMOKE_DETECTOR_COLUMNS = [
   {
@@ -402,14 +409,14 @@ export const SMOKE_DETECTOR_COLUMNS = [
     title: '异常类别',
     dataIndex: 'status',
     key: 'status',
-    render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
+    render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{SMOKE_STATUS_MAP[sts]}</span>,
   },
-  {
-    title: '火警类别',
-    dataIndex: 'parameter',
-    key: 'parameter',
-    // render: param => handleChemicalFormula(param),
-  },
+  // {
+  //   title: '火警类别',
+  //   dataIndex: 'parameter',
+  //   key: 'parameter',
+  //   // render: param => handleChemicalFormula(param),
+  // },
 ];
 
 function dateValidator(rule, value, callback) {
@@ -575,7 +582,7 @@ export function getFields(type, params, methods) {
           label: '区域：',
           labelCol: LABEL_COL_4,
           wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
+          // inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入区域" />,
           transform: v => v.trim(),
         },
@@ -584,7 +591,7 @@ export function getFields(type, params, methods) {
           label: '位置：',
           labelCol: LABEL_COL_4,
           wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
+          // inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入位置" />,
           transform: v => v.trim(),
         },
@@ -593,26 +600,11 @@ export function getFields(type, params, methods) {
           label: '异常类别：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
+          // inputSpan: INPUT_SPAN,
           options: { initialValue: '0' },
           render: () => (
             <Select placeholder="请选择异常类别">
-              {OPTIONS.map(({ name, key }) => (
-                <Option key={key}>{name}</Option>
-              ))}
-            </Select>
-          ),
-        },
-        {
-          id: 'code',
-          label: '火警类别：',
-          labelCol: LABEL_COL_6,
-          wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
-          render: () => (
-            <Select placeholder="请选择火警类别">
-              {params.map(({ name, key }) => (
+              {SMOKE_OPTIONS.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
             </Select>
@@ -621,18 +613,15 @@ export function getFields(type, params, methods) {
         {
           id: 'date',
           label: '日期：',
-          labelCol: { span: 2 },
+          labelCol: LABEL_COL_2,
           wrapperCol: WRAPPER_COL,
-          inputSpan: { span: 18 },
+          inputSpan: SPAN_16,
           options: {
             initialValue: getThisMonth(),
             rules: [{ validator: dateValidator }],
           },
           render: () => (
             <RangePicker
-              // 在Form表单中，由于被getFieldDecorator包裹了，所以只能在options中设定初始值
-              // defaultValue={[moment().startOf('month'), moment()]}
-              // 禁用日期后有些小bug，且体验不太好
               // disabledDate={methods.disabledDate}
               // onCalendarChange={methods.onCalendarChange}
               format="YYYY-MM-DD HH:mm"

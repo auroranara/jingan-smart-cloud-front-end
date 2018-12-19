@@ -198,6 +198,7 @@ export default class DataAnalysisList extends PureComponent {
               safetyPhone,
               elecNum,
               gasNum,
+              smokeNum=0,
               pollutionWaterNum,
               pollutionGasNum,
               opcNum,
@@ -222,7 +223,7 @@ export default class DataAnalysisList extends PureComponent {
               'waste-water': pollutionWaterNum,
               'waste-gas': pollutionGasNum,
               'storage-tank': opcNum,
-              'smoke-detector': 1,
+              'smoke-detector': smokeNum,
             };
 
             return (
