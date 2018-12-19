@@ -19,7 +19,7 @@ const breadcrumbList = [
 const defaultPageSize = 10;
 
 // tabs配置
-const tabsInfo = [{ label: '文章', key: 'article' }, { label: '课件', key: 'courseware' }];
+// const tabsInfo = [{ label: '文章', key: 'article' }, { label: '课件', key: 'courseware' }];
 
 @connect(({ learning, user, loading }) => ({
   user,
@@ -233,19 +233,21 @@ export default class LearningLayout extends PureComponent {
                       <Article
                         handleArticleList={this.handleArticleList}
                         companyId={this.companyId}
-                      />)}
+                      />
+                    )}
                   </TabPane>
                   <TabPane tab="课件" key="courseware">
                     {activeKey === 'courseware' && (
                       <Courseware
                         handleCoursewareList={this.handleCoursewareList}
                         companyId={this.companyId}
-                      />)}
+                      />
+                    )}
                   </TabPane>
                 </Tabs>
               ) : (
-                  <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
-                )}
+                <div style={{ textAlign: 'center' }}>{'请先选择单位'}</div>
+              )}
             </Card>
           </Col>
         </Row>

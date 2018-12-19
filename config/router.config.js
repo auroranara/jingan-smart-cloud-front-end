@@ -1125,24 +1125,12 @@ module.exports = [
                 name: 'list',
                 component: './Training/Learning/LearningLayout',
               },
-              // {
-              //   path: '/training/learning/article/list',
-              //   code: 'training.learning.view',
-              //   name: 'view',
-              //   component: './Training/Learning/Article/ArticleList',
-              // },
               {
                 path: '/training/learning/article/detail/:id',
                 code: 'training.learning.view',
                 name: 'article',
                 component: './Training/Learning/Article/ArticleDeatil',
               },
-              // {
-              //   path: '/training/learning/courseware/list',
-              //   code: 'training.learning.view',
-              //   name: 'view',
-              //   component: './Training/Learning/Courseware/CoursewareList',
-              // },
               {
                 path: '/training/learning/courseware/detail/:id',
                 code: 'training.learning.view',
@@ -1259,6 +1247,70 @@ module.exports = [
                 code: 'training.myExam.listView',
                 name: 'result',
                 component: './Training/MyExam/Result',
+              },
+            ],
+          },
+          // 我的档案
+          {
+            name: 'myFile',
+            path: '/training/myFile',
+            code: 'training.myFile',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/myFile',
+                name: 'myFile',
+                redirect: '/training/myFile/myFileList',
+              },
+              {
+                path: '/training/myFile/myFileList',
+                code: 'training.myFile.view',
+                name: 'myFile',
+                component: './Training/MyFile/MyFileList',
+              },
+              {
+                path: '/training/myFile/myAnalysis/:id',
+                code: 'training.myFile.view',
+                name: 'myAnalysis',
+                component: './Training/MyFile/MyAnalysis',
+              },
+              {
+                path: '/training/myFile/MySynthesis',
+                code: 'training.myFile.view',
+                name: 'mySynthesis',
+                component: './Training/MyFile/MySynthesis',
+              },
+            ],
+          },
+          // 综合档案
+          {
+            name: 'generalFile',
+            path: '/training/generalFile',
+            code: 'training.generalFile',
+            hideChildrenInMenu: true,
+            routes: [
+              {
+                path: '/training/generalFile',
+                name: 'list',
+                redirect: '/training/generalFile/examFile/list',
+              },
+              {
+                path: '/training/generalFile/:type/list',
+                code: 'training.generalFile.view',
+                name: 'list',
+                component: './Training/GeneralFile/GeneralFileLayout',
+              },
+              {
+                path: '/training/generalFile/examDetailList/:id',
+                code: 'training.generalFile.view',
+                name: 'examDetailList',
+                component: './Training/GeneralFile/ExamFile/ExamDetailList',
+              },
+              {
+                path: '/training/generalFile/examReport/:id',
+                code: 'training.generalFile.view',
+                name: 'examReport',
+                component: './Training/GeneralFile/ExamFile/ExamReport',
               },
             ],
           },

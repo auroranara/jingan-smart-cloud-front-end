@@ -184,8 +184,8 @@ export default class DrawerOfHiddenDanger extends PureComponent {
                       backgroundSize: '100% 100%',
                       backgroundPosition: 'center center',
                       backgroundRepeat: 'noRepeat',
-                      width: '350px',
-                      height: '350px',
+                      width: '250px',
+                      height: '250px',
                     }}
                   ></div>
                 </div>
