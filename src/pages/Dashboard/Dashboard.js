@@ -71,7 +71,8 @@ export default class Dashboard extends PureComponent {
     // }
 
     const safeUrl = `${window.publicPath}#/big-platform/safety/company/${companyId}`;
-    const fireUrl = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
+    // const fireUrl = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
+    const fireUrl = `${window.publicPath}#/big-platform/new-fire-control/company/${companyId}`;
     const monitorUrl = `${window.publicPath}#/big-platform/monitor/company/${companyId}`;
 
     // 企事业主体和政府有业务分类，维保和运营没有
