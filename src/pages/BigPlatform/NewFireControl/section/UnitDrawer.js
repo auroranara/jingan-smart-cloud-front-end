@@ -123,7 +123,7 @@ export default function UnitDrawer(props) {
                 检查点位：{itemCount || 0}
                 <span
                   className={hiddenCount ? styles.hiddenDanger : styles.hiddenDangerZero}
-                  onClick={e => handleShowUnitDanger(companyId)}
+                  onClick={hiddenCount ? e => handleShowUnitDanger(companyId) : null}
                 >
                   <span className={styles.danger} style={{ backgroundImage: `url(${dangerIcon})` }} />
                   隐患数量：
