@@ -123,6 +123,12 @@ export default class FireControlBigPlatform extends PureComponent {
   formerAlarmList = [];
   // isLookingUp = false; // 标记正在查岗状态
   companyId = '';
+  // 将FireControlMap中的设置searchValue值的函数挂载到当前组件上，虽然违反了React的数据单项流动的规则，但是这样做可以尽量少的修改代码
+  clearSearchValueInMap = null;
+
+  setClearSearchValueFnInMap = f => {
+    this.clearSearchValueInMap = f;
+  };
 
   getGridId = () => {
     const {
@@ -178,25 +184,30 @@ export default class FireControlBigPlatform extends PureComponent {
       callback: (list=[]) => {
         // console.log(list);
         const newAlarms = getNewAlarms(list, this.formerAlarmList);
+        const companyIds = [];
         if (newAlarms.length)
           for (let i = 0; i < newAlarms.length; i++) {
-            const { id, name, saveTimeStamp } = newAlarms[i];
-            notification.warning({
-              key: id,
-              className: styles.note,
-              message: moment(saveTimeStamp).format('YYYY-MM-DD HH:mm:ss'),
-              description: (
-                <span
-                  className={styles.desc}
-                  onClick={e => {
-                    this.handleReverseById(id);
-                    notification.close(id);
-                  }}>
-                  {`${name}发生火警，请查看！`}
-                </span>
-              ),
-              duration: null,
-            });
+            const { id, comapnyId, name, saveTimeStamp } = newAlarms[i];
+            // 单次警告时，相同企业只警告一次
+            if (!companyIds.includes(comapnyId)) {
+              companyIds.push(comapnyId);
+              notification.warning({
+                key: id,
+                className: styles.note,
+                message: moment(saveTimeStamp).format('YYYY-MM-DD HH:mm:ss'),
+                description: (
+                  <span
+                    className={styles.desc}
+                    onClick={e => {
+                      this.handleReverseById(id);
+                      notification.close(id);
+                    }}>
+                    {`${name}发生火警，请查看！`}
+                  </span>
+                ),
+                duration: null,
+              });
+            }
           }
 
         this.formerAlarmList = list;
@@ -813,7 +824,10 @@ export default class FireControlBigPlatform extends PureComponent {
               reverse={
                 <AlarmDetailSection
                   detail={alarmDetail}
-                  handleReverse={() => this.handleMapBack()}
+                  handleReverse={() => {
+                    this.handleMapBack();
+                    this.clearSearchValueInMap && this.clearSearchValueInMap();
+                  }}
                 />
               }
             />
@@ -832,6 +846,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 handleInfoClose={this.handleMapInfoClose}
                 handleSelected={this.handleMapSelected}
                 setMapItemList={this.setMapItemList}
+                setClearSearchValueFn={this.setClearSearchValueFnInMap}
                 showTooltip={this.showTooltip}
                 hideTooltip={this.hideTooltip}
               />

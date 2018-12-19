@@ -63,6 +63,11 @@ export default class FireControlMap extends PureComponent {
     };
   }
 
+  componentDidMount() {
+    const { setClearSearchValueFn } = this.props;
+    setClearSearchValueFn && setClearSearchValueFn(() => this.setState({ searchValue: '' }));
+  }
+
   newList = [];
 
   back = isFire => {
