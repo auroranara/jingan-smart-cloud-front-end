@@ -77,6 +77,10 @@ module.exports = [
         component: './BigPlatform/FireControl/Government',
       },
       {
+        path: '/big-platform/new-fire-control/government/:gridId',
+        component: './BigPlatform/NewFireControl/Government',
+      },
+      {
         path: '/big-platform/fire-control/company/:unitId',
         component: './BigPlatform/UnitFireControl/UnitFireControl',
       },
@@ -556,6 +560,12 @@ module.exports = [
                 code: 'dataAnalysis.IOTAbnormalData.storageTank',
                 name: 'storageTank',
                 component: './DataAnalysis/StorageTank',
+              },
+              {
+                path: '/data-analysis/IOT-abnormal-data/smoke-detector/:id/count/:count',
+                code: 'dataAnalysis.IOTAbnormalData.smokeDetector',
+                name: 'smokeDetector',
+                component: './DataAnalysis/smokeDetector',
               },
             ],
           },

@@ -1,0 +1,119 @@
+@red: rgb(255, 72, 72);
+@grey: rgb(79, 103, 147);
+
+.outer {
+  padding-right: 5px;
+  margin-bottom: 12px;
+}
+
+.container {
+  cursor: pointer;
+  padding: 10px 15px;
+  position: relative;
+  background-color: transparent;
+  border: 1px solid rgb(4, 253, 255);
+  p {
+    margin-bottom: 6px;
+    color: #FFF;
+  }
+
+  .company {
+
+  }
+
+  .location {
+    color: @grey;
+  }
+
+  .person {
+    color: @grey;
+    margin-bottom: 0;
+  }
+
+  .ps {
+    margin-right: 10px;
+  }
+
+  .info {
+    margin: 0;
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+  }
+}
+
+.containerNoHover:extend(.container) {
+  cursor: auto;
+
+  p {
+    margin-bottom: 6px;
+    color: #FFF;
+  }
+
+  .company {
+
+  }
+
+  .location {
+    color: @grey;
+  }
+
+  .person {
+    color: @grey;
+    margin-bottom: 0;
+  }
+
+  .ps {
+    margin-right: 10px;
+  }
+
+  .info {
+    margin: 0;
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+  }
+}
+
+.icon {
+  display: inline-block;
+  background-size: 100% 100%;
+  position: relative;
+}
+
+.locationIcon:extend(.icon) {
+  width: 15px;
+  height: 18px;
+  left: 2px;
+  top: 4px;
+  margin-right: 8px;
+}
+
+.personIcon:extend(.icon) {
+  width: 18px;
+  height: 18px;
+  top: 3px;
+  margin-right: 5px;
+}
+
+.container:hover {
+  background-color: rgb(6, 59, 111);
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.normal {
+  height: 24px;
+  line-height: 22px;
+  border-radius: 12px;
+  color: #FFF;
+  padding: 0 20px;
+  border: 1px solid #FFF;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+}
+
+.abnormal:extend(.normal) {
+  color: @red;
+  border-color: @red;
+}

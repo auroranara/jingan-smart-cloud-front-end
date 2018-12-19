@@ -1,0 +1,45 @@
+@cyan: #0FF;
+
+.container {
+  font-size: 18px;
+  display: flex;
+  // position: relative;
+  // top: -16px;
+  // left: -16px;
+  margin: -16px -16px 20px;
+  background-color: rgb(3, 35, 73);
+}
+
+.containerLight:extend(.container) {
+  background-color: transparent;
+}
+
+.rect {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  background-color: @cyan;
+  border: 1px solid @cyan;
+  position: relative;
+  top: 3px;
+}
+
+.empty:extend(.rect) {
+  background-color: transparent;
+}
+
+.selected {
+  width: 140px;
+  color: #FFF;
+  margin: 0;
+  text-align: center;
+  line-height: 50px;
+  background-color: rgb(3, 48, 105);
+}
+
+.label:extend(.selected) {
+  color: @cyan;
+  background-color: rgb(3, 35, 73);
+  cursor: pointer;
+}

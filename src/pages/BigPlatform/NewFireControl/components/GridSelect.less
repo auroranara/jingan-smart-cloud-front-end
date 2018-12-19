@@ -1,0 +1,50 @@
+@color: rgb(255, 255, 255);
+@size: 18px;
+
+.treeContainer {
+  // position: absolute;
+  // width: 92%;
+  // left: 8%;
+  // bottom: 10%;
+  color: @color;
+  font-size: @size;
+
+  :global {
+    .ant-select {
+      color: @color;
+    }
+
+    .ant-select-arrow {
+      color: @color;
+    }
+
+    .ant-select-selection {
+      border: none;
+      background-color: transparent;
+    }
+  }
+}
+
+.dropdown {
+  color: @color;
+  background-color: rgba(1, 29, 67, 0.9);
+  box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
+
+  :global {
+    .ant-select-tree {
+      color: @color;
+
+      li .ant-select-tree-node-content-wrapper {
+        color: @color;
+      }
+
+      li .ant-select-tree-node-content-wrapper:hover {
+        background-color: rgba(4, 73, 140, 0.5);
+      }
+
+      li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
+        background-color: rgb(4, 73, 140);
+      }
+    }
+  }
+}

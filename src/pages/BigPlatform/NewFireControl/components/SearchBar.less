@@ -1,0 +1,70 @@
+@color: rgb(4, 253, 255);
+@blue: rgb(4, 71, 134);
+
+.container {
+  height: 100%;
+
+  :global {
+    .ant-input-search.ant-input-search-enter-button > .ant-input {
+      color: #FFF;
+      border: 1px solid @color;
+      background-color: transparent;
+    }
+
+    .ant-btn-primary {
+      color: @color;
+      border: 1px solid @color;
+      background-color: @blue;
+    }
+
+    .ant-table {
+      color: #FFF;
+    }
+
+    .ant-table-header {
+      background-color: @blue;
+    }
+
+    .ant-table-thead > tr > th {
+      color: #FFF;
+      background-color: @blue;
+      border-bottom: none;
+    }
+
+    .ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
+      background-color: rgb(3, 48, 105);
+    }
+
+    .ant-table-tbody > tr > td {
+      border-color: rgb(5, 65, 135);
+    }
+
+    .ant-table-tbody tr:hover td {
+      background-color: #063b6f;
+    }
+
+    .ant-table-placeholder {
+      color: #FFF;
+      background-color: rgb(3, 48, 105);
+      border-color: rgb(5, 65, 135);
+    }
+
+    // .ant-table-thead > tr > th .ant-table-column-sorters:hover:before {
+    //   background: transparent;
+    // }
+
+    .ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.cardsContainer {
+  // margin-top: 12px;
+  height: calc(100% - 32px);
+  overflow: auto;
+}

@@ -1,0 +1,53 @@
+.danger {
+  // height: 33%;
+  padding: 25px 10px;
+  // border-top: 1px solid rgb(9, 103, 211);
+  border-top: 2px solid rgb(1, 152, 180);
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  // background-image: url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/ovDanger.png);
+  background-size: 100% 100%;
+}
+
+.title {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  color: #FFF;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+.dividerBase {
+  position: absolute;
+  width: 1px;
+  height: 65%;
+  // bottom: 10%;
+  // background-image: url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/divider.png);
+  background-size: 100% 100%;
+
+  height: 70%;
+  bottom: 1px;
+}
+
+.divider:extend(.dividerBase) {
+  left: 33.33%;
+}
+
+.divider1:extend(.dividerBase) {
+  left: 66.66%;
+}

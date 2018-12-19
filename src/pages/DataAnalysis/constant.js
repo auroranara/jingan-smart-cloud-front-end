@@ -15,15 +15,24 @@ export const WASTE_GAS_TYPE = 4;
 export const WASTE_GAS_TYPE_LABEL = '废气异常数据分析';
 export const STORAGE_TANK_TYPE = 5;
 export const STORAGE_TANK_TYPE_LABEL = '储罐异常数据分析';
+export const SMOKE_DETECTOR_TYPE = 6;
+export const SMOKE_DETECTOR_TYPE_LABEL = '独立烟感异常数据分析';
 
 export const PAGE_SIZE = 10;
-export const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
-export const STATUS_COLOR_MAP = { '-1': 'rgba(0,0,0,0.65)', 1: 'orange', 2: 'red' };
+const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
+const SMOKE_STATUS_MAP = { '-1': '失联', 2: '火警' };
+const STATUS_COLOR_MAP = { '-1': 'rgba(0,0,0,0.65)', 1: 'orange', 2: 'red' };
 
-export const OPTIONS = [
+const OPTIONS = [
   { name: '全部', key: 0 },
   { name: '预警', key: 1 },
   { name: '告警', key: 2 },
+  { name: '失联', key: -1 },
+];
+
+const SMOKE_OPTIONS = [
+  { name: '全部', key: 0 },
+  { name: '火警', key: 2 },
   { name: '失联', key: -1 },
 ];
 
@@ -311,6 +320,13 @@ export const WASTE_GAS_COLUMNS = [
   },
 ];
 
+export const STORAGE_TANK_PARAMS = [
+  { name: '全部', key: 0 },
+  { name: '液压', key: 1 },
+  { name: '水位', key: 2 },
+  { name: '温度', key: 3 },
+];
+
 export const STORAGE_TANK_COLUMNS = [
   {
     title: '序号',
@@ -361,11 +377,46 @@ export const STORAGE_TANK_COLUMNS = [
   },
 ];
 
-export const STORAGE_TANK_PARAMS = [
-  { name: '全部', key: 0 },
-  { name: '液压', key: 1 },
-  { name: '水位', key: 2 },
-  { name: '温度', key: 3 },
+// export const SMOKE_DETECTOR_FIRE_CATEGORIES = [
+//   { name: '全部', key: 0 },
+//   { name: '真实', key: 1 },
+//   { name: '误报', key: 2 },
+//   { name: '待确认', key: 3 },
+// ];
+
+export const SMOKE_DETECTOR_COLUMNS = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+  },
+  {
+    title: '时间',
+    dataIndex: 'time',
+    key: 'time',
+  },
+  {
+    title: '区域',
+    dataIndex: 'area',
+    key: 'area',
+  },
+  {
+    title: '位置',
+    dataIndex: 'location',
+    key: 'location',
+  },
+  {
+    title: '异常类别',
+    dataIndex: 'status',
+    key: 'status',
+    render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{SMOKE_STATUS_MAP[sts]}</span>,
+  },
+  // {
+  //   title: '火警类别',
+  //   dataIndex: 'parameter',
+  //   key: 'parameter',
+  //   // render: param => handleChemicalFormula(param),
+  // },
 ];
 
 function dateValidator(rule, value, callback) {
@@ -495,6 +546,65 @@ export function getFields(type, params, methods) {
           render: () => (
             <Select placeholder="请选择异常类别">
               {OPTIONS.map(({ name, key }) => (
+                <Option key={key}>{name}</Option>
+              ))}
+            </Select>
+          ),
+        },
+        {
+          id: 'date',
+          label: '日期：',
+          labelCol: LABEL_COL_2,
+          wrapperCol: WRAPPER_COL,
+          inputSpan: SPAN_16,
+          options: {
+            initialValue: getThisMonth(),
+            rules: [{ validator: dateValidator }],
+          },
+          render: () => (
+            <RangePicker
+              // disabledDate={methods.disabledDate}
+              // onCalendarChange={methods.onCalendarChange}
+              format="YYYY-MM-DD HH:mm"
+              placeholder={['开始时间', '结束时间']}
+              showTime={{
+                format: 'HH:mm',
+                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
+            />
+          ),
+        },
+      ];
+    case SMOKE_DETECTOR_TYPE:
+      return [
+        {
+          id: 'area',
+          label: '区域：',
+          labelCol: LABEL_COL_4,
+          wrapperCol: WRAPPER_COL,
+          // inputSpan: INPUT_SPAN,
+          render: () => <Input placeholder="请输入区域" />,
+          transform: v => v.trim(),
+        },
+        {
+          id: 'location',
+          label: '位置：',
+          labelCol: LABEL_COL_4,
+          wrapperCol: WRAPPER_COL,
+          // inputSpan: INPUT_SPAN,
+          render: () => <Input placeholder="请输入位置" />,
+          transform: v => v.trim(),
+        },
+        {
+          id: 'status',
+          label: '异常类别：',
+          labelCol: LABEL_COL_6,
+          wrapperCol: WRAPPER_COL,
+          // inputSpan: INPUT_SPAN,
+          options: { initialValue: '0' },
+          render: () => (
+            <Select placeholder="请选择异常类别">
+              {SMOKE_OPTIONS.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
             </Select>
