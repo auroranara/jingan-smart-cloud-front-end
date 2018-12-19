@@ -4,6 +4,7 @@ import { Col, Row } from 'antd';
 
 import { getUrl } from '../utils';
 import styles from './DangerCard.less';
+import infoIcon from '../img/dangerInfo.png';
 
 function getTime(stamp) {
   return moment(stamp).format('YYYY-MM-DD');
@@ -29,7 +30,10 @@ export default function DangerCard(props) {
 
   return (
     <div className={styles.container} {...restProps}>
-      <p className={styles.desc}>{desc}</p>
+      <p className={styles.desc}>
+        <span className={styles.icon} style={{ backgroundImage: `url(${infoIcon})` }} />
+        {desc}
+      </p>
       <Row>
         <Col span={6}>
           <div className={styles.img} style={{ backgroundImage: `url(${url})` }} />
