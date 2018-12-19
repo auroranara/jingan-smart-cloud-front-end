@@ -740,6 +740,9 @@ class GovernmentBigPlatform extends Component {
                 showTooltip={this.showTooltip}
                 hideTooltip={this.hideTooltip}
                 handleHideInfoWindow={this.handleHideInfoWindow}
+                handleParentChange={newState => {
+                  this.setState(newState);
+                }}
               />
               {/* </div>
                 </div>

@@ -42,7 +42,7 @@ class CheckBar extends PureComponent {
         padding: [5, 15, 5, 15],
       },
       legend: {
-        data: ['上报隐患数', '检查企业数'],
+        data: ['上报隐患数', '检查单位数'],
         textStyle: {
           color: '#fff',
         },
