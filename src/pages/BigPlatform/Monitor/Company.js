@@ -4,9 +4,11 @@ import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
 import styles from './Company.less';
 import FcModule from '../FireControl/FcModule';
-import VideoSection from './sections/VideoSection';
+// import VideoSection from './sections/VideoSection';
 import GasSection from './sections/GasSection';
 import GasBackSection from './sections/GasBackSection';
+import StorageTankMonitor from './sections/StorageTankMonitor';
+import StorageTankDrawer from './sections/StorageTankDrawer';
 import VideoPlay from './sections/VideoPlay';
 import { ALL } from './components/gasStatus';
 
@@ -42,6 +44,7 @@ export default class App extends PureComponent {
     chartSelectVal: '',
     selectedDeviceType: 1,
     smokeStatus: ALL,
+    storageDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -344,6 +347,11 @@ export default class App extends PureComponent {
     });
   };
 
+  // 查看储罐监测
+  handleStorageDrawer = () => {
+    this.setState({ storageDrawerVisible: true });
+  };
+
   render() {
     // 从props中获取企业名称
     const {
@@ -383,6 +391,7 @@ export default class App extends PureComponent {
       waterSelectVal,
       chartSelectVal,
       selectedDeviceType,
+      storageDrawerVisible,
     } = this.state;
 
     // let companyName = '暂无信息';
@@ -415,13 +424,14 @@ export default class App extends PureComponent {
                   />
                 </div>
                 <div className={styles.videoMonitorContainer}>
-                  <VideoSection
+                  <StorageTankMonitor handleStorageDrawer={this.handleStorageDrawer} />
+                  {/* <VideoSection
                     data={allCamera}
                     showVideo={this.handleVideoShow}
                     style={{ transform: 'none' }}
                     backTitle="更多"
                     handleBack={() => this.handleVideoShow()}
-                  />
+                  /> */}
                 </div>
               </div>
               <div
@@ -513,6 +523,14 @@ export default class App extends PureComponent {
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
+        />
+        <StorageTankDrawer
+          visible={storageDrawerVisible}
+          onClose={() => {
+            this.setState({
+              storageDrawerVisible: false,
+            });
+          }}
         />
       </div>
     );
