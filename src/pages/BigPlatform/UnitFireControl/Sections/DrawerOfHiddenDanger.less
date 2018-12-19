@@ -27,7 +27,7 @@
       height: 75px;
       background: transparent no-repeat center center / 100% 100%;
     }
-    &> :nth-child(2) {
+    .photo {
       flex: none;
       display: flex;
       align-items: center;
@@ -39,10 +39,10 @@
       background-size: 50% auto;
       overflow: hidden;
     }
-    &> :nth-child(3) {
+    .content {
       flex: 1;
       padding-left: 28px;
-      &> :first-child {
+      .title {
         margin-left: -28px; // margin-bottom: 6px;
         padding-left: 28px;
         line-height: 28px;
@@ -50,10 +50,7 @@
         background: transparent no-repeat 6px 5px;
         background-size: 15px 18px;
       }
-      &> :nth-child(2),
-      &> :nth-child(3),
-      &> :nth-child(4),
-        {
+      .line {
         display: flex;
         padding-top: 12px;
         &> :first-child {

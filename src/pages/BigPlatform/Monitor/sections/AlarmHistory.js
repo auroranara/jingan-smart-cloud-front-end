@@ -69,7 +69,7 @@ export default class AlarmHistory extends PureComponent {
   }
   render() {
     const {
-      data: { list, alarmTypes },
+      data: { list = [], alarmTypes },
       handleClose,
       loading,
       handleLoadMore,
@@ -98,7 +98,7 @@ export default class AlarmHistory extends PureComponent {
                 </Col>
               ))}
             </Row>
-            {list && list.length ? (
+            {list && list.length > 0 ? (
               <div
                 className={styles.historyContent}
                 ref={historyList => { this.historyList = historyList }}

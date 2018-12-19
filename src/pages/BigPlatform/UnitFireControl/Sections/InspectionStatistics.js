@@ -48,6 +48,8 @@ export default class InspectionStatistics extends PureComponent {
     );
   }
 
+
+
   render() {
     const {
       abnormal = 0,
@@ -62,8 +64,8 @@ export default class InspectionStatistics extends PureComponent {
       backgroundPosition: 'center center',
     }
     const total = abnormal + normal
-    const normalRate = total ? (normal / total).toFixed(2) * 100 : 0
-    const abnormalRate = total ? (abnormal / total).toFixed(2) * 100 : 0
+    const normalRate = total ? (normal / total * 100).toFixed(2) : 0
+    const abnormalRate = total ? (abnormal / total * 100).toFixed(2) : 0
     return (
       <Section title="巡查统计" fixedContent={(
         <Fragment>
