@@ -49,6 +49,7 @@ export default class AlarmDrawer extends PureComponent {
   render() {
     const {
       visible,
+      hideSearch,
       leftType=0,
       rightType=0,
       data: {
@@ -114,7 +115,7 @@ export default class AlarmDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar extra={searchSelect} onSearch={this.handleSearch}>
+        <SearchBar extra={searchSelect} onSearch={this.handleSearch} hideSearch={hideSearch}>
           {rightList.map(({ id, companyId, companyName, searchArea, safetyName, safetyPhone, status, saveTime }) => (
             <DrawerCard
               key={id}

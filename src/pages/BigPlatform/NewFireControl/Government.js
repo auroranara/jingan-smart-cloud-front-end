@@ -976,6 +976,7 @@ export default class FireControlBigPlatform extends PureComponent {
         />
         <AlarmDrawer
           data={{ alarm: showReverse ? comAlarm : govAlarm, trend }}
+          hideSearch={showReverse}
           visible={alarmDrawerVisible}
           leftType={alarmDrawerLeftType}
           rightType={alarmDrawerRightType}

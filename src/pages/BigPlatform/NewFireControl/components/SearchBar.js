@@ -16,20 +16,20 @@ export default class SearchBar extends PureComponent {
 
     return (
       <div className={styles.container} {...restProps}>
-        {!hideSearch && (
-          <Row style={{ marginBottom: 12, ...searchStyle }}>
-            <Col span={extra ? 18 : 24}>
-              <Search
-                placeholder={placeholder}
-                onSearch={this.handleSearch}
-                enterButton
-              />
-            </Col>
-            <Col span={extra ? 6 : 0} style={{ position: 'relative' }}>
-              {extra}
-            </Col>
-          </Row>
-        )}
+        <Row style={{ marginBottom: 12, ...searchStyle }}>
+          <Col span={extra ? 18 : 24}>
+              {!hideSearch && (
+                <Search
+                  placeholder={placeholder}
+                  onSearch={this.handleSearch}
+                  enterButton
+                />
+              )}
+          </Col>
+          <Col span={extra ? 6 : 0} style={{ position: 'relative', height: 32 }}>
+            {extra}
+          </Col>
+        </Row>
         <div className={styles.cardsContainer}>
           {children}
         </div>
