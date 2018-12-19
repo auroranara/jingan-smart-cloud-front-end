@@ -59,12 +59,11 @@ import {
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
 import moment from 'moment';
-
+import { stringify } from 'qs';
 import WebsocketHeartbeatJs from '../utils/heartbeat';
+import pathToRegexp from 'path-to-regexp';
 
-const url = 'ws://47.99.76.214:10028/websocket?companyId=DccBRhlrSiu9gMV7fmvizw&env=v2_test&type=1';
 const options = {
-  url,
   pingTimeout: 30000,
   pongTimeout: 10000,
   reconnectTimeout: 2000,
@@ -337,12 +336,23 @@ export default {
 
   subscriptions: {
     initWebScoket: ({ dispatch, history }) => {
-      if (location.hash.indexOf('big-platform/fire-control/new-company') > -1) {
+      const pathname = '/big-platform/fire-control/new-company/:companyId';
+      const re = pathToRegexp(pathname);
+      if (pathToRegexp(pathname).test(history.location.pathname)) {
+        const list = re.exec(history.location.pathname);
+        const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+        const params = {
+          companyId: list[1],
+          env,
+          type: 1,
+        };
+        const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
         // 链接webscoket
-        global.ws = new WebsocketHeartbeatJs(options);
-        global.ws.onopen = () => {
+        global.NanXiaoWebsocket = new WebsocketHeartbeatJs({ url, ...options });
+        global.NanXiaoWebsocket.onopen = () => {
           console.log('connect success');
-          global.ws.send('heartbeat');
+          global.NanXiaoWebsocket.send('heartbeat');
         };
       }
     },

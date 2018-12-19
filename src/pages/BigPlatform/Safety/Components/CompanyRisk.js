@@ -74,7 +74,7 @@ class CompanyRisk extends PureComponent {
 
   render() {
     const {
-      hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [], ygb = [] },
+      hiddenDangerListByDate, //: { ycq = [], wcq = [], dfc = [], ygb = [] },
     } = this.props;
     const {
       id,
@@ -88,7 +88,7 @@ class CompanyRisk extends PureComponent {
       businessType,
       fcsj,
     } = defaultFieldNames;
-    const newList = [...ycq, ...wcq, ...dfc, ...ygb];
+    const newList = [...hiddenDangerListByDate];
     return (
       <div>
         {newList.length !== 0 ? (

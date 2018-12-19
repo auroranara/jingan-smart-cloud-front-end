@@ -243,6 +243,7 @@ class HiddenDangerPie extends PureComponent {
               onClick={() => {
                 this.setState({ modeActive: index, chartMode: mode });
               }}
+              key={index}
             >
               <img src={modeActive === index ? active : common} alt="modeIcon" />
             </span>

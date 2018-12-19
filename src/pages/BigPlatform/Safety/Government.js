@@ -525,7 +525,9 @@ class GovernmentBigPlatform extends Component {
   };
 
   showTooltip = (e, name) => {
+    if (e.target === this.lastTarget) return;
     const offset = e.target.getBoundingClientRect();
+    this.lastTarget = e.target;
     this.setState({
       tooltipName: name,
       tooltipVisible: true,
@@ -631,6 +633,7 @@ class GovernmentBigPlatform extends Component {
         selfCheckPoint = {},
         selfCheckPoint: { total: selfCheckPointTotal },
         securityCheck,
+        riskDetailNoOrder,
       },
       bigFireControl: { grids },
     } = this.props;
@@ -743,6 +746,7 @@ class GovernmentBigPlatform extends Component {
                 handleParentChange={newState => {
                   this.setState(newState);
                 }}
+                goCompany={this.goCompany}
               />
               {/* </div>
                 </div>
@@ -758,7 +762,7 @@ class GovernmentBigPlatform extends Component {
               />
 
               {/* 单位概况 */}
-              <CompanyInfo
+              {/* <CompanyInfo
                 visible={comInfo}
                 dispatch={dispatch}
                 goBack={this.goBack}
@@ -768,26 +772,26 @@ class GovernmentBigPlatform extends Component {
                 specialEquipment={specialEquipment}
                 hiddenDangerListByDate={riskDetailList}
                 onRef={this.companyInfoRef}
-              />
+              /> */}
 
               {/* 单位统计 */}
-              <CompanyIn
+              {/* <CompanyIn
                 visible={companyIn}
                 dispatch={dispatch}
                 goBack={this.goBack}
                 goCompany={this.goCompany}
                 searchAllCompany={searchAllCompany}
-              />
+              /> */}
 
               {/* 监管人员 */}
-              <FullStaff
+              {/* <FullStaff
                 visible={fullStaff}
                 dispatch={dispatch}
                 goBack={this.goBack}
                 goComponent={this.goComponent}
                 listData={fulltimeWorkerList}
                 fulltimeWorker={fulltimeWorker}
-              />
+              /> */}
 
               {/* 风险点 */}
               {/* <RiskColors
@@ -801,7 +805,7 @@ class GovernmentBigPlatform extends Component {
               /> */}
 
               {/* 已超期隐患单位 */}
-              <HdOverCompany
+              {/* <HdOverCompany
                 visible={overHd}
                 dispatch={dispatch}
                 goBack={this.goBack}
@@ -810,7 +814,7 @@ class GovernmentBigPlatform extends Component {
                 listData={overRectifyCompany}
                 overRectifyNum={overRectifyNum}
                 gridId={gridId}
-              />
+              /> */}
 
               {/* 已超时风险点 */}
               {/* <RiskOver
@@ -822,23 +826,23 @@ class GovernmentBigPlatform extends Component {
               /> */}
 
               {/* 已超期隐患详情 */}
-              <RiskDetailOver
+              {/* <RiskDetailOver
                 visible={hdOverDetail}
                 goBack={this.goBack}
                 hiddenDangerListByDate={riskDetailList}
-              />
+              /> */}
 
               {/* 隐患详情 */}
-              <RiskDetail
+              {/* <RiskDetail
                 visible={hiddenDanger}
                 goBack={this.goBack}
                 hiddenDangerListByDate={hiddenDangerListByDate}
                 riskDetailList={riskDetailList}
                 lastSection={dangerCompanyLast}
-              />
+              /> */}
 
               {/* 隐患单位统计 */}
-              <DangerCompany
+              {/* <DangerCompany
                 data={dangerCompanyData}
                 visible={hdCom}
                 dispatch={dispatch}
@@ -851,10 +855,10 @@ class GovernmentBigPlatform extends Component {
                 checkUserId={checkUserId}
                 gridId={gridId}
                 // monthSelecter={hdComMonth}
-              />
+              /> */}
 
               {/* 安全检查 */}
-              <CheckInfo
+              {/* <CheckInfo
                 dispatch={dispatch}
                 visible={checks}
                 listData={checkInfo}
@@ -869,16 +873,16 @@ class GovernmentBigPlatform extends Component {
                 fetchCheckMsgs={this.fetchCheckMsgs}
                 checksMonth={checksMonth}
                 gridId={gridId}
-              />
+              /> */}
 
               {/* 已超时单位 */}
-              <CompanyOver
+              {/* <CompanyOver
                 visible={companyOver}
                 listData={hiddenDangerOverTime}
                 goBack={this.goBack}
                 goComponent={this.goComponent}
                 goCompany={this.goCompany}
-              />
+              /> */}
             </Col>
           </Row>
         </article>
@@ -953,7 +957,7 @@ class GovernmentBigPlatform extends Component {
         <DangerInfo
           visible={dangerInfo}
           hiddenDangerListByDate={hiddenDangerListByDate}
-          riskDetailList={riskDetailList}
+          riskDetailList={riskDetailNoOrder}
           lastSection={dangerCompanyLast}
           handleParentChange={newState => {
             this.setState(newState);
@@ -1012,7 +1016,7 @@ class GovernmentBigPlatform extends Component {
           companyId={companyId}
           companyMessage={companyMessage}
           specialEquipment={specialEquipment}
-          hiddenDangerListByDate={riskDetailList}
+          hiddenDangerListByDate={riskDetailNoOrder}
           onRef={this.companyInfoRef}
           handleParentChange={newState => {
             this.setState(newState);
