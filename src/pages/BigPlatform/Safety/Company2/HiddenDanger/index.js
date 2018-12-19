@@ -77,7 +77,7 @@ export default class HiddenDanger extends PureComponent {
         plan_rectify_time,
         review_user_name,
         review_time,
-        source_type_name,
+        name: source_type_name,
         desc,
         business_type,
         status,

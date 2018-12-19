@@ -59,7 +59,17 @@ import {
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
 import moment from 'moment';
-import { connect } from '../webscokets/newFireControlWS';
+
+import WebsocketHeartbeatJs from '../utils/heartbeat';
+
+const url = 'ws://47.99.76.214:10028/websocket?companyId=DccBRhlrSiu9gMV7fmvizw&env=v2_test&type=1';
+const options = {
+  url,
+  pingTimeout: 30000,
+  pongTimeout: 10000,
+  reconnectTimeout: 2000,
+  pingMsg: 'heartbeat',
+};
 
 const getColorByRiskLevel = level => {
   switch (+level) {
@@ -329,7 +339,11 @@ export default {
     initWebScoket: ({ dispatch, history }) => {
       if (location.hash.indexOf('big-platform/fire-control/new-company') > -1) {
         // 链接webscoket
-        // connect();
+        global.ws = new WebsocketHeartbeatJs(options);
+        global.ws.onopen = () => {
+          console.log('connect success');
+          global.ws.send('heartbeat');
+        };
       }
     },
   },
@@ -736,6 +750,20 @@ export default {
         error();
       }
     },
+    *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
+      console.log('fetchWebsocketScreenMessage', payload);
+      if (payload.code === 200) {
+        yield put({
+          type: 'saveScreenMessage',
+          payload: payload.data,
+        });
+        if (success) {
+          success(payload.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
     // 火警动态列表或火警消息
     *fetchAlarmHandle({ payload }, { call, put }) {
       const response = yield call(queryAlarmHandleList, payload);
@@ -935,6 +963,12 @@ export default {
           ...state.currentHiddenDanger,
           timestampList,
         },
+      };
+    },
+    saveScreenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: [payload, ...state.screenMessage],
       };
     },
     screenMessage(state, { payload }) {

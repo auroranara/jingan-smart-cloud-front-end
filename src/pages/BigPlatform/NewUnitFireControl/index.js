@@ -115,6 +115,54 @@ export default class App extends PureComponent {
       },
     } = this.props;
 
+    const { ws } = global;
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data);
+        dispatch({
+          type: 'newUnitFireControl/fetchWebsocketScreenMessage',
+          payload: data,
+          success: result => {
+            // 显示火警障碍弹窗
+            const { itemId, messageFlag, type } = result;
+
+            if (type === 5 || type === 6) {
+              this.showFireMsg(result);
+            }
+
+            // 四色图隐患
+            const { fourColorTips, deletedFourColorTips } = this.state;
+            // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+            if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+              // 如果前一条隐患还没消失，则移除前一条隐患
+              if (fourColorTips[itemId] === messageFlag) {
+                return;
+              } else if (fourColorTips[itemId]) {
+                this.setState({
+                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+                  deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
+                });
+              } else {
+                this.setState({
+                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+                });
+              }
+            }
+          },
+        });
+      } catch (error) {
+        console.log('error', error);
+      }
+
+      // console.log(`onmessage: ${e.data}`);
+    };
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+
     // 获取企业信息
     dispatch({
       type: 'newUnitFireControl/fetchCompanyMessage',
@@ -220,7 +268,7 @@ export default class App extends PureComponent {
         }
 
         // 记录最新的一条消息id
-        this.topId = res.list[0] ? res.list[0].messageId : undefined;
+        // this.topId = res.list[0] ? res.list[0].messageId : undefined;
       },
     });
 
@@ -244,7 +292,7 @@ export default class App extends PureComponent {
     this.fetchPointInspectionList();
 
     // 轮询
-    this.pollTimer = setInterval(this.polling, DELAY);
+    // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
@@ -822,6 +870,8 @@ export default class App extends PureComponent {
       fireAlarmTitle,
       faultMessage,
     } = this.state;
+
+    console.log('fourColorTips', fourColorTips);
 
     return (
       <BigPlatformLayout
