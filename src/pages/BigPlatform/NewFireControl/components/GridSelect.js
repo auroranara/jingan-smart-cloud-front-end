@@ -7,6 +7,8 @@ import styles from './GridSelect.less';
 
 const FONT_SIZE = 18;
 
+const URL_BASE = '/big-platform/new-fire-control/government';
+
 export default class GridSelect extends PureComponent {
   state = {
     // treeValue: TREE_DATA[0].key,
@@ -35,7 +37,7 @@ export default class GridSelect extends PureComponent {
       return;
 
     this.setState({ treeValue: value });
-    router.push(`/big-platform/fire-control/government/${value}`);
+    router.push(`${URL_BASE}/${value}`);
     location.reload();
   };
 
