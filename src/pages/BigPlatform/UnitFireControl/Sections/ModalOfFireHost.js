@@ -48,12 +48,12 @@ export default class ModalOfFireHost extends PureComponent {
       list,  // 当前分类展示的数组
       // 每个分类的数量统计
       statistics: {
-        fire_state = 0,   // 火警
-        fault_state = 0,  // 故障
-        start_state = 0,  //  联动
-        supervise_state = 0, // 监管
-        shield_state = 0,    // 屏蔽
-        feedback_state = 0, // 反馈
+        fire_state: fireNum = 0,   // 火警
+        fault_state: faultNum = 0,  // 故障
+        start_state: startNum = 0,  //  联动
+        supervise_state: superviseNum = 0, // 监管
+        shield_state: shieldNum = 0,    // 屏蔽
+        feedback_state: feedbackNum = 0, // 反馈
       },
       currentFireHostType,  // 当前选中的分类
       pagination: {
@@ -63,12 +63,12 @@ export default class ModalOfFireHost extends PureComponent {
       },
     } = this.props
     const options = [
-      { label: '火警', num: fire_state },
-      { label: '故障', num: fault_state },
-      { label: '联动', num: start_state },
-      { label: '监管', num: supervise_state },
-      { label: '屏蔽', num: shield_state },
-      { label: '反馈', num: feedback_state },
+      { label: '火警', num: fireNum },
+      { label: '故障', num: faultNum },
+      { label: '联动', num: startNum },
+      { label: '监管', num: superviseNum },
+      { label: '屏蔽', num: shieldNum },
+      { label: '反馈', num: feedbackNum },
     ]
     return (
       <NewModal
@@ -102,7 +102,7 @@ export default class ModalOfFireHost extends PureComponent {
           </div> */}
           {list && list.length > 0 ? (
             <div className={styles.listContainer}>
-              {list.map(({ typeName, component_region, component_no, label, install_address, t, icon = null }, i) => (
+              {list.map(({ typeName, component_region, component_no, label, install_address, t, icon = null, fire_state = null }, i) => (
                 <Col key={i} span={12} className={styles.cardContainer}>
                   <div className={styles.cardItem}>
                     <div className={styles.innerItem}>
@@ -114,7 +114,7 @@ export default class ModalOfFireHost extends PureComponent {
                             backgroundPosition: 'center center',
                             backgroundSize: '65% 65%',
                           }}></div>
-                          <div className={styles.remarks}>{typeName}</div>
+                          <div className={+fire_state === 1 ? styles.redText : styles.blueText}>{typeName}</div>
                         </div>
                       </div>
                       <div className={styles.line}>{`${component_region}回路${component_no}号`}</div>

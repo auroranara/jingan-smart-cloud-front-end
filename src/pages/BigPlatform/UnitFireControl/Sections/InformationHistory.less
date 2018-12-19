@@ -198,9 +198,16 @@
       .noAlarmContainer {
         position: relative;
         width: 100%;
-        height: calc(100% - 106px);
+        height: calc(100% - 35px);
         padding: 0;
         overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &>div {
+          width: 180px;
+          height: 180px;
+        }
       }
     }
   }

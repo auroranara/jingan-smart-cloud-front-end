@@ -57,7 +57,7 @@ export default class RealTimeAlarm extends PureComponent {
   }
 
   render() {
-    const { list, handleViewHistory, title, showTotal } = this.props
+    const { list = [], handleViewHistory, title, showTotal } = this.props
     return (
       <div className={styles.sectionMain}>
         <div className={styles.shadowIn}>
@@ -71,19 +71,18 @@ export default class RealTimeAlarm extends PureComponent {
             )}
             <div className={styles.history} onClick={handleViewHistory}>历史报警>></div>
           </div>
-          {list && list.length ? (
+          {list && list.length > 0 ? (
             <Row className={styles.sectionContent}>
               {this.renderAlarmList()}
             </Row>
           ) : (
-              <div className={styles.noAlarmContainer}
-                style={{
+              <div className={styles.noAlarmContainer}>
+                <div style={{
                   background: `url(${noAlarm})`,
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition: 'center center',
-                  backgroundSize: '40% 55%',
-                }}
-              >
+                  backgroundSize: '100% 100%',
+                }}></div>
               </div>
             )}
         </div>
