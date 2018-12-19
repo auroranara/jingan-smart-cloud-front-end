@@ -344,6 +344,7 @@ class MapSection extends PureComponent {
       center,
       zoom,
       polygon,
+      handleParentChange,
     } = this.props;
 
     return (
@@ -405,7 +406,8 @@ class MapSection extends PureComponent {
                     //   // ]);
                     // }
                     if (this.props.comInfo) {
-                      this.props.goBack();
+                      // this.props.goBack();
+                      handleParentChange({ companyInfoDrawer: false });
                     }
                   }}
                 >
