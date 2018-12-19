@@ -127,8 +127,11 @@ export default class ExamList extends PureComponent {
     // const list = LIST;
     const {
       loading,
-      myExam: { examList: list=[] },
+      myExam,
+      // myExam: { examList: list=[] },
     } = this.props;
+
+    const list =  Array.isArray(myExam.examList) ? myExam.examList : [];
 
     const FIELDS = [
       {
@@ -144,7 +147,7 @@ export default class ExamList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        // content={}
+        content={<p className={styles.total}>试卷总数：{list.length}</p>}
       >
         <Card style={{ marginBottom: 15 }}>
           <InlineForm
