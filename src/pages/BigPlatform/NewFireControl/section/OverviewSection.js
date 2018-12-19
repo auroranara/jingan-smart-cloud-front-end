@@ -77,7 +77,7 @@ export default function OverviewSection(props) {
         overdue={overdueNum}
         rectify={rectifyNum}
         review={reviewNum}
-        handleClick={i => handleDrawerVisibleChange('dangerTable')}
+        handleClick={i => handleDrawerVisibleChange('danger')}
         style={{ height: HEIGHT, padding: PADDING }}
       />
     </FcSection>

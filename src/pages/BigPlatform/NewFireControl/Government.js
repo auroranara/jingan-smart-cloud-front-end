@@ -30,7 +30,7 @@ import UnitDrawer from './section/UnitDrawer';
 import UnitDangerDrawer from './section/UnitDangerDrawer';
 import HostDrawer from './section/HostDrawer';
 import AlarmDrawer from './section/AlarmDrawer';
-import DangerTableDrawer from './section/DangerTableDrawer';
+// import DangerTableDrawer from './section/DangerTableDrawer';
 import DangerDrawer from './section/DangerDrawer';
 import SafeDrawer from './section/SafeDrawer';
 import RiskDrawer from './section/RiskDrawer';
@@ -95,7 +95,7 @@ export default class FireControlBigPlatform extends PureComponent {
     alarmDrawerVisible: false,
     alarmDrawerLeftType: 0,
     alarmDrawerRightType: 0,
-    dangerTableDrawerVisible: false,
+    // dangerTableDrawerVisible: false,
     dangerDrawerVisible: false,
     dangerLabelIndex: 0, // 企业隐患列表(由隐患排名表格点击的抽屉)的小标签切换
     safeDrawerVisible: false,
@@ -562,11 +562,11 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   // 概况中单位弹框的搜索
-  handleUnitSearch = v => {
-    const { dispatch } = this.props;
-    const gridId = this.getGridId();
-    dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId, companyName: v } });
-  };
+  // handleUnitSearch = v => {
+  //   const { dispatch } = this.props;
+  //   const gridId = this.getGridId();
+  //   dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId, companyName: v } });
+  // };
 
   handleUnitDrawerLabelSwitch = i => {
     const { dispatch } = this.props;
@@ -615,13 +615,9 @@ export default class FireControlBigPlatform extends PureComponent {
     // this.setState({ unitDangerLabelIndex: 0 });
   };
 
-  handleShowDanger = (companyId, labelIndex) => {
-    this.handleShowDangerBase(companyId, labelIndex);
-
-    // this.fetchDangerRecords(companyId);
-    // this.handleDrawerVisibleChange('danger');
-    // this.setState({ dangerLabelIndex: labelIndex });
-  };
+  // handleShowDanger = (companyId, labelIndex) => {
+  //   this.handleShowDangerBase(companyId, labelIndex);
+  // };
 
   handleUnitDangerLabelClick = index => {
     this.setState({ unitDangerLabelIndex: index });
@@ -737,7 +733,7 @@ export default class FireControlBigPlatform extends PureComponent {
       alarmDrawerVisible,
       alarmDrawerLeftType,
       alarmDrawerRightType,
-      dangerTableDrawerVisible,
+      // dangerTableDrawerVisible,
       dangerLabelIndex,
       dangerDrawerVisible,
       safeDrawerVisible,
@@ -954,7 +950,7 @@ export default class FireControlBigPlatform extends PureComponent {
           data={sys}
           visible={unitDrawerVisible}
           labelIndex={unitDrawerLabelIndex}
-          handleSearch={this.handleUnitSearch}
+          // handleSearch={this.handleUnitSearch}
           handleShowUnitDanger={this.handleShowUnitDanger}
           handleAlarmClick={this.handleUnitDrawerAlarmClick}
           handleSwitch={this.handleUnitDrawerLabelSwitch}
@@ -985,12 +981,12 @@ export default class FireControlBigPlatform extends PureComponent {
           handleCardClick={this[`handle${showReverse ? 'Unit' : ''}AlarmDrawerCardClick`]}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
-        <DangerTableDrawer
+        {/* <DangerTableDrawer
           data={dangerList}
           visible={dangerTableDrawerVisible}
           handleShowDanger={this.handleShowDanger}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />
+        /> */}
         <DangerDrawer
           cardLoading={dangerCardLoading}
           selectedCompanyId={this.companyId}
