@@ -21,6 +21,8 @@ import {
   getInspectionPointData,
   // 获取安全人员信息
   getSafetyOfficer,
+  // 获取安全指数
+  getSafetyIndex,
 } from '../services/unitSafety';
 
 export default {
@@ -75,6 +77,8 @@ export default {
     inspectionPointData: {
 
     },
+    // 安全指数
+    safetyIndex: 100,
   },
 
   effects: {
@@ -297,6 +301,21 @@ export default {
         yield put({
           type: 'save',
           payload: { inspectionPointData: response.data },
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      } else if (callback) {
+        callback();
+      }
+    },
+    // 获取安全指数
+    *fetchSafetyIndex({ payload, callback }, { call, put }) {
+      const response = yield call(getSafetyIndex, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { safetyIndex: response.data },
         });
         if (callback) {
           callback(response.data);

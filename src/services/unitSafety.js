@@ -68,3 +68,44 @@ export async function getSafetyOfficer(params) {
 export async function getInspectionPointData(params) {
   return request(`/acloud_new/v2/sfc/companyCheckDataById.json?${stringify(params)}`);
 }
+
+/**
+ * 获取安全指数
+ */
+export async function getSafetyIndex(params) {
+  return request(`/acloud_new/v2/mobile/getTotalScore.json`, {
+    method: 'POST',
+    body: {
+      ...params,
+      functionList: [
+        "special_equipment",
+        "emergency_material",
+        "special_people",
+        "company_training",
+        "major_danger",
+        "tank_info",
+        "material_info",
+        "dust_info",
+        "limit_space",
+        "metallurgy",
+        "ammonia",
+        "occupational",
+        "fire_monitor",
+        "independent_smoke",
+        "electric_monitor",
+        "gas_ponsion",
+        "tank_monitor",
+        "waste_gas",
+        "waste_water",
+        "video_monitor",
+        "hidden_danger",
+        "base_info",
+        "check_point",
+        "hidden_record",
+        "company_people",
+        "emergency_plan",
+      ],
+    },
+  });
+}
+

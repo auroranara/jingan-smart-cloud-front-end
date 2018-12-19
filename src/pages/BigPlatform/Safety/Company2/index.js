@@ -16,6 +16,7 @@ import InspectionPoint from './InspectionPoint';
 import Layout from '../Components/Layout';
 import StaffList from '../Components/StaffList';
 import StaffRecords from '../Components/StaffRecords';
+import VideoPlay from '../../FireControl/section/VideoPlay';
 
 import styles from './index.less';
 
@@ -45,6 +46,8 @@ export default class App extends PureComponent {
     riskPointType: {},
     // 当前隐患弹出框是否显示
     currentHiddenDangerVisible: false,
+    // 隐患点位弹出框是否显示
+    inspectionPointVisible: false,
     // 当前选中的点位
     selectedPointIndex: undefined,
     // 当前四色图上的点位列表
@@ -63,6 +66,10 @@ export default class App extends PureComponent {
     checkUserId: null,
     // 右边的显示队列
     rightQueue: [0],
+    // 是否显示视频
+    videoVisible: false,
+    // 视频keyId
+    keyId: undefined,
   }
 
   componentDidMount() {
@@ -117,6 +124,14 @@ export default class App extends PureComponent {
         company_id: companyId,
       },
     });
+    // 获取安全指数
+    dispatch({
+      type: 'unitSafety/fetchSafetyIndex',
+      payload: {
+        companyId,
+      },
+    });
+
   }
 
   /**
@@ -245,7 +260,7 @@ export default class App extends PureComponent {
   /**
    * 显示巡查点位
    */
-  handleShowInspectionPoint = (checkId) => {
+  handleShowInspectionPoint = (checkId, status) => {
     const {
       dispatch,
       match: {
@@ -256,6 +271,7 @@ export default class App extends PureComponent {
     const payload = {
       companyId,
       checkId,
+      status,
       month,
       checkUserId,
     };
@@ -270,6 +286,7 @@ export default class App extends PureComponent {
         }
         this.setState(({ rightQueue }) => ({
           rightQueue: rightQueue.concat(2),
+          inspectionPointVisible: true,
         }));
       },
     });
@@ -281,17 +298,29 @@ export default class App extends PureComponent {
   handleHideInspectionPoint = () => {
     this.setState(({ rightQueue }) => ({
       rightQueue: rightQueue.slice(0, -1),
+      inspectionPointVisible: false,
     }));
+  }
+
+  /**
+   * 显示视频
+   */
+  handleShowVideo = (keyId) => {
+    this.setState({
+      videoVisible: true,
+      keyId,
+    });
   }
 
   render() {
     const { monitorDataLoading, unitSafety } = this.props;
-    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords, inspectionPointData } = unitSafety;
+    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords, inspectionPointData, videoList } = unitSafety;
     const {
       safetyOfficerVisible,
       riskPointVisible,
       riskPointType,
       currentHiddenDangerVisible,
+      inspectionPointVisible,
       selectedPointIndex,
       points,
       prevSelectedPointIndex,
@@ -300,6 +329,8 @@ export default class App extends PureComponent {
       selectedStaffListMonth,
       selectedStaffRecordsMonth,
       rightQueue,
+      videoVisible,
+      keyId,
     } = this.state;
 
     return (
@@ -358,6 +389,8 @@ export default class App extends PureComponent {
               handleClickPoint={this.handleClickPoint}
               isMouseEnter={isMouseEnter}
               currentHiddenDangerVisible={currentHiddenDangerVisible}
+              inspectionPointVisible={inspectionPointVisible}
+              handleShowVideo={this.handleShowVideo}
             />
             <Rotate
               axis="x"
@@ -423,6 +456,7 @@ export default class App extends PureComponent {
                   prevSelectedPointIndex={prevSelectedPointIndex}
                   points={points}
                   currentHiddenDangerVisible={currentHiddenDangerVisible}
+                  inspectionPointVisible={inspectionPointVisible}
                   onMouseEnter={() => {this.setState({ isMouseEnter: true });}}
                   onMouseLeave={() => {this.setState({ isMouseEnter: false });}}
                 />
@@ -445,6 +479,15 @@ export default class App extends PureComponent {
             )}
           </Col>
         </Row>
+        {/* 视频播放 */}
+        <VideoPlay
+          style={{ zIndex: 99999999 }}
+          videoList={videoList}
+          visible={videoVisible}
+          showList={true}
+          keyId={keyId}
+          handleVideoClose={() => {this.setState({ videoVisible: false });}}
+        />
       </Layout>
     );
   }

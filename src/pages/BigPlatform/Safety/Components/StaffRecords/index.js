@@ -107,12 +107,13 @@ export default class App extends PureComponent {
         title: '巡查人',
         dataIndex: personField,
         key: personField,
+        width: 88,
       },
       {
         title: '巡查时间',
         dataIndex: timeField,
         key: timeField,
-        width: 88,
+        width: 90,
         render: (text) => <span>{moment(+text).format('YYYY-MM-DD')}</span>,
       },
       {
@@ -131,7 +132,7 @@ export default class App extends PureComponent {
                 color: '#00baff',
                 cursor: 'pointer',
               }}
-              onClick={() => {handleShowDetail(check_id);}}
+              onClick={() => {handleShowDetail(check_id, status);}}
             >
               {value}
               {showLabel && <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 58, lineHeight: '19px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
@@ -143,7 +144,7 @@ export default class App extends PureComponent {
         title: '巡查结果',
         dataIndex: resultField,
         key: resultField,
-        width: 72,
+        width: 88,
         render: (text) => {
           const isNormal = +text === 1;
           return (
@@ -155,8 +156,8 @@ export default class App extends PureComponent {
         title: '隐患当前状态',
         dataIndex: 'rectification',
         key: 'rectification',
-        width: 100,
-        render: (value, { rectification, review, closed, overTime }) => rectification + review + closed + overTime > 0 ? <Ellipsis lines={1} tooltip style={{ width: 72, height: '1.5em' }}>{this.getResult({ rectification, review, closed, overTime })}</Ellipsis> : '---',
+        width: 102,
+        render: (value, { check_id, rectification, review, closed, overTime, status }) => <div style={{ display: 'inline-block', width: 72, cursor: 'pointer' }} onClick={() => {handleShowDetail(check_id, status);}}>{rectification + review + closed + overTime > 0 ? <Ellipsis lines={1} tooltip style={{ height: '1.5em' }}>{this.getResult({ rectification, review, closed, overTime })}</Ellipsis> : '---'}</div>,
       },
     ];
 

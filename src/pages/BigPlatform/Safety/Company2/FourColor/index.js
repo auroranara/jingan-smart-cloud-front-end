@@ -161,8 +161,8 @@ export default class FourColor extends PureComponent {
   // 切换选中点位定时器
   alternateTimer = null;
 
-  componentDidUpdate({ model: { companyMessage: { fourColorImg: prevFourColorImg } }, isMouseEnter: prevIsMouseEnter, currentHiddenDangerVisible: prevCurrentHiddenDangerVisible }) {
-    const { model: { companyMessage: { fourColorImg } }, isMouseEnter, currentHiddenDangerVisible, handleClickPoint, points, selectedPointIndex, prevSelectedPointIndex } = this.props;
+  componentDidUpdate({ model: { companyMessage: { fourColorImg: prevFourColorImg } }, isMouseEnter: prevIsMouseEnter, currentHiddenDangerVisible: prevCurrentHiddenDangerVisible, inspectionPointVisible: prevInspectionPointVisible }) {
+    const { model: { companyMessage: { fourColorImg } }, isMouseEnter, currentHiddenDangerVisible, handleClickPoint, points, selectedPointIndex, prevSelectedPointIndex, inspectionPointVisible } = this.props;
     // 1 当四色图源数据更新后，默认获取第一个四色图作为初始值
     if (fourColorImg !== prevFourColorImg) {
       this.changeSelectedFourColorImg(fourColorImg[0] || {});
@@ -183,9 +183,19 @@ export default class FourColor extends PureComponent {
         handleClickPoint && handleClickPoint({ selectedPointIndex: undefined, prevSelectedPointIndex: selectedPointIndex !== undefined ? selectedPointIndex : prevSelectedPointIndex });
       }
       // 会执行一下语句，则意味着为点击关闭按钮隐藏隐患弹出框的
-      else if (prevSelectedPointIndex !== undefined){
+      else if (!inspectionPointVisible && prevSelectedPointIndex !== undefined){
         // const nextIndex = prevSelectedPointIndex + 1;
         // this.alternateTimer = setTimeout(() => {this.handleClickPoint(points.length > nextIndex ? nextIndex : 0);}, 10000);
+        this.handleClickPoint(prevSelectedPointIndex);
+      }
+    }
+    // 4.如果点击显示隐患点位弹窗框，则取消选中点位并移除定时器，否则如点击关闭按钮或点击点位，则选中点位并添加定时器
+    if (prevInspectionPointVisible !== inspectionPointVisible) {
+      clearTimeout(this.alternateTimer);
+      if (inspectionPointVisible) {
+        handleClickPoint && handleClickPoint({ selectedPointIndex: undefined, prevSelectedPointIndex: selectedPointIndex !== undefined ? selectedPointIndex : prevSelectedPointIndex });
+      }
+      else if (!currentHiddenDangerVisible && prevSelectedPointIndex !== undefined) {
         this.handleClickPoint(prevSelectedPointIndex);
       }
     }
@@ -273,8 +283,8 @@ export default class FourColor extends PureComponent {
   handleClickPoint = (index, points) => {
     // 取消之前的定时器
     clearTimeout(this.alternateTimer);
-    const { points: prevPoints, handleClickPoint, selectedPointIndex: prevSelectedPointIndex, currentHiddenDangerVisible } = this.props;
-    const extra = {};
+    const { points: prevPoints, handleClickPoint, selectedPointIndex: prevSelectedPointIndex, currentHiddenDangerVisible, inspectionPointVisible } = this.props;
+    const extra = { rightQueue: [0] };
     // 如果points存在的话，则为切换四色图，需要更新points
     if (points) {
       extra.points = points;
@@ -282,6 +292,10 @@ export default class FourColor extends PureComponent {
     // 如果当前隐患弹出框显示的话，则隐藏弹出框
     if (currentHiddenDangerVisible) {
       extra.currentHiddenDangerVisible = false;
+    }
+    // 如果隐患点位弹出框显示的话，则隐藏弹出框
+    if (inspectionPointVisible) {
+      extra.inspectionPointVisible = false;
     }
     // 获取points
     points = points || prevPoints;
@@ -460,18 +474,16 @@ export default class FourColor extends PureComponent {
       className,
       // 选中的点位索引
       selectedPointIndex,
-      prevSelectedPointIndex,
-      currentHiddenDangerVisible,
       // 当前四色图上的点位列表
       points,
+      // 显示视频
+      handleShowVideo,
     } = this.props;
     const { videos, selectedFourColorImg: { webUrl }, visible, keyId } = this.state;
     // 合并以后的容器类名
     const containerClassName = classnames(styles.container, className);
     // 红，橙，黄，蓝，未评级，视频计数
-    let red = 0, orange = 0, yellow = 0, blue = 0, gray = 0, video = 0;
-
-    // console.log('s:',selectedPointIndex,'p:',prevSelectedPointIndex,'v:',currentHiddenDangerVisible);
+    let red = 0, orange = 0, yellow = 0, blue = 0, gray = 0;
 
     return (
       <div style={style} className={containerClassName}>
@@ -573,7 +585,7 @@ export default class FourColor extends PureComponent {
                       borderRadius: '50%',
                       boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.35)',
                     }}
-                    onClick={() => {this.setState({ visible: true, keyId });}}
+                    onClick={() => {handleShowVideo(keyId);}}
                   />
                 </Tooltip>
               </RiskImgPosition>
@@ -581,16 +593,16 @@ export default class FourColor extends PureComponent {
           })}
         </RiskImg>
         {/* 图例 */}
-        {this.renderLegend(red, orange, yellow, blue, gray, video)}
+        {this.renderLegend(red, orange, yellow, blue, gray, videos.length)}
         {/* 视频播放 */}
-        <VideoPlay
+        {/* <VideoPlay
           style={{ position: 'fixed', zIndex: 99999999 }}
           videoList={videos}
           visible={visible}
           showList={true}
           keyId={keyId}
           handleVideoClose={() => {this.setState({ visible: false });}}
-        />
+        /> */}
       </div>
     );
   }

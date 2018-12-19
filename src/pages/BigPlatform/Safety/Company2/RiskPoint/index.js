@@ -9,7 +9,7 @@ const switchCheckStatus = value => {
   switch (value) {
     case 1:
       return {
-        color: '#00A181',
+        color: '#fff',
         content: '正常',
       };
     case 2:
@@ -19,7 +19,7 @@ const switchCheckStatus = value => {
       };
     case 3:
       return {
-        color: '#5EBEFF',
+        color: '#fff',
         content: '待检查',
       };
     case 4:
@@ -328,6 +328,7 @@ export default class RiskPoint extends PureComponent {
         )}
         isScroll
         closable
+        skip
         onClose={onClose}
       >
         {redDangerResult.map(

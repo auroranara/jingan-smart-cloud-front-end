@@ -56,12 +56,15 @@ export default class HiddenDangerDetail extends PureComponent {
     model: { hiddenDangerList: oldHiddenDangerList },
     selectedPointIndex: oldSelectedPointIndex,
     points: oldPoints,
-    currentHiddenDangerVisible: oldCurrentHiddenDangerVisible }, { data: oldData }) {
+    currentHiddenDangerVisible: oldCurrentHiddenDangerVisible,
+    inspectionPointVisible: oldInspectionPointVisible,
+  }, { data: oldData }) {
     const {
       model: { hiddenDangerList },
       selectedPointIndex,
       points,
       currentHiddenDangerVisible,
+      inspectionPointVisible,
     } = this.props;
     // 选中点位时显示当前隐患，点击关闭按钮隐藏当前隐患
     /**
@@ -96,7 +99,8 @@ export default class HiddenDangerDetail extends PureComponent {
      * s: 2, p: undefined, v: false 显示点位2
      */
     /* 综上，当true=>false时，和false=>false时需要考虑 */
-    if (oldHiddenDangerList !== hiddenDangerList || oldPoints !== points || (!currentHiddenDangerVisible && oldSelectedPointIndex !== selectedPointIndex)) {
+    /* 判断隐患详情数据需要发生变化的情况，接口请求，四色图切换等 */
+    if (oldHiddenDangerList !== hiddenDangerList || oldPoints !== points || (!currentHiddenDangerVisible && !inspectionPointVisible && oldSelectedPointIndex !== selectedPointIndex)) {
       const { ycq = [], wcq = [], dfc = [] } = hiddenDangerList;
       const list = ycq.concat(wcq, dfc);
       // 获取点位id列表
@@ -108,7 +112,7 @@ export default class HiddenDangerDetail extends PureComponent {
       ? list.filter(({ item_id }) => item_id === selectedPointId)
       : list.filter(({ item_id }) => pointIds.includes(item_id));
       // 排除第一种情况
-      if (oldHiddenDangerList === hiddenDangerList && oldPoints === points && !oldCurrentHiddenDangerVisible) {
+      if (oldHiddenDangerList === hiddenDangerList && oldPoints === points && (!oldCurrentHiddenDangerVisible || !oldInspectionPointVisible)) {
         if (oldData.length === data.length && oldData.every((item, index) => item === data[index])) {
           return;
         }
@@ -159,40 +163,12 @@ export default class HiddenDangerDetail extends PureComponent {
 
   render() {
     const {
-      // 模型
-      model: {
-        hiddenDangerList: { ycq = [], wcq = [], dfc = [] },
-      },
-      // 当前选中的点位索引
-      selectedPointIndex,
-      // 之前选中的点位索引
-      prevSelectedPointIndex,
-      // 当前四色图上的点位列表
-      points,
       // 鼠标移入
       onMouseEnter,
       // 鼠标移出
       onMouseLeave,
-      // 当前隐患是否显示
-      currentHiddenDangerVisible,
     } = this.props;
     const { currentIndex, pageSize, data } = this.state;
-    // // 合并隐患详情，并按照已超期，未超期，待复查排序
-    // const hiddenDangerList = ycq.concat(wcq, dfc);
-    // // 获取点位id列表
-    // const pointIds = points.map(({ itemId }) => itemId);
-    // // 获取当前选中的点位id
-    // const selectedPointId = pointIds[selectedPointIndex];
-    // // 获取之前选中的点位id
-    // const prevSelectedPointId = pointIds[prevSelectedPointIndex];
-    // // 从隐患列表中筛选出当前点位对应的隐患
-    // const data = currentHiddenDangerVisible
-    // ? prevSelectedPointId
-    //   ? hiddenDangerList.filter(({ item_id }) => item_id === prevSelectedPointId)
-    //   : hiddenDangerList.filter(({ item_id }) => pointIds.includes(item_id))
-    // : selectedPointId
-    //   ? hiddenDangerList.filter(({ item_id }) => item_id === selectedPointId)
-    //   : hiddenDangerList.filter(({ item_id }) => pointIds.includes(item_id));
     // 页数
     const pageCount = Math.max(Math.ceil(data.length / pageSize), 1);
     // 是否为第一页
