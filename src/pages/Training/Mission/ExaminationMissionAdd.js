@@ -67,6 +67,7 @@ export default class ExaminationMissionAdd extends PureComponent {
       selectedRows: [], // 勾选的试卷信息
       targetKeys: [], // 考试人员穿梭狂右侧keys
       // examStudents: [], // 考试人员穿梭狂左侧数据源
+      disableMin: false,
     };
   }
 
@@ -93,9 +94,6 @@ export default class ExaminationMissionAdd extends PureComponent {
         companyId,
         examId: id,
       },
-      success: res => {
-        this.students = res.list;
-      },
     });
     // 如果新增
     if (!id) {
@@ -113,7 +111,6 @@ export default class ExaminationMissionAdd extends PureComponent {
         },
         success: response => {
           const { arrRuleType, paperId, paperName, students } = response;
-          this.students = [...students, ...this.students];
           setFieldsValue({
             arrRuleType,
             paperId: { key: paperId, label: paperName },
@@ -143,10 +140,13 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   disabledDateTime = (_, type) => {
     // 开始时间才需要筛选
-    if (type === 'start') {
+    const { disableMin } = this.state;
+    if (type === 'start' && this.disTime) {
       return {
         disabledHours: () => this.range(0, 24).slice(0, moment().hour()),
-        disabledMinutes: () => this.range(0, 60).slice(0, moment().minute()),
+        disabledMinutes: () =>
+          // this.range(0, 60).slice(0, 0),
+          disableMin ? this.range(0, 60).slice(0, moment().minute()) : this.range(0, 0),
         disabledSeconds: () => this.range(0, 60).slice(0, moment().second()),
       };
     }
@@ -369,7 +369,12 @@ export default class ExaminationMissionAdd extends PureComponent {
   // 渲染选择人员
   renderSelectStudents = () => {
     const { studentsModalVisible, targetKeys } = this.state;
-
+    const {
+      examinationMission: {
+        detail: { students = [] },
+        examStudents: { list = [] },
+      },
+    } = this.props;
     return (
       <Modal
         title="选择人员"
@@ -381,7 +386,7 @@ export default class ExaminationMissionAdd extends PureComponent {
         onOk={this.handleConfirmStudents}
       >
         <Transfer
-          dataSource={this.students} // 数据源（左侧）
+          dataSource={[...students, ...list]} // 数据源（左侧）
           titles={['未选择人员', '已选择人员']}
           targetKeys={targetKeys} // 右侧数据的key集合
           onChange={this.handleTransferChange}
@@ -469,7 +474,7 @@ export default class ExaminationMissionAdd extends PureComponent {
                   validateTrigger: 'onBlur',
                   getValueFromEvent: e => {
                     const value = e.target.value;
-                    return isNaN(value) ? value : Math.round(value);
+                    return isNaN(value) ? 0 : Math.round(value);
                   },
                 })(<Input addonAfter="分钟" />)}
               </Form.Item>
@@ -494,13 +499,47 @@ export default class ExaminationMissionAdd extends PureComponent {
               <Form.Item label="考试期限" {...formItemLayout}>
                 {getFieldDecorator('timeRange', {
                   initialValue: startTime ? [moment(startTime), moment(endTime)] : [],
-                  rules: [{ required: true, message: '请选择考试期限', type: 'array' }],
+                  rules: [
+                    {
+                      validator: (rule, value, callback) => {
+                        const {
+                          form: { getFieldValue },
+                        } = this.props;
+                        const examLimit = +getFieldValue('examLimit') * 60000;
+                        const diff = moment(value[1]).diff(moment(value[0]));
+                        if (value.length < 2) {
+                          callback('请选择考试期限!');
+                          return;
+                        }
+                        if (diff < examLimit) {
+                          callback('所选考试期限时长需大于考试时长!');
+                        } else {
+                          callback();
+                        }
+                      },
+                    },
+                  ],
                 })(
                   <RangePicker
                     disabledDate={this.disabledDate}
                     disabledTime={this.disabledDateTime}
                     showTime={{ format: 'HH:mm' }}
                     format="YYYY-MM-DD HH:mm"
+                    onCalendarChange={dates => {
+                      if (dates.length !== 2) return;
+                      const selectDay = moment(dates[0]).format('YYYY-MM-DD');
+                      const thisDay = moment().format('YYYY-MM-DD');
+                      if (selectDay !== thisDay) return; // 所选日期不是今日时间随意选
+                      this.disTime = true;
+                      const selectHour = moment(dates[0]).format('HH');
+                      const thisHour = moment().format('HH');
+                      if (selectHour !== thisHour) {
+                        this.setState({ disableMin: false });
+                        return;
+                      }
+                      // 所选日期是今日今时分钟disable当前以前的
+                      this.setState({ disableMin: true });
+                    }}
                   />
                 )}
               </Form.Item>
