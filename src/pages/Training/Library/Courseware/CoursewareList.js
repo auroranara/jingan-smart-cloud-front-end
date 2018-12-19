@@ -68,16 +68,20 @@ export default class CoursewareList extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    const { knowledgeId } = this.props
+    const { knowledgeId, companyId } = this.props
     router.push({
       pathname: '/training/library/courseware/add',
-      query: { knowledgeId },
+      query: { knowledgeId, companyId },
     })
   }
 
   // 跳转到编辑页面
   handleToEdit = (id) => {
-    router.push(`/training/library/courseware/edit/${id}`)
+    const { companyId } = this.props
+    router.push({
+      pathname: `/training/library/courseware/edit/${id}`,
+      query: { companyId },
+    })
   }
 
   // 点击加载更多

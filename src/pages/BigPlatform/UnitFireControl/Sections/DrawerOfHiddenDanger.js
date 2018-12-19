@@ -35,7 +35,7 @@ const getIconByStatus = status => {
       };
     case 7:
       return {
-        color: 'white',
+        color: '#FF6464',
         badge: ycqIcon,
         icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_red.png',
       };
@@ -186,7 +186,7 @@ export default class DrawerOfHiddenDanger extends PureComponent {
         width={530}
         left={(
           <Spin wrapperClassName={styles.drawerOfHiddenDanger} spinning={loading}>
-            {hiddenDangerRecords.length !== 0 ? (
+            {hiddenDangerRecords.length > 0 ? (
               hiddenDangerRecords.map(item => {
                 const { id } = item;
                 return <HiddenDangerRecord key={id} data={item} />;
