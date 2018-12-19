@@ -115,8 +115,8 @@ export default class App extends PureComponent {
       },
     } = this.props;
 
-    const { ws } = global;
-
+    const { NanXiaoWebsocket: ws } = global;
+    if (!ws) return;
     ws.onmessage = e => {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
@@ -871,7 +871,7 @@ export default class App extends PureComponent {
       faultMessage,
     } = this.state;
 
-    console.log('fourColorTips', fourColorTips);
+    // console.log('fourColorTips', fourColorTips);
 
     return (
       <BigPlatformLayout
