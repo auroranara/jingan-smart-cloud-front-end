@@ -194,6 +194,7 @@ export default class FireControlBigPlatform extends PureComponent {
               notification.warning({
                 key: id,
                 className: styles.note,
+                placement: 'bottomLeft',
                 message: moment(saveTimeStamp).format('YYYY-MM-DD HH:mm:ss'),
                 description: (
                   <span
@@ -976,6 +977,7 @@ export default class FireControlBigPlatform extends PureComponent {
         />
         <AlarmDrawer
           data={{ alarm: showReverse ? comAlarm : govAlarm, trend }}
+          hideSearch={showReverse}
           visible={alarmDrawerVisible}
           leftType={alarmDrawerLeftType}
           rightType={alarmDrawerRightType}

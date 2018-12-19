@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva';
 
 import DangerCard from './DangerCard';
 
@@ -35,7 +34,7 @@ export default class DrawerStretchCard extends PureComponent {
           <p className={styles.company}>
             {name}
           </p>
-          <div className={styles.spans} style={{ borderBottom: selected ? '1px solid rgb(4, 253, 255)' : 'none' }}>
+          <div className={styles.spans} style={{ borderBottom: selected && labelIndex !== -1 ? '1px solid rgb(4, 253, 255)' : 'none' }}>
             {[total, overdue, rectify, review].map((n,i) => (
               <span
                 key={i}
