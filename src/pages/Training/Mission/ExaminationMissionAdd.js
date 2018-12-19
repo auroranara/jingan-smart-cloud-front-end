@@ -92,7 +92,7 @@ export default class ExaminationMissionAdd extends PureComponent {
         pageNum: 1,
         pageSize: defaultPageSize,
         companyId,
-        examId: id,
+        // examId: id,
       },
     });
     // 如果新增
@@ -371,7 +371,6 @@ export default class ExaminationMissionAdd extends PureComponent {
     const { studentsModalVisible, targetKeys } = this.state;
     const {
       examinationMission: {
-        detail: { students = [] },
         examStudents: { list = [] },
       },
     } = this.props;
@@ -386,7 +385,7 @@ export default class ExaminationMissionAdd extends PureComponent {
         onOk={this.handleConfirmStudents}
       >
         <Transfer
-          dataSource={[...students, ...list]} // 数据源（左侧）
+          dataSource={[...list]} // 数据源（左侧）
           titles={['未选择人员', '已选择人员']}
           targetKeys={targetKeys} // 右侧数据的key集合
           onChange={this.handleTransferChange}

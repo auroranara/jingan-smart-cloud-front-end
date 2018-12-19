@@ -100,7 +100,7 @@ class CheckBar extends PureComponent {
           data: data.map(item => item.hiddenDanger),
         },
         {
-          name: '检查企业数',
+          name: '检查单位数',
           type: 'bar',
           barWidth: 15,
           data: data.map(item => item.company_num),

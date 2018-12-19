@@ -214,8 +214,9 @@ class MapSection extends PureComponent {
   // 弹窗渲染
   renderInfoWindow = () => {
     const {
-      infoWindow: { longitude, latitude, companyName },
+      infoWindow: { longitude, latitude, companyName, comapnyId },
       infoWindowShow,
+      goCompany,
     } = this.props;
     return (
       <InfoWindow
@@ -226,7 +227,13 @@ class MapSection extends PureComponent {
         visible={infoWindowShow}
         events={{ close: this.handleHideInfoWindow }}
       >
-        <div style={{ padding: '0 5px 0 13px' }} className={styles.companyLabel}>
+        <div
+          style={{ padding: '0 5px 0 13px', cursor: 'pointer' }}
+          className={styles.companyLabel}
+          onClick={() => {
+            goCompany(comapnyId);
+          }}
+        >
           <div>{companyName}</div>
         </div>
       </InfoWindow>
