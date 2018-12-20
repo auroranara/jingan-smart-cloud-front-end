@@ -149,21 +149,21 @@ export default {
       // 筛选已超期的隐患列表并根据计划整改时间排序
       const ycq = response.hiddenDangers
         .filter(({ status }) => +status === 7)
-        .sort((a, b) => {
-          return +b.plan_rectify_time - a.plan_rectify_time;
-        });
+        // .sort((a, b) => {
+        //   return +b.plan_rectify_time - a.plan_rectify_time;
+        // });
       // 筛选未超期的隐患列表并根据计划整改时间排序
       const wcq = response.hiddenDangers
         .filter(({ status }) => +status === 1 || +status === 2)
-        .sort((a, b) => {
-          return +b.plan_rectify_time - a.plan_rectify_time;
-        });
+        // .sort((a, b) => {
+        //   return +b.plan_rectify_time - a.plan_rectify_time;
+        // });
       // 筛选待复查的隐患列表并根据计划整改时间排序
       const dfc = response.hiddenDangers
         .filter(({ status }) => +status === 3)
-        .sort((a, b) => {
-          return +b.real_rectify_time - a.real_rectify_time;
-        });
+        // .sort((a, b) => {
+        //   return +b.real_rectify_time - a.real_rectify_time;
+        // });
       yield put({
         type: 'save',
         payload:  {
