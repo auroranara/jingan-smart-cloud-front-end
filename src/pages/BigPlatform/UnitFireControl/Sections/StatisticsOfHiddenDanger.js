@@ -217,7 +217,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
       series: [
         {
           type: 'pie',
-          center: ['45%', '50%'],
+          center: ['50%', '50%'],
           radius: ['55%', '40%'],
           hoverOffset: 0,
           avoidLabelOverlap: false,
@@ -259,7 +259,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
         },
         {
           type: 'pie',
-          center: ['45%', '50%'],
+          center: ['50%', '50%'],
           radius: '30%',
           hoverOffset: 0,
           hoverAnimation: true,
@@ -351,7 +351,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
         </Fragment>
       )}>
         <div className={styles.hiddenDangerChartContainer}>
-          {/* <Col span={16} style={{ height: '100%' }}>
+          <Col span={16} style={{ height: '100%' }}>
             <ReactEcharts
               option={option}
               style={{ width: '100%', height: '100%' }}
@@ -368,8 +368,8 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
                 <div className={styles.value}>{value}</div>
               </div>
             ))}
-          </Col> */}
-          <Col span={24} style={{ height: '100%' }}>
+          </Col>
+          {/* <Col span={24} style={{ height: '100%' }}>
             <ReactEcharts
               option={option}
               style={{ width: '100%', height: '100%' }}
@@ -386,7 +386,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
                 </div>
               ))}
             </div>
-          </Col>
+          </Col> */}
         </div>
       </Section>
     );
