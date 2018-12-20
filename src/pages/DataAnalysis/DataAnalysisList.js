@@ -51,7 +51,7 @@ const ICONS_URL = {
   'smoke-detector-d': smokeDetectorDarkIcon,
 };
 const ICONS_CN = {
-  electricity: '用电安全异常数据分析',
+  electricity: '电气火灾异常数据分析',
   'toxic-gas': '可燃有毒气体异常数据分析',
   'waste-water': '废水异常数据分析',
   'waste-gas': '废气异常数据分析',
@@ -60,7 +60,7 @@ const ICONS_CN = {
 };
 const OPTIONS = [
   { name: '全部', key: 0 },
-  { name: '用电安全', key: 1 },
+  { name: '电气火灾', key: 1 },
   { name: '可燃有毒气体', key: 2 },
   { name: '废水', key: 3 },
   { name: '废气', key: 4 },

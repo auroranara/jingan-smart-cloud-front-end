@@ -45,7 +45,7 @@ export default {
   'menu.dataAnalysis.IOTAbnormalData.IOTAbnormalData': 'IOT异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.list': '单位列表',
   'menu.dataAnalysis.IOTAbnormalData.toxicGas': '可燃有毒气体异常数据分析',
-  'menu.dataAnalysis.IOTAbnormalData.electricity': '用电安全异常数据分析',
+  'menu.dataAnalysis.IOTAbnormalData.electricity': '电气火灾异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.wasteWater': '废水异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.wasteGas': '废气异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.storageTank': '储罐异常数据分析',

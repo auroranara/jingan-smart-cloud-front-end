@@ -169,7 +169,7 @@ export default class App extends PureComponent {
       },
     });
 
-    // 用电安全监测数据
+    // 电气火灾监测数据
     dispatch({
       type: 'monitor/fetchCompanyDevices',
       payload: { companyId, type: 1 },
@@ -1204,7 +1204,7 @@ export default class App extends PureComponent {
                   {this.renderFireAlarmMonitor()}
                 </Col>
                 <Col span={16} style={{ height: '100%' }}>
-                  {/* 用电安全监测 */}
+                  {/* 电气火灾监测 */}
                   <ElectricityCharts
                     title="电气火灾监测"
                     data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory }}
