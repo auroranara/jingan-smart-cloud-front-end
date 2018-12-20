@@ -160,7 +160,7 @@ class CompanyInfoDrawer extends PureComponent {
                           style={{ borderBottom: 'none', borderTop: '1px solid #0967d3' }}
                         >
                           <span className={styles.tableTitle}>
-                            风险点隐患（
+                            当前隐患（
                             {hiddenDangerListByDate.length}）
                           </span>
                         </div>
