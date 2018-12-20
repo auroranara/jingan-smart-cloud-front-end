@@ -209,7 +209,7 @@ function handleGridTree(gridList = [], idMap) {
 function traverse(gl, idMap) {
   return gl.map(({ id, text, children, nodes, parentIds }) => {
     // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
-    idMap[id] = parentIds ? [...parentIds.split(',').filter(item => item), id] : [];
+    idMap[id] = parentIds ? [...parentIds.split(',').filter(item => item), id] : [id];
     return { value: id, label: text, children: children ? traverse(children, idMap) : undefined };
   });
 }
