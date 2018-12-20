@@ -70,7 +70,10 @@ export default class AlarmSection extends PureComponent {
         isBack={isBack}
         style={{ padding: '0 15px 15px', position: 'relative' }}>
           <Row gutter={6} style={{ marginBottom: 20 }}>
-            <Col span={18}>
+            <Col
+              // span={18}
+              span={24}
+            >
               <Input
                 onPressEnter={this.handleSearch}
                 // onFocus={this.handleFocus}
@@ -81,7 +84,7 @@ export default class AlarmSection extends PureComponent {
                 style={{ background: 'rgb(6,59,111)', border: 'none', color: '#FFF', boxShadow: 'rgba(0, 0, 0, 0.3) 3px 3px 5px' }}
               />
             </Col>
-            <Col span={6}>
+            {/* <Col span={6}>
               <Button
                 onClick={this.handleSearch}
                 // style={{ background: 'rgba(9,103,211,0.5)', border: 'none', color: '#FFF', width: '100%' }}
@@ -89,7 +92,7 @@ export default class AlarmSection extends PureComponent {
               >
                 查询
               </Button>
-            </Col>
+            </Col> */}
           </Row>
           <div className={styles.cardContainer} style={{ height: 'calc(100% - 110px)' }}>
             {filteredList.length ? cards : noCard}

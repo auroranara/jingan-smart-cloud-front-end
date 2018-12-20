@@ -119,7 +119,13 @@ module.exports = [
      */
     // Routes: ['src/pages/Authorized'],
     routes: [
-      { path: '/', redirect: '/fire-control/maintenance-company' }, // '/dashboard/view'
+      {
+        path: '/',
+        redirect:
+          global.PROJECT_CONFIG.projectKey === 'nanxiao'
+            ? '/fire-control/maintenance-company'
+            : '/dashboard/view',
+      }, // '/dashboard/view'
       {
         path: '/dashboard',
         icon: 'home',
