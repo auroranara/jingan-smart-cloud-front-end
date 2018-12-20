@@ -5,7 +5,7 @@ import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import noPendingInfo from '../images/noPendingInfo.png';
+import noPendingInfo from '../images/emptyLogo.png';
 
 export default class InformationHistory extends PureComponent {
 
@@ -153,12 +153,14 @@ export default class InformationHistory extends PureComponent {
               </div>
             ) : (
                 <div className={styles.noAlarmContainer}>
-                  <div style={{
+                  <div className={styles.image} style={{
                     background: `url(${noPendingInfo})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center center',
                     backgroundSize: '100% 100%',
-                  }}></div>
+                  }}>
+                    <div className={styles.text}><span>暂无消息</span></div>
+                  </div>
                 </div>
               )}
           </div>

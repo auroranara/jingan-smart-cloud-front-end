@@ -1,6 +1,7 @@
-import React, { PureComponent } from 'react';
-import { Table, Pagination } from 'antd';
+import React, { PureComponent, Fragment } from 'react';
+import { Table, Pagination, Col, Button, Icon } from 'antd';
 import moment from 'moment';
+import { connect } from 'dva';
 import Switcher from '@/components/Switcher'
 import NewModal from '../components/NewModal';
 import HiddenDanger from '../../Safety/Components/HiddenDanger';
@@ -31,27 +32,27 @@ const columns = [
   },
 ]
 
+@connect(({ unitFireControl }) => ({
+  unitFireControl,
+}))
 export default class ModalOfInspectionStatistics extends PureComponent {
 
-  state = {
-    detail: {},  // 隐患详情
-  }
-
   // 点击查看隐患卡片
-  handleViewDanger = (record) => {
+  handleViewDanger = (check_id = null) => {
+    const { dispatch } = this.props
     const { handleChangeDangerCardVisible } = this.props
-    this.setState({
-      detail: record.card,
+    dispatch({
+      type: 'unitFireControl/fetchPatrolDangers',
+      payload: { checkId: check_id },
+      callback: () => {
+        handleChangeDangerCardVisible(true)
+      },
     })
-    handleChangeDangerCardVisible(true)
   }
 
   // 点击关闭隐患卡片
   handleCloseCard = () => {
     const { handleChangeDangerCardVisible } = this.props
-    this.setState({
-      detail: {},
-    })
     handleChangeDangerCardVisible()
   }
 
@@ -60,19 +61,18 @@ export default class ModalOfInspectionStatistics extends PureComponent {
       visible,
       onCancel,
       type,   // 显示正常还是异常巡查统计(normal、abnormal)
-      list,
-      pagination: {
-        pageNum,
-        total,
-        pageSize,
-      },
       handlePageChange,
       cardVisible,
+      moreLoading,  // 加载更多的loading
+      unitFireControl: {
+        inspectionStatistics: {
+          list,
+          dangers,
+          isLast,
+        },
+      },
     } = this.props
-    const {
-      detail,
-    } = this.state
-    const item = {
+    /* const item = {
       title: '隐患状态',
       key: 'dangerStatus',
       dataIndex: 'dangerStatus',
@@ -85,8 +85,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
           return (<span style={{ color: 'red', cursor: 'pointer' }} onClick={() => this.handleViewDanger(record)}>{val}</span>)
         } else return (<span style={{ cursor: 'pointer' }} onClick={() => this.handleViewDanger(record)}>{val}</span>)
       },
-    }
-    const background = detail.hiddenDangerRecordDto ? detail.hiddenDangerRecordDto[0].files[0].web_url : null
+    } */
     return (
       <NewModal
         title={type === 'normal' ? '巡查统计-正常' : '巡查统计-异常'}
@@ -97,18 +96,70 @@ export default class ModalOfInspectionStatistics extends PureComponent {
         destroyOnClose
       >
         <div className={styles.modalOfInspection}>
-          <Table
+          {/* <Table
             rowKey={(record, i) => i}
             dataSource={list}
             // loading={loading}
             columns={type === 'normal' ? columns : [...columns, item]}
             pagination={false}
             bordered
-          />
-          {total > 0 && (
+          /> */}
+          {/* {total > 0 && (
             <div className={styles.footer}>
               <Pagination current={pageNum} pageSize={pageSize} total={total} onChange={handlePageChange} />
-            </div>)}
+            </div>)} */}
+          <div className={styles.contentContainer}>
+            {list.map(({ check_id, object_title = null, check_user_name = null, check_date = null, dangerStatus = null }, i) => (
+              <Col span={12} key={i} className={styles.cardContainer}>
+                <div className={styles.cardItem}
+                  style={{ cursor: type === 'abnormal' ? 'pointer' : 'inherit' }}
+                  onClick={type === 'abnormal' ? () => this.handleViewDanger(check_id) : null}>
+                  <div className={styles.line}>
+                    <span className={styles.label}>巡查点位</span>
+                    <span className={styles.text}>
+                      <Ellipsis tooltip lines={1}>{object_title}</Ellipsis>
+                    </span>
+                  </div>
+                  <div className={styles.line}>
+                    <span className={styles.label}>巡查人</span>
+                    <span className={styles.text}>
+                      <Ellipsis tooltip lines={1}>{check_user_name}</Ellipsis>
+                    </span>
+                  </div>
+                  <div className={styles.line}>
+                    <span className={styles.label}>巡查时间</span>
+                    <span className={styles.text}>
+                      <Ellipsis tooltip lines={1}>{moment(+check_date).format('YYYY-MM-DD')}</Ellipsis>
+                    </span>
+                  </div>
+                  {type === 'abnormal' && dangerStatus && (
+                    <div className={styles.line}>
+                      <span className={styles.label}>隐患状态</span>
+                      <span className={styles.text}>
+                        <Ellipsis tooltip lines={1}>
+                          {dangerStatus.split('/').map((item, i) => (
+                            <Fragment key={i}>
+                              {i !== 0 && <span>/</span>}
+                              <span style={{ color: item.includes('已超期') ? 'red' : 'inherit' }}>{item}</span>
+                            </Fragment>
+                          ))}
+                        </Ellipsis>
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Col>
+            ))}
+            {list.length > 0 && !isLast ? (
+              <Col span={24} >
+                <div className={styles.moreButton} onClick={handlePageChange}>
+                  {moreLoading ? (<Fragment><Icon style={{ marginRight: '0.5em' }} type="loading" /><span>加载中...</span></Fragment>) : (
+                    <span>加载更多</span>
+                  )}
+                </div>
+              </Col>
+            ) : null}
+          </div>
           {cardVisible && (
             <Switcher
               visible={true}
@@ -122,26 +173,41 @@ export default class ModalOfInspectionStatistics extends PureComponent {
               }}
               onClose={this.handleCloseCard}
             >
-              <HiddenDanger
-                style={{ marginBottom: 0 }}
-                data={{
-                  description: detail.desc,
-                  sbr: detail.report_user_name,
-                  sbsj: moment(+detail.report_time).format('YYYY-MM-DD'),
-                  zgr: detail.rectify_user_name,
-                  plan_zgsj: moment(+detail.plan_rectify_time).format('YYYY-MM-DD'),
-                  real_zgsj: moment(+detail.real_rectify_time).format('YYYY-MM-DD'),
-                  fcr: detail.review_user_name,
-                  fcsj: detail.review_time && moment(+detail.review_time).format('YYYY-MM-DD'),
-                  status: +detail.status,
-                  background: background,
-                  businessType: detail.business_type,
-                }}
-              />
+              {dangers.map(({
+                _desc = null,
+                _report_user_name = null,
+                _report_time = null,
+                _rectify_user_name = null,
+                _plan_rectify_time = null,
+                _real_rectify_time = null,
+                review_user_name = null,
+                review_time = null,
+                hiddenStatus = null,
+                business_type = null,
+                path = null,
+              }, i) => (
+                  <HiddenDanger
+                    key={i}
+                    style={{ marginBottom: 0, background: '#033069' }}
+                    data={{
+                      description: _desc,
+                      sbr: _report_user_name,
+                      sbsj: moment(+_report_time).format('YYYY-MM-DD'),
+                      zgr: _rectify_user_name,
+                      plan_zgsj: moment(+_plan_rectify_time).format('YYYY-MM-DD'),
+                      real_zgsj: moment(+_real_rectify_time).format('YYYY-MM-DD'),
+                      fcr: review_user_name,
+                      fcsj: review_time && moment(+review_time).format('YYYY-MM-DD'),
+                      status: +hiddenStatus,
+                      background: path,
+                      businessType: business_type,
+                    }}
+                  />
+                ))}
             </Switcher>
           )}
         </div>
-      </NewModal>
+      </NewModal >
     )
   }
 }
