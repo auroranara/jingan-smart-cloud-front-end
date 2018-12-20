@@ -126,7 +126,7 @@ export default class App extends PureComponent {
         title: '隐患当前状态',
         dataIndex: 'rectification',
         key: 'rectification',
-        width: 102,
+        width: 116,
         render: (value, { check_id, rectification, review, closed, overTime, status }) => {
           const isAlert = rectification + review + closed + overTime > 0;
           return (
