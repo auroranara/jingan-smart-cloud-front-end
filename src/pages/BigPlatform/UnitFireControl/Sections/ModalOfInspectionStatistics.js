@@ -61,7 +61,6 @@ export default class ModalOfInspectionStatistics extends PureComponent {
       visible,
       onCancel,
       type,   // 显示正常还是异常巡查统计(normal、abnormal)
-      isLast,
       handlePageChange,
       cardVisible,
       moreLoading,  // 加载更多的loading
@@ -69,6 +68,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
         inspectionStatistics: {
           list,
           dangers,
+          isLast,
         },
       },
     } = this.props
@@ -132,7 +132,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                       <Ellipsis tooltip lines={1}>{moment(+check_date).format('YYYY-MM-DD')}</Ellipsis>
                     </span>
                   </div>
-                  {type === 'abnormal' && (
+                  {type === 'abnormal' && dangerStatus && (
                     <div className={styles.line}>
                       <span className={styles.label}>隐患状态</span>
                       <span className={styles.text}>
