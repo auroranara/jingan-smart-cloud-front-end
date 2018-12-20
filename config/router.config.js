@@ -122,7 +122,7 @@ module.exports = [
       {
         path: '/',
         redirect:
-          global.PROJECT_CONFIG.projectKey === 'nanxiao'
+        global.PROJECT_CONFIG && global.PROJECT_CONFIG.projectKey === 'nanxiao'
             ? '/fire-control/maintenance-company'
             : '/dashboard/view',
       }, // '/dashboard/view'
