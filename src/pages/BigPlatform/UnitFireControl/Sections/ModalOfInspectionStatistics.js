@@ -185,6 +185,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                 hiddenStatus = null,
                 business_type = null,
                 path = null,
+                real_reviewer_name = null,
               }, i) => (
                   <HiddenDanger
                     key={i}
@@ -196,7 +197,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                       zgr: _rectify_user_name,
                       plan_zgsj: moment(+_plan_rectify_time).format('YYYY-MM-DD'),
                       real_zgsj: moment(+_real_rectify_time).format('YYYY-MM-DD'),
-                      fcr: _review_user_name,
+                      fcr: real_reviewer_name || _review_user_name,
                       fcsj: _review_time && moment(+_review_time).format('YYYY-MM-DD'),
                       status: +hiddenStatus,
                       background: path,
