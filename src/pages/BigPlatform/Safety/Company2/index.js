@@ -135,6 +135,31 @@ export default class App extends PureComponent {
   }
 
   /**
+   * 获取巡查记录对应的隐患列表
+   */
+  getInspectionRecordData = (checkId, status, callback) => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
+    const payload = {
+      companyId,
+      checkId,
+      status,
+      month,
+      checkUserId,
+    };
+    dispatch({
+      type: 'unitSafety/fetchInspectionRecordData',
+      payload,
+      callback,
+    });
+  }
+
+  /**
    * 点击监控球跳转到监控大屏
    */
   handleClickMonitorBall = () => {
@@ -260,7 +285,7 @@ export default class App extends PureComponent {
   /**
    * 显示巡查点位
    */
-  handleShowInspectionPoint = (checkId, status) => {
+  handleShowInspectionPoint = (itemId, status) => {
     const {
       dispatch,
       match: {
@@ -270,7 +295,7 @@ export default class App extends PureComponent {
     const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
     const payload = {
       companyId,
-      checkId,
+      itemId,
       status,
       month,
       checkUserId,
@@ -314,7 +339,7 @@ export default class App extends PureComponent {
 
   render() {
     const { monitorDataLoading, unitSafety } = this.props;
-    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords, inspectionPointData, videoList } = unitSafety;
+    const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords, inspectionPointData, videoList, inspectionRecordData } = unitSafety;
     const {
       safetyOfficerVisible,
       riskPointVisible,
@@ -424,6 +449,7 @@ export default class App extends PureComponent {
               {/* 人员记录 */}
               <StaffRecords
                 data={staffRecords}
+                inspectionRecordData={inspectionRecordData}
                 month={selectedStaffRecordsMonth}
                 fieldNames={{
                   id: 'check_id',
@@ -437,6 +463,7 @@ export default class App extends PureComponent {
                 }}
                 onSelect={this.handleSelectStaffRecords}
                 handleShowDetail={this.handleShowInspectionPoint}
+                getInspectionRecordData={this.getInspectionRecordData}
               />
             </Rotate>
           </Col>
