@@ -344,6 +344,12 @@ export default class ExaminationMissionList extends PureComponent {
               >
                 选择单位
               </Button>
+              {this.companyId && (
+                <div style={{ marginTop: '8px' }}>
+                  考试任务总数：
+                  {total}
+                </div>
+              )}
             </div>
           )
         }

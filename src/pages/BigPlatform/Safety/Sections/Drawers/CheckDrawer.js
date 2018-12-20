@@ -70,7 +70,7 @@ class CheckDrawer extends PureComponent {
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-          zIndex={1111}
+          zIndex={1040}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div

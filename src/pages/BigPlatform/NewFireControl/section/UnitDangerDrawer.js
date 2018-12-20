@@ -73,6 +73,7 @@ export default function UnitDangerDrawer(props) {
 
   return (
     <DrawerContainer
+      isTop
       title="隐患列表"
       width={540}
       visible={visible}

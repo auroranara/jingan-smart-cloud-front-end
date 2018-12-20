@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Card, Row, Col, Tabs, Input } from 'antd';
+import { Card, Row, Col, Tabs, Input, Button } from 'antd';
 import router from 'umi/router';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -69,8 +69,7 @@ export default class LearningLayout extends PureComponent {
   /**
    * 显示企业弹出框
    */
-  handleFocus = e => {
-    e.target.blur();
+  handleFocus = () => {
     const { dispatch } = this.props;
     this.setState({ visible: true });
     dispatch({
@@ -217,8 +216,11 @@ export default class LearningLayout extends PureComponent {
                 style={{ width: '300px' }}
                 placeholder={'请选择单位'}
                 value={this.companyName}
-                onClick={this.handleFocus}
+                disabled
               />
+              <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleFocus}>
+                选择单位
+              </Button>
             </div>
           )
         }

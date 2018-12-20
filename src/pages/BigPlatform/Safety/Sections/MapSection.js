@@ -13,6 +13,7 @@ import MapTypeBar from '../Components/MapTypeBar';
 import govdotRed from '../img/govdot-red.png';
 
 const { region } = global.PROJECT_CONFIG;
+const zooms = [3, 20];
 let fitView = true;
 @connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSection extends PureComponent {
@@ -365,7 +366,7 @@ class MapSection extends PureComponent {
                 center={center}
                 zoom={zoom}
                 expandZoomRange
-                zooms={[3, 20]}
+                zooms={zooms}
                 events={{
                   created: mapInstance => {
                     this.mapInstance = mapInstance;

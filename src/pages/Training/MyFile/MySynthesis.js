@@ -214,7 +214,7 @@ export default class MySynthesis extends PureComponent {
                             </span>
                           );
                         })
-                      : '无'}
+                      : '无。'}
                   </p>
                   {/* <p>
                     4、本次考试题量：

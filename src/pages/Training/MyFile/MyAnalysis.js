@@ -119,7 +119,6 @@ export default class MyAnalysis extends PureComponent {
         },
       },
     } = this.props;
-
     //面包屑
     const breadcrumbList = [
       {
@@ -200,8 +199,12 @@ export default class MyAnalysis extends PureComponent {
                       {noPassCount}
                       人，我的成绩：
                       {myPassStatus === '1' ? '合格' : myPassStatus === '-1' ? '弃考' : '不合格'}
-                      ，排名为：第
-                      {myRanking}名
+                      {!myPassStatus === '-1' && (
+                        <span>
+                          ，排名为：第
+                          {myRanking}名
+                        </span>
+                      )}
                     </strong>
                     。
                   </p>
