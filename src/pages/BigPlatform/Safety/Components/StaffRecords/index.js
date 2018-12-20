@@ -105,7 +105,7 @@ export default class App extends PureComponent {
               onClick={() => {handleShowDetail(item_id, status);}}
             >
               {value}
-              {showLabel && <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 58, lineHeight: '19px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
+              {showLabel && <div style={{ position: 'absolute', right: 0, top: 0, width: 58, height: 21, lineHeight: '19px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
             </span>
           );
         },
