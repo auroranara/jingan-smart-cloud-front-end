@@ -359,9 +359,7 @@ export default class App extends PureComponent {
     } = this.state;
 
     return (
-      <Layout
-        extra={companyName}
-      >
+      <Layout>
         <Row gutter={24} className={styles.row} style={{ margin: 0, padding: '16px 12px 24px' }}>
           {/* 左边 */}
           <Col span={6} className={styles.col}>
