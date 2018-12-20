@@ -5,6 +5,7 @@ import {
   addExam,
   getExam,
   editExam,
+  deleteExam,
 } from '../services/examinationMission';
 const defaultDetail = {
   arrRuleType: [],
@@ -162,6 +163,21 @@ export default {
         error();
       }
     },
+    // 编辑考试
+    *delete({ payload, success, error }, { call, put }) {
+      const response = yield call(deleteExam, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'remove',
+          payload: payload.id,
+        });
+        if (success) {
+          success(response);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
   },
   reducers: {
     saveExamination(state, action) {
@@ -244,6 +260,19 @@ export default {
       return {
         ...state,
         detail: payload,
+      };
+    },
+    remove(state, { payload }) {
+      return {
+        ...state,
+        mission: {
+          ...state.mission,
+          list: state.mission.list.filter(data => data.id !== payload),
+          pagination: {
+            ...state.mission.pagination,
+            total: state.mission.pagination.total - 1,
+          },
+        },
       };
     },
   },

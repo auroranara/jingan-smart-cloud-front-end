@@ -90,6 +90,7 @@ const HiddenDangerRecord = ({ data }) => {
     plan_rectify_time,
     real_rectify_time,
     review_user_name,
+    real_review_user_name = null,
     hiddenDangerRecordDto,
     business_type,
     review_time,
@@ -167,7 +168,7 @@ const HiddenDangerRecord = ({ data }) => {
               查：
             </span>
             <Ellipsis lines={1} tooltip>
-              <span style={{ marginRight: '16px' }}>{review_user_name}</span>
+              <span style={{ marginRight: '16px' }}>{isYGB ? real_review_user_name : review_user_name}</span>
               {!isDFC && <span>{moment(+review_time).format('YYYY-MM-DD')}</span>}
             </Ellipsis>
           </div>

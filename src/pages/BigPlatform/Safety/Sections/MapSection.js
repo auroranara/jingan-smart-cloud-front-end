@@ -149,7 +149,7 @@ class MapSection extends PureComponent {
       type: 'bigPlatform/fetchRiskDetail',
       payload: {
         company_id: id,
-        source_type: '3',
+        // source_type: '3',
       },
     });
 

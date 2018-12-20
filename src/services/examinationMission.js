@@ -36,3 +36,11 @@ export async function editExam(params) {
     body: params,
   });
 }
+
+// 删除考试
+export async function deleteExam(params) {
+  return request('/acloud_new/v2/education/exam', {
+    method: 'DELETE',
+    body: params,
+  });
+}
