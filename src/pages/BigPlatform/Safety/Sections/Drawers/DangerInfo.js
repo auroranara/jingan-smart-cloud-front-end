@@ -22,7 +22,7 @@ class DangerInfo extends PureComponent {
       hiddenDangerListByDate,
       riskDetailList,
     } = this.props;
-    let dataList = { ycq: [], wcq: [], dfc: [] };
+    let dataList = [];
     if (lastSection === 'checks') dataList = hiddenDangerListByDate;
     else dataList = riskDetailList;
     return (

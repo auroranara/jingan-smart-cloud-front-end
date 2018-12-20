@@ -27,16 +27,18 @@ export default class App extends PureComponent {
       handleCheckDrawer,
       model: {
         companyMessage: {
-          companyMessage: {
-            companyName = '',
-            countCheckItem = 0,
-          },
+          companyMessage: { companyName = '', countCheckItem = 0 },
         },
         currentHiddenDanger: { totalNum },
-        maintenanceCompany: { name: companyNames = [], result: userList = [], PrincipalName='', PrincipalPhone='' },
+        maintenanceCompany: {
+          name: companyNames = [],
+          result: userList = [],
+          PrincipalName = '',
+          PrincipalPhone = '',
+        },
       },
     } = this.props;
-console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
+    // console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
 
     const newUsers = userList.slice(0, 2);
 

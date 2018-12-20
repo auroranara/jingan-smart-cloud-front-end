@@ -1,0 +1,84 @@
+/***************************** 隐患详情单元 *************************/
+.riskDetailItem {
+  position: relative;
+  margin-bottom: 16px;
+  font-size: 16px;
+  line-height: 1;
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.004);
+  background: rgba(7, 43, 93, 0.702) no-repeat right bottom / 110px;
+
+  /* 印章 */
+  .riskDetailItemSealWrapper {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 110px;
+    height: 110px;
+    z-index: 9;
+    background: no-repeat center center;
+    background-size: 100% 100%;
+  }
+
+  /* 标题 */
+  .riskDetailItemTitleWrapper {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+
+    .riskDetailItemTitleAvatar {
+      flex: none;
+      width: 24px;
+      height: 24px;
+      margin: 0 10px;
+      background: transparent no-repeat center;
+      background-size: auto 100%;
+    }
+
+    .riskDetailItemTitle {
+      flex: 1;
+      line-height: 24px;
+    }
+  }
+
+  /* 内容 */
+  .riskDetailItemContentWrapper {
+    display: flex;
+    padding: 0 0 8px 8px;
+
+    .riskDetailItemImageWrapper {
+      flex: none;
+      display: flex;
+      align-items: center;
+      width: 120px;
+      height: 160px;
+      background: #021C42 no-repeat center center;
+      background-size: 50% auto;
+      overflow: hidden;
+
+      .cover {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(0, 168, 255, 0.3);
+      }
+    }
+
+    .riskDetailItemInfoWrapper {
+      flex: 1;
+      padding-left: 16px;
+
+      .riskDetailItemTextWrapper {
+        display: flex;
+        justify-content: center;
+        padding: 5px 0;
+        line-height: 24px;
+
+        .riskDetailItemTextFirstChild {
+          margin-right: 20px;
+        }
+      }
+    }
+  }
+}

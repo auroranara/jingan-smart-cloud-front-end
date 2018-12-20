@@ -71,6 +71,27 @@ const getPendingInfoType = ({
   return value;
 };
 
+// 处理待办事项数组，处理隐患状态logo+排序
+const generateListWithImg = list => {
+  if (!list || list.length < 1) return []
+  let fire = []
+  let other = []
+  list.forEach((item) => {
+    const newItem = {
+      ...item,
+      pendingInfoType: item.pendingInfoType || getPendingInfoType(item, 'title'),
+      icon: item.icon || getPendingInfoType(item, 'icon'),
+    };
+    // 如果是火警
+    if (item.fire_state && +item.fire_state === 1) {
+      fire.push(newItem)
+    } else {
+      other.push(newItem)
+    }
+  })
+  return [...fire, ...other]
+}
+
 
 export default {
   namespace: 'unitFireControl',
@@ -187,7 +208,7 @@ export default {
         error();
       }
     }, */
-    // 获取未处理信息(无status)和处理中信息（status传入'2'）
+    // 获取待处理信息(无status)和处理中信息（status传入'2'）
     *fetchPendingInfo({ payload, payload: { status } = {}, callback }, { call, put }) {
       const response = status && status === '2' ? yield call(fetchPendingInfo, payload) : yield call(fetchUnPendingInfo, payload)
       if (response && response.code === 200) {
@@ -288,7 +309,7 @@ export default {
       const response = yield call(fetchHiddenDangerRecords, payload);
       yield put({
         type: 'saveHiddenDangerRecords',
-        payload: response.data.rows,
+        payload: { list: response.data.rows, isYCQ: +payload._status === 7 },
       });
       if (success) {
         success(response.data.rows);
@@ -470,12 +491,13 @@ export default {
   reducers: {
     // 待处理信息
     savePendingInfo(state, { payload: { list = [], pageNum, pageSize, total } }) {
+      const newList = generateListWithImg(list)
       if (+pageNum === 1) {
         return {
           ...state,
           pendingInfo: {
             ...state.pendingInfo,
-            list,
+            list: newList,
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -486,7 +508,7 @@ export default {
           ...state,
           pendingInfo: {
             ...state.pendingInfo,
-            list: [...state.pendingInfo.list, ...list],
+            list: [...state.pendingInfo.list, ...newList],
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -495,12 +517,17 @@ export default {
     },
     // 保存历史信息
     saveHistoryInfo(state, { payload: { list = [], pageNum, pageSize, total } }) {
+      const more = list.map(item => ({
+        ...item,
+        pendingInfoType: item.pendingInfoType || getPendingInfoType(item, 'title'),
+        icon: item.icon || getPendingInfoType(item, 'icon'),
+      }))
       if (+pageNum === 1) {
         return {
           ...state,
           informationHistory: {
             ...state.informationHistory,
-            list,
+            list: more,
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -511,7 +538,7 @@ export default {
           ...state,
           informationHistory: {
             ...state.informationHistory,
-            list: [...state.informationHistory.list, ...list],
+            list: [...state.informationHistory.list, ...more],
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -555,10 +582,17 @@ export default {
       };
     },
     // 隐患巡查记录
-    saveHiddenDangerRecords(state, { payload: hiddenDangerRecords }) {
+    saveHiddenDangerRecords(state, { payload: { list = [], isYCQ } }) {
+      if (isYCQ) {
+        const newList = list.sort((a, b) => a.plan_rectify_time - b.plan_rectify_time)
+        return {
+          ...state,
+          hiddenDangerRecords: newList,
+        };
+      }
       return {
         ...state,
-        hiddenDangerRecords,
+        hiddenDangerRecords: list,
       };
     },
     // 消防数据统计

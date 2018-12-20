@@ -106,7 +106,7 @@ export default class App extends PureComponent {
                     cursor: 'pointer',
                     zIndex: isAbnormal ? 2 : 1,
                   }} onClick={() => { handleShowPointDetail(item_id, status, object_title); }}>
-                    <img src={isAbnormal?newPointAbnormal:newPointNormal} alt="" style={{ width: '100%', height: '100%', verticalAlign: 'top' }} />
+                    <img src={isAbnormal||showTip?newPointAbnormal:newPointNormal} alt="" style={{ width: '100%', height: '100%', verticalAlign: 'top' }} />
                     <div className={showTip?styles.animated:undefined} />
                     <div className={showTip?`${styles.animated} ${styles.delay}`:undefined} />
                   </div>

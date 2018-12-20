@@ -31,6 +31,11 @@ export async function queryDanger(params) {
   return request(`${URL_PREFIX}/hdfg/hiddenDangerMap.json?${stringify(params)}`);
 }
 
+// 获取隐患企业列表
+export async function queryDangerList(params) {
+  return request(`/acloud_new/v2/sfg/hiddenDangerList.json?${stringify(params)}`);
+}
+
 export async function getCompanyFireInfo(params) {
   return request(`${URL_PREFIX}/automaticFireAlarmSystem/getCompanyFireInfo?${stringify(params)}`);
 }
@@ -84,7 +89,22 @@ export async function getGrids(params) {
   return request(`${URL_PREFIX}/sfc/getGridData.json`);
 }
 
-/************************************** 单位消防 *********************************************** */
+// 获取风险点
+export async function getRiskPoints(params) {
+  return request(`${URL_PREFIX}/sfc/countDangerLocationForCompany.json?${stringify(params)}`);
+}
+
+// 获取安全人员
+export async function getSafeMan(params) {
+  return request(`${URL_PREFIX}/sfc/showSafePerson.json?${stringify(params)}`);
+}
+
+// 获取最近十二个月主机报警数量
+export async function getHostAlarmTrend(params) {
+  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getEveryMonthFireNum?${stringify(params)}`);
+}
+
+/************************************** 单位消防 ************************************************/
 /**
  * 获取待处理信息
  */
@@ -357,6 +377,7 @@ export async function queryWorkOrder(params) {
 export async function fetchCheckRecord(params) {
   return request(`/acloud_new/v2/maintenanceCheck/getCheckRecordByType?${stringify(params)}`)
 }
+
 // 企业负责人和维保员信息
 export async function queryCheckUsers(params) {
   return request(`/acloud_new/v2/maintenanceCheck/getCheckUsersForNanXiao?${stringify(params)}`);

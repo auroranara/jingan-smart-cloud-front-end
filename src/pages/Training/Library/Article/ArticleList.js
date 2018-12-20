@@ -80,10 +80,10 @@ export default class ArticleList extends PureComponent {
 
   // 点击新增文章
   handleAddArticle = () => {
-    const { knowledgeId } = this.props
+    const { knowledgeId, companyId } = this.props
     router.push({
       pathname: '/training/library/article/add',
-      query: { knowledgeId },
+      query: { knowledgeId, companyId },
     })
   }
 
@@ -197,7 +197,11 @@ export default class ArticleList extends PureComponent {
 
   // 点击跳转到编辑页面
   handleToEdit = (id) => {
-    router.push(`/training/library/article/edit/${id}`)
+    const { companyId } = this.props
+    router.push({
+      pathname: `/training/library/article/edit/${id}`,
+      query: { companyId },
+    })
   }
 
   // 点击加载更多

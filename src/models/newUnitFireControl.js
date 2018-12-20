@@ -59,7 +59,16 @@ import {
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
 import moment from 'moment';
-import { connect } from '../webscokets/newFireControlWS';
+import { stringify } from 'qs';
+import WebsocketHeartbeatJs from '../utils/heartbeat';
+import pathToRegexp from 'path-to-regexp';
+
+const options = {
+  pingTimeout: 30000,
+  pongTimeout: 10000,
+  reconnectTimeout: 2000,
+  pingMsg: 'heartbeat',
+};
 
 const getColorByRiskLevel = level => {
   switch (+level) {
@@ -327,9 +336,24 @@ export default {
 
   subscriptions: {
     initWebScoket: ({ dispatch, history }) => {
-      if (location.hash.indexOf('big-platform/fire-control/new-company') > -1) {
+      const pathname = '/big-platform/fire-control/new-company/:companyId';
+      const re = pathToRegexp(pathname);
+      if (pathToRegexp(pathname).test(history.location.pathname)) {
+        const list = re.exec(history.location.pathname);
+        const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+        const params = {
+          companyId: list[1],
+          env,
+          type: 1,
+        };
+        const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
         // 链接webscoket
-        // connect();
+        global.NanXiaoWebsocket = new WebsocketHeartbeatJs({ url, ...options });
+        global.NanXiaoWebsocket.onopen = () => {
+          console.log('connect success');
+          global.NanXiaoWebsocket.send('heartbeat');
+        };
       }
     },
   },
@@ -736,6 +760,20 @@ export default {
         error();
       }
     },
+    *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
+      console.log('fetchWebsocketScreenMessage', payload);
+      if (payload.code === 200) {
+        yield put({
+          type: 'saveScreenMessage',
+          payload: payload.data,
+        });
+        if (success) {
+          success(payload.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
     // 火警动态列表或火警消息
     *fetchAlarmHandle({ payload }, { call, put }) {
       const response = yield call(queryAlarmHandleList, payload);
@@ -935,6 +973,12 @@ export default {
           ...state.currentHiddenDanger,
           timestampList,
         },
+      };
+    },
+    saveScreenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: [payload, ...state.screenMessage],
       };
     },
     screenMessage(state, { payload }) {

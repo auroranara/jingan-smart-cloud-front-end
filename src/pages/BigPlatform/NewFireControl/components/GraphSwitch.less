@@ -1,0 +1,33 @@
+.container {
+  width: 88px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid rgb(14, 74, 149);
+  position: relative;
+  top: -3px;
+  right: 40px;
+}
+
+.base {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  background-size: 24px 24px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.line:extend(.base) {
+  left: 0;
+  border-right: 1px solid rgb(14, 74, 149);
+}
+
+.bar:extend(.base) {
+  right: 0;
+}
+
+.chosen {
+  background-color: rgba(14, 74, 149, 0.5);
+}

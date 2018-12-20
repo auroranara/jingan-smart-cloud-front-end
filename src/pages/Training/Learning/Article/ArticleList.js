@@ -93,6 +93,7 @@ export default class ArticleList extends PureComponent {
         pageSize,
         pageNum: 1,
         type: '1',
+        status: '1', // 发布状态为1
         companyId,
       },
     });
@@ -128,6 +129,7 @@ export default class ArticleList extends PureComponent {
         pageSize,
         pageNum: 1,
         type: '1', // 文章类型为1
+        status: '1', // 发布状态为1
         companyId,
         ...data,
       },
@@ -157,6 +159,7 @@ export default class ArticleList extends PureComponent {
         pageSize,
         pageNum: 1,
         type: '1', // 文章类型为1
+        status: '1', // 发布状态为1
         companyId,
       },
     });
@@ -184,6 +187,7 @@ export default class ArticleList extends PureComponent {
         pageNum: pageNum + 1,
         pageSize: defaultPageSize,
         type: '1', // type=1文章
+        status: '1', // 发布状态为1
         ...data,
         companyId,
       },

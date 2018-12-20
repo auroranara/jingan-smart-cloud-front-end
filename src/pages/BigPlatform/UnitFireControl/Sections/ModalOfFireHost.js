@@ -36,8 +36,6 @@ const columns = [
   },
 ]
 
-const options = ['火警', '故障', '联动', '监管', '屏蔽', '反馈']
-
 export default class ModalOfFireHost extends PureComponent {
 
   render() {
@@ -45,16 +43,33 @@ export default class ModalOfFireHost extends PureComponent {
       visible,
       onCancel,
       // handlePageChange,
-      onFilterChange,
+      onFilterChange,  // 点击分类筛选
       loading,
-      list,
-      currentFireHostType,
+      list,  // 当前分类展示的数组
+      // 每个分类的数量统计
+      statistics: {
+        fire_state: fireNum = 0,   // 火警
+        fault_state: faultNum = 0,  // 故障
+        start_state: startNum = 0,  //  联动
+        supervise_state: superviseNum = 0, // 监管
+        shield_state: shieldNum = 0,    // 屏蔽
+        feedback_state: feedbackNum = 0, // 反馈
+      },
+      currentFireHostType,  // 当前选中的分类
       pagination: {
         pageNum = 1,
         pageSize = 10,
         total = 0,
       },
     } = this.props
+    const options = [
+      { label: '火警', num: fireNum },
+      { label: '故障', num: faultNum },
+      { label: '联动', num: startNum },
+      { label: '监管', num: superviseNum },
+      { label: '屏蔽', num: shieldNum },
+      { label: '反馈', num: feedbackNum },
+    ]
     return (
       <NewModal
         title="消防主机监测"
@@ -64,11 +79,11 @@ export default class ModalOfFireHost extends PureComponent {
       >
         <div className={styles.modalOfFireHost}>
           <Row className={styles.sectionFilter}>
-            {options && options.map((item, i) => (
+            {options && options.map(({ label, num }, i) => (
               <Col span={4} className={styles.filter} key={i}>
-                <div className={currentFireHostType === item ? styles.activeFilter : styles.inActiveFilter}
-                  onClick={() => onFilterChange(item)}>
-                  {item}
+                <div className={currentFireHostType === label ? styles.activeFilter : styles.inActiveFilter}
+                  onClick={() => onFilterChange(label)}>
+                  {label}-{num}
                 </div>
               </Col>
             ))}
@@ -87,7 +102,7 @@ export default class ModalOfFireHost extends PureComponent {
           </div> */}
           {list && list.length > 0 ? (
             <div className={styles.listContainer}>
-              {list.map(({ typeName, component_region, component_no, label, install_address, t, icon = null }, i) => (
+              {list.map(({ typeName, component_region, component_no, label, install_address, t, icon = null, fire_state = null }, i) => (
                 <Col key={i} span={12} className={styles.cardContainer}>
                   <div className={styles.cardItem}>
                     <div className={styles.innerItem}>
@@ -99,7 +114,7 @@ export default class ModalOfFireHost extends PureComponent {
                             backgroundPosition: 'center center',
                             backgroundSize: '65% 65%',
                           }}></div>
-                          <div className={styles.remarks}>{typeName}</div>
+                          <div className={+fire_state === 1 ? styles.redText : styles.blueText}>{typeName}</div>
                         </div>
                       </div>
                       <div className={styles.line}>{`${component_region}回路${component_no}号`}</div>

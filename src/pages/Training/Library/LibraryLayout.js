@@ -251,12 +251,12 @@ export default class LibraryLayout extends PureComponent {
         companyList,
       },
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, companyId },
       },
     } = this.props
     const { activeKey, knowledgeId, company = {}, visible } = this.state
     const notCompany = unitType === 2 || unitType === 3
-    const data = { knowledgeId, companyId: company.id || null, unitType, notCompany }
+    const data = { knowledgeId, companyId: company.id || companyId, unitType, notCompany }
     return (
       <PageHeaderLayout
         title="资源管理"

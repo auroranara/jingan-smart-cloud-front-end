@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
 import Section from '../Section';
-import moment from 'moment';
-import DescriptionList from 'components/DescriptionList';
+// import moment from 'moment';
+// import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
 
-const formatTime = time => {
-  return moment(time).format('YYYY-MM-DD HH:mm');
-};
+// const formatTime = time => {
+//   return moment(time).format('YYYY-MM-DD HH:mm');
+// };
 const getEmptyData = () => {
   return '暂无数据';
 };
@@ -16,7 +16,7 @@ const getEmptyData = () => {
  * author: zkg
  * date: 2018年12月04日
  */
-const { Description } = DescriptionList;
+// const { Description } = DescriptionList;
 export default class Messages extends PureComponent {
   renderMsg = (msg, index) => {
     const {
@@ -31,7 +31,7 @@ export default class Messages extends PureComponent {
       title,
       messageFlag,
       proceCompany,
-      addTime,
+      // addTime,
       address,
       reportUser,
       pointName,

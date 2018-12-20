@@ -74,10 +74,10 @@ export default class QuestionsList extends PureComponent {
 
   // 点击新增
   handleAddQuestions = () => {
-    const { knowledgeId } = this.props
+    const { knowledgeId, companyId } = this.props
     router.push({
       pathname: '/training/library/questions/add',
-      query: { knowledgeId },
+      query: { knowledgeId, companyId },
     })
   }
 
@@ -189,6 +189,14 @@ export default class QuestionsList extends PureComponent {
     )
   }
 
+  handleToEdit = (id) => {
+    const { companyId } = this.props
+    router.push({
+      pathname: `/training/library/questions/edit/${id}`,
+      query: { companyId },
+    })
+  }
+
   // 渲染筛选
   renderFilter = () => {
     const {
@@ -295,7 +303,7 @@ export default class QuestionsList extends PureComponent {
                       {item.levelName && <Tag color={colors[item.level - 1]}>{item.levelName}</Tag>}
                     </div>
                     <div className={styles.rightIcon}>
-                      <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => { router.push(`/training/library/questions/edit/${item.id}`) } : null} />
+                      <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => this.handleToEdit(item.id) : null} />
                       <Divider type="vertical" />
                       {delDisabled ? (
                         <Icon className={styles.disabledIcon} type="close" />

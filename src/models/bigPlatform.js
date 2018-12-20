@@ -211,12 +211,13 @@ export default {
     // 监控数据
     monitorData: {},
     checkInfo: [],
-    hiddenDangerListByDate: {
-      ycq: [],
-      wcq: [],
-      dfc: [],
-      ygb: [],
-    },
+    // hiddenDangerListByDate: {
+    //   ycq: [],
+    //   wcq: [],
+    //   dfc: [],
+    //   ygb: [],
+    // },
+    hiddenDangerListByDate: [],
     hiddenDangerCompanyAll: {},
     hiddenDangerCompanyMonth: {},
     hiddenDangerCompanyUser: {},
@@ -253,6 +254,7 @@ export default {
     },
     listForMapForHidden: [],
     securityCheck: [],
+    riskDetailNoOrder: [],
   },
 
   effects: {
@@ -524,6 +526,13 @@ export default {
           return +a.real_rectify_time - b.real_rectify_time;
         })
         .map(transformHiddenDangerFields);
+
+      const list = response.hiddenDangers
+        .filter(({ status }) => +status === 7 || +status === 1 || +status === 2 || +status === 3)
+        .sort((a, b) => {
+          return +a.plan_rectify_time - b.plan_rectify_time;
+        })
+        .map(transformHiddenDangerFields);
       yield put({
         type: 'saveRiskDetail',
         payload: {
@@ -531,6 +540,11 @@ export default {
           wcq,
           dfc,
         },
+      });
+      // 无分类排序
+      yield put({
+        type: 'saveRiskDetailNoOrder',
+        payload: [...list],
       });
       if (success) {
         success({
@@ -738,38 +752,35 @@ export default {
     *fetchHiddenDangerListByDate({ payload, success, error }, { call, put }) {
       const response = yield call(getHiddenDangerListByDate, payload);
       if (response.code === 200) {
-        const ycq = response.data.hiddenDangers
-          .filter(({ status }) => +status === 7)
-          .sort((a, b) => {
-            return +a.plan_rectify_time - b.plan_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
-        const wcq = response.data.hiddenDangers
-          .filter(({ status }) => +status === 1 || +status === 2)
-          .sort((a, b) => {
-            return +a.plan_rectify_time - b.plan_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
-        const dfc = response.data.hiddenDangers
-          .filter(({ status }) => +status === 3)
-          .sort((a, b) => {
-            return +a.real_rectify_time - b.real_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
-        const ygb = response.data.hiddenDangers
-          .filter(({ status }) => +status === 4)
-          .sort((a, b) => {
-            return +a.real_rectify_time - b.real_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
+        // const ycq = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 7)
+        //   .sort((a, b) => {
+        //     return +a.plan_rectify_time - b.plan_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+        // const wcq = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 1 || +status === 2)
+        //   .sort((a, b) => {
+        //     return +a.plan_rectify_time - b.plan_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+        // const dfc = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 3)
+        //   .sort((a, b) => {
+        //     return +a.real_rectify_time - b.real_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+        // const ygb = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 4)
+        //   .sort((a, b) => {
+        //     return +a.real_rectify_time - b.real_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+
+        const list = response.data.hiddenDangers.map(transformHiddenDangerFields);
         yield put({
           type: 'hiddenDangerListByDate',
-          payload: {
-            ycq,
-            wcq,
-            dfc,
-            ygb,
-          },
+          payload: [...list],
         });
         if (success) {
           success(response.data);
@@ -1110,6 +1121,12 @@ export default {
       return {
         ...state,
         riskDetailList,
+      };
+    },
+    saveRiskDetailNoOrder(state, { payload }) {
+      return {
+        ...state,
+        riskDetailNoOrder: payload,
       };
     },
     // hiddenDanger(state, { payload }) {

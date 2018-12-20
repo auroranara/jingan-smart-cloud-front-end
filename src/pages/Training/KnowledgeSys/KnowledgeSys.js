@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Card, Spin, Button, Input } from 'antd';
+import { Card, Spin, Button, Input, message } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import EditableTree from './Components/EditableTree';
@@ -125,6 +125,9 @@ export default class KnowledgeSys extends PureComponent {
       },
       success: () => {
         this.getTreeData();
+      },
+      error: res => {
+        message.error(res.msg);
       },
     });
   };

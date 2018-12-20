@@ -90,6 +90,7 @@ export default {
       'waste-water': 'dataAnalysis.IOTAbnormalData.wasteWater',
       'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
       'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
+      'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',

@@ -98,7 +98,7 @@ export default class App extends PureComponent {
             <div className={styles.jumpButton} onClick={onBack}>单位巡查>></div>
           </Fragment>
         }
-        hackHeight={data.length > 0 ? (38 * data.length + 37) : 38}
+        skip
         isScroll
       >
         <Table
