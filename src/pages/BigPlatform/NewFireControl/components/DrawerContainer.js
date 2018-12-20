@@ -16,6 +16,7 @@ export default class DrawerContainer extends PureComponent {
       <Drawer
         visible={visible}
         placement="left"
+        destroyOnClose
         onClose={onClose}
         width={width || WIDTH}
         className={styles.drawer}
