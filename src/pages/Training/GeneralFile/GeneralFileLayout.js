@@ -45,13 +45,16 @@ export default class GeneralFileLayout extends PureComponent {
       },
       generalFile: { searchInfo },
     } = this.props;
+
     this.companyId = companyId;
     if (searchInfo && searchInfo.companyId) {
       this.companyId = searchInfo.companyId;
       this.companyName = searchInfo.companyName;
     }
+
     const payload = { pageSize: defaultPageSize, pageNum: 1 };
     if (!companyId) this.fetchCompany({ payload });
+
     this.setState({ activeKey: type });
   }
 
@@ -60,7 +63,6 @@ export default class GeneralFileLayout extends PureComponent {
    */
   handleFocus = () => {
     const { dispatch } = this.props;
-    this.setState({ visible: true });
     dispatch({
       type: 'generalFile/fetchCompanies',
       payload: {
@@ -68,6 +70,7 @@ export default class GeneralFileLayout extends PureComponent {
         pageNum: 1,
       },
     });
+    this.setState({ visible: true });
   };
 
   /**

@@ -3,7 +3,7 @@ import {
   queryPersonList,
   queryExamDetail,
   queryMultipleReport,
-  queryCompanies,
+  queryFileCompanies,
 } from '../services/training/generalFile';
 
 export default {
@@ -93,7 +93,7 @@ export default {
 
     // 获取企业列表
     *fetchCompanies({ payload, success, error }, { call, put }) {
-      const response = yield call(queryCompanies, payload);
+      const response = yield call(queryFileCompanies, payload);
       if (response.code === 200) {
         yield put({
           type: 'saveCompanies',
