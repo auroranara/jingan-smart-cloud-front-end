@@ -22,6 +22,6 @@ export async function queryMultipleReport(params) {
 }
 
 // 获取企业列表
-export async function queryCompanies(params) {
+export async function queryFileCompanies(params) {
   return request(`/acloud_new/v2/baseInfo/model/companies?${stringify(params)}`);
 }
