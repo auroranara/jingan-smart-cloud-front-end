@@ -624,6 +624,12 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   handleDangerLabelClick = (index, companyId) => {
+    // 手动重置，不选择标签
+    if (index === -1) {
+      this.setState({ dangerLabelIndex: -1 });
+      return;
+    }
+
     if (!companyId)
       return;
 

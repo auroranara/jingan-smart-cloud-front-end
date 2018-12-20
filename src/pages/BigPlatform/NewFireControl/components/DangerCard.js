@@ -10,6 +10,8 @@ function getTime(stamp) {
   return moment(stamp).format('YYYY-MM-DD');
 }
 
+const OVER_DUE = '7';
+
 export default function DangerCard(props) {
   const {
     data: {
@@ -27,10 +29,11 @@ export default function DangerCard(props) {
     } = props;
 
   const url = getUrl(hiddenDangerRecordDto);
+  const isOverDue = status === OVER_DUE;
 
   return (
     <div className={styles.container} {...restProps}>
-      <p className={styles.desc}>
+      <p className={isOverDue ? styles.descOverDue : styles.desc}>
         <span className={styles.icon} style={{ backgroundImage: `url(${infoIcon})` }} />
         {desc}
       </p>
@@ -41,7 +44,11 @@ export default function DangerCard(props) {
         <Col span={18}>
           <p>上<span className={styles.space} />报：<span className={styles.info}>{`${report_user_name} ${getTime(report_time)}`}</span></p>
           {status === '1' || status === '2' || status === '7' ? (
-            <p>计划整改：<span className={styles.info}>{`${rectify_user_name} ${getTime(plan_rectify_time)}`}</span></p>
+            <p>计划整改：
+              <span className={styles.info}>
+                {rectify_user_name} <span className={isOverDue ? styles.overdue : null}>{getTime(plan_rectify_time)}</span>
+              </span>
+            </p>
           ) : (
             <Fragment>
               <p>实际整改：<span className={styles.info}>{`${rectify_user_name} ${getTime(real_rectify_time)}`}</span></p>

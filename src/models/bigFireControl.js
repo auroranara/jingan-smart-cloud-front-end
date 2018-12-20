@@ -375,8 +375,8 @@ export default {
     },
     saveDangerRecords(state, action) {
       // 过滤掉隐患记录中的已关闭
-      // return { ...state, dangerRecords: action.payload.filter(({ status }) => status !== '4') };
-      return { ...state, dangerRecords: action.payload };
+      return { ...state, dangerRecords: action.payload.filter(({ status }) => status !== '4') };
+      // return { ...state, dangerRecords: action.payload };
     },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
