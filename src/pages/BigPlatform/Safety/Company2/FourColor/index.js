@@ -173,30 +173,28 @@ export default class FourColor extends PureComponent {
       // 如果为未选中状态移出时，则自动获取之前保存的索引显示下一个
       if (!isMouseEnter) {
         const nextIndex = selectedPointIndex !== undefined ? (selectedPointIndex + 1) : (prevSelectedPointIndex + 1);
-        this.alternateTimer = setTimeout(() => {this.handleClickPoint(points.length > nextIndex ? nextIndex : 0);}, 10000);
+        // this.alternateTimer = setTimeout(() => {this.handleClickPoint(points.length > nextIndex ? nextIndex : 0);}, 10000);
       }
     }
     // 3 如果点击当前隐患统计显示当前隐患弹窗框，则取消点位选中，并且移除定时器，否则如点击关闭按钮或点击点位，则选中点位并添加定时器
     if (prevCurrentHiddenDangerVisible !== currentHiddenDangerVisible) {
       clearTimeout(this.alternateTimer);
       if (currentHiddenDangerVisible) {
-        handleClickPoint && handleClickPoint({ selectedPointIndex: undefined, prevSelectedPointIndex: selectedPointIndex !== undefined ? selectedPointIndex : prevSelectedPointIndex });
+        // handleClickPoint && handleClickPoint({ selectedPointIndex: undefined, prevSelectedPointIndex: selectedPointIndex !== undefined ? selectedPointIndex : prevSelectedPointIndex });
       }
       // 会执行一下语句，则意味着为点击关闭按钮隐藏隐患弹出框的
       else if (!inspectionPointVisible && prevSelectedPointIndex !== undefined){
-        // const nextIndex = prevSelectedPointIndex + 1;
-        // this.alternateTimer = setTimeout(() => {this.handleClickPoint(points.length > nextIndex ? nextIndex : 0);}, 10000);
-        this.handleClickPoint(prevSelectedPointIndex);
+        // this.handleClickPoint(prevSelectedPointIndex);
       }
     }
     // 4.如果点击显示隐患点位弹窗框，则取消选中点位并移除定时器，否则如点击关闭按钮或点击点位，则选中点位并添加定时器
     if (prevInspectionPointVisible !== inspectionPointVisible) {
       clearTimeout(this.alternateTimer);
       if (inspectionPointVisible) {
-        handleClickPoint && handleClickPoint({ selectedPointIndex: undefined, prevSelectedPointIndex: selectedPointIndex !== undefined ? selectedPointIndex : prevSelectedPointIndex });
+        // handleClickPoint && handleClickPoint({ selectedPointIndex: undefined, prevSelectedPointIndex: selectedPointIndex !== undefined ? selectedPointIndex : prevSelectedPointIndex });
       }
       else if (!currentHiddenDangerVisible && prevSelectedPointIndex !== undefined) {
-        this.handleClickPoint(prevSelectedPointIndex);
+        // this.handleClickPoint(prevSelectedPointIndex);
       }
     }
   }
@@ -318,7 +316,7 @@ export default class FourColor extends PureComponent {
         nextIndex = (index + 1) < points.length ? (index + 1) : 0;
       }
       // 重新设置定时器
-      this.alternateTimer = setTimeout(() => {this.handleClickPoint(nextIndex);}, 10000);
+      // this.alternateTimer = setTimeout(() => {this.handleClickPoint(nextIndex);}, 10000);
     }
     else {
       handleClickPoint && handleClickPoint(extra);

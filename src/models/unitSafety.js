@@ -79,6 +79,8 @@ export default {
     },
     // 安全指数
     safetyIndex: undefined,
+    // 隐患巡查单条记录对应的隐患列表
+    inspectionRecordData: {},
   },
 
   effects: {
@@ -301,6 +303,21 @@ export default {
         yield put({
           type: 'save',
           payload: { inspectionPointData: response.data },
+        });
+        if (callback) {
+          callback(response.data);
+        }
+      } else if (callback) {
+        callback();
+      }
+    },
+    // 获取巡查记录对应的隐患列表
+    *fetchInspectionRecordData({ payload, callback }, { call, put }) {
+      const response = yield call(getInspectionPointData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { inspectionRecordData: response.data },
         });
         if (callback) {
           callback(response.data);
