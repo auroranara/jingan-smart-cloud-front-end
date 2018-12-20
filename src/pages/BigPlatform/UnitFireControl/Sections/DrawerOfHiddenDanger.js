@@ -78,14 +78,18 @@ const HiddenDangerRecord = ({ data }) => {
     business_type,
     review_time,
     name,  // 隐患来源
+    risk_level_name, // 风险点等级名称
+    source_type,     // 隐患来源 2:监督点
+    risk_level,     // 风险点等级 未评级为null
   } = data;
   // TODO:如果hiddenDangerRecordDto第一个元素的web_url不是图片
   let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
   fileWebUrl = fileWebUrl ? fileWebUrl.split(',')[0] : '';
   const { badge, icon, color } = getIconByStatus(status);
-  const isYCQ = +status === 7;
-  const isDFC = +status === 3 || +status === 4;  // 待复查或已关闭
-  const rectify_time = isDFC ? real_rectify_time : plan_rectify_time;
+  const isYCQ = +status === 7; // 已超期
+  const isDFC = +status === 3  // 待复查
+  const isYGB = +status === 4; // 已关闭
+  const rectify_time = isDFC || isYGB ? real_rectify_time : plan_rectify_time;
   return (
     <div className={styles.hiddenDangerRecord} key={id}>
       {/* 右上角图 */}
@@ -129,7 +133,7 @@ const HiddenDangerRecord = ({ data }) => {
           </Ellipsis>
         </div>
         <div className={styles.line}>
-          <span>{isDFC ? '实际整改：' : '计划整改：'}</span>
+          <span>{(isDFC || isYGB) ? '实际整改：' : '计划整改：'}</span>
           <Ellipsis lines={1} tooltip>
             <span style={{ marginRight: '16px' }}>{rectify_user_name}</span>
             <span style={{ color: isYCQ ? '#FF6464' : undefined }}>
@@ -137,7 +141,7 @@ const HiddenDangerRecord = ({ data }) => {
             </span>
           </Ellipsis>
         </div>
-        {isDFC && (
+        {(isDFC || isYGB) && (
           <div className={styles.line}>
             <span>
               复<span style={{ opacity: '0' }}>隐藏</span>
@@ -145,7 +149,7 @@ const HiddenDangerRecord = ({ data }) => {
             </span>
             <Ellipsis lines={1} tooltip>
               <span style={{ marginRight: '16px' }}>{review_user_name}</span>
-              <span>{moment(+review_time).format('YYYY-MM-DD')}</span>
+              {!isDFC && <span>{moment(+review_time).format('YYYY-MM-DD')}</span>}
             </Ellipsis>
           </div>
         )}
@@ -154,8 +158,10 @@ const HiddenDangerRecord = ({ data }) => {
             来<span style={{ opacity: '0' }}>隐藏</span>
             源：
           </span>
+          {/* 先判断隐患来源是不是2（网格点），如果是2 直接显示 监督点上报 ，不是2 再判断有没有评级 是这样吗 */}
           <Ellipsis lines={1} tooltip>
-            <span>{name}</span>
+            <span>{+source_type === 2 ? '监督点上报' : risk_level ? `${risk_level_name}色风险点` : '风险点'}</span>
+            <span>{`（${name}）`}</span>
           </Ellipsis>
         </div>
       </div>

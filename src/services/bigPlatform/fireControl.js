@@ -394,3 +394,8 @@ export async function queryFault(params) {
 export async function fetchHiddenDangerDetail({ id }) {
   return request(`/acloud_new/v2/hiddenDanger/hiddenDangerInfo/${id}`);
 }
+
+// 根据巡查记录获取隐患列表
+export async function fetchPatrolDangers(params) {
+  return request(`/acloud_new/v2/hdf/getOncePatrolDangers?${stringify(params)}`)
+}
