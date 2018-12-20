@@ -527,6 +527,7 @@ class GovernmentBigPlatform extends Component {
 
   showTooltip = (e, name) => {
     if (e.target === this.lastTarget) return;
+    console.log('eeeeee', name);
     const offset = e.target.getBoundingClientRect();
     this.lastTarget = e.target;
     this.setState({
