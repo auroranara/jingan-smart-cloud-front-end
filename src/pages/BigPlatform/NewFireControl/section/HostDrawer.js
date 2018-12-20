@@ -53,15 +53,17 @@ export default class HostDrawer extends PureComponent {
       visible,
       data: { sys, hostAlarmTrend },
       handleCardClick,
-      handleDrawerVisibleChange,
     } = this.props;
     const { graph, searchValue } = this.state;
 
+    const { fireDeviceNum: fire=0, norDeviceNum: normal=0 } = sys;
     let list = Array.isArray(sys.companyList) ? sys.companyList : [];
-    const filteredList = list.filter(({ name }) => name.includes(searchValue))
-    const total = list.length;
-    const normal = list.filter(({ isFire }) => isFire === '0').length;
-    const fire = total - normal;
+    const filteredList = list.filter(({ name }) => name.includes(searchValue));
+    // const total = list.length;
+    // const normal = list.filter(({ isFire }) => isFire === '0').length;
+    // const fire = total - normal;
+
+    const total = fire + normal;
     let normalPercent = 0;
     let firePercent = 0;
     if (total) {
