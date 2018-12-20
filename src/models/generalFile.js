@@ -3,6 +3,7 @@ import {
   queryPersonList,
   queryExamDetail,
   queryMultipleReport,
+  queryCompanies,
 } from '../services/training/generalFile';
 
 export default {
@@ -34,6 +35,15 @@ export default {
       },
     },
     multipleData: {},
+    searchInfo: undefined,
+    modal: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    },
   },
 
   effects: {
@@ -80,6 +90,22 @@ export default {
         });
       }
     },
+
+    // 获取企业列表
+    *fetchCompanies({ payload, success, error }, { call, put }) {
+      const response = yield call(queryCompanies, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveCompanies',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -111,6 +137,22 @@ export default {
       return {
         ...state,
         multipleData: payload,
+      };
+    },
+
+    // 获取企业
+    saveCompanies(state, { payload }) {
+      return {
+        ...state,
+        modal: payload,
+      };
+    },
+
+    // 保存搜索条件
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload || null,
       };
     },
   },

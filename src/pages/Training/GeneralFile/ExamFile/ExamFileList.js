@@ -40,6 +40,7 @@ export default class ExamFileList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
     // 获取考试列表
     dispatch({
@@ -47,6 +48,7 @@ export default class ExamFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+        companyId: companyId,
       },
     });
   }

@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Col, Table, Tooltip } from 'antd';
+import { Col, Table } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 import ImageCard from '@/components/ImageCard';
@@ -48,24 +48,14 @@ const columns = [
       const nums = [overTime, rectifyNum, reviewNum, finish];
       return (
         <div className={+val.status === 1 ? null : styles.resultError}>
-          <Tooltip
-            placement="top"
-            title={resultStatus
+          <Ellipsis length={5} tooltip>
+            {resultStatus
               .map((data, index) => {
                 return nums[index] ? `${data} ${nums[index]}` : '';
               })
               .filter(data => data)
               .join('/')}
-          >
-            <Ellipsis length={5}>
-              {resultStatus
-                .map((data, index) => {
-                  return nums[index] ? `${data} ${nums[index]}` : '';
-                })
-                .filter(data => data)
-                .join('/')}
-            </Ellipsis>
-          </Tooltip>
+          </Ellipsis>
         </div>
       );
     },

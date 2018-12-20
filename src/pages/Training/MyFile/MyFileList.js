@@ -101,9 +101,9 @@ export default class myFileList extends PureComponent {
   };
 
   // 跳转到试卷页面
-  goExamDetail = id => {
+  goExamDetail = (id, examId) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/my-exam/result/${id}`));
+    dispatch(routerRedux.push(`/training/my-exam/result/${id}?examId=${examId}`));
   };
 
   // 跳转到分析报告页面
@@ -343,7 +343,7 @@ export default class myFileList extends PureComponent {
         width: 160,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goExamDetail(rows.id)}>试卷</a>
+            <a onClick={() => this.goExamDetail(rows.id, rows.examId)}>试卷</a>
             <Divider type="vertical" />
             <a onClick={() => this.goAlaysisExam(rows.studentId, rows.examId)}>分析报告</a>
           </span>
