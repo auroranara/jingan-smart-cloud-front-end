@@ -115,10 +115,10 @@ export default class App extends PureComponent {
         dataIndex: resultField,
         key: resultField,
         width: 88,
-        render: (text) => {
+        render: (text, { check_id, status }) => {
           const isNormal = +text === 1;
           return (
-            <span style={{ color: isNormal ? undefined : '#ff4848' }}>{isNormal ? '正常':'异常'}</span>
+            <span style={{ color: isNormal ? undefined : '#ff4848', cursor: isNormal ? 'auto' : 'pointer' }} onClick={() => {!isNormal && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isNormal ? '正常':'异常'}</span>
           )
         },
       },
