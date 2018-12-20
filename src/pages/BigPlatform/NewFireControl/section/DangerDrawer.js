@@ -15,11 +15,12 @@ import {
   ChartRing,
   SearchBar,
 } from '../components/Components';
-import { fillZero } from '../utils';
+import { fillZero, sortDangerRecords } from '../utils';
 // import clockIcon from '../img/cardClock1.png';
 
 const TYPE = 'danger';
-const STATUS = ['-1', ['7'], ['1', '2'], ['3']];
+const STATUS = [['-1'], ['7'], ['1', '2'], ['3']];
+STATUS['-1'] = ['-1'];
 
 // const CARDS = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -34,6 +35,13 @@ export default class DangerDrawer extends PureComponent {
     this.setState({ searchValue: v });
   };
 
+  handleClose = () => {
+    const { handleDrawerVisibleChange, handleLabelClick } = this.props;
+    handleDrawerVisibleChange(TYPE);
+    handleLabelClick(-1);
+    this.setState({ searchValue: '' });
+  };
+
   render() {
     const {
       visible,
@@ -41,7 +49,6 @@ export default class DangerDrawer extends PureComponent {
       selectedCompanyId='',
       labelIndex=0,
       handleLabelClick,
-      handleDrawerVisibleChange,
       data: {
         overview: {
           overdueNum=0,
@@ -58,6 +65,7 @@ export default class DangerDrawer extends PureComponent {
     const list = dangerList.slice(0, 10).map(({ companyId, companyName, total }) => ({ id: companyId, name: companyName, value: total }));
     const filteredList = dangerList.filter(({ companyName }) => companyName.includes(searchValue));
     const filteredRecords = labelIndex && labelIndex !== -1 ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
+    sortDangerRecords(filteredRecords, STATUS[labelIndex][0]);
 
     const left = (
       <Fragment>
@@ -101,7 +109,7 @@ export default class DangerDrawer extends PureComponent {
         visible={visible}
         left={left}
         right={right}
-        onClose={() => handleDrawerVisibleChange(TYPE)}
+        onClose={this.handleClose}
       />
     );
   }

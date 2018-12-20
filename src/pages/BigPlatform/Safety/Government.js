@@ -451,6 +451,7 @@ class GovernmentBigPlatform extends Component {
             companyName: response.companyMessage.companyName,
           },
         });
+        this.hideTooltip();
         if (document.querySelector('#companyRisk')) {
           document.querySelector('#companyRisk').scrollTop = 0;
         }

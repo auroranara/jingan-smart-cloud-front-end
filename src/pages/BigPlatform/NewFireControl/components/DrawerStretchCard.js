@@ -28,6 +28,10 @@ export default class DrawerStretchCard extends PureComponent {
     } = this.props;
     // console.log(name, selected, labelIndex);
 
+    let cards = '暂无隐患信息';
+    if (list.length)
+      cards = list.map((item, i) => <DangerCard key={item.id} data={item} style={{ marginTop: i ? 14 : 0 }} />);
+
     return (
       <div className={styles.outer}>
         <div className={styles.container} {...restProps}>
@@ -48,7 +52,7 @@ export default class DrawerStretchCard extends PureComponent {
           </div>
           {selected && labelIndex !== -1 && (
             <div className={styles.cardContainer}>
-              {loading ? 'loading...' : list.map((item, i) => <DangerCard key={item.id} data={item} style={{ marginTop: i ? 14 : 0 }} />)}
+              {loading ? 'loading...' : cards}
             </div>
           )}
         </div>
