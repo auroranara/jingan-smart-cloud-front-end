@@ -33,10 +33,10 @@ const dspItems = [
     name: 'validity',
     cName: '服务有效期',
   },
-  {
-    name: 'companyType',
-    cName: '安监重点单位',
-  },
+  // {
+  //   name: 'companyType',
+  //   cName: '安监重点单位',
+  // },
 ];
 
 const dspItems1 = [
