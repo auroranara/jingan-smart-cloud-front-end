@@ -118,9 +118,7 @@ class DangerCompanyDrawer extends PureComponent {
                                 return (
                                   <tr key={item.id}>
                                     <td>
-                                      {(+item.company_type === 1 ||
-                                        +item.company_type === 3 ||
-                                        +item.company_type === 4) && (
+                                      {(+item.company_type === 1 || +item.company_type === 4) && (
                                         <span className={styles.keyComMark} />
                                       )}
                                     </td>
