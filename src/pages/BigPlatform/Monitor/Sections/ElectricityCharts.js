@@ -65,7 +65,7 @@ class ElectricityCharts extends PureComponent {
           .map(item => {
             return `${item.marker}<span style="color: ${
               item.color === '#e01919' ? '#e01919' : '#fff'
-              }">${item.seriesName}：${item.value[1]}</span>`;
+            }">${item.seriesName}：${item.value[1]}</span>`;
           })
           .join('<br/>')
       );
@@ -73,7 +73,7 @@ class ElectricityCharts extends PureComponent {
       return (
         `${moment(params.name).format('HH:mm')}<br/>` +
         `${params.marker}<span style="color: ${params.color === '#e01919' ? '#e01919' : '#fff'}">${
-        params.seriesName
+          params.seriesName
         }：${params.value[1]}</span><br/>`
       );
     }
@@ -81,13 +81,17 @@ class ElectricityCharts extends PureComponent {
 
   legendFormatter = (arr, unit) => {
     let val = null;
+    let lvl = null;
     arr.forEach(pieces => {
       if (!pieces || pieces.length === 0) return;
       pieces.forEach(p => {
-        if (p.condition === '1') val = val < p.limitValue && val ? val : p.limitValue;
+        if (p.condition === '1') {
+          val = val < p.limitValue && val ? val : p.limitValue;
+          lvl = val < p.limitValue && val ? lvl : p.level;
+        }
       });
     });
-    return val ? `报警值：≥${val}${unit}` : null;
+    return val ? `报警值：≥${val}${unit}（${+lvl === 1 ? '预警' : '告警'}）` : null;
   };
 
   getOptions = () => {
@@ -263,7 +267,7 @@ class ElectricityCharts extends PureComponent {
               color: '#fff',
               fontWeight: 200,
             },
-            right: 25,
+            right: 0,
             bottom: 5,
           },
           legend: {
@@ -320,7 +324,7 @@ class ElectricityCharts extends PureComponent {
               color: '#fff',
               fontWeight: 200,
             },
-            right: 25,
+            right: 0,
             bottom: 5,
           },
           tooltip: {
@@ -391,7 +395,7 @@ class ElectricityCharts extends PureComponent {
               color: '#fff',
               fontWeight: 200,
             },
-            right: 25,
+            right: 0,
             bottom: 5,
           },
           tooltip: {
@@ -450,7 +454,7 @@ class ElectricityCharts extends PureComponent {
               color: '#fff',
               fontWeight: 200,
             },
-            right: 25,
+            right: 0,
             bottom: 5,
           },
           tooltip: {
@@ -508,31 +512,38 @@ class ElectricityCharts extends PureComponent {
     const chartAnimate = () => {
       if (!chart) return;
       const chartSeries = chart.getOption().series;
-      if (!chartSeries[0]) return;
-      const dataLen = chartSeries[0].data.length;
+      if (chartSeries.length === 0) return;
+      let maxIndex = 0;
+      let maxLength = 0;
+      chartSeries.forEach((series, index) => {
+        const { data } = series;
+        maxLength = data.length > maxLength ? data.length : maxLength;
+        maxIndex = data.length > maxLength ? index : maxIndex;
+      });
       // 取消之前高亮的图形
-      chart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: 0,
-        dataIndex: this.currentIndex,
-      });
-      for (let i = 0; i < dataLen; i++) {
-        this.currentIndex = (this.currentIndex + 1) % dataLen;
-        if (chartSeries[0].data[this.currentIndex] !== '-') break;
-      }
-      chartSeries.forEach(series => {
-        if (series.data[series.data.length - 1]) this.currentIndex = dataLen - 1;
-      });
+      // chart.dispatchAction({
+      //   type: 'downplay',
+      //   seriesIndex: maxIndex,
+      //   dataIndex: this.currentIndex,
+      // });
+      // for (let i = 0; i < dataLen; i++) {
+      //   this.currentIndex = (this.currentIndex + 1) % dataLen;
+      //   if (chartSeries[0].data[this.currentIndex] !== '-') break;
+      // }
+      // chartSeries.forEach((series, index) => {
+      //   if (series.data[series.data.length - 1]) this.currentIndex = dataLen - 1;
+      // });
+      this.currentIndex = (this.currentIndex + 1) % maxLength;
       // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: this.currentIndex,
-      });
+      // chart.dispatchAction({
+      //   type: 'highlight',
+      //   seriesIndex: maxIndex,
+      //   dataIndex: this.currentIndex,
+      // });
       // 显示 tooltip
       chart.dispatchAction({
         type: 'showTip',
-        seriesIndex: 0,
+        seriesIndex: maxIndex,
         dataIndex: this.currentIndex,
       });
     };
@@ -607,16 +618,16 @@ class ElectricityCharts extends PureComponent {
               onChartReady={this.onChartReadyCallback}
             />
           ) : (
-              <div
-                className={styles.noCards}
-                style={{
-                  background: `url(${waterBg})`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center center',
-                  backgroundSize: 'auto 55%',
-                }}
-              />
-            )}
+            <div
+              className={styles.noCards}
+              style={{
+                background: `url(${waterBg})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: 'auto 55%',
+              }}
+            />
+          )}
         </SectionWrapper>
       </div>
     );

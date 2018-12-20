@@ -527,7 +527,6 @@ class GovernmentBigPlatform extends Component {
 
   showTooltip = (e, name) => {
     if (e.target === this.lastTarget) return;
-    console.log('eeeeee', name);
     const offset = e.target.getBoundingClientRect();
     this.lastTarget = e.target;
     this.setState({
@@ -650,19 +649,9 @@ class GovernmentBigPlatform extends Component {
           {grids.length > 0 && (
             <div className={styles.treeContainer}>
               {grids.length === 1 ? (
-                <span
-                  style={{
-                    fontSize: '14px',
-                    letterSpacing: '14px',
-                    lineHeight: '30px',
-                    paddingLeft: '11px',
-                  }}
-                >
-                  {grids[0].title}
-                </span>
+                <span>{grids[0].title}</span>
               ) : (
                 <TreeSelect
-                  style={{ width: 300 }}
                   value={treeValue}
                   dropdownClassName={styles.gridDropdown}
                   treeData={grids}
