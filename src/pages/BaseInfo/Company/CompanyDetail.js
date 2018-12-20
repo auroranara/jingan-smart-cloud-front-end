@@ -6,7 +6,7 @@ import { routerRedux } from 'dva/router';
 import { Map, Marker } from 'react-amap';
 
 import DescriptionList from '@/components/DescriptionList';
-import Ellipsis from '@/components/Ellipsis';
+// import Ellipsis from '@/components/Ellipsis';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { hasAuthority } from '@/utils/customAuth';

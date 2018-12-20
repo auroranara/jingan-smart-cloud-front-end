@@ -44,7 +44,7 @@ export default class App extends PureComponent {
     // 容器类名
     const contianerClassName = classnames(className, styles.container);
     // 是否为异常或已超期
-    const isAlert = status === 2 || status === 4;
+    const isAlert = +status === 2 || +status === 4;
     // 图片是否可用
     const isValid = /(.png|.jpg)$/.test(webUrl);
 

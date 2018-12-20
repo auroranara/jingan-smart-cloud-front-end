@@ -90,7 +90,11 @@ export default class DangerSection extends PureComponent {
       dataset: { source },
       xAxis: {
         type: 'category',
+        interval: 2,
+        min: 'dataMin',
+        max: 'dataMax',
         axisLine: { lineStyle: { width: 2, color: 'rgb(62,71,89)' } },
+        axisLabel: { interval: 2 },
       },
       yAxis: {
         type: 'value',

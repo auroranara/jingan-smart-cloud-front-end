@@ -105,7 +105,7 @@ export default class App extends PureComponent {
               onClick={() => {handleShowDetail(item_id, status);}}
             >
               {value}
-              {showLabel && <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 58, lineHeight: '19px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
+              {showLabel && <div style={{ position: 'absolute', right: 0, top: 0, width: 58, height: 21, lineHeight: '19px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
             </span>
           );
         },
@@ -115,10 +115,10 @@ export default class App extends PureComponent {
         dataIndex: resultField,
         key: resultField,
         width: 88,
-        render: (text) => {
+        render: (text, { check_id, status }) => {
           const isNormal = +text === 1;
           return (
-            <span style={{ color: isNormal ? undefined : '#ff4848' }}>{isNormal ? '正常':'异常'}</span>
+            <span style={{ color: isNormal ? undefined : '#ff4848', cursor: isNormal ? 'auto' : 'pointer' }} onClick={() => {!isNormal && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isNormal ? '正常':'异常'}</span>
           )
         },
       },
@@ -126,7 +126,7 @@ export default class App extends PureComponent {
         title: '隐患当前状态',
         dataIndex: 'rectification',
         key: 'rectification',
-        width: 102,
+        width: 116,
         render: (value, { check_id, rectification, review, closed, overTime, status }) => {
           const isAlert = rectification + review + closed + overTime > 0;
           return (
