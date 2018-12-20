@@ -39,6 +39,7 @@ export default class PersonFileList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
     // 获取人员列表
     dispatch({
@@ -46,6 +47,7 @@ export default class PersonFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+        companyId: companyId,
       },
     });
   }

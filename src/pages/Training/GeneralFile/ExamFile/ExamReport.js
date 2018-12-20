@@ -168,15 +168,16 @@ export default class ExamReport extends PureComponent {
                       {shouldCount}
                       人，实际考试人数：
                       {actualCount}
-                      人，缺考人数：
-                      {giveUpCount}
-                      人(
-                      {giveUpUsers.length > 0 ? giveUpUsers.join('、') : ''}
-                      )， 考试最高正确率：
-                      {examMaxScore ? examMaxScore : 0}% (
-                      {maxScoreUsers.length > 0 ? maxScoreUsers.join('、') : ''}) ，最低正确率：
-                      {examMinScore ? examMinScore : 0}% (
-                      {minScoreUsers.length > 0 ? minScoreUsers.join('、') : ''}) ，平均正确率：
+                      人， 缺考人数：
+                      {giveUpCount}人{' '}
+                      {giveUpUsers.length > 0 ? <span>({giveUpUsers.join('、')})</span> : ''}
+                      ，考试最高正确率：
+                      {examMaxScore ? examMaxScore : 0}%{' '}
+                      {maxScoreUsers.length > 0 ? <span>({maxScoreUsers.join('、')})</span> : ''}
+                      ，最低正确率：
+                      {examMinScore ? examMinScore : 0}%
+                      {minScoreUsers.length > 0 ? <span>({minScoreUsers.join('、')})</span> : ''}
+                      ，平均正确率：
                       {examMeanScore ? examMeanScore : 0}%
                     </strong>
                     。
@@ -193,37 +194,42 @@ export default class ExamReport extends PureComponent {
                       人，占比为：
                       {passPercent}
                       %，不合格人数：
-                      {noPassCount}
-                      人(
-                      {noPassUsers.length > 0 ? noPassUsers.join('、') : ''}) ，占比为：
+                      {noPassCount}人
+                      {noPassUsers.length > 0 ? <span>({noPassUsers.join('、')})</span> : ''}
+                      ，占比为：
                       {noPassPercent}%
                     </strong>
                     。
                   </p>
-                  <p>
-                    3、本次考试试题知识点分为：
-                    <strong>
-                      {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
-                      {knowledgeReports.length}项
-                    </strong>
-                    。 其中
-                    {knowledgeReports.map(item => {
-                      const { knowledgeId, knowledgeName, questionCount } = item;
-                      const total = knowledgeReports
-                        .map(t => t.questionCount)
-                        .reduce(function(prev, curr) {
-                          return prev + curr;
-                        });
-                      return (
-                        <span key={knowledgeId}>
-                          {knowledgeName}
-                          比例为：
-                          {((questionCount / total) * 100).toFixed(2)}
-                          %。
-                        </span>
-                      );
-                    })}
-                  </p>
+                  {knowledgeReports.length > 0 ? (
+                    <p>
+                      3、本次考试试题知识点分为：
+                      <strong>
+                        {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
+                        {knowledgeReports.length}项
+                      </strong>
+                      。其中
+                      {knowledgeReports.map(item => {
+                        const { knowledgeId, knowledgeName, questionCount } = item;
+                        const total = knowledgeReports
+                          .map(t => t.questionCount)
+                          .reduce(function(prev, curr) {
+                            return prev + curr;
+                          });
+                        return (
+                          <span key={knowledgeId}>
+                            {knowledgeName}
+                            比例为：
+                            {((questionCount / total) * 100).toFixed(2)}
+                            %。
+                          </span>
+                        );
+                      })}
+                    </p>
+                  ) : (
+                    <p>3、本次考试无试题知识点。</p>
+                  )}
+
                   <p>
                     4、本次考试题量：
                     {singleCount + multiCount + judgeCount} 道，其中，单项选择题：
