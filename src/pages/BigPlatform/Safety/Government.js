@@ -451,6 +451,7 @@ class GovernmentBigPlatform extends Component {
             companyName: response.companyMessage.companyName,
           },
         });
+        this.hideTooltip();
         if (document.querySelector('#companyRisk')) {
           document.querySelector('#companyRisk').scrollTop = 0;
         }
@@ -526,6 +527,7 @@ class GovernmentBigPlatform extends Component {
 
   showTooltip = (e, name) => {
     if (e.target === this.lastTarget) return;
+    console.log('eeeeee', name);
     const offset = e.target.getBoundingClientRect();
     this.lastTarget = e.target;
     this.setState({

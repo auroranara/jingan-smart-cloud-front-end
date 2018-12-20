@@ -5,6 +5,7 @@ import {
   DangerCard,
   DrawerContainer,
 } from '../components/Components';
+import { sortDangerRecords } from '../utils';
 
 // const LIST = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -16,7 +17,8 @@ import {
 
 const TYPE = 'unitDanger';
 const TITLES = ['隐患数量', '已超期', '待整改', '待复查'];
-const STATUS = ['-1', ['7'], ['1', '2'], ['3']];
+const STATUS = [['-1'], ['7'], ['1', '2'], ['3']];
+STATUS['-1'] = ['-1'];
 const COLORS = ['255,255,255', '232,103,103', '246,181,78', '42,139,213'];
 const NO_DATA = '暂无信息';
 
@@ -38,6 +40,17 @@ export default function UnitDangerDrawer(props) {
   const selected = dangerList.find(item => item.companyId === companyId) || {};
   const { companyName, total=0, hasExtended: overdue=0, afterRectification: rectify=0, toReview: review=0 } = selected;
   const filteredRecords = labelIndex ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
+  sortDangerRecords(filteredRecords, STATUS[labelIndex][0]);
+
+  let cards = '暂无隐患信息';
+  if (filteredRecords.length)
+    cards = filteredRecords.map((item, i) => (
+      <DangerCard
+        key={item.id}
+        data={item}
+        style={{ marginTop: i ? 14 : 0 }}
+      />
+    ));
 
   const left = (
     <Fragment>
@@ -53,19 +66,14 @@ export default function UnitDangerDrawer(props) {
           ))}
       </div>
       <div className={styles.cardContainer}>
-        {loading ? 'loading...' : filteredRecords.map((item, i) => (
-          <DangerCard
-            key={item.id}
-            data={item}
-            style={{ marginTop: i ? 14 : 0 }}
-          />
-        ))}
+        {loading ? 'loading...' : cards}
       </div>
     </Fragment>
   )
 
   return (
     <DrawerContainer
+      isTop
       title="隐患列表"
       width={540}
       visible={visible}

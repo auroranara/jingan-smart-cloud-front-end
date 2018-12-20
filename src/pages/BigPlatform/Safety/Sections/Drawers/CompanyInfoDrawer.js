@@ -61,6 +61,7 @@ class CompanyInfoDrawer extends PureComponent {
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          mask={false}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div

@@ -40,8 +40,20 @@ const SWITCH_LABELS = ['管辖单位', '重点单位'];
 export default class UnitDrawer extends PureComponent {
   state={ searchValue: '' };
 
+  handleSwitch = i => {
+    const { handleSwitch } = this.props;
+    handleSwitch(i);
+    this.setState({ searchValue: '' });
+  };
+
   handleSearch = v => {
     this.setState({ searchValue: v });
+  };
+
+  handleClose = () => {
+    const { handleDrawerVisibleChange } = this.props;
+    handleDrawerVisibleChange(TYPE);
+    this.setState({ searchValue: '' });
   };
 
   render() {
@@ -49,10 +61,8 @@ export default class UnitDrawer extends PureComponent {
       visible,
       labelIndex=0,
       // handleSearch,
-      handleSwitch,
       handleShowUnitDanger,
       handleAlarmClick,
-      handleDrawerVisibleChange,
       data: { allCompanyList=[], importCompanyList=[], fireNum=0, commonNum=0, noAccessNum=0, impFireNum=0, impCommonNum=0, impNoAccessNum=0 },
     } = this.props;
     const { searchValue } = this.state;
@@ -70,7 +80,7 @@ export default class UnitDrawer extends PureComponent {
     const [impFirePercent, impCommonPercent, impNoAccessPercent] = [impFireNum, impCommonNum, impNoAccessNum].map(n => impTotal ? n / impTotal * 100 : 0);
 
     const top = (
-      <SwitchHead value={labelIndex} labels={SWITCH_LABELS} onSwitch={handleSwitch} />
+      <SwitchHead value={labelIndex} labels={SWITCH_LABELS} onSwitch={this.handleSwitch} />
     );
 
     const left = (
@@ -107,8 +117,10 @@ export default class UnitDrawer extends PureComponent {
 
     const right = (
         <SearchBar
+          // value={value}
           key={labelIndex}
           onSearch={this.handleSearch}
+          // onChange={this.handleChange}
           // style={{ paddingTop: 50 }}
         >
           {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, itemCount, hiddenCount, isFire }) => (
@@ -160,7 +172,7 @@ export default class UnitDrawer extends PureComponent {
         left={left}
         right={right}
         rowStyle={{ height: 'calc(100% - 70px)' }}
-        onClose={() => handleDrawerVisibleChange(TYPE)}
+        onClose={this.handleClose}
       />
     );
   }

@@ -46,6 +46,12 @@ export default class AlarmDrawer extends PureComponent {
     this.setState({ searchValue: v });
   };
 
+  handleClose = () => {
+    const { handleDrawerVisibleChange } = this.props;
+    handleDrawerVisibleChange(TYPE);
+    this.setState({ searchValue: '' });
+  };
+
   render() {
     const {
       visible,
@@ -144,7 +150,7 @@ export default class AlarmDrawer extends PureComponent {
         visible={visible}
         left={left}
         right={right}
-        onClose={() => handleDrawerVisibleChange(TYPE)}
+        onClose={this.handleClose}
       />
     );
   }

@@ -97,7 +97,7 @@ export default class CompanyInfo extends PureComponent {
             {/* 安全指数 */}
             {safetyIndex !== undefined && (
               <Progress
-                width={90}
+                width={80}
                 type="circle"
                 percent={safetyIndex}
                 strokeColor={safetyIndex >= 80 ? "#00a8ff" : '#ff4848'}
@@ -108,9 +108,9 @@ export default class CompanyInfo extends PureComponent {
                   position: 'absolute',
                   right: 0,
                   bottom: 0,
-                  height: 80,
+                  height: 70,
                 }}
-                format={percent => <div style={{ color: safetyIndex >= 80 ? "#00a8ff" : '#ff4848' }}><div style={{ fontSize: 24, marginBottom: 4 }}>{percent}</div><div style={{ fontSize: 16 }}>安全指数</div></div>}
+                format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 22, marginBottom: 4 }}>{percent}</div><div style={{ fontSize: 12 }}>安全指数</div></div>}
               />
             )}
           </div>

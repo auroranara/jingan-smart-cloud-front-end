@@ -21,9 +21,10 @@ export default class ChartRing extends PureComponent {
       //     formatter: "{a} <br/>{b}: {c} ({d}%)",
       // },
       legend: {
-          data:[{name: '已超期', icon: 'circle'},{name: '待整改', icon: 'circle'} ,{name: '待复查', icon: 'circle'}],
-          bottom: 10,
+          bottom: 0,
+          selectedMode: false,
           textStyle: { color: '#FFF' },
+          data:[{name: '已超期', icon: 'circle'},{name: '待整改', icon: 'circle'} ,{name: '待复查', icon: 'circle'}],
           formatter: name => `${name} ${data[LABELS.indexOf(name)]}`,
       },
       series: [

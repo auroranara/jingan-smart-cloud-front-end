@@ -63,6 +63,22 @@ const getIconByBusinessType = function (businessType) {
   }
 };
 
+// 根据风险等级获取文本
+const getLabelByLevel = function(level) {
+  switch (+level) {
+    case 1:
+      return '红色';
+    case 2:
+      return '橙色';
+    case 3:
+      return '黄色';
+    case 4:
+      return '蓝色';
+    default:
+      return '';
+  }
+};
+
 const HiddenDangerRecord = ({ data }) => {
   const {
     id,
@@ -78,6 +94,8 @@ const HiddenDangerRecord = ({ data }) => {
     business_type,
     review_time,
     name,  // 隐患来源
+    risk_level,
+    source_type_name,
   } = data;
   // TODO:如果hiddenDangerRecordDto第一个元素的web_url不是图片
   let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
@@ -86,6 +104,8 @@ const HiddenDangerRecord = ({ data }) => {
   const isYCQ = +status === 7;
   const isDFC = +status === 3 || +status === 4;  // 待复查或已关闭
   const rectify_time = isDFC ? real_rectify_time : plan_rectify_time;
+  // 来源
+  const source = source_type_name === '风险点上报' ? `${getLabelByLevel(risk_level)}风险点${name ? `（${name}）` : ''}` : source_type_name;
   return (
     <div className={styles.hiddenDangerRecord} key={id}>
       {/* 右上角图 */}
@@ -155,7 +175,7 @@ const HiddenDangerRecord = ({ data }) => {
             源：
           </span>
           <Ellipsis lines={1} tooltip>
-            <span>{name}</span>
+            <span>{source}</span>
           </Ellipsis>
         </div>
       </div>

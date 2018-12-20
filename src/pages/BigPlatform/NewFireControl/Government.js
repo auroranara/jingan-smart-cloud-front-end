@@ -35,7 +35,6 @@ import DangerDrawer from './section/DangerDrawer';
 import SafeDrawer from './section/SafeDrawer';
 import RiskDrawer from './section/RiskDrawer';
 
-
 const { location, region, projectName } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
@@ -181,7 +180,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({
       type: 'bigFireControl/fetchAlarm',
       payload: { gridId },
-      callback: (list=[]) => {
+      callback: (list = []) => {
         // console.log(list);
         const newAlarms = getNewAlarms(list, this.formerAlarmList);
         const companyIds = [];
@@ -202,7 +201,8 @@ export default class FireControlBigPlatform extends PureComponent {
                     onClick={e => {
                       this.handleReverseById(id);
                       notification.close(id);
-                    }}>
+                    }}
+                  >
                     {`${name}发生火警，请查看！`}
                   </span>
                 ),
@@ -224,8 +224,12 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   // 在实时警情中根据id或companyId获取符合条件的最新的火警，然后翻转卡片
-  handleReverseById = (id, prop='id') => {
-    const { bigFireControl: { alarm: { list=[] } } } = this.props;
+  handleReverseById = (id, prop = 'id') => {
+    const {
+      bigFireControl: {
+        alarm: { list = [] },
+      },
+    } = this.props;
     const alarmDetail = list.find(item => item[prop] === id) || {};
     this.handleAlarmClick(alarmDetail);
   };
@@ -585,10 +589,12 @@ export default class FireControlBigPlatform extends PureComponent {
       vals[0] = val;
     }
 
-    this.setState(keys.reduce((prev, next, i) => {
-      prev[`alarmDrawer${next}Type`] = vals[i];
-      return prev;
-    }, {}));
+    this.setState(
+      keys.reduce((prev, next, i) => {
+        prev[`alarmDrawer${next}Type`] = vals[i];
+        return prev;
+      }, {})
+    );
   };
 
   fetchDangerRecords = companyId => {
@@ -601,13 +607,13 @@ export default class FireControlBigPlatform extends PureComponent {
     });
   };
 
-  handleShowDangerBase = (companyId, labelIndex, type='danger') => {
+  handleShowDangerBase = (companyId, labelIndex, type = 'danger') => {
     this.fetchDangerRecords(companyId);
     this.handleDrawerVisibleChange(type);
     this.setState({ [`${type}LabelIndex`]: labelIndex });
   };
 
-  handleShowUnitDanger = (companyId, labelIndex=0) => {
+  handleShowUnitDanger = (companyId, labelIndex = 0) => {
     this.handleShowDangerBase(companyId, labelIndex, 'unitDanger');
 
     // this.fetchDangerRecords(companyId);
@@ -624,8 +630,13 @@ export default class FireControlBigPlatform extends PureComponent {
   };
 
   handleDangerLabelClick = (index, companyId) => {
-    if (!companyId)
+    // 手动重置，不选择标签
+    if (index === -1) {
+      this.setState({ dangerLabelIndex: -1 });
       return;
+    }
+
+    if (!companyId) return;
 
     const formerCompanyId = this.companyId;
     const { dangerLabelIndex: formerLabelIndex } = this.state;
@@ -636,13 +647,16 @@ export default class FireControlBigPlatform extends PureComponent {
     }
 
     this.setState({ dangerLabelIndex: index });
-    if (companyId !== formerCompanyId)
-      this.fetchDangerRecords(companyId);
+    if (companyId !== formerCompanyId) this.fetchDangerRecords(companyId);
   };
 
   // 正面的概况模块的单位抽屉中点击主机状态的报警
-  handleUnitDrawerAlarmClick = (companyId, drawer='unit') => {
-    const { bigFireControl: { alarm: { list=[] } } } = this.props;
+  handleUnitDrawerAlarmClick = (companyId, drawer = 'unit') => {
+    const {
+      bigFireControl: {
+        alarm: { list = [] },
+      },
+    } = this.props;
     const alarmDetail = list.find(item => item.companyId === companyId) || {};
     this.handleAlarmClick(alarmDetail);
     this.handleDrawerVisibleChange(drawer);
@@ -650,7 +664,11 @@ export default class FireControlBigPlatform extends PureComponent {
 
   // 正面的概况模块的火警抽屉中点击警情卡片
   handleAlarmDrawerCardClick = id => {
-    const { bigFireControl: { alarmHistory: { list=[] } } } = this.props;
+    const {
+      bigFireControl: {
+        alarmHistory: { list = [] },
+      },
+    } = this.props;
     const alarmDetail = list.find(item => item.id === id) || {};
     this.handleAlarmClick(alarmDetail);
     this.handleDrawerVisibleChange('alarm');
@@ -658,7 +676,12 @@ export default class FireControlBigPlatform extends PureComponent {
 
   // 反面的概况模块的火警抽屉中点击警情卡片
   handleUnitAlarmDrawerCardClick = id => {
-    const { dispatch, bigFireControl: { alarmHistory: { list=[] } } } = this.props;
+    const {
+      dispatch,
+      bigFireControl: {
+        alarmHistory: { list = [] },
+      },
+    } = this.props;
     const gridId = this.getGridId();
     const alarmDetail = list.find(item => item.id === id) || {};
 
@@ -752,11 +775,8 @@ export default class FireControlBigPlatform extends PureComponent {
     const extra = <GridSelect dispatch={dispatch} data={grids} gridId={gridId} />;
 
     return (
-      <BigPlatformLayout
-        extra={extra}
-        className={styles.root}
-      >
-      {/* <div
+      <BigPlatformLayout extra={extra} className={styles.root}>
+        {/* <div
         className={styles.root}
         style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
       > */}
@@ -945,7 +965,7 @@ export default class FireControlBigPlatform extends PureComponent {
           position={tooltipPosition}
           offset={[23, -38]}
         />
-      {/*</div>*/}
+        {/*</div>*/}
         <UnitDrawer
           data={sys}
           visible={unitDrawerVisible}

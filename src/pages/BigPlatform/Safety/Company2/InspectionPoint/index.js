@@ -56,6 +56,9 @@ export default class InspectionPoint extends PureComponent {
               _real_rectify_time,
               _review_time,
               object_title,
+              hiddenStatus,
+              typeName,
+              risk_level,
             }) => (
               <HiddenDanger
                 key={_id}
@@ -67,10 +70,11 @@ export default class InspectionPoint extends PureComponent {
                   plan_rectify_time: _plan_rectify_time,
                   review_user_name: _review_user_name,
                   review_time: _review_time,
-                  source_type_name: object_title,
+                  source_type_name: typeName,
+                  companyBuildingItem: { object_title, risk_level },
                   desc: _desc,
                   business_type,
-                  status,
+                  status: hiddenStatus,
                   hiddenDangerRecordDto: [{ fileWebUrl: path }],
                 }}
                 isSourceShow

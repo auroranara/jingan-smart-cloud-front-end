@@ -8,7 +8,7 @@ const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
   render() {
-    const { title, width, visible, onClose, left=null, right=null, top=null, rowStyle, ...restProps } = this.props;
+    const { title, width, isTop, visible, onClose, left=null, right=null, top=null, rowStyle, ...restProps } = this.props;
     const hasTitle = !!title;
 
     // right不存在时，默认全部渲染left
@@ -16,9 +16,10 @@ export default class DrawerContainer extends PureComponent {
       <Drawer
         visible={visible}
         placement="left"
+        destroyOnClose
         onClose={onClose}
         width={width || WIDTH}
-        className={styles.drawer}
+        className={isTop ? styles.drawer1 : styles.drawer}
         style={{ padding: 0, height: '100%' }}
         // style={{ padding: '108px 0 0 1px' }}
         {...restProps}

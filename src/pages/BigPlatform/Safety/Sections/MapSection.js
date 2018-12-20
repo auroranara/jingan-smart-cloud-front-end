@@ -12,7 +12,8 @@ import MapTypeBar from '../Components/MapTypeBar';
 
 import govdotRed from '../img/govdot-red.png';
 
-const { location: locationDefault, region } = global.PROJECT_CONFIG;
+const { region } = global.PROJECT_CONFIG;
+const zooms = [3, 20];
 let fitView = true;
 @connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSection extends PureComponent {
@@ -84,7 +85,6 @@ class MapSection extends PureComponent {
 
     const markers = loactions
       .map((item, index) => {
-        // const markers = locData.filter(d => d.level === lvl).map((item, index) => {
         return {
           ...item,
           position: this.analysisPointData(item.location),
@@ -95,7 +95,7 @@ class MapSection extends PureComponent {
       .filter(m => m.level);
     if (markers.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
-      return null;
+      // return null;
     }
     return (
       <Markers
@@ -104,12 +104,10 @@ class MapSection extends PureComponent {
         events={{
           click: (e, marker) => {
             const extData = marker.getExtData();
-            // const index = extData.index;
             this.setState({
               infoWindowShow: true,
             });
             this.props.handleIconClick({ id: extData.id, ...extData.position });
-            // this.handleIconClick({ id: extData.id, ...extData.position });
           },
           created: () => {
             if (fitView) {
@@ -175,10 +173,21 @@ class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { level, company_name } = extData;
+    const {
+      infoWindow: { comapnyId },
+      infoWindowShow,
+    } = this.props;
+    const { level, company_name, company_id } = extData;
+
     return (
       <div
-        onMouseEnter={e => this.props.showTooltip(e, company_name)}
+        onMouseEnter={e => {
+          if (infoWindowShow && comapnyId === company_id) {
+            this.props.hideTooltip();
+            return false;
+          }
+          this.props.showTooltip(e, company_name);
+        }}
         onMouseLeave={this.props.hideTooltip}
       >
         {/* <Tooltip placement="bottom" title={company_name} mouseLeaveDelay={0}> */}
@@ -273,18 +282,8 @@ class MapSection extends PureComponent {
   };
 
   renderMapLegend = () => {
-    const { companyLevelDto = [], locData = [] } = this.props;
+    const { locData = [] } = this.props;
     const { legendActive } = this.state;
-    // let Anum = 0,
-    //   Bnum = 0,
-    //   Cnum = 0,
-    //   Dnum = 0;
-    // companyLevelDto.forEach(item => {
-    //   if (item.level === 'A') Anum = item.num;
-    //   if (item.level === 'B') Bnum = item.num;
-    //   if (item.level === 'C') Cnum = item.num;
-    //   if (item.level === 'D') Dnum = item.num;
-    // });
 
     const lvlNum = [];
     const lvls = ['A', 'B', 'C', 'D'];
@@ -345,14 +344,7 @@ class MapSection extends PureComponent {
   };
 
   render() {
-    const { searchValue } = this.state;
-    const {
-      bigPlatformSafetyCompany: { selectList },
-      center,
-      zoom,
-      polygon,
-      handleParentChange,
-    } = this.props;
+    const { center, zoom, polygon, handleParentChange } = this.props;
 
     return (
       <section className={styles2.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
@@ -374,7 +366,7 @@ class MapSection extends PureComponent {
                 center={center}
                 zoom={zoom}
                 expandZoomRange
-                zooms={[3, 20]}
+                zooms={zooms}
                 events={{
                   created: mapInstance => {
                     this.mapInstance = mapInstance;

@@ -37,6 +37,20 @@ export function getUrl(arr) {
   return '';
 }
 
+// 1 新建 2 待整改 3 待复查 4 已关闭 7 已超期
+export function sortDangerRecords(dangers, status) {
+  switch(status) {
+    case '3':
+      dangers.sort((item, item1) => item1.real_rectify_time - item.real_rectify_time);
+      break;
+    case '7':
+      dangers.sort((item, item1) => item.plan_rectify_time - item1.plan_rectify_time);
+      break;
+    default:
+      return;
+  }
+}
+
 export const TREE_DATA = [{
   title: 'Node1',
   value: '0-0',
