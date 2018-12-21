@@ -50,12 +50,12 @@ export default class LibraryLayout extends PureComponent {
       resourceManagement: { searchInfo = {} },
     } = this.props;
     const company = { id: searchInfo.id, name: searchInfo.name }
-    this.setState({ activeKey: type, company });
     // 获取知识点树
     dispatch({
       type: 'resourceManagement/fetchKnowledgeTree',
       payload: { companyId: searchInfo.id },
     });
+    this.setState({ activeKey: type, company });
   }
 
   // 获取单位列表

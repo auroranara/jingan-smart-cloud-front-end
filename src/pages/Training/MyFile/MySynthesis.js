@@ -123,14 +123,11 @@ export default class MySynthesis extends PureComponent {
         name: '教育培训',
       },
       {
-        title: name ? '综合档案' : '',
-        name: name ? '综合档案' : '',
-        href: name ? '/training/generalFile/personFile/list' : '',
-      },
-      {
-        title: '我的档案',
-        name: '我的档案',
-        href: `/training/myFile/myFileList?studentId=${studentId}`,
+        title: name ? '综合档案' : '我的档案',
+        name: name ? '综合档案' : '我的档案',
+        href: name
+          ? '/training/generalFile/personFile/list'
+          : `/training/myFile/myFileList?studentId=${studentId}`,
       },
       {
         title,
