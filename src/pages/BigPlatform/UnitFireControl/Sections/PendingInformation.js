@@ -24,7 +24,7 @@ export default class PendingInformation extends PureComponent {
   }
 
   renderAlarmList = () => {
-    const { list, status } = this.props
+    const { list, status, handleClick } = this.props
     return list.map(({ id, component_region = null, device_address = null, device_name = null, systemTypeValue = null, component_no = null, label = null, install_address = null, pendingInfoType = null, t, icon, ntype = null, fire_state = null }, i) => pendingInfoType === '一键报修' ? (
       <Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
         <div className={styles.innerItem}>
@@ -53,6 +53,7 @@ export default class PendingInformation extends PureComponent {
           </div>
         </div>
         <div className={styles.topRightPurpleTag}>指派维保</div>
+        <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>
       </Col>
     ) : (<Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
       <div className={styles.innerItem}>
@@ -88,6 +89,7 @@ export default class PendingInformation extends PureComponent {
       </div>
       {ntype && ntype === '4' && (<div className={styles.topRightPurpleTag}>指派维保</div>)}
       {ntype && ntype === '3' && (<div className={styles.topRightBlueTag}>自处理</div>)}
+      <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>
     </Col>
       ))
   }
