@@ -305,14 +305,24 @@ export default class App extends PureComponent {
       payload,
       callback: () => {
         const { rightQueue } = this.state;
-        // 如果巡查点位详情已经显示，则不做任何操作
-        if (rightQueue.includes(2)) {
+        // 如果巡查点位弹出框在最上层，则不做任何操作
+        if (rightQueue[rightQueue.length - 1] === 2) {
           return;
         }
-        this.setState(({ rightQueue }) => ({
-          rightQueue: rightQueue.concat(2),
-          inspectionPointVisible: true,
-        }));
+        // 如果巡查点位弹出框在中间层，则隐藏最上层的弹出框
+        else if (rightQueue[rightQueue.length - 2] === 2) {
+          this.setState(({ rightQueue }) => ({
+            rightQueue: rightQueue.slice(0, -1),
+            currentHiddenDangerVisible: false,
+          }));
+        }
+        // 否则显示巡查点位弹出框
+        else {
+          this.setState(({ rightQueue }) => ({
+            rightQueue: rightQueue.concat(2),
+            inspectionPointVisible: true,
+          }));
+        }
       },
     });
   }

@@ -101,6 +101,8 @@ export default class HiddenDanger extends PureComponent {
       }={},
       isSourceShow,
     } = this.props;
+    // 根据逗号分割多张图片取第一张显示
+    const background = fileWebUrl && fileWebUrl.split(',')[0];
     // 获取风险等级和点位名称
     const { object_title, risk_level } = companyBuildingItem || {};
     // 来源
@@ -119,7 +121,7 @@ export default class HiddenDanger extends PureComponent {
         <div className={styles.riskDetailItemContentWrapper}>
           <div className={styles.riskDetailItemImageWrapper} style={{ backgroundImage: `url(${noPhotoIcon})` }}>
             <div style={{ position: 'relative', width: '100%' }}>
-              <img src={fileWebUrl} alt="" style={{ display: 'block', width: '100%' }} />
+              <img src={background} alt="" style={{ display: 'block', width: '100%' }} />
               <div className={styles.cover} />
             </div>
           </div>
