@@ -62,7 +62,12 @@ export default class DangerDrawer extends PureComponent {
     const { searchValue } = this.state;
 
     const rings = [overdueNum, rectifyNum, reviewNum];
-    const list = dangerList.slice(0, 10).map(({ companyId, companyName, total }) => ({ id: companyId, name: companyName, value: total }));
+    const list = dangerList.slice(0, 10).map(({ companyId, companyName: name, total }, i) => {
+      let newName = name;
+      if (i === 9 && name.length > 10)
+        newName = `${name.slice(0, 10)}...`;
+      return { id: companyId, name: newName, value: total };
+    });
     const filteredList = dangerList.filter(({ companyName }) => companyName.includes(searchValue));
     const filteredRecords = labelIndex && labelIndex !== -1 ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
     sortDangerRecords(filteredRecords, STATUS[labelIndex][0]);
@@ -77,7 +82,7 @@ export default class DangerDrawer extends PureComponent {
           </div>
         </DrawerSection>
         <DrawerSection title="隐患数量排名">
-          <ChartBar data={list} />
+          <ChartBar data={list} labelRotate={-60} />
         </DrawerSection>
       </Fragment>
     );

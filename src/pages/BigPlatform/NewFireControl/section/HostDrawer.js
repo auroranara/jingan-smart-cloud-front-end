@@ -51,19 +51,20 @@ export default class HostDrawer extends PureComponent {
   render() {
     const {
       visible,
+      hostIndex,
       data: { sys, hostAlarmTrend },
       handleCardClick,
     } = this.props;
     const { graph, searchValue } = this.state;
 
-    const { fireDeviceNum: fire=0, norDeviceNum: normal=0 } = sys;
+    // const { fireDeviceNum: fire=0, norDeviceNum: normal=0 } = sys;
     let list = Array.isArray(sys.companyList) ? sys.companyList : [];
     const filteredList = list.filter(({ name }) => name.includes(searchValue));
-    // const total = list.length;
-    // const normal = list.filter(({ isFire }) => isFire === '0').length;
-    // const fire = total - normal;
+    const total = list.length;
+    const normal = list.filter(({ isFire }) => isFire === '0').length;
+    const fire = total - normal;
 
-    const total = fire + normal;
+    // const total = fire + normal;
     let normalPercent = 0;
     let firePercent = 0;
     if (total) {
@@ -80,7 +81,7 @@ export default class HostDrawer extends PureComponent {
       <Fragment>
         <DrawerSection>
           <OvProgress
-            title="报警主机"
+            title="报警单位"
             percent={firePercent}
             quantity={fire}
             strokeColor="rgb(255,72,72)"
@@ -88,7 +89,7 @@ export default class HostDrawer extends PureComponent {
 
           />
           <OvProgress
-            title="正常主机"
+            title="正常单位"
             percent={normalPercent}
             quantity={normal}
             strokeColor="rgb(0,251,252)"
@@ -102,7 +103,7 @@ export default class HostDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar onSearch={this.handleSearch}>
+        <SearchBar onSearch={this.handleSearch} selectedIndex={hostIndex}>
           {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, count, isFire }) => {
             const alarmed = isFire === FIRE;
 

@@ -90,6 +90,7 @@ export default class FireControlBigPlatform extends PureComponent {
     unitDrawerLabelIndex: 0, // unitDrawer的最顶部标签的切换
     unitDangerDrawerVisible: false,
     unitDangerLabelIndex: 0, // 单位隐患列表中的小标签切换
+    hostIndex: -1, // 消防主机抽屉中被选中的卡片序号
     hostDrawerVisible: false,
     alarmDrawerVisible: false,
     alarmDrawerLeftType: 0,
@@ -215,6 +216,8 @@ export default class FireControlBigPlatform extends PureComponent {
       },
     });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
+
+    dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
     // dispatch({ type: 'bigFireControl/fetchCompanyFireInfo' });
 
     // dispatch({ type: 'bigFireControl/fetchOvDangerCounts' });
@@ -690,6 +693,11 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchAlarmHandle', payload: { id: alarmDetail.id, gridId } });
   };
 
+  handleSysClick = i => {
+    this.setState({ hostIndex: i });
+    this.handleDrawerVisibleChange('host');
+  };
+
   render() {
     const {
       // match: { params: { gridId } },
@@ -752,6 +760,7 @@ export default class FireControlBigPlatform extends PureComponent {
       unitDrawerLabelIndex,
       unitDangerDrawerVisible,
       unitDangerLabelIndex,
+      hostIndex,
       hostDrawerVisible,
       alarmDrawerVisible,
       alarmDrawerLeftType,
@@ -939,7 +948,7 @@ export default class FireControlBigPlatform extends PureComponent {
             </div>
             <div className={styles.gutter3} />
             <FcModule className={styles.system} isRotated={showReverse}>
-              <SystemSection data={sys} handleClick={e => this.handleDrawerVisibleChange('host')} />
+              <SystemSection data={sys} handleClick={this.handleSysClick} />
               <VideoSection
                 data={allCamera}
                 showVideo={this.handleVideoShow}
@@ -986,6 +995,7 @@ export default class FireControlBigPlatform extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <HostDrawer
+          hostIndex={hostIndex}
           data={{ sys, hostAlarmTrend }}
           visible={hostDrawerVisible}
           handleCardClick={this.handleUnitDrawerAlarmClick}
