@@ -155,7 +155,7 @@ export default class App extends PureComponent {
       {
         title: '整改金额',
         dataIndex: 'real_rectify_money',
-        render: (value) => typeof value === 'number' ? value : 0,
+        render: (value) => value,
       },
       {
         title: '整改后图片',
@@ -165,9 +165,9 @@ export default class App extends PureComponent {
     ];
     if (!isCompany) {
       defaultColumns.splice(1, 0, {
-          title: '单位名称',
-          dataIndex: 'company_name',
-        });
+        title: '单位名称',
+        dataIndex: 'company_name',
+      });
     }
     this.state = {
       // 当前显示的表格字段
