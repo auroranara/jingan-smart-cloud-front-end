@@ -75,8 +75,8 @@ export default class MySynthesis extends PureComponent {
           type: 'radar',
           data: [
             {
-              value: knowledgeReports.map(data => {
-                return { value: data.rightPercent };
+              value: knowledgeReports.map(k => {
+                return [k.rightPercent];
               }),
               name: '知识点综合分析图',
             },
@@ -93,7 +93,7 @@ export default class MySynthesis extends PureComponent {
   render() {
     const {
       location: {
-        query: { studentId },
+        query: { studentId, name },
       },
       myFile: {
         myselfData: {
@@ -121,6 +121,11 @@ export default class MySynthesis extends PureComponent {
       {
         title: '教育培训',
         name: '教育培训',
+      },
+      {
+        title: name ? '综合档案' : '',
+        name: name ? '综合档案' : '',
+        href: name ? '/training/generalFile/personFile/list' : '',
       },
       {
         title: '我的档案',
@@ -193,7 +198,7 @@ export default class MySynthesis extends PureComponent {
                         ? knowledgeReports.map(k => k.knowledgeName).join(',')
                         : '无'}
                       ， 共{knowledgeReports.length}
-                      项，
+                      项。
                     </strong>
                     我的知识点考试正确率：
                     {knowledgeReports.length > 0

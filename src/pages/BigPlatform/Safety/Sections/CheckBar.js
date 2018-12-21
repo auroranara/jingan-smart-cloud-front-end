@@ -136,11 +136,12 @@ class CheckBar extends PureComponent {
 
     chart.on('click', params => {
       const { dataIndex } = params;
-      const { handleParentChange, fetchCheckMsgs } = this.props;
+      const { handleParentChange, fetchCheckMsgs, closeAllDrawers } = this.props;
       const monthNum = moment().month() - (5 - dataIndex);
       const month = moment()
         .month(monthNum)
         .format('YYYY-MM');
+      closeAllDrawers();
       handleParentChange({
         checkDrawer: true,
         checksMonth: month,

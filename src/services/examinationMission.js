@@ -38,9 +38,8 @@ export async function editExam(params) {
 }
 
 // 删除考试
-export async function deleteExam(params) {
-  return request('/acloud_new/v2/education/exam', {
+export async function deleteExam({ id }) {
+  return request(`/acloud_new/v2/education/exam/${id}`, {
     method: 'DELETE',
-    body: params,
   });
 }
