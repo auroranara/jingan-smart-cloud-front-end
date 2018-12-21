@@ -520,27 +520,27 @@ export function getFields(type, params, methods) {
       return [
         {
           id: 'area',
-          label: '区域：',
-          labelCol: LABEL_COL_4,
-          wrapperCol: WRAPPER_COL,
+          label: '区域',
+          // labelCol: LABEL_COL_4,
+          // wrapperCol: WRAPPER_COL,
           // inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入区域" />,
           transform: v => v.trim(),
         },
         {
           id: 'location',
-          label: '位置：',
-          labelCol: LABEL_COL_4,
-          wrapperCol: WRAPPER_COL,
+          label: '位置',
+          // labelCol: LABEL_COL_4,
+          // wrapperCol: WRAPPER_COL,
           // inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入位置" />,
           transform: v => v.trim(),
         },
         {
           id: 'status',
-          label: '异常类别：',
-          labelCol: LABEL_COL_6,
-          wrapperCol: WRAPPER_COL,
+          label: '异常类别',
+          // labelCol: LABEL_COL_6,
+          // wrapperCol: WRAPPER_COL,
           // inputSpan: INPUT_SPAN,
           options: { initialValue: '0' },
           render: () => (
@@ -553,10 +553,14 @@ export function getFields(type, params, methods) {
         },
         {
           id: 'date',
-          label: '日期：',
-          labelCol: LABEL_COL_2,
-          wrapperCol: WRAPPER_COL,
-          inputSpan: SPAN_16,
+          label: '日期',
+          // labelCol: LABEL_COL_2,
+          // wrapperCol: WRAPPER_COL,
+          span: {
+            md: 12,
+            sm: 24,
+            xs: 24,
+          },
           options: {
             initialValue: getThisMonth(),
             rules: [{ validator: dateValidator }],
@@ -565,6 +569,7 @@ export function getFields(type, params, methods) {
             <RangePicker
               // disabledDate={methods.disabledDate}
               // onCalendarChange={methods.onCalendarChange}
+              style={{ width: '100%' }}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
               showTime={{

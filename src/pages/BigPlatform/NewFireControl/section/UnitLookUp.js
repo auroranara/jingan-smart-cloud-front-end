@@ -208,6 +208,9 @@ export default class UnitLookUp extends Component {
           <span className={styles.camera} style={{ backgroundImage: `url(${cameraIcon})` }} />
           视频查岗
         </div>
+        <div className={styles.note} style={{ display: hover ? 'block' : 'none' }}>
+          查岗后，管辖单位消控室中【用户传输装置】将接收语音查岗指令，10分钟内应答则为【在岗】，否则为【脱岗】。
+        </div>
       </FcSection>
     );
   }
