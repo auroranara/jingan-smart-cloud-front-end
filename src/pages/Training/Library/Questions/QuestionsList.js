@@ -59,14 +59,17 @@ export default class QuestionsList extends PureComponent {
       notCompany,
       companyId,
       knowledgeId,
+      resourceManagement: { searchInfo },
     } = this.props
+    // 如果没有传入companyId，则使用保存在redux中的
+    const id = companyId || searchInfo.id
     // 获取试题列表
     dispatch({
       type: 'resourceManagement/fetchQuestions',
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
-        companyId: notCompany ? companyId : null,
+        companyId: notCompany ? id : null,
         knowledgeId,
       },
     })

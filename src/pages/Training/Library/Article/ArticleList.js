@@ -56,14 +56,17 @@ export default class ArticleList extends PureComponent {
       notCompany,
       companyId,
       knowledgeId,
+      resourceManagement: { searchInfo },
     } = this.props
+    // 如果没有传入companyId，则使用保存在redux中的
+    const id = companyId || searchInfo.id
     // 获取文章列表
     this.fetchArticles({
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
         type: '1', // type 1文章
-        companyId: notCompany ? companyId : null,
+        companyId: notCompany ? id : null,
         knowledgeId,
       },
     })
