@@ -57,6 +57,7 @@ export default {
       isLast: false,
       detail: {},
     },
+    searchInfo: {},
   },
   effects: {
     // 获取知识点树
@@ -465,6 +466,12 @@ export default {
           ...state.courseWare,
           list: newList,
         },
+      }
+    },
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload,
       }
     },
   },
