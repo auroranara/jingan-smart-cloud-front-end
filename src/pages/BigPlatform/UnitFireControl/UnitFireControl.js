@@ -222,12 +222,12 @@ export default class App extends PureComponent {
     // this.polling();
 
     // 获取视频列表
-    // dispatch({
-    //   type: 'unitFireControl/fetchVideoList',
-    //   payload: {
-    //     company_id: companyId,
-    //   },
-    // });
+    dispatch({
+      type: 'unitFireControl/fetchVideoList',
+      payload: {
+        company_id: companyId,
+      },
+    });
 
     // 设置轮询
     this.pollingTimer = setInterval(this.polling, 5000);
@@ -1230,12 +1230,12 @@ export default class App extends PureComponent {
             </Col>
           </Row>
         </div>
-        {/* <VideoPlay
+        <VideoPlay
           showList={true}
           videoList={videoList}
           visible={videoVisible}
           handleVideoClose={this.handleVideoClose}
-        /> */}
+        />
         {/* 隐患统计数据下钻抽屉 */}
         <DrawerOfHiddenDanger
           title={hiddenDangerLabel}
