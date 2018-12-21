@@ -71,7 +71,13 @@ export default class UnitDrawer extends PureComponent {
     const list = [allCompanyList, importCompanyList][labelIndex];
     const newList = list.map(item => ({ ...item }));
     newList.sort((item, item1) => item1.hiddenCount - item.hiddenCount);
-    const chartList = newList.slice(0, 10).map(({ companyId, name, hiddenCount }) => ({ id: companyId, name, value: hiddenCount }));
+    const chartList = newList.slice(0, 10).map(({ companyId, name, hiddenCount }, i) => {
+      let newName = name;
+      if (i === 9 && name.length > 10)
+        newName = `${name.slice(0, 10)}...`;
+      return { id: companyId, name: newName, value: hiddenCount };
+    });
+    // const chartList = [...Array(10).keys()].map(i => ({ id: i, name: '无锡晶安智慧科技有限公司', value: 10 - i }));
     const filteredList = list.filter(({ name }) => name.includes(searchValue));
 
     const total = fireNum + commonNum + noAccessNum;
@@ -110,7 +116,7 @@ export default class UnitDrawer extends PureComponent {
           />
         </DrawerSection>
         <DrawerSection title="隐患数量排名">
-          <ChartBar data={chartList} />
+          <ChartBar data={chartList} labelRotate={-60} />
         </DrawerSection>
       </Fragment>
     );

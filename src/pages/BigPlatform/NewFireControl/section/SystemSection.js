@@ -7,7 +7,7 @@ import styles from './SystemSection.less';
 import hostIcon from '../img/host.png';
 
 function UnitCard(props) {
-  const { comanyId, companyName, hostNum, isFire, isScroll, handleClick } = props;
+  const { index, comanyId, companyName, hostNum, isFire, isScroll, handleClick } = props;
   return (
     <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)', paddingRight: isScroll ? 0 : 8 }}>
       <Col span={16}>
@@ -28,7 +28,7 @@ function UnitCard(props) {
       <Col span={4}>
         <p
           className={styles[isFire ? 'fire' : 'unitCard']}
-          onClick={isFire ? handleClick : null}
+          onClick={() => handleClick(index)}
         >
           {isFire ? '报警' : '正常'}
         </p>
@@ -56,7 +56,7 @@ function UnitCard(props) {
 export default class SystemSection extends PureComponent {
   state = { isScroll: false };
 
-  componentDidUpdate(formerProps, formerState) {
+  componentDidUpdate() {
     this.changePadding();
   }
 
@@ -117,7 +117,8 @@ export default class SystemSection extends PureComponent {
           <div style={{ overflow: 'auto', height: 'calc(100% - 42px)' }} ref={dom => this.container = dom}>
             {companyList.map(({ companyId, name, count, isFire }, index) => (
               <UnitCard
-                key={index}
+                key={companyId}
+                index={index}
                 companyName={name}
                 hostNum={count}
                 comanyId={companyId}

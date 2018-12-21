@@ -15,15 +15,14 @@ class TopData extends PureComponent {
 
   render() {
     const {
-      goComponent,
       searchAllCompany: { dataUnimportantCompany = [], dataImportant = [] },
       fulltimeWorker = 0,
       overRectifyNum = 0,
-      selectOvertimeItemNum = 0,
       checkedCompanyInfo,
       handleParentChange,
       fetchCheckMsgs,
       selfCheckPointTotal,
+      closeAllDrawers,
     } = this.props;
 
     return (
@@ -36,6 +35,7 @@ class TopData extends PureComponent {
                   <div
                     className={styles.itemActive}
                     onClick={() => {
+                      closeAllDrawers();
                       handleParentChange({ comInDrawer: true });
                     }}
                   >
@@ -53,6 +53,7 @@ class TopData extends PureComponent {
                     className={styles.itemActive}
                     onClick={() => {
                       // goComponent('fullStaff');
+                      closeAllDrawers();
                       handleParentChange({ fullStaffDrawer: true });
                     }}
                   >
@@ -70,6 +71,7 @@ class TopData extends PureComponent {
                     className={styles.itemActive}
                     onClick={() => {
                       // goComponent('overHd');
+                      closeAllDrawers();
                       handleParentChange({ overHdCom: true });
                     }}
                   >
@@ -103,6 +105,7 @@ class TopData extends PureComponent {
                     className={styles.itemActive}
                     onClick={() => {
                       // goComponent('riskPoint')
+                      closeAllDrawers();
                       handleParentChange({ riskPoint: true });
                     }}
                   >
@@ -120,6 +123,7 @@ class TopData extends PureComponent {
                     className={styles.itemActive}
                     onClick={() => {
                       const thisMonth = moment().format('YYYY-MM');
+                      closeAllDrawers();
                       handleParentChange({
                         checkDrawer: true,
                         checksMonth: thisMonth,

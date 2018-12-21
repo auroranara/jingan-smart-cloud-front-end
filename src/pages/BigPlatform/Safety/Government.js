@@ -9,21 +9,21 @@ import Timer from './Components/Timer';
 import MapSection from './Sections/MapSection';
 import MyTooltip from '../FireControl/section/Tooltip';
 
-import DangerCompany from './Sections/DangerCompany';
-import CheckInfo from './Sections/CheckInfo';
-import CompanyOver from './Sections/CompanyOver';
-import RiskDetail from './Sections/RiskDetail';
-import RiskDetailOver from './Sections/RiskDetailOver';
+// import DangerCompany from './Sections/DangerCompany';
+// import CheckInfo from './Sections/CheckInfo';
+// import CompanyOver from './Sections/CompanyOver';
+// import RiskDetail from './Sections/RiskDetail';
+// import RiskDetailOver from './Sections/RiskDetailOver';
 // import RiskOver from './Sections/RiskOver';
-import HdOverCompany from './Sections/HdOverCompany';
-import RiskColors from './Sections/RiskColors';
-import FullStaff from './Sections/FullStaff';
-import CompanyIn from './Sections/CompanyIn';
-import CompanyInfo from './Sections/CompanyInfo';
+// import HdOverCompany from './Sections/HdOverCompany';
+// import RiskColors from './Sections/RiskColors';
+// import FullStaff from './Sections/FullStaff';
+// import CompanyIn from './Sections/CompanyIn';
+// import CompanyInfo from './Sections/CompanyInfo';
 import CommunityCom from './Sections/CommunityCom';
 import TopData from './Sections/TopData';
 import HiddenDangerPie from './Sections/HiddenDangerPie';
-import RiskBar from './Sections/RiskBar';
+// import RiskBar from './Sections/RiskBar';
 import RiskPoint from './Sections/Drawers/RiskPoint';
 import DangerCompanyDrawer from './Sections/Drawers/DangerCompanyDrawer';
 import CheckBar from './Sections/CheckBar';
@@ -470,7 +470,7 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchRiskDetail',
       payload: {
         company_id: id,
-        source_type: '3',
+        // source_type: '3',
         gridId,
       },
     });
@@ -527,7 +527,6 @@ class GovernmentBigPlatform extends Component {
 
   showTooltip = (e, name) => {
     if (e.target === this.lastTarget) return;
-    console.log('eeeeee', name);
     const offset = e.target.getBoundingClientRect();
     this.lastTarget = e.target;
     this.setState({
@@ -650,19 +649,9 @@ class GovernmentBigPlatform extends Component {
           {grids.length > 0 && (
             <div className={styles.treeContainer}>
               {grids.length === 1 ? (
-                <span
-                  style={{
-                    fontSize: '14px',
-                    letterSpacing: '14px',
-                    lineHeight: '30px',
-                    paddingLeft: '11px',
-                  }}
-                >
-                  {grids[0].title}
-                </span>
+                <span>{grids[0].title}</span>
               ) : (
                 <TreeSelect
-                  style={{ width: 300 }}
                   value={treeValue}
                   dropdownClassName={styles.gridDropdown}
                   treeData={grids}
@@ -696,6 +685,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 gridId={gridId}
+                closeAllDrawers={this.closeAllDrawers}
               />
 
               <CheckBar
@@ -706,6 +696,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 fetchCheckMsgs={this.fetchCheckMsgs}
+                closeAllDrawers={this.closeAllDrawers}
               />
             </Col>
             <Col
@@ -725,6 +716,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 fetchCheckMsgs={this.fetchCheckMsgs}
+                closeAllDrawers={this.closeAllDrawers}
               />
 
               {/* <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>

@@ -96,6 +96,7 @@ const defaultPageSize = 10;
   monitor,
   pendingHistoryLoading: loading.effects['unitFireControl/fetchInformationHistory'],
   hiddenDnagerLoading: loading.effects['unitFireControl/fetchHiddenDangerRecords'],
+  inspectionMoreLoading: loading.effects['unitFireControl/fetchNormalPatrol'] || loading.effects['unitFireControl/fetchAbnormalPatrol'],
 }))
 export default class App extends PureComponent {
   constructor(props) {
@@ -121,12 +122,6 @@ export default class App extends PureComponent {
       pendingInfoStatus: '待处理',   // 待处理信息展示状态 （待处理、处理中）
       inspectionModalVisible: false, // 巡查统计数据下钻可见
       InspectionModalType: 'normal',  // 巡查统计数据数据下钻正常正常还是异常数据（normal、abnormal）
-      inspectionCurrentList: [],       // 巡查统计数据下钻当前页数据
-      inspectionPagination: {         // 巡查统计数据下钻表格分页
-        pageNum: 1,
-        pageSize: defaultPageSize,
-        total: 0,
-      },
       dangerCardVisible: false,       // 巡查统计数据下钻显示的隐患卡片
       hiddenDangerLabel: '',            // 点击隐患统计时保存类型（已超期、待复查、未超期）
       pendingInfoLoading: true,        // 待办事项是否加载
@@ -147,10 +142,14 @@ export default class App extends PureComponent {
     } = this.props;
     const { fireControlType, maintenanceType } = this.state;
 
-    // 获取待处理信息列表
+    // 获取待处理信息列表 (显示50条)
     dispatch({
       type: 'unitFireControl/fetchPendingInfo',
-      payload: { companyId },
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 50,
+      },
       callback: () => {
         this.setState({ pendingInfoLoading: false })
       },
@@ -170,7 +169,7 @@ export default class App extends PureComponent {
       },
     });
 
-    // 用电安全监测数据
+    // 电气火灾监测数据
     dispatch({
       type: 'monitor/fetchCompanyDevices',
       payload: { companyId, type: 1 },
@@ -255,7 +254,12 @@ export default class App extends PureComponent {
     // 获取待处理信息 1-1
     dispatch({
       type: 'unitFireControl/fetchPendingInfo',
-      payload: { companyId, status: pendingInfoStatus === '处理中' ? '2' : null },
+      payload: {
+        companyId,
+        status: pendingInfoStatus === '处理中' ? '2' : null,
+        pageNum: 1,
+        pageSize: 50,
+      },
     })
 
     // 获取消防主机监测数据 1-2
@@ -543,13 +547,13 @@ export default class App extends PureComponent {
     if (value === '待处理') {
       dispatch({
         type: 'unitFireControl/fetchPendingInfo',
-        payload: { companyId },
+        payload: { companyId, pageNum: 1, pageSize: 50 },
         callback,
       })
     } else if (value === '处理中') {
       dispatch({
         type: 'unitFireControl/fetchPendingInfo',
-        payload: { companyId, status: '2' },
+        payload: { companyId, status: '2', pageNum: 1, pageSize: 50 },
         callback,
       })
     }
@@ -725,6 +729,7 @@ export default class App extends PureComponent {
   * 点击查看巡查统计下钻
   */
   handleViewInspectionStatistics = (type) => {
+    // type normal:正常  abnormal:异常
     const {
       dispatch,
       match: {
@@ -733,19 +738,12 @@ export default class App extends PureComponent {
     } = this.props
     const {
       selectedInspectionMonth,
-      inspectionPagination: { pageSize },
     } = this.state
     // TODO:拿数据
-    const callback = (list = []) => {
+    const callback = () => {
       this.setState({
         inspectionModalVisible: true,
         InspectionModalType: type,
-        inspectionCurrentList: list.slice(0, pageSize),
-        inspectionPagination: {
-          pageNum: 1,
-          pageSize: defaultPageSize,
-          total: list ? list.length : 0,
-        },
       })
     }
     dispatch({
@@ -753,6 +751,8 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         type: selectedInspectionMonth,
+        pageNum: 1,
+        pageSize: 10,
       },
       callback,
     })
@@ -761,17 +761,29 @@ export default class App extends PureComponent {
   /**
     * 巡查统计数据下钻翻页
     */
-  handleInspectionPageChange = (pageNum, pageSize) => {
+  handleInspectionPageChange = () => {
     const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
       unitFireControl: {
-        inspectionStatistics: { list },
+        inspectionStatistics: {
+          pagination: {
+            pageNum,
+            pageSize,
+          },
+        },
       },
     } = this.props
-    this.setState({
-      inspectionCurrentList: list.slice((pageNum - 1) * pageSize, pageNum * pageSize),
-      inspectionPagination: {
-        ...this.state.inspectionPagination,
-        pageNum,
+    const { InspectionModalType, selectedInspectionMonth } = this.state
+    dispatch({
+      type: InspectionModalType === 'normal' ? 'unitFireControl/fetchNormalPatrol' : 'unitFireControl/fetchAbnormalPatrol',
+      payload: {
+        companyId,
+        type: selectedInspectionMonth, // 月份
+        pageNum: pageNum + 1,
+        pageSize,
       },
     })
   }
@@ -782,7 +794,6 @@ export default class App extends PureComponent {
   handleCloseModalOfInspection = () => {
     this.setState({
       inspectionModalVisible: false,
-      inspectionCurrentList: [],
       dangerCardVisible: false,
     })
   }
@@ -1135,6 +1146,7 @@ export default class App extends PureComponent {
     // 从props中获取单位名称
     const {
       hiddenDnagerLoading,
+      inspectionMoreLoading,
       unitFireControl: {
         // 隐患统计
         dangerStatistics: {
@@ -1160,7 +1172,6 @@ export default class App extends PureComponent {
       inspectionModalVisible,
       InspectionModalType,
       inspectionCurrentList,
-      inspectionPagination,
       dangerCardVisible,
       hiddenDangerLabel,
     } = this.state;
@@ -1193,7 +1204,7 @@ export default class App extends PureComponent {
                   {this.renderFireAlarmMonitor()}
                 </Col>
                 <Col span={16} style={{ height: '100%' }}>
-                  {/* 用电安全监测 */}
+                  {/* 电气火灾监测 */}
                   <ElectricityCharts
                     title="电气火灾监测"
                     data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory }}
@@ -1250,11 +1261,10 @@ export default class App extends PureComponent {
           visible={inspectionModalVisible}
           onCancel={this.handleCloseModalOfInspection}
           type={InspectionModalType}
-          list={inspectionCurrentList}
-          pagination={inspectionPagination}
           handlePageChange={this.handleInspectionPageChange}
           cardVisible={dangerCardVisible}
           handleChangeDangerCardVisible={this.handleChangeDangerCardVisible}
+          moreLoading={inspectionMoreLoading}
         />
       </div>
     );

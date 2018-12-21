@@ -529,9 +529,6 @@ export default {
 
       const list = response.hiddenDangers
         .filter(({ status }) => +status === 7 || +status === 1 || +status === 2 || +status === 3)
-        .sort((a, b) => {
-          return +a.plan_rectify_time - b.plan_rectify_time;
-        })
         .map(transformHiddenDangerFields);
       yield put({
         type: 'saveRiskDetail',

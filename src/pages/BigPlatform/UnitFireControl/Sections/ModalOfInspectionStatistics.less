@@ -7,6 +7,85 @@
       border-bottom-width: 1px;
     }
   }
+  .contentContainer {
+    width: 100%;
+    height: 450px;
+    overflow-y: auto;
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
+      background-color: #021c40;
+    }
+    &::-webkit-scrollbar {
+      width: 7px;
+      background-color: #021c40;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #06428a;
+    }
+    .cardContainer {
+      &:nth-child(2n+1) {
+        padding-right: 10px;
+      }
+      &:nth-child(2n) {
+        padding-left: 10px;
+      }
+      .cardItem {
+        box-shadow: 1px 1px 1px 0 #101147;
+        margin-bottom: 20px;
+        position: relative;
+        padding: 10px 25px 10px 0; // background: #011539;
+        background: #043B7E;
+        overflow: hidden;
+        .line {
+          padding-left: 17px;
+          width: 100%;
+          height: 25px;
+          line-height: 25px;
+          position: relative;
+          word-wrap: nowrap;
+          overflow: hidden;
+          color: #D2D7DE;
+          display: flex;
+          .label {
+            color: #7b8caf;
+            width: 5.5em;
+            flex: none;
+          }
+          .text {
+            flex: 1;
+          }
+        }
+      }
+    }
+    .moreButton {
+      width: 100px;
+      margin: 0 auto;
+      padding: 3px 10px;
+      border: 1px solid #0967D3;
+      border-radius: 15px;
+      color: white;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.8s;
+      &:hover {
+        background: #2857aa94;
+      }
+    }
+  }
+  .noContent {
+    width: 100%;
+    height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #022756;
+    text-align: center;
+    color: #dfdbdb;
+  }
   .footer {
     margin-top: 10px;
     width: 100%;

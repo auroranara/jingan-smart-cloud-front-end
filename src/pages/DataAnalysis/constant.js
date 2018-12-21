@@ -6,7 +6,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 export const ELECTRICITY_TYPE = 1;
-export const ELECTRICITY_TYPE_LABEL = '用电安全异常数据分析';
+export const ELECTRICITY_TYPE_LABEL = '电气火灾异常数据分析';
 export const TOXIC_GAS_TYPE = 2;
 export const TOXIC_GAS_TYPE_LABEL = '可燃有毒气体异常数据分析';
 export const WASTE_WATER_TYPE = 3;

@@ -37,7 +37,9 @@ import {
   fetchFireHosts,
   // 获取巡查统计-正常
   fetchNormalPatrol,
+  // 获取巡查统计-异常
   fetchAbnormalPatrol,
+  fetchPatrolDangers,
 } from '../services/bigPlatform/fireControl';
 
 const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
@@ -117,7 +119,14 @@ export default {
       abnormal: 0, //异常数量
       personNum: 0, //巡查人员个数
       totalCheckNum: 0, //巡查总次数
-      list: [],
+      list: [],         // 数据下钻列表（巡查记录）
+      pagination: {      // 数据下钻分页信息
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      isLast: false,
+      dangers: [],        // 隐患列表
     },
     // 隐患统计
     dangerStatistics: {},
@@ -468,9 +477,17 @@ export default {
     *fetchNormalPatrol({ payload, callback }, { call, put }) {
       const response = yield call(fetchNormalPatrol, payload)
       if (response && response.code === 200) {
+        const { pageNum, pageSize } = payload
         yield put({
-          type: 'savePatrolList',
-          payload: response.data.list,
+          type: 'savePatrolRecords',
+          payload: {
+            list: response.data.list,
+            pagination: {
+              pageNum,
+              pageSize,
+              total: response.data.total,
+            },
+          },
         })
         if (callback) callback(response.data.list)
       }
@@ -479,11 +496,30 @@ export default {
     *fetchAbnormalPatrol({ payload, callback }, { call, put }) {
       const response = yield call(fetchAbnormalPatrol, payload)
       if (response && response.code === 200) {
+        const { pageNum, pageSize } = payload
         yield put({
-          type: 'savePatrolList',
-          payload: response.data.list,
+          type: 'savePatrolRecords',
+          payload: {
+            list: response.data.list,
+            pagination: {
+              pageNum,
+              pageSize,
+              total: response.data.total,
+            },
+          },
         })
         if (callback) callback(response.data.list)
+      }
+    },
+    // 根据巡查记录获取隐患列表
+    *fetchPatrolDangers({ payload, callback }, { call, put }) {
+      const response = yield call(fetchPatrolDangers, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'savePatrolDangers',
+          payload: response.data.list,
+        })
+        if (callback) callback()
       }
     },
   },
@@ -690,7 +726,7 @@ export default {
         fireHost: {
           ...state.fireHost,
           list: newList,
-          pageination: {
+          pagination: {
             pageNum,
             pageSize,
             total,
@@ -698,12 +734,37 @@ export default {
         },
       }
     },
-    savePatrolList(state, { payload = [] }) {
+    // 保存巡查统计下钻列表
+    savePatrolRecords(state, { payload: { list = [], pagination } }) {
+      const { pageNum, pageSize, total } = pagination
+      if (pageNum === 1) {
+        return {
+          ...state,
+          inspectionStatistics: {
+            ...state.inspectionStatistics,
+            list,
+            pagination,
+            isLast: pageNum * pageSize >= total,
+          },
+        }
+      } else {
+        return {
+          ...state,
+          inspectionStatistics: {
+            ...state.inspectionStatistics,
+            list: [...state.inspectionStatistics.list, ...list],
+            pagination,
+            isLast: pageNum * pageSize >= total,
+          },
+        }
+      }
+    },
+    savePatrolDangers(state, { payload }) {
       return {
         ...state,
         inspectionStatistics: {
           ...state.inspectionStatistics,
-          list: payload,
+          dangers: payload,
         },
       }
     },

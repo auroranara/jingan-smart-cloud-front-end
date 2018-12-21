@@ -183,8 +183,8 @@ export default class ExaminationMissionAdd extends PureComponent {
         const payload = {
           ...others,
           id,
-          startTime: moment(start).format('YYYY/MM/DD HH:mm:ss'),
-          endTime: moment(end).format('YYYY/MM/DD HH:mm:ss'),
+          startTime: moment(start).format('YYYY/MM/DD HH:mm:00'),
+          endTime: moment(end).format('YYYY/MM/DD HH:mm:00'),
           paperId: paperId.key,
           companyId,
         };

@@ -80,7 +80,7 @@ class OverComDrawer extends PureComponent {
                                 checkCycleCode && (
                                   <tr key={index}>
                                     <td>
-                                      {companyType === '1' && (
+                                      {(+companyType === 1 || +companyType === 4) && (
                                         <span className={styles.keyComMark} />
                                       )}
                                     </td>

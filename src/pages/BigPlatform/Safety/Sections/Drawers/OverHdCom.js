@@ -74,7 +74,7 @@ class OverHdCom extends PureComponent {
                               return (
                                 <tr key={item.companyId}>
                                   <td>
-                                    {+item.companyType === 1 && (
+                                    {(+item.companyType === 1 || +item.companyType === 4) && (
                                       <span className={styles.keyComMark} />
                                     )}
                                   </td>
