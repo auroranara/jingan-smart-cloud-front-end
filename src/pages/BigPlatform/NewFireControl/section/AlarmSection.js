@@ -81,7 +81,13 @@ export default class AlarmSection extends PureComponent {
                 ref={node => { this.node = node; }}
                 placeholder="请输入单位名称"
                 // style={{ background: 'rgba(9,103,211,0.2)', border: 'none', color: '#FFF' }}
-                style={{ background: 'rgb(6,59,111)', border: 'none', color: '#FFF', boxShadow: 'rgba(0, 0, 0, 0.3) 3px 3px 5px' }}
+                style={{
+                  // background: 'rgb(6,59,111)',
+                  background: 'rgba(26,106,194,0.9)',
+                  border: 'none',
+                  color: '#FFF',
+                  boxShadow: 'rgba(0, 0, 0, 0.3) 3px 3px 5px',
+                }}
               />
             </Col>
             {/* <Col span={6}>

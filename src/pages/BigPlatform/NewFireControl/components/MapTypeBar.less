@@ -1,0 +1,78 @@
+@govImgUrl2: 'http://data.jingan-china.cn/v2/big-platform/safety/gov/';
+.typeLsit {
+  position: absolute;
+  right: 85px;
+  top: 10px;
+  overflow: auto;
+  zoom: 1;
+  border-radius: 5px;
+  text-align: center;
+  .typeItem {
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 12px;
+    // background-color: rgba(4, 71, 134, 0.8);
+    background-color: rgba(26, 106, 194, 0.9);
+    // color: #6ea9dd;
+    color: #FFF;
+    position: relative;
+    cursor: pointer;
+    // border-left: 1px solid rgba(0, 161, 246, 0.2);
+    .typeIcon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      position: relative;
+      top: 3px;
+    }
+    .itemName {
+      display: inline-block; // margin-top: -3px;
+    }
+    .iconSatellite {
+      .typeIcon;
+      background: url('@{govImgUrl2}icon-satellite.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+    .iconRoad {
+      .typeIcon;
+      background: url('@{govImgUrl2}icon-road.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+    .itemContent:first-of-type {
+      border-left: none;
+    }
+  }
+  .typeItem::before {
+    content: '';
+    // background-color: rgba(0, 161, 246, 0.2);
+    background-color: #FFF;
+    width: 1px;
+    // height: 16px;
+    height: 24px;
+    position: absolute;
+    left: 0;
+    // top: 9px;
+    top: 3px;
+  }
+  .typeItem:first-of-type::before {
+    content: '';
+    background: none;
+  }
+  .typeItem:hover {
+    opacity: 0.85;
+  }
+  .typeItem.active {
+    color: #fff;
+    background-color: rgba(9, 103, 211, 0.8);
+    .iconSatellite {
+      background: url('@{govImgUrl2}icon-satellite-active.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+    .iconRoad {
+      background: url('@{govImgUrl2}icon-road-active.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+  }
+}

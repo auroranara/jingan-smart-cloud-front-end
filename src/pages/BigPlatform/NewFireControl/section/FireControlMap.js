@@ -7,7 +7,8 @@ import debounce from 'lodash/debounce';
 import FcSection from './FcSection';
 import styles from './FireControlMap.less';
 import MapSearch from '../components/MapSearch';
-import MapTypeBar from '../../Safety/Components/MapTypeBar';
+// import MapTypeBar from '../../Safety/Components/MapTypeBar';
+import MapTypeBar from '../components/MapTypeBar';
 
 import mapDot from '../img/mapDot.png';
 import mapAlarmDot from '../img/mapAlarmDot.png';
@@ -197,9 +198,11 @@ export default class FireControlMap extends PureComponent {
       <Button
         onClick={() => this.back(!!selected.isFire)}
         style={{
-          background: 'rgba(1, 39, 79, 0.8)',
+          // background: 'rgba(1, 39, 79, 0.8)',
+          backgroundColor: 'rgba(26, 106, 194, 0.9)',
           border: 'none',
-          color: '#009eff',
+          // color: '#009eff',
+          color: '#FFF',
           width: '80',
           position: 'absolute',
           top: '10px',
@@ -277,7 +280,8 @@ export default class FireControlMap extends PureComponent {
           type="close"
           onClick={handleInfoClose}
           style={{
-            color: 'rgb(110,169,221)',
+            // color: 'rgb(110,169,221)',
+            color: '#FFF',
             position: 'absolute',
             right: 10,
             top: 10,
