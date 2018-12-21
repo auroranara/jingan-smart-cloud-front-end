@@ -13,23 +13,6 @@ const Option = Select.Option;
 // 标题
 const title = '我的档案';
 
-//面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '教育培训',
-    name: '教育培训',
-  },
-  {
-    title,
-    name: '我的档案',
-  },
-];
-
 // 默认表单值
 const defaultFormData = {
   examName: undefined,
@@ -96,7 +79,12 @@ export default class myFileList extends PureComponent {
 
   // 跳转到综合分析报告
   goToMySynthesis = id => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // location: {
+      //   query: { name },
+      // },
+    } = this.props;
     dispatch(routerRedux.push(`/training/myFile/mySynthesis?studentId=${id}`));
   };
 
@@ -108,7 +96,12 @@ export default class myFileList extends PureComponent {
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      // location: {
+      //   query: { name },
+      // },
+    } = this.props;
     dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
   };
 
@@ -392,9 +385,32 @@ export default class myFileList extends PureComponent {
         currentUser: { userId },
       },
       location: {
-        query: { studentId },
+        query: { studentId, name },
       },
     } = this.props;
+
+    //面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+
+      {
+        title: '教育培训',
+        name: '教育培训',
+      },
+      {
+        title: name ? '综合档案' : '',
+        name: name ? '综合档案' : '',
+        href: name ? '/training/generalFile/personFile/list' : '',
+      },
+      {
+        title,
+        name: '我的档案',
+      },
+    ];
 
     return (
       <PageHeaderLayout

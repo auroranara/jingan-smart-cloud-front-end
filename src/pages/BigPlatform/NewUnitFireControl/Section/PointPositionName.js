@@ -225,7 +225,7 @@ export default class PointPositionName extends PureComponent {
       <DrawerContainer
         title={checkPointName}
         destroyOnClose={true}
-        zIndex={2000}
+        zIndex={1050}
         width={485}
         visible={visible}
         left={left}

@@ -9,21 +9,21 @@ import Timer from './Components/Timer';
 import MapSection from './Sections/MapSection';
 import MyTooltip from '../FireControl/section/Tooltip';
 
-import DangerCompany from './Sections/DangerCompany';
-import CheckInfo from './Sections/CheckInfo';
-import CompanyOver from './Sections/CompanyOver';
-import RiskDetail from './Sections/RiskDetail';
-import RiskDetailOver from './Sections/RiskDetailOver';
+// import DangerCompany from './Sections/DangerCompany';
+// import CheckInfo from './Sections/CheckInfo';
+// import CompanyOver from './Sections/CompanyOver';
+// import RiskDetail from './Sections/RiskDetail';
+// import RiskDetailOver from './Sections/RiskDetailOver';
 // import RiskOver from './Sections/RiskOver';
-import HdOverCompany from './Sections/HdOverCompany';
-import RiskColors from './Sections/RiskColors';
-import FullStaff from './Sections/FullStaff';
-import CompanyIn from './Sections/CompanyIn';
-import CompanyInfo from './Sections/CompanyInfo';
+// import HdOverCompany from './Sections/HdOverCompany';
+// import RiskColors from './Sections/RiskColors';
+// import FullStaff from './Sections/FullStaff';
+// import CompanyIn from './Sections/CompanyIn';
+// import CompanyInfo from './Sections/CompanyInfo';
 import CommunityCom from './Sections/CommunityCom';
 import TopData from './Sections/TopData';
 import HiddenDangerPie from './Sections/HiddenDangerPie';
-import RiskBar from './Sections/RiskBar';
+// import RiskBar from './Sections/RiskBar';
 import RiskPoint from './Sections/Drawers/RiskPoint';
 import DangerCompanyDrawer from './Sections/Drawers/DangerCompanyDrawer';
 import CheckBar from './Sections/CheckBar';
@@ -685,6 +685,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 gridId={gridId}
+                closeAllDrawers={this.closeAllDrawers}
               />
 
               <CheckBar
@@ -695,6 +696,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 fetchCheckMsgs={this.fetchCheckMsgs}
+                closeAllDrawers={this.closeAllDrawers}
               />
             </Col>
             <Col
@@ -714,6 +716,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 fetchCheckMsgs={this.fetchCheckMsgs}
+                closeAllDrawers={this.closeAllDrawers}
               />
 
               {/* <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
