@@ -187,7 +187,7 @@ export default class MyAnalysis extends PureComponent {
                       {minScore}
                       %，平均正确率：
                       {meanScore}% ，我的正确率为：
-                      {myScore}%
+                      {myScore ? myScore : 0}%
                     </strong>
                     。
                   </p>

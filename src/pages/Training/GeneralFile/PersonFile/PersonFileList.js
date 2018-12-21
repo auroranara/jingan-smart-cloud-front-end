@@ -126,6 +126,7 @@ export default class PersonFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      companyId,
     } = this.props;
     const data = getFieldsValue();
     dispatch({
@@ -133,6 +134,7 @@ export default class PersonFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum,
+        companyId: companyId,
         ...data,
       },
     });
