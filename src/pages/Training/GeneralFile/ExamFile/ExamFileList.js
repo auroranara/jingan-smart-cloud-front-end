@@ -81,6 +81,7 @@ export default class ExamFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      companyId,
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
@@ -91,6 +92,7 @@ export default class ExamFileList extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        companyId: companyId,
         ...data,
       },
     });
@@ -103,6 +105,7 @@ export default class ExamFileList extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
+      companyId,
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -112,6 +115,7 @@ export default class ExamFileList extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        companyId: companyId,
       },
     });
   };
