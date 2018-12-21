@@ -96,8 +96,8 @@ export default class ExamReport extends PureComponent {
           type: 'radar',
           data: [
             {
-              value: knowledgeReports.map(data => {
-                return { value: data.rightPercent };
+              value: knowledgeReports.map(k => {
+                return [k.rightPercent];
               }),
               name: '知识点综合分析图',
             },
