@@ -53,14 +53,17 @@ export default class CoursewareList extends PureComponent {
       notCompany,
       companyId,
       knowledgeId,
+      resourceManagement: { searchInfo },
     } = this.props
+    // 如果没有传入companyId，则使用保存在redux中的
+    const id = companyId || searchInfo.id
     dispatch({
       type: 'resourceManagement/fetchCourseWare',
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
         type: '2', // type '1'文章 '2' 课件
-        companyId: notCompany ? companyId : null,
+        companyId: notCompany ? id : null,
         knowledgeId,
       },
     })

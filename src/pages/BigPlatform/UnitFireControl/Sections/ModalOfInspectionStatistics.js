@@ -108,58 +108,59 @@ export default class ModalOfInspectionStatistics extends PureComponent {
             <div className={styles.footer}>
               <Pagination current={pageNum} pageSize={pageSize} total={total} onChange={handlePageChange} />
             </div>)} */}
-          <div className={styles.contentContainer}>
-            {list.map(({ check_id, object_title = null, check_user_name = null, check_date = null, dangerStatus = null }, i) => (
-              <Col span={12} key={i} className={styles.cardContainer}>
-                <div className={styles.cardItem}
-                  style={{ cursor: type === 'abnormal' ? 'pointer' : 'inherit' }}
-                  onClick={type === 'abnormal' ? () => this.handleViewDanger(check_id) : null}>
-                  <div className={styles.line}>
-                    <span className={styles.label}>巡查点位</span>
-                    <span className={styles.text}>
-                      <Ellipsis tooltip lines={1}>{object_title}</Ellipsis>
-                    </span>
-                  </div>
-                  <div className={styles.line}>
-                    <span className={styles.label}>巡查人</span>
-                    <span className={styles.text}>
-                      <Ellipsis tooltip lines={1}>{check_user_name}</Ellipsis>
-                    </span>
-                  </div>
-                  <div className={styles.line}>
-                    <span className={styles.label}>巡查时间</span>
-                    <span className={styles.text}>
-                      <Ellipsis tooltip lines={1}>{moment(+check_date).format('YYYY-MM-DD')}</Ellipsis>
-                    </span>
-                  </div>
-                  {type === 'abnormal' && dangerStatus && (
+          {list && list.length > 0 ? (
+            <div className={styles.contentContainer}>
+              {list.map(({ check_id, object_title = null, check_user_name = null, check_date = null, dangerStatus = null }, i) => (
+                <Col span={12} key={i} className={styles.cardContainer}>
+                  <div className={styles.cardItem}
+                    style={{ cursor: type === 'abnormal' ? 'pointer' : 'inherit' }}
+                    onClick={type === 'abnormal' ? () => this.handleViewDanger(check_id) : null}>
                     <div className={styles.line}>
-                      <span className={styles.label}>隐患状态</span>
+                      <span className={styles.label}>巡查点位</span>
                       <span className={styles.text}>
-                        <Ellipsis tooltip lines={1}>
-                          {dangerStatus.split('/').map((item, i) => (
-                            <Fragment key={i}>
-                              {i !== 0 && <span>/</span>}
-                              <span style={{ color: item.includes('已超期') ? 'red' : 'inherit' }}>{item}</span>
-                            </Fragment>
-                          ))}
-                        </Ellipsis>
+                        <Ellipsis tooltip lines={1}>{object_title}</Ellipsis>
                       </span>
                     </div>
-                  )}
-                </div>
-              </Col>
-            ))}
-            {list.length > 0 && !isLast ? (
-              <Col span={24} >
-                <div className={styles.moreButton} onClick={handlePageChange}>
-                  {moreLoading ? (<Fragment><Icon style={{ marginRight: '0.5em' }} type="loading" /><span>加载中...</span></Fragment>) : (
-                    <span>加载更多</span>
-                  )}
-                </div>
-              </Col>
-            ) : null}
-          </div>
+                    <div className={styles.line}>
+                      <span className={styles.label}>巡查人</span>
+                      <span className={styles.text}>
+                        <Ellipsis tooltip lines={1}>{check_user_name}</Ellipsis>
+                      </span>
+                    </div>
+                    <div className={styles.line}>
+                      <span className={styles.label}>巡查时间</span>
+                      <span className={styles.text}>
+                        <Ellipsis tooltip lines={1}>{moment(+check_date).format('YYYY-MM-DD')}</Ellipsis>
+                      </span>
+                    </div>
+                    {type === 'abnormal' && dangerStatus && (
+                      <div className={styles.line}>
+                        <span className={styles.label}>隐患状态</span>
+                        <span className={styles.text}>
+                          <Ellipsis tooltip lines={1}>
+                            {dangerStatus.split('/').map((item, i) => (
+                              <Fragment key={i}>
+                                {i !== 0 && <span>/</span>}
+                                <span style={{ color: item.includes('已超期') ? 'red' : 'inherit' }}>{item}</span>
+                              </Fragment>
+                            ))}
+                          </Ellipsis>
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </Col>
+              ))}
+              {list.length > 0 && !isLast ? (
+                <Col span={24} >
+                  <div className={styles.moreButton} onClick={handlePageChange}>
+                    {moreLoading ? (<Fragment><Icon style={{ marginRight: '0.5em' }} type="loading" /><span>加载中...</span></Fragment>) : (
+                      <span>加载更多</span>
+                    )}
+                  </div>
+                </Col>
+              ) : null}
+            </div>) : (<div className={styles.noContent}><span>暂无数据</span></div>)}
           {cardVisible && (
             <Switcher
               visible={true}
