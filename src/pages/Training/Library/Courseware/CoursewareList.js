@@ -339,7 +339,7 @@ export default class CoursewareList extends PureComponent {
                   </div>
                 </div>
                 <div className={styles.tags}>
-                  {item.knowledgeName && <Tag>{item.knowledgeName}</Tag>}
+                  {item.knowledges && (<Tag>{item.knowledges.join(' > ')}</Tag>)}
                   <Tag>{item.type === '2' ? '视频' : '文档'}</Tag>
                   {statusAuth ? (
                     <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>
