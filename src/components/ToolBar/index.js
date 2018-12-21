@@ -157,6 +157,8 @@ class ToolBar extends PureComponent {
       buttonSpan=defaultButtonSpan,
       // 容器的间隔，具体见Row组件
       gutter=defaultGutter,
+      // 按钮容器样式
+      buttonStyle,
     } = this.props;
 
     return (
@@ -171,6 +173,7 @@ class ToolBar extends PureComponent {
             render,
             labelCol,
             wrapperCol,
+            style,
           }) => (
             <Col
               key={id}
@@ -178,7 +181,7 @@ class ToolBar extends PureComponent {
             >
               <FormItem
                 label={label}
-                style={defaultStyle}
+                style={{ ...defaultStyle, ...style }}
                 labelCol={labelCol}
                 wrapperCol={wrapperCol}
               >
@@ -188,7 +191,7 @@ class ToolBar extends PureComponent {
           ))}
           {/* 按钮 */}
           <Col {...buttonSpan}>
-            <FormItem style={defaultStyle}>
+            <FormItem style={{ ...defaultStyle, ...buttonStyle }}>
               {/* 搜索按钮 */}
               {searchable && (
                 <Button type="primary" style={{ marginRight: '16px' }} {...searchProps} onClick={this.handleSearch}>
