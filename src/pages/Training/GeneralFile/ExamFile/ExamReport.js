@@ -77,6 +77,18 @@ export default class ExamReport extends PureComponent {
   getOption = knowledgeReports => {
     const option = {
       radar: {
+        tooltip: {
+          formatter: params => {
+            return (
+              `${params.name}<br/>` +
+              params.value
+                .map((item, index) => {
+                  return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
+                })
+                .join('<br/>')
+            );
+          },
+        },
         radius: 170,
         name: {
           textStyle: {
@@ -249,7 +261,7 @@ export default class ExamReport extends PureComponent {
                   <h3>二、知识点综合分析</h3>
                   {knowledgeReports.length > 2 && (
                     <ReactEcharts
-                      style={{ height: '450px' }}
+                      style={{ height: '450px', textIndent: 0 }}
                       option={this.getOption(knowledgeReports)}
                       notMerge={true}
                       lazyUpdate={true}
