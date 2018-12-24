@@ -7,6 +7,15 @@ export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
 }
 
+// 根据code生成chart 默认26个大写字母
+export function initChars(start = 65, end = 91) {
+  var list = [];
+  for (var i = start; i < end; i++) {
+    list.push(String.fromCharCode(i));
+  }
+  return list;
+}
+
 export function getTimeDistance(type) {
   const now = new Date();
   const oneDay = 1000 * 60 * 60 * 24;

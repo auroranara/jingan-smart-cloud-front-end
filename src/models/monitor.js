@@ -13,6 +13,8 @@ import {
   getPieces,
   fetchErrorDevices,
   fetchAlarmInfoTypes,
+  querySmokeList,
+  getDeviceDataHistory,
 } from '../services/bigPlatform/monitor';
 
 const DEFAULT_CODE = 500;
@@ -26,6 +28,14 @@ export default {
     allCamera: [],
     gasCount: {},
     gasList: [],
+    smokeCount: {},
+    smokeList: {
+      smokeLists: [],
+      smokeListByPage: [],
+      pageNum: 1,
+      pageSize: 10,
+      total: 0,
+    },
     tags: [],
     countAndExponent: {},
     realTimeAlarm: [],
@@ -49,6 +59,7 @@ export default {
       pageSize: 10,
       total: 0,
     },
+    deviceDataHistory: [],
   },
 
   effects: {
@@ -75,6 +86,27 @@ export default {
       response = response || EMPTY_OBJECT;
       const { result = EMPTY_OBJECT } = response;
       yield put({ type: 'saveGasList', payload: result });
+    },
+    // 烟感监测数据
+    *fetchSmokeCount({ payload }, { call, put }) {
+      let response = yield call(getGasCount, payload);
+      response = response || EMPTY_OBJECT;
+      const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
+      if (code === 200) yield put({ type: 'saveSmokeCount', payload: data });
+    },
+    // 烟感监测列表
+    *fetchSmokeList({ payload }, { call, put }) {
+      const response = yield call(querySmokeList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveSmokeList',
+          payload: response.data.list || [],
+        });
+        yield put({
+          type: 'handleSmokeListPagination',
+          payload: { pageNum: 1 },
+        });
+      }
     },
     // 获取企业传感器列表 根据传感器类型
     *fetchCompanyDevices({ payload, callback }, { call, put }) {
@@ -205,6 +237,21 @@ export default {
         });
       }
     },
+    // 获取传感器历史数据
+    *fetchDeviceDataHistory({ payload, success, error }, { call, put }) {
+      const response = yield call(getDeviceDataHistory, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'deviceDataHistory',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -219,6 +266,36 @@ export default {
     },
     saveGasList(state, action) {
       return { ...state, gasList: action.payload };
+    },
+    saveSmokeCount(state, action) {
+      return { ...state, smokeCount: action.payload };
+    },
+    saveSmokeList(state, { payload }) {
+      return {
+        ...state,
+        smokeList: {
+          ...state.smokeList,
+          smokeLists: payload || [],
+          smokeListByPage: [],
+          pageNum: 1,
+          total: (payload && payload.length) || 0,
+        },
+      };
+    },
+    handleSmokeListPagination(state, { payload }) {
+      const { pageNum } = payload;
+      const {
+        smokeList: { pageSize, smokeLists },
+      } = state;
+      const list = smokeLists.slice((pageNum - 1) * pageSize, pageNum * pageSize);
+      return {
+        ...state,
+        smokeList: {
+          ...state.smokeList,
+          smokeListByPage: list,
+          pageNum,
+        },
+      };
     },
     saveChartDeviceList(state, action) {
       return { ...state, chartDeviceList: action.payload };
@@ -341,6 +418,12 @@ export default {
           ...state.historyAlarm,
           alarmTypes: action.payload,
         },
+      };
+    },
+    deviceDataHistory(state, { payload }) {
+      return {
+        ...state,
+        deviceDataHistory: payload.list,
       };
     },
   },

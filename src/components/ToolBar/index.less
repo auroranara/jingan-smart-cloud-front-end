@@ -1,0 +1,22 @@
+/* 容器 */
+.container {
+  position: relative;
+}
+@media screen and (min-width: 576px) {
+  /* 表单 */
+  .form {
+    :global {
+      .ant-form-item {
+        display: flex;
+      }
+
+      .ant-form-item-label {
+        flex: none;
+      }
+
+      .ant-form-item-control-wrapper {
+        flex: 1;
+      }
+    }
+  }
+}

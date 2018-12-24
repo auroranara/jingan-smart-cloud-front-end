@@ -5,7 +5,6 @@ import router from 'umi/router';
 import VisibilitySensor from 'react-visibility-sensor';
 import { hasAuthority } from '@/utils/customAuth';
 
-
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
@@ -82,13 +81,25 @@ export default class ServiceUnitList extends PureComponent {
 
   // 跳转到企业详情页
   goToCompany = companyId => {
-    const { user: { currentUser: { permissionCodes } }, match: { params: { id } } } = this.props;
+    const {
+      user: {
+        currentUser: { permissionCodes },
+      },
+      match: {
+        params: { id },
+      },
+    } = this.props;
     if (hasAuthority('fireControl.maintenanceCompany.serviceUnitView', permissionCodes)) {
       router.push(`/fire-control/maintenance-company/serviceList/${id}/detail/${companyId}`);
-    }
-    else {
+    } else {
       message.warning('您没有权限访问对应页面');
     }
+  };
+
+  goToCompanyScreen = companyId => {
+    const url = `${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`;
+    const win = window.open(url, '_blank');
+    win.focus();
   };
 
   /* 查询按钮点击事件 */
@@ -217,7 +228,21 @@ export default class ServiceUnitList extends PureComponent {
             } = item;
             return (
               <List.Item key={companyId}>
-                <Card title={name} className={styles.card}>
+                <Card
+                  title={name}
+                  className={styles.card}
+                  extra={
+                    <a
+                      onClick={() => {
+                        this.goToCompanyScreen(companyId);
+                      }}
+                    >
+                      驾驶舱
+                    </a>
+                  }
+                  style={{ dispaly: 'block' }}
+                  hoverable
+                >
                   <div
                     onClick={() => {
                       this.goToCompany(companyId);
@@ -256,12 +281,16 @@ export default class ServiceUnitList extends PureComponent {
     } = this.props;
 
     return (
-      <PageHeaderLayout title="服务单位列表" breadcrumbList={breadcrumbList} content={
-        <div>
-          单位总数：
-          {list.length}
-        </div>
-      }>
+      <PageHeaderLayout
+        title="服务单位列表"
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            单位总数：
+            {list.length}
+          </div>
+        }
+      >
         {this.renderForm()}
         {this.renderList()}
         {list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}

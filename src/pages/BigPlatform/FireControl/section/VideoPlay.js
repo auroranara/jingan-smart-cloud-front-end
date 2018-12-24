@@ -121,7 +121,7 @@ class VideoPlay extends Component {
                 onClick={() => {
                   this.handleItemClick(index, keyId);
                 }}
-                key={keyId}
+                key={item.id}
               >
                 {activeIndex === index && (
                   <Icon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
@@ -158,7 +158,7 @@ class VideoPlay extends Component {
             notification['error']({
               message: '失败',
               description: '视频请求失败',
-              duration: null,
+              duration: 3,
             });
           },
         });
@@ -183,7 +183,7 @@ class VideoPlay extends Component {
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
     return (
-      <div className={wrapperStyles} style={{ ...style }}>
+      <div className={wrapperStyles} style={{ ...style, zIndex: 1070 }}>
         <div
           id="dragBar"
           className={styles.titleBar}

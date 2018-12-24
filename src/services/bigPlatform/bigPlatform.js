@@ -122,6 +122,31 @@ export async function getDangerLocationCompanyNotRatedData(params) {
   return request(`/acloud_new/v2/sfg/dangerLocationCompanyNotRatedData.json?${stringify(params)}`);
 }
 
+// 企业风险点
+export async function getselfCheckPoint(params) {
+  return request(`/acloud_new/v2/sfm/getselfCheckPoint?${stringify(params)}`);
+}
+
+// 各风险点具体信息
+export async function getSelfCheckPointData(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointData?${stringify(params)}`);
+}
+
+// 公司各风险点数量
+export async function getSelfCheckPointDataByCompanyId(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointDataByCompanyId?${stringify(params)}`);
+}
+
+// 隐患饼图下钻接口
+export async function getListForMapForHidden(params) {
+  return request(`/acloud_new/v2/sfg/listForMapForHidden.json?${stringify(params)}`);
+}
+
+// 12迭代 安全检查柱状图
+export async function getSecurityCheck(params) {
+  return request(`/acloud_new/v2/sfg/securityCheck.json?${stringify(params)}`);
+}
+
 // 企业大屏
 // 企业风险点数 (正常，异常，待检查，已超时) 分开请求！？？
 export async function getCoItemList(params) {

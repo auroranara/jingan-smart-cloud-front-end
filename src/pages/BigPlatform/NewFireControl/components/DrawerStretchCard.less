@@ -1,0 +1,48 @@
+@red: rgb(255, 72, 72);
+@grey: rgb(79, 103, 147);
+
+.outer {
+  padding-right: 5px;
+  margin-bottom: 12px;
+}
+
+.container {
+  // padding: 15px;
+  padding-top: 15px;
+  position: relative;
+  background-color: transparent;
+  border: 1px solid rgb(4, 253, 255);
+}
+
+.company {
+  color: #FFF;
+  margin: 0 0 15px 15px;
+}
+
+.spans {
+  display: flex;
+  padding: 0 0 15px 15px;
+}
+
+.item {
+  padding: 5px 8px;
+  margin-right: 8px;
+  color: #FFF;
+  border: 1px solid #0FF;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.selected:extend(.item) {
+  // cursor: auto;
+  background-color: rgb(4, 71, 134);
+}
+
+.item:hover {
+  background-color: rgb(4, 71, 134);
+}
+
+.cardContainer {
+  color: #FFF;
+  padding: 14px;
+}

@@ -1,0 +1,135 @@
+@color: rgb(4, 253, 255);
+@blue: rgb(4, 71, 134);
+.container {
+  height: 100%;
+  :global {
+    .ant-input-search.ant-input-search-enter-button > .ant-input {
+      color: #fff;
+      border: 1px solid @color;
+      background-color: transparent;
+    }
+
+    .ant-btn-primary {
+      color: @color;
+      border: 1px solid @color;
+      background-color: @blue;
+    }
+
+    .ant-table {
+      color: #fff;
+    }
+
+    .ant-table-header {
+      background-color: @blue;
+    }
+
+    .ant-table-thead > tr > th {
+      color: #fff;
+      background-color: @blue;
+      border-bottom: none;
+    }
+
+    .ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
+      background-color: rgb(3, 48, 105);
+    }
+
+    .ant-table-tbody > tr > td {
+      border-color: rgb(5, 65, 135);
+    }
+
+    .ant-table-tbody tr:hover td {
+      background-color: #063b6f;
+    }
+    .ant-table-placeholder {
+      background-color: transparent;
+      border-bottom: none;
+      color: #fff;
+    }
+    .ant-pagination-item-link {
+      background-color: #063b6f;
+      color: #fff;
+    }
+    .ant-pagination-item {
+      background-color: #063b6f;
+    }
+    .ant-pagination-item a {
+      color: #fff;
+    }
+  }
+}
+
+.circleContainer {
+  height: 90px;
+  margin-bottom: 20px;
+}
+
+.currentTitle {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 14px;
+}
+
+.statusIcon {
+  height: 100%;
+}
+.icon {
+  width: 90px;
+  height: 90px;
+  position: absolute;
+  left: 0;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.cardsTitle {
+  border-left: 4px solid rgb(0, 255, 255);
+}
+
+.cards {
+  // height: calc(100% - 340px);
+  overflow: auto;
+
+  div:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.twoCards {
+  height: 100%;
+}
+
+.oneCards {
+  height: 100%;
+}
+.titleP {
+  padding-left: 10px;
+  color: #fff;
+
+  .titleSpan {
+    padding-left: 5px;
+  }
+}
+
+.recordTitle {
+  border-left: 4px solid rgb(0, 255, 255);
+  margin-top: 1em;
+}
+
+.record {
+  overflow: auto;
+}
+.warningText {
+  margin-left: 1em;
+  color: red;
+  font-weight: 700;
+}
+.text {
+  margin-left: 1em;
+}
+
+.resultError {
+  color: #ff4848;
+}

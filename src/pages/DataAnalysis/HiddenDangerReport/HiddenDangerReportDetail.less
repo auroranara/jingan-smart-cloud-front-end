@@ -56,6 +56,16 @@
   margin-bottom: 24px;
 }
 
+.card:first-child {
+  :global {
+    .ant-card-body {
+      overflow-x: auto;
+      padding-left: 0;
+      padding-right: 48px;
+    }
+  }
+}
+
 @media screen and (max-width: @screen-sm) {
   .stepDescription {
     left: 8px;

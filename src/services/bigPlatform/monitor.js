@@ -72,3 +72,13 @@ export async function fetchErrorDevices(params) {
 export async function fetchAlarmInfoTypes() {
   return request('/acloud_new/v2/deviceInfo/messageType');
 }
+
+// 获取独立烟感列表
+export async function querySmokeList(params) {
+  return request(`/acloud_new/v2/monitor/getDevicesByType?${stringify(params)}`);
+}
+
+// 获取传感器历史数据
+export async function getDeviceDataHistory(params) {
+  return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
+}

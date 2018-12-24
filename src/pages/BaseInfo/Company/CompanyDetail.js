@@ -6,13 +6,14 @@ import { routerRedux } from 'dva/router';
 import { Map, Marker } from 'react-amap';
 
 import DescriptionList from '@/components/DescriptionList';
-import Ellipsis from '@/components/Ellipsis';
+// import Ellipsis from '@/components/Ellipsis';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import titles from '@/utils/titles';
+import { getImportantTypes } from '../utils';
 
 import styles from './Company.less';
 import SafetyDetail from './SafetyDetail';
@@ -20,6 +21,8 @@ import SafetyDetail from './SafetyDetail';
 const { Description } = DescriptionList;
 
 // const companyTypes = ['', '重点单位', '一般单位', '九小场所'];
+const IMPORTANT_TYPES = ['否', '是'];
+
 // 获取title
 const {
   home: homeTitle,
@@ -79,6 +82,8 @@ const fieldLabels = {
   principalEmail: '邮箱',
   companyNature: '单位性质',
   gridId: '所属网格',
+  importantSafety: '安监重点单位',
+  importantHost: '消防重点单位',
 };
 // tab列表
 const tabList = [
@@ -237,11 +242,14 @@ export default class CompanyDetail extends PureComponent {
             practicalCityLabel,
             practicalDistrictLabel,
             practicalTownLabel,
+            companyType,
           },
         },
       },
     } = this.props;
     const { isCompany, gridLabel } = this.state;
+
+    const [importantHost, importantSafety] = getImportantTypes(companyType);
 
     const registerAddressLabel =
       (registerProvinceLabel || '') +
@@ -288,6 +296,10 @@ export default class CompanyDetail extends PureComponent {
               {practicalAddressLabel || getEmptyData()}
             {/* </Ellipsis> */}
           </Description>
+        </DescriptionList>
+        <DescriptionList col={3} style={{ marginBottom: 16 }}>
+          <Description term={fieldLabels.importantHost}>{IMPORTANT_TYPES[importantHost]}</Description>
+          <Description term={fieldLabels.importantSafety}>{IMPORTANT_TYPES[importantSafety]}</Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>

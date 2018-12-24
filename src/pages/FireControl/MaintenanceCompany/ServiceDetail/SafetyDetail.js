@@ -33,10 +33,10 @@ const dspItems = [
     name: 'validity',
     cName: '服务有效期',
   },
-  {
-    name: 'companyType',
-    cName: '安监重点单位',
-  },
+  // {
+  //   name: 'companyType',
+  //   cName: '安监重点单位',
+  // },
 ];
 
 const dspItems1 = [
@@ -63,8 +63,7 @@ const textMap = {};
 function traverse(tree) {
   tree.forEach(({ id, parentIds, text, children }) => {
     // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
-    if (parentIds) idMap[id] = [...parentIds.split(','), id].filter(item => item);
-    else idMap[id] = [];
+    idMap[id] = parentIds ? [...parentIds.split(',').filter(item => item), id] : [id];
     textMap[id] = text;
     children && traverse(children);
   });

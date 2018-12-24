@@ -21,7 +21,7 @@ import {
   getSearchAllCompany,
   getDangerLocationCompanyData,
   getAllCamera,
-  getStartToPlay,
+  // getStartToPlay,
   getMonitorData,
   getHiddenDangerCompany,
   getCheckInfo,
@@ -37,6 +37,11 @@ import {
   getMapLocation,
   getCompanyCheckCount,
   getDangerLocationCompanyNotRatedData,
+  getselfCheckPoint,
+  getSelfCheckPointData,
+  getSelfCheckPointDataByCompanyId,
+  getListForMapForHidden,
+  getSecurityCheck,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -65,12 +70,20 @@ const transformHiddenDangerFields = ({
   real_rectify_time,
   review_user_name,
   status,
-  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
+  hiddenDangerRecordDto,
   source_type_name,
   companyBuildingItem,
   business_type,
   review_time,
 }) => {
+  let background,
+    operator_name = '';
+  if (hiddenDangerRecordDto && hiddenDangerRecordDto.length) {
+    background = hiddenDangerRecordDto[0].fileWebUrl;
+    operator_name = hiddenDangerRecordDto[hiddenDangerRecordDto.length - 1].operator_name; // 取隐患最后结束的
+  }
+  // const { fileWebUrl: background } = hiddenDangerRecordDto[0];
+
   const { object_title, risk_level } = companyBuildingItem || {};
   return {
     id,
@@ -81,7 +94,7 @@ const transformHiddenDangerFields = ({
     zgr: rectify_user_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
-    fcr: review_user_name,
+    fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
     source:
@@ -198,12 +211,13 @@ export default {
     // 监控数据
     monitorData: {},
     checkInfo: [],
-    hiddenDangerListByDate: {
-      ycq: [],
-      wcq: [],
-      dfc: [],
-      ygb: [],
-    },
+    // hiddenDangerListByDate: {
+    //   ycq: [],
+    //   wcq: [],
+    //   dfc: [],
+    //   ygb: [],
+    // },
+    hiddenDangerListByDate: [],
     hiddenDangerCompanyAll: {},
     hiddenDangerCompanyMonth: {},
     hiddenDangerCompanyUser: {},
@@ -223,6 +237,24 @@ export default {
       companyNum: 0,
       fireCheckCompanyCount: 0,
     },
+    risksCompany: [],
+    selfCheckPoint: {
+      total: 0,
+      abnormal: 0,
+      overTime: 0,
+      list: [],
+    },
+    selfCheckPointData: {
+      all: 0,
+      abnormal: 0,
+      overTime: 0,
+      rectify: 0,
+      normal: 0,
+      list: [],
+    },
+    listForMapForHidden: [],
+    securityCheck: [],
+    riskDetailNoOrder: [],
   },
 
   effects: {
@@ -494,6 +526,10 @@ export default {
           return +a.real_rectify_time - b.real_rectify_time;
         })
         .map(transformHiddenDangerFields);
+
+      const list = response.hiddenDangers
+        .filter(({ status }) => +status === 7 || +status === 1 || +status === 2 || +status === 3)
+        .map(transformHiddenDangerFields);
       yield put({
         type: 'saveRiskDetail',
         payload: {
@@ -502,8 +538,17 @@ export default {
           dfc,
         },
       });
+      // 无分类排序
+      yield put({
+        type: 'saveRiskDetailNoOrder',
+        payload: [...list],
+      });
       if (success) {
-        success();
+        success({
+          ycq,
+          wcq,
+          dfc,
+        });
       }
     },
     // *fetchHiddenDanger({ payload, success }, { call, put }) {
@@ -704,38 +749,35 @@ export default {
     *fetchHiddenDangerListByDate({ payload, success, error }, { call, put }) {
       const response = yield call(getHiddenDangerListByDate, payload);
       if (response.code === 200) {
-        const ycq = response.data.hiddenDangers
-          .filter(({ status }) => +status === 7)
-          .sort((a, b) => {
-            return +a.plan_rectify_time - b.plan_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
-        const wcq = response.data.hiddenDangers
-          .filter(({ status }) => +status === 1 || +status === 2)
-          .sort((a, b) => {
-            return +a.plan_rectify_time - b.plan_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
-        const dfc = response.data.hiddenDangers
-          .filter(({ status }) => +status === 3)
-          .sort((a, b) => {
-            return +a.real_rectify_time - b.real_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
-        const ygb = response.data.hiddenDangers
-          .filter(({ status }) => +status === 4)
-          .sort((a, b) => {
-            return +a.real_rectify_time - b.real_rectify_time;
-          })
-          .map(transformHiddenDangerFields);
+        // const ycq = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 7)
+        //   .sort((a, b) => {
+        //     return +a.plan_rectify_time - b.plan_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+        // const wcq = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 1 || +status === 2)
+        //   .sort((a, b) => {
+        //     return +a.plan_rectify_time - b.plan_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+        // const dfc = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 3)
+        //   .sort((a, b) => {
+        //     return +a.real_rectify_time - b.real_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+        // const ygb = response.data.hiddenDangers
+        //   .filter(({ status }) => +status === 4)
+        //   .sort((a, b) => {
+        //     return +a.real_rectify_time - b.real_rectify_time;
+        //   })
+        //   .map(transformHiddenDangerFields);
+
+        const list = response.data.hiddenDangers.map(transformHiddenDangerFields);
         yield put({
           type: 'hiddenDangerListByDate',
-          payload: {
-            ycq,
-            wcq,
-            dfc,
-            ygb,
-          },
+          payload: [...list],
         });
         if (success) {
           success(response.data);
@@ -847,6 +889,109 @@ export default {
         });
         if (success) {
           success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    *fetchRisksCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(getCountDangerLocationForCompany, payload);
+      // if (response.code === 200) {
+      const {
+        redDangerResult,
+        orangeDangerResult,
+        yellowDangerResult,
+        blueDangerResult,
+        notRatedDangerResult = [],
+      } = response;
+      yield put({
+        type: 'risksCompany',
+        payload: [
+          ...redDangerResult,
+          ...orangeDangerResult,
+          ...yellowDangerResult,
+          ...blueDangerResult,
+          ...notRatedDangerResult,
+        ],
+      });
+      if (success) {
+        success();
+      }
+      // }
+      // else if (error) {
+      //   error();
+      // }
+    },
+    // 企业风险点
+    *fetchSelfCheckPoint({ payload, success, error }, { call, put }) {
+      const response = yield call(getselfCheckPoint, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'selfCheckPoint',
+          payload: response.data || {},
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 各风险点具体信息
+    *fetchSelfCheckPointData({ payload, success, error }, { call, put }) {
+      const response = yield call(getSelfCheckPointData, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'selfCheckPointData',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 公司各风险点数量
+    *fetchSelfCheckPointDataByCompanyId({ payload, success, error }, { call, put }) {
+      const response = yield call(getSelfCheckPointDataByCompanyId, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'selfCheckPointDataByCompanyId',
+          payload: response.data || {},
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 隐患饼图下钻接口
+    *fetchListForMapForHidden({ payload, success, error }, { call, put }) {
+      const response = yield call(getListForMapForHidden, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'listForMapForHidden',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 12迭代 安全检查柱状图
+    *fetchSecurityCheck({ payload, success, error }, { call, put }) {
+      const response = yield call(getSecurityCheck, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'securityCheck',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
         }
       } else if (error) {
         error();
@@ -973,6 +1118,12 @@ export default {
       return {
         ...state,
         riskDetailList,
+      };
+    },
+    saveRiskDetailNoOrder(state, { payload }) {
+      return {
+        ...state,
+        riskDetailNoOrder: payload,
       };
     },
     // hiddenDanger(state, { payload }) {
@@ -1123,6 +1274,42 @@ export default {
       return {
         ...state,
         companyCheckCount: payload,
+      };
+    },
+    risksCompany(state, { payload }) {
+      return {
+        ...state,
+        risksCompany: payload,
+      };
+    },
+    selfCheckPoint(state, { payload }) {
+      return {
+        ...state,
+        selfCheckPoint: payload,
+      };
+    },
+    selfCheckPointData(state, { payload }) {
+      return {
+        ...state,
+        selfCheckPointData: { ...state.selfCheckPointData, list: payload.list },
+      };
+    },
+    selfCheckPointDataByCompanyId(state, { payload }) {
+      return {
+        ...state,
+        selfCheckPointData: { ...state.selfCheckPointData, ...payload },
+      };
+    },
+    listForMapForHidden(state, { payload }) {
+      return {
+        ...state,
+        listForMapForHidden: payload.list,
+      };
+    },
+    securityCheck(state, { payload }) {
+      return {
+        ...state,
+        securityCheck: payload.list,
       };
     },
   },

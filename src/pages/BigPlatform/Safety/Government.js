@@ -9,37 +9,63 @@ import Timer from './Components/Timer';
 import MapSection from './Sections/MapSection';
 import MyTooltip from '../FireControl/section/Tooltip';
 
-import DangerCompany from './Sections/DangerCompany';
-import CheckInfo from './Sections/CheckInfo';
-import CompanyOver from './Sections/CompanyOver';
-import RiskDetail from './Sections/RiskDetail';
-import RiskDetailOver from './Sections/RiskDetailOver';
-import RiskOver from './Sections/RiskOver';
-import HdOverCompany from './Sections/HdOverCompany';
-import RiskColors from './Sections/RiskColors';
-import FullStaff from './Sections/FullStaff';
-import CompanyIn from './Sections/CompanyIn';
-import CompanyInfo from './Sections/CompanyInfo';
+// import DangerCompany from './Sections/DangerCompany';
+// import CheckInfo from './Sections/CheckInfo';
+// import CompanyOver from './Sections/CompanyOver';
+// import RiskDetail from './Sections/RiskDetail';
+// import RiskDetailOver from './Sections/RiskDetailOver';
+// import RiskOver from './Sections/RiskOver';
+// import HdOverCompany from './Sections/HdOverCompany';
+// import RiskColors from './Sections/RiskColors';
+// import FullStaff from './Sections/FullStaff';
+// import CompanyIn from './Sections/CompanyIn';
+// import CompanyInfo from './Sections/CompanyInfo';
 import CommunityCom from './Sections/CommunityCom';
 import TopData from './Sections/TopData';
 import HiddenDangerPie from './Sections/HiddenDangerPie';
-import RiskBar from './Sections/RiskBar';
+// import RiskBar from './Sections/RiskBar';
+import RiskPoint from './Sections/Drawers/RiskPoint';
+import DangerCompanyDrawer from './Sections/Drawers/DangerCompanyDrawer';
+import CheckBar from './Sections/CheckBar';
+import CheckDrawer from './Sections/Drawers/CheckDrawer';
+import RiskPointCompany from './Sections/Drawers/RiskPointCompany';
+import DangerInfo from './Sections/Drawers/DangerInfo';
+import OverComDrawer from './Sections/Drawers/OverComDrawer';
+import ComInDrawer from './Sections/Drawers/ComInDrawer';
+import FullStaffDrawer from './Sections/Drawers/FullStaffDrawer';
+import OverHdCom from './Sections/Drawers/OverHdCom';
+import CompanyInfoDrawer from './Sections/Drawers/CompanyInfoDrawer';
 
 const { location: locationDefault, region } = global.PROJECT_CONFIG;
 
 const sectionsVisible = {
   communityCom: false, // 社区接入单位数
   companyIn: false, // 接入单位统计
-  fullStaff: false, // 专职人员统计
+  fullStaff: false, // 监管人员统计
   overHd: false, // 已超期隐患
   hdCom: false, // 隐患单位统计
   comInfo: false, // 企业信息
-  riskColors: false, // 风险点
+  // riskColors: false, // 风险点
   hdOverDetail: false, // 已超期隐患详情
   hiddenDanger: false, // 隐患详情
-  checks: false, // 监督检查
+  checks: false, // 安全检查
   companyOver: false, // 已超时单位
   riskOver: false, // 已超时风险点
+  riskPoint: false, //风险点
+};
+
+const drawVisible = {
+  riskPoint: false, // 风险点
+  riskPointCompany: false, // 风险点-企业
+  dangerCoDrawer: false, // 隐患单位
+  dangerInfo: false, // 隐患详情
+  checkDrawer: false, // 安全检查
+  overComDrawer: false, // 已超时单位
+  comInDrawer: false, // 单位统计
+  fullStaffDrawer: false, // 专职人员统计
+  overHdCom: false, // 已超期隐患单位
+  overHdDetail: false, // 已超期隐患详情
+  companyInfoDrawer: false, // 单位概况
 };
 
 export function getGridId(gridId, initVal = 'index') {
@@ -74,18 +100,19 @@ class GovernmentBigPlatform extends Component {
       center: [locationDefault.x, locationDefault.y],
       zoom: locationDefault.zoom,
       // 右侧显示
+      ...sectionsVisible,
       communityCom: true, // 社区接入单位数
-      companyIn: false, // 接入单位统计
-      fullStaff: false, // 专职人员统计
-      overHd: false, // 已超期隐患
-      hdCom: false, // 隐患单位统计
-      comInfo: false, // 企业信息
-      riskColors: false, // 风险点
-      hdOverDetail: false, // 已超期隐患详情
-      hiddenDanger: false, // 隐患详情
-      checks: false, // 监督检查
-      companyOver: false, // 已超时单位
-      riskOver: false, // 已超时风险点
+      // companyIn: false, // 接入单位统计
+      // fullStaff: false, // 监管人员统计
+      // overHd: false, // 已超期隐患
+      // hdCom: false, // 隐患单位统计
+      // comInfo: false, // 企业信息
+      // riskColors: false, // 风险点
+      // hdOverDetail: false, // 已超期隐患详情
+      // hiddenDanger: false, // 隐患详情
+      // checks: false, // 安全检查
+      // companyOver: false, // 已超时单位
+      // riskOver: false, // 已超时风险点
       companyId: '',
       riskColorSummary: {
         riskColorTitle: '',
@@ -106,6 +133,9 @@ class GovernmentBigPlatform extends Component {
       checkUserId: '',
       checkNum: 0,
       treeValue: '',
+      dangerCoTitle: '隐患单位统计',
+      riskComName: '',
+      ...drawVisible,
     };
   }
 
@@ -170,7 +200,7 @@ class GovernmentBigPlatform extends Component {
       payload: { gridId },
     });
 
-    // 政府专职人员列表
+    // 政府监管人员列表
     dispatch({
       type: 'bigPlatform/fetchGovFulltimeWorkerList',
       payload: { gridId },
@@ -225,6 +255,22 @@ class GovernmentBigPlatform extends Component {
       },
     });
 
+    // 企业风险点
+    dispatch({
+      type: 'bigPlatform/fetchSelfCheckPoint',
+      payload: {
+        gridId,
+      },
+    });
+
+    // 12迭代 安全检查柱状图
+    dispatch({
+      type: 'bigPlatform/fetchSecurityCheck',
+      payload: {
+        gridId,
+      },
+    });
+
     if (region === '无锡市') {
       // 获取网格区域
       dispatch({
@@ -252,11 +298,11 @@ class GovernmentBigPlatform extends Component {
     return getGridId(gridId);
   };
 
-  // 某月监督检查相关信息
+  // 某月安全检查相关信息
   fetchCheckMsgs = month => {
     const { dispatch } = this.props;
     const gridId = this.getGridId();
-    // 专职人员检查信息
+    // 监管人员检查信息
     dispatch({
       type: 'bigPlatform/fetchCheckInfo',
       payload: {
@@ -274,7 +320,7 @@ class GovernmentBigPlatform extends Component {
       },
     });
 
-    // 专职人员检查信息 已检查和未检查单位数量
+    // 监管人员检查信息 已检查和未检查单位数量
     dispatch({
       type: 'bigPlatform/fetchCompanyCheckCount',
       payload: {
@@ -287,7 +333,7 @@ class GovernmentBigPlatform extends Component {
       },
     });
 
-    // // 监督检查已查
+    // // 安全检查已查
     // dispatch({
     //   type: 'bigPlatform/fetchCheckedCompanyInfo',
     //   payload: {
@@ -303,7 +349,7 @@ class GovernmentBigPlatform extends Component {
     // },
     // });
 
-    // // 监督检查未查
+    // // 安全检查未查
     // dispatch({
     //   type: 'bigPlatform/fetchCheckedCompanyInfo',
     //   payload: {
@@ -371,7 +417,8 @@ class GovernmentBigPlatform extends Component {
     const gridId = this.getGridId();
     if (companyId === company.id) {
       if (!comInfo) {
-        this.goComponent('comInfo');
+        // this.goComponent('comInfo');
+        this.setState({ companyInfoDrawer: true });
       }
       if (!infoWindowShow) {
         this.setState({ infoWindowShow: true });
@@ -392,8 +439,10 @@ class GovernmentBigPlatform extends Component {
       },
       success: response => {
         this.companyInfo.initFull();
-        this.goComponent('comInfo');
+        // this.goComponent('comInfo');
+        // this.setState({companyInfoDrawer: true});
         this.setState({
+          companyInfoDrawer: true,
           infoWindowShow: true,
           infoWindow: {
             comapnyId: company.id,
@@ -402,6 +451,7 @@ class GovernmentBigPlatform extends Component {
             companyName: response.companyMessage.companyName,
           },
         });
+        this.hideTooltip();
         if (document.querySelector('#companyRisk')) {
           document.querySelector('#companyRisk').scrollTop = 0;
         }
@@ -420,7 +470,7 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchRiskDetail',
       payload: {
         company_id: id,
-        source_type: '3',
+        // source_type: '3',
         gridId,
       },
     });
@@ -476,7 +526,9 @@ class GovernmentBigPlatform extends Component {
   };
 
   showTooltip = (e, name) => {
+    if (e.target === this.lastTarget) return;
     const offset = e.target.getBoundingClientRect();
+    this.lastTarget = e.target;
     this.setState({
       tooltipName: name,
       tooltipVisible: true,
@@ -499,6 +551,10 @@ class GovernmentBigPlatform extends Component {
     this.setState({ treeValue: value });
     router.push(`/big-platform/safety/government/${value}`);
     location.reload();
+  };
+
+  closeAllDrawers = () => {
+    this.setState({ ...drawVisible });
   };
 
   render() {
@@ -531,6 +587,20 @@ class GovernmentBigPlatform extends Component {
       checkUserId,
       checkNum,
       treeValue,
+      dangerCoTitle,
+      // drawer
+      riskPoint,
+      riskPointCompany,
+      dangerCoDrawer,
+      dangerInfo,
+      checkDrawer,
+      riskComName,
+      overComDrawer,
+      comInDrawer,
+      fullStaffDrawer,
+      overHdCom,
+      overHdDetail,
+      companyInfoDrawer,
     } = this.state;
     const {
       dispatch,
@@ -561,6 +631,10 @@ class GovernmentBigPlatform extends Component {
         mapLocation = [],
         companyCheckCount,
         riskDetailList,
+        selfCheckPoint = {},
+        selfCheckPoint: { total: selfCheckPointTotal },
+        securityCheck,
+        riskDetailNoOrder,
       },
       bigFireControl: { grids },
     } = this.props;
@@ -575,19 +649,9 @@ class GovernmentBigPlatform extends Component {
           {grids.length > 0 && (
             <div className={styles.treeContainer}>
               {grids.length === 1 ? (
-                <span
-                  style={{
-                    fontSize: '14px',
-                    letterSpacing: '14px',
-                    lineHeight: '30px',
-                    paddingLeft: '11px',
-                  }}
-                >
-                  {grids[0].title}
-                </span>
+                <span>{grids[0].title}</span>
               ) : (
                 <TreeSelect
-                  style={{ width: 300 }}
                   value={treeValue}
                   dropdownClassName={styles.gridDropdown}
                   treeData={grids}
@@ -602,7 +666,7 @@ class GovernmentBigPlatform extends Component {
         <article className={styles.mainBody}>
           <Row gutter={12} className={styles.heightFull}>
             <Col span={6} className={styles.heightFull}>
-              <RiskBar
+              {/* <RiskBar
                 dispatch={dispatch}
                 countDangerLocation={countDangerLocation}
                 goComponent={this.goComponent}
@@ -610,7 +674,7 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 gridId={gridId}
-              />
+              /> */}
 
               <HiddenDangerPie
                 dispatch={dispatch}
@@ -621,6 +685,18 @@ class GovernmentBigPlatform extends Component {
                   this.setState(newState);
                 }}
                 gridId={gridId}
+                closeAllDrawers={this.closeAllDrawers}
+              />
+
+              <CheckBar
+                dispatch={dispatch}
+                goComponent={this.goComponent}
+                data={securityCheck}
+                handleParentChange={newState => {
+                  this.setState(newState);
+                }}
+                fetchCheckMsgs={this.fetchCheckMsgs}
+                closeAllDrawers={this.closeAllDrawers}
               />
             </Col>
             <Col
@@ -633,12 +709,14 @@ class GovernmentBigPlatform extends Component {
                 searchAllCompany={searchAllCompany}
                 fulltimeWorker={fulltimeWorker}
                 overRectifyNum={overRectifyNum}
+                selfCheckPointTotal={selfCheckPointTotal}
                 selectOvertimeItemNum={selectOvertimeItemNum}
                 checkedCompanyInfo={checkNum}
                 handleParentChange={newState => {
                   this.setState(newState);
                 }}
                 fetchCheckMsgs={this.fetchCheckMsgs}
+                closeAllDrawers={this.closeAllDrawers}
               />
 
               {/* <section className={styles.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
@@ -659,6 +737,10 @@ class GovernmentBigPlatform extends Component {
                 showTooltip={this.showTooltip}
                 hideTooltip={this.hideTooltip}
                 handleHideInfoWindow={this.handleHideInfoWindow}
+                handleParentChange={newState => {
+                  this.setState(newState);
+                }}
+                goCompany={this.goCompany}
               />
               {/* </div>
                 </div>
@@ -674,7 +756,7 @@ class GovernmentBigPlatform extends Component {
               />
 
               {/* 单位概况 */}
-              <CompanyInfo
+              {/* <CompanyInfo
                 visible={comInfo}
                 dispatch={dispatch}
                 goBack={this.goBack}
@@ -684,29 +766,29 @@ class GovernmentBigPlatform extends Component {
                 specialEquipment={specialEquipment}
                 hiddenDangerListByDate={riskDetailList}
                 onRef={this.companyInfoRef}
-              />
+              /> */}
 
               {/* 单位统计 */}
-              <CompanyIn
+              {/* <CompanyIn
                 visible={companyIn}
                 dispatch={dispatch}
                 goBack={this.goBack}
                 goCompany={this.goCompany}
                 searchAllCompany={searchAllCompany}
-              />
+              /> */}
 
-              {/* 风险点 */}
-              <FullStaff
+              {/* 监管人员 */}
+              {/* <FullStaff
                 visible={fullStaff}
                 dispatch={dispatch}
                 goBack={this.goBack}
                 goComponent={this.goComponent}
                 listData={fulltimeWorkerList}
                 fulltimeWorker={fulltimeWorker}
-              />
+              /> */}
 
               {/* 风险点 */}
-              <RiskColors
+              {/* <RiskColors
                 visible={riskColors}
                 dispatch={dispatch}
                 goBack={this.goBack}
@@ -714,10 +796,10 @@ class GovernmentBigPlatform extends Component {
                 goComponent={this.goComponent}
                 listData={dangerLocationCompanyData}
                 riskColorSummary={riskColorSummary}
-              />
+              /> */}
 
               {/* 已超期隐患单位 */}
-              <HdOverCompany
+              {/* <HdOverCompany
                 visible={overHd}
                 dispatch={dispatch}
                 goBack={this.goBack}
@@ -726,35 +808,35 @@ class GovernmentBigPlatform extends Component {
                 listData={overRectifyCompany}
                 overRectifyNum={overRectifyNum}
                 gridId={gridId}
-              />
+              /> */}
 
               {/* 已超时风险点 */}
-              <RiskOver
+              {/* <RiskOver
                 visible={riskOver}
                 goBack={this.goBack}
                 goCompany={this.goCompany}
                 listData={overtimeUncheckedCompany}
                 riskOverNum={selectOvertimeItemNum}
-              />
+              /> */}
 
               {/* 已超期隐患详情 */}
-              <RiskDetailOver
+              {/* <RiskDetailOver
                 visible={hdOverDetail}
                 goBack={this.goBack}
                 hiddenDangerListByDate={riskDetailList}
-              />
+              /> */}
 
               {/* 隐患详情 */}
-              <RiskDetail
+              {/* <RiskDetail
                 visible={hiddenDanger}
                 goBack={this.goBack}
                 hiddenDangerListByDate={hiddenDangerListByDate}
                 riskDetailList={riskDetailList}
                 lastSection={dangerCompanyLast}
-              />
+              /> */}
 
               {/* 隐患单位统计 */}
-              <DangerCompany
+              {/* <DangerCompany
                 data={dangerCompanyData}
                 visible={hdCom}
                 dispatch={dispatch}
@@ -767,10 +849,10 @@ class GovernmentBigPlatform extends Component {
                 checkUserId={checkUserId}
                 gridId={gridId}
                 // monthSelecter={hdComMonth}
-              />
+              /> */}
 
-              {/* 监督检查 */}
-              <CheckInfo
+              {/* 安全检查 */}
+              {/* <CheckInfo
                 dispatch={dispatch}
                 visible={checks}
                 listData={checkInfo}
@@ -785,16 +867,16 @@ class GovernmentBigPlatform extends Component {
                 fetchCheckMsgs={this.fetchCheckMsgs}
                 checksMonth={checksMonth}
                 gridId={gridId}
-              />
+              /> */}
 
               {/* 已超时单位 */}
-              <CompanyOver
+              {/* <CompanyOver
                 visible={companyOver}
                 listData={hiddenDangerOverTime}
                 goBack={this.goBack}
                 goComponent={this.goComponent}
                 goCompany={this.goCompany}
-              />
+              /> */}
             </Col>
           </Row>
         </article>
@@ -803,6 +885,136 @@ class GovernmentBigPlatform extends Component {
           title={tooltipName}
           position={tooltipPosition}
           offset={[10, 30]}
+        />
+
+        {/* 风险点 */}
+        <RiskPoint
+          riskPointVisible={riskPointCompany}
+          visible={riskPoint}
+          dispatch={dispatch}
+          goBack={this.goBack}
+          goCompany={this.goCompany}
+          goComponent={this.goComponent}
+          data={selfCheckPoint}
+          riskColorSummary={riskColorSummary}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+          closeAllDrawers={this.closeAllDrawers}
+        />
+
+        {/* 风险点-企业 */}
+        <RiskPointCompany
+          visible={riskPointCompany}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+          closeAllDrawers={this.closeAllDrawers}
+          companyName={riskComName}
+        />
+
+        {/* 隐患单位统计 */}
+        <DangerCompanyDrawer
+          data={dangerCompanyData}
+          visible={dangerCoDrawer}
+          dispatch={dispatch}
+          goCompany={this.goCompany}
+          monthSelecter={false}
+          lastSection={dangerCompanyLast}
+          month={checksMonth}
+          checkUserId={checkUserId}
+          gridId={gridId}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+          dangerCoTitle={dangerCoTitle}
+        />
+
+        {/* 安全检查 */}
+        <CheckDrawer
+          dispatch={dispatch}
+          visible={checkDrawer}
+          listData={checkInfo}
+          checkedCompanyInfo={companyCheckCount}
+          dangerCompany={hiddenDangerCompanyMonth}
+          dangerCompanyOver={hiddenDangerOverTime}
+          goComponent={this.goComponent}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+          fetchCheckMsgs={this.fetchCheckMsgs}
+          checksMonth={checksMonth}
+          gridId={gridId}
+        />
+
+        {/* 隐患详情 */}
+        <DangerInfo
+          visible={dangerInfo}
+          hiddenDangerListByDate={hiddenDangerListByDate}
+          riskDetailList={riskDetailNoOrder}
+          lastSection={dangerCompanyLast}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+        />
+
+        {/* 已超时单位 */}
+        <OverComDrawer
+          visible={overComDrawer}
+          listData={hiddenDangerOverTime}
+          goCompany={this.goCompany}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+        />
+
+        {/* 单位概况 */}
+        <ComInDrawer
+          visible={comInDrawer}
+          goCompany={this.goCompany}
+          searchAllCompany={searchAllCompany}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+        />
+
+        {/* 监管人员 */}
+        <FullStaffDrawer
+          visible={fullStaffDrawer}
+          goComponent={this.goComponent}
+          listData={fulltimeWorkerList}
+          fulltimeWorker={fulltimeWorker}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+        />
+
+        {/* 已超期隐患单位 */}
+        <OverHdCom
+          visible={overHdCom}
+          dispatch={dispatch}
+          goCompany={this.goCompany}
+          listData={overRectifyCompany}
+          overRectifyNum={overRectifyNum}
+          gridId={gridId}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
+        />
+
+        {/* 单位概况 */}
+        <CompanyInfoDrawer
+          visible={companyInfoDrawer}
+          dispatch={dispatch}
+          goCompany={this.goCompany}
+          companyId={companyId}
+          companyMessage={companyMessage}
+          specialEquipment={specialEquipment}
+          hiddenDangerListByDate={riskDetailNoOrder}
+          onRef={this.companyInfoRef}
+          handleParentChange={newState => {
+            this.setState(newState);
+          }}
         />
       </div>
     );

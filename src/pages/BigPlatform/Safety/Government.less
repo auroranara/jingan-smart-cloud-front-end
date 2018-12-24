@@ -28,15 +28,25 @@
       font-size: 20px;
       position: absolute;
       bottom: 15px;
-      right: 30px;
+      right: 0;
+      width: 25%;
+      margin-right: -4px;
     }
     .treeContainer {
       position: absolute;
-      left: 6%;
-      bottom: 0;
+      width: 25%;
+      text-align: center;
+      bottom: 10px;
+      line-height: 32px;
+      font-size: 18px;
+      margin-left: -4px;
+      letter-spacing: 0;
       :global {
         .ant-select {
           color: #fff;
+          width: 200px;
+          font-size: 18px;
+          letter-spacing: 0px;
         }
         .ant-select-arrow {
           color: #fff;
@@ -576,10 +586,11 @@
       height: 100%;
     }
     .hdCompany {
-      padding: 5px 16px;
+      padding: 0px 10px;
       position: absolute;
+      top: 68px;
       width: auto;
-      right: 10px;
+      right: 15px;
       border-radius: 5px;
       z-index: 6;
       cursor: pointer;
@@ -591,6 +602,38 @@
     }
     .hdCompany:hover {
       background-color: rgba(4, 57, 110, 0.5);
+    }
+    .modeChange {
+      position: absolute;
+      width: auto;
+      height: 24px;
+      top: 35px;
+      right: 25px;
+      border-radius: 3px;
+      z-index: 6;
+      overflow: hidden;
+      border: 1px solid #0e4a95;
+      .modeBtn {
+        position: relative;
+        display: inline-block;
+        width: 34px;
+        height: 24px;
+        text-align: center;
+        background-color: #033069;
+        cursor: pointer;
+        &+.modeBtn {
+          border-left: 1px solid #0e4a95;
+        }
+        &:hover {
+          opacity: 0.8;
+        }
+        img {
+          width: auto;
+          height: 70%;
+          position: relative;
+          top: -1px;
+        }
+      }
     }
     .riskTotal {
       padding: 5px 16px;
@@ -861,6 +904,13 @@
       font-size: 30px;
       .subHeader {
         font-size: 16px;
+      }
+      .treeContainer {
+        :global {
+          .ant-select {
+            font-size: 16px;
+          }
+        }
       }
     }
     .mainBody {

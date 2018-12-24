@@ -50,74 +50,6 @@ const handleViewDetail = id => {
   router.push(`/data-analysis/test-info/detail/${id}`);
 };
 
-const COLUMNS = [
-  {
-    title: '警情状态',
-    dataIndex: 'status',
-    key: 'status',
-    align: 'center',
-    width: 120,
-  },
-  {
-    title: '测试时间',
-    dataIndex: 'testTime',
-    key: 'testTime',
-    align: 'center',
-    width: 180,
-    render: val => {
-      return val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '';
-    },
-  },
-  {
-    title: '主机编号',
-    dataIndex: 'clientAddr',
-    key: 'clientAddr',
-    align: 'center',
-    width: 110,
-  },
-  {
-    title: '回路故障号',
-    dataIndex: 'failureCode',
-    key: 'failureCode',
-    align: 'center',
-    width: 140,
-  },
-  {
-    title: '设施部件类型',
-    dataIndex: 'type',
-    key: 'type',
-    align: 'center',
-    width: 130,
-  },
-  {
-    title: '具体位置',
-    dataIndex: 'installAddress',
-    key: 'installAddress',
-    align: 'center',
-    width: 130,
-  },
-  {
-    title: '服务单位',
-    dataIndex: 'companyName',
-    key: 'companyName',
-    align: 'center',
-    width: 130,
-  },
-  {
-    title: '操作',
-    dataIndex: '操作',
-    key: '操作',
-    align: 'center',
-    fixed: 'right',
-    width: 120,
-    render: (val, record) => (
-      <span>
-        <a onClick={() => handleViewDetail(record.detailId)}>查看</a>
-      </span>
-    ),
-  },
-];
-
 @connect(
   ({ fireTest, loading, user }) => ({
     fireTest,
@@ -150,6 +82,7 @@ const COLUMNS = [
 export default class TestList extends PureComponent {
   state = {
     formData: {
+      unitCompanyName: undefined,
       alertStatus: undefined,
       companyName: undefined,
       deviceCode: undefined,
@@ -159,11 +92,102 @@ export default class TestList extends PureComponent {
       unitType: undefined,
     },
     isInit: false,
+    scrollX: 1250, // 列表scroll宽度
+    columns: [
+      {
+        title: '警情状态',
+        dataIndex: 'status',
+        key: 'status',
+        align: 'center',
+        width: 120,
+      },
+      {
+        title: '测试时间',
+        dataIndex: 'testTime',
+        key: 'testTime',
+        align: 'center',
+        width: 180,
+        render: val => {
+          return val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : '';
+        },
+      },
+      {
+        title: '主机编号',
+        dataIndex: 'clientAddr',
+        key: 'clientAddr',
+        align: 'center',
+        width: 110,
+      },
+      {
+        title: '回路故障号',
+        dataIndex: 'failureCode',
+        key: 'failureCode',
+        align: 'center',
+        width: 140,
+      },
+      {
+        title: '设施部件类型',
+        dataIndex: 'type',
+        key: 'type',
+        align: 'center',
+        width: 130,
+      },
+      {
+        title: '具体位置',
+        dataIndex: 'installAddress',
+        key: 'installAddress',
+        align: 'center',
+        width: 130,
+      },
+      {
+        title: '服务单位',
+        dataIndex: 'companyName',
+        key: 'companyName',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: '操作',
+        dataIndex: '操作',
+        key: '操作',
+        align: 'center',
+        fixed: 'right',
+        width: 120,
+        render: (val, record) => (
+          <span>
+            <a onClick={() => handleViewDetail(record.detailId)}>查看</a>
+          </span>
+        ),
+      },
+    ],
   };
 
   /* 挂载后 */
   componentDidMount() {
-    const { fetchAppHistories, fetchSelectCondition } = this.props;
+    const {
+      fetchAppHistories,
+      fetchSelectCondition,
+      user: {
+        currentUser: { companyBasicInfo: { isBranch } = {} },
+      },
+    } = this.props;
+    // 判断是否是维保子公司
+    const { columns } = this.state;
+
+    if (!isBranch) {
+      columns.splice(6, 0, {
+        title: '维保单位',
+        dataIndex: 'unitCompanyName',
+        key: 'unitCompanyName',
+        align: 'center',
+        width: 200,
+        render: val => {
+          return val ? val : '暂无数据';
+        },
+      });
+      this.setState({ columns: [...columns], scrollX: 1600 });
+    }
+
     /* 获取测试火灾自动报警系统历史记录(web) */
     fetchAppHistories({
       payload: {
@@ -215,6 +239,7 @@ export default class TestList extends PureComponent {
       success: () => {
         this.setState({
           formData: {
+            unitCompanyName: undefined,
             alertStatus: undefined,
             companyName: undefined,
             deviceCode: undefined,
@@ -236,13 +261,126 @@ export default class TestList extends PureComponent {
     const {
       // fireAlarm: { dictDataList },
       fireTest: { dictDataList, deviceCodes },
+      user: {
+        currentUser: { companyBasicInfo: { isBranch } = {} },
+      },
     } = this.props;
+
     /* 表单字段 */
     const fields = [
       {
+        id: 'unitCompanyName',
+        render() {
+          return <Input placeholder="请输入维保单位名称" />;
+        },
+        transform,
+      },
+      {
         id: 'companyName',
         render() {
-          return <Input placeholder="请输入单位名称" />;
+          return <Input placeholder="请输入服务单位名称" />;
+        },
+        transform,
+      },
+      {
+        id: 'alertStatus',
+        render() {
+          return (
+            <Select
+              allowClear
+              placeholder="警情状态"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {alertStatusList.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
+      },
+      {
+        id: 'deviceCode',
+        render() {
+          return (
+            <Select
+              allowClear
+              showSearch
+              placeholder="主机编号"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {[...new Set(deviceCodes)].map((item, index) => {
+                return (
+                  item && (
+                    <Option value={item} key={index}>
+                      {item}
+                    </Option>
+                  )
+                );
+              })}
+            </Select>
+          );
+        },
+      },
+      {
+        id: 'unitType',
+        render() {
+          return (
+            <Select
+              allowClear
+              showSearch
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              placeholder="设施部件类型"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {dictDataList.map(item => (
+                <Option value={item.value} key={item.id}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
+      },
+      {
+        id: 'specificLocation',
+        render() {
+          return <Input placeholder="请输入具体位置" />;
+        },
+        transform,
+      },
+      {
+        id: 'period',
+        options: {
+          initialValue: [],
+        },
+        render() {
+          return (
+            <RangePicker
+              style={{ width: '100%' }}
+              format="YYYY-MM-DD HH:mm:ss"
+              placeholder={['开始时间', '结束时间']}
+              showTime={{
+                defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
+              getCalendarContainer={getRootChild}
+            />
+          );
+        },
+      },
+    ];
+
+    const isField = [
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入服务单位名称" />;
         },
         transform,
       },
@@ -343,7 +481,7 @@ export default class TestList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={fields}
+          fields={isBranch ? isField : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -379,8 +517,7 @@ export default class TestList extends PureComponent {
       fireTest: { pagination, list },
     } = this.props;
     const { pageNum, pageSize, total } = pagination;
-    console.log(this.props);
-
+    const { columns, scrollX } = this.state;
     return (
       <PageHeaderLayout
         title={title}
@@ -398,9 +535,10 @@ export default class TestList extends PureComponent {
             <Table
               rowKey="detailId"
               loading={loading}
-              columns={COLUMNS}
+              columns={columns}
               dataSource={list}
               pagination={false}
+              scroll={{ x: scrollX }}
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}

@@ -1,0 +1,104 @@
+.drawerOfFireAlarm {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
+    background-color: #021c40;
+  }
+  &::-webkit-scrollbar {
+    width: 7px;
+    background-color: #021c40;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #06428a;
+  }
+  .fireAlarmItem {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #04fdff;
+    margin-bottom: 1em;
+    position: relative;
+    .line {
+      width: 100%;
+      display: flex;
+      line-height: 30px;
+      font-size: 15px;
+      .label {
+        padding-right: 0.3em;
+        flex: none;
+        & * {
+          color: #04fdff;
+        }
+      }
+      .value {
+        flex: 1;
+        overflow: hidden;
+        & * {
+          color: white;
+          word-break: break-all;
+        }
+      }
+      .listValue {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        & * {
+          color: white;
+        }
+      }
+    }
+    .goodLogo {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      padding: 5px 10px;
+      border: 1px solid #04fdff;
+      z-index: -1;
+      span {
+        color: #04fdff;
+      }
+    }
+    .normalLogo {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      padding: 5px 10px;
+      border: 1px solid #F6B54E;
+      z-index: -1;
+      span {
+        color: #F6B54E;
+      }
+    }
+    .errorLogo {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      padding: 5px 10px;
+      border: 1px solid #E96767;
+      z-index: -1;
+      span {
+        color: #E96767;
+      }
+    }
+    .imageLine {
+      width: 100%;
+      line-height: 30px;
+      font-size: 15px;
+      .label {
+        padding-right: 0.3em;
+        & * {
+          color: #04fdff;
+        }
+      }
+      .images {
+        margin-top: 0.5em;
+        width: 100%;
+        & * {
+          word-break: break-all;
+        }
+      }
+    }
+  }
+}

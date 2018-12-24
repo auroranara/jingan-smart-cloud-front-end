@@ -19,7 +19,7 @@ export default {
     },
     *updateGridMapLocation({ payload }, { call, put }) {
       const response = yield call(updateGridLocation, payload);
-      console.log(response);
+      // console.log(response);
     },
   },
 

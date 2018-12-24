@@ -3,14 +3,14 @@
 // https://umijs.org/config/
 
 const path = require('path');
-const pageRoutes = require('./router.config');
+const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
   sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
-  ct: '192.168.10.8', //陈涛
+  ct: '192.168.10.8:8080', //陈涛
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18081', // 开发
   test: '192.168.10.68:18082', // 测试
@@ -42,11 +42,6 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
-    // '/eye': {
-    //   target: 'http://192.168.10.2',
-    //   changeOrigin: true,
-    //   pathRewrite: { '^/eye': '/eye' },
-    // },
   },
   // add for transfer to umi
   plugins: [
@@ -69,21 +64,12 @@ export default {
           exclude: ['@babel/runtime'],
         },
         hardSource: true,
-
-        // ...(
-        //   require('os').platform() === 'darwin'
-        //   ? {
-        //       dll: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-        //       hardSource: true,
-        //     }
-        //   : {}
-        // ),
       },
     ],
   ],
 
   // 路由配置
-  routes: pageRoutes,
+  routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
   publicPath: '/acloud_new/',

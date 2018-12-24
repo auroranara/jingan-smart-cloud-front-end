@@ -3,8 +3,9 @@ import { Table, Select } from 'antd'
 import moment from 'moment';
 import backIcon from 'assets/back.png';
 import Section from '@/components/Section';
+import Ellipsis from '@/components/Ellipsis';
 import Switcher from '@/components/Switcher'
-import HiddenDanger from '../HiddenDanger';
+import HiddenDanger from '../../Company2/HiddenDanger';
 
 import styles from './index.less';
 const { Option } = Select;
@@ -25,7 +26,21 @@ const defaultFieldNames = {
  */
 export default class App extends PureComponent {
   state={
-    hiddenDanger: null,
+    visible: false,
+  }
+
+  /**
+   * 获取处理结果
+   */
+  getResult = ({ rectification=0, review=0, closed=0, overTime=0 }={}) => {
+    return (
+      <span>
+        {overTime > 0 && <span style={{ color: '#ff4848' }}>已超期-{overTime}{(rectification > 0 || review > 0 || closed > 0) && '/'}</span>}
+        {rectification > 0 && <span>待整改-{rectification}{(review > 0 || closed > 0) && '/'}</span>}
+        {review > 0 && <span>待复查-{review}{closed > 0 && '/'}</span>}
+        {closed > 0 && <span>已关闭-{closed}</span>}
+      </span>
+    )
   }
 
   /**
@@ -38,53 +53,23 @@ export default class App extends PureComponent {
     }
   }
 
-  /**
-   * 修改隐患数据
-   */
-  setHiddenDanger = (hiddenDanger) => {
-    this.setState({
-      hiddenDanger,
-    });
-  }
-
   render() {
     const {
       onBack,
       data=[],
+      inspectionRecordData: {
+        hiddenData=[],
+      },
       fieldNames,
       month,
+      // 显示隐患详情
+      handleShowDetail,
+      getInspectionRecordData,
     } = this.props;
-    const { hiddenDanger } = this.state;
+    const { visible } = this.state;
     const { id: idField, person: personField, time: timeField, point: pointField, result: resultField } = {...defaultFieldNames, ...fieldNames};
     const total = data.length;
     const abnormal = data.filter(item => +item[resultField] !== 1).length;
-    const list = hiddenDanger && hiddenDanger.map(({
-      _id,
-      _desc,
-      _report_user_name,
-      _report_time,
-      _rectify_user_name,
-      _plan_rectify_time,
-      _real_rectify_time,
-      _review_user_name,
-      _review_time,
-      hiddenStatus,
-      _path,
-      business_type,
-    }) => ({
-      id: _id,
-      description: _desc,
-      sbr: _report_user_name,
-      sbsj: moment(+_report_time).format('YYYY-MM-DD'),
-      zgr: _rectify_user_name,
-      plan_zgsj: moment(+_plan_rectify_time).format('YYYY-MM-DD'),
-      real_zgsj: moment(+_real_rectify_time).format('YYYY-MM-DD'),
-      fcr: _review_user_name,
-      fcsj: _review_time && moment(+_review_time).format('YYYY-MM-DD'),
-      status: +hiddenStatus,
-      background: _path,
-      businessType: business_type,
-    }));
 
     /* 表头 */
     const columns = [
@@ -92,27 +77,61 @@ export default class App extends PureComponent {
         title: '巡查人',
         dataIndex: personField,
         key: personField,
+        width: 88,
       },
       {
         title: '巡查时间',
         dataIndex: timeField,
         key: timeField,
+        width: 90,
         render: (text) => <span>{moment(+text).format('YYYY-MM-DD')}</span>,
       },
       {
         title: '巡查点位',
         dataIndex: pointField,
         key: pointField,
+        render: (value, { item_id, status }) => {
+          // 当前状态为异常或超时时显示文本
+          const showLabel = +status === 2 || +status === 4;
+          return (
+            <span
+              style={{
+                display: 'inline-block',
+                position: 'relative',
+                padding: showLabel ? '0 66px' : undefined,
+                color: '#00baff',
+                cursor: 'pointer',
+              }}
+              onClick={() => {handleShowDetail(item_id, status);}}
+            >
+              {value}
+              {showLabel && <div style={{ position: 'absolute', right: 0, top: 0, width: 58, height: 21, lineHeight: '19px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
+            </span>
+          );
+        },
       },
       {
         title: '巡查结果',
         dataIndex: resultField,
         key: resultField,
-        render: (text, { card }) => {
+        width: 88,
+        render: (text, { check_id, status }) => {
           const isNormal = +text === 1;
           return (
-            <div style={{ cursor: isNormal?undefined:'pointer' }} onClick={isNormal?undefined:() => this.setHiddenDanger(card)}>{isNormal ? '正常':'异常'}</div>
+            <span style={{ color: isNormal ? undefined : '#ff4848', cursor: isNormal ? 'auto' : 'pointer' }} onClick={() => {!isNormal && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isNormal ? '正常':'异常'}</span>
           )
+        },
+      },
+      {
+        title: '隐患当前状态',
+        dataIndex: 'rectification',
+        key: 'rectification',
+        width: 116,
+        render: (value, { check_id, rectification, review, closed, overTime, status }) => {
+          const isAlert = rectification + review + closed + overTime > 0;
+          return (
+            <div style={{ display: 'inline-block', width: 72, cursor: isAlert ? 'pointer' : 'auto' }} onClick={() => {isAlert && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isAlert ? <Ellipsis lines={1} tooltip style={{ height: '1.5em' }}>{this.getResult({ rectification, review, closed, overTime })}</Ellipsis> : '---'}</div>
+          );
         },
       },
     ];
@@ -141,12 +160,12 @@ export default class App extends PureComponent {
             <div className={styles.jumpButton} onClick={onBack}><img src={backIcon} alt="" /></div>
           </Fragment>
         }
-        hackHeight={data.length > 0 ? (38 * data.length + 37) : 38}
+        skip
         isScroll
       >
         <Table
           className={styles.table}
-          rowClassName={record => +record[resultField] === 1 ? '' : styles.abnormal }
+          // rowClassName={record => +record[resultField] === 1 ? '' : styles.abnormal }
           size="small"
           dataSource={data}
           columns={columns}
@@ -154,22 +173,52 @@ export default class App extends PureComponent {
           bordered={false}
           rowKey={idField}
         />
-        {list && (
+        {hiddenData && (
           <Switcher
-            visible={true}
+            visible={visible}
             style={{
               position: 'fixed',
               bottom: '0',
               left: '25%',
               right: '25%',
             }}
-            onClose={() => this.setHiddenDanger(null)}
+            onClose={() => this.setState({ visible: false })}
           >
-            {list.map(item => (
+            {hiddenData.map(({
+              _id,
+              _report_user_name,
+              _report_time,
+              _rectify_user_name,
+              _plan_rectify_time,
+              _review_user_name,
+              business_type,
+              _desc,
+              path,
+              _real_rectify_time,
+              _review_time,
+              object_title,
+              hiddenStatus,
+              typeName,
+              risk_level,
+            }) => (
               <HiddenDanger
-                key={item.id}
-                style={{ marginBottom: 0 }}
-                data={item}
+                key={_id}
+                style={{ marginBottom: 0, backgroundColor: '#062756' }}
+                data={{
+                  report_user_name: _report_user_name,
+                  report_time: _report_time,
+                  rectify_user_name: _rectify_user_name,
+                  real_rectify_time: _real_rectify_time,
+                  plan_rectify_time: _plan_rectify_time,
+                  review_user_name: _review_user_name,
+                  review_time: _review_time,
+                  source_type_name: typeName,
+                  companyBuildingItem: { object_title, risk_level },
+                  desc: _desc,
+                  business_type,
+                  status: hiddenStatus,
+                  hiddenDangerRecordDto: [{ fileWebUrl: path }],
+                }}
               />
             ))}
           </Switcher>

@@ -16,7 +16,6 @@ class DangerCompany extends PureComponent {
   handleClick = id => {
     const { dispatch, lastSection, month, checkUserId, gridId } = this.props;
     const param = lastSection === 'checks' ? { date: month } : {};
-    console.log(lastSection);
     if (lastSection === 'checks') {
       dispatch({
         type: 'bigPlatform/fetchHiddenDangerListByDate',

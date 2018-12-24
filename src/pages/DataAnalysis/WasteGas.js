@@ -34,7 +34,7 @@ const breadcrumbList = [
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class ToxicGas extends PureComponent {
+export default class WasteGas extends PureComponent {
   state = {
     // moments: null,
     formVals: null,
@@ -45,7 +45,7 @@ export default class ToxicGas extends PureComponent {
     const vals = { date: getThisMonth() };
     this.setState({ formVals: vals });
     this.fetchData(1, vals);
-    // this.fetchCompanyInfo();
+    this.fetchCompanyInfo();
   }
 
   fetchCompanyInfo() {
@@ -170,7 +170,7 @@ export default class ToxicGas extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div className={styles.content}>
-            <p>{companyName ? companyName : '暂无企业信息'}</p>
+            <p>{companyName ? companyName : '暂无单位信息'}</p>
             <p className={styles.count}>
               监测点：
               {count}

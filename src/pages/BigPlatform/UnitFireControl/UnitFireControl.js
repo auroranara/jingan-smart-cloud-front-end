@@ -6,7 +6,6 @@ import Header from './components/Header/Header';
 import Section from '@/components/Section';
 import FireAlarmSystem from './components/FireAlarmSystem/FireAlarmSystem';
 import StatisticsOfMaintenance from './components/StatisticsOfMaintenance/StatisticsOfMaintenance';
-import StatisticsOfHiddenDanger from './components/StatisticsOfHiddenDanger/StatisticsOfHiddenDanger';
 import StatisticsOfFireControl from './components/StatisticsOfFireControl/StatisticsOfFireControl';
 import Rotate from 'components/Rotate';
 import VideoPlay from '../FireControl/section/VideoPlay';
@@ -16,7 +15,6 @@ import resetKeyPressIcon from './images/resetKeyPress.png';
 import hostIcon from './images/hostIcon.png';
 import fireHostIcon from './images/fireHostIcon.png';
 import noPhotoIcon from './images/noPhoto.png';
-import noPendingInfo from './images/noPendingInfo.png';
 import noHiddenDangerRecords from './images/noHiddenDangerRecords.png';
 import dfcIcon from './images/dfc.png';
 import wcqIcon from './images/wcq.png';
@@ -27,6 +25,15 @@ import safety from '@/assets/safety.png';
 import fireControl from '@/assets/fire-control.png';
 import environment from '@/assets/environment.png';
 import hygiene from '@/assets/hygiene.png';
+import PendingInformation from './Sections/PendingInformation';
+import InformationHistory from './Sections/InformationHistory';
+import InspectionStatistics from './Sections/InspectionStatistics';
+import FireHostMonitoring from './Sections/FireHostMonitoring';
+import ElectricityCharts from '../Monitor/Sections/ElectricityCharts';
+import StatisticsOfHiddenDanger from './Sections/StatisticsOfHiddenDanger';
+import DrawerOfHiddenDanger from './Sections/DrawerOfHiddenDanger';
+import ModalOfFireHost from './Sections/ModalOfFireHost';
+import ModalOfInspectionStatistics from './Sections/ModalOfInspectionStatistics';
 
 import styles from './UnitFireControl.less';
 const { projectName } = global.PROJECT_CONFIG;
@@ -37,124 +44,6 @@ const positionBlueIcon = `${prefix}fire_position_blue.png`;
 const positionRedIcon = `${prefix}fire_position_red.png`;
 const splitIcon = `${prefix}split.png`;
 const splitHIcon = `${prefix}split_h.png`;
-/* 待处理信息项 */
-const PendingInfoItem = ({ data, onClick }) => {
-  const { id, t, install_address, component_region, component_no, label, pendingInfoType } = data;
-  const isFire = pendingInfoType === '火警';
-  return (
-    <div
-      key={id}
-      className={styles.pendingInfoItem}
-      style={{ color: isFire ? '#FF6464' : '#00ADFF' }}
-    >
-      <div style={{ backgroundImage: `url(${isFire ? fireIcon : faultIcon})` }}>
-        {pendingInfoType}
-        <div className={styles.pendingInfoItemTime}>{t}</div>
-      </div>
-      <div>
-        {component_region}
-        回路
-        {component_no}号
-      </div>
-      <div>{label}</div>
-      <div style={{ backgroundImage: `url(${isFire ? positionRedIcon : positionBlueIcon})` }}>
-        {install_address}
-      </div>
-      <div className={styles.videoPlayButton} onClick={onClick}>
-        <img src={videoIcon} alt="" />
-      </div>
-    </div>
-  );
-};
-
-/**
- * 隐患巡查记录项
- */
-const HiddenDangerRecord = ({ data }) => {
-  const {
-    id,
-    status,
-    desc,
-    report_user_name,
-    report_time,
-    rectify_user_name,
-    plan_rectify_time,
-    real_rectify_time,
-    review_user_name,
-    hiddenDangerRecordDto,
-    business_type,
-  } = data;
-  let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
-  fileWebUrl = fileWebUrl ? fileWebUrl.split(',')[0] : '';
-  const { badge, icon, color } = getIconByStatus(status);
-  const isYCQ = +status === 7;
-  const isDFC = +status === 3;
-  const rectify_time = isDFC ? real_rectify_time : plan_rectify_time;
-  return (
-    <div className={styles.hiddenDangerRecord} key={id}>
-      <div
-        className={styles.hiddenDangerRecordBadge}
-        style={{ backgroundImage: badge && `url(${badge})` }}
-      />
-      <div style={{ backgroundImage: `url(${noPhotoIcon})` }}>
-        <div style={{ position: 'relative', width: '100%', textAlign: 'center' }}>
-          <img
-            src={fileWebUrl && fileWebUrl.split(',')[0]}
-            alt=""
-            style={{ display: 'block', width: '100%', margin: '0 auto' }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              backgroundColor: 'rgba(0, 168, 255, 0.3)',
-            }}
-          />
-        </div>
-      </div>
-      <div>
-        <div style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})`, color }}>
-          <Ellipsis lines={2} tooltip>
-            {desc || <span style={{ color: '#fff' }}>暂无隐患描述</span>}
-          </Ellipsis>
-        </div>
-        <div>
-          <span>
-            上<span style={{ opacity: '0' }}>隐藏</span>
-            报：
-          </span>
-          <Ellipsis lines={1} tooltip>
-            <span style={{ marginRight: '16px' }}>{report_user_name}</span>
-            {moment(+report_time).format('YYYY-MM-DD')}
-          </Ellipsis>
-        </div>
-        <div>
-          <span>{isDFC ? '实际整改：' : '计划整改：'}</span>
-          <Ellipsis lines={1} tooltip>
-            <span style={{ marginRight: '16px' }}>{rectify_user_name}</span>
-            <span style={{ color: isYCQ ? '#FF6464' : undefined }}>
-              {moment(+rectify_time).format('YYYY-MM-DD')}
-            </span>
-          </Ellipsis>
-        </div>
-        {isDFC && (
-          <div>
-            <span>
-              复<span style={{ opacity: '0' }}>隐藏</span>
-              查：
-            </span>
-            <Ellipsis lines={1} tooltip>
-              <span>{review_user_name}</span>
-            </Ellipsis>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
 /**
  * 复位主机
@@ -189,106 +78,53 @@ const Host = ({ data, onClick }) => {
   );
 };
 
-// 根据业务分类获取对应图标
-const getIconByBusinessType = function(businessType) {
-  switch (+businessType) {
-    case 1:
-      return safety;
-    case 2:
-      return fireControl;
-    case 3:
-      return environment;
-    case 4:
-      return hygiene;
-    default:
-      return safety;
-  }
-};
-
-/**
- * 根据status获取对应的标记
- */
-const getIconByStatus = status => {
-  switch (+status) {
-    case 3:
-      return {
-        color: '#00ADFF',
-        badge: dfcIcon,
-        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
-      };
-    case 1:
-    case 2:
-      return {
-        color: '#00ADFF',
-        badge: wcqIcon,
-        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
-      };
-    case 7:
-      return {
-        color: '#FF6464',
-        badge: ycqIcon,
-        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_red.png',
-      };
-    default:
-      return {
-        color: '#00ADFF',
-        icon: 'http://data.jingan-china.cn/v2/big-platform/safety/com/description_blue.png',
-      };
-  }
-};
-
-/**
- * 获取待处理信息的类型
- */
-const getPendingInfoType = ({
-  fire_state,
-  fault_state,
-  main_elec_state,
-  prepare_elec_state,
-  start_state,
-  supervise_state,
-  shield_state,
-  feedback_state,
-}) => {
-  let type = '';
-  if (+fire_state === 1) {
-    type = '火警';
-  } else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
-    type = '故障';
-  } else if (+start_state === 1) {
-    type = '联动';
-  } else if (+supervise_state === 1) {
-    type = '监管';
-  } else if (+shield_state === 1) {
-    type = '屏蔽';
-  } else if (+feedback_state === 1) {
-    type = '反馈';
-  }
-  return type;
-};
 
 /* 默认选中的消防数据统计类型 */
 const defaultFireControlType = 1;
 /* 默认选中的隐患巡查统计类型 */
-const defaultHiddenDangerType = moment().get('month');
+const defaultHiddenDangerType = 1;
 /* 默认选中的维保情况统计类型 */
 const defaultMaintenanceType = 6;
+/* 默认每页显示数量 */
+const defaultPageSize = 10;
 
 /**
  * 单位消防大屏
  */
-@connect(({ unitFireControl }) => ({
+@connect(({ unitFireControl, monitor, loading }) => ({
   unitFireControl,
+  monitor,
+  pendingHistoryLoading: loading.effects['unitFireControl/fetchInformationHistory'],
+  hiddenDnagerLoading: loading.effects['unitFireControl/fetchHiddenDangerRecords'],
+  inspectionMoreLoading: loading.effects['unitFireControl/fetchNormalPatrol'] || loading.effects['unitFireControl/fetchAbnormalPatrol'],
 }))
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       fireControlType: defaultFireControlType,
-      hiddenDangerType: defaultHiddenDangerType,
+      hiddenDangerType: 'realTime',  // 实时：realTime  月份：YYYY-MM
       maintenanceType: defaultMaintenanceType,
       frontIndex: 0,
       videoVisible: false,
+      selectedInspectionMonth: defaultHiddenDangerType, // 选中的巡查统计时间筛选 今日、本周、本月、本季度依次为 1 2 3 4
+      chartSelectVal: '',
+      hiddenDangerVisible: false,  // 隐患抽屉是否可见
+      fireHostVisible: false,      // 消防主机弹窗可见
+      currentFireHostType: null,   // 当前选择的消防主机类型
+      fireHostLoading: false,      // 消防主机弹窗数据加载
+      fireHostPagination: {        // 消防主机表格的分页数据
+        pageNum: 1,
+        pageSize: defaultPageSize,
+        total: 0,
+      },
+      currentFireHosts: [],         // 当前分页展示的消防主机
+      pendingInfoStatus: '待处理',   // 待处理信息展示状态 （待处理、处理中）
+      inspectionModalVisible: false, // 巡查统计数据下钻可见
+      InspectionModalType: 'normal',  // 巡查统计数据数据下钻正常正常还是异常数据（normal、abnormal）
+      dangerCardVisible: false,       // 巡查统计数据下钻显示的隐患卡片
+      hiddenDangerLabel: '',            // 点击隐患统计时保存类型（已超期、待复查、未超期）
+      pendingInfoLoading: true,        // 待办事项是否加载
     };
     // 轮询定时器
     this.pollingTimer = null;
@@ -304,27 +140,86 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    // 立即执行轮询
-    this.polling();
+    const { fireControlType, maintenanceType } = this.state;
 
-    // 获取隐患巡查记录
+    // 获取待处理信息列表 (显示50条)
     dispatch({
-      type: 'unitFireControl/fetchHiddenDangerRecords',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
-    });
-
-    // 获取隐患巡查统计
-    dispatch({
-      type: 'unitFireControl/fetchHiddenDangerCount',
+      type: 'unitFireControl/fetchPendingInfo',
       payload: {
         companyId,
-        month: moment({ month: defaultHiddenDangerType }).format('YYYY-MM'),
-        businessType: 2,
+        pageNum: 1,
+        pageSize: 50,
+      },
+      callback: () => {
+        this.setState({ pendingInfoLoading: false })
+      },
+    })
+
+    // 获取巡查统计数据 今日、本周、本月、本季度type依次为 1 2 3 4
+    dispatch({
+      type: 'unitFireControl/fetchInspectionStatistics',
+      payload: { type: 1, companyId },
+    })
+
+    // 获取消防主机监测数据
+    dispatch({
+      type: 'unitFireControl/fetchFireAlarmSystem',
+      payload: {
+        companyId,
       },
     });
+
+    // 电气火灾监测数据
+    dispatch({
+      type: 'monitor/fetchCompanyDevices',
+      payload: { companyId, type: 1 },
+      callback: firstDeviceId => {
+        this.setState({ chartSelectVal: firstDeviceId });
+        // 获取传感器历史
+        // dispatch({
+        //   type: 'monitor/fetchGsmsHstData',
+        //   payload: { deviceId: firstDeviceId },
+        // });
+        // 获取实时警报信息
+        dispatch({
+          type: 'monitor/fetchDeviceDataHistory',
+          payload: { deviceId: firstDeviceId },
+        });
+        // 获取上下线的区块
+        this.fetchPieces(firstDeviceId);
+      },
+    });
+
+    // 获取隐患统计（实时）
+    dispatch({
+      type: 'unitFireControl/fetchDangerStatistics',
+      payload: {
+        companyId,
+        // date: moment().format('YYYY-MM-DD'),
+      },
+    })
+
+    // 获取消防数据统计
+    dispatch({
+      type: 'unitFireControl/fetchFireControlCount',
+      payload: {
+        companyId,
+        t: fireControlType,
+      },
+    });
+
+    // 获取维保情况统计
+    dispatch({
+      type: 'unitFireControl/fetchMaintenanceCount',
+      payload: {
+        companyId,
+        type: maintenanceType,
+      },
+    });
+
+
+    // 立即执行轮询
+    // this.polling();
 
     // 获取视频列表
     dispatch({
@@ -355,48 +250,19 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    const { fireControlType, maintenanceType } = this.state;
-    // 获取待处理信息
+    const { fireControlType, maintenanceType, pendingInfoStatus } = this.state;
+    // 获取待处理信息 1-1
     dispatch({
       type: 'unitFireControl/fetchPendingInfo',
       payload: {
         companyId,
+        status: pendingInfoStatus === '处理中' ? '2' : null,
+        pageNum: 1,
+        pageSize: 50,
       },
-    });
+    })
 
-    // 获取待处理火警和待处理故障数量
-    dispatch({
-      type: 'unitFireControl/fetchPendingNumber',
-      payload: {
-        companyId,
-      },
-    });
-
-    // 超期未整改隐患数量
-    dispatch({
-      type: 'unitFireControl/fetchOutOfDateNumber',
-      payload: {
-        companyId,
-      },
-    });
-
-    // 获取待整改隐患数量
-    dispatch({
-      type: 'unitFireControl/fetchToBeRectifiedNumber',
-      payload: {
-        companyId,
-      },
-    });
-
-    // 获取待巡查任务数量
-    dispatch({
-      type: 'unitFireControl/fetchToBeInspectedNumber',
-      payload: {
-        companyId,
-      },
-    });
-
-    // 获取火灾报警系统
+    // 获取消防主机监测数据 1-2
     dispatch({
       type: 'unitFireControl/fetchFireAlarmSystem',
       payload: {
@@ -404,31 +270,63 @@ export default class App extends PureComponent {
       },
     });
 
-    // 获取消防数据统计
-    dispatch({
+    // 获取待处理火警和待处理故障数量
+    /* dispatch({
+      type: 'unitFireControl/fetchPendingNumber',
+      payload: {
+        companyId,
+      },
+    }); */
+
+    // 超期未整改隐患数量
+    /* dispatch({
+      type: 'unitFireControl/fetchOutOfDateNumber',
+      payload: {
+        companyId,
+      },
+    }); */
+
+    // 获取待整改隐患数量
+    /* dispatch({
+      type: 'unitFireControl/fetchToBeRectifiedNumber',
+      payload: {
+        companyId,
+      },
+    }); */
+
+    // 获取待巡查任务数量
+    /* dispatch({
+      type: 'unitFireControl/fetchToBeInspectedNumber',
+      payload: {
+        companyId,
+      },
+    }); */
+
+    // 获取消防数据统计 2-3
+    /* dispatch({
       type: 'unitFireControl/fetchFireControlCount',
       payload: {
         companyId,
         t: fireControlType,
       },
-    });
+    }); */
 
-    // 获取维保情况统计
-    dispatch({
+    // 获取维保情况统计 2-4
+    /* dispatch({
       type: 'unitFireControl/fetchMaintenanceCount',
       payload: {
         companyId,
         type: maintenanceType,
       },
-    });
+    }); */
 
     // 获取主机列表
-    dispatch({
+    /* dispatch({
       type: 'unitFireControl/fetchHosts',
       payload: {
         companyId,
       },
-    });
+    }); */
   };
 
   /**
@@ -464,18 +362,19 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
+    // 实时不传date
+    const date = hiddenDangerType === 'realTime' ? null : hiddenDangerType
     this.setState({
       hiddenDangerType,
     });
-    // 重新获取隐患巡查统计
+    // 更新获取隐患统计
     dispatch({
-      type: 'unitFireControl/fetchHiddenDangerCount',
+      type: 'unitFireControl/fetchDangerStatistics',
       payload: {
         companyId,
-        month: moment({ month: hiddenDangerType }).format('YYYY-MM'),
-        businessType: 2,
+        date,
       },
-    });
+    })
   };
 
   /**
@@ -583,111 +482,603 @@ export default class App extends PureComponent {
   };
 
   /**
-   * 渲染所有统计信息块
+   * 点击加载更多已处理信息
    */
-  renderAllCountSection() {
+  handleMorePendingInfo = () => {
     const {
-      // 待处理火警数量
-      pendingFireNumber = 0,
-      // 待处理故障数量
-      pendingFaultNumber = 0,
-      // 超期未整改隐患数量
-      outOfDateNumber = 0,
-      // 待整改隐患数量
-      toBeRectifiedNumber = 0,
-      // 待巡查任务数量
-      toBeInspectedNumber = 0,
-      maintenanceCount: { needRepairNum = 0 } = {},
-    } = this.props.unitFireControl;
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+      unitFireControl: {
+        informationHistory: {
+          pagination: { pageNum, pageSize },
+          isLast,
+        },
+      },
+    } = this.props
+    if (isLast) return
+    // 获取更多已处理信息
+    dispatch({
+      type: 'unitFireControl/fetchInformationHistory',
+      payload: { companyId, pageSize, pageNum: pageNum + 1, status: '1' },
+    })
+  }
+
+  // 查看待处理信息的历史纪录
+  handleViewHistory = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+      unitFireControl: {
+        informationHistory: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props
+
+    // 获取已处理信息
+    dispatch({
+      type: 'unitFireControl/fetchInformationHistory',
+      payload: { companyId, pageSize, pageNum: 1, status: '1' },
+      callback: () => {
+        this.leftSections.style.opacity = 0
+        this.InformationHistory.style.right = 0
+      },
+    })
+    // this.setState({pendingInfoStatus:'历史报警'})
+  }
+
+  // 点击未处理信息模块筛选栏
+  handlePendingFilterChnage = (e) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    const value = e.target.value
+    this.setState({ pendingInfoLoading: true })
+    const callback = () => {
+      this.setState({ pendingInfoStatus: value, pendingInfoLoading: false })
+    }
+    if (value === '待处理') {
+      dispatch({
+        type: 'unitFireControl/fetchPendingInfo',
+        payload: { companyId, pageNum: 1, pageSize: 50 },
+        callback,
+      })
+    } else if (value === '处理中') {
+      dispatch({
+        type: 'unitFireControl/fetchPendingInfo',
+        payload: { companyId, status: '2', pageNum: 1, pageSize: 50 },
+        callback,
+      })
+    }
+  }
+
+  /**
+   *   渲染待处理信息模块
+   */
+  renderPendingInfo = () => {
+    const {
+      unitFireControl: {
+        // 待处理信息
+        pendingInfo: {
+          list,
+        },
+      },
+    } = this.props
+    const { pendingInfoStatus, pendingInfoLoading } = this.state
 
     return (
-      <Section>
-        <div className={styles.countContainer}>
-          <Row className={styles.countContainerRow}>
-            <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue} style={{ color: '#FF6464' }}>
-                {pendingFireNumber}
-              </div>
-              <div className={styles.countName}>待处理火警</div>
-            </Col>
-            <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue}>{pendingFaultNumber}</div>
-              <div className={styles.countName}>待处理故障</div>
-            </Col>
-            <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue}>{outOfDateNumber}</div>
-              <div className={styles.countName}>超期未整改隐患</div>
-            </Col>
-          </Row>
-          <Row className={styles.countContainerRow}>
-            <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue}>{toBeRectifiedNumber}</div>
-              <div className={styles.countName}>待整改隐患</div>
-            </Col>
-            <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue}>{needRepairNum}</div>
-              <div className={styles.countName}>待维保任务</div>
-            </Col>
-            <Col span={8} className={styles.countContainerColumn}>
-              <div className={styles.countValue}>{toBeInspectedNumber}</div>
-              <div className={styles.countName}>待巡查任务</div>
-            </Col>
-          </Row>
-          <div className={styles.firstVerticalLine}>
-            <img src={splitIcon} alt="" />
-          </div>
-          <div className={styles.secondVerticalLine}>
-            <img src={splitIcon} alt="" />
-          </div>
-          <div className={styles.horizontalLine}>
-            <img src={splitHIcon} alt="" />
-          </div>
-        </div>
-      </Section>
+      <PendingInformation
+        title="待办事项"
+        showTotal={false}
+        status={pendingInfoStatus}
+        list={list}
+        handleClick={this.handleVideoOpen}
+        handleViewHistory={this.handleViewHistory}
+        onFilterChange={this.handlePendingFilterChnage}
+        loading={pendingInfoLoading}
+      />
+    )
+  }
+
+
+  /**
+   * 渲染消防数据统计块
+   */
+  renderStatisticsOfFireControl() {
+    const {
+      fireControlCount: {
+        warnTrue = 0,
+        warnFalse = 0,
+        fire_state = 0,
+        fault_state = 0,
+        start_state = 0,
+        shield_state = 0,
+        feedback_state = 0,
+        supervise_state = 0,
+      },
+    } = this.props.unitFireControl;
+    const { fireControlType } = this.state;
+
+    return (
+      <StatisticsOfFireControl
+        type={fireControlType}
+        real={warnTrue}
+        misinformation={warnFalse}
+        pending={fire_state - warnTrue - warnFalse}
+        fault={fault_state}
+        shield={shield_state}
+        linkage={start_state}
+        supervise={supervise_state}
+        feedback={feedback_state}
+        onSwitch={this.handleSwitchFireControlType}
+      />
     );
   }
 
   /**
-   * 火灾警报系统
-   */
-  renderFireAlarmSystem() {
-    // 从props中获取数据
+  * 点击隐患统计图表显示详情抽屉
+  */
+  handleClickChat = (params) => {
+    const { data: { status = null, source_type = null, name = null } } = params
     const {
-      fireAlarmSystem: {
-        fire_state = 0,
-        fault_state = 0,
-        start_state = 0,
-        supervise_state = 0,
-        shield_state = 0,
-        feedback_state = 0,
+      dispatch,
+      match: {
+        params: { unitId: companyId },
       },
-      hosts,
+    } = this.props
+    const { hiddenDangerType } = this.state
+    if (source_type) return
+    dispatch({
+      type: 'unitFireControl/fetchHiddenDangerRecords',
+      payload: {
+        companyId,
+        businessType: 2,
+        _status: status,
+        month: hiddenDangerType === 'realTime' ? null : hiddenDangerType,
+      },
+    });
+    this.setState({ hiddenDangerVisible: true, hiddenDangerLabel: name })
+  }
+
+  // 关闭隐患统计抽屉
+  closeDrawerOfHiddenDanger = () => {
+    this.setState({ hiddenDangerVisible: false, hiddenDangerLabel: '' })
+  }
+
+  /**
+   * 渲染隐患统计
+   */
+  renderhiddenDangerDtatistics() {
+    const {
+      dangerStatistics: {
+        dangerType: [
+          {
+            // 随手拍
+            random_photo = 0,
+            // 风险点
+            from_self_check_point = 0,
+            // 监督点
+            from_grid_point = 0,
+          } = {},
+        ] = [],
+        dangerDto: {
+          // 已超期
+          over_rectify_num = 0,
+          // 待复查
+          rectify_num = 0,
+          // 待整改
+          total_num = 0,
+          // 已关闭
+          count_closed_danger = 0,
+          overRectifyNum = 0,
+          reviewNum = 0,
+          rectifyNum = 0,
+          closedNum = 0,
+        } = {},
+      },
     } = this.props.unitFireControl;
-    const { frontIndex } = this.state;
+    const { hiddenDangerType } = this.state;
+    return (
+      <StatisticsOfHiddenDanger
+        type={hiddenDangerType}
+        handleClickChat={this.handleClickChat}
+        onSwitch={this.handleSwitchHiddenDangerType}
+        ssp={random_photo}
+        fxd={from_self_check_point}
+        jdd={from_grid_point}
+        // cqwzg={over_rectify_num}
+        // dfc={rectify_num}
+        // dzg={total_num - over_rectify_num - rectify_num - count_closed_danger}
+        // ygb={count_closed_danger}
+        cqwzg={overRectifyNum}
+        dfc={reviewNum}
+        dzg={rectifyNum}
+        ygb={closedNum}
+      />
+    );
+  }
+
+  /**
+  * 点击巡查统计右侧月份
+  */
+  handleInspectionFilter = selectedInspectionMonth => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    this.setState({
+      selectedInspectionMonth,
+    })
+    // 更新巡查统计数据 今日、本周、本月、本季度依次为 1 2 3 4
+    dispatch({
+      type: 'unitFireControl/fetchInspectionStatistics',
+      payload: { type: selectedInspectionMonth, companyId },
+    })
+  }
+
+  /**
+  * 点击查看巡查统计下钻
+  */
+  handleViewInspectionStatistics = (type) => {
+    // type normal:正常  abnormal:异常
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    const {
+      selectedInspectionMonth,
+    } = this.state
+    // TODO:拿数据
+    const callback = () => {
+      this.setState({
+        inspectionModalVisible: true,
+        InspectionModalType: type,
+      })
+    }
+    dispatch({
+      type: type === 'normal' ? 'unitFireControl/fetchNormalPatrol' : 'unitFireControl/fetchAbnormalPatrol',
+      payload: {
+        companyId,
+        type: selectedInspectionMonth,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      callback,
+    })
+  }
+
+  /**
+    * 巡查统计数据下钻翻页
+    */
+  handleInspectionPageChange = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+      unitFireControl: {
+        inspectionStatistics: {
+          pagination: {
+            pageNum,
+            pageSize,
+          },
+        },
+      },
+    } = this.props
+    const { InspectionModalType, selectedInspectionMonth } = this.state
+    dispatch({
+      type: InspectionModalType === 'normal' ? 'unitFireControl/fetchNormalPatrol' : 'unitFireControl/fetchAbnormalPatrol',
+      payload: {
+        companyId,
+        type: selectedInspectionMonth, // 月份
+        pageNum: pageNum + 1,
+        pageSize,
+      },
+    })
+  }
+
+  /**
+    * 关闭巡查统计数据下钻
+    */
+  handleCloseModalOfInspection = () => {
+    this.setState({
+      inspectionModalVisible: false,
+      dangerCardVisible: false,
+    })
+  }
+
+  // 巡查统计下钻隐患卡片显示与否
+  handleChangeDangerCardVisible = (value = false) => {
+    this.setState({
+      dangerCardVisible: value,
+    })
+  }
+
+  /**
+   * 巡查统计模块
+   */
+  renderInspectionStatistics = () => {
+    const {
+      unitFireControl: { inspectionStatistics },
+    } = this.props
+    const { selectedInspectionMonth } = this.state
+    return (
+      <InspectionStatistics
+        type={selectedInspectionMonth}
+        onSwitch={this.handleInspectionFilter}
+        onClick={this.handleViewInspectionStatistics}
+        {...inspectionStatistics}
+      />
+    )
+  }
+
+  fetchPieces = firstDeviceId => {
+    const { dispatch } = this.props;
+    const codes = ['v1', 'v2', 'v3', 'v4', 'v5', 'ia', 'ib', 'ic', 'ua', 'ub', 'uc'];
+    codes.forEach(code => {
+      dispatch({
+        type: 'monitor/fetchPieces',
+        payload: { deviceId: firstDeviceId, code },
+      });
+    });
+
+    // 获取参数
+    dispatch({
+      type: 'monitor/fetchChartParams',
+      payload: { deviceId: firstDeviceId },
+    });
+  };
+
+  handleChartSelect = value => {
+    const { dispatch } = this.props;
+    this.setState({ chartSelectVal: value });
+    // 获取实时警报信息
+    dispatch({
+      type: 'monitor/fetchDeviceDataHistory',
+      payload: { deviceId: value },
+      error: () => {
+        dispatch({
+          type: 'monitor/deviceDataHistory',
+          payload: {},
+        });
+      },
+    });
+    // 获取传感器历史
+    // dispatch({
+    //   type: 'monitor/fetchGsmsHstData',
+    //   payload: { deviceId: value },
+    //   error: () => {
+    //     dispatch({
+    //       type: 'monitor/gsmsHstData',
+    //       payload: {},
+    //     });
+    //   },
+    // });
+    // 获取上下线的区块
+    this.fetchPieces(value);
+  };
+
+  // 查看消防主机（消防主机监测模块）
+  handleViewFireHosts = type => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props
+    dispatch({
+      type: 'unitFireControl/fetchFireHosts',
+      payload: {
+        companyId,
+      },
+      callback: () => {
+        const {
+          unitFireControl: {
+            fireHost: { list = [] },
+          },
+        } = this.props
+        const currentFireHosts = list.filter(item => item.typeName === type)
+        this.setState({
+          currentFireHostType: type,
+          currentFireHosts,
+          fireHostVisible: true,
+          fireHostLoading: true,
+        })
+        setTimeout(() => {
+          this.setState({
+            fireHostLoading: false,
+          })
+        }, 500);
+      },
+    })
+
+  }
+
+  // 消防主机翻页
+  // handleFireHostPageChange = (pageNum, pageSize) => {
+  //   const {
+  //     unitFireControl: {
+  //       fireHost: { list = [] },
+  //     },
+  //   } = this.props
+  //   const { currentFireHostType } = this.state
+  //   const currentFireHosts = list.filter(item => item.typeName === currentFireHostType).slice((pageNum - 1) * pageSize, pageNum * pageSize)
+  //   this.setState({
+  //     fireHostPagination: {
+  //       ...this.state.fireHostPagination,
+  //       pageNum,
+  //     },
+  //     currentFireHosts,
+  //     fireHostLoading: true,
+  //   })
+  //   setTimeout(() => {
+  //     this.setState({
+  //       fireHostLoading: false,
+  //     })
+  //   }, 500);
+  // }
+
+  // 消防主机筛选
+  handleFireHostFilter = (value) => {
+    const {
+      unitFireControl: {
+        fireHost: { list = [] },
+      },
+    } = this.props
+    const currentFireHosts = list.filter(item => item.typeName === value).slice(0, 1 * defaultPageSize)
+    this.setState({
+      currentFireHostType: value,
+      fireHostPagination: {
+        ...this.state.fireHostPagination,
+        pageNum: 1,
+      },
+      currentFireHosts,
+      fireHostLoading: true,
+    })
+    setTimeout(() => {
+      this.setState({
+        fireHostLoading: false,
+      })
+    }, 500);
+  }
+
+
+  // 关闭消防主机弹窗
+  handleCloseModalOfFireHost = () => {
+    this.setState({
+      fireHostVisible: false,
+      fireHostLoading: false,
+      currentFireHosts: [],
+    })
+  }
+
+  // 关闭历史信息
+  handleCloseInfoHistory = () => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'unitFireControl/saveHistoryInfo',
+      payload: {
+        list: [],
+        pageNum: 1,
+        pageSize: 20,
+        total: 0,
+      },
+    })
+    this.leftSections.style.opacity = 1
+    this.InformationHistory.style.right = '110%';
+  }
+
+  /**
+   * 维保情况统计
+   */
+  renderStatisticsOfMaintenance() {
+    const {
+      maintenanceCount: {
+        selfAllNum = 0,
+        selfNoNum = 0,
+        selfDoingNum = 0,
+        selfFinishNum = 0,
+        assignAllNum = 0,
+        assignNoNum = 0,
+        assignDoingNum = 0,
+        assignFinishNum = 0,
+        avgSelfTime = '',
+        selfRate = '100%',
+        avgAssignTime = '',
+        assignRate = '100%',
+        unitName,
+      },
+    } = this.props.unitFireControl;
+    const { maintenanceType } = this.state;
+
+    return (
+      <StatisticsOfMaintenance
+        type={maintenanceType}
+        onSwitch={this.handleSwitchMaintenanceType}
+        maintenance={{
+          name: unitName && unitName.length > 0 ? unitName[0].name : '维保单位',
+          total: assignAllNum,
+          repaired: assignFinishNum,
+          unrepaired: assignNoNum,
+          repairing: assignDoingNum,
+          duration: avgAssignTime,
+          rate: assignRate,
+        }}
+        local={{
+          total: selfAllNum,
+          repaired: selfFinishNum,
+          unrepaired: selfNoNum,
+          repairing: selfDoingNum,
+          duration: avgSelfTime,
+          rate: selfRate,
+        }}
+      />
+    );
+  }
+
+  /**
+   * 渲染历史信息
+   */
+  renderHistoryInfo = () => {
+    const {
+      pendingHistoryLoading,
+      unitFireControl: {
+        informationHistory: { list },
+      },
+    } = this.props;
+    return (
+      <div
+        ref={InformationHistory => { this.InformationHistory = InformationHistory }}
+        style={{ width: '100%', height: '100%', position: 'absolute', top: 0, right: '110%', transition: 'all 0.5s' }}>
+        <InformationHistory
+          title="历史消息"
+          data={{ list, alarmTypes: [] }}
+          loading={pendingHistoryLoading}
+          handleLoadMore={this.handleMorePendingInfo}
+          handleClose={() => this.handleCloseInfoHistory()}
+        />
+      </div>
+    )
+  }
+
+  /**
+   * 消防主机监测以及主机复位
+   */
+  renderFireAlarmMonitor = () => {
+    const {
+      unitFireControl: {
+        fireAlarmSystem,
+        hosts,
+      } } = this.props;
+    const { frontIndex } = this.state
     const isResetAll = hosts.filter(({ isReset }) => isReset).length === hosts.length;
     return (
       <Rotate frontIndex={frontIndex}>
-        <FireAlarmSystem
-          fire={fire_state}
-          fault={fault_state}
-          shield={shield_state}
-          linkage={start_state}
-          supervise={supervise_state}
-          feedback={feedback_state}
-          fixedContent={
-            hosts.length > 0 && (
-              <Tooltip
-                overlayClassName={styles.tooltip}
-                title="一键复位功能只对平台数据进行复位，并不能控制主机复位。如需复位火警等，需到消防主机进行复位"
-              >
-                <div className={styles.resetButton} onClick={this.handleShowResetSection}>
-                  <img src={resetKeyIcon} alt="" />
-                  一键复位
-                </div>
-              </Tooltip>
-            )
-          }
-          // onClick={this.handleVideoOpen}
+        <FireHostMonitoring
+          data={fireAlarmSystem}
+          fixedContent={(
+            <Tooltip
+              overlayClassName={styles.tooltip}
+              title="一键复位功能只对平台数据进行复位，并不能控制主机复位。"
+            >
+              <div className={styles.resetButton} onClick={this.handleShowResetSection}>
+                <img src={resetKeyIcon} alt="" />
+                一键复位
+              </div>
+            </Tooltip>
+          )}
+          onClick={this.handleViewFireHosts}
         />
         <Section
           title="一键复位"
@@ -739,136 +1130,13 @@ export default class App extends PureComponent {
               );
             })
           ) : (
-            <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
-              暂无主机
+              <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
+                暂无主机
             </div>
-          )}
+            )}
         </Section>
       </Rotate>
-    );
-  }
-
-  /**
-   * 渲染消防数据统计块（未完成）
-   */
-  renderStatisticsOfFireControl() {
-    const {
-      fireControlCount: {
-        warnTrue = 0,
-        warnFalse = 0,
-        fire_state = 0,
-        fault_state = 0,
-        start_state = 0,
-        shield_state = 0,
-        feedback_state = 0,
-        supervise_state = 0,
-      },
-    } = this.props.unitFireControl;
-    const { fireControlType } = this.state;
-
-    return (
-      <StatisticsOfFireControl
-        type={fireControlType}
-        real={warnTrue}
-        misinformation={warnFalse}
-        pending={fire_state - warnTrue - warnFalse}
-        fault={fault_state}
-        shield={shield_state}
-        linkage={start_state}
-        supervise={supervise_state}
-        feedback={feedback_state}
-        onSwitch={this.handleSwitchFireControlType}
-      />
-    );
-  }
-
-  /**
-   * 隐患巡查统计模块
-   */
-  renderStatisticsOfHiddenDanger() {
-    const {
-      hiddenDangerCount: {
-        dangerType: [
-          {
-            // 随手拍
-            random_photo = 0,
-            // 风险点
-            from_self_check_point = 0,
-          } = {},
-        ] = [],
-        dangerDto: {
-          // 已超期
-          over_rectify_num = 0,
-          // 待复查
-          rectify_num = 0,
-          // 待整改
-          total_num = 0,
-          // 已关闭
-          count_closed_danger = 0,
-        } = {},
-      },
-    } = this.props.unitFireControl;
-    const { hiddenDangerType } = this.state;
-
-    return (
-      <StatisticsOfHiddenDanger
-        type={hiddenDangerType}
-        onSwitch={this.handleSwitchHiddenDangerType}
-        ssp={random_photo}
-        fxd={from_self_check_point}
-        cqwzg={over_rectify_num}
-        dfc={rectify_num}
-        dzg={total_num - over_rectify_num - rectify_num - count_closed_danger}
-        ygb={count_closed_danger}
-      />
-    );
-  }
-
-  /**
-   * 维保情况统计
-   */
-  renderStatisticsOfMaintenance() {
-    const {
-      maintenanceCount: {
-        selfAllNum = 0,
-        selfNoNum = 0,
-        selfDoingNum = 0,
-        selfFinishNum = 0,
-        assignAllNum = 0,
-        assignNoNum = 0,
-        assignDoingNum = 0,
-        assignFinishNum = 0,
-        avgSelfTime = '',
-        selfRate = '100%',
-        avgAssignTime = '',
-        assignRate = '100%',
-      },
-    } = this.props.unitFireControl;
-    const { maintenanceType } = this.state;
-
-    return (
-      <StatisticsOfMaintenance
-        type={maintenanceType}
-        onSwitch={this.handleSwitchMaintenanceType}
-        maintenance={{
-          name: '维保单位',
-          total: assignAllNum,
-          repaired: assignFinishNum,
-          unrepaired: assignNoNum,
-          repairing: assignDoingNum,
-          duration: avgAssignTime,
-          rate: assignRate,
-        }}
-        local={{
-          total: selfAllNum,
-          repaired: selfFinishNum,
-          unrepaired: selfNoNum,
-          repairing: selfDoingNum,
-          duration: avgSelfTime,
-          rate: selfRate,
-        }}
-      />
-    );
+    )
   }
 
   /**
@@ -877,97 +1145,88 @@ export default class App extends PureComponent {
   render() {
     // 从props中获取单位名称
     const {
+      hiddenDnagerLoading,
+      inspectionMoreLoading,
       unitFireControl: {
-        // 待处理信息
-        pendingInfo,
-        // 消防巡查统计
-        hiddenDangerCount: {
-          // 企业名称
+        // 隐患统计
+        dangerStatistics: {
           companyName,
         },
         // 隐患巡查记录
         hiddenDangerRecords,
         // 视频列表
         videoList,
+        fireAlarmSystem,
       },
+      monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory },
     } = this.props;
-    const { videoVisible } = this.state;
-    const pendingInfoList = pendingInfo.map(item => {
-      return {
-        ...item,
-        pendingInfoType: getPendingInfoType(item),
-      };
-    });
+    const {
+      videoVisible,
+      chartSelectVal,
+      hiddenDangerVisible,
+      fireHostVisible,
+      fireHostLoading,
+      currentFireHostType,
+      fireHostPagination,
+      currentFireHosts,
+      inspectionModalVisible,
+      InspectionModalType,
+      inspectionCurrentList,
+      dangerCardVisible,
+      hiddenDangerLabel,
+    } = this.state;
 
     return (
-      <div className={styles.main}>
+      <div className={styles.unitFileControl}>
         <Header title={projectName} extraContent={companyName} />
         <div className={styles.mainBody}>
-          <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
-            <Col span={6} style={{ height: '100%' }}>
-              <Section
-                isScroll
-                isCarousel
-                split={
-                  <div key="split" className={styles.splitText}>
-                    ——已经到底了，您即将看到第一条信息——
-                  </div>
-                }
-                splitHeight={48}
+          <Row gutter={16} style={{ height: '100%' }}>
+            <Col span={6} style={{ height: '100%', position: 'relative' }}>
+              <div ref={leftSections => { this.leftSections = leftSections }}
+                style={{ width: '100%', height: '100%', transition: 'opacity 0.5s' }}
               >
-                {pendingInfoList.length !== 0 ? (
-                  [
-                    ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType === '火警'),
-                    ...pendingInfoList.filter(({ pendingInfoType }) => pendingInfoType !== '火警'),
-                  ].map((item, index) => {
-                    const { id } = item;
-                    return (
-                      <PendingInfoItem
-                        key={id || index}
-                        data={item}
-                        onClick={this.handleVideoOpen}
-                      />
-                    );
-                  })
-                ) : (
-                  <div
-                    className={styles.noPendingInfo}
-                    style={{ backgroundImage: `url(${noPendingInfo})` }}
+                <div style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
+                  {/* 待处理信息 */}
+                  {this.renderPendingInfo()}
+                </div>
+                <div style={{ height: '51.08%' }}>
+                  {/* 隐患统计 */}
+                  {this.renderhiddenDangerDtatistics()}
+                </div>
+              </div>
+              {/* 历史信息 */}
+              {this.renderHistoryInfo()}
+            </Col>
+            <Col span={18} style={{ height: '100%' }}>
+              <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
+                <Col span={8} style={{ height: '100%' }}>
+                  {/* 消防主机监测 */}
+                  {this.renderFireAlarmMonitor()}
+                </Col>
+                <Col span={16} style={{ height: '100%' }}>
+                  {/* 电气火灾监测 */}
+                  <ElectricityCharts
+                    title="电气火灾监测"
+                    data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory }}
+                    selectVal={chartSelectVal}
+                    handleSelect={this.handleChartSelect}
                   />
-                )}
-              </Section>
-            </Col>
-            <Col span={12} style={{ height: '100%' }}>
-              {this.renderAllCountSection()}
-            </Col>
-            <Col span={6} style={{ height: '100%' }}>
-              {this.renderFireAlarmSystem()}
-            </Col>
-          </Row>
-          <Row gutter={16} style={{ height: '51.08%' }}>
-            <Col span={6} style={{ height: '100%' }}>
-              <Section isScroll isCarousel title="隐患巡查记录">
-                {hiddenDangerRecords.length !== 0 ? (
-                  hiddenDangerRecords.map(item => {
-                    const { id } = item;
-                    return <HiddenDangerRecord key={id} data={item} />;
-                  })
-                ) : (
-                  <div
-                    className={styles.noPendingInfo}
-                    style={{ backgroundImage: `url(${noHiddenDangerRecords})` }}
-                  />
-                )}
-              </Section>
-            </Col>
-            <Col span={6} style={{ height: '100%' }}>
-              {this.renderStatisticsOfFireControl()}
-            </Col>
-            <Col span={6} style={{ height: '100%' }}>
-              {this.renderStatisticsOfHiddenDanger()}
-            </Col>
-            <Col span={6} style={{ height: '100%' }}>
-              {this.renderStatisticsOfMaintenance()}
+                </Col>
+              </Row>
+              <Row gutter={16} style={{ height: '51.08%' }}>
+                <Col span={8} style={{ height: '100%' }}>
+                  {/* 巡查统计 */}
+                  {this.renderInspectionStatistics()}
+                </Col>
+                <Col span={8} style={{ height: '100%' }}>
+                  {/* 消防数据统计 */}
+                  {this.renderStatisticsOfFireControl()}
+                </Col>
+                <Col span={8} style={{ height: '100%' }}>
+                  {/* 维保情况统计 */}
+                  {this.renderStatisticsOfMaintenance()}
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div>
@@ -976,6 +1235,36 @@ export default class App extends PureComponent {
           videoList={videoList}
           visible={videoVisible}
           handleVideoClose={this.handleVideoClose}
+        />
+        {/* 隐患统计数据下钻抽屉 */}
+        <DrawerOfHiddenDanger
+          title={hiddenDangerLabel}
+          loading={hiddenDnagerLoading}
+          visible={hiddenDangerVisible}
+          onClose={this.closeDrawerOfHiddenDanger}
+          data={{ hiddenDangerRecords }}
+        />
+        {/* 消防主机监测数据下钻 */}
+        <ModalOfFireHost
+          visible={fireHostVisible}
+          loading={fireHostLoading}
+          onCancel={this.handleCloseModalOfFireHost}
+          // handlePageChange={this.handleFireHostPageChange}
+          currentFireHostType={currentFireHostType}
+          onFilterChange={this.handleFireHostFilter}
+          pagination={fireHostPagination}
+          list={currentFireHosts}
+          statistics={fireAlarmSystem}
+        />
+        {/* 巡查统计数据下钻 */}
+        <ModalOfInspectionStatistics
+          visible={inspectionModalVisible}
+          onCancel={this.handleCloseModalOfInspection}
+          type={InspectionModalType}
+          handlePageChange={this.handleInspectionPageChange}
+          cardVisible={dangerCardVisible}
+          handleChangeDangerCardVisible={this.handleChangeDangerCardVisible}
+          moreLoading={inspectionMoreLoading}
         />
       </div>
     );

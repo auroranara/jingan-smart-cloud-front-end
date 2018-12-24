@@ -1,0 +1,74 @@
+.articleList {
+  @mb: 14px;
+  :global {
+    .ant-form-item {
+      margin-bottom: @mb;
+    }
+  }
+  .cardContainer {
+    .firstLine {
+      display: flex;
+      .title {
+        flex: 1;
+        font-size: 16px;
+        font-weight: 600;
+        word-break: break-all;
+        padding-right: 10px;
+      }
+      .rightIcon {
+        visibility: hidden;
+        color: #615b5b;
+        .icon {
+          cursor: pointer;
+        }
+        .disabledIcon {
+          cursor: not-allowed;
+        }
+      }
+    }
+    &:hover {
+      .rightIcon {
+        visibility: visible;
+      }
+    }
+    .tags {
+      margin-top: @mb;
+      font-size: 13px;
+    }
+    .disabledTags {
+      margin-top: @mb;
+      font-size: 13px;
+      cursor: not-allowed;
+    }
+    .introduction {
+      margin-top: @mb;
+      font-size: 15px;
+    }
+    .statistics {
+      margin-top: @mb;
+      color: rgba(0, 0, 0, .45);
+      .icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  .grey {
+    color: rgba(0, 0, 0, .45);
+  }
+}
+
+.articleViewTitle {
+  .titleContainer {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 500;
+    word-break: break-all;
+    margin-bottom: 0.4em;
+    color: rgba(0, 0, 0, .85);
+  }
+  .statistics {
+    text-align: right;
+    color: rgba(0, 0, 0, .65);
+    margin-bottom: 0.4em;
+  }
+}

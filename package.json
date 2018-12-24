@@ -17,6 +17,7 @@
     "build:changshu": "cross-env PROJECT_ENV=changshu ESLINT=none umi build",
     "build:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi build",
     "build:xuexiao": "cross-env PROJECT_ENV=xuexiao ESLINT=none umi build",
+    "build:nanxiao": "cross-env PROJECT_ENV=nanxiao ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",
     "analyze": "cross-env ESLINT=none ANALYZE=1 umi build",
     "lint:style": "stylelint \"src/**/*.less\" --syntax less",
@@ -43,6 +44,7 @@
     "antd": "^3.10.0",
     "bizcharts": "^3.2.2",
     "bizcharts-plugin-slider": "^2.0.3",
+    "braft-editor": "^2.1.28",
     "classnames": "^2.2.6",
     "coordtransform": "^2.1.2",
     "crypto-js": "^3.1.9-1",
@@ -68,6 +70,7 @@
     "react-amap": "^1.2.7",
     "react-container-query": "^0.11.0",
     "react-copy-to-clipboard": "^5.0.1",
+    "react-custom-scrollbars": "^4.2.1",
     "react-document-title": "^2.0.3",
     "react-dom": "^16.5.1",
     "react-draggable": "^3.0.5",
@@ -75,6 +78,7 @@
     "react-images": "^0.5.19",
     "react-infinite-scroller": "^1.2.1",
     "react-loadable": "^5.4.0",
+    "react-pdf": "^3.0.5",
     "react-visibility-sensor": "^3.11.0",
     "rollbar": "^2.4.2",
     "setprototypeof": "^1.1.0",
@@ -120,7 +124,8 @@
     "stylelint-config-standard": "^18.0.0",
     "umi": "^2.1.2",
     "umi-plugin-ga": "^1.1.3",
-    "umi-plugin-react": "^1.1.1"
+    "umi-plugin-react": "^1.1.1",
+    "web-report": "^1.0.0"
   },
   "optionalDependencies": {
     "puppeteer": "^1.6.0"

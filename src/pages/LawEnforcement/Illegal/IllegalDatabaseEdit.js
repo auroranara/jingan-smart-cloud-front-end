@@ -207,7 +207,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
 
   // 选择按钮点击事件(设定依据)
   handleSelect = value => {
-    console.log('value', value);
+    // console.log('value', value);
     const { setFieldsValue } = this.props.form;
     setFieldsValue({
       setLawIds: value.map(item => item.lawTypeName + ' ' + item.article).join(','),
@@ -462,22 +462,20 @@ export default class IllegalDatabaseEdit extends PureComponent {
         align: 'center',
         width: 80,
         render: (text, record) => (
-          console.log(record),
-          (
-            <span>
-              <a
-                onClick={() => {
-                  if (flow_id.join(',').indexOf(record.flow_id) >= 0) {
-                    return;
-                  }
-                  this.setState({ flowList: [...flowList, record] });
-                  flow_id.push(record.flow_id);
-                }}
-              >
-                {flow_id.join(',').indexOf(record.flow_id) >= 0 ? '已添加' : '添加'}
-              </a>
-            </span>
-          )
+          // console.log(record),
+          <span>
+            <a
+              onClick={() => {
+                if (flow_id.join(',').indexOf(record.flow_id) >= 0) {
+                  return;
+                }
+                this.setState({ flowList: [...flowList, record] });
+                flow_id.push(record.flow_id);
+              }}
+            >
+              {flow_id.join(',').indexOf(record.flow_id) >= 0 ? '已添加' : '添加'}
+            </a>
+          </span>
         ),
       },
     ];
@@ -547,7 +545,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
         const { businessType, typeCode, actContent, discretionStandard, enable } = values;
 
         const { setLawIds, punishLawIds } = this.state;
-        console.log(setLawIds);
+        // console.log(setLawIds);
 
         const payload = {
           id,

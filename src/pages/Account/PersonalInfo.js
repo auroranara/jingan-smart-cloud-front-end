@@ -60,7 +60,7 @@ export default class PersonalInfo extends PureComponent {
 
   /* 生命周期函数 */
   componentDidMount() {
-    console.log('props', this.props);
+    // console.log('props', this.props);
     const {
       dispatch,
       match: {
@@ -106,8 +106,8 @@ export default class PersonalInfo extends PureComponent {
     const { companyType } = this.state;
 
     const userTypeObj = UserTypes.find(t => t.value === userType);
-    const phone = phoneNumber + ''
-    const formatPhone = phone.substr(0, 3) + "****" + phone.substr(7)
+    const phone = phoneNumber + '';
+    const formatPhone = phone.substr(0, 3) + '****' + phone.substr(7);
 
     return (
       <Card bordered={false}>
@@ -133,10 +133,10 @@ export default class PersonalInfo extends PureComponent {
           <Description term="角色">
             {roleNames
               ? roleNames.split(',').map(roleName => (
-                <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                  {roleName}
-                </p>
-              ))
+                  <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                    {roleName}
+                  </p>
+                ))
               : getEmptyData()}
           </Description>
         </DescriptionList>

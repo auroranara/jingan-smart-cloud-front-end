@@ -1,0 +1,50 @@
+.riskPointItem {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 3px 0 3px 16px;
+  box-shadow: 3px 3px 3px #000;
+  background-color: #011539;
+  .riskPointItemLabel {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    width: 30px;
+    padding-top: 10px;
+    padding-bottom: 15px;
+    line-height: 1;
+    text-align: center;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+  .riskPointItemNameWrapper {
+    display: flex;
+    padding: 9px 0;
+    line-height: 1;
+    .riskPointItemName {
+      width: 80px;
+      color: #4f6793;
+    }
+    .riskPointItemValue {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.tab {
+  display: inline-block;
+  padding: 6px 10px;
+  text-align: center;
+  color: #fff;
+  background-color: rgba(3, 51, 113, 0.8);
+  border-radius: 10px;
+  cursor: pointer;
+  & + .tab {
+    margin-left: 10px;
+  }
+  &.active {
+    background-color: #0867d3;
+  }
+}

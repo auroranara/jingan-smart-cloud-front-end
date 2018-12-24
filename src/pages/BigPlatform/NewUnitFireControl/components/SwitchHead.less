@@ -1,0 +1,24 @@
+.container {
+  color: #FFF;
+  text-align: center;
+  height: 20px;
+  line-height: 20px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.line {
+  width: 110px;
+  height: 2px;
+  position: absolute;
+  top: 50%;
+  background-size: 100% 100%;
+}
+
+.leftLine:extend(.line) {
+  left: 20%;
+}
+
+.rightLine:extend(.line) {
+  right: 20%;
+}

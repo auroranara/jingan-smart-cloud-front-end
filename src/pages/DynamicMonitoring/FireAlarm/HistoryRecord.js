@@ -112,7 +112,7 @@ export default class HistoryRecord extends PureComponent {
       },
       fetchHistoryDetail,
     } = this.props;
-    console.log('rows', rows);
+    // console.log('rows', rows);
     this.setState({ visible: true });
     fetchHistoryDetail({
       payload: { companyId: companyId, detailId: rows.detailId },

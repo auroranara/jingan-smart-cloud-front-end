@@ -5,20 +5,27 @@ import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-// import iconLight from '../../../../assets/icon-light.png' // 电
-// import iconFire from '../../../../assets/icon-fire.png' // 可燃气体
-// import iconWater from '../../../../assets/icon-water.png' // 废水
-// import iconGas from '../../../../assets/icon-gas.png'// 废气
-import noAlarm from '../../../../assets/no-alarm.png'
+import noAlarm from '@/assets/no-alarm.png'
 
 export default class AlarmHistory extends PureComponent {
 
   static propTypes = {
-    selectedDeviceType: PropTypes.number,
+    title: PropTypes.string.isRequired, // 模块标题
+    selectedDeviceType: PropTypes.number, // 当前筛选栏选中的key
+    handleFilterHistory: PropTypes.func.isRequired, // 点击筛选栏筛选
+    data: PropTypes.shape({
+      list: PropTypes.array.isRequired,  // 列表数组
+      alarmTypes: PropTypes.array.isRequired, // 筛选栏所需数组
+    }),
+    handleClose: PropTypes.func.isRequired, // 点击右上角关闭历史记录
+    loading: PropTypes.bool.isRequired, // 是否正在加载数据
+    handleLoadMore: PropTypes.func.isRequired, // 加载更多数据
   }
+
 
   static defaultProps = {
     selectedDeviceType: 1,
+    loading: false,
   }
 
 
@@ -62,11 +69,12 @@ export default class AlarmHistory extends PureComponent {
   }
   render() {
     const {
-      historyAlarm: { list, alarmTypes },
+      data: { list = [], alarmTypes },
       handleClose,
       loading,
       handleLoadMore,
       selectedDeviceType,
+      title,
     } = this.props
 
     return (
@@ -75,7 +83,7 @@ export default class AlarmHistory extends PureComponent {
           <div className={styles.shadowIn}>
             <div className={styles.sectionTitle}>
               <div className={styles.sectionTitleIcon} />
-              历史报警
+              {title}
               <div className={styles.iconClose}>
                 <Icon onClick={handleClose} className={styles.icon} type="close" theme="outlined" />
               </div>
@@ -90,7 +98,7 @@ export default class AlarmHistory extends PureComponent {
                 </Col>
               ))}
             </Row>
-            {list && list.length ? (
+            {list && list.length > 0 ? (
               <div
                 className={styles.historyContent}
                 ref={historyList => { this.historyList = historyList }}

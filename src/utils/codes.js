@@ -90,6 +90,7 @@ export default {
       'waste-water': 'dataAnalysis.IOTAbnormalData.wasteWater',
       'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
       'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
+      'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
@@ -109,6 +110,27 @@ export default {
       edit: 'lawEnforcement.illegal.edit',
       detail: 'lawEnforcement.illegal.view',
       delete: 'lawEnforcement.illegal.delete',
+    },
+  },
+  training: {
+    examinationPaper: {
+      list: 'training.examinationPaper.listView',
+      add: 'training.examinationPaper.add',
+      edit: 'training.examinationPaper.edit',
+      detail: 'training.examinationPaper.view',
+      delete: 'training.examinationPaper.delete',
+    },
+    library: {
+      list: 'training.library.listView',
+      add: 'training.library.add',
+      edit: 'training.library.edit',
+      delete: 'training.library.delete',
+    },
+    points: {
+      view: 'training.points.view',
+      add: 'training.points.add',
+      edit: 'training.points.edit',
+      delete: 'training.points.delete',
     },
   },
 };

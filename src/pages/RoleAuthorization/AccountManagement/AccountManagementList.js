@@ -141,25 +141,25 @@ const getEmptyData = () => {
       dispatch({
         type: 'account/fetchOptions',
         ...action,
-      })
+      });
     },
     fetchUserType(action) {
       dispatch({
         type: 'account/fetchUserType',
         ...action,
-      })
+      });
     },
     saveSearchInfo(action) {
       dispatch({
         type: 'account/saveSearchInfo',
         ...action,
-      })
+      });
     },
     initPageNum(action) {
       dispatch({
         type: 'account/initPageNum',
         ...action,
-      })
+      });
     },
   })
 )
@@ -185,40 +185,38 @@ export default class accountManagementList extends PureComponent {
       fetchUnitsFuzzy,
       // fetchGavUserTypes,
       fetchUserType,
-      account: {
-        searchInfo,
-      },
-      form: {
-        setFieldsValue,
-      },
+      account: { searchInfo },
+      form: { setFieldsValue },
     } = this.props;
 
     // fetchGavUserTypes()
     fetchUserType({
-      success: () => {
-
-      },
-    })
+      success: () => {},
+    });
     // 获取单位类型和账户状态
     fetchOptions({
       success: ({ unitType }) => {
-        const selectedUnitType = searchInfo && searchInfo.unitType || unitType && unitType.length && unitType[0].id || undefined
-        this.setState({ unitTypeChecked: selectedUnitType })
+        const selectedUnitType =
+          (searchInfo && searchInfo.unitType) ||
+          (unitType && unitType.length && unitType[0].id) ||
+          undefined;
+        this.setState({ unitTypeChecked: selectedUnitType });
 
         // 如果有搜索条件，则填入并所属单位和账号列表
         if (searchInfo) {
-          const { unitId: { key } = {}, ...other } = searchInfo
-          selectedUnitType === 2 ?
-            fetchUnitsFuzzy({
-              payload: { unitType: 2 },
-            }) : fetchUnitsFuzzy({
-              payload: {
-                unitType: selectedUnitType,
-                pageNum: 1,
-                pageSize: defaultPageSize,
-              },
-            });
-          setFieldsValue(searchInfo)
+          const { unitId: { key } = {}, ...other } = searchInfo;
+          selectedUnitType === 2
+            ? fetchUnitsFuzzy({
+                payload: { unitType: 2 },
+              })
+            : fetchUnitsFuzzy({
+                payload: {
+                  unitType: selectedUnitType,
+                  pageNum: 1,
+                  pageSize: defaultPageSize,
+                },
+              });
+          setFieldsValue(searchInfo);
           fetch({
             payload: {
               pageSize,
@@ -243,13 +241,12 @@ export default class accountManagementList extends PureComponent {
           });
         }
       },
-    })
-
+    });
   }
 
   componentWillUnmount() {
-    const { initPageNum } = this.props
-    initPageNum()
+    const { initPageNum } = this.props;
+    initPageNum();
   }
 
   /* 去除输入框里左右两边空白 */
@@ -263,7 +260,7 @@ export default class accountManagementList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    const { unitId: { key } = {}, ...other } = data
+    const { unitId: { key } = {}, ...other } = data;
     // 修改表单数据
     // this.formData = data;
     // 重新请求数据
@@ -271,13 +268,13 @@ export default class accountManagementList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
-        unitId: key || null,
+        unitId: key || data.unitId || null,
         ...other,
       },
     });
     saveSearchInfo({
       payload: data,
-    })
+    });
   };
 
   /* 重置按钮点击事件 */
@@ -301,7 +298,7 @@ export default class accountManagementList extends PureComponent {
         pageNum: 1,
       },
     });
-    const unitType = getFieldValue('unitType')
+    const unitType = getFieldValue('unitType');
     this.setState({ unitTypeChecked: unitType }, () => {
       fetchUnitsFuzzy({
         payload: {
@@ -311,7 +308,7 @@ export default class accountManagementList extends PureComponent {
         },
       });
     });
-    saveSearchInfo()
+    saveSearchInfo();
   };
 
   /* 滚动加载 */
@@ -324,13 +321,14 @@ export default class accountManagementList extends PureComponent {
     if (isLast) {
       return;
     }
-    const { unitId: { key } = {}, ...other } = getFieldsValue()
+    const data = getFieldsValue();
+    const { unitId: { key } = {}, ...other } = data;
     // 请求数据
     appendfetch({
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        unitId: key || null,
+        unitId: key || data.unitId || null,
         ...other,
       },
     });
@@ -342,7 +340,7 @@ export default class accountManagementList extends PureComponent {
       fetchUnitsFuzzy,
       form: { setFieldsValue, getFieldValue },
     } = this.props;
-    const selectedUnitType = getFieldValue('unitType')
+    const selectedUnitType = getFieldValue('unitType');
     setFieldsValue({ unitId: undefined, userType: [] });
     this.setState({ unitTypeChecked: value || selectedUnitType });
     // 根据当前选中的单位类型获取对应的所属单位列表
@@ -389,14 +387,14 @@ export default class accountManagementList extends PureComponent {
   handleUnitIdBlur = () => {
     const {
       form: { setFieldsValue, getFieldValue },
-    } = this.props
-    const value = getFieldValue('unitId')
+    } = this.props;
+    const value = getFieldValue('unitId');
 
     // 搜索后没有选择就清空
     if (value && value.key === value.label) {
-      setFieldsValue({ unitId: undefined })
+      setFieldsValue({ unitId: undefined });
     }
-  }
+  };
 
   // 查看更多关联企业
   handleViewMore = (users, loginId) => {
@@ -549,30 +547,34 @@ export default class accountManagementList extends PureComponent {
                 )}
               </FormItem>
             )}
-            {unitTypeChecked && unitTypeChecked === 4 && (
-              <FormItem label="用户类型">
-                {getFieldDecorator('userType')(
-                  <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
-                    {userTypes.map(item => (
-                      <Option value={item.value} key={item.value}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>)}
-            {unitTypeChecked && unitTypeChecked === 2 && (
-              <FormItem label="用户类型">
-                {getFieldDecorator('userType')(
-                  <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
-                    {gavUserTypes.map(item => (
-                      <Option value={item.id} key={item.id}>
-                        {item.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>)}
+            {unitTypeChecked &&
+              unitTypeChecked === 4 && (
+                <FormItem label="用户类型">
+                  {getFieldDecorator('userType')(
+                    <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
+                      {userTypes.map(item => (
+                        <Option value={item.value} key={item.value}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              )}
+            {unitTypeChecked &&
+              unitTypeChecked === 2 && (
+                <FormItem label="用户类型">
+                  {getFieldDecorator('userType')(
+                    <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
+                      {gavUserTypes.map(item => (
+                        <Option value={item.id} key={item.id}>
+                          {item.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              )}
           </Col>
 
           {/* 按钮 */}
@@ -636,22 +638,22 @@ export default class accountManagementList extends PureComponent {
                       code={codesMap.account.addAssociatedUnit}
                       to={`/role-authorization/account-management/associated-unit/add/${
                         item.loginId
-                        }`}
+                      }`}
                     >
                       关联单位
                     </AuthLink>,
                   ]}
-                // extra={
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // }
+                  // extra={
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // }
                 >
                   <div>
                     <Row>
@@ -686,7 +688,7 @@ export default class accountManagementList extends PureComponent {
                           <Popconfirm
                             title={`确定要${
                               !!item.users[0].accountStatus ? '解绑' : '开启'
-                              }关联企业吗？`}
+                            }关联企业吗？`}
                             onConfirm={() =>
                               this.handleAccountStatus({
                                 accountStatus: Number(!item.users[0].accountStatus),
@@ -703,15 +705,15 @@ export default class accountManagementList extends PureComponent {
                               {!!item.users[0].accountStatus ? (
                                 <Icon type="link" />
                               ) : (
-                                  <Icon style={{ color: 'red' }} type="disconnect" />
-                                )}
+                                <Icon style={{ color: 'red' }} type="disconnect" />
+                              )}
                             </AuthSpan>
                           </Popconfirm>
                         </Col>
                       </Row>
                     ) : (
-                        <p>{getEmptyData()}</p>
-                      )}
+                      <p>{getEmptyData()}</p>
+                    )}
                     <p
                       onClick={() => this.handleViewMore(item.users, item.loginId)}
                       style={{
@@ -747,10 +749,10 @@ export default class accountManagementList extends PureComponent {
               <span>{val}</span>
             </Fragment>
           ) : (
-              <Fragment>
-                <span>运营企业</span>
-              </Fragment>
-            );
+            <Fragment>
+              <span>运营企业</span>
+            </Fragment>
+          );
         },
       },
       {
@@ -784,8 +786,8 @@ export default class accountManagementList extends PureComponent {
                   {!!row.accountStatus ? (
                     <Icon type="link" />
                   ) : (
-                      <Icon style={{ color: 'red' }} type="disconnect" />
-                    )}
+                    <Icon style={{ color: 'red' }} type="disconnect" />
+                  )}
                 </AuthSpan>
               </Popconfirm>
             </Fragment>

@@ -1,0 +1,59 @@
+.questionsList {
+  @mb: 0.8em;
+  margin-top: 0;
+  :global {
+    .ant-card-body {
+      padding: 1.5em 1.5em 0.7em 1.5em;
+    }
+    .ant-form-item {
+      margin-bottom: @mb;
+    }
+  }
+  .listFilter {
+    margin-bottom: 20px;
+  }
+  .cardContainer {
+    .questionsItem {
+      display: flex;
+      justify-content: left;
+      font-size: 15px;
+      margin-bottom: @mb;
+      .label {
+        width: 6em;
+        text-align: right;
+      }
+      .content {
+        flex: 1;
+        word-break: break-all;
+      }
+    }
+    .firstLine {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      margin-bottom: @mb;
+      .tags {
+        flex: 1;
+        padding: 0 1em;
+        &>* {
+          font-size: 14px;
+        }
+      }
+      .rightIcon {
+        visibility: hidden;
+        color: #615b5b;
+        .icon {
+          cursor: pointer;
+        }
+        .disabledIcon {
+          cursor: not-allowed;
+        }
+      }
+    }
+    &:hover {
+      .firstLine .rightIcon {
+        visibility: visible;
+      }
+    }
+  }
+}
