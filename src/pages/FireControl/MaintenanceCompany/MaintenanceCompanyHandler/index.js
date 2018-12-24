@@ -475,6 +475,9 @@ export default class App extends PureComponent {
       longitude,
       latitude,
       parentId: parentId && parentId.key,
+      principalName: restFields.safetyName,     // 为防止麻烦，safetyName和principalName都给
+      principalPhone: restFields.safetyPhone,
+      principalEmail: restFields.safetyEmail,
     };
     // 回调函数
     const callback = ({ code, msg }) => {
