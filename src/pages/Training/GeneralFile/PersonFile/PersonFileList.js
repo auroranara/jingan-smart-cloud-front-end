@@ -182,21 +182,24 @@ export default class PersonFileList extends PureComponent {
         dataIndex: 'passCount',
         key: 'passCount',
         align: 'center',
-        render: val => {
-          return `${val}%`;
-        },
       },
       {
         title: '不合格次数',
         dataIndex: 'noPassCount',
         key: 'noPassCount',
         align: 'center',
+        render: val => {
+          return +val === 0 ? val : <span style={{ color: 'red' }}>{val}</span>;
+        },
       },
       {
         title: '弃考次数',
         dataIndex: 'giveUpCount',
         key: 'giveUpCount',
         align: 'center',
+        render: val => {
+          return +val === 0 ? val : <span style={{ color: 'red' }}>{val}</span>;
+        },
       },
       {
         title: '最高正确率',
