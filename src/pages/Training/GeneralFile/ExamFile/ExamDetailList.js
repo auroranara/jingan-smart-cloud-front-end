@@ -129,6 +129,7 @@ export default class ExamDetailList extends PureComponent {
         examId: id,
         pageSize: 10,
         pageNum: 1,
+        orderByField: 'score desc',
         ...data,
       },
     });
@@ -367,24 +368,11 @@ export default class ExamDetailList extends PureComponent {
 
   render() {
     const {
-      generalFile: {
-        examDetailData: { list = [] },
+      location: {
+        query: { name, startTime, endTime, examLimit, percentOfPass },
       },
     } = this.props;
-
-    let examName = '暂无信息';
-    let examStartTime = '暂无信息';
-    let examEndTime = '暂无信息';
-    let examLimit = '暂无信息';
-    let percentOfPass = '暂无信息';
-
-    if (list.length) {
-      examName = list[0].examName;
-      examStartTime = list[0].examStartTime;
-      examEndTime = list[0].examEndTime;
-      examLimit = list[0].examLimit;
-      percentOfPass = list[0].percentOfPass;
-    }
+    console.log('startTime', parseInt(startTime, 10));
 
     return (
       <PageHeaderLayout
@@ -392,12 +380,12 @@ export default class ExamDetailList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <p>{examName || '暂无数据'}</p>
+            <p>{name || '暂无数据'}</p>
             <p>
               <span>
                 考试期限：
-                {moment(examStartTime).format('YYYY-MM-DD HH:mm')} 至{' '}
-                {moment(examEndTime).format('YYYY-MM-DD HH:mm')}
+                {moment(parseInt(startTime, 10)).format('YYYY-MM-DD HH:mm')} 至{' '}
+                {moment(parseInt(endTime, 10)).format('YYYY-MM-DD HH:mm')}
               </span>
               <span style={{ paddingLeft: 30 }}>
                 考试时长：
