@@ -204,7 +204,7 @@ export default class MyAnalysis extends PureComponent {
                       {noPassCount}
                       人，我的成绩：
                       {myPassStatus === '1' ? '合格' : myPassStatus === '-1' ? '弃考' : '不合格'}
-                      {!myPassStatus === '-1' && (
+                      {myPassStatus !== '-1' && (
                         <span>
                           ，排名为：第
                           {myRanking}名
