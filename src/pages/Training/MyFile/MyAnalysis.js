@@ -58,7 +58,18 @@ export default class MyAnalysis extends PureComponent {
 
   getOption = knowledgeReports => {
     const option = {
-      tooltip: {},
+      tooltip: {
+        formatter: params => {
+          return (
+            `${params.name}<br/>` +
+            params.value
+              .map((item, index) => {
+                return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
+              })
+              .join('<br/>')
+          );
+        },
+      },
       radar: {
         radius: 170,
         name: {
@@ -245,7 +256,7 @@ export default class MyAnalysis extends PureComponent {
 
                   {knowledgeReports.length > 2 && (
                     <ReactEcharts
-                      style={{ height: '450px' }}
+                      style={{ height: '450px', textIndent: 0 }}
                       option={this.getOption(knowledgeReports)}
                       notMerge={true}
                       lazyUpdate={true}
