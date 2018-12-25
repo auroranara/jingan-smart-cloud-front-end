@@ -54,8 +54,12 @@ export default class PersonFileList extends PureComponent {
 
   // 跳转到考试档案页面
   goMyExamList = (id, name) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myFileList?studentId=${id}&&name=${name}`));
+    const { dispatch, companyId } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/myFile/myFileList?studentId=${id}&&name=${name}&&companyId=${companyId}`
+      )
+    );
   };
 
   // 跳转到综合分析报告页面
