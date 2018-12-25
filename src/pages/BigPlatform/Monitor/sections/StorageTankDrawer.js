@@ -19,7 +19,7 @@ export default class StorageTankDrawer extends PureComponent {
     const { visible } = this.props;
     const left = (
       <div className={styles.content}>
-        <Row gutter={6} style={{ marginBottom: 20 }}>
+        <Row gutter={6}>
           <Col span={9}>
             <Select
               placeholder="全部状态"
