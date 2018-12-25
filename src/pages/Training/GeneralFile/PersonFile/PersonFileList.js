@@ -52,12 +52,12 @@ export default class PersonFileList extends PureComponent {
     });
   }
 
-  // 跳转到考试档案页面
-  goMyExamList = (id, name) => {
+  // 跳转到人员档案页面
+  goMyExamList = id => {
     const { dispatch, companyId } = this.props;
     dispatch(
       routerRedux.push(
-        `/training/myFile/myFileList?studentId=${id}&&name=${name}&&companyId=${companyId}`
+        `/training/generalFile/myFile/myFileList?studentId=${id}&&companyId=${companyId}`
       )
     );
   };
@@ -65,7 +65,9 @@ export default class PersonFileList extends PureComponent {
   // 跳转到综合分析报告页面
   goMySynthesisReport = (id, name) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/mySynthesis?studentId=${id}&&name=${name}`));
+    dispatch(
+      routerRedux.push(`/training/generalFile/myFile/mySynthesis?studentId=${id}&&name=${name}`)
+    );
   };
 
   handleTableData = (list = [], indexBase) => {
@@ -233,7 +235,7 @@ export default class PersonFileList extends PureComponent {
         width: 240,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goMyExamList(rows.id, rows.name)}>考试档案</a>
+            <a onClick={() => this.goMyExamList(rows.id)}>考试档案</a>
             <Divider type="vertical" />
             <a onClick={() => this.goMySynthesisReport(rows.id, rows.name)}>人员分析</a>
           </span>
