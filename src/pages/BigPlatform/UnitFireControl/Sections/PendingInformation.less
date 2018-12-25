@@ -155,7 +155,7 @@
         .videoPlayButton {
           position: absolute;
           right: 12px;
-          bottom: 12px;
+          top: 46px;
           width: 32px;
           height: 32px;
           cursor: pointer;
@@ -206,9 +206,16 @@
     .noAlarmContainer {
       position: relative;
       width: 100%;
-      height: calc(100% - 35px);
+      height: calc(100% - 75px);
       padding: 0;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &>div {
+        width: 180px;
+        height: 180px;
+      }
     }
   }
   .mt10 {

@@ -58,7 +58,7 @@ class OverHdCom extends PureComponent {
                         <table className={styles.scrollTable}>
                           <thead>
                             <tr>
-                              <th style={{ width: '38px' }} />
+                              <th style={{ width: '40px' }} />
                               <th style={{ width: '74%' }}>
                                 隐患单位（
                                 {listData.length}）
@@ -73,8 +73,10 @@ class OverHdCom extends PureComponent {
                             {listData.map((item, index) => {
                               return (
                                 <tr key={item.companyId}>
-                                  <td style={{ textAlign: 'left', paddingLeft: '10px' }}>
-                                    {index + 1}
+                                  <td>
+                                    {(+item.companyType === 1 || +item.companyType === 4) && (
+                                      <span className={styles.keyComMark} />
+                                    )}
                                   </td>
                                   <td>
                                     <span

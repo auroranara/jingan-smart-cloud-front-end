@@ -1,0 +1,24 @@
+@color: rgb(9, 103, 211);
+@width: 2px;
+
+.divider {
+  :global {
+    .ant-divider.ant-divider-horizontal.ant-divider-with-text::before {
+      border-top: @width solid @color;
+    }
+    .ant-divider.ant-divider-horizontal.ant-divider-with-text::after {
+      border-top: @width solid @color;
+    }
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  color: rgb(0, 168, 255);
+  font-weight: bold;
+}
+
+.unit {
+  padding-left: 30px;
+}

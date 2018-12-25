@@ -214,8 +214,10 @@ class HiddenDangerPie extends PureComponent {
     }, 5000);
 
     chart.on('click', params => {
+      const { closeAllDrawers } = this.props;
       const { dataIndex } = params;
       const { chartMode } = this.state;
+      closeAllDrawers();
       if (!chartMode || chartMode === 'pie') {
         this.handleDataClick(params, dataIndex);
       } else if (chartMode === 'bar') {
@@ -243,6 +245,7 @@ class HiddenDangerPie extends PureComponent {
               onClick={() => {
                 this.setState({ modeActive: index, chartMode: mode });
               }}
+              key={index}
             >
               <img src={modeActive === index ? active : common} alt="modeIcon" />
             </span>
@@ -311,6 +314,7 @@ class HiddenDangerPie extends PureComponent {
     const { chartMode } = this.state;
     const {
       listForMap: { dangerCompanyNum = 0 },
+      closeAllDrawers,
     } = this.props;
     return (
       <section className={styles.sectionWrapper} style={{ height: 'calc(50% - 6px)' }}>
@@ -323,6 +327,7 @@ class HiddenDangerPie extends PureComponent {
           <div
             className={styles.hdCompany}
             onClick={() => {
+              closeAllDrawers();
               this.handleHdComClick();
             }}
           >

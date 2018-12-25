@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { Card, List, Button, Form, Col, Row, Input, Select, Spin } from 'antd';
+import { Card, List, Button, Form, Col, Row, Input, Select, Spin, Popconfirm, message } from 'antd';
 import moment from 'moment';
 import Ellipsis from '@/components/Ellipsis';
 import { connect } from 'dva';
 import router from 'umi/router';
 import InfiniteScroll from 'react-infinite-scroller';
-import { AuthLink } from '@/utils/customAuth';
+import { AuthLink, AuthA } from '@/utils/customAuth';
 import styles from './ExaminationMissionList.less';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 
@@ -227,6 +227,22 @@ export default class ExaminationMissionList extends PureComponent {
     });
   };
 
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'examinationMission/delete',
+      payload: {
+        id,
+      },
+      success: () => {
+        message.success('删除成功');
+      },
+      error: res => {
+        message.error(res.msg);
+      },
+    });
+  };
+
   renderList = () => {
     const {
       examinationMission: {
@@ -252,6 +268,23 @@ export default class ExaminationMissionList extends PureComponent {
                 >
                   编辑
                 </AuthLink>,
+                <Popconfirm
+                  title="确定要删除此考试任务？"
+                  placement="top"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => {
+                    this.handleDelete(item.id);
+                  }}
+                >
+                  <AuthA
+                    code={+item.status === 1 ? 'training.mission.delete' : 'training.mission.fuck'}
+                    // to={`/training/mission/edit/${item.id}`}
+                    // onClick={() => {}}
+                  >
+                    删除
+                  </AuthA>
+                </Popconfirm>,
               ]}
               title={
                 <Ellipsis tooltip lines={1}>
@@ -344,6 +377,12 @@ export default class ExaminationMissionList extends PureComponent {
               >
                 选择单位
               </Button>
+              {this.companyId && (
+                <div style={{ marginTop: '8px' }}>
+                  考试任务总数：
+                  {total}
+                </div>
+              )}
             </div>
           )
         }

@@ -53,14 +53,17 @@ export default class CoursewareList extends PureComponent {
       notCompany,
       companyId,
       knowledgeId,
+      resourceManagement: { searchInfo },
     } = this.props
+    // 如果没有传入companyId，则使用保存在redux中的
+    const id = companyId || searchInfo.id
     dispatch({
       type: 'resourceManagement/fetchCourseWare',
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
         type: '2', // type '1'文章 '2' 课件
-        companyId: notCompany ? companyId : null,
+        companyId: notCompany ? id : null,
         knowledgeId,
       },
     })
@@ -68,16 +71,20 @@ export default class CoursewareList extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    const { knowledgeId } = this.props
+    const { knowledgeId, companyId } = this.props
     router.push({
       pathname: '/training/library/courseware/add',
-      query: { knowledgeId },
+      query: { knowledgeId, companyId },
     })
   }
 
   // 跳转到编辑页面
   handleToEdit = (id) => {
-    router.push(`/training/library/courseware/edit/${id}`)
+    const { companyId } = this.props
+    router.push({
+      pathname: `/training/library/courseware/edit/${id}`,
+      query: { companyId },
+    })
   }
 
   // 点击加载更多
@@ -332,7 +339,7 @@ export default class CoursewareList extends PureComponent {
                   </div>
                 </div>
                 <div className={styles.tags}>
-                  {item.knowledgeName && <Tag>{item.knowledgeName}</Tag>}
+                  {item.knowledges && (<Tag>{item.knowledges.join(' > ')}</Tag>)}
                   <Tag>{item.type === '2' ? '视频' : '文档'}</Tag>
                   {statusAuth ? (
                     <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}课件吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, item.type, statusAuth) }}>

@@ -51,6 +51,8 @@ export default class CompanyInfo extends PureComponent {
         specialEquipmentCount,
         // 隐患列表
         hiddenDangerList: { ycq = [], wcq = [], dfc = [] },
+        // 安全指数
+        safetyIndex,
       },
       // 点击企业名称
       handleClickUnitName,
@@ -93,21 +95,24 @@ export default class CompanyInfo extends PureComponent {
               </Ellipsis>
             </div>
             {/* 安全指数 */}
-            <Progress
-              width={90}
-              type="circle"
-              percent={80}
-              strokeColor="#00a8ff"
-              trailColor="#021C41"
-              status="active"
-              style={{
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-                height: 80,
-              }}
-              format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 24 }}>{percent}</div><div style={{ fontSize: 16 }}>安全指数</div></div>}
-            />
+            {safetyIndex !== undefined && (
+              <Progress
+                width={80}
+                type="circle"
+                percent={safetyIndex}
+                strokeColor={safetyIndex >= 80 ? "#00a8ff" : '#ff4848'}
+                trailColor="#021C41"
+                prefixCls={styles.progress}
+                status="active"
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 0,
+                  height: 70,
+                }}
+                format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 22, marginBottom: 4 }}>{percent}</div><div style={{ fontSize: 12 }}>安全指数</div></div>}
+              />
+            )}
           </div>
           {/* 统计信息 */}
           <div className={styles.bottom}>

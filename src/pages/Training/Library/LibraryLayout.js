@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Row, Col, Tabs, Tree, Spin, Form, Input } from 'antd';
+import { Card, Row, Col, Tabs, Tree, Spin, Form, Input, Button } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -47,10 +47,15 @@ export default class LibraryLayout extends PureComponent {
       match: {
         params: { type = 'questions' },
       },
+      resourceManagement: { searchInfo = {} },
     } = this.props;
-    this.setState({ activeKey: type });
+    const company = { id: searchInfo.id, name: searchInfo.name }
     // 获取知识点树
-    dispatch({ type: 'resourceManagement/fetchKnowledgeTree' });
+    dispatch({
+      type: 'resourceManagement/fetchKnowledgeTree',
+      payload: { companyId: searchInfo.id },
+    });
+    this.setState({ activeKey: type, company });
   }
 
   // 获取单位列表
@@ -95,38 +100,13 @@ export default class LibraryLayout extends PureComponent {
         companyId: company.id,
       },
     });
-    if (activeKey === 'questions') {
-      // 清空试题筛选数据
-      this.refs.questions && this.refs.questions.resetFields();
-      // 获取试题列表
-      this.fetchQuestions({
-        payload: {
-          pageNum: 1,
-          pageSize: defaultPageSize,
-          companyId: company.id,
-        },
-      });
-    } else if (activeKey === 'article') {
-      this.refs.questions && this.refs.article.resetFields()
-      this.fetchArticles({
-        payload: {
-          pageNum: 1,
-          pageSize: defaultPageSize,
-          type: '1', // type 1文章
-          companyId: company.id,
-        },
-      })
-    } else if (activeKey === 'courseware') {
-      this.refs.questions && this.refs.courseware.resetFields()
-      this.fetchCourseWare({
-        payload: {
-          pageNum: 1,
-          pageSize: defaultPageSize,
-          type: '2', // type '1'文章 '2' 课件
-          companyId: company.id,
-        },
-      })
-    }
+    // 获取当前tab下的列表数据
+    this.getCurrentList({ activeKey, company })
+    // 保存企业信息，方便返回该页面显示
+    dispatch({
+      type: 'resourceManagement/saveSearchInfo',
+      payload: company,
+    })
   };
 
 
@@ -138,47 +118,56 @@ export default class LibraryLayout extends PureComponent {
   // 点击知识点
   handleSelectTree = (keys) => {
     const { activeKey, company } = this.state
+    const [selected] = keys
+    this.setState({ knowledgeId: selected, selectedKeys: keys })
+    // 获取当前tab下的列表
+    this.getCurrentList({ activeKey, knowledgeId: selected, company })
+  };
+
+  // 获取当前tab下的列表 （区分试题、文章、课件）
+  getCurrentList = ({ activeKey = null, knowledgeId = null, company = {} }) => {
     const {
       user: {
         currentUser: { unitType },
       },
     } = this.props
-    const [selected] = keys
     const notCompany = unitType === 2 || unitType === 3
-
-    this.setState({ knowledgeId: selected, selectedKeys: keys })
     if (activeKey === 'questions') {
+      // 清空试题筛选数据
+      this.refs.questions && this.refs.questions.resetFields();
       // 获取试题列表 Tips：user为政府人员需要传companyId，来看所有试题
       this.fetchQuestions({
         payload: {
           pageNum: 1,
           pageSize: defaultPageSize,
-          knowledgeId: selected,
+          knowledgeId,
           companyId: company && notCompany ? company.id : null,
         },
       });
     } else if (activeKey === 'article') {
+      this.refs.questions && this.refs.article.resetFields()
       this.fetchArticles({
         payload: {
           pageNum: 1,
           pageSize: defaultPageSize,
           type: '1', // type 1文章
-          knowledgeId: selected,
+          knowledgeId,
           companyId: company && notCompany ? company.id : null,
         },
       })
     } else if (activeKey === 'courseware') {
+      this.refs.questions && this.refs.courseware.resetFields()
       this.fetchCourseWare({
         payload: {
           pageNum: 1,
           pageSize: defaultPageSize,
           type: '2', // type '1'文章 '2' 课件
-          knowledgeId: selected,
+          knowledgeId,
           companyId: company && notCompany ? company.id : null,
         },
       })
     }
-  };
+  }
 
   // 渲染树节点
   renderTreeNodes = data => {
@@ -217,31 +206,14 @@ export default class LibraryLayout extends PureComponent {
       );
   };
 
-  handleFocus = e => {
-    e.target.blur();
+  //点击选择企业
+  handleViewModal = () => {
     this.fetchCompanyList({
       payload: { pageNum: 1, pageSize: defaultPageSize },
       callback: () => {
         this.setState({ visible: true });
       },
     })
-  };
-
-  // 渲染单位选择
-  renderSelect = () => {
-    const { user: { currentUser: { unitType } } } = this.props;
-    const { company } = this.state;
-    const notCompany = unitType === 2 || unitType === 3;
-    // 当账户为政府或运营时可以选择单位
-    return notCompany && (
-      <Input
-        placeholder="请选择单位"
-        style={{ marginBottom: 8, width: 256 }}
-        onFocus={this.handleFocus}
-        value={company && company.name}
-        readOnly
-      />
-    );
   }
 
   render() {
@@ -251,19 +223,31 @@ export default class LibraryLayout extends PureComponent {
         companyList,
       },
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, companyId },
       },
     } = this.props
     const { activeKey, knowledgeId, company = {}, visible } = this.state
     const notCompany = unitType === 2 || unitType === 3
-    const data = { knowledgeId, companyId: company.id || null, unitType, notCompany }
+    const data = { knowledgeId, companyId: company.id || companyId, unitType, notCompany }
     return (
       <PageHeaderLayout
         title="资源管理"
         breadcrumbList={breadcrumbList}
-        content={(
+        content={notCompany && (
           <Fragment>
-            {this.renderSelect()}
+            <Input
+              disabled
+              style={{ width: '300px' }}
+              placeholder={'请选择单位'}
+              value={company.name}
+            />
+            <Button
+              type="primary"
+              style={{ marginLeft: '5px' }}
+              onClick={this.handleViewModal}
+            >
+              选择单位
+              </Button>
           </Fragment>
         )}
       >

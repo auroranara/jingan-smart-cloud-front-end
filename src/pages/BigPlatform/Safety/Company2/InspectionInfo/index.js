@@ -122,7 +122,8 @@ export default class InspectionInfo extends PureComponent {
         },
         axisLine: {
           lineStyle: {
-            color: ['rgb(2,28,66)'],
+            // color: ['rgb(2,28,66)'],
+            color: ['#ccc'],
           },
         },
       },
@@ -139,7 +140,8 @@ export default class InspectionInfo extends PureComponent {
         },
         axisLine: {
           lineStyle: {
-            color: ['rgb(2,28,66)'],
+            // color: ['rgb(2,28,66)'],
+            color: ['#ccc'],
           },
         },
       },

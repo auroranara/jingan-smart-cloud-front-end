@@ -54,7 +54,18 @@ export default class MySynthesis extends PureComponent {
 
   getOption = knowledgeReports => {
     const option = {
-      tooltip: {},
+      tooltip: {
+        formatter: params => {
+          return (
+            `${params.name}<br/>` +
+            params.value
+              .map((item, index) => {
+                return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
+              })
+              .join('<br/>')
+          );
+        },
+      },
       radar: {
         radius: 170,
         name: {
@@ -75,8 +86,8 @@ export default class MySynthesis extends PureComponent {
           type: 'radar',
           data: [
             {
-              value: knowledgeReports.map(data => {
-                return { value: data.rightPercent };
+              value: knowledgeReports.map(k => {
+                return [k.rightPercent];
               }),
               name: '知识点综合分析图',
             },
@@ -193,7 +204,7 @@ export default class MySynthesis extends PureComponent {
                         ? knowledgeReports.map(k => k.knowledgeName).join(',')
                         : '无'}
                       ， 共{knowledgeReports.length}
-                      项，
+                      项。
                     </strong>
                     我的知识点考试正确率：
                     {knowledgeReports.length > 0
@@ -214,7 +225,7 @@ export default class MySynthesis extends PureComponent {
                             </span>
                           );
                         })
-                      : '无'}
+                      : '无。'}
                   </p>
                   {/* <p>
                     4、本次考试题量：

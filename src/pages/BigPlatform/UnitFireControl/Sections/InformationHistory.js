@@ -5,7 +5,7 @@ import Ellipsis from '@/components/Ellipsis';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-import noPendingInfo from '../images/noPendingInfo.png';
+import noPendingInfo from '../images/emptyLogo.png';
 
 export default class InformationHistory extends PureComponent {
 
@@ -118,7 +118,6 @@ export default class InformationHistory extends PureComponent {
       selectedDeviceType,
       title,
     } = this.props
-
     return (
       <div className={styles.AlarmHistory}>
         <div className={styles.sectionMain}>
@@ -140,7 +139,7 @@ export default class InformationHistory extends PureComponent {
                 </Col>
               ))}
             </Row>
-            {list && list.length ? (
+            {list && list.length > 0 ? (
               <div
                 className={styles.historyContent}
                 ref={historyList => { this.historyList = historyList }}
@@ -153,14 +152,15 @@ export default class InformationHistory extends PureComponent {
                 )}
               </div>
             ) : (
-                <div className={styles.noAlarmContainer}
-                  style={{
+                <div className={styles.noAlarmContainer}>
+                  <div className={styles.image} style={{
                     background: `url(${noPendingInfo})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center center',
-                    backgroundSize: '40% 25%',
-                  }}
-                >
+                    backgroundSize: '100% 100%',
+                  }}>
+                    <div className={styles.text}><span>暂无消息</span></div>
+                  </div>
                 </div>
               )}
           </div>

@@ -20,3 +20,8 @@ export async function queryExamDetail(params) {
 export async function queryMultipleReport(params) {
   return request(`/acloud_new/v2/education/multipleExamReport?${stringify(params)}`);
 }
+
+// 获取企业列表
+export async function queryFileCompanies(params) {
+  return request(`/acloud_new/v2/baseInfo/model/companies?${stringify(params)}`);
+}

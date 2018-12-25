@@ -40,6 +40,7 @@ export default class ExamFileList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
     // 获取考试列表
     dispatch({
@@ -47,14 +48,19 @@ export default class ExamFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+        companyId: companyId,
       },
     });
   }
 
   // 跳转到考试详情页面
-  goExamDetail = id => {
+  goExamDetail = (id, name, startTime, endTime, examLimit, percentOfPass) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/generalFile/examDetailList/${id}`));
+    dispatch(
+      routerRedux.push(
+        `/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+      )
+    );
   };
 
   // 跳转到考试成绩综合分析报告
@@ -79,6 +85,7 @@ export default class ExamFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      companyId,
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
@@ -89,6 +96,7 @@ export default class ExamFileList extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        companyId: companyId,
         ...data,
       },
     });
@@ -101,6 +109,7 @@ export default class ExamFileList extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
+      companyId,
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -110,6 +119,7 @@ export default class ExamFileList extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        companyId: companyId,
       },
     });
   };
@@ -121,6 +131,7 @@ export default class ExamFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      companyId,
     } = this.props;
     const data = getFieldsValue();
     dispatch({
@@ -128,6 +139,7 @@ export default class ExamFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum,
+        companyId: companyId,
         ...data,
       },
     });
@@ -254,7 +266,20 @@ export default class ExamFileList extends PureComponent {
         width: 140,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goExamDetail(rows.id)}>查看</a>
+            <a
+              onClick={() =>
+                this.goExamDetail(
+                  rows.id,
+                  rows.name,
+                  rows.startTime,
+                  rows.endTime,
+                  rows.examLimit,
+                  rows.percentOfPass
+                )
+              }
+            >
+              查看
+            </a>
             <Divider type="vertical" />
             <a onClick={() => this.goExamReport(rows.id)}>分析报告</a>
           </span>

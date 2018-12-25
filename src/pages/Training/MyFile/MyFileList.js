@@ -13,23 +13,6 @@ const Option = Select.Option;
 // 标题
 const title = '我的档案';
 
-//面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '教育培训',
-    name: '教育培训',
-  },
-  {
-    title,
-    name: '我的档案',
-  },
-];
-
 // 默认表单值
 const defaultFormData = {
   examName: undefined,
@@ -101,9 +84,9 @@ export default class myFileList extends PureComponent {
   };
 
   // 跳转到试卷页面
-  goExamDetail = id => {
+  goExamDetail = (id, examId) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/my-exam/result/${id}`));
+    dispatch(routerRedux.push(`/training/my-exam/result/${id}?examId=${examId}`));
   };
 
   // 跳转到分析报告页面
@@ -343,7 +326,7 @@ export default class myFileList extends PureComponent {
         width: 160,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goExamDetail(rows.id)}>试卷</a>
+            <a onClick={() => this.goExamDetail(rows.id, rows.examId)}>试卷</a>
             <Divider type="vertical" />
             <a onClick={() => this.goAlaysisExam(rows.studentId, rows.examId)}>分析报告</a>
           </span>
@@ -391,10 +374,25 @@ export default class myFileList extends PureComponent {
       user: {
         currentUser: { userId },
       },
-      location: {
-        query: { studentId },
-      },
     } = this.props;
+
+    //面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+
+      {
+        title: '教育培训',
+        name: '教育培训',
+      },
+      {
+        title,
+        name: '我的档案',
+      },
+    ];
 
     return (
       <PageHeaderLayout
@@ -408,10 +406,7 @@ export default class myFileList extends PureComponent {
         }
         extraContent={
           <div>
-            <Button
-              className={styles.backBtn}
-              onClick={() => this.goToMySynthesis(studentId ? studentId : userId)}
-            >
+            <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
               综合分析报告
             </Button>
           </div>

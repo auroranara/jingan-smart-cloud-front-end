@@ -58,7 +58,18 @@ export default class MyAnalysis extends PureComponent {
 
   getOption = knowledgeReports => {
     const option = {
-      tooltip: {},
+      tooltip: {
+        formatter: params => {
+          return (
+            `${params.name}<br/>` +
+            params.value
+              .map((item, index) => {
+                return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
+              })
+              .join('<br/>')
+          );
+        },
+      },
       radar: {
         radius: 170,
         name: {
@@ -79,8 +90,8 @@ export default class MyAnalysis extends PureComponent {
           type: 'radar',
           data: [
             {
-              value: knowledgeReports.map(data => {
-                return { value: data.rightPercent };
+              value: knowledgeReports.map(k => {
+                return [k.rightPercent];
               }),
               name: '知识点综合分析图',
             },
@@ -119,7 +130,6 @@ export default class MyAnalysis extends PureComponent {
         },
       },
     } = this.props;
-
     //面包屑
     const breadcrumbList = [
       {
@@ -183,7 +193,7 @@ export default class MyAnalysis extends PureComponent {
                       {minScore}
                       %，平均正确率：
                       {meanScore}% ，我的正确率为：
-                      {myScore}%
+                      {myScore ? myScore : 0}%
                     </strong>
                     。
                   </p>
@@ -200,8 +210,12 @@ export default class MyAnalysis extends PureComponent {
                       {noPassCount}
                       人，我的成绩：
                       {myPassStatus === '1' ? '合格' : myPassStatus === '-1' ? '弃考' : '不合格'}
-                      ，排名为：第
-                      {myRanking}名
+                      {myPassStatus !== '-1' && (
+                        <span>
+                          ，排名为：第
+                          {myRanking}名
+                        </span>
+                      )}
                     </strong>
                     。
                   </p>
@@ -211,7 +225,7 @@ export default class MyAnalysis extends PureComponent {
                       {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
                       {knowledgeReports.length}项
                     </strong>
-                    ，我的知识点考试正确率：
+                    。我的知识点考试正确率：
                     {knowledgeReports.map(item => {
                       const {
                         knowledgeId,
@@ -237,7 +251,7 @@ export default class MyAnalysis extends PureComponent {
 
                   {knowledgeReports.length > 2 && (
                     <ReactEcharts
-                      style={{ height: '450px' }}
+                      style={{ height: '450px', textIndent: 0 }}
                       option={this.getOption(knowledgeReports)}
                       notMerge={true}
                       lazyUpdate={true}

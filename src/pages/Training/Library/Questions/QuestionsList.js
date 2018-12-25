@@ -59,14 +59,17 @@ export default class QuestionsList extends PureComponent {
       notCompany,
       companyId,
       knowledgeId,
+      resourceManagement: { searchInfo },
     } = this.props
+    // 如果没有传入companyId，则使用保存在redux中的
+    const id = companyId || searchInfo.id
     // 获取试题列表
     dispatch({
       type: 'resourceManagement/fetchQuestions',
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
-        companyId: notCompany ? companyId : null,
+        companyId: notCompany ? id : null,
         knowledgeId,
       },
     })
@@ -74,10 +77,10 @@ export default class QuestionsList extends PureComponent {
 
   // 点击新增
   handleAddQuestions = () => {
-    const { knowledgeId } = this.props
+    const { knowledgeId, companyId } = this.props
     router.push({
       pathname: '/training/library/questions/add',
-      query: { knowledgeId },
+      query: { knowledgeId, companyId },
     })
   }
 
@@ -189,6 +192,14 @@ export default class QuestionsList extends PureComponent {
     )
   }
 
+  handleToEdit = (id) => {
+    const { companyId } = this.props
+    router.push({
+      pathname: `/training/library/questions/edit/${id}`,
+      query: { companyId },
+    })
+  }
+
   // 渲染筛选
   renderFilter = () => {
     const {
@@ -255,7 +266,6 @@ export default class QuestionsList extends PureComponent {
     const {
       initLoading,
       moreLoading,
-      notCompany,
       resourceManagement: {
         questions: {
           list,
@@ -290,12 +300,12 @@ export default class QuestionsList extends PureComponent {
                 >
                   <div className={styles.firstLine}>
                     <div className={styles.tags}>
-                      {item.knowledgeName && <Tag>{item.knowledgeName}</Tag>}
+                      {item.knowledges && (<Tag>{item.knowledges.join(' > ')}</Tag>)}
                       {item.typeName && <Tag>{item.typeName}</Tag>}
                       {item.levelName && <Tag color={colors[item.level - 1]}>{item.levelName}</Tag>}
                     </div>
                     <div className={styles.rightIcon}>
-                      <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => { router.push(`/training/library/questions/edit/${item.id}`) } : null} />
+                      <Icon className={editDisabled ? styles.disabledIcon : styles.icon} type="edit" onClick={!editDisabled ? () => this.handleToEdit(item.id) : null} />
                       <Divider type="vertical" />
                       {delDisabled ? (
                         <Icon className={styles.disabledIcon} type="close" />

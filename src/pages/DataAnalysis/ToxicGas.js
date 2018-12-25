@@ -6,6 +6,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
+import ToolBar from '@/components/ToolBar';
 import {
   TOXIC_GAS_TYPE as TYPE,
   TOXIC_GAS_TYPE_LABEL as TYPE_LABEL,
@@ -58,7 +59,7 @@ export default class ToxicGas extends PureComponent {
 
   renderExportButton() {
     return (
-      <Button type="primary" onClick={this.handleExport} ghost style={{ marginTop: '8px' }}>
+      <Button type="primary" onClick={this.handleExport} ghost /* style={{ marginTop: '8px' }} */>
         导出报表
       </Button>
     );
@@ -177,12 +178,18 @@ export default class ToxicGas extends PureComponent {
         }
       >
         <Card className={styles.search}>
-          <InlineForm
+          <ToolBar
             fields={fields}
             action={this.renderExportButton()}
-            buttonSpan={{ xl: 8, md: 12, sm: 24 }}
+            // buttonSpan={{ xl: 8, md: 12, sm: 24 }}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
+            buttonStyle={{ textAlign: 'right' }}
+            buttonSpan={{
+              xl: 12,
+              sm: 24,
+              xs: 24,
+            }}
           />
         </Card>
         <div className={styles.container}>

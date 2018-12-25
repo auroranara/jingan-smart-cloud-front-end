@@ -33,7 +33,7 @@ export default class App extends PureComponent {
         status = 0,
         webUrl,
         user_name,
-        check_date,
+        last_check_date,
         location_code,
         accidentTypeName,
         area_name,
@@ -44,7 +44,7 @@ export default class App extends PureComponent {
     // 容器类名
     const contianerClassName = classnames(className, styles.container);
     // 是否为异常或已超期
-    const isAlert = status === 2 || status === 4;
+    const isAlert = +status === 2 || +status === 4;
     // 图片是否可用
     const isValid = /(.png|.jpg)$/.test(webUrl);
 
@@ -88,7 +88,7 @@ export default class App extends PureComponent {
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查人</div>
-                  <div className={styles.infoValue}>{user_name} {moment && moment(check_date).format('YYYY-MM-DD ')}</div>
+                  <div className={styles.infoValue}>{user_name} {moment && moment(last_check_date).format('YYYY-MM-DD ')}</div>
                 </div>
               </Fragment>
             ) : (
@@ -107,7 +107,7 @@ export default class App extends PureComponent {
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查时间</div>
-                  <div className={styles.infoValue}>{moment && moment(check_date).format('YYYY-MM-DD ')}</div>
+                  <div className={styles.infoValue}>{moment && moment(last_check_date).format('YYYY-MM-DD ')}</div>
                 </div>
               </Fragment>
             )}

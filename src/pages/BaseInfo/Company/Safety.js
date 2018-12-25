@@ -6,7 +6,6 @@ import {
   message,
   Button,
   Card,
-  Cascader,
   Col,
   DatePicker,
   Form,
@@ -92,7 +91,7 @@ const GET_ITEMS = [
   'subjection',
   'regulatoryOrganization',
   'startTime',
-  SAFETY_IMPORTANT,
+  // SAFETY_IMPORTANT,
   'safetyFourPicture',
   'companyLogo',
 ];
@@ -104,7 +103,7 @@ const MORE_GET_ITEMS = [
   'subjection',
   'regulatoryOrganization',
   'startTime',
-  SAFETY_IMPORTANT,
+  // SAFETY_IMPORTANT,
   'reachGradeAccessory',
   'safetyFourPicture',
   'companyLogo',
@@ -210,7 +209,7 @@ function handleGridTree(gridList = [], idMap) {
 function traverse(gl, idMap) {
   return gl.map(({ id, text, children, nodes, parentIds }) => {
     // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
-    idMap[id] = parentIds ? [...parentIds.split(',').filter(item => item), id] : [];
+    idMap[id] = parentIds ? [...parentIds.split(',').filter(item => item), id] : [id];
     return { value: id, label: text, children: children ? traverse(children, idMap) : undefined };
   });
 }
@@ -568,17 +567,17 @@ export default class Safety extends PureComponent {
         rules: generateRules('服务有效期'),
         component: <RangePicker />,
       },
-      {
-        name: SAFETY_IMPORTANT,
-        cName: '安监重点单位',
-        rules: generateRules('是否为安监重点单位'),
-        component: (
-          <RadioGroup>
-            <Radio value="1">是</Radio>
-            <Radio value="2">否</Radio>
-          </RadioGroup>
-        ),
-      },
+      // {
+      //   name: SAFETY_IMPORTANT,
+      //   cName: '安监重点单位',
+      //   rules: generateRules('是否为安监重点单位'),
+      //   component: (
+      //     <RadioGroup>
+      //       <Radio value="1">是</Radio>
+      //       <Radio value="2">否</Radio>
+      //     </RadioGroup>
+      //   ),
+      // },
       {
         name: 'safetyFourPicture',
         cName: '安全四色图',

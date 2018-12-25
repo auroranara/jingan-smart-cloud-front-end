@@ -22,9 +22,9 @@ export default class App extends PureComponent {
             principalName,
             principalPhone,
             principalEmail,
-            /* safetyName,
+            safetyName,
             safetyPhone,
-            safetyEmail, */
+            safetyEmail,
           } = {},
         },
       },
@@ -75,8 +75,8 @@ export default class App extends PureComponent {
           <Row gutter={{ lg: 48, md: 24 }} className={styles.subBody}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.principalName}>
-                {getFieldDecorator('principalName', {
-                  initialValue: principalName,
+                {getFieldDecorator('safetyName', {
+                  initialValue: safetyName,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入主要负责人姓名' }],
                 })(<Input placeholder="请输入姓名" />)}
@@ -84,8 +84,8 @@ export default class App extends PureComponent {
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.principalPhone}>
-                {getFieldDecorator('principalPhone', {
-                  initialValue: principalPhone,
+                {getFieldDecorator('safetyPhone', {
+                  initialValue: safetyPhone,
                   getValueFromEvent: this.handleTrim,
                   rules: [
                     { required: true, message: '请输入主要负责人联系方式' },
@@ -96,8 +96,8 @@ export default class App extends PureComponent {
             </Col>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.principalEmail}>
-                {getFieldDecorator('principalEmail', {
-                  initialValue: principalEmail,
+                {getFieldDecorator('safetyEmail', {
+                  initialValue: safetyEmail,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ pattern: emailReg, message: '主要负责人邮箱格式不正确' }],
                 })(<Input placeholder="请输入邮箱" />)}

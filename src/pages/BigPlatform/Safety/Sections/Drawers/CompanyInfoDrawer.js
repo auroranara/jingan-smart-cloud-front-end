@@ -12,9 +12,15 @@ class CompanyInfoDrawer extends PureComponent {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.props.onRef(this);
+  }
 
   componentWillUnmount() {}
+
+  initFull = () => {
+    this.setState({ riskDetailFull: false });
+  };
 
   render() {
     const { riskDetailFull } = this.state;
@@ -22,7 +28,6 @@ class CompanyInfoDrawer extends PureComponent {
       visible,
       handleParentChange,
       goCompany,
-      dispatch,
       companyMessage: {
         companyMessage: {
           // 企业名称
@@ -39,7 +44,7 @@ class CompanyInfoDrawer extends PureComponent {
       },
       specialEquipment,
       hiddenDangerListByDate,
-      hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
+      // hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
       companyId,
     } = this.props;
     const companyInfoStyles = riskDetailFull ? { opacity: 0 } : {};
@@ -56,6 +61,7 @@ class CompanyInfoDrawer extends PureComponent {
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          mask={false}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div
@@ -154,8 +160,8 @@ class CompanyInfoDrawer extends PureComponent {
                           style={{ borderBottom: 'none', borderTop: '1px solid #0967d3' }}
                         >
                           <span className={styles.tableTitle}>
-                            风险点隐患（
-                            {ycq.length + wcq.length + dfc.length}）
+                            当前隐患（
+                            {hiddenDangerListByDate.length}）
                           </span>
                         </div>
 

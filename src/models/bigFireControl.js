@@ -6,6 +6,8 @@ import {
   querySys,
   queryFireTrend,
   queryDanger,
+  queryDangerList,
+  getHiddenDangerRecords,
   getCompanyFireInfo,
   queryAlarmHandle,
   queryLookUp,
@@ -17,6 +19,9 @@ import {
   getVideoLookUp,
   getMapLocation,
   getGrids,
+  getRiskPoints,
+  getSafeMan,
+  getHostAlarmTrend,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -66,6 +71,17 @@ function handleDanger(response, isCompany = false) {
 //   });
 // }
 
+function handleRiskPoints(pointsObj) {
+  if (!pointsObj)
+    return [];
+
+  return ['red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
+    const prop = `${next}DangerResult`;
+    const arr = Array.isArray(pointsObj[prop]) ? pointsObj[prop] : [];
+    return prev.concat(arr);
+  }, []);
+}
+
 export default {
   namespace: 'bigFireControl',
 
@@ -77,12 +93,16 @@ export default {
     },
     overview: {},
     companyOv: {},
+    govAlarm: {}, // 概况中的火警信息
+    comAlarm: {},
     alarm: {},
     alarmHistory: {},
     sys: {},
     trend: {},
     companyTrend: {},
     danger: {},
+    dangerList: [], // 隐患企业列表
+    dangerRecords: [], // 隐患巡查记录
     gridDanger: {},
     companyDanger: {},
     alarmProcess: {
@@ -113,6 +133,10 @@ export default {
     lookUpCamera: [],
     mapLocation: [],
     grids: [],
+    units: {},
+    riskPoints: [],
+    safeMan: {},
+    hostAlarmTrend: {},
   },
 
   effects: {
@@ -124,7 +148,10 @@ export default {
       let response = yield call(queryOvAlarmCounts, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200) yield put({ type: payload.companyId ? 'saveCompanyOv' : 'saveOv', payload: data });
+      if (code === 200) {
+        yield put({ type: payload.companyId ? 'saveCompanyOv' : 'saveOv', payload: data });
+        yield put({ type: payload.companyId ? 'saveComAlarm' : 'saveGovAlarm', payload: data });
+      }
     },
     *fetchOvDangerCounts({ payload }, { call, put }) {
       const response = yield call(queryOvDangerCounts, payload);
@@ -146,11 +173,14 @@ export default {
         yield put({ type: 'saveCompanyOv', payload: { safetyOfficer, riskPointer } });
       }
     },
-    *fetchAlarm({ payload }, { call, put }) {
+    *fetchAlarm({ payload, callback }, { call, put }) {
       let response = yield call(queryAlarm, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200) yield put({ type: 'saveAlarm', payload: data });
+      if (code === 200) {
+        callback && callback(data ? data.list : []);
+        yield put({ type: 'saveAlarm', payload: data });
+      }
     },
     *fetchAlarmHistory({ payload }, { call, put }) {
       let response = yield call(queryAlarm, { ...payload, historyType: 1 });
@@ -164,9 +194,9 @@ export default {
       const response = yield call(querySys, payload);
       if (response && response.code === 200) {
         const { data = EMPTY_OBJECT } = response;
-        const { total, activeCount, titleName } = data;
+        const { total, activeCount, importCount, titleName } = data;
         yield put({ type: 'saveSys', payload: data });
-        yield put({ type: 'saveOv', payload: { total, activeCount, titleName } });
+        yield put({ type: 'saveOv', payload: { total, activeCount, importCount, titleName } });
       }
     },
     *fetchFireTrend({ payload }, { call, put }) {
@@ -188,6 +218,15 @@ export default {
           yield put({ type: 'saveGridDanger', payload: gridPyd });
         }
       }
+    },
+    *fetchDangerList({ payload }, { call, put }) {
+      const response = yield call(queryDangerList, payload);
+      yield put({ type: 'saveDangerList', payload: response || [] });
+    },
+    *fetchDangerRecords({ payload }, { call, put }) {
+      const response = yield call(getHiddenDangerRecords, payload);
+      if (response && Array.isArray(response.hiddenDangers))
+        yield put({ type: 'saveDangerRecords', payload: response.hiddenDangers });
     },
     *fetchInitLookUp({ payload, callback }, { call, put }) {
       let response = yield call(queryLookUp, payload);
@@ -271,6 +310,26 @@ export default {
         callback && callback(data);
       }
     },
+    // 获取风险点
+    *fetchRiskPoints({ payload }, { call, put }) {
+      let response = yield call(getRiskPoints, payload);
+      if (response)
+        yield put({ type: 'saveRiskPoints', payload: response });
+    },
+    // 获取安全员
+    *fetchSafeMan({ payload }, { call, put }) {
+      let response = yield call(getSafeMan, payload);
+      if (response)
+        yield put({ type: 'saveSafeMan', payload: response });
+    },
+    // 获取最近十二个月的主机报警数量
+    *fetchHostAlarmTrend({ payload }, { call, put }) {
+      let response = yield call(getHostAlarmTrend, payload);
+      response = response || {};
+      const { code=DEFAULT_CODE, data={} } = response;
+      if (code === 200)
+        yield put({ type: 'saveHostAlarmTrend', payload: data || {} });
+    },
   },
 
   reducers: {
@@ -284,6 +343,12 @@ export default {
     saveCompanyOv(state, action) {
       const companyOv = { ...state.companyOv, ...action.payload };
       return { ...state, companyOv };
+    },
+    saveGovAlarm(state, action) {
+      return { ...state, govAlarm: action.payload };
+    },
+    saveComAlarm(state, action) {
+      return { ...state, comAlarm: action.payload };
     },
     saveAlarm(state, action) {
       return { ...state, alarm: action.payload };
@@ -302,6 +367,16 @@ export default {
     },
     saveDanger(state, action) {
       return { ...state, danger: action.payload };
+    },
+    saveDangerList(state, action) {
+      const dangerList = action.payload;
+      dangerList.forEach((item, i) => item.index = i + 1);
+      return { ...state, dangerList };
+    },
+    saveDangerRecords(state, action) {
+      // 过滤掉隐患记录中的已关闭
+      return { ...state, dangerRecords: action.payload.filter(({ status }) => status !== '4') };
+      // return { ...state, dangerRecords: action.payload };
     },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
@@ -341,6 +416,15 @@ export default {
     },
     saveGrids(state, action) {
       return { ...state, grids: action.payload };
+    },
+    saveRiskPoints(state, action) {
+      return { ...state, riskPoints: handleRiskPoints(action.payload) }
+    },
+    saveSafeMan(state, action) {
+      return { ...state, safeMan: action.payload };
+    },
+    saveHostAlarmTrend(state, action) {
+      return { ...state, hostAlarmTrend: action.payload };
     },
   },
 };

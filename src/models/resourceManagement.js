@@ -13,6 +13,29 @@ import {
 } from '@/services/training/resourceManagement';
 import { queryUnits } from '@/services/accountManagement';
 import { getCompanyList } from '@/services/examinationPaper.js';
+
+const handleListWithKnowledges = (list, knowledgeTree) => {
+  return list.map(row => {
+    let knowledges = []
+    // 根据子节点找出所有父节点
+    const findSon = (tree, targetId, temp) => {
+      for (const item of tree) {
+        if (item.id === targetId) {
+          knowledges = [...temp, item.name]
+          return
+        } else if (item.children && item.children.length > 0) {
+          findSon(item.children, targetId, [...temp, item.name])
+        }
+      }
+    }
+    findSon(knowledgeTree, row.knowledgeId, [])
+    return {
+      ...row,
+      knowledges,
+    }
+  })
+}
+
 export default {
   namespace: 'resourceManagement',
   state: {
@@ -57,6 +80,7 @@ export default {
       isLast: false,
       detail: {},
     },
+    searchInfo: {},
   },
   effects: {
     // 获取知识点树
@@ -269,23 +293,20 @@ export default {
         knowledgeTree: list,
       }
     },
-    saveQuestions(state, action) {
-      const {
-        payload: {
-          list = [],
-          pagination,
-          pagination: {
-            total,
-            pageNum,
-            pageSize,
-          },
-        },
-      } = action
+    saveQuestions(state, { payload: {
+      list = [],
+      pagination,
+      pagination: {
+        total,
+        pageNum,
+        pageSize,
+      },
+    } }) {
       return {
         ...state,
         questions: {
           ...state.questions,
-          list,
+          list: handleListWithKnowledges(list, state.knowledgeTree),
           pagination,
           isLast: pageNum * pageSize >= total,
         },
@@ -329,7 +350,7 @@ export default {
         ...state,
         questions: {
           ...state.questions,
-          list: [...state.questions.list, ...list],
+          list: [...state.questions.list, ...handleListWithKnowledges(list, state.knowledgeTree)],
           pagination,
           isLast: pageNum * pageSize >= total,
         },
@@ -348,7 +369,7 @@ export default {
         ...state,
         article: {
           ...state.article,
-          list,
+          list: handleListWithKnowledges(list, state.knowledgeTree),
           pagination,
           isLast: pageNum * pageSize >= total,
         },
@@ -377,7 +398,7 @@ export default {
         ...state,
         article: {
           ...state.article,
-          list: [...state.article.list, ...list],
+          list: [...state.article.list, ...handleListWithKnowledges(list, state.knowledgeTree)],
           pagination,
           isLast: pageNum * pageSize >= total,
         },
@@ -396,7 +417,7 @@ export default {
         ...state,
         courseWare: {
           ...state.courseWare,
-          list,
+          list: handleListWithKnowledges(list, state.knowledgeTree),
           pagination,
           isLast: pageNum * pageSize >= total,
         },
@@ -425,7 +446,7 @@ export default {
         ...state,
         courseWare: {
           ...state.courseWare,
-          list: [...state.courseWare.list, ...list],
+          list: [...state.courseWare.list, ...handleListWithKnowledges(list, state.knowledgeTree)],
           pagination,
           isLast: pageNum * pageSize >= total,
         },
@@ -465,6 +486,12 @@ export default {
           ...state.courseWare,
           list: newList,
         },
+      }
+    },
+    saveSearchInfo(state, { payload }) {
+      return {
+        ...state,
+        searchInfo: payload,
       }
     },
   },

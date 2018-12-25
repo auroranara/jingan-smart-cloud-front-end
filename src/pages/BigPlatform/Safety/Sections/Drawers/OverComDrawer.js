@@ -35,6 +35,7 @@ class OverComDrawer extends PureComponent {
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          zIndex={1333}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div
@@ -79,7 +80,7 @@ class OverComDrawer extends PureComponent {
                                 checkCycleCode && (
                                   <tr key={index}>
                                     <td>
-                                      {companyType === '1' && (
+                                      {(+companyType === 1 || +companyType === 4) && (
                                         <span className={styles.keyComMark} />
                                       )}
                                     </td>

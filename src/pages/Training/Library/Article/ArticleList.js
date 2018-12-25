@@ -56,14 +56,17 @@ export default class ArticleList extends PureComponent {
       notCompany,
       companyId,
       knowledgeId,
+      resourceManagement: { searchInfo },
     } = this.props
+    // 如果没有传入companyId，则使用保存在redux中的
+    const id = companyId || searchInfo.id
     // 获取文章列表
     this.fetchArticles({
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
         type: '1', // type 1文章
-        companyId: notCompany ? companyId : null,
+        companyId: notCompany ? id : null,
         knowledgeId,
       },
     })
@@ -80,10 +83,10 @@ export default class ArticleList extends PureComponent {
 
   // 点击新增文章
   handleAddArticle = () => {
-    const { knowledgeId } = this.props
+    const { knowledgeId, companyId } = this.props
     router.push({
       pathname: '/training/library/article/add',
-      query: { knowledgeId },
+      query: { knowledgeId, companyId },
     })
   }
 
@@ -197,7 +200,11 @@ export default class ArticleList extends PureComponent {
 
   // 点击跳转到编辑页面
   handleToEdit = (id) => {
-    router.push(`/training/library/article/edit/${id}`)
+    const { companyId } = this.props
+    router.push({
+      pathname: `/training/library/article/edit/${id}`,
+      query: { companyId },
+    })
   }
 
   // 点击加载更多
@@ -341,7 +348,7 @@ export default class ArticleList extends PureComponent {
                       )}
                   </div>
                 </div>
-                {item.knowledgeName && <Tag className={styles.tags}>{item.knowledgeName}</Tag>}
+                {item.knowledges && (<Tag className={styles.tags}>{item.knowledges.join(' > ')}</Tag>)}
                 {statusAuth ? (
                   <Popconfirm title={`确认要${item.status === '1' ? '取消发布' : '发布'}文章吗？`} onConfirm={() => { this.handleChangeStatus(item.id, item.status, statusAuth) }}>
                     <Tag className={styles.tags} color={item.status === '1' ? 'blue' : 'grey'}>{item.status === '1' ? '已发布' : '未发布'}</Tag>

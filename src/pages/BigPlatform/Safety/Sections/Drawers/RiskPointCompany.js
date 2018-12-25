@@ -75,6 +75,15 @@ const tabs = ['全部', '异常', '已超时', '待检查', '正常'];
 const riskStatus = [0, 2, 4, 3, 1];
 const riskColors = ['红', '橙', '黄', '蓝', '未评级'];
 let riskNums = [0, 0, 0, 0, 0];
+
+const removeSame = list => {
+  const ids = [...new Set(list.map(data => data.item_id))];
+  const newList = [];
+  ids.forEach(id => {
+    newList.push(list.filter(data => data.item_id === id)[0]);
+  });
+  return newList;
+};
 @connect(({ bigPlatform, loading }) => ({
   bigPlatform,
   loading: loading.effects['bigPlatform/fetchSelfCheckPointData'],
@@ -94,11 +103,7 @@ class RiskPointCompany extends PureComponent {
         selfCheckPointData: { list },
       },
     } = this.props;
-    const ids = [...new Set(list.map(data => data.item_id))];
-    const newList = [];
-    ids.forEach(id => {
-      newList.push(list.filter(data => data.item_id === id)[0]);
-    });
+    const newList = removeSame(list);
     riskNums = riskStatus.map(data => {
       if (data === 0) return newList.length;
       return newList.filter(d => +d.status === data).length;
@@ -121,11 +126,7 @@ class RiskPointCompany extends PureComponent {
       },
     } = this.props;
     if (snapshot) {
-      const ids = [...new Set(list.map(data => data.item_id))];
-      const newList = [];
-      ids.forEach(id => {
-        newList.push(list.filter(data => data.item_id === id)[0]);
-      });
+      const newList = removeSame(list);
       riskNums = riskStatus.map(data => {
         if (data === 0) return newList.length;
         return newList.filter(d => +d.status === data).length;
@@ -183,11 +184,7 @@ class RiskPointCompany extends PureComponent {
           className={tabStyles}
           onClick={() => {
             if (active === index) return;
-            const ids = [...new Set(list.map(data => data.item_id))];
-            const newList = [];
-            ids.forEach(id => {
-              newList.push(list.filter(data => data.item_id === id)[0]);
-            });
+            const newList = removeSame(list);
             const filterData = newList.filter(
               data => !riskStatus[index] || (data.status && +data.status === riskStatus[index])
             );
@@ -201,8 +198,22 @@ class RiskPointCompany extends PureComponent {
     });
   };
 
+  handleClose = () => {
+    const {
+      handleParentChange,
+      bigPlatform: {
+        selfCheckPointData: { list },
+      },
+    } = this.props;
+    const newList = removeSame(list);
+    handleParentChange({ riskPointCompany: false });
+    setTimeout(() => {
+      this.setState({ active: 0, listData: newList });
+    }, 300);
+  };
+
   render() {
-    const { visible, closeAllDrawers, loading, companyName, handleParentChange } = this.props;
+    const { visible, closeAllDrawers, loading, companyName } = this.props;
     const { listData } = this.state;
     return (
       <div>
@@ -210,14 +221,12 @@ class RiskPointCompany extends PureComponent {
           width={500}
           closable={false}
           onClose={() => {
-            handleParentChange({ riskPointCompany: false });
-            setTimeout(() => {
-              this.setState({ active: 0 });
-            }, 300);
+            this.handleClose();
           }}
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          zIndex={1333}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div
@@ -244,10 +253,7 @@ class RiskPointCompany extends PureComponent {
                   <div
                     className={styles.backBtn}
                     onClick={() => {
-                      handleParentChange({ riskPointCompany: false });
-                      setTimeout(() => {
-                        this.setState({ active: 0 });
-                      }, 300);
+                      this.handleClose();
                     }}
                   />
                   {/* <div

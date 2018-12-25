@@ -42,7 +42,7 @@ class CheckBar extends PureComponent {
         padding: [5, 15, 5, 15],
       },
       legend: {
-        data: ['上报隐患数', '检查企业数'],
+        data: ['上报隐患数', '检查单位数'],
         textStyle: {
           color: '#fff',
         },
@@ -100,7 +100,7 @@ class CheckBar extends PureComponent {
           data: data.map(item => item.hiddenDanger),
         },
         {
-          name: '检查企业数',
+          name: '检查单位数',
           type: 'bar',
           barWidth: 15,
           data: data.map(item => item.company_num),
@@ -136,11 +136,12 @@ class CheckBar extends PureComponent {
 
     chart.on('click', params => {
       const { dataIndex } = params;
-      const { handleParentChange, fetchCheckMsgs } = this.props;
+      const { handleParentChange, fetchCheckMsgs, closeAllDrawers } = this.props;
       const monthNum = moment().month() - (5 - dataIndex);
       const month = moment()
         .month(monthNum)
         .format('YYYY-MM');
+      closeAllDrawers();
       handleParentChange({
         checkDrawer: true,
         checksMonth: month,

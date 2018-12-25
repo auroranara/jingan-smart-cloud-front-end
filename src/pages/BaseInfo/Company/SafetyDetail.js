@@ -33,10 +33,10 @@ const dspItems = [
     name: 'validity',
     cName: '服务有效期',
   },
-  {
-    name: 'companyType',
-    cName: '安监重点单位',
-  },
+  // {
+  //   name: 'companyType',
+  //   cName: '安监重点单位',
+  // },
 ];
 
 const dspItems1 = [
@@ -63,8 +63,7 @@ const textMap = {};
 function traverse(tree) {
   tree.forEach(({ id, parentIds, text, children }) => {
     // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
-    if (parentIds) idMap[id] = [...parentIds.split(','), id].filter(item => item);
-    else idMap[id] = [];
+    idMap[id] = parentIds ? [...parentIds.split(','), id].filter(item => item) : [id];
     textMap[id] = text;
     children && traverse(children);
   });
@@ -104,9 +103,9 @@ function renderDsp(items, detail, menus) {
           if (!list.length)
             val = '暂无信息';
           break;
-        case 'companyType':
-          val = v === '1' ? '是' : '否';
-          break;
+        // case 'companyType':
+        //   val = v === '1' ? '是' : '否';
+        //   break;
         default:
           // console.log(name, menus[name], detail[name], menus[name].find(item => item.value === detail[name]));
           const menu = menus[name].find(item => item.value === detail[name]);

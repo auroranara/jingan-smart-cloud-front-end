@@ -14,7 +14,6 @@ class DangerInfo extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const {} = this.state;
     const {
       visible,
       handleParentChange,
@@ -22,7 +21,7 @@ class DangerInfo extends PureComponent {
       hiddenDangerListByDate,
       riskDetailList,
     } = this.props;
-    let dataList = { ycq: [], wcq: [], dfc: [] };
+    let dataList = [];
     if (lastSection === 'checks') dataList = hiddenDangerListByDate;
     else dataList = riskDetailList;
     return (
@@ -36,6 +35,7 @@ class DangerInfo extends PureComponent {
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          zIndex={1666}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div

@@ -99,15 +99,33 @@ export default class ExamDetailList extends PureComponent {
   };
 
   // 跳转到试卷页面
-  goToExam = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/my-exam/result/${id}`));
+  goToExam = (id, examId) => {
+    const {
+      dispatch,
+      location: {
+        query: { name, startTime, endTime, examLimit, percentOfPass },
+      },
+    } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/my-exam/result/${id}?id=${examId}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+      )
+    );
   };
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
+    const {
+      dispatch,
+      location: {
+        query: { name, startTime, endTime, examLimit, percentOfPass },
+      },
+    } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/generalFile/myFile/myAnalysis/${examId}?studentId=${studentId}&&id=${examId}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+      )
+    );
   };
 
   /* 查询按钮点击事件 */
@@ -129,6 +147,7 @@ export default class ExamDetailList extends PureComponent {
         examId: id,
         pageSize: 10,
         pageNum: 1,
+        orderByField: 'score desc',
         ...data,
       },
     });
@@ -172,6 +191,7 @@ export default class ExamDetailList extends PureComponent {
       type: 'generalFile/fetchExamDetail',
       payload: {
         examId: id,
+        orderByField: 'score desc',
         pageSize: 10,
         pageNum: 1,
       },
@@ -241,7 +261,7 @@ export default class ExamDetailList extends PureComponent {
         dataIndex: 'index',
         key: 'index',
         align: 'center',
-        width: 70,
+        width: 100,
       },
       {
         title: '姓名',
@@ -255,7 +275,7 @@ export default class ExamDetailList extends PureComponent {
         dataIndex: 'ranking',
         key: 'ranking',
         align: 'center',
-        width: 90,
+        width: 110,
         render: (val, record) => {
           return record.passStatus === '-1' ? '---' : val;
         },
@@ -265,7 +285,7 @@ export default class ExamDetailList extends PureComponent {
         dataIndex: 'score',
         key: 'score',
         align: 'center',
-        width: 120,
+        width: 140,
         render: val => {
           return val ? `${val.toFixed(2)}%` : '---';
         },
@@ -293,7 +313,7 @@ export default class ExamDetailList extends PureComponent {
         dataIndex: 'useTime',
         key: 'useTime',
         align: 'center',
-        width: 110,
+        width: 160,
         render: time => {
           return time ? moment(time).format('mm分钟ss秒') : '---';
         },
@@ -303,7 +323,7 @@ export default class ExamDetailList extends PureComponent {
         dataIndex: 'startTime',
         key: 'startTime',
         align: 'center',
-        width: 200,
+        width: 210,
         render: time => {
           return time ? moment(time).format('YYYY-MM-DD HH:mm:ss') : '---';
         },
@@ -313,7 +333,7 @@ export default class ExamDetailList extends PureComponent {
         dataIndex: 'endTime',
         key: 'endTime',
         align: 'center',
-        width: 200,
+        width: 230,
         render: time => {
           return time ? moment(time).format('YYYY-MM-DD HH:mm:ss') : '---';
         },
@@ -324,10 +344,10 @@ export default class ExamDetailList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 160,
+        width: 180,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goToExam(rows.id)}>试卷</a>
+            <a onClick={() => this.goToExam(rows.id, rows.examId)}>试卷</a>
             <Divider type="vertical" />
             <a onClick={() => this.goAlaysisExam(rows.studentId, rows.examId)}>分析报告</a>
           </span>
@@ -367,37 +387,22 @@ export default class ExamDetailList extends PureComponent {
 
   render() {
     const {
-      generalFile: {
-        examDetailData: { list = [] },
+      location: {
+        query: { name, startTime, endTime, examLimit, percentOfPass },
       },
     } = this.props;
-
-    let examName = '暂无信息';
-    let examStartTime = '暂无信息';
-    let examEndTime = '暂无信息';
-    let examLimit = '暂无信息';
-    let percentOfPass = '暂无信息';
-
-    if (list.length) {
-      examName = list[0].examName;
-      examStartTime = list[0].examStartTime;
-      examEndTime = list[0].examEndTime;
-      examLimit = list[0].examLimit;
-      percentOfPass = list[0].percentOfPass;
-    }
-
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <p>{examName || '暂无数据'}</p>
+            <p>{name || '暂无数据'}</p>
             <p>
               <span>
                 考试期限：
-                {moment(examStartTime).format('YYYY-MM-DD HH:mm')} 至{' '}
-                {moment(examEndTime).format('YYYY-MM-DD HH:mm')}
+                {moment(parseInt(startTime, 10)).format('YYYY-MM-DD HH:mm')} 至{' '}
+                {moment(parseInt(endTime, 10)).format('YYYY-MM-DD HH:mm')}
               </span>
               <span style={{ paddingLeft: 30 }}>
                 考试时长：

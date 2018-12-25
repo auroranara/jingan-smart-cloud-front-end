@@ -58,12 +58,12 @@ export default class QuestionsAdd extends PureComponent {
       match: {
         params: { id },
       },
-      location: { query: { knowledgeId } },
+      location: { query: { knowledgeId, companyId } },
       form: { setFieldsValue },
     } = this.props
 
     // 获取知识点树
-    dispatch({ type: 'resourceManagement/fetchKnowledgeTree' })
+    dispatch({ type: 'resourceManagement/fetchKnowledgeTree', payload: { companyId } })
     // 如果是编辑的情况
     if (id) {
       dispatch({

@@ -369,6 +369,24 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
               </div>
             ))}
           </Col>
+          {/* <Col span={24} style={{ height: '100%' }}>
+            <ReactEcharts
+              option={option}
+              style={{ width: '100%', height: '100%' }}
+              onChartReady={chart => {
+                this.handleChartReady(chart, option);
+              }}
+            />
+            <div className={styles.legendContainer}>
+              {legendInfo.map(({ label, value, iconColor, status }, i) => (
+                <div key={i} className={styles.line} onClick={() => handleClickChat({ data: { status, name: label } })}>
+                  <div className={styles.icon} style={{ backgroundColor: iconColor }}></div>
+                  <div className={styles.label}>{label}</div>
+                  <div className={styles.value}>{value}</div>
+                </div>
+              ))}
+            </div>
+          </Col> */}
         </div>
       </Section>
     );

@@ -1,0 +1,111 @@
+.container {
+  position: relative;
+  // height: 100px;
+  overflow: hidden;
+  // background: rgba(1, 21, 57, 0.8);
+  margin-bottom: 15px;
+  border-radius: 1%;
+  cursor: pointer;
+
+  background: rgba(6, 59, 111);
+  border: 1px solid rgb(4, 253, 255);
+}
+
+.container:hover {
+  background: rgba(9, 103, 211, 0.1);
+}
+
+@left: 55px;
+
+.company {
+  color: #FFF;
+  font-size: 16px;
+  // margin: 19px 0 0 80px;
+  margin: 10px 0 0 @left;
+}
+
+.clock {
+  margin: 8px 0 5px @left;
+  // color: #FFF;
+}
+
+.clockIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin-right: 10px;
+  position: relative;
+  top: 3px;
+  background-size: 100% 100%;
+}
+
+.address {
+  color: rgb(79,103,147);
+  // margin: 15px 0 19px 80px;
+  margin: 0 0 10px @left;
+}
+
+.locateIcon {
+  display: inline-block;
+  width: 15px;
+  height: 18px;
+  margin-right: 10px;
+  position: relative;
+  top: 3px;
+  // background-image: url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/locate.png);
+  background-size: 100% 100%;
+}
+
+.time {
+  position: absolute;
+  right: 10px;
+  top: 20px;
+}
+
+.timeShort:extend(.time) {
+  color: rgb(225,103,98);
+}
+
+.timeLong:extend(.time) {
+  color: rgb(79,103,147);
+}
+
+.fireIcon {
+  // width: 48px;
+  // height: 48px;
+  position: absolute;
+  left: 10px;
+  // top: 25px;
+  // background-image: url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/fire.png);
+  background-size: 100% 100%;
+
+  width: 32px;
+  height: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@red: rgb(255, 72, 72);
+
+.handling {
+  width: 70px;
+  height: 24px;
+  color: @red;
+  text-align: center;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 12px;
+  border: 1px solid @red;
+}
+
+.handled:extend(.handling) {
+  color: #FFF;
+  border-color: #FFF;
+}
+
+.handle:extend(.handling) {
+  color: #FF0;
+  border-color: #FF0;
+}

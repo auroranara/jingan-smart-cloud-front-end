@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Carousel } from 'antd';
 import Section from '@/components/Section';
 import HiddenDanger from '../HiddenDanger';
 import RiskCard from '../../Components/RiskCard';
@@ -25,21 +26,20 @@ export default class InspectionPoint extends PureComponent {
         isScroll
         closable
         title="巡查点位详情"
-        titleStyle={{ marginBottom: 0 }}
         onClose={onClose}
         skip
       >
         <div className={styles.title}>风险点详情</div>
         {data.length > 0 ? (
-          <div className={styles.content}>
+          <Carousel className={styles.carousel}>
             {data.map(item => (
               <RiskCard
                 key={item.id}
                 data={item}
               />
             ))}
-          </div>
-        ) : <div style={{ textAlign: 'center' }}>暂无风险点</div>}
+          </Carousel>
+        ) : <div style={{ textAlign: 'center' }}>暂无风险信息</div>}
         <div className={styles.title}>隐患详情 ({hiddenData.length})</div>
         {hiddenData.length > 0 ? (
           <div className={styles.content}>
@@ -55,7 +55,10 @@ export default class InspectionPoint extends PureComponent {
               path,
               _real_rectify_time,
               _review_time,
+              object_title,
+              hiddenStatus,
               typeName,
+              risk_level,
             }) => (
               <HiddenDanger
                 key={_id}
@@ -68,9 +71,10 @@ export default class InspectionPoint extends PureComponent {
                   review_user_name: _review_user_name,
                   review_time: _review_time,
                   source_type_name: typeName,
+                  companyBuildingItem: { object_title, risk_level },
                   desc: _desc,
                   business_type,
-                  status,
+                  status: hiddenStatus,
                   hiddenDangerRecordDto: [{ fileWebUrl: path }],
                 }}
                 isSourceShow

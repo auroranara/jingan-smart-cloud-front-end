@@ -39,6 +39,7 @@ export default class PersonFileList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      companyId,
     } = this.props;
     // 获取人员列表
     dispatch({
@@ -46,20 +47,27 @@ export default class PersonFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
+        companyId: companyId,
       },
     });
   }
 
-  // 跳转到考试档案页面
+  // 跳转到人员档案页面
   goMyExamList = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myFileList?studentId=${id}`));
+    const { dispatch, companyId } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/generalFile/myFile/myFileList?studentId=${id}&&companyId=${companyId}`
+      )
+    );
   };
 
-  // 跳转到人员分析报告页面
-  goMyAlaysisReport = id => {
+  // 跳转到综合分析报告页面
+  goMySynthesisReport = (id, name) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/mySynthesis?studentId=${id}`));
+    dispatch(
+      routerRedux.push(`/training/generalFile/myFile/mySynthesis?studentId=${id}&&name=${name}`)
+    );
   };
 
   handleTableData = (list = [], indexBase) => {
@@ -78,6 +86,7 @@ export default class PersonFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      companyId,
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
@@ -88,6 +97,7 @@ export default class PersonFileList extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        companyId: companyId,
         ...data,
       },
     });
@@ -100,6 +110,7 @@ export default class PersonFileList extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
+      companyId,
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -109,6 +120,7 @@ export default class PersonFileList extends PureComponent {
       payload: {
         pageSize: 10,
         pageNum: 1,
+        companyId: companyId,
       },
     });
   };
@@ -120,6 +132,7 @@ export default class PersonFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      companyId,
     } = this.props;
     const data = getFieldsValue();
     dispatch({
@@ -127,6 +140,7 @@ export default class PersonFileList extends PureComponent {
       payload: {
         pageSize,
         pageNum,
+        companyId: companyId,
         ...data,
       },
     });
@@ -174,21 +188,24 @@ export default class PersonFileList extends PureComponent {
         dataIndex: 'passCount',
         key: 'passCount',
         align: 'center',
-        render: val => {
-          return `${val}%`;
-        },
       },
       {
         title: '不合格次数',
         dataIndex: 'noPassCount',
         key: 'noPassCount',
         align: 'center',
+        render: val => {
+          return +val === 0 ? val : <span style={{ color: 'red' }}>{val}</span>;
+        },
       },
       {
         title: '弃考次数',
         dataIndex: 'giveUpCount',
         key: 'giveUpCount',
         align: 'center',
+        render: val => {
+          return +val === 0 ? val : <span style={{ color: 'red' }}>{val}</span>;
+        },
       },
       {
         title: '最高正确率',
@@ -220,7 +237,7 @@ export default class PersonFileList extends PureComponent {
           <span>
             <a onClick={() => this.goMyExamList(rows.id)}>考试档案</a>
             <Divider type="vertical" />
-            <a onClick={() => this.goMyAlaysisReport(rows.id)}>人员分析</a>
+            <a onClick={() => this.goMySynthesisReport(rows.id, rows.name)}>人员分析</a>
           </span>
         ),
       },

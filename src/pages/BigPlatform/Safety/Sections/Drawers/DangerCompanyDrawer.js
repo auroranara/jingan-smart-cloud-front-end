@@ -69,6 +69,7 @@ class DangerCompanyDrawer extends PureComponent {
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          zIndex={1222}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div
@@ -117,7 +118,7 @@ class DangerCompanyDrawer extends PureComponent {
                                 return (
                                   <tr key={item.id}>
                                     <td>
-                                      {item.company_type === '1' && (
+                                      {(+item.company_type === 1 || +item.company_type === 4) && (
                                         <span className={styles.keyComMark} />
                                       )}
                                     </td>

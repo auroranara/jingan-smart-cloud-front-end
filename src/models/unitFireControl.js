@@ -37,7 +37,9 @@ import {
   fetchFireHosts,
   // 获取巡查统计-正常
   fetchNormalPatrol,
+  // 获取巡查统计-异常
   fetchAbnormalPatrol,
+  fetchPatrolDangers,
 } from '../services/bigPlatform/fireControl';
 
 const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
@@ -54,22 +56,43 @@ const getPendingInfoType = ({
 }, returnType = 'title') => {
   let value = '';
   if (+report_type === 2) {
-    value = (returnType === 'title' && '一键报修') || (returnType === 'icon' && `${prefix}baoxiu.png`);
+    value = (returnType === 'title' && '一键报修') || (returnType === 'icon' && `${prefix}blue-baoxiu.png`);
   } else if (+fire_state === 1) {
     value = (returnType === 'title' && '火警') || (returnType === 'icon' && `${prefix}huojing.png`);
   } else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
-    value = (returnType === 'title' && '故障') || (returnType === 'icon' && `${prefix}guzhang.png`);
+    value = (returnType === 'title' && '故障') || (returnType === 'icon' && `${prefix}blue-guzhang.png`);
   } else if (+start_state === 1) {
-    value = (returnType === 'title' && '联动') || (returnType === 'icon' && `${prefix}liandong.png`);
+    value = (returnType === 'title' && '联动') || (returnType === 'icon' && `${prefix}blue-liandong.png`);
   } else if (+supervise_state === 1) {
-    value = (returnType === 'title' && '监管') || (returnType === 'icon' && `${prefix}jianguan.png`);
+    value = (returnType === 'title' && '监管') || (returnType === 'icon' && `${prefix}blue-jianguan.png`);
   } else if (+shield_state === 1) {
-    value = (returnType === 'title' && '屏蔽') || (returnType === 'icon' && `${prefix}pingbi.png`);
+    value = (returnType === 'title' && '屏蔽') || (returnType === 'icon' && `${prefix}blue-pingbi.png`);
   } else if (+feedback_state === 1) {
-    value = (returnType === 'title' && '反馈') || (returnType === 'icon' && `${prefix}fankui.png`);
+    value = (returnType === 'title' && '反馈') || (returnType === 'icon' && `${prefix}blue-fankui.png`);
   }
   return value;
 };
+
+// 处理待办事项数组，处理隐患状态logo+排序
+const generateListWithImg = list => {
+  if (!list || list.length < 1) return []
+  let fire = []
+  let other = []
+  list.forEach((item) => {
+    const newItem = {
+      ...item,
+      pendingInfoType: item.pendingInfoType || getPendingInfoType(item, 'title'),
+      icon: item.icon || getPendingInfoType(item, 'icon'),
+    };
+    // 如果是火警
+    if (item.fire_state && +item.fire_state === 1) {
+      fire.push(newItem)
+    } else {
+      other.push(newItem)
+    }
+  })
+  return [...fire, ...other]
+}
 
 
 export default {
@@ -96,7 +119,14 @@ export default {
       abnormal: 0, //异常数量
       personNum: 0, //巡查人员个数
       totalCheckNum: 0, //巡查总次数
-      list: [],
+      list: [],         // 数据下钻列表（巡查记录）
+      pagination: {      // 数据下钻分页信息
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      isLast: false,
+      dangers: [],        // 隐患列表
     },
     // 隐患统计
     dangerStatistics: {},
@@ -187,7 +217,7 @@ export default {
         error();
       }
     }, */
-    // 获取未处理信息(无status)和处理中信息（status传入'2'）
+    // 获取待处理信息(无status)和处理中信息（status传入'2'）
     *fetchPendingInfo({ payload, payload: { status } = {}, callback }, { call, put }) {
       const response = status && status === '2' ? yield call(fetchPendingInfo, payload) : yield call(fetchUnPendingInfo, payload)
       if (response && response.code === 200) {
@@ -288,7 +318,7 @@ export default {
       const response = yield call(fetchHiddenDangerRecords, payload);
       yield put({
         type: 'saveHiddenDangerRecords',
-        payload: response.data.rows,
+        payload: { list: response.data.rows, isYCQ: +payload._status === 7 },
       });
       if (success) {
         success(response.data.rows);
@@ -447,9 +477,17 @@ export default {
     *fetchNormalPatrol({ payload, callback }, { call, put }) {
       const response = yield call(fetchNormalPatrol, payload)
       if (response && response.code === 200) {
+        const { pageNum, pageSize } = payload
         yield put({
-          type: 'savePatrolList',
-          payload: response.data.list,
+          type: 'savePatrolRecords',
+          payload: {
+            list: response.data.list,
+            pagination: {
+              pageNum,
+              pageSize,
+              total: response.data.total,
+            },
+          },
         })
         if (callback) callback(response.data.list)
       }
@@ -458,11 +496,30 @@ export default {
     *fetchAbnormalPatrol({ payload, callback }, { call, put }) {
       const response = yield call(fetchAbnormalPatrol, payload)
       if (response && response.code === 200) {
+        const { pageNum, pageSize } = payload
         yield put({
-          type: 'savePatrolList',
-          payload: response.data.list,
+          type: 'savePatrolRecords',
+          payload: {
+            list: response.data.list,
+            pagination: {
+              pageNum,
+              pageSize,
+              total: response.data.total,
+            },
+          },
         })
         if (callback) callback(response.data.list)
+      }
+    },
+    // 根据巡查记录获取隐患列表
+    *fetchPatrolDangers({ payload, callback }, { call, put }) {
+      const response = yield call(fetchPatrolDangers, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'savePatrolDangers',
+          payload: response.data.list,
+        })
+        if (callback) callback()
       }
     },
   },
@@ -470,12 +527,13 @@ export default {
   reducers: {
     // 待处理信息
     savePendingInfo(state, { payload: { list = [], pageNum, pageSize, total } }) {
+      const newList = generateListWithImg(list)
       if (+pageNum === 1) {
         return {
           ...state,
           pendingInfo: {
             ...state.pendingInfo,
-            list,
+            list: newList,
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -486,7 +544,7 @@ export default {
           ...state,
           pendingInfo: {
             ...state.pendingInfo,
-            list: [...state.pendingInfo.list, ...list],
+            list: [...state.pendingInfo.list, ...newList],
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -495,12 +553,17 @@ export default {
     },
     // 保存历史信息
     saveHistoryInfo(state, { payload: { list = [], pageNum, pageSize, total } }) {
+      const more = list.map(item => ({
+        ...item,
+        pendingInfoType: item.pendingInfoType || getPendingInfoType(item, 'title'),
+        icon: item.icon || getPendingInfoType(item, 'icon'),
+      }))
       if (+pageNum === 1) {
         return {
           ...state,
           informationHistory: {
             ...state.informationHistory,
-            list,
+            list: more,
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -511,7 +574,7 @@ export default {
           ...state,
           informationHistory: {
             ...state.informationHistory,
-            list: [...state.informationHistory.list, ...list],
+            list: [...state.informationHistory.list, ...more],
             isLast: pageNum * pageSize >= total,
             pagination: { pageNum, pageSize, total },
           },
@@ -555,10 +618,17 @@ export default {
       };
     },
     // 隐患巡查记录
-    saveHiddenDangerRecords(state, { payload: hiddenDangerRecords }) {
+    saveHiddenDangerRecords(state, { payload: { list = [], isYCQ } }) {
+      if (isYCQ) {
+        const newList = list.sort((a, b) => a.plan_rectify_time - b.plan_rectify_time)
+        return {
+          ...state,
+          hiddenDangerRecords: newList,
+        };
+      }
       return {
         ...state,
-        hiddenDangerRecords,
+        hiddenDangerRecords: list,
       };
     },
     // 消防数据统计
@@ -656,7 +726,7 @@ export default {
         fireHost: {
           ...state.fireHost,
           list: newList,
-          pageination: {
+          pagination: {
             pageNum,
             pageSize,
             total,
@@ -664,12 +734,37 @@ export default {
         },
       }
     },
-    savePatrolList(state, { payload = [] }) {
+    // 保存巡查统计下钻列表
+    savePatrolRecords(state, { payload: { list = [], pagination } }) {
+      const { pageNum, pageSize, total } = pagination
+      if (pageNum === 1) {
+        return {
+          ...state,
+          inspectionStatistics: {
+            ...state.inspectionStatistics,
+            list,
+            pagination,
+            isLast: pageNum * pageSize >= total,
+          },
+        }
+      } else {
+        return {
+          ...state,
+          inspectionStatistics: {
+            ...state.inspectionStatistics,
+            list: [...state.inspectionStatistics.list, ...list],
+            pagination,
+            isLast: pageNum * pageSize >= total,
+          },
+        }
+      }
+    },
+    savePatrolDangers(state, { payload }) {
       return {
         ...state,
         inspectionStatistics: {
           ...state.inspectionStatistics,
-          list: payload,
+          dangers: payload,
         },
       }
     },

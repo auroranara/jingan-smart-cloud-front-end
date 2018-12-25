@@ -8,6 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import TagSelect from '@/components/TagSelect';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
+import Ellipsis from '@/components/Ellipsis';
 
 import styles from './HiddenDangerReportList.less';
 const { Option: TagSelectOption } = TagSelect;
@@ -17,8 +18,8 @@ const { home: homeUrl, hiddenDangerReport: { detail: detailUrl } } = urls;
 const { home: homeTitle, hiddenDangerReport: { list: title, menu: menuTitle } } = titles;
 
 /* 根据隐患状态获取对应文字 */
-const getLabelByStatus = function(status) {
-  switch(+status) {
+const getLabelByStatus = function (status) {
+  switch (+status) {
     case 1:
     case 2:
       return <Badge status="success" text="待整改" />;
@@ -77,7 +78,7 @@ const sessionPrefix = 'hidden_danger_report_list_';
 /**
  * 隐患排查报表
  */
-@connect(({hiddenDangerReport, user, loading}) => ({
+@connect(({ hiddenDangerReport, user, loading }) => ({
   hiddenDangerReport,
   user,
   loading: loading.models.hiddenDangerReport,
@@ -92,7 +93,7 @@ export default class App extends PureComponent {
     /* 图片字段render方法 */
     const renderImage = (value) => {
       const src = value.filter(image => /(.jpg|.png)$/.test(image))[0];
-      return src ? <img style={{ width: 30, height: 40, cursor: 'pointer' }} src={src} alt="" onClick={() => {this.setState({ images: value, currentImage: 0 });}} /> : <span style={{ display: 'inline-block', width: 30, height: 40 }} />;
+      return src ? <img style={{ width: 30, height: 40, cursor: 'pointer' }} src={src} alt="" onClick={() => { this.setState({ images: value, currentImage: 0 }); }} /> : <span style={{ display: 'inline-block', width: 30, height: 40 }} />;
     };
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
@@ -127,7 +128,9 @@ export default class App extends PureComponent {
       },
       {
         title: '检查人',
-        dataIndex: 'report_user_name',
+        // dataIndex: 'report_user_name',
+        dataIndex: 'allCheckPersonNames',
+        render: (val) => (<Ellipsis tooltip length={7}>{val}</Ellipsis>),
       },
       {
         title: '创建日期',
@@ -155,7 +158,7 @@ export default class App extends PureComponent {
       {
         title: '整改金额',
         dataIndex: 'real_rectify_money',
-        render: (value) => typeof value === 'number' ? value : 0,
+        render: (value) => value,
       },
       {
         title: '整改后图片',
@@ -165,9 +168,9 @@ export default class App extends PureComponent {
     ];
     if (!isCompany) {
       defaultColumns.splice(1, 0, {
-          title: '单位名称',
-          dataIndex: 'company_name',
-        });
+        title: '单位名称',
+        dataIndex: 'company_name',
+      });
     }
     this.state = {
       // 当前显示的表格字段
@@ -224,7 +227,7 @@ export default class App extends PureComponent {
     //   return;
     // }
     this.setState({
-      columns: columns.sort((a,b) => {
+      columns: columns.sort((a, b) => {
         return this.defaultColumns.indexOf(a) - this.defaultColumns.indexOf(b);
       }),
     });
@@ -306,7 +309,7 @@ export default class App extends PureComponent {
    */
   handlePrevImage = () => {
     this.setState(({ currentImage }) => ({
-      currentImage: currentImage-1,
+      currentImage: currentImage - 1,
     }));
   }
 
@@ -315,7 +318,7 @@ export default class App extends PureComponent {
    */
   handleNextImage = () => {
     this.setState(({ currentImage }) => ({
-      currentImage: currentImage+1,
+      currentImage: currentImage + 1,
     }));
   }
 
@@ -569,9 +572,9 @@ export default class App extends PureComponent {
         list: {
           list,
           pagination: {
-            pageSize=10,
-            pageNum=1,
-            total=0,
+            pageSize = 10,
+            pageNum = 1,
+            total = 0,
           },
         },
       },
@@ -599,8 +602,8 @@ export default class App extends PureComponent {
         }}
       />
     ) : (
-      <div style={{ textAlign: 'center' }}><span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span></div>
-    );
+        <div style={{ textAlign: 'center' }}><span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span></div>
+      );
   }
 
   /**
