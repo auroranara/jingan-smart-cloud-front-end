@@ -1,6 +1,6 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
-import { Icon } from 'antd';
+import { Icon, Alert } from 'antd';
 
 import GlobalFooter from 'components/GlobalFooter';
 import styles from './UserLayout.less';
@@ -10,6 +10,21 @@ import DocumentTitle from 'react-document-title';
 const links = [];
 // console.log('PROJECT_CONFIG', global.PROJECT_CONFIG);
 const { serviceSupport, servicePhone, projectName } = global.PROJECT_CONFIG;
+
+const alertContent = () => {
+  const ua = window.navigator.userAgent,
+    isChrome = ua.indexOf('Chrome') && window.chrome;
+  if (!isChrome) {
+    return (
+      <Alert
+        style={{ zIndex: 99 }}
+        message={'推荐使用 Chrome 浏览器获得完整功能。'}
+        banner
+        closable
+      />
+    );
+  }
+};
 
 @connect(({ login }) => ({
   login,
@@ -40,6 +55,7 @@ export default class UserLayout extends PureComponent {
     return (
       <DocumentTitle title="登录">
         <div className={styles.container}>
+          {alertContent()}
           <div className={styles.content}>
             <div className={styles.top}>
               <div className={styles.header}>
