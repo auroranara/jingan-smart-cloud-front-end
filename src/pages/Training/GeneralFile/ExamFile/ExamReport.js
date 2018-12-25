@@ -76,19 +76,19 @@ export default class ExamReport extends PureComponent {
 
   getOption = knowledgeReports => {
     const option = {
-      radar: {
-        tooltip: {
-          formatter: params => {
-            return (
-              `${params.name}<br/>` +
-              params.value
-                .map((item, index) => {
-                  return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
-                })
-                .join('<br/>')
-            );
-          },
+      tooltip: {
+        formatter: params => {
+          return (
+            `${params.name}<br/>` +
+            params.value
+              .map((item, index) => {
+                return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
+              })
+              .join('<br/>')
+          );
         },
+      },
+      radar: {
         radius: 170,
         name: {
           textStyle: {

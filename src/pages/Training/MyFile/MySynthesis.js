@@ -54,7 +54,18 @@ export default class MySynthesis extends PureComponent {
 
   getOption = knowledgeReports => {
     const option = {
-      tooltip: {},
+      tooltip: {
+        formatter: params => {
+          return (
+            `${params.name}<br/>` +
+            params.value
+              .map((item, index) => {
+                return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
+              })
+              .join('<br/>')
+          );
+        },
+      },
       radar: {
         radius: 170,
         name: {
