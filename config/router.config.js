@@ -97,6 +97,10 @@ module.exports = env => {
           path: '/big-platform/video',
           component: './BigPlatform/Video',
         },
+        {
+          path: '/big-platform/ws',
+          component: './BigPlatform/Ws/WsTest',
+        },
       ],
     },
 
