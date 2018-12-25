@@ -100,8 +100,17 @@ export default class ExamDetailList extends PureComponent {
 
   // 跳转到试卷页面
   goToExam = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/my-exam/result/${id}`));
+    const {
+      dispatch,
+      location: {
+        query: { name, startTime, endTime, examLimit, percentOfPass },
+      },
+    } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/my-exam/result/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+      )
+    );
   };
 
   // 跳转到分析报告页面
@@ -173,6 +182,7 @@ export default class ExamDetailList extends PureComponent {
       type: 'generalFile/fetchExamDetail',
       payload: {
         examId: id,
+        orderByField: 'score desc',
         pageSize: 10,
         pageNum: 1,
       },
@@ -328,7 +338,7 @@ export default class ExamDetailList extends PureComponent {
         width: 160,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goToExam(rows.id)}>试卷</a>
+            <a onClick={() => this.goToExam(rows.id, rows.studentId)}>试卷</a>
             <Divider type="vertical" />
             <a onClick={() => this.goAlaysisExam(rows.studentId, rows.examId)}>分析报告</a>
           </span>

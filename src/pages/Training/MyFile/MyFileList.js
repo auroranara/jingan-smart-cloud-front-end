@@ -54,18 +54,31 @@ export default class myFileList extends PureComponent {
         },
       },
       location: {
-        query: { studentId },
+        query: { studentId, companyId, name },
       },
     } = this.props;
-    // 获取个人档案列表
-    dispatch({
-      type: 'myFile/fetchSelfList',
-      payload: {
-        pageSize,
-        pageNum: 1,
-        studentId: studentId,
-      },
-    });
+    if (name) {
+      // 获取当前企业个人档案列表
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          pageSize,
+          pageNum: 1,
+          studentId: studentId,
+          companyId: companyId,
+        },
+      });
+    } else {
+      // 获取个人档案列表
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          pageSize,
+          pageNum: 1,
+          studentId: studentId,
+        },
+      });
+    }
   }
 
   handleTableData = (list = [], indexBase) => {
@@ -96,12 +109,7 @@ export default class myFileList extends PureComponent {
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
-    const {
-      dispatch,
-      // location: {
-      //   query: { name },
-      // },
-    } = this.props;
+    const { dispatch } = this.props;
     dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
   };
 
@@ -110,19 +118,36 @@ export default class myFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      location: {
+        query: { studentId, companyId, name },
+      },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
-    // 重新请求数据
-    dispatch({
-      type: 'myFile/fetchSelfList',
-      payload: {
-        pageSize: 10,
-        pageNum: 1,
-        ...data,
-      },
-    });
+    if (name) {
+      // 重新请求当前企业个人档案列表
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          pageSize: 10,
+          pageNum: 1,
+          studentId: studentId,
+          companyId: companyId,
+          ...data,
+        },
+      });
+    } else {
+      // 重新请求数据
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          pageSize: 10,
+          pageNum: 1,
+          ...data,
+        },
+      });
+    }
   };
 
   /* 处理翻页 */
@@ -130,16 +155,33 @@ export default class myFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      location: {
+        query: { studentId, companyId, name },
+      },
     } = this.props;
     const data = getFieldsValue();
-    dispatch({
-      type: 'myFile/fetchSelfList',
-      payload: {
-        pageSize,
-        pageNum,
-        ...data,
-      },
-    });
+    if (name) {
+      // 获取当前企业个人档案列表
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          pageSize,
+          pageNum,
+          studentId: studentId,
+          companyId: companyId,
+          ...data,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          pageSize,
+          pageNum,
+          ...data,
+        },
+      });
+    }
   };
 
   /* 重置按钮点击事件 */
@@ -152,17 +194,32 @@ export default class myFileList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      location: {
+        query: { studentId, companyId, name },
+      },
     } = this.props;
     // 清除筛选条件
     resetFields();
     this.formData = defaultFormData;
-    dispatch({
-      type: 'myFile/fetchSelfList',
-      payload: {
-        pageSize,
-        pageNum: 1,
-      },
-    });
+    if (name) {
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          studentId: studentId,
+          companyId: companyId,
+          pageSize,
+          pageNum: 1,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'myFile/fetchSelfList',
+        payload: {
+          pageSize,
+          pageNum: 1,
+        },
+      });
+    }
   };
 
   /* 渲染form表单 */
@@ -385,7 +442,7 @@ export default class myFileList extends PureComponent {
         currentUser: { userId },
       },
       location: {
-        query: { studentId, name },
+        query: { name },
       },
     } = this.props;
 
@@ -408,13 +465,13 @@ export default class myFileList extends PureComponent {
       },
       {
         title,
-        name: '我的档案',
+        name: name ? '人员档案' : '我的档案',
       },
     ];
 
     return (
       <PageHeaderLayout
-        title={title}
+        title={name ? '人员档案' : title}
         breadcrumbList={breadcrumbList}
         content={
           <div>
@@ -424,12 +481,11 @@ export default class myFileList extends PureComponent {
         }
         extraContent={
           <div>
-            <Button
-              className={styles.backBtn}
-              onClick={() => this.goToMySynthesis(studentId ? studentId : userId)}
-            >
-              综合分析报告
-            </Button>
+            {!name && (
+              <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
+                综合分析报告
+              </Button>
+            )}
           </div>
         }
       >
