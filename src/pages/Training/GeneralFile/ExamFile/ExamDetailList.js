@@ -372,7 +372,6 @@ export default class ExamDetailList extends PureComponent {
         query: { name, startTime, endTime, examLimit, percentOfPass },
       },
     } = this.props;
-    console.log('startTime', parseInt(startTime, 10));
 
     return (
       <PageHeaderLayout

@@ -252,8 +252,6 @@ export default class ExamFileList extends PureComponent {
         align: 'center',
         width: 250,
         render: (val, record) => {
-          console.log(record.endTime);
-
           return `${moment(val).format('YYYY-MM-DD HH:mm')} 至 ${moment(record.endTime).format(
             'YYYY-MM-DD HH:mm'
           )}`;
