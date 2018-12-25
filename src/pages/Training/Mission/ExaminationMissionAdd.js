@@ -500,6 +500,7 @@ export default class ExaminationMissionAdd extends PureComponent {
                   initialValue: startTime ? [moment(startTime), moment(endTime)] : [],
                   rules: [
                     {
+                      required: true,
                       validator: (rule, value, callback) => {
                         const {
                           form: { getFieldValue },

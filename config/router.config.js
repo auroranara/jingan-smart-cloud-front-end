@@ -1327,6 +1327,25 @@ module.exports = env => {
                   name: 'examReport',
                   component: './Training/GeneralFile/ExamFile/ExamReport',
                 },
+                /**综合档案-我的档案 */
+                {
+                  path: '/training/generalFile/myFile/myFileList',
+                  code: 'training.generalFile.view',
+                  name: 'personFile',
+                  component: './Training/GeneralFile/MyFile/MyFileList',
+                },
+                {
+                  path: '/training/generalFile/myFile/myAnalysis/:id',
+                  code: 'training.generalFile.view',
+                  name: 'myAnalysis',
+                  component: './Training/GeneralFile/MyFile/MyAnalysis',
+                },
+                {
+                  path: '/training/generalFile/myFile/MySynthesis',
+                  code: 'training.generalFile.view',
+                  name: 'mySynthesis',
+                  component: './Training/GeneralFile/MyFile/MySynthesis',
+                },
               ],
             },
           ],

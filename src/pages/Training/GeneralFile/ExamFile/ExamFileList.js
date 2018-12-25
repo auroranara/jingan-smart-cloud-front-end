@@ -58,7 +58,7 @@ export default class ExamFileList extends PureComponent {
     const { dispatch } = this.props;
     dispatch(
       routerRedux.push(
-        `/training/generalFile/examDetailList/${id}?name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+        `/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
       )
     );
   };

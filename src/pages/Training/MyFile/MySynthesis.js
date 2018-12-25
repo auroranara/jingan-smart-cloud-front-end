@@ -104,7 +104,7 @@ export default class MySynthesis extends PureComponent {
   render() {
     const {
       location: {
-        query: { studentId, name },
+        query: { studentId },
       },
       myFile: {
         myselfData: {
@@ -134,11 +134,9 @@ export default class MySynthesis extends PureComponent {
         name: '教育培训',
       },
       {
-        title: name ? '综合档案' : '我的档案',
-        name: name ? '综合档案' : '我的档案',
-        href: name
-          ? '/training/generalFile/personFile/list'
-          : `/training/myFile/myFileList?studentId=${studentId}`,
+        title: '我的档案',
+        name: '我的档案',
+        href: `/training/myFile/myFileList?studentId=${studentId}`,
       },
       {
         title,

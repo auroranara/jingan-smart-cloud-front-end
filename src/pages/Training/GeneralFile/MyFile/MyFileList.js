@@ -5,13 +5,13 @@ import { Form, Card, Button, Input, Select, Table, Divider } from 'antd';
 import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
-import styles from './MyFile.less';
+// import styles from './MyFile.less';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 // 标题
-const title = '我的档案';
+const title = '人员档案';
 
 // 默认表单值
 const defaultFormData = {
@@ -54,16 +54,17 @@ export default class myFileList extends PureComponent {
         },
       },
       location: {
-        query: { studentId },
+        query: { studentId, companyId },
       },
     } = this.props;
-    // 获取个人档案列表
+    // 获取当前企业个人档案列表
     dispatch({
       type: 'myFile/fetchSelfList',
       payload: {
         pageSize,
         pageNum: 1,
         studentId: studentId,
+        companyId: companyId,
       },
     });
   }
@@ -84,15 +85,33 @@ export default class myFileList extends PureComponent {
   };
 
   // 跳转到试卷页面
-  goExamDetail = (id, examId) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/my-exam/result/${id}?examId=${examId}`));
+  goExamDetail = (id, studentId) => {
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/my-exam/result/${id}?studentId=${studentId}&&companyId=${companyId}`
+      )
+    );
   };
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/generalFile/myFile/myAnalysis/${examId}?studentId=${studentId}&&companyId=${companyId}`
+      )
+    );
   };
 
   /* 查询按钮点击事件 */
@@ -100,16 +119,21 @@ export default class myFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      location: {
+        query: { studentId, companyId },
+      },
     } = this.props;
     const data = getFieldsValue();
     // 修改表单数据
     this.formData = data;
-    // 重新请求数据
+    // 重新请求当前企业个人档案列表
     dispatch({
       type: 'myFile/fetchSelfList',
       payload: {
         pageSize: 10,
         pageNum: 1,
+        studentId: studentId,
+        companyId: companyId,
         ...data,
       },
     });
@@ -120,13 +144,19 @@ export default class myFileList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      location: {
+        query: { studentId, companyId },
+      },
     } = this.props;
     const data = getFieldsValue();
+    // 获取当前企业个人档案列表
     dispatch({
       type: 'myFile/fetchSelfList',
       payload: {
         pageSize,
         pageNum,
+        studentId: studentId,
+        companyId: companyId,
         ...data,
       },
     });
@@ -142,6 +172,9 @@ export default class myFileList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      location: {
+        query: { studentId, companyId },
+      },
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -149,6 +182,8 @@ export default class myFileList extends PureComponent {
     dispatch({
       type: 'myFile/fetchSelfList',
       payload: {
+        studentId: studentId,
+        companyId: companyId,
         pageSize,
         pageNum: 1,
       },
@@ -326,7 +361,7 @@ export default class myFileList extends PureComponent {
         width: 160,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goExamDetail(rows.id, rows.examId)}>试卷</a>
+            <a onClick={() => this.goExamDetail(rows.id, rows.studentId)}>试卷</a>
             <Divider type="vertical" />
             <a onClick={() => this.goAlaysisExam(rows.studentId, rows.examId)}>分析报告</a>
           </span>
@@ -371,9 +406,6 @@ export default class myFileList extends PureComponent {
           pagination: { total },
         },
       },
-      user: {
-        currentUser: { userId },
-      },
     } = this.props;
 
     //面包屑
@@ -389,8 +421,13 @@ export default class myFileList extends PureComponent {
         name: '教育培训',
       },
       {
+        title: '综合档案',
+        name: '综合档案',
+        href: '/training/generalFile/personFile/list',
+      },
+      {
         title,
-        name: '我的档案',
+        name: '人员档案',
       },
     ];
 
@@ -402,13 +439,6 @@ export default class myFileList extends PureComponent {
           <div>
             列表记录：
             {total}{' '}
-          </div>
-        }
-        extraContent={
-          <div>
-            <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
-              综合分析报告
-            </Button>
           </div>
         }
       >

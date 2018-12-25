@@ -108,7 +108,7 @@ export default class MyAnalysis extends PureComponent {
   render() {
     const {
       location: {
-        query: { studentId },
+        query: { id, name, startTime, endTime, examLimit, percentOfPass, studentId, companyId },
       },
       myFile: {
         analysisData: {
@@ -124,12 +124,13 @@ export default class MyAnalysis extends PureComponent {
           myPassStatus,
           passCount,
           noPassCount,
-          // examPercent,
           passPercent,
           knowledgeReports = [],
         },
       },
     } = this.props;
+    console.log('examId', this.props);
+
     //面包屑
     const breadcrumbList = [
       {
@@ -142,9 +143,11 @@ export default class MyAnalysis extends PureComponent {
         name: '教育培训',
       },
       {
-        title: '我的档案',
-        name: '我的档案',
-        href: `/training/myFile/myFileList?studentId=${studentId}`,
+        title: id ? '考试详情' : '人员档案',
+        name: id ? '考试详情' : '人员档案',
+        href: id
+          ? `/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+          : `/training/generalFile/myFile/myFileList?studentId=${studentId}&&companyId=${companyId}`,
       },
       {
         title,
