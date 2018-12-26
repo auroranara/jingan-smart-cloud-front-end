@@ -183,25 +183,53 @@ export default class GeneralFileLayout extends PureComponent {
       user: {
         currentUser: { companyId },
       },
+      generalFile: {
+        examData: {
+          list,
+          pagination: { total },
+        },
+        personalData: {
+          list: personalList,
+          pagination: { total: personalTotal },
+        },
+      },
     } = this.props;
     return (
       <PageHeaderLayout
         title="综合档案"
         breadcrumbList={breadcrumbList}
         content={
-          !companyId && (
-            <div>
+          <div>
+            {!companyId && (
               <Input
                 style={{ width: '300px' }}
                 placeholder={'请选择单位'}
                 value={this.companyName}
                 disabled
               />
+            )}
+            {!companyId && (
               <Button type="primary" style={{ marginLeft: '5px' }} onClick={this.handleFocus}>
                 选择单位
               </Button>
+            )}
+            <div>
+              {list.length > 0 &&
+                activeKey === 'examFile' && (
+                  <p style={{ marginTop: 6, marginLeft: 2 }}>
+                    列表记录：
+                    {total}
+                  </p>
+                )}
+              {personalList.length > 0 &&
+                activeKey === 'personFile' && (
+                  <p style={{ marginTop: 6, marginLeft: 2 }}>
+                    列表记录：
+                    {personalTotal}
+                  </p>
+                )}
             </div>
-          )
+          </div>
         }
       >
         <Row gutter={16}>
