@@ -1,6 +1,9 @@
 import React, { PureComponent } from 'react';
 // import pathToRegexp from 'path-to-regexp';
+import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
+import RealTimeMonitor from './components/RealTimeMonitor';
+import AlarmView from './components/AlarmView';
 import { stringify } from 'qs';
 
 import styles from './RealTime.less';
@@ -56,10 +59,30 @@ export default class WbTest extends PureComponent {
     const { x, y } = this.state;
 
     return (
-      <div className={styles.outer}>
-        <div className={styles.inner}></div>
-        <div className={styles.dot} style={{ left: Number.parseFloat(x), bottom: Number.parseFloat(y) }}></div>
-    </div>
+      <BigPlatformLayout
+        title="晶安人员定位监控系统"
+        extra="无锡晶安科技有限公司"
+        headerStyle={{ fontSize: 16 }}
+        style={{
+          backgroundImage:
+            'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
+        }}
+      >
+        <div className={styles.container}>
+          <div className={styles.left}>
+            {/* 实时监控 */}
+            <RealTimeMonitor className={styles.leftTop} />
+            {/* 报警查看 */}
+            <AlarmView className={styles.leftBottom} />
+          </div>
+          <div className={styles.right}>
+            <div className={styles.outer}>
+              <div className={styles.inner}></div>
+              <div className={styles.dot} style={{ left: Number.parseFloat(x), bottom: Number.parseFloat(y) }}></div>
+            </div>
+          </div>
+        </div>
+      </BigPlatformLayout>
     );
   }
 }
