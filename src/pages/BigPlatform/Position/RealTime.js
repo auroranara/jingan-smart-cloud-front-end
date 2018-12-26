@@ -7,6 +7,7 @@ import AlarmView from './components/AlarmView';
 import { stringify } from 'qs';
 
 import styles from './RealTime.less';
+import { Map, Info, PersonInfo, AlarmMsg } from './components/Components';
 
 const options = {
   pingTimeout: 30000,
@@ -76,10 +77,17 @@ export default class WbTest extends PureComponent {
             <AlarmView className={styles.leftBottom} />
           </div>
           <div className={styles.right}>
-            <div className={styles.outer}>
-              <div className={styles.inner}></div>
-              <div className={styles.dot} style={{ left: Number.parseFloat(x), bottom: Number.parseFloat(y) }}></div>
-            </div>
+            <Map x="200" y="200" />
+            <Info />
+            <PersonInfo
+              isSOS
+              name="张三丰"
+              phone="13288888888"
+              code="0001"
+              department="管理部"
+              section="5号楼3层办公区"
+            />
+            <AlarmMsg />
           </div>
         </div>
       </BigPlatformLayout>
