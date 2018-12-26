@@ -33,12 +33,12 @@ export default {
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/mock': {
-      target: `http://${hosts.mock}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.ct}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

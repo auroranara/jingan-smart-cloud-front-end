@@ -104,6 +104,25 @@ module.exports = env => {
     //   path: '/demo',
     //   component: './Demo',
     // },
+    // 档案分析报告
+    {
+      path: '/training/myFile/AnalysisReport/:id',
+      code: 'training.myFile.view',
+      name: 'myAnalysis',
+      component: './Training/MyFile/AnalysisReport',
+    },
+    {
+      path: '/training/myFile/synthesisReport',
+      code: 'training.myFile.view',
+      name: 'mySynthesis',
+      component: './Training/MyFile/SynthesisReport',
+    },
+    {
+      path: '/training/generalFile/examFileReport/:id',
+      code: 'training.generalFile.view',
+      name: 'examReport',
+      component: './Training/GeneralFile/ExamFile/ExamFileReport',
+    },
 
     //404
     {
