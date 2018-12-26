@@ -36,6 +36,8 @@ export default function EffluentMonitor(props) {
   let rtData = realTimeData;
   if (status === '0') rtData = {};
 
+  console.log('params', params);
+  console.log('rtData', rtData);
   const handledParams = params.map(({ id, code, desc, unit }) => ({
     id,
     desc,
@@ -44,6 +46,7 @@ export default function EffluentMonitor(props) {
     isBeyond: unnormalCodes.includes(code),
   }));
 
+  console.log('handledParams', handledParams);
   const sectionStyle = {
     boxShadow: `0 0 1.1em rgba(${status === '2' ? '200,70,70' : '9,103,211'}, 0.9) inset`,
   };
