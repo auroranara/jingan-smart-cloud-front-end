@@ -98,8 +98,8 @@ module.exports = env => {
           component: './BigPlatform/Video',
         },
         {
-          path: '/big-platform/ws',
-          component: './BigPlatform/Ws/WsTest',
+          path: '/big-platform/position',
+          component: './BigPlatform/Position/RealTime',
         },
       ],
     },

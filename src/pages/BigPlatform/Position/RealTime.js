@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
 
-import styles from './WsTest.less';
+import styles from './RealTime.less';
 
 const options = {
   pingTimeout: 30000,
