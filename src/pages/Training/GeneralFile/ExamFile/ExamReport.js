@@ -1,32 +1,9 @@
 import React, { PureComponent } from 'react';
-import ReactEcharts from 'echarts-for-react';
-import {
-  Card,
-  Row,
-  Col,
-  // Button,
-} from 'antd';
+import { Button } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from '../GeneralFile.less';
-
-function KnowledgeList(props) {
-  const { index, knowledgeName, questionCount, rightCount, rightPercent } = props;
-  return (
-    <p style={{ margin: 'auto' }}>
-      {index}、{knowledgeName}
-      :总共
-      {questionCount}
-      题，答对
-      {rightCount}
-      题，正确率
-      {rightPercent}
-      %；
-    </p>
-  );
-}
 
 // 标题
 const title = '综合分析报告';
@@ -53,6 +30,22 @@ const breadcrumbList = [
   },
 ];
 
+function reportDownload() {
+  const iframe = document.getElementById('reportIframe').contentWindow;
+  iframe.print();
+}
+
+function setIframeHeight() {
+  const ifm = document.getElementById('reportIframe');
+  ifm.height = ifm.contentWindow.document.getElementById('reportIframe').scrollHeight;
+}
+
+window.onresize = function() {
+  setTimeout(() => {
+    setIframeHeight();
+  }, 1000);
+};
+
 @connect(({ generalFile }) => ({
   generalFile,
 }))
@@ -74,82 +67,13 @@ export default class ExamReport extends PureComponent {
     });
   }
 
-  getOption = knowledgeReports => {
-    const option = {
-      tooltip: {
-        formatter: params => {
-          return (
-            `${params.name}<br/>` +
-            params.value
-              .map((item, index) => {
-                return `<span>${knowledgeReports[index].knowledgeName}：${item}%</span>`;
-              })
-              .join('<br/>')
-          );
-        },
-      },
-      radar: {
-        radius: 170,
-        name: {
-          textStyle: {
-            color: '#fff',
-            backgroundColor: '#999',
-            borderRadius: 3,
-            padding: [3, 5],
-          },
-        },
-        indicator: knowledgeReports.map(data => {
-          return { name: data.knowledgeName, max: 100 };
-        }),
-      },
-      series: [
-        {
-          name: '知识点综合分析图',
-          type: 'radar',
-          data: [
-            {
-              value: knowledgeReports.map(k => {
-                return [k.rightPercent];
-              }),
-              name: '知识点综合分析图',
-            },
-          ],
-        },
-      ],
-    };
-    return option;
-  };
-
   // 下载
   reportDownload = () => {};
 
   render() {
     const {
-      generalFile: {
-        multipleData: {
-          shouldCount,
-          actualCount,
-          giveUpCount,
-          examMaxScore,
-          examMinScore,
-          examMeanScore,
-          passCount,
-          noPassCount,
-          percentOfPass,
-          passPercent,
-          noPassPercent,
-          singleCount,
-          multiCount,
-          judgeCount,
-          examMinUseTime,
-          examMaxUseTime,
-          examLimitTime,
-          giveUpUsers = [],
-          maxScoreUsers = [],
-          minScoreUsers = [],
-          noPassUsers = [],
-          knowledgeReports = [],
-        },
+      match: {
+        params: { id },
       },
     } = this.props;
 
@@ -158,142 +82,26 @@ export default class ExamReport extends PureComponent {
         title="综合分析报告"
         breadcrumbList={breadcrumbList}
         content={<div />}
-        // extraContent={
-        //   <Button className={styles.backBtn} onClick={this.reportDownload}>
-        //     下载
-        //   </Button>
-        // }
+        extraContent={
+          <Button className={styles.backBtn} onClick={reportDownload}>
+            下载
+          </Button>
+        }
       >
-        <Row gutter={16}>
-          <Col>
-            <Card>
-              <div className={styles.detailFirst}>
-                <div className={styles.detailTitle}>考试成绩综合分析报告</div>
-              </div>
-              <div className={styles.detailMain}>
-                <div className={styles.grade}>
-                  <h3>一、考试成绩分析</h3>
-                  <p>
-                    1、本次考试
-                    <strong>
-                      计划参加考试人数：
-                      {shouldCount}
-                      人，实际考试人数：
-                      {actualCount}
-                      人， 缺考人数：
-                      {giveUpCount}人{' '}
-                      {giveUpUsers.length > 0 ? <span>({giveUpUsers.join('、')})</span> : ''}
-                      ，考试最高正确率：
-                      {examMaxScore ? examMaxScore : 0}%{' '}
-                      {maxScoreUsers.length > 0 ? <span>({maxScoreUsers.join('、')})</span> : ''}
-                      ，最低正确率：
-                      {examMinScore ? examMinScore : 0}%
-                      {minScoreUsers.length > 0 ? <span>({minScoreUsers.join('、')})</span> : ''}
-                      ，平均正确率：
-                      {examMeanScore ? examMeanScore : 0}%
-                    </strong>
-                    。
-                  </p>
-                  <p>
-                    2、本次考试试题设定合格率为
-                    {percentOfPass}
-                    %，本次实际参加考试人数：
-                    {actualCount}
-                    人，
-                    <strong>
-                      合格人数：
-                      {passCount}
-                      人，占比为：
-                      {passPercent}
-                      %，不合格人数：
-                      {noPassCount}人
-                      {noPassUsers.length > 0 ? <span>({noPassUsers.join('、')})</span> : ''}
-                      ，占比为：
-                      {noPassPercent}%
-                    </strong>
-                    。
-                  </p>
-                  {knowledgeReports.length > 0 ? (
-                    <p>
-                      3、本次考试试题知识点分为：
-                      <strong>
-                        {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
-                        {knowledgeReports.length}项
-                      </strong>
-                      。其中
-                      {knowledgeReports.map(item => {
-                        const { knowledgeId, knowledgeName, questionCount } = item;
-                        const total = knowledgeReports
-                          .map(t => t.questionCount)
-                          .reduce(function(prev, curr) {
-                            return prev + curr;
-                          });
-                        return (
-                          <span key={knowledgeId}>
-                            {knowledgeName}
-                            比例为：
-                            {((questionCount / total) * 100).toFixed(2)}
-                            %。
-                          </span>
-                        );
-                      })}
-                    </p>
-                  ) : (
-                    <p>3、本次考试无试题知识点。</p>
-                  )}
-
-                  <p>
-                    4、本次考试题量：
-                    {singleCount + multiCount + judgeCount} 道，其中，单项选择题：
-                    {singleCount}
-                    道，多项选择题：
-                    {multiCount}
-                    道，判断题：
-                    {judgeCount}
-                    道。考试总时长： {moment(examLimitTime).format('mm分钟')}
-                    ，最快完成答题用时：
-                    {examMinUseTime ? moment(examMinUseTime).format('mm分钟') : '00分钟'}
-                    ，最慢完成答题用时：
-                    {examMaxUseTime ? moment(examMaxUseTime).format('mm分钟') : '00分钟'}。
-                  </p>
-                </div>
-                <div className={styles.knowledge}>
-                  <h3>二、知识点综合分析</h3>
-                  {knowledgeReports.length > 2 && (
-                    <ReactEcharts
-                      style={{ height: '450px', textIndent: 0 }}
-                      option={this.getOption(knowledgeReports)}
-                      notMerge={true}
-                      lazyUpdate={true}
-                    />
-                  )}
-
-                  <span>
-                    {knowledgeReports.map((item, index) => {
-                      const {
-                        knowledgeId,
-                        knowledgeName,
-                        questionCount,
-                        rightCount,
-                        rightPercent,
-                      } = item;
-                      return (
-                        <KnowledgeList
-                          key={knowledgeId}
-                          index={index + 1}
-                          knowledgeName={knowledgeName}
-                          questionCount={questionCount}
-                          rightCount={rightCount}
-                          rightPercent={rightPercent}
-                        />
-                      );
-                    })}
-                  </span>
-                </div>
-              </div>
-            </Card>
-          </Col>
-        </Row>
+        <iframe
+          title="report"
+          frameBorder="0"
+          id="reportIframe"
+          width="100%"
+          height="800"
+          scrolling="no"
+          src={`#/training/generalFile/examFileReport/${id}`}
+          onLoad={() => {
+            setTimeout(() => {
+              setIframeHeight();
+            }, 1000);
+          }}
+        />
       </PageHeaderLayout>
     );
   }

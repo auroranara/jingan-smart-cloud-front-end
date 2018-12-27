@@ -104,6 +104,37 @@ module.exports = env => {
     //   path: '/demo',
     //   component: './Demo',
     // },
+    // 档案分析报告
+    {
+      path: '/training/myFile/analysisReport/:id',
+      code: 'training.myFile.view',
+      name: 'myAnalysis',
+      component: './Training/MyFile/AnalysisReport',
+    },
+    {
+      path: '/training/myFile/synthesisReport',
+      code: 'training.myFile.view',
+      name: 'mySynthesis',
+      component: './Training/MyFile/SynthesisReport',
+    },
+    {
+      path: '/training/generalFile/examFileReport/:id',
+      code: 'training.generalFile.view',
+      name: 'examReport',
+      component: './Training/GeneralFile/ExamFile/ExamFileReport',
+    },
+    {
+      path: '/training/generalFile/myFile/analysisReport/:id',
+      code: 'training.generalFile.view',
+      name: 'myAnalysis',
+      component: './Training/GeneralFile/MyFile/AnalysisReport',
+    },
+    {
+      path: '/training/generalFile/myFile/synthesisReport',
+      code: 'training.generalFile.view',
+      name: 'mySynthesis',
+      component: './Training/GeneralFile/MyFile/SynthesisReport',
+    },
 
     //404
     {
@@ -1290,7 +1321,7 @@ module.exports = env => {
                   component: './Training/MyFile/MyAnalysis',
                 },
                 {
-                  path: '/training/myFile/MySynthesis',
+                  path: '/training/myFile/mySynthesis',
                   code: 'training.myFile.view',
                   name: 'mySynthesis',
                   component: './Training/MyFile/MySynthesis',
@@ -1341,7 +1372,7 @@ module.exports = env => {
                   component: './Training/GeneralFile/MyFile/MyAnalysis',
                 },
                 {
-                  path: '/training/generalFile/myFile/MySynthesis',
+                  path: '/training/generalFile/myFile/mySynthesis',
                   code: 'training.generalFile.view',
                   name: 'mySynthesis',
                   component: './Training/GeneralFile/MyFile/MySynthesis',

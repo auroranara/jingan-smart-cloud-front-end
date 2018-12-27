@@ -287,7 +287,7 @@ export default class ExamDetailList extends PureComponent {
         align: 'center',
         width: 140,
         render: val => {
-          return val ? `${val.toFixed(2)}%` : '---';
+          return val === null ? '---' : `${val.toFixed(2)}%`;
         },
       },
       {
