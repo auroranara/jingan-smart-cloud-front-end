@@ -1350,6 +1350,36 @@ module.exports = env => {
             },
           ],
         },
+        // 人员定位
+        {
+          name: 'personnelPosition',
+          path: '/personnel-position',
+          icon: 'environment',
+          code: 'personnelPosition',
+          hideInMenu: false,
+          routes: [
+            /* 系统配置 */
+            {
+              name: 'systemConfiguration',
+              path: '/personnel-position/system-configuration',
+              code: 'personnelPosition.systemConfiguration',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/system-configuration',
+                  redirect: '/personnel-position/system-configuration/list',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.systemConfiguration.listView',
+                  path: '/personnel-position/system-configuration/list',
+                  component: './PersonnelPosition/SystemConfiguration/SystemConfigurationList',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];
