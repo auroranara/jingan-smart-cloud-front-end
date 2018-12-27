@@ -143,11 +143,11 @@ export default class SynthesisReport extends PureComponent {
                   次，不合格
                   {noPassCount}
                   次；最好一次成绩正确率为：
-                  {maxScore ? `${maxScore}%` : '无'}
+                  {maxScore === null ? '无' : `${maxScore}%`}
                   ，最差一次正确率为：
-                  {minScore ? `${minScore}%` : '无'}
+                  {minScore === null ? '无' : `${minScore}%`}
                   ，平均正确率为：
-                  {meanScore ? `${meanScore}%` : '无'}；
+                  {meanScore === null ? '无' : `${meanScore}%`}。
                 </p>
                 <p>
                   2、所有考试中知识点分为：

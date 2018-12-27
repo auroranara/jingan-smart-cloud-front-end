@@ -59,6 +59,7 @@ export default class MyAnalysis extends PureComponent {
         params: { id: examID },
       },
     } = this.props;
+
     //面包屑
     const breadcrumbList = [
       {
@@ -100,7 +101,7 @@ export default class MyAnalysis extends PureComponent {
           id="reportIframe"
           width="100%"
           scrolling="no"
-          src={`#/training/generalFile/myFile/analysisReport/${examID}`}
+          src={`#/training/generalFile/myFile/analysisReport/${examID}?studentId=${studentId}`}
           onLoad={() => {
             setTimeout(() => {
               setIframeHeight();
