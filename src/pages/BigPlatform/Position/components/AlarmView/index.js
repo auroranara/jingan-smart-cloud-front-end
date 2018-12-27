@@ -25,6 +25,7 @@ const typeLabel = {
 const Alarm = function({
   data,
   onClick,
+  handleShowVideo,
 }) {
   const { id, info, type, time, status } = data;
 
@@ -44,7 +45,13 @@ const Alarm = function({
           <div className={styles.value}>{time}</div>
         </div>
         <div className={styles.icon} style={{ backgroundImage: `url(${statusIcon[status]})` }} />
-        <span className={styles.camera} style={{ backgroundImage: `url(${cameraIcon})` }} />
+        <span className={styles.camera}
+          style={{ backgroundImage: `url(${cameraIcon})` }}
+          onClick={e => {
+            e.stopPropagation();
+            handleShowVideo();
+          }}
+        />
       </div>
     </div>
   );
@@ -133,6 +140,7 @@ export default class AlarmView extends PureComponent {
       ],
       // 点击事件
       onClick,
+      handleShowVideo,
     } = this.props;
 
     return (
@@ -144,7 +152,7 @@ export default class AlarmView extends PureComponent {
       >
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
           {data.map(item => (
-            <Alarm key={item.id} data={item} onClick={onClick} />
+            <Alarm key={item.id} data={item} onClick={onClick} handleShowVideo={handleShowVideo} />
           ))}
         </Scrollbars>
       </Section>

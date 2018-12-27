@@ -15,7 +15,14 @@ const CAMERAS = [
 
 export default class Map extends PureComponent {
   render() {
-    const { data=[], style, handleClickPerson, handleAlarmSectionClick, ...restProps } = this.props;
+    const {
+      data=[],
+      style,
+      handleClickPerson,
+      handleAlarmSectionClick,
+      handleShowVideo,
+      ...restProps
+    } = this.props;
     const newStyle = {
       backgroundImage: `url(${bg})`,
       ...style,
@@ -55,6 +62,7 @@ export default class Map extends PureComponent {
               key={id}
               className={styles.camera}
               style={{ backgroundImage: `url(${cameraIcon})`, top, right }}
+              onClick={e => handleShowVideo()}
             />
           ))}
         </div>

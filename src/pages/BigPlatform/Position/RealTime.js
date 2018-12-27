@@ -134,7 +134,9 @@ export default class WbTest extends PureComponent {
     this.setState({ alarmMsgVisible: true });
   };
 
-  handleSOS = () => {
+  handleSOS = (id) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'personPosition/quitSOS', payload: id });
     this.setState({ personInfoVisible: false, sosHandleVisible: true });
   };
 
@@ -144,6 +146,17 @@ export default class WbTest extends PureComponent {
 
   handleClose = prop => {
     this.setState({ [`${prop}Visible`]: false });
+  };
+
+  handleShowVideo = keyId => {
+    this.setState({ videoVisible: true });
+  };
+
+  handleHideVideo = () => {
+    this.setState({
+      videoVisible: false,
+      // videoKeyId: undefined,
+    });
   };
 
   render() {
@@ -179,13 +192,18 @@ export default class WbTest extends PureComponent {
             {/* 实时监控 */}
             <RealTimeMonitor className={styles.leftTop} />
             {/* 报警查看 */}
-            <AlarmView className={styles.leftBottom} onClick={this.handleAlarmCardClick} />
+            <AlarmView
+              className={styles.leftBottom}
+              onClick={this.handleAlarmCardClick}
+              handleShowVideo={this.handleShowVideo}
+            />
           </div>
           <div className={styles.right}>
             <Map
               data={positions}
               handleClickPerson={this.handleClickPerson}
               handleAlarmSectionClick={this.handleShowAlarmMsg}
+              handleShowVideo={this.handleShowVideo}
             />
             <Info data={posInfo} />
             <PersonInfo
@@ -223,7 +241,13 @@ export default class WbTest extends PureComponent {
               handleClose={() => this.handleClose('alarmHandle')}
             />
           </div>
-          <VideoPlay visible={videoVisible} showList={false} />
+          <VideoPlay
+            visible={videoVisible}
+            showList={false}
+            videoList={[]}
+            keyId=""
+            handleVideoClose={this.handleHideVideo}
+          />
         </div>
       </BigPlatformLayout>
     );
