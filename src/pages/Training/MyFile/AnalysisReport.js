@@ -142,12 +142,12 @@ export default class AnalysisReport extends PureComponent {
                     人，缺考人数：
                     {giveUpCount}
                     人， 考试最高正确率：
-                    {maxScore ? `${maxScore}%` : '无'}
+                    {maxScore === null ? '无' : `${maxScore}%`}
                     ，最低正确率：
-                    {minScore ? `${minScore}%` : '无'}
+                    {minScore === null ? '无' : `${minScore}%`}
                     ，平均正确率：
-                    {meanScore ? `${meanScore}%` : '无'} ，我的正确率为：
-                    {myScore ? `${myScore}%` : '无'}
+                    {meanScore === null ? '无' : `${meanScore}%`} ，我的正确率为：
+                    {myScore === null ? '无' : `${myScore}%`}
                   </strong>
                   。
                 </p>

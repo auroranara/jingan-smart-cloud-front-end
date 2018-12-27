@@ -101,6 +101,8 @@ export default class myFileList extends PureComponent {
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
+    console.log('studentId', studentId);
+    console.log('examId', examId);
     const {
       dispatch,
       location: {
@@ -291,7 +293,7 @@ export default class myFileList extends PureComponent {
         align: 'center',
         width: 120,
         render: val => {
-          return val ? `${val.toFixed(2)}%` : '---';
+          return val === null ? '---' : `${val.toFixed(2)}%`;
         },
       },
       {

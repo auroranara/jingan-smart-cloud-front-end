@@ -146,13 +146,13 @@ export default class ExamReport extends PureComponent {
                     {giveUpCount}人{' '}
                     {giveUpUsers.length > 0 ? <span>({giveUpUsers.join('、')})</span> : ''}
                     ，考试最高正确率：
-                    {examMaxScore ? `${examMaxScore}%` : '无'}
+                    {examMaxScore === null ? '无' : `${examMaxScore}%`}
                     {maxScoreUsers.length > 0 ? <span>({maxScoreUsers.join('、')})</span> : ''}
                     ，最低正确率：
-                    {examMinScore ? `${examMinScore}%` : '无'}
+                    {examMinScore === null ? '无' : `${examMinScore}%`}
                     {minScoreUsers.length > 0 ? <span>({minScoreUsers.join('、')})</span> : ''}
                     ，平均正确率：
-                    {examMeanScore ? `${examMeanScore}%` : '无'}
+                    {examMeanScore === null ? '无' : `${examMeanScore}%`}
                   </strong>
                   。
                 </p>
