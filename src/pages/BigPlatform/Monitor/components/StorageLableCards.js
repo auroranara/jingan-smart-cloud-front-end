@@ -28,9 +28,7 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.liquidCount}>{0}</p>
-          <p className={styles.liquidTitle}>
-            {desc}({unit})
-          </p>
+          <p className={styles.liquidTitle}>液位(mm)</p>
         </div>
 
         <div

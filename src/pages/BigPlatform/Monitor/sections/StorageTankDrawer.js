@@ -15,6 +15,8 @@ import StorageLableCards from '../components/StorageLableCards';
 export default class StorageTankDrawer extends PureComponent {
   state = {};
 
+  //condition 大于等于
+  // limitValue 数值
   renderTankList = list => {
     return list.map((item, i) => (
       <StorageLableCards key={item.tankId} num={item.locationCode} title={item.tankName} />
