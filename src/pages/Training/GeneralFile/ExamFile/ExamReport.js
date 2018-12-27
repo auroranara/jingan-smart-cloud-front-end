@@ -35,6 +35,17 @@ function reportDownload() {
   iframe.print();
 }
 
+function setIframeHeight() {
+  const ifm = document.getElementById('reportIframe');
+  ifm.height = ifm.contentWindow.document.getElementById('reportIframe').scrollHeight;
+}
+
+window.onresize = function() {
+  setTimeout(() => {
+    setIframeHeight();
+  }, 1000);
+};
+
 @connect(({ generalFile }) => ({
   generalFile,
 }))
@@ -85,6 +96,11 @@ export default class ExamReport extends PureComponent {
           height="800"
           scrolling="no"
           src={`#/training/generalFile/examFileReport/${id}`}
+          onLoad={() => {
+            setTimeout(() => {
+              setIframeHeight();
+            }, 1000);
+          }}
         />
       </PageHeaderLayout>
     );

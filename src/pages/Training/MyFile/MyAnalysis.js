@@ -13,6 +13,17 @@ function reportDownload() {
   iframe.print();
 }
 
+function setIframeHeight() {
+  const ifm = document.getElementById('reportIframe');
+  ifm.height = ifm.contentWindow.document.getElementById('reportIframe').scrollHeight;
+}
+
+window.onresize = function() {
+  setTimeout(() => {
+    setIframeHeight();
+  }, 1000);
+};
+
 @connect(({ myFile }) => ({
   myFile,
 }))
@@ -86,9 +97,13 @@ export default class MyAnalysis extends PureComponent {
           frameBorder="0"
           id="reportIframe"
           width="100%"
-          height="800"
           scrolling="no"
-          src={`#/training/myFile/AnalysisReport/${id}`}
+          src={`#/training/myFile/analysisReport/${id}`}
+          onLoad={() => {
+            setTimeout(() => {
+              setIframeHeight();
+            }, 1000);
+          }}
         />
       </PageHeaderLayout>
     );

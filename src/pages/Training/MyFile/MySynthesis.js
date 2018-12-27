@@ -10,6 +10,17 @@ function synthesisDownLoad() {
   iframe.print();
 }
 
+function setIframeHeight() {
+  const ifm = document.getElementById('reportIframe');
+  ifm.height = ifm.contentWindow.document.getElementById('reportIframe').scrollHeight;
+}
+
+window.onresize = function() {
+  setTimeout(() => {
+    setIframeHeight();
+  }, 1000);
+};
+
 // 标题
 const title = '综合分析报告';
 
@@ -81,7 +92,12 @@ export default class MySynthesis extends PureComponent {
           width="100%"
           height="800"
           scrolling="no"
-          src={`#/training/myFile/SynthesisReport?studentId=${studentId}`}
+          src={`#/training/myFile/synthesisReport?studentId=${studentId}`}
+          onLoad={() => {
+            setTimeout(() => {
+              setIframeHeight();
+            }, 1000);
+          }}
         />
       </PageHeaderLayout>
     );

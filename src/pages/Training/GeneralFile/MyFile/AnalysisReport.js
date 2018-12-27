@@ -1,23 +1,19 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import {
-  Card,
-  Row,
-  Col,
-  // Button,
-} from 'antd';
+import { Card, Row, Col } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 
-import styles from '../GeneralFile.less';
+import styles from './MyFile.less';
 
 function KnowledgeList(props) {
-  const { index, knowledgeName, questionCountToPercent, rightPercent } = props;
+  const { index, knowledgeName, questionCount, rightCount, rightPercent } = props;
   return (
     <p style={{ margin: 'auto' }}>
       {index}、{knowledgeName}
       :总共
-      {questionCountToPercent}
+      {questionCount}
+      题，答对
+      {rightCount}
       题，正确率
       {rightPercent}
       %；
@@ -25,23 +21,28 @@ function KnowledgeList(props) {
   );
 }
 
-@connect(({ generalFile }) => ({
-  generalFile,
+@connect(({ myFile }) => ({
+  myFile,
 }))
-export default class ExamReport extends PureComponent {
-  // 挂载后
+export default class AnalysisReport extends PureComponent {
+  /**
+   * 挂载后
+   */
   componentDidMount() {
     const {
       dispatch,
       match: {
         params: { id },
       },
+      location: {
+        query: { studentId },
+      },
     } = this.props;
-    // 获取报告详情
     dispatch({
-      type: 'generalFile/fetchMultipleReport',
+      type: 'myFile/fetchExamReport',
       payload: {
         examId: id,
+        studentId: studentId,
       },
     });
   }
@@ -70,8 +71,8 @@ export default class ExamReport extends PureComponent {
             padding: [3, 5],
           },
         },
-        indicator: knowledgeReports.map(data => {
-          return { name: data.knowledgeName, max: 100 };
+        indicator: knowledgeReports.map(k => {
+          return { name: k.knowledgeName, max: 100 };
         }),
       },
       series: [
@@ -97,29 +98,21 @@ export default class ExamReport extends PureComponent {
 
   render() {
     const {
-      generalFile: {
-        multipleData: {
+      myFile: {
+        analysisData: {
+          studentName,
           shouldCount,
           actualCount,
           giveUpCount,
-          examMaxScore,
-          examMinScore,
-          examMeanScore,
+          maxScore,
+          minScore,
+          meanScore,
+          myScore,
+          myRanking,
+          myPassStatus,
           passCount,
           noPassCount,
-          percentOfPass,
           passPercent,
-          noPassPercent,
-          singleCount,
-          multiCount,
-          judgeCount,
-          examMinUseTime,
-          examMaxUseTime,
-          examLimitTime,
-          giveUpUsers = [],
-          maxScoreUsers = [],
-          minScoreUsers = [],
-          noPassUsers = [],
           knowledgeReports = [],
         },
       },
@@ -132,6 +125,12 @@ export default class ExamReport extends PureComponent {
             <div className={styles.detailFirst}>
               <div className={styles.detailTitle}>考试成绩综合分析报告</div>
             </div>
+            <div className={styles.detailSecond}>
+              <span>
+                考生：
+                {studentName}
+              </span>
+            </div>
             <div className={styles.detailMain}>
               <div className={styles.grade}>
                 <h3>一、考试成绩分析</h3>
@@ -142,87 +141,70 @@ export default class ExamReport extends PureComponent {
                     {shouldCount}
                     人，实际考试人数：
                     {actualCount}
-                    人， 缺考人数：
-                    {giveUpCount}人{' '}
-                    {giveUpUsers.length > 0 ? <span>({giveUpUsers.join('、')})</span> : ''}
-                    ，考试最高正确率：
-                    {examMaxScore ? `${examMaxScore}%` : '无'}
-                    {maxScoreUsers.length > 0 ? <span>({maxScoreUsers.join('、')})</span> : ''}
+                    人，缺考人数：
+                    {giveUpCount}
+                    人， 考试最高正确率：
+                    {maxScore ? `${maxScore}%` : '无'}
                     ，最低正确率：
-                    {examMinScore ? `${examMinScore}%` : '无'}
-                    {minScoreUsers.length > 0 ? <span>({minScoreUsers.join('、')})</span> : ''}
+                    {minScore ? `${minScore}%` : '无'}
                     ，平均正确率：
-                    {examMeanScore ? `${examMeanScore}%` : '无'}
+                    {meanScore ? `${meanScore}%` : '无'} ，我的正确率为：
+                    {myScore ? `${myScore}%` : '无'}
                   </strong>
                   。
                 </p>
                 <p>
                   2、本次考试试题设定合格率为
-                  {percentOfPass}
+                  {passPercent}
                   %，本次实际参加考试人数：
                   {actualCount}
                   人，
                   <strong>
                     合格人数：
                     {passCount}
-                    人，占比为：
-                    {passPercent}
-                    %，不合格人数：
-                    {noPassCount}人
-                    {noPassUsers.length > 0 ? <span>({noPassUsers.join('、')})</span> : ''}
-                    ，占比为：
-                    {noPassPercent}%
+                    人，不合格人数：
+                    {noPassCount}
+                    人，我的成绩：
+                    {myPassStatus === '1' ? '合格' : myPassStatus === '-1' ? '弃考' : '不合格'}
+                    {myPassStatus !== '-1' && (
+                      <span>
+                        ，排名为：第
+                        {myRanking}名
+                      </span>
+                    )}
                   </strong>
                   。
                 </p>
-                {knowledgeReports.length > 0 ? (
-                  <p>
-                    3、本次考试试题知识点分为：
-                    <strong>
-                      {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
-                      {knowledgeReports.length}项
-                    </strong>
-                    。其中
-                    {knowledgeReports.map(item => {
-                      const { knowledgeId, knowledgeName, questionCountToPercent } = item;
-                      const total = knowledgeReports
-                        .map(t => t.questionCountToPercent)
-                        .reduce(function(prev, curr) {
-                          return prev + curr;
-                        });
-                      return (
-                        <span key={knowledgeId}>
-                          {knowledgeName}
-                          比例为：
-                          {questionCountToPercent
-                            ? `${((questionCountToPercent / total) * 100).toFixed(2)}%`
-                            : '无'}
-                          。
-                        </span>
-                      );
-                    })}
-                  </p>
-                ) : (
-                  <p>3、本次考试无试题知识点。</p>
-                )}
-
                 <p>
-                  4、本次考试题量：
-                  {singleCount + multiCount + judgeCount} 道，其中，单项选择题：
-                  {singleCount}
-                  道，多项选择题：
-                  {multiCount}
-                  道，判断题：
-                  {judgeCount}
-                  道。考试总时长： {moment(examLimitTime).format('mm分钟')}
-                  ，最快完成答题用时：
-                  {examMinUseTime ? moment(examMinUseTime).format('mm分钟') : '00分钟'}
-                  ，最慢完成答题用时：
-                  {examMaxUseTime ? moment(examMaxUseTime).format('mm分钟') : '00分钟'}。
+                  3、考试知识点分为：
+                  <strong>
+                    {knowledgeReports.map(k => k.knowledgeName).join(',')}， 共
+                    {knowledgeReports.length}项
+                  </strong>
+                  。我的知识点考试正确率：
+                  {knowledgeReports.map(item => {
+                    const {
+                      knowledgeId,
+                      knowledgeName,
+                      questionCount,
+                      rightCount,
+                      rightPercent,
+                    } = item;
+                    return (
+                      <span key={knowledgeId}>
+                        {knowledgeName}共{questionCount}
+                        题，答对
+                        {rightCount}题 ，正确率为：
+                        {rightPercent}
+                        %。
+                      </span>
+                    );
+                  })}
                 </p>
               </div>
               <div className={styles.knowledge}>
                 <h3>二、知识点综合分析</h3>
+
                 {knowledgeReports.length > 2 && (
                   <ReactEcharts
                     style={{ height: '450px', textIndent: 0 }}
@@ -237,7 +219,7 @@ export default class ExamReport extends PureComponent {
                     const {
                       knowledgeId,
                       knowledgeName,
-                      questionCountToPercent,
+                      questionCount,
                       rightCount,
                       rightPercent,
                     } = item;
@@ -246,7 +228,7 @@ export default class ExamReport extends PureComponent {
                         key={knowledgeId}
                         index={index + 1}
                         knowledgeName={knowledgeName}
-                        questionCountToPercent={questionCountToPercent}
+                        questionCount={questionCount}
                         rightCount={rightCount}
                         rightPercent={rightPercent}
                       />

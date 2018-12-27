@@ -117,7 +117,7 @@ export default class AnalysisReport extends PureComponent {
     } = this.props;
 
     return (
-      <Row gutter={16}>
+      <Row gutter={16} id="reportIframe">
         <Col>
           <Card>
             <div className={styles.detailFirst}>
@@ -142,12 +142,12 @@ export default class AnalysisReport extends PureComponent {
                     人，缺考人数：
                     {giveUpCount}
                     人， 考试最高正确率：
-                    {maxScore}
-                    %，最低正确率：
-                    {minScore}
-                    %，平均正确率：
-                    {meanScore}% ，我的正确率为：
-                    {myScore ? myScore : 0}%
+                    {maxScore ? `${maxScore}%` : '无'}
+                    ，最低正确率：
+                    {minScore ? `${minScore}%` : '无'}
+                    ，平均正确率：
+                    {meanScore ? `${meanScore}%` : '无'} ，我的正确率为：
+                    {myScore ? `${myScore}%` : '无'}
                   </strong>
                   。
                 </p>
