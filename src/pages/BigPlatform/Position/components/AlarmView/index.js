@@ -22,16 +22,14 @@ const typeLabel = {
 
 // 报警
 const Alarm = function({
-  data: {
-    info,
-    type,
-    time,
-    status,
-  },
+  data,
+  onClick,
 }) {
+  const { id, info, type, time, status } = data;
+
   return (
     <div className={styles.alarm}>
-      <div className={styles.alarmItem}>
+      <div className={styles.alarmItem} onClick={() => {onClick(type, data);}}>
         <div className={styles.itemLine}>
           <div className={styles.label}>报警信息：</div>
           <div className={styles.value}>{info}</div>
@@ -131,6 +129,8 @@ export default class AlarmView extends PureComponent {
           status: 1,
         },
       ],
+      // 点击事件
+      onClick,
     } = this.props;
 
     return (
@@ -142,7 +142,7 @@ export default class AlarmView extends PureComponent {
       >
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
           {data.map(item => (
-            <Alarm key={item.id} data={item} />
+            <Alarm key={item.id} data={item} onClick={onClick} />
           ))}
         </Scrollbars>
       </Section>

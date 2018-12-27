@@ -7,11 +7,13 @@ import AlarmView from './components/AlarmView';
 import { stringify } from 'qs';
 import moment from 'moment';
 import { notification } from 'antd';
+import { connect } from 'dva';
 
 import styles from './RealTime.less';
 import sosIcon from './imgs/sos.png';
 import alarmInfoIcon from './imgs/alarmInfo.png';
 import { Map, Info, PersonInfo, AlarmMsg, AlarmHandle, VideoPlay } from './components/Components';
+import { handlePositions, handleInitialInfo, handlePosInfo } from './utils';
 
 const options = {
   pingTimeout: 30000,
@@ -19,9 +21,19 @@ const options = {
   reconnectTimeout: 2000,
   pingMsg: 'heartbeat',
 };
+const COMPANY_ID = 'DccBRhlrSiu9gMV7fmvizw';
 
+const TYPES = [1, 2];
+const TYPE_LABELS = {
+  1: '越界',
+  2: 'SOS求助',
+};
+
+@connect(({ personPosition }) => ({ personPosition }))
 export default class WbTest extends PureComponent {
   state = {
+    positions: [],
+    posInfo: [],
     isSOS: false,
     personInfoVisible: false,
     sosHandleVisible: false,
@@ -32,8 +44,9 @@ export default class WbTest extends PureComponent {
 
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const { dispatch } = this.props;
     const params = {
-      companyId: 'DccBRhlrSiu9gMV7fmvizw',
+      companyId: COMPANY_ID,
       env: 'dev',
       type: 2,
     };
@@ -55,7 +68,11 @@ export default class WbTest extends PureComponent {
       try {
         const data = JSON.parse(e.data);
         console.log(data);
-        this.setState({ x: data[0].xarea, y: data[0].yarea });
+        if (Array.isArray(data))
+          this.setState(({ positions, posInfo }) => ({
+            positions: handlePositions(positions, data),
+            posInfo: handlePosInfo(posInfo, data),
+          }));
       } catch (error) {
         console.log('error', error);
       }
@@ -66,28 +83,55 @@ export default class WbTest extends PureComponent {
       console.log('reconnecting...');
     };
 
-    notification.warning({
-      // key: id,
-      className: styles.note,
-      placement: 'bottomLeft',
-      message: '报警提示 SOS求助',
-      description: (
-        <span
-          className={styles.desc}
-          onClick={e => {
-            this.handleClickPerson(0, true);
-            // notification.close(id);
-          }}
-        >
-          {`${moment().format('HH:mm:ss')} 张三【13025142568】发起求救信号，请及时支援！`}
-        </span>
-      ),
-      duration: null,
+    dispatch({
+      type: 'personPosition/fetchInitialPositions',
+      payload: { companyId: COMPANY_ID },
+      callback: (data=[]) => {
+        this.setState({ positions: data, posInfo: handleInitialInfo(data) });
+      },
+    });
+
+    TYPES.forEach((t, i) => {
+      setTimeout(() => notification.warning({
+        // key: id,
+        className: styles.note,
+        placement: 'bottomLeft',
+        message: `报警提示 ${TYPE_LABELS[t]}`,
+        description: (
+          <span
+            className={styles.desc}
+            onClick={e => {
+              this.handleAlarmCardClick(t);
+              // notification.close(id);
+            }}
+          >
+            {`${moment().format('HH:mm:ss')} 张三【13025142568】发起求救信号，请及时支援！`}
+          </span>
+        ),
+        duration: null,
+      }), i * 500);
     });
   }
 
+  handleAlarmCardClick = (type, data) => {
+    switch(type) {
+      case 1:
+        this.handleShowAlarmMsg();
+        break;
+      case 2:
+        this.handleClickPerson(0, true);
+        break;
+      default:
+        return;
+    }
+  };
+
   handleClickPerson = (i, isSOS) => {
     this.setState({ personInfoVisible: true, isSOS });
+  };
+
+  handleShowAlarmMsg = () => {
+    this.setState({ alarmMsgVisible: true });
   };
 
   handleSOS = () => {
@@ -104,6 +148,8 @@ export default class WbTest extends PureComponent {
 
   render() {
     const {
+      positions,
+      posInfo,
       isSOS,
       personInfoVisible,
       sosHandleVisible,
@@ -112,10 +158,10 @@ export default class WbTest extends PureComponent {
       videoVisible,
     } = this.state;
 
-    const positions = [
-      { xarea: '20%', yarea: '60%', isSOS: true },
-      { xarea: '20%', yarea: '30%', isSOS: false },
-    ]
+    // const positions = [
+    //   { xarea: '20%', yarea: '60%', isSOS: true },
+    //   { xarea: '30%', yarea: '60%', isSOS: false },
+    // ]
 
     return (
       <BigPlatformLayout
@@ -133,14 +179,15 @@ export default class WbTest extends PureComponent {
             {/* 实时监控 */}
             <RealTimeMonitor className={styles.leftTop} />
             {/* 报警查看 */}
-            <AlarmView className={styles.leftBottom} />
+            <AlarmView className={styles.leftBottom} onClick={this.handleAlarmCardClick} />
           </div>
           <div className={styles.right}>
             <Map
               data={positions}
               handleClickPerson={this.handleClickPerson}
+              handleAlarmSectionClick={this.handleShowAlarmMsg}
             />
-            <Info />
+            <Info data={posInfo} />
             <PersonInfo
               isSOS={isSOS}
               visible={personInfoVisible}

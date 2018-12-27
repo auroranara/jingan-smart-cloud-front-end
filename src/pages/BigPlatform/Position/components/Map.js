@@ -7,7 +7,7 @@ import PersonIcon from './PersonIcon';
 
 export default class Map extends PureComponent {
   render() {
-    const { data=[], style, handleClickPerson, ...restProps } = this.props;
+    const { data=[], style, handleClickPerson, handleAlarmSectionClick, ...restProps } = this.props;
     const newStyle = {
       backgroundImage: `url(${bg})`,
       ...style,
@@ -21,19 +21,19 @@ export default class Map extends PureComponent {
           <span className={styles.red}>SOS求救：1起</span>
         </p>
         <div className={styles.map} style={{ backgroundImage: `url(${mapBg})` }}>
-          {data.map(({ xarea, yarea, isSOS }, i) => (
+          {data.map(({ xarea=0, yarea=0, isSOS }, i) => (
             <PersonIcon
               key={i}
               isSOS={isSOS}
-              x={xarea}
-              y={yarea}
+              x={`${xarea}%`}
+              y={`${yarea}%`}
               onClick={e => handleClickPerson(i, isSOS)}
             />
           ))}
           <div className={styles.sections}>
             <div className={styles.canteen} />
             <div className={styles.fire} />
-            <div className={styles.play} />
+            <div className={styles.play} onClick={e => handleAlarmSectionClick()} />
             <div className={styles.lab} />
           </div>
         </div>

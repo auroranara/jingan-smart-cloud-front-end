@@ -26,7 +26,7 @@ export default function PersonInfo(props) {
 
   const newStyle = {
     backgroundImage: `url(${bg})`,
-    paddingBottom: isSOS ? 70 : 15,
+    // paddingBottom: isSOS ? 70 : 15,
     ...style,
     display: visible ? 'block' : 'none',
   };
@@ -35,7 +35,10 @@ export default function PersonInfo(props) {
     <div className={styles.container} style={newStyle} {...restProps}>
       <Icon type="close" style={ICON_STYLE} onClick={e => handleClose()} />
       <div className={styles.img} style={{ backgroundImage: `url(${Zhang})` }} />
-      {isSOS && <Button ghost style={BTN_STYLE} onClick={e => handleSOS()}>处理</Button>}
+      {isSOS
+        ? <Button ghost style={BTN_STYLE} onClick={e => handleSOS()}>处理</Button>
+        : <Button ghost style={BTN_STYLE} onClick={e => {}}>历史轨迹</Button>
+      }
       <h3 className={styles.name}>
         {name}
         {isSOS && <span className={styles.sos} style={{ backgroundImage: `url(${sosIcon})` }} />}
