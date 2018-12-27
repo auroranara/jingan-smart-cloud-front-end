@@ -1,0 +1,102 @@
+/* 容器 */
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  color: #fff;
+  background: no-repeat center center;
+  background-size: 100% 100%;
+  overflow: hidden;
+}
+/* canvas容器 */
+.canvasWrapper {
+  flex: 1;
+  position: relative;
+}
+/* 控制器容器 */
+.controlWrapper {
+  flex: none;
+  margin: 0 auto;
+  padding: 24px 0 12px;
+  width: 50%;
+
+  /* 时间条 */
+  .timeBar {
+    position: relative;
+    width: 100%;
+    height: 10px;
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+
+    /* 当前时间条 */
+    .currentTimeBar {
+      width: 0;
+      height: 10px;
+      border-radius: 10px;
+      background-color: #00a8ff;
+    }
+
+  }
+
+  /* 按钮栏 */
+  .buttonBar {
+    position: relative;
+    padding: 12px 0;
+    height: 48px;
+    line-height: 24px;
+    font-size: 14px;
+    text-align: center;
+
+    /* 起始时间 */
+    .startTime {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 48px;
+      line-height: 48px;
+      transform: translateX(-50%);
+      cursor: auto;
+    }
+
+    /* 结束时间 */
+    .endTime {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 48px;
+      line-height: 48px;
+      transform: translateX(50%);
+      cursor: auto;
+    }
+
+    .button {
+      font-size: 24px;
+      cursor: pointer;
+
+      &:not(:last-child) {
+        margin-right: 24px;
+      }
+
+      &:hover {
+        color: #00a8ff;
+      }
+    }
+  }
+}
+/* 提示框 */
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transform: translate(0, -120%)
+}

@@ -101,6 +101,10 @@ module.exports = env => {
           path: '/big-platform/position',
           component: './BigPlatform/Position/RealTime',
         },
+        {
+          path: '/big-platform/position/history/:id',
+          component: './BigPlatform/Position/History',
+        },
       ],
     },
 

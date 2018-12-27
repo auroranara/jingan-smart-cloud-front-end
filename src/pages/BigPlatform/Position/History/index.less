@@ -1,0 +1,31 @@
+/* 容器 */
+.container {
+  display: flex;
+  padding: 24px 12px;
+  height: 100%;
+  position: relative;
+
+  .left, .right {
+    padding: 0 12px;
+    height: 100%;
+  }
+
+  .left {
+    flex: 3;
+
+    .leftTop {
+      padding-bottom: 12px;
+      height: 50%;
+    }
+
+    .leftBottom {
+      padding-top: 12px;
+      height: 50%;
+    }
+  }
+
+  .right {
+    flex: 7;
+    position: relative;
+  }
+}
