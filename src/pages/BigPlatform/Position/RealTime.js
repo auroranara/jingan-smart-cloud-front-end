@@ -63,6 +63,7 @@ export default class WbTest extends PureComponent {
         title="晶安人员定位监控系统"
         extra="无锡晶安科技有限公司"
         headerStyle={{ fontSize: 16 }}
+        titleStyle={{ fontSize: 46 }}
         style={{
           backgroundImage:
             'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
