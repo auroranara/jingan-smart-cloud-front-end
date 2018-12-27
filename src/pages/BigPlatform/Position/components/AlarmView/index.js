@@ -1,7 +1,54 @@
 import React, { PureComponent } from 'react';
+import { Scrollbars } from 'react-custom-scrollbars';
 import Section from '@/pages/BigPlatform/NewUnitFireControl/Section';
+import pendingIcon from '@/assets/pending.png';
 // 引入样式文件
 import styles from './index.less';
+
+// 根据状态获取图片
+const statusIcon = {
+  '1': pendingIcon,
+  '2': '已处理',
+};
+
+// 根据类型获取文本
+const typeLabel = {
+  '1': '越界',
+  '2': 'SOS求助',
+  '3': '超员',
+  '4': '缺员',
+  '5': '长时间静止',
+};
+
+// 报警
+const Alarm = function({
+  data: {
+    info,
+    type,
+    time,
+    status,
+  },
+}) {
+  return (
+    <div className={styles.alarm}>
+      <div className={styles.alarmItem}>
+        <div className={styles.itemLine}>
+          <div className={styles.label}>报警信息：</div>
+          <div className={styles.value}>{info}</div>
+        </div>
+        <div className={styles.itemLine}>
+          <div className={styles.label}>报警类型：</div>
+          <div className={styles.value}>{typeLabel[type]}</div>
+        </div>
+        <div className={styles.itemLine}>
+          <div className={styles.label}>报警时间：</div>
+          <div className={styles.value}>{time}</div>
+        </div>
+        <div className={styles.icon} style={{ backgroundImage: `url(${statusIcon[status]})` }} />
+      </div>
+    </div>
+  );
+}
 
 /**
  * description: 报警查看
@@ -36,6 +83,22 @@ export default class AlarmView extends PureComponent {
   }
 
   /**
+   * 修改滚动条颜色
+   */
+  renderThumb({ style, ...props }) {
+    const thumbStyle = {
+      backgroundColor: `rgba(9, 103, 211, 0.5)`,
+      borderRadius: '10px',
+    };
+    return (
+      <div
+        style={{ ...style, ...thumbStyle }}
+        {...props}
+      />
+    );
+  }
+
+  /**
    * 渲染
    */
   render() {
@@ -44,7 +107,30 @@ export default class AlarmView extends PureComponent {
       className,
       // 容器样式
       style,
-      model,
+      // 数据源
+      data=[
+        {
+          id: 1,
+          info: '东厂区建筑物A',
+          type: 1,
+          time: '2018-12-25 12:00:00',
+          status: 1,
+        },
+        {
+          id: 2,
+          info: '东厂区建筑物A',
+          type: 2,
+          time: '2018-12-25 12:00:00',
+          status: 1,
+        },
+        {
+          id: 3,
+          info: '东厂区建筑物A',
+          type: 3,
+          time: '2018-12-25 12:00:00',
+          status: 1,
+        },
+      ],
     } = this.props;
 
     return (
@@ -52,8 +138,13 @@ export default class AlarmView extends PureComponent {
         className={className?`${styles.container} ${className}`:styles.container}
         style={style}
         title="报警查看"
+        contentStyle={{ padding: '16px 0' }}
       >
-        123
+        <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
+          {data.map(item => (
+            <Alarm key={item.id} data={item} />
+          ))}
+        </Scrollbars>
       </Section>
     );
   }

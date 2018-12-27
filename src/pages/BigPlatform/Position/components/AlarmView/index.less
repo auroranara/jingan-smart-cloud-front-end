@@ -5,3 +5,43 @@
   height: 100%;
   overflow: hidden;
 }
+/* 报警 */
+.alarm {
+  padding: 12px 20px;
+
+  .alarmItem {
+    position: relative;
+    padding: 12px 24px;
+    padding-right: 120px;
+    font-size: 14px;
+    line-height: 18px;
+    color: #fff;
+    background-color: rgba(9, 103, 211, 0.2);
+    box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+
+    .itemLine {
+      display: flex;
+      padding: 12px 0;
+
+      .label {
+        flex: none;
+        color: #04fdff;
+      }
+      .value {
+        flex: 1;
+      }
+    }
+
+    .icon {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      width: 120px;
+      height: 120px;
+      background: no-repeat center center;
+      background-size: 100% auto;
+      transform: translateY(-50%);
+      z-index: 9;
+    }
+  }
+}
