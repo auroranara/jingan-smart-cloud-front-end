@@ -507,10 +507,21 @@ export default class App extends PureComponent {
                 />
               </Translate>
             ) : (
-              <CurrentHiddenDanger
-                model={unitSafety}
-                closable={false}
-              />
+              <Translate
+                direction="left"
+                queue={rightQueue}
+                offset={{ right: 10, bottom: 10 }}
+              >
+                <CurrentHiddenDanger
+                  model={unitSafety}
+                  closable={false}
+                />
+                <div>占位</div>
+                <InspectionPoint
+                  onClose={this.handleHideInspectionPoint}
+                  data={inspectionPointData}
+                />
+              </Translate>
             )}
           </Col>
         </Row>
