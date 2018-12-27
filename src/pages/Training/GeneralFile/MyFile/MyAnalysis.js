@@ -129,8 +129,6 @@ export default class MyAnalysis extends PureComponent {
         },
       },
     } = this.props;
-    console.log('examId', this.props);
-
     //面包屑
     const breadcrumbList = [
       {

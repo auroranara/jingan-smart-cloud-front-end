@@ -111,4 +111,20 @@ export default {
       zoom: 13,
     },
   },
+  shanxi: {
+    region: '山西',
+    logo: '',
+    mail: 'jazh@jingan-china.cn',
+    mainWeb: 'https://www.jingan-china.cn',
+    projectKey: 'shanxi',
+    projectName: '山西晶安智慧云平台',
+    servicePhone: '400-928-5656',
+    serviceSupport: '无锡晶安智慧科技有限公司',
+    webscoketHost: '47.99.76.214:10028',
+    location: {
+      x: 120.401163,
+      y: 31.560116,
+      zoom: 13,
+    },
+  },
 };
