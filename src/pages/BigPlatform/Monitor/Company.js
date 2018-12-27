@@ -108,6 +108,18 @@ export default class App extends PureComponent {
       payload: { companyId, overFlag: 0 },
     });
 
+    // 获取储罐统计
+    dispatch({
+      type: 'monitor/fetchTankMessageData',
+      payload: { companyId },
+    });
+
+    // 储罐统计下钻
+    dispatch({
+      type: 'monitor/fetchTankMessageList',
+      payload: { companyId },
+    });
+
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
     // this.waterTimer = setInterval(this.waterPolling, WATER_DELAY);
@@ -376,6 +388,8 @@ export default class App extends PureComponent {
         errorDevice,
         smokeCount,
         smokeList,
+        tankData,
+        tankDataList,
         deviceDataHistory,
       },
       unitFireControl: { fireAlarmSystem },
@@ -424,7 +438,10 @@ export default class App extends PureComponent {
                   />
                 </div>
                 <div className={styles.videoMonitorContainer}>
-                  <StorageTankMonitor handleStorageDrawer={this.handleStorageDrawer} />
+                  <StorageTankMonitor
+                    tankData={tankData}
+                    handleStorageDrawer={this.handleStorageDrawer}
+                  />
                   {/* <VideoSection
                     data={allCamera}
                     showVideo={this.handleVideoShow}
@@ -525,6 +542,7 @@ export default class App extends PureComponent {
           handleVideoClose={this.handleVideoClose}
         />
         <StorageTankDrawer
+          tankDataList={tankDataList}
           visible={storageDrawerVisible}
           onClose={() => {
             this.setState({

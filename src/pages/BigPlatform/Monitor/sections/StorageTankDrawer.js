@@ -15,11 +15,20 @@ import StorageLableCards from '../components/StorageLableCards';
 export default class StorageTankDrawer extends PureComponent {
   state = {};
 
+  renderTankList = list => {
+    return list.map((item, i) => (
+      <StorageLableCards key={item.tankId} num={item.locationCode} title={item.tankName} />
+    ));
+  };
+
   render() {
-    const { visible } = this.props;
+    const {
+      visible,
+      tankDataList: { list },
+    } = this.props;
     const left = (
       <div className={styles.content}>
-        <Row gutter={6}>
+        {/* <Row gutter={6}>
           <Col span={9}>
             <Select
               placeholder="全部状态"
@@ -50,13 +59,9 @@ export default class StorageTankDrawer extends PureComponent {
               查询
             </Button>
           </Col>
-        </Row>
+        </Row> */}
         <div className={styles.cardContainer}>
-          <StorageLableCards num="22" title="二氧化碳" />
-          <StorageLableCards num="22" title="二氧化碳" />
-          <StorageLableCards num="22" title="二氧化碳" />
-          <StorageLableCards num="22" title="二氧化碳" />
-          <StorageLableCards num="22" title="二氧化碳" />
+          {list && list.length > 0 && <div> {this.renderTankList(list)} </div>}
         </div>
       </div>
     );

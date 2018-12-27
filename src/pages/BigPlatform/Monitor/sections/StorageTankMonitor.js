@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { Col, Modal, Table, Pagination } from 'antd';
 
 import StorageCard from '../components/StorageCard';
 import styles from './StorageTankMonitor.less';
@@ -35,7 +34,14 @@ export default class StorageTankMonitor extends PureComponent {
   };
 
   render() {
-    const { handleStorageDrawer } = this.props;
+    const {
+      handleStorageDrawer,
+      tankData: {
+        tankNum,
+        alarmSensor: { liquidLevel, temperature, pressure },
+        lostSensor: { liquidLevel: lostLiquid, temperature: lostTemp, pressure: lostPressure },
+      },
+    } = this.props;
     return (
       <ExSection title="储罐监测">
         <div className={styles.content}>
@@ -54,7 +60,7 @@ export default class StorageTankMonitor extends PureComponent {
             </div>
             <div className={styles.number}>
               <span className={styles.text} onClick={handleStorageDrawer}>
-                200
+                {tankNum}
               </span>
             </div>
           </div>
@@ -64,13 +70,13 @@ export default class StorageTankMonitor extends PureComponent {
               <div className={styles.leftTitle}>
                 <span>报警</span>
                 <span className={styles.errorText} style={{ paddingLeft: 15 }}>
-                  8
+                  {liquidLevel + temperature + pressure}
                 </span>
               </div>
               <div className={styles.storageCards}>
-                <StorageCard num="5" title="液位" />
-                <StorageCard num="5" title="压力" />
-                <StorageCard num="5" title="温度" />
+                <StorageCard num={liquidLevel} title="液位" />
+                <StorageCard num={temperature} title="压力" />
+                <StorageCard num={pressure} title="温度" />
               </div>
             </div>
             {this.renderDivider(divider)}
@@ -78,13 +84,13 @@ export default class StorageTankMonitor extends PureComponent {
               <div className={styles.leftTitle}>
                 <span>失联</span>
                 <span className={styles.errorText} style={{ paddingLeft: 15 }}>
-                  8
+                  {lostLiquid + lostTemp + lostPressure}
                 </span>
               </div>
               <div className={styles.storageCards}>
-                <StorageCard num="5" title="液位" color="rgb(198, 193, 129)" />
-                <StorageCard num="5" title="压力" color="rgb(198, 193, 129)" />
-                <StorageCard num="5" title="温度" color="rgb(198, 193, 129)" />
+                <StorageCard num={lostLiquid} title="液位" color="rgb(198, 193, 129)" />
+                <StorageCard num={lostTemp} title="压力" color="rgb(198, 193, 129)" />
+                <StorageCard num={lostPressure} title="温度" color="rgb(198, 193, 129)" />
               </div>
             </div>
           </div>

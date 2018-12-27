@@ -4,7 +4,7 @@ import line from '../imgs/line.png';
 import styles from './StorageLableCards.less';
 
 export default function StorageCards(props) {
-  const { num, title, color } = props;
+  const { num, title, desc, unit, color } = props;
   return (
     <div className={styles.card}>
       <div className={styles.top}>
@@ -28,7 +28,9 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.liquidCount}>{0}</p>
-          <p className={styles.liquidTitle}>液位(mm)</p>
+          <p className={styles.liquidTitle}>
+            {desc}({unit})
+          </p>
         </div>
 
         <div

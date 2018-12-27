@@ -15,6 +15,8 @@ import {
   fetchAlarmInfoTypes,
   querySmokeList,
   getDeviceDataHistory,
+  getTankMessageList,
+  getTankMessageData,
 } from '../services/bigPlatform/monitor';
 
 const DEFAULT_CODE = 500;
@@ -60,6 +62,15 @@ export default {
       total: 0,
     },
     deviceDataHistory: [],
+    // 储罐统计
+    tankData: {
+      tankNum: 0,
+      alarmSensor: { liquidLevel: 0, temperature: 0, pressure: 0 },
+      lostSensor: { liquidLevel: 0, temperature: 0, pressure: 0 },
+    },
+    tankDataList: {
+      list: [],
+    },
   },
 
   effects: {
@@ -252,6 +263,23 @@ export default {
         error();
       }
     },
+    // 储罐统计
+    *fetchTankMessageData({ payload }, { call, put }) {
+      const response = yield call(getTankMessageData, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveTankData', payload: response.data });
+      }
+    },
+    // 储罐下钻
+    *fetchTankMessageList({ payload }, { call, put }) {
+      const response = yield call(getTankMessageList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveTankMessageList',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -424,6 +452,17 @@ export default {
       return {
         ...state,
         deviceDataHistory: payload.list,
+      };
+    },
+    saveTankData(state, action) {
+      return { ...state, tankData: action.payload };
+    },
+    saveTankMessageList(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        tankDataList: payload,
       };
     },
   },
