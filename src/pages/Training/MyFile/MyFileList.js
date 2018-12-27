@@ -374,6 +374,9 @@ export default class myFileList extends PureComponent {
       user: {
         currentUser: { userId },
       },
+      myFile: {
+        data: { list },
+      },
     } = this.props;
 
     //面包屑
@@ -406,9 +409,12 @@ export default class myFileList extends PureComponent {
         }
         extraContent={
           <div>
-            <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
-              综合分析报告
-            </Button>
+            {list &&
+              list.length > 0 && (
+                <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
+                  综合分析报告
+                </Button>
+              )}
           </div>
         }
       >
