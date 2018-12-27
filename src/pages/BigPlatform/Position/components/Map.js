@@ -1,9 +1,17 @@
 import React, { PureComponent } from 'react';
 
+import PersonIcon from './PersonIcon';
 import styles from './Map.less';
 import bg from '../imgs/mapOuter.png';
 import mapBg from '../imgs/map.png';
-import PersonIcon from './PersonIcon';
+import cameraIcon from '../imgs/camera.png';
+
+const SECTIONS = ['canteen', 'fire', 'play', 'lab'];
+const SELECTED = 2;
+const CAMERAS = [
+  { id: 0, top: 3, right: 3 },
+  { id: 1, top: '45%', right: 3 },
+];
 
 export default class Map extends PureComponent {
   render() {
@@ -31,11 +39,24 @@ export default class Map extends PureComponent {
             />
           ))}
           <div className={styles.sections}>
-            <div className={styles.canteen} />
-            <div className={styles.fire} />
-            <div className={styles.play} onClick={e => handleAlarmSectionClick()} />
-            <div className={styles.lab} />
+            {SECTIONS.map((sec, i) => {
+              const isAlarm = i === SELECTED;
+              return (
+                <div
+                  key={sec}
+                  className={styles[isAlarm ? `${sec}Alarm` : sec]}
+                  onClick={isAlarm ? e => handleAlarmSectionClick() : null}
+                />
+              );
+            })}
           </div>
+          {CAMERAS.map(({ id, top, right }) => (
+            <span
+              key={id}
+              className={styles.camera}
+              style={{ backgroundImage: `url(${cameraIcon})`, top, right }}
+            />
+          ))}
         </div>
       </div>
     );

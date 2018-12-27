@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 
 import styles from './Info.less';
-import infoBg from '../imgs/information.png';
+// import infoBg from '../imgs/information.png';
 
 function InfoItem(props) {
   const { time, person, phone, desc } = props;
@@ -19,7 +19,8 @@ export default function Info(props) {
   const { data } = props;
 
   return (
-    <div className={styles.container} style={{ backgroundImage: `url(${infoBg})` }}>
+    // <div className={styles.container} style={{ backgroundImage: `url(${infoBg})` }}>
+    <div className={styles.container}>
       {data.map(({ id, time, desc }, i) => (
         <InfoItem
           key={i}

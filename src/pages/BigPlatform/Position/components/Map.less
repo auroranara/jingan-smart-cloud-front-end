@@ -41,15 +41,21 @@
   position: absolute;
 }
 
+@red: rgba(69, 13, 27, 0.5);
+
 .canteen:extend(.room) {
   left: 0;
   top: 0;
 }
-
 .fire:extend(.room) {
   width: 63%;
   top: 0;
   right: 0;
+}
+
+.play:extend(.room) {
+  left: 0;
+  bottom: 0;
 }
 
 .lab:extend(.room) {
@@ -58,13 +64,18 @@
   right: 0;
 }
 
-.canteen:hover, .fire:hover, .lab:hover {
+.canteenAlarm:extend(.canteen), .fireAlarm:extend(.fire), .playAlarm:extend(.play), .labAlarm:extend(.lab) {
+  cursor: pointer;
+  background-color: @red;
+}
+
+.canteen:hover, .fire:hover, .play:hover, .lab:hover {
   background-color: rgba(2, 47, 90, 0.5);
 }
 
-.play:extend(.room) {
-  left: 0;
-  bottom: 0;
-  cursor: pointer;
-  background-color: rgba(69, 13, 27, 0.5);
+.camera {
+  width: 32px;
+  height: 32px;
+  background-size: 100% 100%;
+  position: absolute;
 }

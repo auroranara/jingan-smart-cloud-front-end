@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
+
 import Section from '@/pages/BigPlatform/NewUnitFireControl/Section';
 import pendingIcon from '@/assets/pending.png';
-// 引入样式文件
+import cameraIcon from '../../imgs/camera.png';
 import styles from './index.less';
 
 // 根据状态获取图片
@@ -29,7 +30,7 @@ const Alarm = function({
 
   return (
     <div className={styles.alarm}>
-      <div className={styles.alarmItem} onClick={() => {onClick(type, data);}}>
+      <div className={styles.alarmItem} onClick={() => { onClick(type, data); }}>
         <div className={styles.itemLine}>
           <div className={styles.label}>报警信息：</div>
           <div className={styles.value}>{info}</div>
@@ -43,6 +44,7 @@ const Alarm = function({
           <div className={styles.value}>{time}</div>
         </div>
         <div className={styles.icon} style={{ backgroundImage: `url(${statusIcon[status]})` }} />
+        <span className={styles.camera} style={{ backgroundImage: `url(${cameraIcon})` }} />
       </div>
     </div>
   );
