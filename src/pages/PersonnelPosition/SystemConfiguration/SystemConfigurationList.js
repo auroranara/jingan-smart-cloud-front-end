@@ -28,9 +28,9 @@ const {
 } = codes
 
 // 获取无数据
-const getEmptyData = () => {
+/* const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
+}; */
 
 @connect(({ user, personnelPosition, loading }) => ({
   user,
@@ -56,7 +56,7 @@ export default class SystemConfiguration extends PureComponent {
 
 
 
-  // 获取列表
+  // 获取系统配置列表
   fetchList = (actions) => {
     const { dispatch } = this.props
     dispatch({
@@ -139,6 +139,35 @@ export default class SystemConfiguration extends PureComponent {
       payload: {
         pageNum,
         pageSize,
+      },
+    })
+  }
+
+  // 点击搜索
+  handleQuery = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props
+    const value = getFieldValue('searchName')
+    this.fetchList({
+      payload: {
+        pageNum: 1,
+        pageSize: defaultPageSize,
+        companyName: value || null,
+      },
+    })
+  }
+
+  // 点击重置
+  handleResetQuery = () => {
+    const {
+      form: { resetFields },
+    } = this.props
+    resetFields(['searchName'])
+    this.fetchList({
+      payload: {
+        pageNum: 1,
+        pageSize: defaultPageSize,
       },
     })
   }
@@ -299,8 +328,8 @@ export default class SystemConfiguration extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-
       >
+        {/* 删选栏 */}
         <Card>
           <Form>
             <Row gutter={16}>
@@ -310,59 +339,15 @@ export default class SystemConfiguration extends PureComponent {
                 )}
               </Col>
               <Col span={8}>
-                <Button type="primary">查询</Button>
+                <Button type="primary" onClick={this.handleQuery}>查询</Button>
+                <Button onClick={this.handleResetQuery} style={{ marginLeft: '10px' }}>重置</Button>
                 <Button type="primary" disabled={!addAuth} onClick={this.handleToAdd} style={{ marginLeft: '10px' }}>新增</Button>
               </Col>
             </Row>
           </Form>
         </Card>
+        {/* 表格 */}
         <Card className={styles.systemConfigurationList}>
-          {/* <InfiniteScroll
-            initialLoad={false}
-            pageStart={0}
-            loadMore={() => {
-              // 防止多次加载
-              !isLast && !listLoading && this.handleLoadMore();
-            }}
-            hasMore={!isLast}
-            loader={
-              <div className="loader" key={0}>
-                {listLoading && (
-                  <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                    <Spin />
-                  </div>
-                )}
-              </div>
-            }
-          >
-            <List
-              grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-              dataSource={list}
-              renderItem={item => {
-                const {
-                  id,
-                  companyName, // 企业名称
-                  sysName,  // 系统名称
-                  sysKey,  // 注册号
-                } = item
-                return (
-                  <ListItem key={id}>
-                    <Card
-                      title={companyName}
-                      actions={[
-                        <span disabled={!editAuth} onClick={editAuth ? () => this.handleToEdit(item) : null}>编辑</span>,
-                        <span disabled={!deleteAuth} onClick={deleteAuth ? () => this.handleToDelete(item) : null}>删除</span>,
-                      ]}
-                      className={styles.card}
-                    >
-                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>系统名称：{sysName || getEmptyData()}</Ellipsis>
-                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>注册号：{sysKey || getEmptyData()}</Ellipsis>
-                    </Card>
-                  </ListItem>
-                )
-              }}
-            />
-          </InfiniteScroll> */}
           <Table
             rowKey="id"
             loading={listLoading}
@@ -383,6 +368,7 @@ export default class SystemConfiguration extends PureComponent {
             }}
           />
         </Card>
+        {/* 添加和编辑弹窗 */}
         <Modal
           title={isAdd ? '新增系统配置' : '编辑系统配置'}
           visible={modalVisible}
@@ -429,6 +415,7 @@ export default class SystemConfiguration extends PureComponent {
             </FormItem>
           </Form>
         </Modal>
+        {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"
           loading={companyLoading}
