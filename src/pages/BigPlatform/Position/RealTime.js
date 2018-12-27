@@ -5,9 +5,13 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import RealTimeMonitor from './components/RealTimeMonitor';
 import AlarmView from './components/AlarmView';
 import { stringify } from 'qs';
+import moment from 'moment';
+import { notification } from 'antd';
 
 import styles from './RealTime.less';
-import { Map, Info, PersonInfo, AlarmMsg } from './components/Components';
+import sosIcon from './imgs/sos.png';
+import alarmInfoIcon from './imgs/alarmInfo.png';
+import { Map, Info, PersonInfo, AlarmMsg, AlarmHandle, VideoPlay } from './components/Components';
 
 const options = {
   pingTimeout: 30000,
@@ -17,7 +21,14 @@ const options = {
 };
 
 export default class WbTest extends PureComponent {
-  state = { x: 200, y: 400 };
+  state = {
+    isSOS: false,
+    personInfoVisible: false,
+    sosHandleVisible: false,
+    alarmMsgVisible: false,
+    alarmHandleVisible: false,
+    videoVisible: false,
+  };
 
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
@@ -54,10 +65,57 @@ export default class WbTest extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+
+    notification.warning({
+      // key: id,
+      className: styles.note,
+      placement: 'bottomLeft',
+      message: '报警提示 SOS求助',
+      description: (
+        <span
+          className={styles.desc}
+          onClick={e => {
+            this.handleClickPerson(0, true);
+            // notification.close(id);
+          }}
+        >
+          {`${moment().format('HH:mm:ss')} 张三【13025142568】发起求救信号，请及时支援！`}
+        </span>
+      ),
+      duration: null,
+    });
   }
 
+  handleClickPerson = (i, isSOS) => {
+    this.setState({ personInfoVisible: true, isSOS });
+  };
+
+  handleSOS = () => {
+    this.setState({ personInfoVisible: false, sosHandleVisible: true });
+  };
+
+  handleAlarm = () => {
+    this.setState({ alarmMsgVisible: false, alarmHandleVisible: true });
+  };
+
+  handleClose = prop => {
+    this.setState({ [`${prop}Visible`]: false });
+  };
+
   render() {
-    const { x, y } = this.state;
+    const {
+      isSOS,
+      personInfoVisible,
+      sosHandleVisible,
+      alarmMsgVisible,
+      alarmHandleVisible,
+      videoVisible,
+    } = this.state;
+
+    const positions = [
+      { xarea: '20%', yarea: '60%', isSOS: true },
+      { xarea: '20%', yarea: '30%', isSOS: false },
+    ]
 
     return (
       <BigPlatformLayout
@@ -77,18 +135,47 @@ export default class WbTest extends PureComponent {
             <AlarmView className={styles.leftBottom} />
           </div>
           <div className={styles.right}>
-            <Map x="200" y="200" />
+            <Map
+              data={positions}
+              handleClickPerson={this.handleClickPerson}
+            />
             <Info />
             <PersonInfo
-              isSOS
+              isSOS={isSOS}
+              visible={personInfoVisible}
               name="张三丰"
               phone="13288888888"
               code="0001"
               department="管理部"
               section="5号楼3层办公区"
+              handleSOS={() => this.handleSOS()}
+              handleClose={() => this.handleClose('personInfo')}
             />
-            <AlarmMsg />
+            <AlarmMsg
+              visible={alarmMsgVisible}
+              section="五号楼3层实验室"
+              type="越界"
+              time="2018-12-22 10:30:00"
+              handleAlarm={() => this.handleAlarm()}
+              handleClose={() => this.handleClose('alarmMsg')}
+            />
+            <AlarmHandle
+              title="SOS报警处理"
+              visible={sosHandleVisible}
+              prefix={<span className={styles.sos} style={{ backgroundImage: `url(${sosIcon})` }} />}
+              handleSubmit={() => this.handleClose('sosHandle')}
+              handleClose={() => this.handleClose('sosHandle')}
+            />
+            <AlarmHandle
+              type={1}
+              title="报警处理"
+              visible={alarmHandleVisible}
+              prefix={<span className={styles.alarmInfo} style={{ backgroundImage: `url(${alarmInfoIcon})` }} />}
+              handleSubmit={() => this.handleClose('alarmHandle')}
+              handleClose={() => this.handleClose('alarmHandle')}
+            />
           </div>
+          <VideoPlay visible={videoVisible} showList={false} />
         </div>
       </BigPlatformLayout>
     );
