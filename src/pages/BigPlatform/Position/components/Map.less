@@ -1,0 +1,69 @@
+.outer {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-size: 100% 100%;
+}
+
+.desc {
+  font-size: 18px;
+  margin: 20px 0 20px 5%;
+}
+
+.red {
+  color: rgb(213, 4, 9);
+}
+
+.alarm:extend(.red) {
+  margin: 0 50px;
+}
+
+.map {
+  width: 75%;
+  height: 85%;
+  margin-left: 5%;
+  position: relative;
+  background-size: 100% 100%;
+}
+
+.sections {
+  width: 86%;
+  height: 66%;
+  position: absolute;
+  top: 17%;
+  right: 2px;
+  // background: rgba(0, 0, 0, 0.5);
+}
+
+.room {
+  width: 36.5%;
+  height: 49%;
+  position: absolute;
+}
+
+.canteen:extend(.room) {
+  left: 0;
+  top: 0;
+}
+
+.fire:extend(.room) {
+  width: 63%;
+  top: 0;
+  right: 0;
+}
+
+.lab:extend(.room) {
+  width: 63%;
+  bottom: 0;
+  right: 0;
+}
+
+.canteen:hover, .fire:hover, .lab:hover {
+  background-color: rgba(2, 47, 90, 0.5);
+}
+
+.play:extend(.room) {
+  left: 0;
+  bottom: 0;
+  background-color: rgba(69, 13, 27, 0.5);
+}
