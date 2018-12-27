@@ -27,6 +27,8 @@ import MaintenanceDrawer from './Section/MaintenanceDrawer';
 import DrawerOfFireAlarm from './Section/DrawerOfFireAlarm';
 import MaintenanceCheckDrawer from './Section/MaintenanceCheckDrawer';
 import FaultMessageDrawer from './Section/FaultMessageDrawer';
+import MaintenanceMsgDrawer from './Section/MaintenanceMsgDrawer';
+import AlarmDynamicMsgDrawer from './Section/AlarmDynamicMsgDrawer';
 
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -90,6 +92,8 @@ export default class App extends PureComponent {
     dangerDetailVisible: false, // 隐患详情抽屉可见
     // 点位巡查抽屉是否显示
     pointInspectionDrawerVisible: false,
+    maintenanceMsgDrawerVisible: false,
+    alarmDynamicMsgDrawerVisible: false,
     // 点位巡查抽屉的选中时间
     pointInspectionDrawerSelectedDate: moment().format('YYYY-MM-DD'),
     // 四色图贴士
@@ -105,6 +109,9 @@ export default class App extends PureComponent {
     checkPointName: '',
     maintenanceCheckDrawerVisible: false,
     fireAlarmTitle: '',
+    maintenanceTitle: '维保处理动态',
+    processIds: [],
+    fireProcessIds: [],
   };
 
   componentDidMount() {
@@ -675,7 +682,7 @@ export default class App extends PureComponent {
     this.fetchPointInspectionList(date);
   };
 
-  handleFetchAlarmHandle = (dataId = 0, historyType = 0) => {
+  handleFetchAlarmHandle = (dataId, historyType) => {
     const {
       dispatch,
       match: {
@@ -716,12 +723,31 @@ export default class App extends PureComponent {
     this.handleFetchWorkOrder(undefined, id);
   };
 
+  handleWorkOrderCardClickMsg = ids => {
+    this.handleDrawerVisibleChange('maintenanceMsg');
+    this.setState({ processIds: ids });
+    this.fetchFaultDetail(ids[0]);
+  };
+
+  fetchFaultDetail = id => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchMaintenanceMsg',
+      payload: { companyId, id },
+    });
+  };
+
   handleShowAlarm = e => {
     const {
       monitor: { allCamera },
     } = this.props;
 
-    this.handleFetchAlarmHandle();
+    this.handleFetchAlarmHandle(0, 0);
     this.setState({ alarmDynamicDrawerVisible: true });
     this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
   };
@@ -751,6 +777,27 @@ export default class App extends PureComponent {
     this.handleFetchAlarmHandle(dataId);
     this.setState({ alarmMessageDrawerVisible: true });
     this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
+  };
+
+  handleFireMessage = processIds => {
+    this.setState({ fireProcessIds: processIds });
+    this.handleFetchDataId(processIds[0], res => {
+      if (!res.data) return;
+      const {
+        data: { dataId },
+      } = res;
+      this.handleFetchAlarmHandle(dataId);
+      this.setState({ alarmDynamicMsgDrawerVisible: true });
+    });
+  };
+
+  handleFetchDataId = (processId, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchDataId',
+      payload: { id: processId },
+      success: callback,
+    });
   };
 
   handleFaultClick = data => {
@@ -869,9 +916,12 @@ export default class App extends PureComponent {
       faultDrawerVisible,
       fireAlarmTitle,
       faultMessage,
+      maintenanceTitle,
+      maintenanceMsgDrawerVisible,
+      processIds,
+      fireProcessIds,
+      alarmDynamicMsgDrawerVisible,
     } = this.state;
-
-    // console.log('fourColorTips', fourColorTips);
 
     return (
       <BigPlatformLayout
@@ -927,6 +977,8 @@ export default class App extends PureComponent {
                   fetchData={this.fetchMaintenanceCheck}
                   handleClickMessage={this.handleClickMessage}
                   handleFaultClick={this.handleFaultClick}
+                  handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
+                  handleFireMessage={this.handleFireMessage}
                 />
               </div>
             </div>
@@ -1087,6 +1139,28 @@ export default class App extends PureComponent {
             data={workOrderDetail}
             visible={maintenanceDrawerVisible}
             onClose={() => this.handleDrawerVisibleChange('maintenance')}
+          />
+          <MaintenanceMsgDrawer
+            title={maintenanceTitle}
+            type={drawerType}
+            data={workOrderDetail}
+            processIds={processIds}
+            visible={maintenanceMsgDrawerVisible}
+            fetchFaultDetail={this.fetchFaultDetail}
+            onClose={() => {
+              this.handleDrawerVisibleChange('maintenanceMsg');
+              setTimeout(() => {
+                this.setState({ maintenanceTitle: '维保处理动态' });
+              }, 200);
+            }}
+          />
+          <AlarmDynamicMsgDrawer
+            data={alarmHandleMessage}
+            visible={alarmDynamicMsgDrawerVisible}
+            processIds={fireProcessIds}
+            handleFetchDataId={this.handleFetchDataId}
+            handleFetchAlarmHandle={this.handleFetchAlarmHandle}
+            onClose={() => this.handleDrawerVisibleChange('alarmDynamicMsg')}
           />
           <DrawerOfFireAlarm
             visible={fireAlarmVisible}

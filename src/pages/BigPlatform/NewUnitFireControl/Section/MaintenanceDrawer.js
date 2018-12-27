@@ -22,7 +22,8 @@ export default class MaintenanceDrawer extends PureComponent {
   render() {
     const { title, type, data, ...restProps } = this.props;
     const { index } = this.state;
-    const list = Array.isArray(data) ? data : [];
+    const list2 = Array.isArray(data) ? data : [];
+    const list = [...list2, {}]
     // const list = [...Array(10).keys()].map(i => data);
     const length = list.length;
 
