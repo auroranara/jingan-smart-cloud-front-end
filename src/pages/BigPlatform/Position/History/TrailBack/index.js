@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd'
 import moment from 'moment';
+import person from '../../imgs/person.png';
 // 引入样式文件
 import styles from './index.less';
 
@@ -42,7 +43,7 @@ const defaultState = {
 /**
  * description: 模板
  * author: sunkai
- * date: 2018年12月13日
+ * date: 2018年12月25日
  */
 export default class Template extends PureComponent {
   // 组件内仓库
@@ -336,6 +337,8 @@ export default class Template extends PureComponent {
     const {
       // 样式
       style,
+      // 顶部样式
+      topStyle,
       // 背景图地址
       src,
       // 点位数据
@@ -372,14 +375,14 @@ export default class Template extends PureComponent {
     return (
       <div className={styles.container} style={style}>
         {/* canvas容器 */}
-        <div className={styles.canvasWrapper}>
+        <div className={styles.canvasWrapper} style={{ ...topStyle, backgroundImage: `url(${src})` }}>
           {data.map((item) => {
             const { x, y, time } = item;
             return (
-              <div key={time} style={{ position: 'absolute', left: x, top: y, width: 10, height: 10, borderRadius: '10px', background: '#f28800', cursor: 'pointer'  }} onClick={() => {onClick(item);}} />
+              <div key={time} style={{ position: 'absolute', left: `${x}%`, bottom: `${y}%`, width: 39, height: 13, /* border: '3px solid #0186D1' */border: '3px solid #f28800', borderRadius: '50%', cursor: 'pointer', transform: 'translateX(-50%)' }} onClick={() => {onClick(item);}} />
             );
           })}
-          {currentData && <div style={{ position: 'absolute', left: currentData.x, top: currentData.y, width: 10, height: 10, borderRadius: '10px', background: '#000', cursor: 'pointer' }} onClick={() => {onClick(currentData);}} />}
+          {currentData && <div style={{ position: 'absolute', left: `${currentData.x}%`, bottom: `${currentData.y}%`, width: 39, height: 40, background: `url(${person}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translateX(-50%)' }} onClick={() => {onClick(currentData);}} />}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
