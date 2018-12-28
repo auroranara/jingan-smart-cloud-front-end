@@ -67,30 +67,46 @@ export default class StorageTankMonitor extends PureComponent {
           {this.renderDivider(hDivider)}
           <div className={styles.statusList}>
             <div className={styles.left}>
-              <div className={styles.leftTitle}>
+              <div className={styles.leftTitle} onClick={handleStorageDrawer}>
                 <span>报警</span>
                 <span className={styles.errorText} style={{ paddingLeft: 15 }}>
                   {liquidLevel + temperature + pressure}
                 </span>
               </div>
               <div className={styles.storageCards}>
-                <StorageCard num={liquidLevel} title="液位" />
-                <StorageCard num={temperature} title="压力" />
-                <StorageCard num={pressure} title="温度" />
+                <StorageCard num={liquidLevel} title="液位" onClick={handleStorageDrawer} />
+                <StorageCard num={temperature} title="压力" onClick={handleStorageDrawer} />
+                <StorageCard num={pressure} title="温度" onClick={handleStorageDrawer} />
               </div>
             </div>
             {this.renderDivider(divider)}
             <div className={styles.right}>
-              <div className={styles.leftTitle}>
+              <div className={styles.leftTitle} onClick={handleStorageDrawer}>
                 <span>失联</span>
                 <span className={styles.errorText} style={{ paddingLeft: 15 }}>
                   {lostLiquid + lostTemp + lostPressure}
                 </span>
               </div>
+
               <div className={styles.storageCards}>
-                <StorageCard num={lostLiquid} title="液位" color="rgb(198, 193, 129)" />
-                <StorageCard num={lostTemp} title="压力" color="rgb(198, 193, 129)" />
-                <StorageCard num={lostPressure} title="温度" color="rgb(198, 193, 129)" />
+                <StorageCard
+                  num={lostLiquid}
+                  title="液位"
+                  color="rgb(198, 193, 129)"
+                  onClick={handleStorageDrawer}
+                />
+                <StorageCard
+                  num={lostTemp}
+                  title="压力"
+                  color="rgb(198, 193, 129)"
+                  onClick={handleStorageDrawer}
+                />
+                <StorageCard
+                  num={lostPressure}
+                  title="温度"
+                  color="rgb(198, 193, 129)"
+                  onClick={handleStorageDrawer}
+                />
               </div>
             </div>
           </div>
