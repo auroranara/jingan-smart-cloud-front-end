@@ -411,7 +411,7 @@ export default class ExaminationMissionAdd extends PureComponent {
     const arrRuleType = getFieldValue('arrRuleType') || [];
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '培训', name: '培训' },
+      { title: '教育培训', name: '教育培训' },
       { title: '考试任务', name: '考试任务', href: '/training/mission/list' },
       { title, name: title },
     ];
