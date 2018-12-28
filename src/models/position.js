@@ -9,12 +9,12 @@ const data = [
     z: 0,
     time: startTime,
   },
-  {
-    x: 90,
-    y: 90,
-    z: 0,
-    time: startTime+6000,
-  },
+  // {
+  //   x: 90,
+  //   y: 90,
+  //   z: 0,
+  //   time: startTime+6000,
+  // },
   {
     x: 90,
     y: 80,
@@ -45,12 +45,12 @@ const data = [
     z: 0,
     time: startTime+36000,
   },
-  {
-    x: 60,
-    y: 60,
-    z: 0,
-    time: startTime+42000,
-  },
+  // {
+  //   x: 60,
+  //   y: 60,
+  //   z: 0,
+  //   time: startTime+42000,
+  // },
   {
     x: 70,
     y: 60,

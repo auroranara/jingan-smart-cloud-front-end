@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Icon } from 'antd'
 import moment from 'moment';
 import person from '../../imgs/person.png';
@@ -304,6 +304,24 @@ export default class Template extends PureComponent {
   }
 
   /**
+   * 连线
+   */
+  renderLine({ x: x1, y: y1 }={}, { x: x2, y: y2 }={}) {
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          left: x1 > x2 ? `${x2}%`: `${x1}%`,
+          bottom: y1 > y2 ? `${y2}%`: `${y1}%`,
+          width: Math.abs(x1 - x2) > 1 ? `${Math.abs(x1 - x2)}%` : 1,
+          height: Math.abs(y1 - y2) > 1 ? `${Math.abs(y1 - y2)}%` : 1,
+          backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="green" stroke-width="1"/></svg>')`,
+         }}
+      />
+    );
+  }
+
+  /**
    * 点击时间条
    * 说明：
    * 1.重置时间条
@@ -376,13 +394,16 @@ export default class Template extends PureComponent {
       <div className={styles.container} style={style}>
         {/* canvas容器 */}
         <div className={styles.canvasWrapper} style={{ ...topStyle, backgroundImage: `url(${src})` }}>
-          {data.map((item) => {
+          {data.map((item, index) => {
             const { x, y, time } = item;
             return (
-              <div key={time} style={{ position: 'absolute', left: `${x}%`, bottom: `${y}%`, width: 39, height: 13, /* border: '3px solid #0186D1' */border: '3px solid #f28800', borderRadius: '50%', cursor: 'pointer', transform: 'translateX(-50%)' }} onClick={() => {onClick(item);}} />
+              <Fragment key={time}>
+                <div key={time} style={{ display: index === currentIndex ? 'none': undefined, position: 'absolute', left: `${x}%`, bottom: `${y}%`, /* width: 39, height: 13, border: '3px solid #0186D1', */width: 13, height: 13, backgroundColor: 'green', borderRadius: '50%', cursor: 'pointer', transform: 'translate(-50%, 50%)' }} onClick={() => {onClick(item);}} />
+                {index < data.length - 1 && this.renderLine(item, data[index+1])}
+              </Fragment>
             );
           })}
-          {currentData && <div style={{ position: 'absolute', left: `${currentData.x}%`, bottom: `${currentData.y}%`, width: 39, height: 40, background: `url(${person}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translateX(-50%)' }} onClick={() => {onClick(currentData);}} />}
+          {currentData && <div style={{ position: 'absolute', left: `${currentData.x}%`, bottom: `${currentData.y}%`, width: 39, height: 40, background: `url(${person}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translate(-50%, 6px)' }} onClick={() => {onClick(currentData);}} />}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
