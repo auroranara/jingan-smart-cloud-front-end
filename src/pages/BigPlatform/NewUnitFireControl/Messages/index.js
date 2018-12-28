@@ -25,6 +25,8 @@ export default class Messages extends PureComponent {
       handleViewDangerDetail,
       handleClickMessage,
       handleFaultClick,
+      handleFireMessage,
+      handleWorkOrderCardClickMsg,
     } = this.props;
     const {
       type,
@@ -68,7 +70,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
+            {loopNumber || loopNumber === 0 ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -98,7 +100,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
+            {loopNumber || loopNumber === 0 ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -110,10 +112,15 @@ export default class Messages extends PureComponent {
       // 火警确认
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleFireMessage(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
+          </a>
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -134,10 +141,15 @@ export default class Messages extends PureComponent {
       // 真实火警处理，误报火警处理
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleFireMessage(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
+          </a>
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -158,10 +170,16 @@ export default class Messages extends PureComponent {
       // 开始故障维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleParentChange({ maintenanceTitle: '故障处理动态' });
+              handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
+          </a>
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -175,13 +193,19 @@ export default class Messages extends PureComponent {
         </div>
       );
     } else if (type === 10 || type === 11) {
-      // 故障指派维修
+      // 故障指派维修, 维保开始维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              if (type === 10) handleParentChange({ maintenanceTitle: '故障处理动态' });
+              handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
+          </a>
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -198,10 +222,16 @@ export default class Messages extends PureComponent {
       // 完成故障维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleParentChange({ maintenanceTitle: '故障处理动态' });
+              handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
+          </a>
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -275,10 +305,15 @@ export default class Messages extends PureComponent {
       // 整改隐患, 重新整改隐患
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleViewDangerDetail({ id: messageFlag });
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
+          </a>
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -303,10 +338,15 @@ export default class Messages extends PureComponent {
       // 复查隐患
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleViewDangerDetail({ id: messageFlag });
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
+          </a>
           <div className={styles.msgTime}>{addTimeStr}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
@@ -353,7 +393,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             维保人：
-            {maintenanceUser || getEmptyData()}
+            {(Array.isArray(maintenanceUser) && maintenanceUser.join('，')) || maintenanceUser}
           </div>
           <div className={styles.msgBody}>
             消防设施评分：

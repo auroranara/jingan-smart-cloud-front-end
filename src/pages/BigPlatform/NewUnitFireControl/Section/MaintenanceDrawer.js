@@ -23,7 +23,6 @@ export default class MaintenanceDrawer extends PureComponent {
     const { title, type, data, ...restProps } = this.props;
     const { index } = this.state;
     const list = Array.isArray(data) ? data : [];
-    // const list = [...Array(10).keys()].map(i => data);
     const length = list.length;
 
     // 判断是否是维保处理，维保处理动态时，显示流程图，故障处理动态时不显示流程图
