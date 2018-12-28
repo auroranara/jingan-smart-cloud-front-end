@@ -21,10 +21,10 @@ export default function Info(props) {
   return (
     // <div className={styles.container} style={{ backgroundImage: `url(${infoBg})` }}>
     <div className={styles.container}>
-      {data.map(({ id, time, desc }, i) => (
+      {data.map(({ name, time, desc }, i) => (
         <InfoItem
           key={i}
-          person={id}
+          person={name}
           time={time}
           desc={desc}
         />

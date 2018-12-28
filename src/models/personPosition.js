@@ -1,6 +1,7 @@
 import {
   queryInitialPositions,
   postSOS,
+  postOverstep,
 } from '../services/bigPlatform/personPosition';
 
 export default {
@@ -21,7 +22,13 @@ export default {
       }
     },
     *quitSOS({ payload, callback }, { call }) {
-      const response = yield call(queryInitialPositions, payload);
+      const response = yield call(postSOS, payload);
+      const { code=500 } = response || {};
+      if (code === 200)
+        callback && callback();
+    },
+    *quitOverstep({ payload, callback }, { call }) {
+      const response = yield call(postOverstep, payload);
       const { code=500 } = response || {};
       if (code === 200)
         callback && callback();

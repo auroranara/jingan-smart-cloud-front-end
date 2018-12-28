@@ -27,11 +27,11 @@ const Alarm = function({
   onClick,
   handleShowVideo,
 }) {
-  const { id, info, type, time, status } = data;
+  const { id, cardId, info, type, time, status } = data;
 
   return (
     <div className={styles.alarm}>
-      <div className={styles.alarmItem} onClick={() => { onClick(type, data); }}>
+      <div className={styles.alarmItem} onClick={() => { onClick(type, cardId); }}>
         <div className={styles.itemLine}>
           <div className={styles.label}>报警信息：</div>
           <div className={styles.value}>{info}</div>
