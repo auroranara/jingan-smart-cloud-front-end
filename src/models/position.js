@@ -1,6 +1,7 @@
 // import { getList } from '../services/position';
 import moment from 'moment';
 const startTime = +moment('2018-12-28 12:00:00');
+const endTime = +moment('2018-12-28 12:01:00');
 // 假数据
 const data = [
   {
@@ -75,14 +76,14 @@ export default {
   namespace: 'position',
 
   state: {
-    list: data,
+    list: [],
   },
 
   effects: {
     *fetchList({ payload, callback }, { call, put }) {
       // const response = yield call(getList, payload);
-      console.log(payload);
-      const response = {code:200, data: {list: []}};
+      const { startTime: start, endTime: end } = payload;
+      const response = {code:200, data: {list: start <= startTime && end >= endTime ? data : [] }};
       if (response.code === 200) {
         yield put({ type: 'save', payload: { list: response.data.list }});
         if (callback) {

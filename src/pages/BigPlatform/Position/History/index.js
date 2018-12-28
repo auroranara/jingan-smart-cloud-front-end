@@ -38,7 +38,7 @@ export default class History extends PureComponent {
   componentDidMount() {
     const { match: { params: { id } } } = this.props;
     // 获取列表
-    // this.getList(defaultRange);
+    this.getList(defaultRange);
   }
 
   /**
@@ -51,8 +51,8 @@ export default class History extends PureComponent {
       type: 'position/fetchList',
       payload: {
         id,
-        startTime: startTime && startTime.format(timeFormat),
-        endTime: endTime && endTime.format(timeFormat),
+        startTime: startTime && +startTime,
+        endTime: endTime && +endTime,
       },
     });
   }
