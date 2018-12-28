@@ -38,7 +38,7 @@ export default class History extends PureComponent {
   componentDidMount() {
     const { match: { params: { id } } } = this.props;
     // 获取列表
-    this.getList(defaultRange);
+    // this.getList(defaultRange);
   }
 
   /**

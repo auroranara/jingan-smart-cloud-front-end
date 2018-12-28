@@ -121,7 +121,7 @@ export default class Template extends PureComponent {
       this.setFrameTimer();
       this.setState({
         currentTimeStamp: nextCurrentTimeStamp,
-        currentIndex: data[currentIndex+1] && data[currentIndex+1].time <= nextCurrentTimeStamp ? currentIndex+1 : currentIndex,
+        currentIndex: this.getCurrentIndex(nextCurrentTimeStamp, currentIndex),
       });
     }
     // // 从点击继续到现在的时间
@@ -200,10 +200,9 @@ export default class Template extends PureComponent {
   /**
    * 获取当前点位索引
    */
-  getCurrentIndex = (currentTimeStamp) => {
+  getCurrentIndex = (currentTimeStamp, currentIndex=0) => {
     const { data=[] } = this.props;
-    let currentIndex = 0;
-    for(let i=0; i<data.length; i++) {
+    for(let i=currentIndex+1; i<data.length; i++) {
       if (data[i].time <= currentTimeStamp) {
         currentIndex = i;
       }
@@ -316,6 +315,7 @@ export default class Template extends PureComponent {
           width: Math.abs(x1 - x2) > 1 ? `${Math.abs(x1 - x2)}%` : 1,
           height: Math.abs(y1 - y2) > 1 ? `${Math.abs(y1 - y2)}%` : 1,
           backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="green" stroke-width="1"/></svg>')`,
+          zIndex: 1,
          }}
       />
     );
@@ -398,12 +398,12 @@ export default class Template extends PureComponent {
             const { x, y, time } = item;
             return (
               <Fragment key={time}>
-                <div key={time} style={{ display: index === currentIndex ? 'none': undefined, position: 'absolute', left: `${x}%`, bottom: `${y}%`, /* width: 39, height: 13, border: '3px solid #0186D1', */width: 13, height: 13, backgroundColor: 'green', borderRadius: '50%', cursor: 'pointer', transform: 'translate(-50%, 50%)' }} onClick={() => {onClick(item);}} />
+                <div key={time} style={{ display: index === currentIndex ? 'none': undefined, position: 'absolute', left: `${x}%`, bottom: `${y}%`, /* width: 39, height: 13, border: '3px solid #0186D1', */width: 13, height: 13, backgroundColor: 'green', borderRadius: '50%', cursor: 'pointer', transform: 'translate(-50%, 50%)', zIndex: 2 }} onClick={() => {onClick(item);}} />
                 {index < data.length - 1 && this.renderLine(item, data[index+1])}
               </Fragment>
             );
           })}
-          {currentData && <div style={{ position: 'absolute', left: `${currentData.x}%`, bottom: `${currentData.y}%`, width: 39, height: 40, background: `url(${person}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translate(-50%, 6px)' }} onClick={() => {onClick(currentData);}} />}
+          {currentData && <div style={{ position: 'absolute', left: `${currentData.x}%`, bottom: `${currentData.y}%`, width: 39, height: 40, background: `url(${person}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translate(-50%, 6px)', zIndex: 3 }} onClick={() => {onClick(currentData);}} />}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>

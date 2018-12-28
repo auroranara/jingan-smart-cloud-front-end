@@ -75,14 +75,14 @@ export default {
   namespace: 'position',
 
   state: {
-    list: [],
+    list: data,
   },
 
   effects: {
     *fetchList({ payload, callback }, { call, put }) {
       // const response = yield call(getList, payload);
       console.log(payload);
-      const response = {code:200, data: {list: data}};
+      const response = {code:200, data: {list: []}};
       if (response.code === 200) {
         yield put({ type: 'save', payload: { list: response.data.list }});
         if (callback) {
