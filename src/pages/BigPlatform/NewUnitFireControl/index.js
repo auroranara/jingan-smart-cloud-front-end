@@ -140,6 +140,24 @@ export default class App extends PureComponent {
               this.showFireMsg(result);
             }
 
+            if (type === 1 || type === 2 || type === 3 || type === 4 || type === 5 || type === 6) {
+              // 获取消防主机监测
+              dispatch({
+                type: 'newUnitFireControl/fetchFireAlarmSystem',
+                payload: {
+                  companyId,
+                },
+              });
+            }
+
+            if (type === 14 || type === 15 || type === 16 || type === 17) {
+              // 更新当前隐患总数
+              dispatch({
+                type: 'newUnitFireControl/fetchHiddenDangerNum',
+                payload: { companyId },
+              });
+            }
+
             // 四色图隐患
             const { fourColorTips, deletedFourColorTips } = this.state;
             // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
@@ -163,8 +181,6 @@ export default class App extends PureComponent {
       } catch (error) {
         console.log('error', error);
       }
-
-      // console.log(`onmessage: ${e.data}`);
     };
     ws.onreconnect = () => {
       console.log('reconnecting...');

@@ -393,7 +393,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             维保人：
-            {maintenanceUser || getEmptyData()}
+            {(Array.isArray(maintenanceUser) && maintenanceUser.join('，')) || maintenanceUser}
           </div>
           <div className={styles.msgBody}>
             消防设施评分：
