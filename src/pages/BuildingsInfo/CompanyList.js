@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Spin, Col, Row, Select } from 'antd';
+import { Form, List, Card, Button, Input, Spin, Col, Row, Select, Cascader } from 'antd';
 // import { routerRedux } from 'dva/router';
 import { AuthLink } from '@/utils/customAuth';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -18,8 +18,8 @@ const Option = Select.Option;
 
 // 默认表单值
 const defaultFormData = {
-  name: undefined,
-  practicalAddress: undefined,
+  companyName: undefined,
+  dangerLevel: undefined,
   industryCategory: undefined,
   companyType: undefined,
   companyStatus: undefined,
@@ -46,6 +46,9 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
+// 获取根节点
+const getRootChild = () => document.querySelector('#root>div');
+
 @connect()
 export default class CompanyList extends PureComponent {
   /* 挂载后 */
@@ -55,9 +58,9 @@ export default class CompanyList extends PureComponent {
   renderForm() {
     const {
       form: { getFieldDecorator },
-      user: {
-        currentUser: { permissionCodes: codes },
-      },
+      // user: {
+      //   currentUser: { permissionCodes: codes },
+      // },
     } = this.props;
 
     return (
@@ -66,32 +69,53 @@ export default class CompanyList extends PureComponent {
           <Row gutter={30}>
             <Col span={8}>
               <FormItem>
-                {getFieldDecorator('name', {
-                  initialValue: defaultFormData.name,
+                {getFieldDecorator('companyName', {
+                  initialValue: defaultFormData.companyName,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入单位名称" />)}
+                })(<Input placeholder="请输入企业名称" />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem>
-                {getFieldDecorator('practicalAddress', {
-                  initialValue: defaultFormData.practicalAddress,
+                {getFieldDecorator('dangerLevel', {
+                  initialValue: defaultFormData.dangerLevel,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入单位地址" />)}
+                })(<Select placeholder="重大危险源等级" />)}
               </FormItem>
             </Col>
             <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('companyStatus', {
-                  initialValue: defaultFormData.companyStatus,
+                {getFieldDecorator('isOrganization', {
+                  initialValue: defaultFormData.isOrganization,
                 })(
-                  <Select allowClear placeholder="请选择单位状态">
+                  <Select allowClear placeholder="属地安监机构">
                     {[].map(item => (
                       <Option value={item.key} key={item.key}>
                         {item.value}
                       </Option>
                     ))}
                   </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                {getFieldDecorator('industryCategory', {
+                  initialValue: defaultFormData.industryCategory,
+                })(
+                  <Cascader
+                    // options={industryCategories}
+                    fieldNames={{
+                      value: 'type_id',
+                      label: 'gs_type_name',
+                      children: 'children',
+                    }}
+                    allowClear
+                    changeOnSelect
+                    notFoundContent
+                    placeholder="请选择行业类别"
+                    getPopupContainer={getRootChild}
+                  />
                 )}
               </FormItem>
             </Col>
@@ -192,7 +216,7 @@ export default class CompanyList extends PureComponent {
         data: {
           pagination: { total },
         },
-        list,
+        // list,
         isLast,
       },
     } = this.props;
