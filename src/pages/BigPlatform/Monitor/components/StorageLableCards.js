@@ -64,7 +64,7 @@ export default function StorageCards(props) {
           </p>
           <p className={styles.liquidTitle}>
             液位(
-            {dataList[0].unit || 'Mm'})
+            {dataList[0].unit || 'mm'})
             {dataList[0].status !== '0' && dataList[0].limitValue ? (
               <span>
                 ({dataList[0].condition === '1' ? '>=' : '=<'}
