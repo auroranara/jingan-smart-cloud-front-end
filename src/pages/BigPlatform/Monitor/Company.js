@@ -22,6 +22,8 @@ import AlarmHistory from './sections/AlarmHistory.js';
 
 import ElectricityCharts from './Sections/ElectricityCharts';
 
+import videoBtn from './imgs/videoBtn.png';
+
 const DELAY = 5 * 1000;
 // const WATER_DELAY = 5 * 60 * 1000;
 const CHART_DELAY = 10 * 60 * 1000;
@@ -172,6 +174,17 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+    // 获取储罐统计
+    dispatch({
+      type: 'monitor/fetchTankMessageData',
+      payload: { companyId },
+    });
+
+    // 储罐统计下钻
+    dispatch({
+      type: 'monitor/fetchTankMessageList',
+      payload: { companyId },
+    });
   };
 
   waterPolling = () => {
@@ -416,6 +429,18 @@ export default class App extends PureComponent {
         <Header title={projectName} extraContent={companyName ? companyName : '暂无信息'} />
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
+            <div
+              title="视频监控"
+              className={styles.videoBtn}
+              style={{
+                backgroundImage: `url(${videoBtn})`,
+                backgroundRepeat: 'no-repeat',
+                groundPosition: 'center center',
+                backgroundSize: '100% 100%',
+                transform: 'none',
+              }}
+              onClick={this.handleVideoShow}
+            />
             <Col span={6} style={{ height: '100%' }}>
               <div
                 style={{

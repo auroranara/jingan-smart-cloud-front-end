@@ -34,7 +34,7 @@ export default class StorageTankDrawer extends PureComponent {
     const left = (
       <div className={styles.content}>
         <div className={styles.cardContainer}>
-          <div> {this.renderTankList(list)} </div>
+          <div>{this.renderTankList(list)}</div>
         </div>
       </div>
     );
