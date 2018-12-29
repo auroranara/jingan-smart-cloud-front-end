@@ -10,8 +10,8 @@ const SECTIONS = ['canteen', 'fire', 'play', 'lab'];
 // const SELECTED = [0, 2];
 // const SELECTED = [];
 const CAMERAS = [
-  { id: 0, top: 3, right: 3 },
-  { id: 1, top: '45%', right: 3 },
+  { id: 0, top: 3, right: 3, videoKeyId: '250ch11' },
+  { id: 1, top: '45%', right: 3, videoKeyId: '250ch10' },
 ];
 
 export default class Map extends PureComponent {
@@ -34,7 +34,7 @@ export default class Map extends PureComponent {
     return (
       <div className={styles.outer} style={newStyle} {...restProps}>
         <p className={styles.desc}>
-          全厂108人
+          全厂1人
           <span className={styles.alarm}>报警：{alarm}处</span>
           <span className={styles.red}>SOS求救：{sos}起</span>
         </p>
@@ -45,7 +45,7 @@ export default class Map extends PureComponent {
               isSOS={sos}
               x={`${xarea}%`}
               y={`${yarea}%`}
-              onClick={e => handleClickPerson(cardId, sos)}
+              onClick={e => handleClickPerson(cardId)}
             />
           ))}
           <div className={styles.sections}>
@@ -55,17 +55,17 @@ export default class Map extends PureComponent {
                 <div
                   key={sec}
                   className={styles[isAlarm ? `${sec}Alarm` : sec]}
-                  onClick={isAlarm ? e => handleAlarmSectionClick() : null}
+                  onClick={isAlarm ? e => handleAlarmSectionClick('1') : null}
                 />
               );
             })}
           </div>
-          {CAMERAS.map(({ id, top, right }) => (
+          {CAMERAS.map(({ id, top, right, videoKeyId }) => (
             <span
               key={id}
               className={styles.camera}
               style={{ backgroundImage: `url(${cameraIcon})`, top, right }}
-              onClick={e => handleShowVideo()}
+              onClick={e => handleShowVideo(videoKeyId)}
             />
           ))}
         </div>

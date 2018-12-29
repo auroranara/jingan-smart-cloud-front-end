@@ -14,9 +14,8 @@ const BTN_STYLE = { color: 'rgb(4, 253, 255)', borderColor: 'rgb(4, 253, 255)', 
 
 export default function PersonInfo(props) {
   const {
-    isSOS,
     visible,
-    data: { cardId, userName: name, phone=PHONE, cardCode: code, department, areaName: section }={},
+    data: { sos: isSOS, cardId, userName: name, phone=PHONE, cardCode: code, department, areaName: section }={},
     style,
     handleClose,
     handleSOS,
@@ -39,7 +38,7 @@ export default function PersonInfo(props) {
         : <Button ghost style={BTN_STYLE} onClick={e => router.push('/big-platform/position/history/0')}>历史轨迹</Button>
       }
       <h3 className={styles.name}>
-        {name}
+        {name || '暂无名字'}
         {isSOS && <span className={styles.sos} style={{ backgroundImage: `url(${sosIcon})` }} />}
       </h3>
       <p>电话：{phone}</p>

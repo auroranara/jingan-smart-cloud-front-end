@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { Button, Icon } from 'antd';
 
 import styles from './AlarmMsg.less';
@@ -35,7 +36,7 @@ export default function AlarmMsg(props) {
       </h5>
       <p>区域名称：{section}</p>
       <p>报警类型：越界</p>
-      <p>报警时间：{time}</p>
+      <p>报警时间：{moment(time).format('YYYY-MM-DD HH:mm:ss')}</p>
     </div>
   );
 }

@@ -1,9 +1,11 @@
+import moment from 'moment';
+
 export function handlePositions(positions=[], wsData=[]) {
   if (!wsData || !wsData.length)
     return positions;
 
   const ids = wsData.map(({ cardId }) => cardId);
-  // 不包含在websocket推送中且在线的卡
+  // 筛选出不包含在websocket推送中且在线的卡，然后再加上推送的含有新状态的卡，即为新的人员位置及状态列表
   const pos = positions.filter(({ cardId, onlineStatus }) => !ids.includes(cardId) && Number.parseInt(onlineStatus, 10));
   return [...pos, ...wsData];
 }
@@ -35,10 +37,31 @@ export function getAlarmList(alarmList, wsData, prop, callback) {
   return [...alarmList, ...newAlarms];
 };
 
-export function getSOSItem(cardId, list) {
+export function getPersonInfoItem(cardId, list) {
   return list.find(item => item.cardId === cardId);
 }
 
 export function getOverstepItem(cardId, list) {
   return list.find(item => item.cardId === cardId);
+}
+
+export function getAlarmCards(list) {
+  const cards = list.map(({ cardId, uptime, sos, overstep, areaName }) => ({
+    cardId,
+    id: `${cardId}-${uptime}`,
+    type: sos ? 2 : 1,
+    info: areaName,
+    time: moment(uptime).format('YYYY-MM-DD HH:mm:ss'),
+    status: 1,
+  }));
+
+  cards.sort((c, c1) => c1.uptime - c.uptime);
+  return cards;
+}
+
+export function getAreaId(wsData) {
+  const alarm = wsData.find(({ sos, overstep }) => sos || overstep);
+  if (alarm)
+    return alarm.areaId;
+  return '';
 }

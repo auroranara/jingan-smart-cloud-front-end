@@ -21,6 +21,30 @@ const typeLabel = {
   '5': '长时间静止',
 };
 
+// const DATA = [
+//   {
+//     id: 1,
+//     info: '东厂区建筑物A',
+//     type: 1,
+//     time: '2018-12-25 12:00:00',
+//     status: 1,
+//   },
+//   {
+//     id: 2,
+//     info: '东厂区建筑物A',
+//     type: 2,
+//     time: '2018-12-25 12:00:00',
+//     status: 1,
+//   },
+//   {
+//     id: 3,
+//     info: '东厂区建筑物A',
+//     type: 3,
+//     time: '2018-12-25 12:00:00',
+//     status: 1,
+//   },
+// ];
+
 // 报警
 const Alarm = function({
   data,
@@ -28,6 +52,7 @@ const Alarm = function({
   handleShowVideo,
 }) {
   const { id, cardId, info, type, time, status } = data;
+  // console.log(data);
 
   return (
     <div className={styles.alarm}>
@@ -63,32 +88,6 @@ const Alarm = function({
  * date: 2018年12月26日
  */
 export default class AlarmView extends PureComponent {
-  // 组件内仓库
-  state = {
-
-  }
-
-  /**
-   * 挂载后
-   */
-  componentDidMount() {
-
-  }
-
-  /**
-   * 更新后
-   */
-  componentDidUpdate() {
-
-  }
-
-  /**
-   * 销毁前
-   */
-  componentWillUnmount() {
-
-  }
-
   /**
    * 修改滚动条颜色
    */
@@ -115,29 +114,7 @@ export default class AlarmView extends PureComponent {
       // 容器样式
       style,
       // 数据源
-      data=[
-        {
-          id: 1,
-          info: '东厂区建筑物A',
-          type: 1,
-          time: '2018-12-25 12:00:00',
-          status: 1,
-        },
-        {
-          id: 2,
-          info: '东厂区建筑物A',
-          type: 2,
-          time: '2018-12-25 12:00:00',
-          status: 1,
-        },
-        {
-          id: 3,
-          info: '东厂区建筑物A',
-          type: 3,
-          time: '2018-12-25 12:00:00',
-          status: 1,
-        },
-      ],
+      data=[],
       // 点击事件
       onClick,
       handleShowVideo,
