@@ -76,31 +76,8 @@ export default class CompanyList extends PureComponent {
               </FormItem>
             </Col>
             <Col span={8}>
-              <FormItem>
-                {getFieldDecorator('dangerLevel', {
-                  initialValue: defaultFormData.dangerLevel,
-                  getValueFromEvent: e => e.target.value.trim(),
-                })(<Select placeholder="重大危险源等级" />)}
-              </FormItem>
-            </Col>
-            <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('isOrganization', {
-                  initialValue: defaultFormData.isOrganization,
-                })(
-                  <Select allowClear placeholder="属地安监机构">
-                    {[].map(item => (
-                      <Option value={item.key} key={item.key}>
-                        {item.value}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('industryCategory', {
+                {getFieldDecorator({
                   initialValue: defaultFormData.industryCategory,
                 })(
                   <Cascader
@@ -130,6 +107,9 @@ export default class CompanyList extends PureComponent {
                 </Button>
                 <Button onClick={this.handleClickToReset} style={{ marginRight: '16px' }}>
                   重置
+                </Button>
+                <Button onClick={this.handleClickToReset} style={{ marginRight: '16px' }}>
+                  新增
                 </Button>
               </FormItem>
             </Col>
@@ -198,7 +178,6 @@ export default class CompanyList extends PureComponent {
                   </Col>
                   <Col span={8} style={{ cursor: 'pointer' }}>
                     <span className={styles.quantity}>{item.serviceCompanyCount}</span>
-                    <span className={styles.servicenum}>服务单位数</span>
                   </Col>
                 </Row>
               </Card>
@@ -210,27 +189,13 @@ export default class CompanyList extends PureComponent {
   }
 
   render() {
-    const {
-      loading,
-      maintenanceCompany: {
-        data: {
-          pagination: { total },
-        },
-        // list,
-        isLast,
-      },
-    } = this.props;
+    const { loading } = this.props;
 
     return (
       <PageHeaderLayout
         title="维保单位管理"
         breadcrumbList={breadcrumbList}
-        content={
-          <div>
-            维保单位总数：
-            {total}{' '}
-          </div>
-        }
+        content={<div>单位总数： </div>}
       >
         {this.renderForm()}
         <InfiniteScroll
@@ -240,7 +205,7 @@ export default class CompanyList extends PureComponent {
             // 防止多次加载
             !loading && this.handleLoadMore();
           }}
-          hasMore={!isLast}
+          // hasMore={!isLast}
           loader={
             <div className="loader" key={0}>
               {loading && (

@@ -1409,6 +1409,26 @@ module.exports = env => {
                 },
               ],
             },
+            /* 建筑物信息 */
+            {
+              name: 'buildingsInfo',
+              path: '/personnel-position/buildings-info',
+              code: 'personnelPosition.buildingsInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/buildings-info',
+                  redirect: '/personnel-position/buildings-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.buildingsInfo.listView',
+                  path: '/personnel-position/buildings-info/list',
+                  component: './PersonnelPosition/BuildingsInfo/CompanyList',
+                },
+              ],
+            },
           ],
         },
       ],
