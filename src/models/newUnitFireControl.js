@@ -55,6 +55,8 @@ import {
   queryCheckUsers,
   queryFault,
   fetchHiddenDangerDetail,
+  queryWorkOrderMsg,
+  queryDataId,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -837,6 +839,25 @@ export default {
           payload: response.data,
         });
         if (success) success(response);
+      } else if (error) {
+        error();
+      }
+    },
+    // 消息故障详情
+    *fetchMaintenanceMsg({ payload }, { call, put }) {
+      const response = yield call(queryWorkOrderMsg, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWorkOrderDetail',
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+        });
+      }
+    },
+    // 根据processId查dataId
+    *fetchDataId({ payload, success, error}, { call, put }) {
+      const response = yield call(queryDataId, payload);
+      if (response && response.code === 200) {
+        if(success) success(response);
       } else if (error) {
         error();
       }

@@ -399,3 +399,13 @@ export async function fetchHiddenDangerDetail({ id }) {
 export async function fetchPatrolDangers(params) {
   return request(`/acloud_new/v2/hdf/getOncePatrolDangers?${stringify(params)}`)
 }
+
+// 消息故障详情
+export async function queryWorkOrderMsg(params) {
+  return request(`${URL_PREFIX}/nanxiao/fire/getFaultForMaintenanceMessage?${stringify(params)}`);
+}
+
+// 根据processId查dataId
+export async function queryDataId({ id }) {
+  return request(`${URL_PREFIX}/fireManage/fireProcess/${id}`);
+}

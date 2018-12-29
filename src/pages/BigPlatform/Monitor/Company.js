@@ -4,9 +4,11 @@ import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
 import styles from './Company.less';
 import FcModule from '../FireControl/FcModule';
-import VideoSection from './sections/VideoSection';
+// import VideoSection from './sections/VideoSection';
 import GasSection from './sections/GasSection';
 import GasBackSection from './sections/GasBackSection';
+import StorageTankMonitor from './sections/StorageTankMonitor';
+import StorageTankDrawer from './sections/StorageTankDrawer';
 import VideoPlay from './sections/VideoPlay';
 import { ALL } from './components/gasStatus';
 
@@ -42,6 +44,7 @@ export default class App extends PureComponent {
     chartSelectVal: '',
     selectedDeviceType: 1,
     smokeStatus: ALL,
+    storageDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -103,6 +106,18 @@ export default class App extends PureComponent {
     dispatch({
       type: 'monitor/fetchRealTimeAlarm',
       payload: { companyId, overFlag: 0 },
+    });
+
+    // 获取储罐统计
+    dispatch({
+      type: 'monitor/fetchTankMessageData',
+      payload: { companyId },
+    });
+
+    // 储罐统计下钻
+    dispatch({
+      type: 'monitor/fetchTankMessageList',
+      payload: { companyId },
     });
 
     // 轮询
@@ -344,6 +359,11 @@ export default class App extends PureComponent {
     });
   };
 
+  // 查看储罐监测
+  handleStorageDrawer = () => {
+    this.setState({ storageDrawerVisible: true });
+  };
+
   render() {
     // 从props中获取企业名称
     const {
@@ -368,6 +388,8 @@ export default class App extends PureComponent {
         errorDevice,
         smokeCount,
         smokeList,
+        tankData,
+        tankDataList,
         deviceDataHistory,
       },
       unitFireControl: { fireAlarmSystem },
@@ -383,6 +405,7 @@ export default class App extends PureComponent {
       waterSelectVal,
       chartSelectVal,
       selectedDeviceType,
+      storageDrawerVisible,
     } = this.state;
 
     // let companyName = '暂无信息';
@@ -415,13 +438,17 @@ export default class App extends PureComponent {
                   />
                 </div>
                 <div className={styles.videoMonitorContainer}>
-                  <VideoSection
+                  <StorageTankMonitor
+                    tankData={tankData}
+                    handleStorageDrawer={this.handleStorageDrawer}
+                  />
+                  {/* <VideoSection
                     data={allCamera}
                     showVideo={this.handleVideoShow}
                     style={{ transform: 'none' }}
                     backTitle="更多"
                     handleBack={() => this.handleVideoShow()}
-                  />
+                  /> */}
                 </div>
               </div>
               <div
@@ -513,6 +540,15 @@ export default class App extends PureComponent {
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
+        />
+        <StorageTankDrawer
+          tankDataList={tankDataList}
+          visible={storageDrawerVisible}
+          onClose={() => {
+            this.setState({
+              storageDrawerVisible: false,
+            });
+          }}
         />
       </div>
     );

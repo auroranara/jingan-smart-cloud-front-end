@@ -358,33 +358,35 @@ export default class ExaminationMissionList extends PureComponent {
         title="考试任务"
         breadcrumbList={breadcrumbList}
         content={
-          !companyId && (
-            <div>
-              <Input
-                disabled
-                style={{ width: '300px' }}
-                placeholder={'请选择单位'}
-                value={this.companyName}
-              />
-              <Button
-                type="primary"
-                style={{ marginLeft: '5px' }}
-                onClick={() => {
-                  this.setState({ visible: true });
-                  const payload = { pageSize: companyPageSize, pageNum: 1 };
-                  this.fetchCompany({ payload });
-                }}
-              >
-                选择单位
-              </Button>
-              {this.companyId && (
-                <div style={{ marginTop: '8px' }}>
-                  考试任务总数：
-                  {total}
-                </div>
-              )}
-            </div>
-          )
+          <div>
+            {!companyId && (
+              <div style={{ marginBottom: '8px' }}>
+                <Input
+                  disabled
+                  style={{ width: '300px' }}
+                  placeholder={'请选择单位'}
+                  value={this.companyName}
+                />
+                <Button
+                  type="primary"
+                  style={{ marginLeft: '5px' }}
+                  onClick={() => {
+                    this.setState({ visible: true });
+                    const payload = { pageSize: companyPageSize, pageNum: 1 };
+                    this.fetchCompany({ payload });
+                  }}
+                >
+                  选择单位
+                </Button>
+              </div>
+            )}
+            {this.companyId && (
+              <div>
+                考试任务总数：
+                {total}
+              </div>
+            )}
+          </div>
         }
       >
         {this.companyId ? (
