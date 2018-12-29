@@ -52,7 +52,8 @@ export default function StorageCards(props) {
             {dataList[0].value || '---'}
           </p>
           <p className={styles.liquidTitle}>
-            液位(mm)
+            液位(
+            {dataList[0].unit || 'mm'})
             {dataList[0].limitValue ? (
               <span>
                 ({dataList[0].condition === '1' ? '>' : '<'}
@@ -76,7 +77,8 @@ export default function StorageCards(props) {
             {dataList[1].value || '---'}
           </p>
           <p className={styles.pressureTitle}>
-            压力(Pa)
+            压力(
+            {dataList[1].unit || 'pa'})
             {dataList[1].limitValue ? (
               <span>
                 ({dataList[1].condition === '1' ? '>' : '<'}
@@ -93,7 +95,8 @@ export default function StorageCards(props) {
             {dataList[2].value || '---'}
           </p>
           <p className={styles.tempTitle}>
-            温度(℃)
+            温度(
+            {dataList[2].unit || '℃'} )
             {dataList[2].limitValue ? (
               <span>
                 ({dataList[2].condition === '1' ? '>' : '<'}

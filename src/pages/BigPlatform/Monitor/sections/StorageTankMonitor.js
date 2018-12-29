@@ -38,8 +38,8 @@ export default class StorageTankMonitor extends PureComponent {
       handleStorageDrawer,
       tankData: {
         tankNum,
-        alarmSensor: { liquidLevel, temperature, pressure },
-        lostSensor: { liquidLevel: lostLiquid, temperature: lostTemp, pressure: lostPressure },
+        alarmSensor: { liquidLevel, pressure, temperature },
+        lostSensor: { liquidLevel: lostLiquid, pressure: lostPressure, temperature: lostTemp },
       },
     } = this.props;
     return (
@@ -75,8 +75,8 @@ export default class StorageTankMonitor extends PureComponent {
               </div>
               <div className={styles.storageCards}>
                 <StorageCard num={liquidLevel} title="液位" onClick={handleStorageDrawer} />
-                <StorageCard num={temperature} title="压力" onClick={handleStorageDrawer} />
-                <StorageCard num={pressure} title="温度" onClick={handleStorageDrawer} />
+                <StorageCard num={pressure} title="压力" onClick={handleStorageDrawer} />
+                <StorageCard num={temperature} title="温度" onClick={handleStorageDrawer} />
               </div>
             </div>
             {this.renderDivider(divider)}
@@ -96,13 +96,13 @@ export default class StorageTankMonitor extends PureComponent {
                   onClick={handleStorageDrawer}
                 />
                 <StorageCard
-                  num={lostTemp}
+                  num={lostPressure}
                   title="压力"
                   color="rgb(198, 193, 129)"
                   onClick={handleStorageDrawer}
                 />
                 <StorageCard
-                  num={lostPressure}
+                  num={lostTemp}
                   title="温度"
                   color="rgb(198, 193, 129)"
                   onClick={handleStorageDrawer}
