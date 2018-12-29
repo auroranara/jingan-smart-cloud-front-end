@@ -1,6 +1,6 @@
 import React from 'react';
 import line from '../imgs/line.png';
-// import { Col, Row } from 'antd';
+import { Col } from 'antd';
 import styles from './StorageLableCards.less';
 import Ellipsis from 'components/Ellipsis';
 
@@ -29,21 +29,25 @@ export default function StorageCards(props) {
   return (
     <div className={styles.card}>
       <div className={styles.top}>
-        <span className={styles.dot} />
-
-        <span className={styles.topTitle}>
-          储罐ID：
-          <Ellipsis tooltip length={10}>
-            {title}
-          </Ellipsis>
-        </span>
-
-        <span className={styles.topNum}>
-          位号：
-          <Ellipsis tooltip length={8}>
-            {num}
-          </Ellipsis>
-        </span>
+        <Col span={1}>
+          <span className={styles.dot} />
+        </Col>
+        <Col span={15}>
+          <span className={styles.topTitle}>
+            储罐ID：
+            <Ellipsis tooltip length={10}>
+              {title}
+            </Ellipsis>
+          </span>
+        </Col>
+        <Col span={7} style={{ textAlign: 'right' }}>
+          <span className={styles.topNum}>
+            位号：
+            <Ellipsis tooltip length={6}>
+              {num}
+            </Ellipsis>
+          </span>
+        </Col>
       </div>
 
       <div className={styles.bottom}>
@@ -60,8 +64,8 @@ export default function StorageCards(props) {
           </p>
           <p className={styles.liquidTitle}>
             液位(
-            {dataList[0].unit || 'mm'})
-            {dataList[0].limitValue ? (
+            {dataList[0].unit || 'Mm'})
+            {dataList[0].status !== '0' && dataList[0].limitValue ? (
               <span>
                 ({dataList[0].condition === '1' ? '>=' : '=<'}
                 {dataList[0].limitValue})
@@ -85,8 +89,8 @@ export default function StorageCards(props) {
           </p>
           <p className={styles.pressureTitle}>
             压力(
-            {dataList[1].unit || 'pa'})
-            {dataList[1].limitValue ? (
+            {dataList[1].unit || 'MPa'})
+            {dataList[1].status !== '0' && dataList[1].limitValue ? (
               <span>
                 ({dataList[1].condition === '1' ? '>=' : '=<'}
                 {dataList[1].limitValue})
@@ -104,7 +108,7 @@ export default function StorageCards(props) {
           <p className={styles.tempTitle}>
             温度(
             {dataList[2].unit || '℃'} )
-            {dataList[2].limitValue ? (
+            {dataList[2].status !== '0' && dataList[2].limitValue ? (
               <span>
                 ({dataList[2].condition === '1' ? '>=' : '=<'}
                 {dataList[2].limitValue})
