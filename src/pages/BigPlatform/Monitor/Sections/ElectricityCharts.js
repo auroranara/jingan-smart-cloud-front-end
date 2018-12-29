@@ -99,7 +99,7 @@ class ElectricityCharts extends PureComponent {
       data: {
         electricityPieces,
         chartParams: { list = [] },
-        deviceDataHistory,
+        deviceDataHistory=[],
       },
     } = this.props;
     let iaList = [],

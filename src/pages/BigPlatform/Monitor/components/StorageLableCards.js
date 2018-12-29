@@ -2,6 +2,7 @@ import React from 'react';
 import line from '../imgs/line.png';
 // import { Col, Row } from 'antd';
 import styles from './StorageLableCards.less';
+import Ellipsis from 'components/Ellipsis';
 
 export default function StorageCards(props) {
   const { num, title, dataList } = props;
@@ -17,7 +18,7 @@ export default function StorageCards(props) {
       case '-1':
         return lossColor;
       case '1':
-        return lossColor;
+        return fireColor;
       case '2':
         return fireColor;
       default:
@@ -29,13 +30,19 @@ export default function StorageCards(props) {
     <div className={styles.card}>
       <div className={styles.top}>
         <span className={styles.dot} />
+
         <span className={styles.topTitle}>
           储罐ID：
-          {title}
+          <Ellipsis tooltip length={10}>
+            {title}
+          </Ellipsis>
         </span>
+
         <span className={styles.topNum}>
           位号：
-          {num}
+          <Ellipsis tooltip length={8}>
+            {num}
+          </Ellipsis>
         </span>
       </div>
 
@@ -56,7 +63,7 @@ export default function StorageCards(props) {
             {dataList[0].unit || 'mm'})
             {dataList[0].limitValue ? (
               <span>
-                ({dataList[0].condition === '1' ? '>' : '<'}
+                ({dataList[0].condition === '1' ? '>=' : '=<'}
                 {dataList[0].limitValue})
               </span>
             ) : (
@@ -81,7 +88,7 @@ export default function StorageCards(props) {
             {dataList[1].unit || 'pa'})
             {dataList[1].limitValue ? (
               <span>
-                ({dataList[1].condition === '1' ? '>' : '<'}
+                ({dataList[1].condition === '1' ? '>=' : '=<'}
                 {dataList[1].limitValue})
               </span>
             ) : (
@@ -99,7 +106,7 @@ export default function StorageCards(props) {
             {dataList[2].unit || '℃'} )
             {dataList[2].limitValue ? (
               <span>
-                ({dataList[2].condition === '1' ? '>' : '<'}
+                ({dataList[2].condition === '1' ? '>=' : '=<'}
                 {dataList[2].limitValue})
               </span>
             ) : (
