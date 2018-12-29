@@ -82,3 +82,13 @@ export async function querySmokeList(params) {
 export async function getDeviceDataHistory(params) {
   return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
 }
+
+// 储罐统计
+export async function getTankMessageData(params) {
+  return request(`/acloud_new/v2/hdf/tankMessageList?${stringify(params)}`);
+}
+
+// 储罐统计下钻
+export async function getTankMessageList(params) {
+  return request(`/acloud_new/v2/hdf/tankMessageData?${stringify(params)}`);
+}

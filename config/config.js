@@ -29,17 +29,17 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/mock': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.ct}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
