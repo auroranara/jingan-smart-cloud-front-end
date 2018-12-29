@@ -1,12 +1,35 @@
+@cyan: rgb(4, 253, 255);
+
 .container {
   // width: 323px;
   width: 220px;
-  max-height: 100%;
-  padding: 20px;
+  max-height: 90%;
+  padding: 20px 5px;
   position: absolute;
   top: 20px;
   right: 20px;
   background-size: 100% 100%;
+  overflow: auto;
+
+  border: 1px solid @cyan;
+  border-radius: 5px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    // background: rgba(9, 103, 211, 0.5);
+    background: rgba(0, 87, 169, 1);
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 4px;
+    // background: rgba(2, 28, 64, 1);
+
+    background: rgba(2, 28, 64, 0.6);
+  }
 
   p {
     margin-bottom: 5px;
@@ -14,6 +37,6 @@
 }
 
 .time {
-  color: rgb(4, 253, 255);
+  color: @cyan;
   padding-left: 5px;
 }

@@ -13,7 +13,7 @@ import styles from './RealTime.less';
 import sosIcon from './imgs/sos.png';
 import alarmInfoIcon from './imgs/alarmInfo.png';
 import { Map, Info, PersonInfo, AlarmMsg, AlarmHandle, VideoPlay } from './components/Components';
-import { handlePositions, handleInitialInfo, handlePosInfo } from './utils';
+import { handlePositions, handlePosInfo, getAlarmList, getPersonInfoItem, getOverstepItem, getAlarmCards,getAreaId } from './utils';
 
 const options = {
   pingTimeout: 30000,
@@ -22,28 +22,56 @@ const options = {
   pingMsg: 'heartbeat',
 };
 const COMPANY_ID = 'DccBRhlrSiu9gMV7fmvizw';
+// areaId 0 大区域 1 消控室
+const VIDEO_KEY_IDS = ['250ch11', '250ch10'];
 
-const TYPES = [1, 2];
+// const TYPES = [1, 2];
 const TYPE_LABELS = {
   1: '越界',
   2: 'SOS求助',
 };
+const ALARM_DESC = {
+  1: '越界，请及时处理！',
+  2: '发起求救信号，请及时支援！',
+};
+const PHONE = '13270801232';
+
+// const INFO_DATA = {
+//   cardId: '1',
+//   userName: "波波安",
+//   phone: "13270801232",
+//   cardCode: "276",
+//   department: "管理部",
+//   areaName: "大区域",
+// };
+
+// const ALARM_MSG = {
+//   cardId: '1',
+//   section: "消控室",
+//   type: "越界",
+//   time: "2018-12-22 10:30:00",
+// };
 
 @connect(({ personPosition }) => ({ personPosition }))
 export default class WbTest extends PureComponent {
   state = {
-    positions: [],
-    posInfo: [],
-    isSOS: false,
+    positions: [], // 地图上的显示的所有点的集合
+    posInfo: [], // Info组件中传入的值，记录区域变化
+    sosCardId: '',
+    overstepCardId: '',
+    sosList: [],
+    overstepList: [],
     personInfoVisible: false,
+    personInfoSOSVisible: false,
     sosHandleVisible: false,
     alarmMsgVisible: false,
     alarmHandleVisible: false,
     videoVisible: false,
+    videoKeyId: '',
   };
 
   componentDidMount() {
-    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    // const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const { dispatch } = this.props;
     const params = {
       companyId: COMPANY_ID,
@@ -55,6 +83,7 @@ export default class WbTest extends PureComponent {
 
     // 链接webscoket
     const ws = new WebsocketHeartbeatJs({ url, ...options });
+    this.ws = ws;
     ws.onopen = () => {
       console.log('connect success');
       ws.send('heartbeat');
@@ -68,11 +97,18 @@ export default class WbTest extends PureComponent {
       try {
         const data = JSON.parse(e.data);
         console.log(data);
-        if (Array.isArray(data))
-          this.setState(({ positions, posInfo }) => ({
+        if (Array.isArray(data)) {
+          this.setState(({ positions, posInfo, sosList, overstepList }) => ({
             positions: handlePositions(positions, data),
             posInfo: handlePosInfo(posInfo, data),
+            sosList: getAlarmList(sosList, data, 'sos', this.showNotification(2)),
+            overstepList: getAlarmList(overstepList, data, 'overstep', this.showNotification(1)),
           }));
+          const areaId = getAreaId(data);
+          if (areaId && areaId !== this.lastAreaId)
+            this.handleShowVideo(VIDEO_KEY_IDS[areaId]);
+          this.lastAreaId = areaId;
+        }
       } catch (error) {
         console.log('error', error);
       }
@@ -87,81 +123,144 @@ export default class WbTest extends PureComponent {
       type: 'personPosition/fetchInitialPositions',
       payload: { companyId: COMPANY_ID },
       callback: (data=[]) => {
-        this.setState({ positions: data, posInfo: handleInitialInfo(data) });
+        this.setState({ positions: data });
       },
-    });
-
-    TYPES.forEach((t, i) => {
-      setTimeout(() => notification.warning({
-        // key: id,
-        className: styles.note,
-        placement: 'bottomLeft',
-        message: `报警提示 ${TYPE_LABELS[t]}`,
-        description: (
-          <span
-            className={styles.desc}
-            onClick={e => {
-              this.handleAlarmCardClick(t);
-              // notification.close(id);
-            }}
-          >
-            {`${moment().format('HH:mm:ss')} 张三【13025142568】发起求救信号，请及时支援！`}
-          </span>
-        ),
-        duration: null,
-      }), i * 500);
     });
   }
 
-  handleAlarmCardClick = (type, data) => {
+  // componentWillUnmount() {
+  //   const ws = this.ws;
+  //   ws && ws.close();
+  // }
+
+  ws = null;
+  lastAreaId = ''; // 上次发生警报区域
+
+  showNotification = type => ({ cardId, uptime, userName, phone=PHONE }) => {
+    notification.warning({
+      key: type,
+      className: styles.note,
+      placement: 'bottomLeft',
+      message: `报警提示 ${TYPE_LABELS[type]}`,
+      description: (
+        <span
+          className={styles.desc}
+          onClick={e => {
+            this.handleAlarmCardClick(type, cardId);
+            notification.close(type);
+          }}
+        >
+          {`${moment(uptime).format('HH:mm:ss')} ${userName}【${phone}】${ALARM_DESC[type]}`}
+        </span>
+      ),
+      duration: null,
+    })
+  };
+
+  handleAlarmCardClick = (type, cardId) => {
     switch(type) {
       case 1:
-        this.handleShowAlarmMsg();
+        this.handleShowAlarmMsg(cardId);
         break;
       case 2:
-        this.handleClickPerson(0, true);
+        this.handleClickPerson(cardId, true);
         break;
       default:
         return;
     }
   };
 
-  handleClickPerson = (i, isSOS) => {
-    this.setState({ personInfoVisible: true, isSOS });
+  handleClickPerson = (cardId) => {
+    this.setState({ personInfoVisible: true, infoCardId: cardId });
   };
 
-  handleShowAlarmMsg = () => {
-    this.setState({ alarmMsgVisible: true });
+  handleShowAlarmMsg = cardId => {
+    this.setState({ alarmMsgVisible: true, overstepCardId: cardId });
   };
 
-  handleSOS = () => {
-    this.setState({ personInfoVisible: false, sosHandleVisible: true });
+  handleSOS = (id) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'personPosition/quitSOS', payload: id });
+    this.setState({ personInfoVisible: false, sosHandleVisible: true, sosList: [] });
+    notification.close(2);
   };
 
-  handleAlarm = () => {
-    this.setState({ alarmMsgVisible: false, alarmHandleVisible: true });
+  handleAlarm = (id) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'personPosition/quitOverstep', payload: id });
+    this.setState({ alarmMsgVisible: false, alarmHandleVisible: true, overstepList: [] });
+    notification.close(1);
   };
 
   handleClose = prop => {
     this.setState({ [`${prop}Visible`]: false });
   };
 
+  handleShowVideo = keyId => {
+    if (!keyId)
+      return;
+    this.setState({ videoVisible: true, videoKeyId: keyId });
+  };
+
+  handleHideVideo = () => {
+    this.setState({
+      videoVisible: false,
+      videoKeyId: '',
+    });
+  };
+
   render() {
     const {
       positions,
       posInfo,
-      isSOS,
+      infoCardId,
+      overstepCardId,
+      sosList,
+      overstepList,
       personInfoVisible,
       sosHandleVisible,
       alarmMsgVisible,
       alarmHandleVisible,
       videoVisible,
+      videoKeyId,
     } = this.state;
 
-    // const positions = [
-    //   { xarea: '20%', yarea: '60%', isSOS: true },
-    //   { xarea: '30%', yarea: '60%', isSOS: false },
-    // ]
+    const alarmCards = getAlarmCards([...sosList, ...overstepList]);
+
+    const sectionInfo = [
+      {
+        id: 1,
+        areaName: '演示区域',
+        count: 1,
+        status: alarmCards.length ? 2 : 1,
+        indentLevel: 0,
+        children: [{
+          id: 2,
+          areaName: '消控室',
+          count: 1,
+          status: overstepList.length ? 2 : 1,
+          indentLevel: 1,
+        }, {
+          id: 3,
+          areaName: '活动室',
+          count: 0,
+          status: 1,
+          indentLevel: 1,
+        }, {
+          id: 4,
+          areaName: '餐厅',
+          count: 0,
+          status: 1,
+          indentLevel: 1,
+        }, {
+          id: 5,
+          areaName: '实验室',
+          count: 0,
+          status: 1,
+          indentLevel: 1,
+        }],
+      },
+    ];
 
     return (
       <BigPlatformLayout
@@ -177,34 +276,38 @@ export default class WbTest extends PureComponent {
         <div className={styles.container}>
           <div className={styles.left}>
             {/* 实时监控 */}
-            <RealTimeMonitor className={styles.leftTop} />
+            <RealTimeMonitor
+              data={sectionInfo}
+              className={styles.leftTop}
+            />
             {/* 报警查看 */}
-            <AlarmView className={styles.leftBottom} onClick={this.handleAlarmCardClick} />
+            <AlarmView
+              data={alarmCards}
+              className={styles.leftBottom}
+              onClick={this.handleAlarmCardClick}
+              handleShowVideo={this.handleShowVideo}
+            />
           </div>
           <div className={styles.right}>
             <Map
               data={positions}
+              overstepSections={overstepList.length ? [1] : []}
+              quantity={{ sos: sosList.length, alarm: overstepList.length }}
               handleClickPerson={this.handleClickPerson}
               handleAlarmSectionClick={this.handleShowAlarmMsg}
+              handleShowVideo={this.handleShowVideo}
             />
             <Info data={posInfo} />
             <PersonInfo
-              isSOS={isSOS}
               visible={personInfoVisible}
-              name="张三丰"
-              phone="13288888888"
-              code="0001"
-              department="管理部"
-              section="5号楼3层办公区"
-              handleSOS={() => this.handleSOS()}
+              data={getPersonInfoItem(infoCardId, positions)}
+              handleSOS={this.handleSOS}
               handleClose={() => this.handleClose('personInfo')}
             />
             <AlarmMsg
               visible={alarmMsgVisible}
-              section="五号楼3层实验室"
-              type="越界"
-              time="2018-12-22 10:30:00"
-              handleAlarm={() => this.handleAlarm()}
+              data={getOverstepItem(overstepCardId, overstepList)}
+              handleAlarm={this.handleAlarm}
               handleClose={() => this.handleClose('alarmMsg')}
             />
             <AlarmHandle
@@ -223,7 +326,13 @@ export default class WbTest extends PureComponent {
               handleClose={() => this.handleClose('alarmHandle')}
             />
           </div>
-          <VideoPlay visible={videoVisible} showList={false} />
+          <VideoPlay
+            visible={videoVisible}
+            showList={false}
+            videoList={[]}
+            keyId={videoKeyId}
+            handleVideoClose={this.handleHideVideo}
+          />
         </div>
       </BigPlatformLayout>
     );
