@@ -128,8 +128,8 @@ export default class App extends PureComponent {
       },
       {
         title: '检查人',
-        // dataIndex: 'report_user_name',
-        dataIndex: 'allCheckPersonNames',
+        dataIndex: 'report_user_name',
+        // dataIndex: 'allCheckPersonNames',
         render: (val) => (<Ellipsis tooltip length={7}>{val}</Ellipsis>),
       },
       {
