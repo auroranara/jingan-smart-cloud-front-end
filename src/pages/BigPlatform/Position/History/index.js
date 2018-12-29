@@ -36,7 +36,7 @@ export default class History extends PureComponent {
   lastRange = defaultRange;
 
   componentDidMount() {
-    const { match: { params: { id } } } = this.props;
+    // const { match: { params: { id } } } = this.props;
     // 获取列表
     this.getList(defaultRange);
   }
@@ -45,14 +45,14 @@ export default class History extends PureComponent {
    * 获取列表
    */
   getList = (range) => {
-    const { match: { params: { id } }, dispatch } = this.props;
-    const [startTime, endTime] = range;
+    const { match: { params: { id: cardId } }, dispatch } = this.props;
+    const [queryStartTime, queryEndTime] = range;
     dispatch({
       type: 'position/fetchList',
       payload: {
-        id,
-        startTime: startTime && +startTime,
-        endTime: endTime && +endTime,
+        cardId,
+        queryStartTime: queryStartTime && +queryStartTime,
+        queryEndTime: queryEndTime && +queryEndTime,
       },
     });
   }
@@ -146,7 +146,7 @@ export default class History extends PureComponent {
                 <div className={styles.tr}>
                   <div className={styles.td}>{startTime.format('HH:mm:ss')}</div>
                   <div className={styles.td}>{endTime.format('HH:mm:ss')}</div>
-                  <div className={styles.td}>东厂区A建筑物1层</div>
+                  <div className={styles.td}>办公区域</div>
                 </div>
               </div>
               <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
@@ -157,7 +157,7 @@ export default class History extends PureComponent {
                   <div className={styles.td}>Z坐标</div>
                 </div>
                 <Scrollbars style={{ flex: '1' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
-                  {list && list.length > 0 ? list.map(({ time, x, y, z }) => (
+                  {list && list.length > 0 ? list.map(({ intime: time, xarea: x, yarea: y, zarea: z }) => (
                     <div className={styles.tr} key={time}>
                       <div className={styles.td}>{moment(time).format('HH:mm:ss')}</div>
                       <div className={styles.td}>{x}</div>

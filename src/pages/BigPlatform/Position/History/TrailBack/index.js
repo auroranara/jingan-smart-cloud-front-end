@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Icon } from 'antd'
+import { Icon, Tooltip } from 'antd'
 import moment from 'moment';
-import person from '../../imgs/person.png';
+import bluePerson from '../../imgs/person.png';
+import redPerson from '../../imgs/personRed.png';
 // 引入样式文件
 import styles from './index.less';
 
@@ -39,6 +40,11 @@ const defaultState = {
   // 当前点所在的位置索引
   currentIndex: 0,
 };
+// 警报状态文本
+const alarmStatus = {
+  '1': 'sos',
+  '2': '越界',
+};
 
 /**
  * description: 模板
@@ -50,9 +56,6 @@ export default class Template extends PureComponent {
   state = {
     ...defaultState,
   }
-
-  // 定时器
-  playTimer = null
 
   // requestAnimationFrame
   frameTimer = null;
@@ -124,12 +127,6 @@ export default class Template extends PureComponent {
         currentIndex: this.getCurrentIndex(nextCurrentTimeStamp, currentIndex),
       });
     }
-    // // 从点击继续到现在的时间
-    // const offset = timestamp - this.frameStart;
-    // // 已经播放的时间
-    // const overlay =
-    // // 总时长
-    // const duration = endTime - startTime;
   }
 
   /**
@@ -203,7 +200,7 @@ export default class Template extends PureComponent {
   getCurrentIndex = (currentTimeStamp, currentIndex=0) => {
     const { data=[] } = this.props;
     for(let i=currentIndex+1; i<data.length; i++) {
-      if (data[i].time <= currentTimeStamp) {
+      if (data[i].intime <= currentTimeStamp) {
         currentIndex = i;
       }
       else {
@@ -305,7 +302,9 @@ export default class Template extends PureComponent {
   /**
    * 连线
    */
-  renderLine({ x: x1, y: y1 }={}, { x: x2, y: y2 }={}) {
+  renderLine({ xarea: x1, yarea: y1 }={}, { xarea: x2, yarea: y2, locationStatusHistoryList }={}) {
+    // 当有警报信息时显示红色
+    const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
     return (
       <div
         style={{
@@ -314,7 +313,7 @@ export default class Template extends PureComponent {
           bottom: y1 > y2 ? `${y2}%`: `${y1}%`,
           width: Math.abs(x1 - x2) > 1 ? `${Math.abs(x1 - x2)}%` : 1,
           height: Math.abs(y1 - y2) > 1 ? `${Math.abs(y1 - y2)}%` : 1,
-          backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="green" stroke-width="1"/></svg>')`,
+          backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="${isAlarm?'#8A101D' : '#0186D1'}" stroke-width="1"/></svg>')`,
           zIndex: 1,
          }}
       />
@@ -383,6 +382,10 @@ export default class Template extends PureComponent {
     const { playing, currentTimeStamp, currentIndex, speed, tooltip: { visible, left: tooltipLeft, top: tooltipTop, content } } = this.state;
     // 获取当前点位位置
     const currentData = data[currentIndex];
+    // 获取当前点位的属性
+    const { xarea: currentX, yarea: currentY, locationStatusHistoryList: currentLocationStatusHistoryList } = currentData || {};
+    // 当前点位是否为警报状态
+    const isAlarm = currentLocationStatusHistoryList && currentLocationStatusHistoryList.length > 1 || false;
     // 当前时间轴宽度
     const width = currentTimeStamp ? `${(currentTimeStamp - startTime) / (endTime - startTime) * 100}%` : 0;
     // 是否已经减速到最小速率
@@ -395,15 +398,15 @@ export default class Template extends PureComponent {
         {/* canvas容器 */}
         <div className={styles.canvasWrapper} style={{ ...topStyle, backgroundImage: `url(${src})` }}>
           {data.map((item, index) => {
-            const { x, y, time } = item;
+            const { xarea: x, yarea: y, intime: time, locationStatusHistoryList } = item;
             return (
               <Fragment key={time}>
-                <div key={time} style={{ display: index === currentIndex ? 'none': undefined, position: 'absolute', left: `${x}%`, bottom: `${y}%`, /* width: 39, height: 13, border: '3px solid #0186D1', */width: 13, height: 13, backgroundColor: 'green', borderRadius: '50%', cursor: 'pointer', transform: 'translate(-50%, 50%)', zIndex: 2 }} onClick={() => {onClick(item);}} />
+                <div key={time} style={{ display: currentX === x && currentY === y ? 'none': undefined, position: 'absolute', left: `${x}%`, bottom: `${y}%`, /* width: 39, height: 13, border: '3px solid #0186D1', */width: 13, height: 13, backgroundColor: locationStatusHistoryList && locationStatusHistoryList.length > 1 ? '#8A101D' : '#0186D1', borderRadius: '50%', cursor: 'pointer', transform: 'translate(-50%, 50%)', zIndex: 2 }} onClick={() => {onClick(item);}} />
                 {index < data.length - 1 && this.renderLine(item, data[index+1])}
               </Fragment>
             );
           })}
-          {currentData && <div style={{ position: 'absolute', left: `${currentData.x}%`, bottom: `${currentData.y}%`, width: 39, height: 40, background: `url(${person}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translate(-50%, 6px)', zIndex: 3 }} onClick={() => {onClick(currentData);}} />}
+          {currentData && <Tooltip overlayClassName={styles.alarmTooltip} placement="top" title={isAlarm ? currentLocationStatusHistoryList.map(({ status }) => alarmStatus(status)).join('，') : ''} visible={isAlarm}><div style={{ position: 'absolute', left: `${currentX}%`, bottom: `${currentY}%`, width: 39, height: 40, background: `url(${isAlarm? redPerson : bluePerson}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translate(-50%, 6px)', zIndex: 3 }} onClick={() => {onClick(currentData);}} /></Tooltip>}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
