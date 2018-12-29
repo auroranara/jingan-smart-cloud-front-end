@@ -133,4 +133,13 @@ export default {
       delete: 'training.points.delete',
     },
   },
+  personnelPosition: {
+    // 系统配置
+    systemConfiguration: {
+      list: 'personnelPosition.systemConfiguration.listView',
+      add: 'personnelPosition.systemConfiguration.add',
+      edit: 'personnelPosition.systemConfiguration.edit',
+      delete: 'personnelPosition.systemConfiguration.delete',
+    },
+  },
 };
