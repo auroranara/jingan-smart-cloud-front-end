@@ -213,7 +213,7 @@ export default class PersonFileList extends PureComponent {
         key: 'maxScore',
         align: 'center',
         render: val => {
-          return val ? `${val.toFixed(2)}%` : '---';
+          return val === null ? '---' : `${val.toFixed(2)}%`;
         },
       },
       {
@@ -223,7 +223,7 @@ export default class PersonFileList extends PureComponent {
         align: 'center',
         // width: 150,
         render: val => {
-          return val ? `${val.toFixed(2)}%` : '---';
+          return val === null ? '---' : `${val.toFixed(2)}%`;
         },
       },
       {
