@@ -74,49 +74,63 @@ export default class BuildingInfoList extends PureComponent {
     return (
       <Card>
         <Form layout="inline">
-          <FormItem>
-            {getFieldDecorator('companyName', {
-              initialValue: defaultFormData.companyName,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Input style={{ width: '250px' }} placeholder="请输入建筑物名称" />)}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('companyName', {
-              initialValue: defaultFormData.companyName,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Select style={{ width: '250px' }} placeholder="请选择建筑物类型" />)}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('companyName', {
-              initialValue: defaultFormData.companyName,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Select style={{ width: '250px' }} placeholder="请选择火灾危险性分类" />)}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('companyName', {
-              initialValue: defaultFormData.companyName,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Select style={{ width: '250px' }} placeholder="请选择耐火等级" />)}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('companyName', {
-              initialValue: defaultFormData.companyName,
-              getValueFromEvent: e => e.target.value.trim(),
-            })(<Select style={{ width: '250px' }} placeholder="请选择建筑结构" />)}
-          </FormItem>
-          <FormItem>
-            <Button type="primary" onClick={this.handleClickToQuery}>
-              查询
-            </Button>
-          </FormItem>
-          <FormItem>
-            <Button onClick={this.handleClickToReset}>重置</Button>
-          </FormItem>
-          <FormItem style={{ float: 'right' }}>
-            <Button type="primary" href="#/device-management/video-monitor/add">
-              新增
-            </Button>
-          </FormItem>
+          <Row>
+            <Col span={8}>
+              <FormItem>
+                {getFieldDecorator('companyName', {
+                  initialValue: defaultFormData.companyName,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Input style={{ width: '330px' }} placeholder="请输入建筑物名称" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem>
+                {getFieldDecorator('companyName', {
+                  initialValue: defaultFormData.companyName,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Select style={{ width: '330px' }} placeholder="请选择建筑物类型" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem>
+                {getFieldDecorator('companyName', {
+                  initialValue: defaultFormData.companyName,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Select style={{ width: '330px' }} placeholder="请选择火灾危险性分类" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem>
+                {getFieldDecorator('companyName', {
+                  initialValue: defaultFormData.companyName,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Select style={{ width: '330px' }} placeholder="请选择耐火等级" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem>
+                {getFieldDecorator('companyName', {
+                  initialValue: defaultFormData.companyName,
+                  getValueFromEvent: e => e.target.value.trim(),
+                })(<Select style={{ width: '330px' }} placeholder="请选择建筑结构" />)}
+              </FormItem>
+            </Col>
+            <Col span={8} style={{ width: '350px' }}>
+              <FormItem>
+                <Button type="primary" onClick={this.handleClickToQuery}>
+                  查询
+                </Button>
+              </FormItem>
+              <FormItem>
+                <Button onClick={this.handleClickToReset}>重置</Button>
+              </FormItem>
+              <FormItem style={{ float: 'right' }}>
+                <Button type="primary" href="#/device-management/video-monitor/add">
+                  新增
+                </Button>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Card>
     );
