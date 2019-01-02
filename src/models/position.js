@@ -90,10 +90,11 @@ export default {
   effects: {
     *fetchList({ payload, callback }, { call, put }) {
       const response = yield call(getList, payload);
+      const list = response.data.list.filter(({ xarea, yarea }) => xarea <= 100 && yarea <= 100);
       if (response.code === 200) {
-        yield put({ type: 'save', payload: { list: response.data.list }});
+        yield put({ type: 'save', payload: { list }});
         if (callback) {
-          callback(response.data.list);
+          callback(list);
         }
       }
       else if (callback) {
