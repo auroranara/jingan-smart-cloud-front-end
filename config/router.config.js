@@ -1434,6 +1434,27 @@ module.exports = env => {
                   component:
                     './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
                 },
+                {
+                  name: 'add',
+                  code: 'personnelPosition.buildingsInfo.add',
+                  path: '/personnel-position/buildings-info/add',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'floorList',
+                  code: 'personnelPosition.buildingsInfo.listView',
+                  path: '/personnel-position/buildings-info/floor/list',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
+                },
+                {
+                  name: 'floorAdd',
+                  code: 'personnelPosition.buildingsInfo.add',
+                  path: '/personnel-position/buildings-info/floor/add',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
               ],
             },
           ],

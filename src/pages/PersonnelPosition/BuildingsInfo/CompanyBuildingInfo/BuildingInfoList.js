@@ -4,13 +4,13 @@ import { Form, List, Card, Button, Input, Spin, Col, Row, Select } from 'antd';
 // import { routerRedux } from 'dva/router';
 // import { AuthLink } from '@/utils/customAuth';
 import InfiniteScroll from 'react-infinite-scroller';
-import Ellipsis from '@/components/Ellipsis';
+// import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './CompanyInfo.less';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
+// const Option = Select.Option;
 
 // 默认页面显示数量
 // const pageSize = 18;
@@ -125,7 +125,7 @@ export default class BuildingInfoList extends PureComponent {
                 <Button onClick={this.handleClickToReset}>重置</Button>
               </FormItem>
               <FormItem style={{ float: 'right' }}>
-                <Button type="primary" href="#/device-management/video-monitor/add">
+                <Button type="primary" href="#/personnel-position/buildings-info/add">
                   新增
                 </Button>
               </FormItem>
