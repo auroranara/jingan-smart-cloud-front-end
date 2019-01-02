@@ -79,7 +79,8 @@ export default class WbTest extends PureComponent {
       type: 2,
     };
     // const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-    const url = `ws://192.168.10.19:10028/websocket?${stringify(params)}`;
+    // const url = `ws://192.168.10.19:10028/websocket?${stringify(params)}`;
+    const url = `ws://47.99.76.214:10028/websocket?${stringify(params)}`;
 
     // 链接webscoket
     const ws = new WebsocketHeartbeatJs({ url, ...options });
