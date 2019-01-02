@@ -4,6 +4,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import Section from '@/pages/BigPlatform/NewUnitFireControl/Section';
 import pendingIcon from '@/assets/pending.png';
 import cameraIcon from '../../imgs/camera.png';
+import emptyIcon from '../../imgs/emtpyAlarm.png';
 import styles from './index.less';
 
 // 根据状态获取图片
@@ -111,7 +112,7 @@ export default class AlarmView extends PureComponent {
       handleShowVideo,
     } = this.props;
 
-    let cards = <p className={styles.empty}>暂无信息</p>;
+    let cards = <div className={styles.empty} style={{ backgroundImage: `url(${emptyIcon})` }} />;
     if (data.length)
       cards = data.map(item => (
         <Alarm key={item.id} data={item} onClick={onClick} handleShowVideo={handleShowVideo} />
