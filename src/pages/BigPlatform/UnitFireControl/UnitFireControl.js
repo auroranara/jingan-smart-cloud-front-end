@@ -1067,7 +1067,7 @@ export default class App extends PureComponent {
       <Rotate frontIndex={frontIndex}>
         <FireHostMonitoring
           data={fireAlarmSystem}
-          fixedContent={hosts && hosts.length > 0 && (
+          fixedContent={(
             <Tooltip
               overlayClassName={styles.tooltip}
               title="一键复位功能只对平台数据进行复位，并不能控制主机复位。"
@@ -1130,9 +1130,9 @@ export default class App extends PureComponent {
               );
             })
           ) : (
-              <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
-                暂无主机
-            </div>
+              <div className={styles.hostIsEmpty}>
+                <span>暂无主机</span>
+              </div>
             )}
         </Section>
       </Rotate>
