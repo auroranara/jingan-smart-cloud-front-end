@@ -15,8 +15,8 @@ const { RangePicker } = DatePicker;
 // 时间格式
 const timeFormat = 'YYYY-MM-DD HH:mm';
 // 默认范围
-// const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
-const defaultRange = [moment('2018-12-29 14:23'), moment('2018-12-29 14:25')];
+const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
+// const defaultRange = [moment('2018-12-29 14:23'), moment('2018-12-29 14:25')];
 // const defaultRange = [moment('2018-12-29 14:27'), moment('2018-12-29 14:29')];
 
 
