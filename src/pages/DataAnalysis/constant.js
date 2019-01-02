@@ -322,8 +322,8 @@ export const WASTE_GAS_COLUMNS = [
 
 export const STORAGE_TANK_PARAMS = [
   { name: '全部', key: 0 },
-  { name: '液压', key: 1 },
-  { name: '水位', key: 2 },
+  { name: '压力', key: 1 },
+  { name: '液位', key: 2 },
   { name: '温度', key: 3 },
 ];
 

@@ -60,7 +60,11 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.liquidCount} style={{ color: `${getStatus(dataList[0].status)}` }}>
-            {dataList[0].value || '---'}
+            {getStatus(dataList[0].status) ? (
+              dataList[0].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.liquidTitle}>
             液位(
@@ -85,7 +89,11 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.pressureCount} style={{ color: `${getStatus(dataList[1].status)}` }}>
-            {dataList[1].value || '---'}
+            {getStatus(dataList[1].status) ? (
+              dataList[1].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.pressureTitle}>
             压力(
@@ -103,7 +111,11 @@ export default function StorageCards(props) {
 
         <div className={styles.temp}>
           <p className={styles.tempCount} style={{ color: `${getStatus(dataList[2].status)}` }}>
-            {dataList[2].value || '---'}
+            {getStatus(dataList[2].status) ? (
+              dataList[2].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.tempTitle}>
             温度(
