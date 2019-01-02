@@ -38,7 +38,7 @@ const alertContent = () => {
     return (
       <Alert
         style={{ zIndex: 99 }}
-        message={'推荐使用 Chrome 浏览器获得完整功能。'}
+        message={'推荐使用 Chrome 浏览器或360浏览器急速模式获得完整功能。'}
         banner
         closable
       />
