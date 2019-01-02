@@ -1,17 +1,15 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Spin, Col, Row, Select, Cascader } from 'antd';
+import { Form, List, Card, Button, Input, Spin, Col, Row, Cascader } from 'antd';
 // import { routerRedux } from 'dva/router';
-import { AuthLink } from '@/utils/customAuth';
+// import { AuthLink } from '@/utils/customAuth';
 import InfiniteScroll from 'react-infinite-scroller';
 
-import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './BuildingsInfo.less';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 
 // 默认页面显示数量
 // const pageSize = 18;
@@ -19,11 +17,14 @@ const Option = Select.Option;
 // 默认表单值
 const defaultFormData = {
   companyName: undefined,
-  dangerLevel: undefined,
   industryCategory: undefined,
-  companyType: undefined,
-  companyStatus: undefined,
 };
+
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
+};
+
 //面包屑
 const breadcrumbList = [
   {
@@ -41,16 +42,21 @@ const breadcrumbList = [
   },
 ];
 
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-
 // 获取根节点
 const getRootChild = () => document.querySelector('#root>div');
 
-@connect()
+@connect(({ buildingsInfo, user, loading }) => ({
+  buildingsInfo,
+  user,
+  loading: loading.models.buildingsInfo,
+}))
+@Form.create()
 export default class CompanyList extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.formData = defaultFormData;
+  }
+
   /* 挂载后 */
   componentDidMount() {}
 
@@ -65,55 +71,46 @@ export default class CompanyList extends PureComponent {
 
     return (
       <Card>
-        <Form className={styles.form}>
-          <Row gutter={30}>
-            <Col span={8}>
-              <FormItem>
-                {getFieldDecorator('companyName', {
-                  initialValue: defaultFormData.companyName,
-                  getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入企业名称" />)}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator({
-                  initialValue: defaultFormData.industryCategory,
-                })(
-                  <Cascader
-                    // options={industryCategories}
-                    fieldNames={{
-                      value: 'type_id',
-                      label: 'gs_type_name',
-                      children: 'children',
-                    }}
-                    allowClear
-                    changeOnSelect
-                    notFoundContent
-                    placeholder="请选择行业类别"
-                    getPopupContainer={getRootChild}
-                  />
-                )}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                <Button
-                  type="primary"
-                  onClick={this.handleClickToQuery}
-                  style={{ marginRight: '16px' }}
-                >
-                  查询
-                </Button>
-                <Button onClick={this.handleClickToReset} style={{ marginRight: '16px' }}>
-                  重置
-                </Button>
-                <Button onClick={this.handleClickToReset} style={{ marginRight: '16px' }}>
-                  新增
-                </Button>
-              </FormItem>
-            </Col>
-          </Row>
+        <Form layout="inline">
+          <FormItem>
+            {getFieldDecorator('companyName', {
+              initialValue: defaultFormData.companyName,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Input placeholder="请输入企业名称" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('industryCategory', {
+              initialValue: defaultFormData.industryCategory,
+            })(
+              <Cascader
+                style={{ width: '300px' }}
+                // options={industryCategories}
+                fieldNames={{
+                  value: 'type_id',
+                  label: 'gs_type_name',
+                  children: 'children',
+                }}
+                allowClear
+                changeOnSelect
+                notFoundContent
+                placeholder="请选择行业类别"
+                getPopupContainer={getRootChild}
+              />
+            )}
+          </FormItem>
+          <FormItem>
+            <Button type="primary" onClick={this.handleClickToQuery}>
+              查询
+            </Button>
+          </FormItem>
+          <FormItem>
+            <Button onClick={this.handleClickToReset}>重置</Button>
+          </FormItem>
+          <FormItem style={{ float: 'right' }}>
+            <Button type="primary" href="#/device-management/video-monitor/add">
+              新增
+            </Button>
+          </FormItem>
         </Form>
       </Card>
     );
@@ -121,7 +118,15 @@ export default class CompanyList extends PureComponent {
 
   /* 渲染列表 */
   renderList() {
-    const list = [];
+    const list = [
+      {
+        name: '无锡晶安智慧科技有限公司',
+        principalPhone: '制造业',
+        parentUnitName: '张三',
+        parentUnitPj: '12222222222',
+        serviceCompanyCount: '2',
+      },
+    ];
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
@@ -133,14 +138,6 @@ export default class CompanyList extends PureComponent {
               <Card
                 title={item.name}
                 className={styles.card}
-                actions={[
-                  <AuthLink to={`/fire-control/maintenance-company/detail/${item.id}`}>
-                    查看
-                  </AuthLink>,
-                  <AuthLink to={`/fire-control/maintenance-company/edit/${item.id}`}>
-                    编辑
-                  </AuthLink>,
-                ]}
                 // extra={
                 //   <Button
                 //     onClick={() => {
@@ -155,28 +152,26 @@ export default class CompanyList extends PureComponent {
               >
                 <Row>
                   <Col span={16} style={{ cursor: 'pointer' }}>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      重大危险源等级：
-                      {item.practicalAddress || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      属地安监机构：
-                      {item.principalName || getEmptyData()}
-                    </Ellipsis>
                     <p>
                       行业类别：
                       {item.principalPhone || getEmptyData()}
                     </p>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    <p>
                       安全负责人：
                       {item.parentUnitName || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    </p>
+                    <p>
                       联系电话：
-                      {item.parentUnitName || getEmptyData()}
-                    </Ellipsis>
+                      {item.parentUnitPj || getEmptyData()}
+                    </p>
                   </Col>
-                  <Col span={8} style={{ cursor: 'pointer' }}>
+                  <Col
+                    span={8}
+                    onClick={() => {
+                      this.handleGoToDetail(item.id);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <span className={styles.quantity}>{item.serviceCompanyCount}</span>
                   </Col>
                 </Row>
@@ -193,7 +188,7 @@ export default class CompanyList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="维保单位管理"
+        title="建筑物信息"
         breadcrumbList={breadcrumbList}
         content={<div>单位总数： </div>}
       >

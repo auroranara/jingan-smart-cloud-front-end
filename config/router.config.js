@@ -1427,6 +1427,13 @@ module.exports = env => {
                   path: '/personnel-position/buildings-info/list',
                   component: './PersonnelPosition/BuildingsInfo/CompanyList',
                 },
+                {
+                  name: 'view',
+                  code: 'personnelPosition.buildingsInfo.view',
+                  path: '/personnel-position/buildings-info/detail',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+                },
               ],
             },
           ],
