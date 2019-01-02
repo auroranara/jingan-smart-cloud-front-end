@@ -27,7 +27,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss';
 // 最小速率
 const minSpeed = 1;
 // 最大速率
-const maxSpeed = 64;
+const maxSpeed = 16;
 // 默认state
 const defaultState = {
   // 是否正在播放
@@ -209,10 +209,32 @@ export default class Template extends PureComponent {
       }
     }
     // 保证最后一个点存在至少1秒
-    if (currentIndex === data.length - 1 && data[currentIndex].uptime <= currentTimeStamp && data[currentIndex].intime <= currentTimeStamp - 1000) {
+    if (currentIndex === data.length - 1 && data[currentIndex] && data[currentIndex].uptime <= currentTimeStamp && data[currentIndex].intime <= currentTimeStamp - 1000) {
       currentIndex = data.length;
     }
     return currentIndex;
+  }
+
+  /**
+   * 根据当前时间戳获取点位位置
+   */
+  getCurrentPosition = (currentTimeStamp, currentData, nextData) => {
+    if (!currentData) {
+      return;
+    }
+    const { xarea: x1, yarea: y1, uptime: out1 } = currentData;
+    if (!nextData || currentTimeStamp < out1) {
+      return currentData;
+    }
+    else {
+      const { xarea: x2, yarea: y2, intime: in2 } = nextData;
+      const percent = (currentTimeStamp - out1) / (in2 - out1);
+      return {
+        ...nextData,
+        xarea: x1 + (x2-x1)*percent,
+        yarea: y1 + (y2-y1)*percent,
+      };
+    }
   }
 
   /**
@@ -304,6 +326,34 @@ export default class Template extends PureComponent {
     }
   }
 
+
+  /**
+   * 点击时间条
+   * 说明：
+   * 1.重置时间条
+   * 2.重置点位
+   * 3.根据是否在播放决定是否重置定时器
+   * 4.若有onLocate传参则调用
+   */
+  handleLocate = (e) => {
+    const { onLocate } = this.props;
+    const { playing } = this.state;
+    const currentTimeStamp = this.getCurrentTimeStamp(e);
+    const currentIndex = this.getCurrentIndex(currentTimeStamp);
+    this.unsetFrameTimer();
+    /* 第一步，第二步 */
+    this.setState({ currentTimeStamp, currentIndex }, () => {
+      /* 第三步 */
+      if (playing) {
+        this.setFrameTimer();
+      }
+    });
+    /* 第四步 */
+    if (onLocate) {
+      onLocate();
+    }
+  }
+
   /**
    * 连线
    */
@@ -356,33 +406,6 @@ export default class Template extends PureComponent {
   }
 
   /**
-   * 点击时间条
-   * 说明：
-   * 1.重置时间条
-   * 2.重置点位
-   * 3.根据是否在播放决定是否重置定时器
-   * 4.若有onLocate传参则调用
-   */
-  handleLocate = (e) => {
-    const { onLocate } = this.props;
-    const { playing } = this.state;
-    const currentTimeStamp = this.getCurrentTimeStamp(e);
-    const currentIndex = this.getCurrentIndex(currentTimeStamp);
-    this.unsetFrameTimer();
-    /* 第一步，第二步 */
-    this.setState({ currentTimeStamp, currentIndex }, () => {
-      /* 第三步 */
-      if (playing) {
-        this.setFrameTimer();
-      }
-    });
-    /* 第四步 */
-    if (onLocate) {
-      onLocate();
-    }
-  }
-
-  /**
    * 渲染
    */
   render() {
@@ -416,7 +439,7 @@ export default class Template extends PureComponent {
     } = this.props;
     const { playing, currentTimeStamp, currentIndex, speed, tooltip: { visible, left: tooltipLeft, top: tooltipTop, content } } = this.state;
     // 获取当前点位位置
-    const currentData = data[currentIndex];
+    const currentData = this.getCurrentPosition(currentTimeStamp, data[currentIndex], data[currentIndex+1]);
     // 获取当前点位的属性
     const { xarea: currentX, yarea: currentY, locationStatusHistoryList: currentLocationStatusHistoryList } = currentData || {};
     // 当前点位是否为警报状态
