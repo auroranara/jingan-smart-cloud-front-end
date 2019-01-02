@@ -1,15 +1,16 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Spin, Col, Row, Cascader } from 'antd';
+import { Form, List, Card, Button, Input, Spin, Col, Row, Select } from 'antd';
 // import { routerRedux } from 'dva/router';
 // import { AuthLink } from '@/utils/customAuth';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
-import styles from '../BuildingsInfo.less';
+import styles from './CompanyInfo.less';
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 // 默认页面显示数量
 // const pageSize = 18;
@@ -46,9 +47,6 @@ const breadcrumbList = [
   },
 ];
 
-// 获取根节点
-const getRootChild = () => document.querySelector('#root>div');
-
 @connect(({ buildingsInfo, user, loading }) => ({
   buildingsInfo,
   user,
@@ -80,27 +78,31 @@ export default class BuildingInfoList extends PureComponent {
             {getFieldDecorator('companyName', {
               initialValue: defaultFormData.companyName,
               getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入企业名称" />)}
+            })(<Input style={{ width: '250px' }} placeholder="请输入建筑物名称" />)}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('industryCategory', {
-              initialValue: defaultFormData.industryCategory,
-            })(
-              <Cascader
-                style={{ width: '300px' }}
-                // options={industryCategories}
-                fieldNames={{
-                  value: 'type_id',
-                  label: 'gs_type_name',
-                  children: 'children',
-                }}
-                allowClear
-                changeOnSelect
-                notFoundContent
-                placeholder="请选择行业类别"
-                getPopupContainer={getRootChild}
-              />
-            )}
+            {getFieldDecorator('companyName', {
+              initialValue: defaultFormData.companyName,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Select style={{ width: '250px' }} placeholder="请选择建筑物类型" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('companyName', {
+              initialValue: defaultFormData.companyName,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Select style={{ width: '250px' }} placeholder="请选择火灾危险性分类" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('companyName', {
+              initialValue: defaultFormData.companyName,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Select style={{ width: '250px' }} placeholder="请选择耐火等级" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('companyName', {
+              initialValue: defaultFormData.companyName,
+              getValueFromEvent: e => e.target.value.trim(),
+            })(<Select style={{ width: '250px' }} placeholder="请选择建筑结构" />)}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
@@ -124,7 +126,7 @@ export default class BuildingInfoList extends PureComponent {
   renderList() {
     const list = [
       {
-        name: '无锡晶安智慧科技有限公司',
+        name: '锻造车间',
         principalPhone: '制造业',
         parentUnitName: '张三',
         parentUnitPj: '12222222222',
@@ -138,27 +140,36 @@ export default class BuildingInfoList extends PureComponent {
           dataSource={list || []}
           renderItem={item => (
             <List.Item key={item.id}>
-              <Card className={styles.card}>
+              <Card title={item.name} className={styles.card}>
                 <Row>
                   <Col span={8} style={{ cursor: 'pointer' }}>
                     <span className={styles.detailpic}>{item.serviceCompanyCount}</span>
                   </Col>
                   <Col span={16} style={{ cursor: 'pointer' }}>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       <span classNames={styles.detailName}>{'锻造车间' || getEmptyData()}</span>
-                    </Ellipsis>
+                    </Ellipsis> */}
                     <p>
-                      行业类别：
+                      建筑物类型：
                       {item.principalPhone || getEmptyData()}
                     </p>
                     <p>
-                      安全负责人：
+                      火灾危险性分类：
                       {item.parentUnitName || getEmptyData()}
                     </p>
                     <p>
-                      联系电话：
+                      耐火等级：
                       {item.parentUnitPj || getEmptyData()}
                     </p>
+                    <p>
+                      建筑结构：
+                      {item.parentUnitPj || getEmptyData()}
+                    </p>
+                    <p>
+                      层数：
+                      {item.parentUnitPj || getEmptyData()}
+                    </p>
+                    <Button>楼层管理</Button>
                   </Col>
                 </Row>
               </Card>
