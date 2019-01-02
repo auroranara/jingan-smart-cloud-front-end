@@ -21,6 +21,11 @@ const typeLabel = {
   '5': '长时间静止',
 };
 
+const VIDEO_KEY_IDS = {
+  1:'250ch11',
+  2:'250ch10',
+};
+
 // const DATA = [
 //   {
 //     id: 1,
@@ -28,21 +33,7 @@ const typeLabel = {
 //     type: 1,
 //     time: '2018-12-25 12:00:00',
 //     status: 1,
-//   },
-//   {
-//     id: 2,
-//     info: '东厂区建筑物A',
-//     type: 2,
-//     time: '2018-12-25 12:00:00',
-//     status: 1,
-//   },
-//   {
-//     id: 3,
-//     info: '东厂区建筑物A',
-//     type: 3,
-//     time: '2018-12-25 12:00:00',
-//     status: 1,
-//   },
+//   }
 // ];
 
 // 报警
@@ -59,7 +50,7 @@ const Alarm = function({
       <div className={styles.alarmItem} onClick={() => { onClick(type, cardId); }}>
         <div className={styles.itemLine}>
           <div className={styles.label}>报警信息：</div>
-          <div className={styles.value}>{info}</div>
+          <div className={styles.value}>{info || '通道'}</div>
         </div>
         <div className={styles.itemLine}>
           <div className={styles.label}>报警类型：</div>
@@ -74,7 +65,7 @@ const Alarm = function({
           style={{ backgroundImage: `url(${cameraIcon})` }}
           onClick={e => {
             e.stopPropagation();
-            handleShowVideo();
+            handleShowVideo(VIDEO_KEY_IDS[type]);
           }}
         />
       </div>

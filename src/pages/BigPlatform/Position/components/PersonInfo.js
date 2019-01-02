@@ -7,6 +7,7 @@ import bg from '../imgs/personCard.png';
 import Zhang from '../imgs/zhang.png';
 import sosIcon from '../imgs/sos.png';
 
+const NO_DATA = '暂无信息';
 const PHONE = '13270801232';
 
 const ICON_STYLE = { color: '#FFF', fontSize: 16, position: 'absolute', top: 10, right: 15, cursor: 'pointer' };
@@ -41,10 +42,10 @@ export default function PersonInfo(props) {
         {name || '暂无名字'}
         {isSOS && <span className={styles.sos} style={{ backgroundImage: `url(${sosIcon})` }} />}
       </h3>
-      <p>电话：{phone}</p>
-      <p>编号：{code}</p>
-      <p>部门：{department}</p>
-      <p>区域：{section}</p>
+      <p>电话：{phone || NO_DATA}</p>
+      <p>编号：{code || NO_DATA}</p>
+      <p>部门：{department || '产品部'}</p>
+      <p>区域：{section || '5号楼3层办公区'}</p>
     </div>
   );
 }
