@@ -75,7 +75,7 @@ export default class WbTest extends PureComponent {
     const { dispatch } = this.props;
     const params = {
       companyId: COMPANY_ID,
-      env: 'dev',
+      env: 'v2_test',
       type: 2,
     };
     // const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
