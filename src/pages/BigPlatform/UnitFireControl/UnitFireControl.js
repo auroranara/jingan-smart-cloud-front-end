@@ -1067,7 +1067,7 @@ export default class App extends PureComponent {
       <Rotate frontIndex={frontIndex}>
         <FireHostMonitoring
           data={fireAlarmSystem}
-          fixedContent={(
+          fixedContent={hosts && hosts.length > 0 && (
             <Tooltip
               overlayClassName={styles.tooltip}
               title="一键复位功能只对平台数据进行复位，并不能控制主机复位。"
