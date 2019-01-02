@@ -217,6 +217,14 @@ export default class App extends PureComponent {
       },
     });
 
+    // 获取主机列表
+    dispatch({
+      type: 'unitFireControl/fetchHosts',
+      payload: {
+        companyId,
+      },
+    });
+
 
     // 立即执行轮询
     // this.polling();
@@ -270,6 +278,14 @@ export default class App extends PureComponent {
       },
     });
 
+    // 获取主机列表
+    dispatch({
+      type: 'unitFireControl/fetchHosts',
+      payload: {
+        companyId,
+      },
+    });
+
     // 获取待处理火警和待处理故障数量
     /* dispatch({
       type: 'unitFireControl/fetchPendingNumber',
@@ -317,14 +333,6 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         type: maintenanceType,
-      },
-    }); */
-
-    // 获取主机列表
-    /* dispatch({
-      type: 'unitFireControl/fetchHosts',
-      payload: {
-        companyId,
       },
     }); */
   };
@@ -404,19 +412,19 @@ export default class App extends PureComponent {
    * 显示一键复位模块
    */
   handleShowResetSection = () => {
-    const {
+    /* const {
       dispatch,
       match: {
-        params: { unitId },
+        params: { unitId: companyId },
       },
     } = this.props;
     // 获取主机列表
     dispatch({
       type: 'unitFireControl/fetchHosts',
       payload: {
-        companyId: unitId,
+        companyId,
       },
-    });
+    }); */
     // 显示一键复位模块
     this.setState({
       frontIndex: 1,
@@ -1130,9 +1138,9 @@ export default class App extends PureComponent {
               );
             })
           ) : (
-              <div style={{ textAlign: 'center', paddingTop: '12px', fontSize: '14px' }}>
-                暂无主机
-            </div>
+              <div className={styles.hostIsEmpty}>
+                <span>暂无主机</span>
+              </div>
             )}
         </Section>
       </Rotate>
