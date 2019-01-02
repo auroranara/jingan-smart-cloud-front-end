@@ -18,17 +18,21 @@ function InfoItem(props) {
 export default function Info(props) {
   const { data } = props;
 
+  let items = <p className={styles.empty}>暂无信息</p>;
+  if (data.length)
+    items = data.map(({ name, time, desc }, i) => (
+      <InfoItem
+        key={i}
+        person={name}
+        time={time}
+        desc={desc}
+      />
+    ));
+
   return (
     // <div className={styles.container} style={{ backgroundImage: `url(${infoBg})` }}>
     <div className={styles.container}>
-      {data.map(({ name, time, desc }, i) => (
-        <InfoItem
-          key={i}
-          person={name}
-          time={time}
-          desc={desc}
-        />
-      ))}
+      {items}
     </div>
   );
 }

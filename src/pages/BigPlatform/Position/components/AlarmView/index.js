@@ -111,6 +111,12 @@ export default class AlarmView extends PureComponent {
       handleShowVideo,
     } = this.props;
 
+    let cards = <p className={styles.empty}>暂无信息</p>;
+    if (data.length)
+      cards = data.map(item => (
+        <Alarm key={item.id} data={item} onClick={onClick} handleShowVideo={handleShowVideo} />
+      ));
+
     return (
       <Section
         className={className?`${styles.container} ${className}`:styles.container}
@@ -119,9 +125,7 @@ export default class AlarmView extends PureComponent {
         contentStyle={{ padding: '16px 0' }}
       >
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
-          {data.map(item => (
-            <Alarm key={item.id} data={item} onClick={onClick} handleShowVideo={handleShowVideo} />
-          ))}
+          {cards}
         </Scrollbars>
       </Section>
     );
