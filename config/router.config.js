@@ -97,6 +97,10 @@ module.exports = env => {
           path: '/big-platform/video',
           component: './BigPlatform/Video',
         },
+        {
+          path: '/big-platform/position',
+          component: './BigPlatform/Position/RealTime',
+        },
       ],
     },
 
