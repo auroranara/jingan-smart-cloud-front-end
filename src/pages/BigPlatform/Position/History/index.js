@@ -37,9 +37,26 @@ export default class History extends PureComponent {
   lastRange = defaultRange;
 
   componentDidMount() {
-    // const { match: { params: { id } } } = this.props;
-    // 获取列表
-    this.getList(defaultRange);
+    const { dispatch, match: { params: { id: cardId } } } = this.props;
+    dispatch({
+      type: 'position/fetchLatest',
+      payload: {
+        cardId,
+      },
+      callback: (data) => {
+        if (data) {
+          const { intime } = data;
+          const minute = 60 * 1000;
+          const queryEndTime = intime%minute === 0 ? intime : Math.ceil(intime/minute)*minute;
+          const queryStartTime = queryEndTime - minute * 2;
+          const range = [moment(queryStartTime), moment(queryEndTime)];
+          this.setState({ range });
+          this.lastRange = range;
+          // 获取列表
+          this.getList(range);
+        }
+      },
+    });
   }
 
   /**
@@ -126,6 +143,7 @@ export default class History extends PureComponent {
             <div className={styles.wrapper} style={{ display: 'flex', flexDirection: 'column', backgroundImage: `url(${borderIcon})` }}>
               <div style={{ flex: 'none', marginBottom: 12 }}>
                 <RangePicker
+                  dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker}
                   style={{ width: '100%' }}
                   showTime={{ format: 'HH:mm' }}
