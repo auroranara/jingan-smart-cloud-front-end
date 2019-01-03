@@ -1,4 +1,6 @@
 .content {
+  height: 100%;
+
   :global {
     .ant-select-selection {
       background-color: rgba(9, 103, 211, 0.2);
@@ -8,9 +10,14 @@
       color: #fff;
     }
   }
+}
 
-  .cardContainer {
-    height: auto;
+.cardContainer {
+  height: calc(100% - 12px);
+  overflow: auto;
+
+  div:last-child {
+    margin-bottom: 0;
   }
 }
 

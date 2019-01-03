@@ -488,7 +488,7 @@ export default class ExaminationMissionAdd extends PureComponent {
                           callback('请输入考试时长!');
                           return;
                         }
-                        if (diff < examLimit) {
+                        if (range[0] && diff < examLimit) {
                           callback('考试时长需小于考试期限时长!');
                         } else {
                           callback();

@@ -6,7 +6,8 @@ export default function SwitchHead(props) {
   const { value=0, labels=[], onSwitch, ...restProps } = props;
 
   return (
-    <div className={value ? styles.containerLight : styles.container} {...restProps}>
+    // <div className={value ? styles.containerLight : styles.container} {...restProps}>
+    <div className={styles.container} {...restProps}>
       {labels.map((label, i) => {
         const isSelected = i === value;
         return (

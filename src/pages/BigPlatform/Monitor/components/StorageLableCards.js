@@ -1,7 +1,8 @@
 import React from 'react';
 import line from '../imgs/line.png';
-// import { Col, Row } from 'antd';
+import { Col } from 'antd';
 import styles from './StorageLableCards.less';
+import Ellipsis from 'components/Ellipsis';
 
 export default function StorageCards(props) {
   const { num, title, dataList } = props;
@@ -17,7 +18,7 @@ export default function StorageCards(props) {
       case '-1':
         return lossColor;
       case '1':
-        return lossColor;
+        return fireColor;
       case '2':
         return fireColor;
       default:
@@ -28,15 +29,25 @@ export default function StorageCards(props) {
   return (
     <div className={styles.card}>
       <div className={styles.top}>
-        <span className={styles.dot} />
-        <span className={styles.topTitle}>
-          储罐ID：
-          {title}
-        </span>
-        <span className={styles.topNum}>
-          位号：
-          {num}
-        </span>
+        <Col span={1}>
+          <span className={styles.dot} />
+        </Col>
+        <Col span={15}>
+          <span className={styles.topTitle}>
+            储罐ID：
+            <Ellipsis tooltip length={10}>
+              {title}
+            </Ellipsis>
+          </span>
+        </Col>
+        <Col span={7} style={{ textAlign: 'right' }}>
+          <span className={styles.topNum}>
+            位号：
+            <Ellipsis tooltip length={6}>
+              {num}
+            </Ellipsis>
+          </span>
+        </Col>
       </div>
 
       <div className={styles.bottom}>
@@ -49,13 +60,18 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.liquidCount} style={{ color: `${getStatus(dataList[0].status)}` }}>
-            {dataList[0].value || '---'}
+            {getStatus(dataList[0].status) ? (
+              dataList[0].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.liquidTitle}>
-            液位(mm)
-            {dataList[0].limitValue ? (
+            液位(
+            {dataList[0].unit || 'mm'})
+            {dataList[0].status !== '0' && dataList[0].limitValue ? (
               <span>
-                ({dataList[0].condition === '1' ? '>' : '<'}
+                ({dataList[0].condition === '1' ? '>=' : '<='}
                 {dataList[0].limitValue})
               </span>
             ) : (
@@ -73,13 +89,18 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.pressureCount} style={{ color: `${getStatus(dataList[1].status)}` }}>
-            {dataList[1].value || '---'}
+            {getStatus(dataList[1].status) ? (
+              dataList[1].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.pressureTitle}>
-            压力(Pa)
-            {dataList[1].limitValue ? (
+            压力(
+            {dataList[1].unit || 'MPa'})
+            {dataList[1].status !== '0' && dataList[1].limitValue ? (
               <span>
-                ({dataList[1].condition === '1' ? '>' : '<'}
+                ({dataList[1].condition === '1' ? '>=' : '<='}
                 {dataList[1].limitValue})
               </span>
             ) : (
@@ -90,13 +111,18 @@ export default function StorageCards(props) {
 
         <div className={styles.temp}>
           <p className={styles.tempCount} style={{ color: `${getStatus(dataList[2].status)}` }}>
-            {dataList[2].value || '---'}
+            {getStatus(dataList[2].status) ? (
+              dataList[2].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.tempTitle}>
-            温度(℃)
-            {dataList[2].limitValue ? (
+            温度(
+            {dataList[2].unit || '℃'} )
+            {dataList[2].status !== '0' && dataList[2].limitValue ? (
               <span>
-                ({dataList[2].condition === '1' ? '>' : '<'}
+                ({dataList[2].condition === '1' ? '>=' : '<='}
                 {dataList[2].limitValue})
               </span>
             ) : (

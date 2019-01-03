@@ -12,7 +12,7 @@ export default class AlarmDynamicMsgDrawer extends PureComponent {
   handleLeftClick = () => {
     const { processIds, handleFetchDataId, handleFetchAlarmHandle } = this.props;
     const { index } = this.state;
-    handleFetchDataId(processIds[index], res => {
+    handleFetchDataId(processIds[index - 1], res => {
       if (!res.data) return;
       const {
         data: { dataId },
@@ -25,7 +25,7 @@ export default class AlarmDynamicMsgDrawer extends PureComponent {
   handleRightClick = () => {
     const { processIds, handleFetchDataId, handleFetchAlarmHandle } = this.props;
     const { index } = this.state;
-    handleFetchDataId(processIds[index], res => {
+    handleFetchDataId(processIds[index + 1], res => {
       if (!res.data) return;
       const {
         data: { dataId },

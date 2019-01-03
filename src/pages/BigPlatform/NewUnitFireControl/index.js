@@ -140,7 +140,15 @@ export default class App extends PureComponent {
               this.showFireMsg(result);
             }
 
-            if (type === 1 || type === 2 || type === 3 || type === 4 || type === 5 || type === 6) {
+            if (
+              type === 1 ||
+              type === 2 ||
+              type === 3 ||
+              type === 4 ||
+              type === 5 ||
+              type === 6 ||
+              type === 21
+            ) {
               // 获取消防主机监测
               dispatch({
                 type: 'newUnitFireControl/fetchFireAlarmSystem',
