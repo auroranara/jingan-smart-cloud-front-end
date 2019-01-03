@@ -13,7 +13,7 @@ const FormItem = Form.Item;
 // const Option = Select.Option;
 
 // 默认页面显示数量
-// const pageSize = 18;
+const pageSize = 18;
 
 // 默认表单值
 const defaultFormData = {
@@ -40,6 +40,7 @@ const breadcrumbList = [
   {
     title: '建筑物信息',
     name: '建筑物信息',
+    href: '/personnel-position/buildings-info/list',
   },
   {
     title: '建筑物信息列表',
@@ -60,15 +61,32 @@ export default class BuildingInfoList extends PureComponent {
   }
 
   /* 挂载后 */
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    //获取建筑物信息列表
+    dispatch({
+      type: 'buildingsInfo/fetchBuildingList',
+      payload: {
+        company_id: id,
+        pageSize,
+        pageNum: 1,
+      },
+    });
+    // 获取字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+    });
+  }
 
   /* 渲染form表单 */
   renderForm() {
     const {
       form: { getFieldDecorator },
-      // user: {
-      //   currentUser: { permissionCodes: codes },
-      // },
     } = this.props;
 
     return (
@@ -138,68 +156,71 @@ export default class BuildingInfoList extends PureComponent {
 
   /* 渲染列表 */
   renderList() {
-    const list = [
-      {
-        name: '锻造车间',
-        principalPhone: '制造业',
-        parentUnitName: '张三',
-        parentUnitPj: '12222222222',
+    const {
+      buildingsInfo: {
+        buildingData: { list },
       },
-    ];
+    } = this.props;
+
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list || []}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card title={item.name} className={styles.card}>
-                <Row>
-                  <Col span={8} style={{ cursor: 'pointer' }}>
-                    <span className={styles.detailpic}>{item.serviceCompanyCount}</span>
-                  </Col>
-                  <Col span={16} style={{ cursor: 'pointer' }}>
-                    {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      <span classNames={styles.detailName}>{'锻造车间' || getEmptyData()}</span>
-                    </Ellipsis> */}
-                    <p>
-                      建筑物类型：
-                      {item.principalPhone || getEmptyData()}
-                    </p>
-                    <p>
-                      火灾危险性分类：
-                      {item.parentUnitName || getEmptyData()}
-                    </p>
-                    <p>
-                      耐火等级：
-                      {item.parentUnitPj || getEmptyData()}
-                    </p>
-                    <p>
-                      建筑结构：
-                      {item.parentUnitPj || getEmptyData()}
-                    </p>
-                    <p>
-                      层数：
-                      {item.parentUnitPj || getEmptyData()}
-                    </p>
-                    <Button>楼层管理</Button>
-                  </Col>
-                </Row>
-              </Card>
-            </List.Item>
-          )}
+          renderItem={item => {
+            const { id, buildingName, buildingType, fireDangerType, fireRating, floorLevel } = item;
+            return (
+              <List.Item key={id}>
+                <Card title={buildingName} className={styles.card}>
+                  <Row>
+                    <Col span={8} style={{ cursor: 'pointer' }}>
+                      <span className={styles.detailpic}>{item.serviceCompanyCount}</span>
+                    </Col>
+                    <Col span={16} style={{ cursor: 'pointer' }}>
+                      <p>
+                        建筑物类型：
+                        {buildingType || getEmptyData()}
+                      </p>
+                      <p>
+                        火灾危险性分类：
+                        {fireDangerType || getEmptyData()}
+                      </p>
+                      <p>
+                        耐火等级：
+                        {fireRating || getEmptyData()}
+                      </p>
+                      <p>
+                        建筑结构：
+                        {item.parentUnitPj || getEmptyData()}
+                      </p>
+                      <p>
+                        层数：
+                        {floorLevel || getEmptyData()}
+                      </p>
+                      <Button>楼层管理</Button>
+                    </Col>
+                  </Row>
+                </Card>
+              </List.Item>
+            );
+          }}
         />
       </div>
     );
   }
 
   render() {
-    const { loading } = this.props;
-
+    const {
+      loading,
+      location: {
+        query: { name },
+      },
+    } = this.props;
+    console.log('this.props', this.props);
     return (
       <PageHeaderLayout
-        title="企业"
+        title={name}
         breadcrumbList={breadcrumbList}
         content={<div>建筑物总数： </div>}
       >

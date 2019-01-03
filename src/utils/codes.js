@@ -141,5 +141,13 @@ export default {
       edit: 'personnelPosition.systemConfiguration.edit',
       delete: 'personnelPosition.systemConfiguration.delete',
     },
+    // 建筑物信息
+    buildingsInfo: {
+      list: 'personnelPosition.buildingsInfo.listView',
+      view: 'personnelPosition.buildingsInfo.view',
+      add: 'personnelPosition.buildingsInfo.add',
+      edit: 'personnelPosition.buildingsInfo.edit',
+      delete: 'personnelPosition.buildingsInfo.delete',
+    },
   },
 };

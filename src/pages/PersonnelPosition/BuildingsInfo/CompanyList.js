@@ -1,13 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Spin, Col, Row, Cascader } from 'antd';
-// import { routerRedux } from 'dva/router';
-// import { AuthLink } from '@/utils/customAuth';
+import { Form, List, Card, Button, Input, Spin, Col, Row, Cascader, message } from 'antd';
+import { routerRedux } from 'dva/router';
+import Ellipsis from 'components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';
-
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import styles from './BuildingsInfo.less';
+import codesMap from '@/utils/codes';
+import { hasAuthority, AuthButton } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 
@@ -17,7 +18,7 @@ const pageSize = 18;
 // 默认表单值
 const defaultFormData = {
   company_name: undefined,
-  industryTypeId: undefined,
+  regulatory_classify: undefined,
 };
 
 /* 获取无数据 */
@@ -75,13 +76,19 @@ export default class CompanyList extends PureComponent {
     });
   }
 
+  // 跳转到建筑物信息列表
+  handleBuildingList = (id, name) => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(`/personnel-position/buildings-info/detail/${id}?name=${name}`));
+  };
+
   /* 查询 */
   handleClickToQuery = () => {
     const {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    const { industryTypeId } = data;
+    const { regulatory_classify } = data;
     // 修改表单数据
     this.formData = data;
     // 重新请求数据
@@ -90,9 +97,11 @@ export default class CompanyList extends PureComponent {
       payload: {
         pageSize,
         pageNum: 1,
-        industryTypeId:
-          industryTypeId && industryTypeId.length > 0 ? industryTypeId.join(',') : undefined,
         ...data,
+        regulatory_classify:
+          regulatory_classify && regulatory_classify.length > 0
+            ? regulatory_classify.pop()
+            : undefined,
       },
     });
   };
@@ -100,6 +109,7 @@ export default class CompanyList extends PureComponent {
   /* 重置 */
   handleClickToReset = () => {
     const {
+      dispatch,
       form: { resetFields },
     } = this.props;
     // 清除筛选条件
@@ -107,11 +117,33 @@ export default class CompanyList extends PureComponent {
     // 修改表单数据
     this.formData = defaultFormData;
     // 重新请求数据
-    this.props.dispatch({
+    dispatch({
       type: 'buildingsInfo/fetchCompanyList',
       payload: {
         pageSize,
         pageNum: 1,
+      },
+    });
+  };
+
+  /* 滚动加载 */
+  handleLoadMore = () => {
+    const {
+      dispatch,
+      buildingsInfo: { pageNum, isLast },
+      form: { getFieldsValue },
+    } = this.props;
+    if (isLast) {
+      return;
+    }
+    const data = getFieldsValue();
+    // 请求数据
+    dispatch({
+      type: 'buildingsInfo/appendFetch',
+      payload: {
+        pageSize,
+        pageNum: pageNum + 1,
+        ...data,
       },
     });
   };
@@ -121,9 +153,6 @@ export default class CompanyList extends PureComponent {
     const {
       company: { industryCategories },
       form: { getFieldDecorator },
-      // user: {
-      //   currentUser: { permissionCodes: codes },
-      // },
     } = this.props;
 
     return (
@@ -136,8 +165,8 @@ export default class CompanyList extends PureComponent {
             })(<Input placeholder="请输入企业名称" />)}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('industryTypeId', {
-              initialValue: defaultFormData.industryTypeId,
+            {getFieldDecorator('regulatory_classify', {
+              initialValue: defaultFormData.regulatory_classify,
             })(
               <Cascader
                 style={{ width: '300px' }}
@@ -164,9 +193,13 @@ export default class CompanyList extends PureComponent {
             <Button onClick={this.handleClickToReset}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <Button type="primary" href="#/device-management/video-monitor/add">
+            <AuthButton
+              code={codesMap.personnelPosition.buildingsInfo.add}
+              type="primary"
+              href="#/personnel-position/buildings-info/add"
+            >
               新增
-            </Button>
+            </AuthButton>
           </FormItem>
         </Form>
       </Card>
@@ -176,72 +209,90 @@ export default class CompanyList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      buildingsInfo: { list },
+      buildingsInfo: {
+        data: { list },
+      },
+      user: {
+        currentUser: { permissionCodes: codes },
+      },
     } = this.props;
+
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list || []}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card
-                title={item.company_name}
-                className={styles.card}
-                // extra={
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(item.id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // }
-              >
-                <Row>
-                  <Col span={16} style={{ cursor: 'pointer' }}>
-                    <p>
-                      行业类别：
-                      {item.industry_type_id || getEmptyData()}
-                    </p>
-                    <p>
-                      安全负责人：
-                      {item.principal_name || getEmptyData()}
-                    </p>
-                    <p>
-                      联系电话：
-                      {item.principal_phone || getEmptyData()}
-                    </p>
-                  </Col>
-                  <Col
-                    span={8}
-                    onClick={() => {
-                      this.handleGoToDetail(item.id);
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <span className={styles.quantity}>{item.serviceCompanyCount}</span>
-                  </Col>
-                </Row>
-              </Card>
-            </List.Item>
-          )}
+          renderItem={item => {
+            const {
+              grid_id,
+              company_id,
+              company_name,
+              industryName,
+              principal_name,
+              principal_phone,
+              buildingNum,
+            } = item;
+            return (
+              <List.Item key={grid_id}>
+                <Card title={company_name} className={styles.card}>
+                  <Row>
+                    <Col span={16} style={{ cursor: 'pointer' }}>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        行业类别：
+                        {industryName || getEmptyData()}
+                      </Ellipsis>
+                      <p>
+                        安全负责人：
+                        {principal_name || getEmptyData()}
+                      </p>
+                      <p>
+                        联系电话：
+                        {principal_phone || getEmptyData()}
+                      </p>
+                    </Col>
+                    <Col
+                      span={8}
+                      onClick={() => {
+                        if (hasAuthority(codesMap.personnelPosition.buildingsInfo.view, codes))
+                          this.handleBuildingList(company_id, company_name);
+                        else message.warn('您没有权限访问对应页面');
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className={styles.quantity}>{buildingNum}</span>
+                    </Col>
+                  </Row>
+                </Card>
+              </List.Item>
+            );
+          }}
         />
       </div>
     );
   }
 
   render() {
-    const { loading } = this.props;
+    const {
+      loading,
+      buildingsInfo: {
+        data: {
+          pagination: { total },
+        },
+        isLast,
+      },
+    } = this.props;
 
     return (
       <PageHeaderLayout
         title="建筑物信息"
         breadcrumbList={breadcrumbList}
-        content={<div>单位总数： </div>}
+        content={
+          <div>
+            单位总数：
+            {total}{' '}
+          </div>
+        }
       >
         {this.renderForm()}
         <InfiniteScroll
@@ -251,7 +302,7 @@ export default class CompanyList extends PureComponent {
             // 防止多次加载
             !loading && this.handleLoadMore();
           }}
-          // hasMore={!isLast}
+          hasMore={!isLast}
           loader={
             <div className="loader" key={0}>
               {loading && (

@@ -6,6 +6,11 @@ export async function queryCompanyList(params) {
   return request(`/acloud_new/v2/buildingInfo/index.json?${stringify(params)}`);
 }
 
+/* 获取字典 */
+export async function queryDict(params) {
+  return request(`/acloud_new/v2/sys/dict/list?${stringify(params)}`);
+}
+
 // 获取建筑物列表
 export async function queryBuildingsList(params) {
   return request(`/acloud_new/v2/buildingInfo/buildingList.json?${stringify(params)}`);
