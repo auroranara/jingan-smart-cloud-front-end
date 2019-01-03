@@ -1,5 +1,4 @@
-// import {
-// } from '../services/buildingsInfo';
+import { queryCompanyList } from '../services/personnelPosition/buildingsInfo';
 
 export default {
   namespace: 'buildingsInfo',
@@ -13,9 +12,41 @@ export default {
         pageNum: 1,
       },
     },
+    isLast: false,
   },
 
-  effects: {},
+  effects: {
+    // 获取建筑物单位列表
+    *fetchCompanyList({ payload, success, error }, { call, put }) {
+      const response = yield call(queryCompanyList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryCompanyList',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+  },
 
-  reducers: {},
+  reducers: {
+    // 获取建筑物单位列表
+    queryCompanyList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
+      return {
+        ...state,
+        list,
+        pageNum: 1,
+        data: payload,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+  },
 };

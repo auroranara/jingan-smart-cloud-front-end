@@ -12,12 +12,12 @@ import styles from './BuildingsInfo.less';
 const FormItem = Form.Item;
 
 // 默认页面显示数量
-// const pageSize = 18;
+const pageSize = 18;
 
 // 默认表单值
 const defaultFormData = {
-  companyName: undefined,
-  industryCategory: undefined,
+  company_name: undefined,
+  industryTypeId: undefined,
 };
 
 /* 获取无数据 */
@@ -45,8 +45,9 @@ const breadcrumbList = [
 // 获取根节点
 const getRootChild = () => document.querySelector('#root>div');
 
-@connect(({ buildingsInfo, user, loading }) => ({
+@connect(({ buildingsInfo, company, user, loading }) => ({
   buildingsInfo,
+  company,
   user,
   loading: loading.models.buildingsInfo,
 }))
@@ -58,11 +59,67 @@ export default class CompanyList extends PureComponent {
   }
 
   /* 挂载后 */
-  componentDidMount() {}
+  componentDidMount() {
+    const { dispatch } = this.props;
+    //获取单位列表
+    dispatch({
+      type: 'buildingsInfo/fetchCompanyList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+    // 获取行业类别
+    dispatch({
+      type: 'company/fetchIndustryType',
+    });
+  }
+
+  /* 查询 */
+  handleClickToQuery = () => {
+    const {
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    const { industryTypeId } = data;
+    // 修改表单数据
+    this.formData = data;
+    // 重新请求数据
+    this.props.dispatch({
+      type: 'buildingsInfo/fetchCompanyList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+        industryTypeId:
+          industryTypeId && industryTypeId.length > 0 ? industryTypeId.join(',') : undefined,
+        ...data,
+      },
+    });
+  };
+
+  /* 重置 */
+  handleClickToReset = () => {
+    const {
+      form: { resetFields },
+    } = this.props;
+    // 清除筛选条件
+    resetFields();
+    // 修改表单数据
+    this.formData = defaultFormData;
+    // 重新请求数据
+    this.props.dispatch({
+      type: 'buildingsInfo/fetchCompanyList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
+  };
 
   /* 渲染form表单 */
   renderForm() {
     const {
+      company: { industryCategories },
       form: { getFieldDecorator },
       // user: {
       //   currentUser: { permissionCodes: codes },
@@ -73,18 +130,18 @@ export default class CompanyList extends PureComponent {
       <Card>
         <Form layout="inline">
           <FormItem>
-            {getFieldDecorator('companyName', {
-              initialValue: defaultFormData.companyName,
+            {getFieldDecorator('company_name', {
+              initialValue: defaultFormData.company_name,
               getValueFromEvent: e => e.target.value.trim(),
             })(<Input placeholder="请输入企业名称" />)}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('industryCategory', {
-              initialValue: defaultFormData.industryCategory,
+            {getFieldDecorator('industryTypeId', {
+              initialValue: defaultFormData.industryTypeId,
             })(
               <Cascader
                 style={{ width: '300px' }}
-                // options={industryCategories}
+                options={industryCategories}
                 fieldNames={{
                   value: 'type_id',
                   label: 'gs_type_name',
@@ -118,15 +175,9 @@ export default class CompanyList extends PureComponent {
 
   /* 渲染列表 */
   renderList() {
-    const list = [
-      {
-        name: '无锡晶安智慧科技有限公司',
-        principalPhone: '制造业',
-        parentUnitName: '张三',
-        parentUnitPj: '12222222222',
-        serviceCompanyCount: '2',
-      },
-    ];
+    const {
+      buildingsInfo: { list },
+    } = this.props;
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
@@ -136,7 +187,7 @@ export default class CompanyList extends PureComponent {
           renderItem={item => (
             <List.Item key={item.id}>
               <Card
-                title={item.name}
+                title={item.company_name}
                 className={styles.card}
                 // extra={
                 //   <Button
@@ -154,15 +205,15 @@ export default class CompanyList extends PureComponent {
                   <Col span={16} style={{ cursor: 'pointer' }}>
                     <p>
                       行业类别：
-                      {item.principalPhone || getEmptyData()}
+                      {item.industry_type_id || getEmptyData()}
                     </p>
                     <p>
                       安全负责人：
-                      {item.parentUnitName || getEmptyData()}
+                      {item.principal_name || getEmptyData()}
                     </p>
                     <p>
                       联系电话：
-                      {item.parentUnitPj || getEmptyData()}
+                      {item.principal_phone || getEmptyData()}
                     </p>
                   </Col>
                   <Col
