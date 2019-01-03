@@ -98,7 +98,7 @@ module.exports = env => {
           component: './BigPlatform/Video',
         },
         {
-          path: '/big-platform/position',
+          path: '/big-platform/position/:companyId',
           component: './BigPlatform/Position/RealTime',
         },
         {

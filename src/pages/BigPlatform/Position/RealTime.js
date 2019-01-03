@@ -72,9 +72,13 @@ export default class WbTest extends PureComponent {
 
   componentDidMount() {
     // const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: { params: { companyId } },
+    } = this.props;
     const params = {
-      companyId: COMPANY_ID,
+      // companyId: COMPANY_ID,
+      companyId,
       env: 'v2_test',
       type: 2,
     };
@@ -122,7 +126,8 @@ export default class WbTest extends PureComponent {
 
     dispatch({
       type: 'personPosition/fetchInitialPositions',
-      payload: { companyId: COMPANY_ID },
+      // payload: { companyId: COMPANY_ID },
+      payload: { companyId },
       callback: (data=[]) => {
         this.setState({ positions: data });
       },
