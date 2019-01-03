@@ -335,9 +335,9 @@ export const WASTE_GAS_COLUMNS = [
 
 export const STORAGE_TANK_PARAMS = [
   { name: '全部', key: 0 },
-  { name: '压力', key: 1 },
   { name: '液位', key: 2 },
-  { name: '温度', key: 3 },
+  { name: '压力', key: 3 },
+  { name: '温度', key: 4 },
 ];
 
 export const STORAGE_TANK_COLUMNS = [
@@ -488,7 +488,7 @@ export function getFields(type, params, methods) {
           ),
         },
         {
-          id: 'code',
+          id: 'modelCode',
           label: '异常参数：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
