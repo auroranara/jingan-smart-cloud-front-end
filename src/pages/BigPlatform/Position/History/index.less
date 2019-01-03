@@ -79,5 +79,127 @@
     .ant-calendar-range-picker-separator {
       color: #fff;
     }
+    .ant-calendar-picker-icon {
+      color: #fff;
+    }
+  }
+}
+.rangePickerDropDown {
+  :global {
+    .ant-calendar-range {
+      color: #fff;
+      background-color: #032d5d;
+      border-color: #032d5d;
+    }
+    .ant-calendar-footer, .ant-calendar-body {
+      border-top-color: #032d5d;
+    }
+    .ant-calendar-input-wrap {
+      border-bottom-color: #032d5d;
+    }
+    .ant-calendar-range-middle {
+      color: #fff;
+    }
+    .ant-calendar-input {
+      text-align: center;
+      color: #fff;
+      background-color: #032d5d;
+    }
+    .ant-calendar-time-picker-btn {
+      color: #fff;
+
+      &:hover {
+        color: #195fbd;
+      }
+      &.ant-calendar-time-picker-btn-disabled {
+        color: #1b497d;
+      }
+    }
+    .ant-calendar-ok-btn {
+      background-color: #044786;
+      border-color: #044786;
+
+      &:hover {
+        background-color: #195fbd;
+        border-color: #195fbd;
+      }
+      &.ant-calendar-ok-btn-disabled {
+        color: #1b497d;
+      }
+    }
+    .ant-calendar-prev-year-btn,
+    .ant-calendar-next-year-btn,
+    .ant-calendar-prev-month-btn,
+    .ant-calendar-next-month-btn,
+    .ant-calendar-month-select,
+    .ant-calendar-year-select,
+    .ant-calendar-day-select {
+      color: #fff;
+
+      &:hover {
+        color: #195fbd;
+      }
+    }
+    .ant-calendar-date {
+      color: #fff;
+
+      &:hover {
+        background-color: #06366c;
+      }
+    }
+    .ant-calendar-in-range-cell {
+      &:before {
+        background-color: #06366c;
+      }
+    }
+    .ant-calendar-next-month-btn-day,
+    .ant-calendar-last-month-cell {
+      .ant-calendar-date {
+        color: #1b497d;
+      }
+    }
+    .ant-calendar-selected-start-date,
+    .ant-calendar-selected-end-date {
+      .ant-calendar-date {
+        background-color: #195fbd;
+      }
+      &.ant-calendar-today {
+        .ant-calendar-date {
+          color: #fff;
+        }
+      }
+    }
+    .ant-calendar-today {
+      .ant-calendar-date {
+        border-color: #195fbd;
+        color: #195fbd;
+      }
+    }
+    .ant-calendar-range.ant-calendar-time .ant-calendar-time-picker-combobox {
+      background-color: #032d5d;
+    }
+    .ant-calendar-time-picker-select{
+      &::-webkit-scrollbar {
+        width: 8px;
+        background-color: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: rgba(9, 103, 211, 0.5);
+      }
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+        background-color: transparent;
+      }
+      li {
+        &:hover {
+          background-color: #06366c;
+        }
+
+        &.ant-calendar-time-picker-select-option-selected {
+          background-color: #195fbd;
+        }
+      }
+    }
   }
 }
