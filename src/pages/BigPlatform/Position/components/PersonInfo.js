@@ -36,7 +36,8 @@ export default function PersonInfo(props) {
       <div className={styles.img} style={{ backgroundImage: `url(${Zhang})` }} />
       {isSOS
         ? <Button ghost style={BTN_STYLE} onClick={e => handleSOS(cardId)}>处理</Button>
-        : <Button ghost style={BTN_STYLE} onClick={e => router.push(`/big-platform/position/history/${cardId}`)}>历史轨迹</Button>
+        // : <Button ghost style={BTN_STYLE} onClick={e => router.push(`/big-platform/position/history/${cardId}`)}>历史轨迹</Button>
+        : <Button ghost style={BTN_STYLE} onClick={e => window.open(`${window.publicPath}#/big-platform/position/history/${cardId}`, '_blank')}>历史轨迹</Button>
       }
       <h3 className={styles.name}>
         {name || '暂无名字'}
