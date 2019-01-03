@@ -3,6 +3,7 @@ export default {
     safety: 'dashboard.safetyView',
     fireControl: 'dashboard.fireControlView',
     dynamicMonitor: 'dashboard.dynamicMonitorView',
+    personnelPosition: 'dashboard.personnelPositioningView',
   },
   role: {
     list: 'roleAuthorization.role.listView',
@@ -131,6 +132,23 @@ export default {
       add: 'training.points.add',
       edit: 'training.points.edit',
       delete: 'training.points.delete',
+    },
+  },
+  personnelPosition: {
+    // 系统配置
+    systemConfiguration: {
+      list: 'personnelPosition.systemConfiguration.listView',
+      add: 'personnelPosition.systemConfiguration.add',
+      edit: 'personnelPosition.systemConfiguration.edit',
+      delete: 'personnelPosition.systemConfiguration.delete',
+    },
+    // 信标管理
+    beaconManagement: {
+      list: 'personnelPosition.beaconManagement.listView',
+      companyBeacon: 'personnelPosition.beaconManagement.companyBeacon',
+      add: 'personnelPosition.beaconManagement.add',
+      edit: 'personnelPosition.beaconManagement.edit',
+      delete: 'personnelPosition.beaconManagement.delete',
     },
   },
 };
