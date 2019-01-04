@@ -10,7 +10,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './CompanyInfo.less';
 
 const FormItem = Form.Item;
-// const Option = Select.Option;
+const Option = Select.Option;
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -77,9 +77,37 @@ export default class BuildingInfoList extends PureComponent {
         pageNum: 1,
       },
     });
-    // 获取字典
+    // 获取建筑物类型字典
     dispatch({
       type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'buildingType',
+        key: 'buildingTypes',
+      },
+    });
+    // 获取火灾危险等级字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'fireDangerType',
+        key: 'fireDangerTypes',
+      },
+    });
+    // 获取耐火等级字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'fireRating',
+        key: 'fireRatings',
+      },
+    });
+    // 获取建筑结构字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'floorNumber',
+        key: 'floorNumbers',
+      },
     });
   }
 
@@ -87,8 +115,8 @@ export default class BuildingInfoList extends PureComponent {
   renderForm() {
     const {
       form: { getFieldDecorator },
+      buildingsInfo: { buildingTypes },
     } = this.props;
-
     return (
       <Card>
         <Form layout="inline">
@@ -106,7 +134,15 @@ export default class BuildingInfoList extends PureComponent {
                 {getFieldDecorator('companyName', {
                   initialValue: defaultFormData.companyName,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Select style={{ width: '330px' }} placeholder="请选择建筑物类型" />)}
+                })(
+                  <Select style={{ width: '330px' }} placeholder="请选择建筑物类型">
+                    {buildingTypes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -169,15 +205,29 @@ export default class BuildingInfoList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list || []}
           renderItem={item => {
-            const { id, buildingName, buildingType, fireDangerType, fireRating, floorLevel } = item;
+            const {
+              id,
+              buildingName,
+              buildingType,
+              fireDangerType,
+              fireRating,
+              floorLevel,
+              photoWebUrl,
+            } = item;
             return (
               <List.Item key={id}>
                 <Card title={buildingName} className={styles.card}>
                   <Row>
-                    <Col span={8} style={{ cursor: 'pointer' }}>
-                      <span className={styles.detailpic}>{item.serviceCompanyCount}</span>
+                    <Col span={10} style={{ cursor: 'pointer' }}>
+                      <div
+                        className={styles.detailpic}
+                        style={{
+                          backgroundImage: `url(${photoWebUrl[0].webUrl.split(',')[0]})`,
+                          backgroundSize: 'cover',
+                        }}
+                      />
                     </Col>
-                    <Col span={16} style={{ cursor: 'pointer' }}>
+                    <Col span={14} style={{ cursor: 'pointer' }}>
                       <p>
                         建筑物类型：
                         {buildingType || getEmptyData()}
@@ -213,16 +263,27 @@ export default class BuildingInfoList extends PureComponent {
   render() {
     const {
       loading,
+      buildingsInfo: {
+        buildingData: {
+          pagination: { total },
+        },
+        isLast,
+      },
       location: {
         query: { name },
       },
     } = this.props;
-    console.log('this.props', this.props);
+
     return (
       <PageHeaderLayout
         title={name}
         breadcrumbList={breadcrumbList}
-        content={<div>建筑物总数： </div>}
+        content={
+          <div>
+            建筑物总数：
+            {total}{' '}
+          </div>
+        }
       >
         {this.renderForm()}
         <InfiniteScroll
@@ -232,7 +293,7 @@ export default class BuildingInfoList extends PureComponent {
             // 防止多次加载
             !loading && this.handleLoadMore();
           }}
-          // hasMore={!isLast}
+          hasMore={!isLast}
           loader={
             <div className="loader" key={0}>
               {loading && (

@@ -129,21 +129,22 @@ export default class CompanyList extends PureComponent {
   /* 滚动加载 */
   handleLoadMore = () => {
     const {
-      dispatch,
-      buildingsInfo: { pageNum, isLast },
-      form: { getFieldsValue },
+      buildingsInfo: { isLast },
     } = this.props;
     if (isLast) {
       return;
     }
-    const data = getFieldsValue();
+    const {
+      dispatch,
+      buildingsInfo: { pageNum },
+    } = this.props;
     // 请求数据
     dispatch({
-      type: 'buildingsInfo/appendFetch',
+      type: 'buildingsInfo/appendfetch',
       payload: {
         pageSize,
         pageNum: pageNum + 1,
-        ...data,
+        ...this.formData,
       },
     });
   };

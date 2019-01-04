@@ -17,6 +17,7 @@ export default {
       },
     },
     isLast: false,
+    list: [],
     pageNum: 1,
     buildingData: {
       list: [],
@@ -26,6 +27,14 @@ export default {
         pageNum: 1,
       },
     },
+    // 建筑物类型
+    buildingTypes: [],
+    // 火灾危险性分类
+    fireDangerTypes: [],
+    // 耐火等级
+    fireRatings: [],
+    // 建筑结构
+    floorNumbers: [],
   },
 
   effects: {
@@ -59,7 +68,7 @@ export default {
     // 获取字典
     *fetchDict(
       {
-        payload: { type, id },
+        payload: { type, key },
         success,
         error,
       },
@@ -70,8 +79,7 @@ export default {
         yield put({
           type: 'saveDict',
           payload: {
-            id,
-            list: response.result,
+            result: response.result,
           },
         });
         if (success) {
@@ -117,25 +125,30 @@ export default {
     saveLoadMoreList(state, { payload }) {
       const {
         list,
+        pagination,
         pagination: { pageNum, pageSize, total },
       } = payload;
+      let nextList = list;
+      if (pageNum !== 1) nextList = state.list.concat(list);
       return {
         ...state,
-        list: [...state.list, ...list],
-        data: payload,
+        data: {
+          list: nextList,
+          pagination,
+        },
+        pageNum,
+        list: nextList,
         isLast: pageNum * pageSize >= total,
       };
     },
     // 获取字典
-    saveDict(
-      state,
-      {
-        payload: { id, result },
-      }
-    ) {
+    saveDict(state, { payload }) {
+      console.log('payload', payload);
+
+      const { result } = payload;
       return {
         ...state,
-        [id]: result,
+        result,
       };
     },
     // 获取建筑物信息列表
@@ -147,7 +160,6 @@ export default {
       return {
         ...state,
         list,
-        pageNum: 1,
         buildingData: payload,
         isLast: pageNum * pageSize >= total,
       };
