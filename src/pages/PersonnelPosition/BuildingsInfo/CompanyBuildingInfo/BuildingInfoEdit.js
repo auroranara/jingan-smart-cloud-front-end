@@ -122,7 +122,7 @@ export default class BuildingInfoEdit extends PureComponent {
     });
   }
 
-  handleSubmit = e => {};
+  handleClickValidate = () => {};
 
   // 渲染表单
   renderFormItems(items) {
@@ -137,14 +137,22 @@ export default class BuildingInfoEdit extends PureComponent {
       )
     );
   }
-
+  photoAddress;
   render() {
     const {
       location: {
         query: { name: company_name },
       },
       form: { getFieldDecorator },
-      buildingsInfo: { buildingType = [], fireDangerType = [], fireRating = [], floorNumber = [] },
+      buildingsInfo: {
+        buildingType = [],
+        fireDangerType = [],
+        fireRating = [],
+        floorNumber = [],
+        detail: {
+          data: { buildingTypeName, buildingName, floorNumberName },
+        },
+      },
     } = this.props;
 
     const defaultItems = [
@@ -169,25 +177,49 @@ export default class BuildingInfoEdit extends PureComponent {
         name: 'buildingType',
         cName: '建筑物类型',
         rules: generateRules('建筑物类型'),
-        component: <Select placeholder="请选择建筑物类型">{getOptions(buildingType)}</Select>,
+        component: (
+          <div>
+            {getFieldDecorator('buildingType', { initialValue: buildingTypeName })(
+              <Select placeholder="请选择建筑物类型">{getOptions(buildingType)}</Select>
+            )}
+          </div>
+        ),
       },
       {
         name: 'buildingName',
         cName: '建筑物名称',
         rules: generateRules('建筑物名称'),
-        component: <Input placeholder="请输入建筑物名称" />,
+        component: (
+          <div>
+            {getFieldDecorator('buildingName', { initialValue: buildingName })(
+              <Input placeholder="请输入建筑物名称" />
+            )}
+          </div>
+        ),
       },
       {
-        name: 'contaction',
+        name: 'floorNumber',
         cName: '建筑结构',
         rules: generateRules('建筑结构'),
-        component: <Select placeholder="请选择建筑结构">{getOptions(floorNumber)}</Select>,
+        component: (
+          <div>
+            {getFieldDecorator('floorNumber', { initialValue: floorNumberName })(
+              <Select placeholder="请选择建筑结构">{getOptions(floorNumber)}</Select>
+            )}
+          </div>
+        ),
       },
       {
         name: 'dangerousType',
         cName: '火灾危险性分类',
         rules: generateRules('火灾危险性分类'),
-        component: <Select placeholder="请选择火灾危险性分类">{getOptions(fireDangerType)}</Select>,
+        component: (
+          <div>
+            {getFieldDecorator('fireDangerType', { initialValue: floorNumberName })(
+              <Select placeholder="请选择火灾危险性分类">{getOptions(fireDangerType)}</Select>
+            )}
+          </div>
+        ),
       },
       {
         name: 'buildingArea',
@@ -195,7 +227,7 @@ export default class BuildingInfoEdit extends PureComponent {
         component: <InputNumber style={{ width: '100%' }} />,
       },
       {
-        name: 'level',
+        name: 'fireRating',
         cName: '耐火等级',
         rules: generateRules('耐火等级'),
         component: <Select placeholder="请选择耐火等级">{getOptions(fireRating)}</Select>,
@@ -247,7 +279,7 @@ export default class BuildingInfoEdit extends PureComponent {
             {this.renderFormItems(formItems)}
             <Col span={24}>
               <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" onClick={this.handleClickValidate}>
                   确定
                 </Button>
                 <Button type="primary" style={{ marginLeft: '10px' }}>

@@ -29,6 +29,9 @@ export default {
         pageNum: 1,
       },
     },
+    detail: {
+      data: { buildingTypeName: undefined, buildingName: undefined, floorNumberName: undefined },
+    },
   },
 
   effects: {
@@ -119,7 +122,7 @@ export default {
     },
 
     // 编辑建筑
-    *editLaws({ payload, success, error }, { call, put }) {
+    *editBuilding({ payload, success, error }, { call, put }) {
       const response = yield call(editBuildings, payload);
       if (response.code === 200) {
         yield put({
@@ -211,6 +214,25 @@ export default {
         pageNum,
         list: nextList,
         isLast: pageNum * pageSize >= total,
+      };
+    },
+
+    // 新增建筑
+    addBuilding(state, { payload }) {
+      return {
+        ...state,
+        detail: payload,
+      };
+    },
+
+    // 编辑建筑
+    updateBuilding(state, { payload }) {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
   },
