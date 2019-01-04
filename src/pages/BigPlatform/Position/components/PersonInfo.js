@@ -17,6 +17,7 @@ export default function PersonInfo(props) {
   const {
     visible,
     data: { sos: isSOS, cardId, userName: name, phone=PHONE, cardCode: code, department, areaName: section }={},
+    companyId,
     style,
     handleClose,
     handleSOS,
@@ -37,7 +38,7 @@ export default function PersonInfo(props) {
       {isSOS
         ? <Button ghost style={BTN_STYLE} onClick={e => handleSOS(cardId)}>处理</Button>
         // : <Button ghost style={BTN_STYLE} onClick={e => router.push(`/big-platform/position/history/${cardId}`)}>历史轨迹</Button>
-        : <Button ghost style={BTN_STYLE} onClick={e => window.open(`${window.publicPath}#/big-platform/position/history/${cardId}`, '_blank')}>历史轨迹</Button>
+        : <Button ghost style={BTN_STYLE} onClick={e => window.open(`${window.publicPath}#/big-platform/position/${companyId}/history/${cardId}`, '_blank')}>历史轨迹</Button>
       }
       <h3 className={styles.name}>
         {name || '暂无名字'}

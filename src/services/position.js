@@ -10,3 +10,8 @@ export async function getList(params) {
 export async function getLatest({ cardId }) {
   return request(`/acloud_new/v2/location/getRecentlyTrack/${cardId}`);
 }
+
+// 获取企业名称
+export async function getCompany({ companyId }) {
+  return request(`/acloud_new/v2/baseInfo/company/${companyId}`);
+}
