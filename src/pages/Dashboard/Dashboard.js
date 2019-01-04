@@ -46,7 +46,6 @@ export default class Dashboard extends PureComponent {
     // const regulatoryClassification = ['1', '2'];
     const classification = Array.isArray(regulatoryClassification) && regulatoryClassification.map(n => Number.parseInt(n, 10)) || [];
     const [safetyAuth, fireControlAuth, dynamicMonitorAuth, personnelPositionAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
-    console.log('personnelPositionAuth', personnelPositionAuth);
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应)
     const [clfcSafetyAuth, clfcFireControlAuth, clfcEnviromentAuth] = [1, 2, 3].map(k => classification.includes(k));
