@@ -52,7 +52,7 @@ const PHONE = '13270801232';
 //   time: "2018-12-22 10:30:00",
 // };
 
-@connect(({ personPosition, position }) => ({ personPosition, position }))
+@connect(({ personPosition, user }) => ({ personPosition, user }))
 export default class WbTest extends PureComponent {
   state = {
     positions: [], // 地图上的显示的所有点的集合
@@ -135,8 +135,7 @@ export default class WbTest extends PureComponent {
 
     // 获取企业信息
     dispatch({
-      type: 'position/fetchCompany',
-      payload: { companyId },
+      type: 'user/fetchCurrent',
     });
   }
 
@@ -223,7 +222,7 @@ export default class WbTest extends PureComponent {
 
   render() {
     // 注意这里额外引了一个model
-    const { match: { params: { companyId } }, position: { company: { name } } } = this.props;
+    const { match: { params: { companyId } }, user: { currentUser: { companyName } } } = this.props;
     const {
       positions,
       posInfo,
@@ -279,7 +278,7 @@ export default class WbTest extends PureComponent {
     return (
       <BigPlatformLayout
         title="晶安人员定位监控系统"
-        extra={name}
+        extra={companyName}
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
         style={{
