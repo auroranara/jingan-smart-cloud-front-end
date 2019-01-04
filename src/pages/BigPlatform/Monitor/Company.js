@@ -409,7 +409,6 @@ export default class App extends PureComponent {
       dispatch,
       historyAlarmLoading,
     } = this.props;
-
     const {
       gasRotated,
       gasStatus,
@@ -439,7 +438,7 @@ export default class App extends PureComponent {
                 backgroundSize: '100% 100%',
                 transform: 'none',
               }}
-              onClick={this.handleVideoShow}
+              onClick={() => this.handleVideoShow(allCamera[0].key_id)}
             />
             <Col span={6} style={{ height: '100%' }}>
               <div
