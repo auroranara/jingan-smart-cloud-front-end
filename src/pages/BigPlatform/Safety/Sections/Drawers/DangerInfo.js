@@ -34,6 +34,7 @@ class DangerInfo extends PureComponent {
           }}
           visible={visible}
           style={{ padding: 0 }}
+          className={styles.drawer}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
           zIndex={1666}
         >
