@@ -2,6 +2,8 @@ import {
   queryCompanyList,
   queryDict,
   queryBuildingsList,
+  addBuildings,
+  editBuildings,
 } from '../services/personnelPosition/buildingsInfo';
 
 export default {
@@ -27,14 +29,6 @@ export default {
         pageNum: 1,
       },
     },
-    // 建筑物类型
-    buildingTypes: [],
-    // 火灾危险性分类
-    fireDangerTypes: [],
-    // 耐火等级
-    fireRatings: [],
-    // 建筑结构
-    floorNumbers: [],
   },
 
   effects: {
@@ -66,20 +60,13 @@ export default {
     },
 
     // 获取字典
-    *fetchDict(
-      {
-        payload: { type, key },
-        success,
-        error,
-      },
-      { call, put }
-    ) {
-      const response = yield call(queryDict, { type });
-      if (response.code === 200) {
+    *fetchDict({ payload, success, error }, { call, put }) {
+      const response = yield call(queryDict, payload);
+      if (response.error.code === 200) {
         yield put({
           type: 'saveDict',
           payload: {
-            result: response.result,
+            [payload.type]: response.result,
           },
         });
         if (success) {
@@ -105,6 +92,47 @@ export default {
         error(response.msg);
       }
     },
+
+    // 查询建筑物信息列表
+    *appendBuildingList({ payload }, { call, put }) {
+      const response = yield call(queryBuildingsList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveLoadBuildingList',
+          payload: response.data,
+        });
+      }
+    },
+
+    // 新增建筑
+    *insertBuilding({ payload, success, error }, { call, put }) {
+      const response = yield call(addBuildings, payload);
+      const { code, data } = response;
+      if (code === 200) {
+        yield put({ type: 'addBuilding', payload: data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 编辑建筑
+    *editLaws({ payload, success, error }, { call, put }) {
+      const response = yield call(editBuildings, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'updateBuilding',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
@@ -121,6 +149,7 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
+
     // 查询建筑物列表
     saveLoadMoreList(state, { payload }) {
       const {
@@ -141,16 +170,15 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
+
     // 获取字典
     saveDict(state, { payload }) {
-      console.log('payload', payload);
-
-      const { result } = payload;
       return {
         ...state,
-        result,
+        ...payload,
       };
     },
+
     // 获取建筑物信息列表
     saveBuildingList(state, { payload }) {
       const {
@@ -161,6 +189,27 @@ export default {
         ...state,
         list,
         buildingData: payload,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+
+    // 查询建筑物信息列表
+    saveLoadBuildingList(state, { payload }) {
+      const {
+        list,
+        pagination,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
+      let nextList = list;
+      if (pageNum !== 1) nextList = state.list.concat(list);
+      return {
+        ...state,
+        buildingData: {
+          list: nextList,
+          pagination,
+        },
+        pageNum,
+        list: nextList,
         isLast: pageNum * pageSize >= total,
       };
     },

@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { routerRedux } from 'dva/router';
-// import moment from 'moment';
-import { Button, Card, Col, Form, Icon, Input, Upload, Select } from 'antd';
+import { Button, Card, Col, Form, Icon, Input, Upload, Select, InputNumber } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 // import urls from 'utils/urls';
@@ -78,39 +77,54 @@ function generateRules(cName, msg = '输入', ...rules) {
   return [{ required: true, message: `请${msg}${cName}` }, ...rules];
 }
 
-// function genCheckFileList(msg) {
-//   return function(rule, value, callback) {
-//     if (!value || !value.fileList || !value.fileList.length) callback(`请上传${msg}`);
-//     else callback();
-//   };
-// }
-
 function getOptions(options = []) {
-  // console.log(options);
-  return options.map(({ value, label }) => (
-    <Option key={value} value={value}>
+  return options.map(({ id, label }) => (
+    <Option key={id} value={id}>
       {label}
     </Option>
   ));
 }
 
-@connect(({ safety, loading }) => ({ safety, loading: loading.models.safety }))
+@connect(({ buildingsInfo, loading }) => ({ buildingsInfo, loading: loading.models.buildingsInfo }))
 @Form.create()
-export default class Safety extends PureComponent {
-  state = {
-    showMore: false,
-    submitting: false,
-    logoLoading: false,
-    logoList: [],
-    standardLoading: false,
-    standardList: [],
-    safeLoading: false,
-    safeList: [],
-  };
+export default class BuildingInfoEdit extends PureComponent {
+  state = {};
 
-  componentDidMount() {}
+  componentDidMount() {
+    const { dispatch } = this.props;
+    // 获取建筑物类型字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'buildingType',
+      },
+    });
+    // 获取火灾危险等级字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'fireDangerType',
+      },
+    });
+    // 获取耐火等级字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'fireRating',
+      },
+    });
+    // 获取建筑结构字典
+    dispatch({
+      type: 'buildingsInfo/fetchDict',
+      payload: {
+        type: 'floorNumber',
+      },
+    });
+  }
 
   handleSubmit = e => {};
+
+  // 渲染表单
   renderFormItems(items) {
     const { getFieldDecorator } = this.props.form;
     return items.map(
@@ -126,29 +140,36 @@ export default class Safety extends PureComponent {
 
   render() {
     const {
-      safety: { menus },
-      // loading,
+      location: {
+        query: { name: company_name },
+      },
+      form: { getFieldDecorator },
+      buildingsInfo: { buildingType = [], fireDangerType = [], fireRating = [], floorNumber = [] },
     } = this.props;
-    const {
-      // submitting,
-      // standardLoading,
-      safeLoading,
-      safeList,
-      logoLoading,
-      logoList,
-    } = this.state;
 
     const defaultItems = [
       {
         name: 'CompanyName',
         cName: '企业名称',
-        component: <Input placeholder="请输入企业名称" />,
+        component: (
+          <div>
+            {company_name ? (
+              <div>
+                {getFieldDecorator('companyId', { initialValue: company_name })(
+                  <Input disabled placeholder="请输入企业名称" />
+                )}
+              </div>
+            ) : (
+              ''
+            )}
+          </div>
+        ),
       },
       {
         name: 'buildingType',
         cName: '建筑物类型',
         rules: generateRules('建筑物类型'),
-        component: <Select placeholder="请选择建筑物类型">{getOptions(menus.buildingType)}</Select>,
+        component: <Select placeholder="请选择建筑物类型">{getOptions(buildingType)}</Select>,
       },
       {
         name: 'buildingName',
@@ -160,24 +181,24 @@ export default class Safety extends PureComponent {
         name: 'contaction',
         cName: '建筑结构',
         rules: generateRules('建筑结构'),
-        component: <Select placeholder="请选择建筑结构">{getOptions(menus.contaction)}</Select>,
+        component: <Select placeholder="请选择建筑结构">{getOptions(floorNumber)}</Select>,
       },
       {
         name: 'dangerousType',
         cName: '火灾危险性分类',
         rules: generateRules('火灾危险性分类'),
-        component: <Select placeholder="请选择火灾危险性分类" />,
+        component: <Select placeholder="请选择火灾危险性分类">{getOptions(fireDangerType)}</Select>,
       },
       {
         name: 'buildingArea',
-        cName: '建筑面积',
-        component: <Input />,
+        cName: '建筑面积(㎡)',
+        component: <InputNumber style={{ width: '100%' }} />,
       },
       {
         name: 'level',
         cName: '耐火等级',
         rules: generateRules('耐火等级'),
-        component: <Select placeholder="请选择耐火等级" />,
+        component: <Select placeholder="请选择耐火等级">{getOptions(fireRating)}</Select>,
       },
       {
         name: 'safetyFourPicture',
@@ -185,8 +206,8 @@ export default class Safety extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}>
-            <Button loading={safeLoading} type="primary">
+          <Upload {...defaultUploadProps} onChange={this.handleSafeChange}>
+            <Button type="primary">
               {UploadIcon}
               选择图片
             </Button>
@@ -199,8 +220,8 @@ export default class Safety extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} fileList={logoList} onChange={this.handleLogoChange}>
-            <Button loading={logoLoading} type="primary">
+          <Upload {...defaultUploadProps} onChange={this.handleLogoChange}>
+            <Button type="primary">
               {UploadIcon}
               选择文件
             </Button>
