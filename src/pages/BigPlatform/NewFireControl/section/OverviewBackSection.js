@@ -73,7 +73,7 @@ export default function OverviewBackSection(props) {
                 style={UNIT_STYLE}
                 iconStyle={ICON_STYLE}
                 num={safetyOfficer}
-                onClick={e => handleDrawerVisibleChange('safe')}
+                onClick={safetyOfficer ? e => handleDrawerVisibleChange('safe') : null}
               />
             </div>
           </Col>
@@ -85,7 +85,7 @@ export default function OverviewBackSection(props) {
                 style={UNIT_STYLE}
                 iconStyle={ICON_STYLE}
                 num={riskPointer}
-                onClick={e => handleDrawerVisibleChange('risk')}
+                onClick={riskPointer ? e => handleDrawerVisibleChange('risk') : null}
               />
             </div>
           </Col>

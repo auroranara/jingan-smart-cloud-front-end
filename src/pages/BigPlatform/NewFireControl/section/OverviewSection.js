@@ -49,7 +49,7 @@ export default function OverviewSection(props) {
               title="管辖单位"
               url={companyIcon}
               num={total}
-              onClick={e => handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 0, isUnit: 0 })}
+              onClick={total ? e => handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 0, isUnit: 0 }) : null}
             />
           </div>
         </Col>
@@ -59,7 +59,7 @@ export default function OverviewSection(props) {
               title="消防重点单位"
               url={hostIcon}
               num={importCount}
-              onClick={e => handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 1, isUnit: 0 })}
+              onClick={importCount ? e => handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 1, isUnit: 0 }) : null}
             />
           </div>
         </Col>
