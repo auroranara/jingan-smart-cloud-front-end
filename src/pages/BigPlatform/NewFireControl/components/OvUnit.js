@@ -4,7 +4,6 @@ import styles from './OvUnit.less';
 
 export default function OvUnit(props) {
   const { url, title, num=0, style={}, iconStyle={}, onClick, ...restProps } = props;
-  console.log(num);
   return (
     <div
       className={num ? styles.unit1 : styles.unit}
