@@ -15,14 +15,14 @@ export default class MaintenanceMsgDrawer extends PureComponent {
     const { processIds, fetchFaultDetail } = this.props;
     const { index } = this.state;
     this.setState(({ index }) => ({ index: index - 1 }));
-    fetchFaultDetail(processIds[index]);
+    fetchFaultDetail(processIds[index - 1]);
   };
 
   handleRightClick = () => {
     const { processIds, fetchFaultDetail } = this.props;
     const { index } = this.state;
     this.setState(({ index }) => ({ index: index + 1 }));
-    fetchFaultDetail(processIds[index]);
+    fetchFaultDetail(processIds[index + 1]);
   };
 
   render() {

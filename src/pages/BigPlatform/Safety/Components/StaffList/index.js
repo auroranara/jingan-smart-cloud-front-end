@@ -6,9 +6,8 @@ import Section from '@/components/Section';
 import styles from './index.less';
 const { Option } = Select;
 
-const currentMonth = moment().get('month');
-const months = [...Array(currentMonth+1).keys()].map(month => ({
-  value: moment({ month: currentMonth-month }).format('YYYY-MM'),
+const months = [...Array(12).keys()].map(month => ({
+  value: moment().subtract(month, 'months').format('YYYY-MM'),
 }));
 const defaultFieldNames = {
   id: 'id',

@@ -60,14 +60,18 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.liquidCount} style={{ color: `${getStatus(dataList[0].status)}` }}>
-            {dataList[0].value || '---'}
+            {getStatus(dataList[0].status) ? (
+              dataList[0].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.liquidTitle}>
             液位(
-            {dataList[0].unit || 'Mm'})
+            {dataList[0].unit || 'mm'})
             {dataList[0].status !== '0' && dataList[0].limitValue ? (
               <span>
-                ({dataList[0].condition === '1' ? '>=' : '=<'}
+                ({dataList[0].condition === '1' ? '>=' : '<='}
                 {dataList[0].limitValue})
               </span>
             ) : (
@@ -85,14 +89,18 @@ export default function StorageCards(props) {
           }}
         >
           <p className={styles.pressureCount} style={{ color: `${getStatus(dataList[1].status)}` }}>
-            {dataList[1].value || '---'}
+            {getStatus(dataList[1].status) ? (
+              dataList[1].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.pressureTitle}>
             压力(
             {dataList[1].unit || 'MPa'})
             {dataList[1].status !== '0' && dataList[1].limitValue ? (
               <span>
-                ({dataList[1].condition === '1' ? '>=' : '=<'}
+                ({dataList[1].condition === '1' ? '>=' : '<='}
                 {dataList[1].limitValue})
               </span>
             ) : (
@@ -103,14 +111,18 @@ export default function StorageCards(props) {
 
         <div className={styles.temp}>
           <p className={styles.tempCount} style={{ color: `${getStatus(dataList[2].status)}` }}>
-            {dataList[2].value || '---'}
+            {getStatus(dataList[2].status) ? (
+              dataList[2].value || '---'
+            ) : (
+              <span style={{ color: '#516895' }}>/</span>
+            )}
           </p>
           <p className={styles.tempTitle}>
             温度(
             {dataList[2].unit || '℃'} )
             {dataList[2].status !== '0' && dataList[2].limitValue ? (
               <span>
-                ({dataList[2].condition === '1' ? '>=' : '=<'}
+                ({dataList[2].condition === '1' ? '>=' : '<='}
                 {dataList[2].limitValue})
               </span>
             ) : (
