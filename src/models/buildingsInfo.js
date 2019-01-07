@@ -30,7 +30,14 @@ export default {
       },
     },
     detail: {
-      data: { buildingTypeName: undefined, buildingName: undefined, floorNumberName: undefined },
+      data: {
+        buildingTypeName: undefined,
+        buildingName: undefined,
+        floorNumberName: undefined,
+        fireDangerTypeName: undefined,
+        buildingArea: undefined,
+        fireRatingName: undefined,
+      },
     },
   },
 

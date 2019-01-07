@@ -38,18 +38,11 @@ const { Option } = Select;
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+
 // 上传文件夹
 const folder = 'safetyInfo';
 
 const UploadIcon = <Icon type="upload" />;
-
-const defaultUploadProps = {
-  name: 'files',
-  data: { folder },
-  multiple: true,
-  action: uploadAction,
-  headers: { 'JA-Token': getToken() },
-};
 
 const itemLayout = {
   labelCol: {
@@ -88,7 +81,10 @@ function getOptions(options = []) {
 @connect(({ buildingsInfo, loading }) => ({ buildingsInfo, loading: loading.models.buildingsInfo }))
 @Form.create()
 export default class BuildingInfoEdit extends PureComponent {
-  state = {};
+  state = {
+    picLoading: false,
+    fileLoading: false,
+  };
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -150,10 +146,19 @@ export default class BuildingInfoEdit extends PureComponent {
         fireRating = [],
         floorNumber = [],
         detail: {
-          data: { buildingTypeName, buildingName, floorNumberName },
+          data: {
+            buildingTypeName,
+            buildingName,
+            floorNumberName,
+            fireDangerTypeName,
+            buildingArea,
+            fireRatingName,
+          },
         },
       },
     } = this.props;
+
+    const { picLoading, fileLoading } = this.state;
 
     const defaultItems = [
       {
@@ -210,12 +215,12 @@ export default class BuildingInfoEdit extends PureComponent {
         ),
       },
       {
-        name: 'dangerousType',
+        name: 'fireDangerType',
         cName: '火灾危险性分类',
         rules: generateRules('火灾危险性分类'),
         component: (
           <div>
-            {getFieldDecorator('fireDangerType', { initialValue: floorNumberName })(
+            {getFieldDecorator('fireDangerType', { initialValue: fireDangerTypeName })(
               <Select placeholder="请选择火灾危险性分类">{getOptions(fireDangerType)}</Select>
             )}
           </div>
@@ -224,13 +229,25 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'buildingArea',
         cName: '建筑面积(㎡)',
-        component: <InputNumber style={{ width: '100%' }} />,
+        component: (
+          <div>
+            {getFieldDecorator('buildingArea', { initialValue: buildingArea })(
+              <InputNumber style={{ width: '100%' }} placeholder="请输入建筑面积" />
+            )}
+          </div>
+        ),
       },
       {
         name: 'fireRating',
         cName: '耐火等级',
         rules: generateRules('耐火等级'),
-        component: <Select placeholder="请选择耐火等级">{getOptions(fireRating)}</Select>,
+        component: (
+          <div>
+            {getFieldDecorator('fireRating', { initialValue: fireRatingName })(
+              <Select placeholder="请选择耐火等级">{getOptions(fireRating)}</Select>
+            )}
+          </div>
+        ),
       },
       {
         name: 'safetyFourPicture',
@@ -238,8 +255,13 @@ export default class BuildingInfoEdit extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} onChange={this.handleSafeChange}>
-            <Button type="primary">
+          <Upload
+            name="files"
+            accept=".jpg,.png" // 接受的文件格式
+            headers={{ 'JA-Token': getToken() }}
+            onChange={this.handlePicChange}
+          >
+            <Button loading={picLoading} type="primary">
               {UploadIcon}
               选择图片
             </Button>
@@ -252,8 +274,8 @@ export default class BuildingInfoEdit extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} onChange={this.handleLogoChange}>
-            <Button type="primary">
+          <Upload onChange={this.handleFileChange}>
+            <Button loading={fileLoading} type="primary">
               {UploadIcon}
               选择文件
             </Button>
