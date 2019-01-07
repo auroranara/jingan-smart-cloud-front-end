@@ -13,7 +13,15 @@ import styles from './RealTime.less';
 import sosIcon from './imgs/sos.png';
 import alarmInfoIcon from './imgs/alarmInfo.png';
 import { Map, Info, PersonInfo, AlarmMsg, AlarmHandle, VideoPlay } from './components/Components';
-import { handlePositions, handlePosInfo, getAlarmList, getPersonInfoItem, getOverstepItem, getAlarmCards,getAreaId } from './utils';
+import {
+  handlePositions,
+  handlePosInfo,
+  getAlarmList,
+  getPersonInfoItem,
+  getOverstepItem,
+  getAlarmCards,
+  getAreaId,
+} from './utils';
 
 const options = {
   pingTimeout: 30000,
@@ -71,20 +79,22 @@ export default class WbTest extends PureComponent {
   };
 
   componentDidMount() {
-    // const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const {
       dispatch,
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
     const params = {
       // companyId: COMPANY_ID,
       companyId,
-      env: 'v2_test',
+      env,
       type: 2,
     };
-    // const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
     // const url = `ws://192.168.10.19:10028/websocket?${stringify(params)}`;
-    const url = `ws://47.99.76.214:10028/websocket?${stringify(params)}`;
+    // const url = `ws://47.99.76.214:10028/websocket?${stringify(params)}`;
 
     // 链接webscoket
     const ws = new WebsocketHeartbeatJs({ url, ...options });
@@ -110,8 +120,7 @@ export default class WbTest extends PureComponent {
             overstepList: getAlarmList(overstepList, data, 'overstep', this.showNotification(1)),
           }));
           const areaId = getAreaId(data);
-          if (areaId && areaId !== this.lastAreaId)
-            this.handleShowVideo(VIDEO_KEY_IDS[areaId]);
+          if (areaId && areaId !== this.lastAreaId) this.handleShowVideo(VIDEO_KEY_IDS[areaId]);
           this.lastAreaId = areaId;
         }
       } catch (error) {
@@ -128,7 +137,7 @@ export default class WbTest extends PureComponent {
       type: 'personPosition/fetchInitialPositions',
       // payload: { companyId: COMPANY_ID },
       payload: { companyId },
-      callback: (data=[]) => {
+      callback: (data = []) => {
         this.setState({ positions: data });
       },
     });
@@ -142,7 +151,7 @@ export default class WbTest extends PureComponent {
   ws = null;
   lastAreaId = ''; // 上次发生警报区域
 
-  showNotification = type => ({ cardId, uptime, userName, phone=PHONE }) => {
+  showNotification = type => ({ cardId, uptime, userName, phone = PHONE }) => {
     notification.warning({
       key: type,
       className: styles.note,
@@ -160,11 +169,11 @@ export default class WbTest extends PureComponent {
         </span>
       ),
       duration: null,
-    })
+    });
   };
 
   handleAlarmCardClick = (type, cardId) => {
-    switch(type) {
+    switch (type) {
       case 1:
         this.handleShowAlarmMsg(cardId);
         break;
@@ -176,7 +185,7 @@ export default class WbTest extends PureComponent {
     }
   };
 
-  handleClickPerson = (cardId) => {
+  handleClickPerson = cardId => {
     this.setState({ personInfoVisible: true, infoCardId: cardId });
   };
 
@@ -184,14 +193,14 @@ export default class WbTest extends PureComponent {
     this.setState({ alarmMsgVisible: true, overstepCardId: cardId });
   };
 
-  handleSOS = (id) => {
+  handleSOS = id => {
     const { dispatch } = this.props;
     dispatch({ type: 'personPosition/quitSOS', payload: id });
     this.setState({ personInfoVisible: false, sosHandleVisible: true, sosList: [] });
     notification.close(2);
   };
 
-  handleAlarm = (id) => {
+  handleAlarm = id => {
     const { dispatch } = this.props;
     dispatch({ type: 'personPosition/quitOverstep', payload: id });
     this.setState({ alarmMsgVisible: false, alarmHandleVisible: true, overstepList: [] });
@@ -203,8 +212,7 @@ export default class WbTest extends PureComponent {
   };
 
   handleShowVideo = keyId => {
-    if (!keyId)
-      return;
+    if (!keyId) return;
     this.setState({ videoVisible: true, videoKeyId: keyId });
   };
 
@@ -240,31 +248,36 @@ export default class WbTest extends PureComponent {
         count: 1,
         status: alarmCards.length ? 2 : 1,
         indentLevel: 0,
-        children: [{
-          id: 2,
-          areaName: '消控室',
-          count: 1,
-          status: overstepList.length ? 2 : 1,
-          indentLevel: 1,
-        }, {
-          id: 3,
-          areaName: '活动室',
-          count: 0,
-          status: 1,
-          indentLevel: 1,
-        }, {
-          id: 4,
-          areaName: '餐厅',
-          count: 0,
-          status: 1,
-          indentLevel: 1,
-        }, {
-          id: 5,
-          areaName: '实验室',
-          count: 0,
-          status: 1,
-          indentLevel: 1,
-        }],
+        children: [
+          {
+            id: 2,
+            areaName: '消控室',
+            count: 1,
+            status: overstepList.length ? 2 : 1,
+            indentLevel: 1,
+          },
+          {
+            id: 3,
+            areaName: '活动室',
+            count: 0,
+            status: 1,
+            indentLevel: 1,
+          },
+          {
+            id: 4,
+            areaName: '餐厅',
+            count: 0,
+            status: 1,
+            indentLevel: 1,
+          },
+          {
+            id: 5,
+            areaName: '实验室',
+            count: 0,
+            status: 1,
+            indentLevel: 1,
+          },
+        ],
       },
     ];
 
@@ -282,10 +295,7 @@ export default class WbTest extends PureComponent {
         <div className={styles.container}>
           <div className={styles.left}>
             {/* 实时监控 */}
-            <RealTimeMonitor
-              data={sectionInfo}
-              className={styles.leftTop}
-            />
+            <RealTimeMonitor data={sectionInfo} className={styles.leftTop} />
             {/* 报警查看 */}
             <AlarmView
               data={alarmCards}
@@ -319,7 +329,9 @@ export default class WbTest extends PureComponent {
             <AlarmHandle
               title="SOS报警处理"
               visible={sosHandleVisible}
-              prefix={<span className={styles.sos} style={{ backgroundImage: `url(${sosIcon})` }} />}
+              prefix={
+                <span className={styles.sos} style={{ backgroundImage: `url(${sosIcon})` }} />
+              }
               handleSubmit={() => this.handleClose('sosHandle')}
               handleClose={() => this.handleClose('sosHandle')}
             />
@@ -327,7 +339,12 @@ export default class WbTest extends PureComponent {
               type={1}
               title="报警处理"
               visible={alarmHandleVisible}
-              prefix={<span className={styles.alarmInfo} style={{ backgroundImage: `url(${alarmInfoIcon})` }} />}
+              prefix={
+                <span
+                  className={styles.alarmInfo}
+                  style={{ backgroundImage: `url(${alarmInfoIcon})` }}
+                />
+              }
               handleSubmit={() => this.handleClose('alarmHandle')}
               handleClose={() => this.handleClose('alarmHandle')}
             />
