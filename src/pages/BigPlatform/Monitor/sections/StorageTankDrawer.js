@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import { connect } from 'dva';
-
+import { Icon } from 'antd';
 import styles from './StorageTankDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import StorageLableCards from '../components/StorageLableCards';
@@ -31,8 +31,18 @@ export default class StorageTankDrawer extends PureComponent {
       visible,
       tankDataList: { list },
     } = this.props;
+    const ICON_STYLE = {
+      position: 'absolute',
+      right: 10,
+      top: -46,
+      fontSize: 18,
+      color: '#FFF',
+      cursor: 'pointer',
+    };
+
     const left = (
       <div className={styles.content}>
+        <Icon type="close" style={ICON_STYLE} onClick={e => this.props.onClose()} />
         <div className={styles.cardContainer}>
           <div>{this.renderTankList(list)}</div>
         </div>
@@ -53,6 +63,7 @@ export default class StorageTankDrawer extends PureComponent {
     return (
       <DrawerContainer
         style={{ overflow: 'hidden' }}
+        className={styles.drawer}
         destroyOnClose={true}
         title="储罐监测"
         width={485}
