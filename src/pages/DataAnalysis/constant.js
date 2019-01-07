@@ -161,6 +161,19 @@ export const TOXIC_GAS_COLUMNS = [
 
 export const WASTE_WATER_PARAMS = [
   { name: '全部', key: 0 },
+  // {
+  //   name: (
+  //     <span>
+  //       NH
+  //       <sub>3</sub>
+  //     </span>
+  //   ),
+  //   key: '060',
+  // },
+  // { name: 'COD', key: '011' },
+  // { name: '总磷', key: '101' },
+  // { name: '总氮', key: '065' },
+  // { name: '瞬时流量', key: 'B01' },
   {
     name: (
       <span>
@@ -168,12 +181,12 @@ export const WASTE_WATER_PARAMS = [
         <sub>3</sub>
       </span>
     ),
-    key: '060',
+    key: 'w00000',
   },
-  { name: 'COD', key: '011' },
-  { name: '总磷', key: '101' },
-  { name: '总氮', key: '065' },
-  { name: '瞬时流量', key: 'B01' },
+  { name: '总磷', key: 'w21011' },
+  { name: '总氮', key: 'w21001' },
+  { name: '氨氮', key: 'w21003' },
+  { name: '化学需氧量', key: 'w01018' },
 ];
 
 export const WASTE_WATER_COLUMNS = [
@@ -322,9 +335,9 @@ export const WASTE_GAS_COLUMNS = [
 
 export const STORAGE_TANK_PARAMS = [
   { name: '全部', key: 0 },
-  { name: '液压', key: 1 },
-  { name: '水位', key: 2 },
-  { name: '温度', key: 3 },
+  { name: '液位', key: 2 },
+  { name: '压力', key: 3 },
+  { name: '温度', key: 4 },
 ];
 
 export const STORAGE_TANK_COLUMNS = [
@@ -439,7 +452,6 @@ export function getFields(type, params, methods) {
     case ELECTRICITY_TYPE:
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
-    case STORAGE_TANK_TYPE:
       return [
         {
           id: 'area',
@@ -476,6 +488,83 @@ export function getFields(type, params, methods) {
         },
         {
           id: 'code',
+          label: '异常参数：',
+          labelCol: LABEL_COL_6,
+          wrapperCol: WRAPPER_COL,
+          inputSpan: INPUT_SPAN,
+          options: { initialValue: '0' },
+          render: () => (
+            <Select placeholder="请选择异常参数">
+              {params.map(({ name, key }) => (
+                <Option key={key}>{name}</Option>
+              ))}
+            </Select>
+          ),
+        },
+        {
+          id: 'date',
+          label: '日期：',
+          labelCol: { span: 2 },
+          wrapperCol: WRAPPER_COL,
+          inputSpan: { span: 18 },
+          options: {
+            initialValue: getThisMonth(),
+            rules: [{ validator: dateValidator }],
+          },
+          render: () => (
+            <RangePicker
+              // 在Form表单中，由于被getFieldDecorator包裹了，所以只能在options中设定初始值
+              // defaultValue={[moment().startOf('month'), moment()]}
+              // 禁用日期后有些小bug，且体验不太好
+              // disabledDate={methods.disabledDate}
+              // onCalendarChange={methods.onCalendarChange}
+              format="YYYY-MM-DD HH:mm"
+              placeholder={['开始时间', '结束时间']}
+              showTime={{
+                format: 'HH:mm',
+                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
+            />
+          ),
+        },
+      ];
+    case STORAGE_TANK_TYPE:
+      return [
+        {
+          id: 'area',
+          label: '区域：',
+          labelCol: LABEL_COL_4,
+          wrapperCol: WRAPPER_COL,
+          inputSpan: INPUT_SPAN,
+          render: () => <Input placeholder="请输入区域" />,
+          transform: v => v.trim(),
+        },
+        {
+          id: 'location',
+          label: '位置：',
+          labelCol: LABEL_COL_4,
+          wrapperCol: WRAPPER_COL,
+          inputSpan: INPUT_SPAN,
+          render: () => <Input placeholder="请输入位置" />,
+          transform: v => v.trim(),
+        },
+        {
+          id: 'status',
+          label: '异常类别：',
+          labelCol: LABEL_COL_6,
+          wrapperCol: WRAPPER_COL,
+          inputSpan: INPUT_SPAN,
+          options: { initialValue: '0' },
+          render: () => (
+            <Select placeholder="请选择异常类别">
+              {OPTIONS.map(({ name, key }) => (
+                <Option key={key}>{name}</Option>
+              ))}
+            </Select>
+          ),
+        },
+        {
+          id: 'modelCode',
           label: '异常参数：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,

@@ -97,6 +97,14 @@ module.exports = env => {
           path: '/big-platform/video',
           component: './BigPlatform/Video',
         },
+        {
+          path: '/big-platform/position/:companyId',
+          component: './BigPlatform/Position/RealTime',
+        },
+        {
+          path: '/big-platform/position/:companyId/history/:id',
+          component: './BigPlatform/Position/History',
+        },
       ],
     },
 
@@ -104,6 +112,37 @@ module.exports = env => {
     //   path: '/demo',
     //   component: './Demo',
     // },
+    // 档案分析报告
+    {
+      path: '/training/myFile/analysisReport/:id',
+      code: 'training.myFile.view',
+      name: 'myAnalysis',
+      component: './Training/MyFile/AnalysisReport',
+    },
+    {
+      path: '/training/myFile/synthesisReport',
+      code: 'training.myFile.view',
+      name: 'mySynthesis',
+      component: './Training/MyFile/SynthesisReport',
+    },
+    {
+      path: '/training/generalFile/examFileReport/:id',
+      code: 'training.generalFile.view',
+      name: 'examReport',
+      component: './Training/GeneralFile/ExamFile/ExamFileReport',
+    },
+    {
+      path: '/training/generalFile/myFile/analysisReport/:id',
+      code: 'training.generalFile.view',
+      name: 'myAnalysis',
+      component: './Training/GeneralFile/MyFile/AnalysisReport',
+    },
+    {
+      path: '/training/generalFile/myFile/synthesisReport',
+      code: 'training.generalFile.view',
+      name: 'mySynthesis',
+      component: './Training/GeneralFile/MyFile/SynthesisReport',
+    },
 
     //404
     {
@@ -1290,7 +1329,7 @@ module.exports = env => {
                   component: './Training/MyFile/MyAnalysis',
                 },
                 {
-                  path: '/training/myFile/MySynthesis',
+                  path: '/training/myFile/mySynthesis',
                   code: 'training.myFile.view',
                   name: 'mySynthesis',
                   component: './Training/MyFile/MySynthesis',
@@ -1327,8 +1366,83 @@ module.exports = env => {
                   name: 'examReport',
                   component: './Training/GeneralFile/ExamFile/ExamReport',
                 },
+                /**综合档案-我的档案 */
+                {
+                  path: '/training/generalFile/myFile/myFileList',
+                  code: 'training.generalFile.view',
+                  name: 'personFile',
+                  component: './Training/GeneralFile/MyFile/MyFileList',
+                },
+                {
+                  path: '/training/generalFile/myFile/myAnalysis/:id',
+                  code: 'training.generalFile.view',
+                  name: 'myAnalysis',
+                  component: './Training/GeneralFile/MyFile/MyAnalysis',
+                },
+                {
+                  path: '/training/generalFile/myFile/mySynthesis',
+                  code: 'training.generalFile.view',
+                  name: 'mySynthesis',
+                  component: './Training/GeneralFile/MyFile/MySynthesis',
+                },
               ],
             },
+          ],
+        },
+        // 人员定位
+        {
+          name: 'personnelPosition',
+          path: '/personnel-position',
+          icon: 'environment',
+          code: 'personnelPosition',
+          hideInMenu: false,
+          routes: [
+            /* 系统配置 */
+            {
+              name: 'systemConfiguration',
+              path: '/personnel-position/system-configuration',
+              code: 'personnelPosition.systemConfiguration',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/system-configuration',
+                  redirect: '/personnel-position/system-configuration/list',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.systemConfiguration.listView',
+                  path: '/personnel-position/system-configuration/list',
+                  component: './PersonnelPosition/SystemConfiguration/SystemConfigurationList',
+                },
+              ],
+            },
+            /* 信标管理 */
+            // {
+            //   name: 'beaconManagement',
+            //   path: '/personnel-position/beacon-management',
+            //   code: 'personnelPosition.beaconManagement',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       name: 'companies',
+            //       path: '/personnel-position/beacon-management',
+            //       redirect: '/personnel-position/beacon-management/companies',
+            //     },
+            //     {
+            //       name: 'companies',
+            //       code: 'personnelPosition.beaconManagement.listView',
+            //       path: '/personnel-position/beacon-management/companies',
+            //       component: './PersonnelPosition/BeaconManagement/index',
+            //     },
+            //     {
+            //       name: 'companyBeacon',
+            //       code: 'personnelPosition.beaconManagement.companyBeacon',
+            //       path: '/personnel-position/beacon-management/company/:id',
+            //       component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
+            //     },
+            //   ],
+            // },
           ],
         },
       ],

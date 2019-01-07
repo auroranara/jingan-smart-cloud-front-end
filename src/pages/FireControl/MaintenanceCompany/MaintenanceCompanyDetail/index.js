@@ -342,13 +342,13 @@ export default class App extends PureComponent {
         </DescriptionList>
         <DescriptionList title="主要负责人" col={3} style={{ marginBottom: 32 }}>
           <Description term={fieldLabels.principalName}>
-            {principalName || getEmptyData()}
+            {safetyName || getEmptyData()}
           </Description>
           <Description term={fieldLabels.principalPhone}>
-            {principalPhone || getEmptyData()}
+            {safetyPhone || getEmptyData()}
           </Description>
           <Description term={fieldLabels.principalEmail}>
-            {principalEmail || getEmptyData()}
+            {safetyEmail || getEmptyData()}
           </Description>
         </DescriptionList>
       </Card>

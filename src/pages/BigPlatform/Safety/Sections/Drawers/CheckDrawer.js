@@ -6,9 +6,10 @@ import styles2 from './CheckDrawer.less';
 import noChecks from '../../img/noChecks.png';
 
 const { Option } = Select;
-const currentMonth = moment().get('month');
-const months = [...Array(currentMonth + 1).keys()].map(month => ({
-  value: moment({ month: currentMonth - month }).format('YYYY-MM'),
+const months = [...Array(6).keys()].map(month => ({
+  value: moment()
+    .month(-month)
+    .format('YYYY-MM'),
 }));
 class CheckDrawer extends PureComponent {
   constructor(props) {
@@ -70,6 +71,7 @@ class CheckDrawer extends PureComponent {
           visible={visible}
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          className={styles.drawer}
           zIndex={1040}
         >
           <div className={styles.main} style={{ padding: 0 }}>

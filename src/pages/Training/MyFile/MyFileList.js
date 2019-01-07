@@ -79,12 +79,7 @@ export default class myFileList extends PureComponent {
 
   // 跳转到综合分析报告
   goToMySynthesis = id => {
-    const {
-      dispatch,
-      // location: {
-      //   query: { name },
-      // },
-    } = this.props;
+    const { dispatch } = this.props;
     dispatch(routerRedux.push(`/training/myFile/mySynthesis?studentId=${id}`));
   };
 
@@ -96,12 +91,7 @@ export default class myFileList extends PureComponent {
 
   // 跳转到分析报告页面
   goAlaysisExam = (studentId, examId) => {
-    const {
-      dispatch,
-      // location: {
-      //   query: { name },
-      // },
-    } = this.props;
+    const { dispatch } = this.props;
     dispatch(routerRedux.push(`/training/myFile/myAnalysis/${examId}?studentId=${studentId}`));
   };
 
@@ -266,7 +256,7 @@ export default class myFileList extends PureComponent {
         align: 'center',
         width: 120,
         render: val => {
-          return val ? `${val.toFixed(2)}%` : '---';
+          return val === null ? '---' : `${val.toFixed(2)}%`;
         },
       },
       {
@@ -384,8 +374,8 @@ export default class myFileList extends PureComponent {
       user: {
         currentUser: { userId },
       },
-      location: {
-        query: { studentId, name },
+      myFile: {
+        data: { list },
       },
     } = this.props;
 
@@ -400,11 +390,6 @@ export default class myFileList extends PureComponent {
       {
         title: '教育培训',
         name: '教育培训',
-      },
-      {
-        title: name ? '综合档案' : '',
-        name: name ? '综合档案' : '',
-        href: name ? '/training/generalFile/personFile/list' : '',
       },
       {
         title,
@@ -424,12 +409,12 @@ export default class myFileList extends PureComponent {
         }
         extraContent={
           <div>
-            <Button
-              className={styles.backBtn}
-              onClick={() => this.goToMySynthesis(studentId ? studentId : userId)}
-            >
-              综合分析报告
-            </Button>
+            {list &&
+              list.length > 0 && (
+                <Button className={styles.backBtn} onClick={() => this.goToMySynthesis(userId)}>
+                  综合分析报告
+                </Button>
+              )}
           </div>
         }
       >

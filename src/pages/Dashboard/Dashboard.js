@@ -10,10 +10,12 @@ import styles from './Dashboard.less';
 const fire = "http://data.jingan-china.cn/v2/dashboard/home-fire.png"
 const safe = "http://data.jingan-china.cn/v2/dashboard/home-safety.png"
 const monitor = "http://data.jingan-china.cn/v2/dashboard/home-monitor.png"
+const psoitionImg = "http://data.jingan-china.cn/v2/dashboard/personnel-positioning.png"
 
 const safeItem = { src: safe, url: '', label: '安全驾驶舱' };
 const fireItem = { src: fire, url: '', label: '消防驾驶舱' };
 const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' }
+const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' }
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
@@ -22,17 +24,18 @@ const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' }
 }))
 export default class Dashboard extends PureComponent {
   state = {
-    safetyProduction: 0,
-    fireService: 0,
-    monitorService: 0,
+    safetyProduction: 0,    // 安全大屏可见
+    fireService: 0,         // 消防可见
+    monitorService: 0,      // 动态监测可见
+    personnelPositioning: 0, // 人员定位可见
   };
 
   componentDidMount() {
     let {
       user: {
         currentUser: {
-          permissionCodes=[],
-          companyBasicInfo: { fireService, safetyProduction, monitorService } = {},
+          permissionCodes = [],
+          companyBasicInfo: { fireService, safetyProduction, monitorService, personnelPositioning } = {},
           unitType,
           companyId,
           regulatoryClassification,
@@ -42,10 +45,10 @@ export default class Dashboard extends PureComponent {
 
     // const regulatoryClassification = ['1', '2'];
     const classification = Array.isArray(regulatoryClassification) && regulatoryClassification.map(n => Number.parseInt(n, 10)) || [];
-    const [safetyAuth, fireControlAuth, dynamicMonitorAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
+    const [safetyAuth, fireControlAuth, dynamicMonitorAuth, personnelPositionAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应)
-    const [clfcSafetyAuth, clfcFireControlAuth, clfcEnviromentAuth] = [1,2,3].map(k => classification.includes(k));
+    const [clfcSafetyAuth, clfcFireControlAuth, clfcEnviromentAuth] = [1, 2, 3].map(k => classification.includes(k));
     // console.log([safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]);
 
     safeItem.url = `${window.publicPath}#/big-platform/safety/government/index`
@@ -71,22 +74,26 @@ export default class Dashboard extends PureComponent {
     //   });
     // }
 
+    // 企业url
     const safeUrl = `${window.publicPath}#/big-platform/safety/company/${companyId}`;
     const fireUrl = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
     const monitorUrl = `${window.publicPath}#/big-platform/monitor/company/${companyId}`;
+    const positionUrl = `${window.publicPath}#/big-platform/position/${companyId}`;
 
     // 企事业主体和政府有业务分类，维保和运营没有
     // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
-    switch(unitType) {
+    switch (unitType) {
       // 维保企业
       case 1:
         safeItem.url = safeUrl;
         fireItem.url = fireUrl;
         monitorItem.url = monitorUrl;
+        positionItem.url = positionUrl;
         this.setState({
           safetyProduction: safetyProduction && safetyAuth,
           fireService: 0, // 这个迭代维保企业不能看消防
           monitorService: monitorService && dynamicMonitorAuth,
+          personnelPositioning: personnelPositioning && personnelPositionAuth,
         });
         break;
 
@@ -111,10 +118,12 @@ export default class Dashboard extends PureComponent {
         safeItem.url = safeUrl;
         fireItem.url = fireUrl;
         monitorItem.url = monitorUrl;
+        positionItem.url = positionUrl;
         this.setState({
           safetyProduction: safetyProduction && safetyAuth && clfcSafetyAuth,
           fireService: fireService && fireControlAuth && clfcFireControlAuth,
           monitorService: monitorService && dynamicMonitorAuth && clfcSafetyAuth,
+          personnelPositioning: personnelPositioning && personnelPositionAuth,
         });
         break;
 
@@ -124,7 +133,7 @@ export default class Dashboard extends PureComponent {
   }
 
   render() {
-    const { safetyProduction, fireService, monitorService } = this.state;
+    const { safetyProduction, fireService, monitorService, personnelPositioning } = this.state;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =
@@ -144,8 +153,8 @@ export default class Dashboard extends PureComponent {
     //   imgWrapper.push(monitorItem)
     // }
 
-    const items = [safeItem, fireItem, monitorItem];
-    const imgWrapper = [safetyProduction, fireService, monitorService].reduce((prev, next, i) => {
+    const items = [safeItem, fireItem, monitorItem, positionItem];
+    const imgWrapper = [safetyProduction, fireService, monitorService, personnelPositioning].reduce((prev, next, i) => {
       next && prev.push(items[i]);
       return prev;
     }, []);
@@ -155,7 +164,7 @@ export default class Dashboard extends PureComponent {
       win.focus();
     };
 
-    const hasFourItems = { width: '300px', height: '400px', padding: '20px' };
+    const hasFourItems = { width: '330px', height: '425px', padding: '25px' };
     const hasLittleItems = { width: '405px', height: '480px', padding: '40px' };
 
     const children = imgWrapper.map((item, i) => (

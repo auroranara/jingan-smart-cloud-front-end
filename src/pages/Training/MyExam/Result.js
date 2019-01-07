@@ -90,10 +90,22 @@ export default class ExamResult extends PureComponent {
       // loading,
       myExam: { side, paper },
       location: {
-        query: { examId },
+        query: {
+          examId,
+          id,
+          name,
+          startTime,
+          endTime,
+          examLimit,
+          percentOfPass,
+          studentId,
+          companyId,
+        },
       },
       // user: { currentUser: { userName, userTypeName } },
     } = this.props;
+    console.log(' this.props', this.props);
+
     const {
       // index,
       spreadStates,
@@ -103,9 +115,15 @@ export default class ExamResult extends PureComponent {
       { title: '首页', name: '首页', href: '/' },
       { title: '教育培训', name: '教育培训' },
       {
-        title: examId ? '我的档案' : '我的考试',
-        name: examId ? '我的档案' : '我的考试',
-        href: examId ? '/training/myFile/myFileList' : '/training/my-exam/list',
+        title: examId ? '我的档案' : id ? '考试详情' : studentId ? '人员档案' : '我的考试',
+        name: examId ? '我的档案' : id ? '考试详情' : studentId ? '人员档案' : '我的考试',
+        href: examId
+          ? '/training/myFile/myFileList'
+          : id
+            ? `/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+            : studentId
+              ? `/training/generalFile/myFile/myFileList?studentId=${studentId}&&companyId=${companyId}`
+              : '/training/my-exam/list',
       },
       { title: '考试分析', name: '考试分析' },
     ];

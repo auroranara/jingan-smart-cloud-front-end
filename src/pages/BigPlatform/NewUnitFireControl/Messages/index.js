@@ -1,13 +1,25 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
 import Section from '../Section';
-// import moment from 'moment';
+import moment from 'moment';
 // import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
 
-// const formatTime = time => {
-//   return moment(time).format('YYYY-MM-DD HH:mm');
-// };
+const formatTime = time => {
+  const diff = moment().diff(moment(time));
+  if (diff > 2 * 24 * 60 * 60 * 1000) {
+    return moment(time).format('YYYY-MM-DD HH:mm');
+  } else if (diff > 24 * 60 * 60 * 1000) {
+    return `昨日 ${moment(time).format('HH:mm')}`;
+  } else if (diff > 60 * 60 * 1000) {
+    return `今日 ${moment(time).format('HH:mm')}`;
+  } else if (diff > 60 * 1000) {
+    return `${moment.duration(diff).minutes() + 1}分钟前`;
+  } else {
+    return `刚刚`;
+  }
+};
+
 const getEmptyData = () => {
   return '暂无数据';
 };
@@ -18,6 +30,19 @@ const getEmptyData = () => {
  */
 // const { Description } = DescriptionList;
 export default class Messages extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      thisMin: '',
+    };
+  }
+
+  componentDidMount() {
+    setInterval(() => {
+      this.setState({ thisMin: moment().format('YYYY-MM-DD HH:mm') });
+    }, 120000);
+  }
+
   renderMsg = (msg, index) => {
     const {
       handleParentChange,
@@ -25,13 +50,15 @@ export default class Messages extends PureComponent {
       handleViewDangerDetail,
       handleClickMessage,
       handleFaultClick,
+      handleFireMessage,
+      handleWorkOrderCardClickMsg,
     } = this.props;
     const {
       type,
       title,
       messageFlag,
       proceCompany,
-      // addTime,
+      addTime,
       address,
       reportUser,
       pointName,
@@ -53,14 +80,14 @@ export default class Messages extends PureComponent {
       score,
       maintenanceCompany,
       maintenanceUser,
-      addTimeStr,
+      // addTimeStr,
     } = msg;
     let msgItem = null;
     if (type === 1 || type === 2 || type === 3 || type === 4) {
       // 发生监管\联动\反馈\屏蔽
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -68,7 +95,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
+            {loopNumber || loopNumber === 0 ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -90,7 +117,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -98,7 +125,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             回路故障号：
-            {loopNumber ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
+            {loopNumber || loopNumber === 0 ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
           </div>
           <div className={styles.msgBody}>
             部件类型：
@@ -110,11 +137,16 @@ export default class Messages extends PureComponent {
       // 火警确认
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleFireMessage(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -134,11 +166,16 @@ export default class Messages extends PureComponent {
       // 真实火警处理，误报火警处理
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleFireMessage(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -158,11 +195,17 @@ export default class Messages extends PureComponent {
       // 开始故障维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleParentChange({ maintenanceTitle: '故障处理动态' });
+              handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -175,14 +218,20 @@ export default class Messages extends PureComponent {
         </div>
       );
     } else if (type === 10 || type === 11) {
-      // 故障指派维修
+      // 故障指派维修, 维保开始维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              if (type === 10) handleParentChange({ maintenanceTitle: '故障处理动态' });
+              handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -198,11 +247,17 @@ export default class Messages extends PureComponent {
       // 完成故障维修
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleParentChange({ maintenanceTitle: '故障处理动态' });
+              handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             位置：
@@ -226,7 +281,7 @@ export default class Messages extends PureComponent {
       // 安全巡查
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -255,7 +310,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -275,11 +330,16 @@ export default class Messages extends PureComponent {
       // 整改隐患, 重新整改隐患
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleViewDangerDetail({ id: messageFlag });
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -303,11 +363,16 @@ export default class Messages extends PureComponent {
       // 复查隐患
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          {/* <a className={styles.detailBtn}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleViewDangerDetail({ id: messageFlag });
+            }}
+          >
             详情
             <Icon type="double-right" />
-          </a> */}
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             检查点：
@@ -345,7 +410,7 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
             维保单位：
@@ -353,7 +418,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             维保人：
-            {maintenanceUser || getEmptyData()}
+            {(Array.isArray(maintenanceUser) && maintenanceUser.join('，')) || maintenanceUser}
           </div>
           <div className={styles.msgBody}>
             消防设施评分：
@@ -364,7 +429,7 @@ export default class Messages extends PureComponent {
     } else {
       msgItem = (
         <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{addTimeStr}</div>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
         </div>
       );
@@ -376,6 +441,7 @@ export default class Messages extends PureComponent {
     const {
       model: { screenMessage },
     } = this.props;
+    // const { thisMin } = this.state;
     const sectionHeight = screenMessage.length > 3 ? {} : { height: 'auto' };
     return (
       <Section title="实时消息" style={{ ...sectionHeight }}>

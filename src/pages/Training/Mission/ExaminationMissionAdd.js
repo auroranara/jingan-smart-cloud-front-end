@@ -68,6 +68,9 @@ export default class ExaminationMissionAdd extends PureComponent {
       targetKeys: [], // 考试人员穿梭狂右侧keys
       // examStudents: [], // 考试人员穿梭狂左侧数据源
       disableMin: false,
+      disTime: false,
+      disableOk: true,
+      rangeOpen: false,
     };
   }
 
@@ -140,8 +143,9 @@ export default class ExaminationMissionAdd extends PureComponent {
 
   disabledDateTime = (_, type) => {
     // 开始时间才需要筛选
-    const { disableMin } = this.state;
-    if (type === 'start' && this.disTime) {
+    const { disableMin, disTime } = this.state;
+    // return false;
+    if (type === 'start' && disTime) {
       return {
         disabledHours: () => this.range(0, 24).slice(0, moment().hour()),
         disabledMinutes: () =>
@@ -149,6 +153,8 @@ export default class ExaminationMissionAdd extends PureComponent {
           disableMin ? this.range(0, 60).slice(0, moment().minute()) : this.range(0, 0),
         disabledSeconds: () => this.range(0, 60).slice(0, moment().second()),
       };
+    } else {
+      return {};
     }
   };
 
@@ -406,12 +412,12 @@ export default class ExaminationMissionAdd extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { studentsModalVisible } = this.state;
+    const { studentsModalVisible, disableOk, rangeOpen } = this.state;
     const title = id ? '编辑考试任务' : '新增考试任务';
     const arrRuleType = getFieldValue('arrRuleType') || [];
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '培训', name: '培训' },
+      { title: '教育培训', name: '教育培训' },
       { title: '考试任务', name: '考试任务', href: '/training/mission/list' },
       { title, name: title },
     ];
@@ -467,8 +473,28 @@ export default class ExaminationMissionAdd extends PureComponent {
                 {getFieldDecorator('examLimit', {
                   initialValue: examLimit,
                   rules: [
-                    { required: true, message: '请输入考试时长' },
-                    { type: 'number', message: '请输入数字' },
+                    // { required: true, message: '请输入考试时长' },
+                    // { type: 'number', message: '请输入数字' },
+                    {
+                      required: true,
+                      validator: (rule, value, callback) => {
+                        const {
+                          form: { getFieldValue },
+                        } = this.props;
+                        const examLimit = +value * 60000;
+                        const range = getFieldValue('timeRange');
+                        const diff = moment(range[1]).diff(moment(range[0]));
+                        if (isNaN(value)) {
+                          callback('请输入考试时长!');
+                          return;
+                        }
+                        if (range[0] && diff < examLimit) {
+                          callback('考试时长需小于考试期限时长!');
+                        } else {
+                          callback();
+                        }
+                      },
+                    },
                   ],
                   validateTrigger: 'onBlur',
                   getValueFromEvent: e => {
@@ -500,6 +526,7 @@ export default class ExaminationMissionAdd extends PureComponent {
                   initialValue: startTime ? [moment(startTime), moment(endTime)] : [],
                   rules: [
                     {
+                      required: true,
                       validator: (rule, value, callback) => {
                         const {
                           form: { getFieldValue },
@@ -520,16 +547,52 @@ export default class ExaminationMissionAdd extends PureComponent {
                   ],
                 })(
                   <RangePicker
+                    dropdownClassName="rangePicker"
                     disabledDate={this.disabledDate}
                     disabledTime={this.disabledDateTime}
                     showTime={{ format: 'HH:mm' }}
                     format="YYYY-MM-DD HH:mm"
+                    open={rangeOpen}
+                    onOpenChange={open => {
+                      this.setState({ rangeOpen: open });
+                    }}
+                    renderExtraFooter={() => {
+                      return (
+                        <Button
+                          type="primary"
+                          style={{
+                            height: '26px',
+                            padding: '1px 10px',
+                            position: 'absolute',
+                            right: '10px',
+                            bottom: '6px',
+                            zIndex: 10,
+                          }}
+                          disabled={disableOk}
+                          onClick={() => {
+                            this.setState({ rangeOpen: false });
+                          }}
+                        >
+                          确定
+                        </Button>
+                      );
+                    }}
                     onCalendarChange={dates => {
-                      if (dates.length !== 2) return;
+                      if (dates.length !== 2) {
+                        this.setState({ disableOk: true });
+                        return;
+                      }
+                      this.setState({ disableOk: false });
                       const selectDay = moment(dates[0]).format('YYYY-MM-DD');
                       const thisDay = moment().format('YYYY-MM-DD');
-                      if (selectDay !== thisDay) return; // 所选日期不是今日时间随意选
-                      this.disTime = true;
+                      if (selectDay !== thisDay) {
+                        // 所选日期不是今日时间随意选
+                        this.setState({ disTime: false });
+                        // this.disTime = false;
+                        return;
+                      }
+                      this.setState({ disTime: true });
+                      // this.disTime = true;
                       const selectHour = moment(dates[0]).format('HH');
                       const thisHour = moment().format('HH');
                       if (selectHour !== thisHour) {

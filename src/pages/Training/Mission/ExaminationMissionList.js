@@ -24,7 +24,7 @@ const status = [
 ];
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '培训', name: '培训' },
+  { title: '教育培训', name: '教育培训' },
   { title: '考试任务', name: '考试任务' },
 ];
 
@@ -358,33 +358,35 @@ export default class ExaminationMissionList extends PureComponent {
         title="考试任务"
         breadcrumbList={breadcrumbList}
         content={
-          !companyId && (
-            <div>
-              <Input
-                disabled
-                style={{ width: '300px' }}
-                placeholder={'请选择单位'}
-                value={this.companyName}
-              />
-              <Button
-                type="primary"
-                style={{ marginLeft: '5px' }}
-                onClick={() => {
-                  this.setState({ visible: true });
-                  const payload = { pageSize: companyPageSize, pageNum: 1 };
-                  this.fetchCompany({ payload });
-                }}
-              >
-                选择单位
-              </Button>
-              {this.companyId && (
-                <div style={{ marginTop: '8px' }}>
-                  考试任务总数：
-                  {total}
-                </div>
-              )}
-            </div>
-          )
+          <div>
+            {!companyId && (
+              <div style={{ marginBottom: '8px' }}>
+                <Input
+                  disabled
+                  style={{ width: '300px' }}
+                  placeholder={'请选择单位'}
+                  value={this.companyName}
+                />
+                <Button
+                  type="primary"
+                  style={{ marginLeft: '5px' }}
+                  onClick={() => {
+                    this.setState({ visible: true });
+                    const payload = { pageSize: companyPageSize, pageNum: 1 };
+                    this.fetchCompany({ payload });
+                  }}
+                >
+                  选择单位
+                </Button>
+              </div>
+            )}
+            {this.companyId && (
+              <div>
+                考试任务总数：
+                {total}
+              </div>
+            )}
+          </div>
         }
       >
         {this.companyId ? (

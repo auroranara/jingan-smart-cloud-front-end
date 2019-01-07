@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import BraftEditor from 'braft-editor'
-import 'braft-editor/dist/index.css'
+import BraftEditor from 'braft-editor';
+import 'braft-editor/dist/index.css';
 import { connect } from 'dva';
 import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import { Card, Form, Row, Input, Col, Button, TreeSelect, Radio, message } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 
-const FormItem = Form.Item
+const FormItem = Form.Item;
 const TreeNode = TreeSelect.TreeNode;
 
 const formItemLayout = {
@@ -21,12 +21,11 @@ const formItemLayout = {
   resourceManagement,
 }))
 export default class ArticleAdd extends PureComponent {
-
   constructor() {
-    super()
+    super();
     this.state = {
       editorState: BraftEditor.createEditorState(null),
-    }
+    };
   }
 
   componentDidMount() {
@@ -36,11 +35,13 @@ export default class ArticleAdd extends PureComponent {
         params: { id },
       },
       form: { setFieldsValue },
-      location: { query: { knowledgeId, companyId } },
-    } = this.props
+      location: {
+        query: { knowledgeId, companyId },
+      },
+    } = this.props;
 
     // 获取知识点树
-    dispatch({ type: 'resourceManagement/fetchKnowledgeTree', payload: { companyId } })
+    dispatch({ type: 'resourceManagement/fetchKnowledgeTree', payload: { companyId } });
     // 如果编辑
     if (id) {
       dispatch({
@@ -49,36 +50,33 @@ export default class ArticleAdd extends PureComponent {
           type: '1', // type 1文章
           id,
         },
-        callback: (detail) => {
-          setFieldsValue({ content: BraftEditor.createEditorState(detail.content) })
+        callback: detail => {
+          setFieldsValue({ content: BraftEditor.createEditorState(detail.content) });
         },
-      })
+      });
     } else {
       // 如果新增
-      setFieldsValue({ knowledgeId })
+      setFieldsValue({ knowledgeId });
     }
   }
 
   // 监听富文本变化
-  handleEditorChange = (editorState) => {
-    this.setState({ editorState })
-  }
+  handleEditorChange = editorState => {
+    this.setState({ editorState });
+  };
 
   // 渲染树节点
-  renderTreeNodes = (data) => {
+  renderTreeNodes = data => {
     return data.map(item => {
       if (item.children && Array.isArray(item.children)) {
         return (
           <TreeNode value={item.id} title={item.name} key={item.id}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
-        )
-      } else return (
-        <TreeNode value={item.id} title={item.name} key={item.id}>
-        </TreeNode>
-      )
-    })
-  }
+        );
+      } else return <TreeNode value={item.id} title={item.name} key={item.id} />;
+    });
+  };
 
   // ctrl+s保存
   /* saveContent = async () => {
@@ -91,11 +89,11 @@ export default class ArticleAdd extends PureComponent {
 
   // 文章内容验证规则
   contentValidator = (rule, value, callback) => {
-    const data = value.toHTML().replace(/\<(\/)?\w\>/g, '')
+    const data = value.toHTML().replace(/\<(\/)?\w\>/g, '');
     if (!data || data === '') {
-      callback('请输入文章内容')
-    } else callback()
-  }
+      callback('请输入文章内容');
+    } else callback();
+  };
 
   // 点击提交
   handleSubmit = () => {
@@ -106,24 +104,24 @@ export default class ArticleAdd extends PureComponent {
       match: {
         params: { id },
       },
-    } = this.props
-    const libraryType = pathname.split('/')[3]
+    } = this.props;
+    const libraryType = pathname.split('/')[3];
     const success = () => {
-      message.success(id ? '编辑成功' : '新增成功')
-      router.push(`/training/library/${libraryType}/list`)
-    }
+      message.success(id ? '编辑成功' : '新增成功');
+      router.push(`/training/library/${libraryType}/list`);
+    };
     const error = () => {
-      message.error(id ? '编辑失败' : '新增失败')
-    }
+      message.error(id ? '编辑失败' : '新增失败');
+    };
 
     validateFields((errors, values) => {
       if (!errors) {
-        const { content, ...others } = values
+        const { content, ...others } = values;
         const payload = {
           content: content.toHTML(),
           ...others,
           type: '1',
-        }
+        };
         // 如果新增
         if (!id) {
           dispatch({
@@ -131,18 +129,18 @@ export default class ArticleAdd extends PureComponent {
             payload,
             success,
             error,
-          })
+          });
         } else {
           dispatch({
             type: 'resourceManagement/editArticlesOrCourseWare',
             payload: { ...payload, id },
             success,
             error,
-          })
+          });
         }
       }
-    })
-  }
+    });
+  };
 
   render() {
     const {
@@ -153,28 +151,20 @@ export default class ArticleAdd extends PureComponent {
       resourceManagement: {
         knowledgeTree,
         article: {
-          detail: {
-            status,
-            name,
-            content,
-            knowledgeId,
-          },
+          detail: { status, name, content, knowledgeId },
         },
       },
-    } = this.props
-    const title = id ? '编辑文章' : '新增文章'
+    } = this.props;
+    const title = id ? '编辑文章' : '新增文章';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '培训', name: '培训' },
+      { title: '教育培训', name: '教育培训' },
       { title: '资源管理', name: '资源管理', href: `/training/library/article/list` },
       { title, name: title },
-    ]
+    ];
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card>
           <Form>
             <Row gutter={12}>
@@ -183,21 +173,15 @@ export default class ArticleAdd extends PureComponent {
                   {getFieldDecorator('name', {
                     validateTrigger: 'onBlur',
                     initialValue: id ? name : undefined,
-                    rules: [
-                      { required: true, message: '请输入文章标题' },
-                    ],
-                  })(
-                    <Input placeholder="文章标题" />
-                  )}
+                    rules: [{ required: true, message: '请输入文章标题' }],
+                  })(<Input placeholder="文章标题" />)}
                 </FormItem>
               </Col>
               <Col span={7}>
                 <FormItem>
                   {getFieldDecorator('knowledgeId', {
                     initialValue: id ? knowledgeId : undefined,
-                    rules: [
-                      { required: true, message: '请选择知识点分类' },
-                    ],
+                    rules: [{ required: true, message: '请选择知识点分类' }],
                   })(
                     <TreeSelect placeholder="知识点分类">
                       {this.renderTreeNodes(knowledgeTree)}
@@ -222,14 +206,12 @@ export default class ArticleAdd extends PureComponent {
                   {getFieldDecorator('content', {
                     initialValue: id ? BraftEditor.createEditorState(content) : undefined,
                     validateTrigger: 'onBlur',
-                    rules: [
-                      { validator: this.contentValidator },
-                    ],
+                    rules: [{ validator: this.contentValidator }],
                   })(
                     <BraftEditor
                       // value={editorState}
                       onChange={this.handleEditorChange}
-                    // onSave={this.saveContent}
+                      // onSave={this.saveContent}
                     />
                   )}
                 </FormItem>
@@ -238,7 +220,9 @@ export default class ArticleAdd extends PureComponent {
           </Form>
         </Card>
         <FooterToolbar>
-          <Button onClick={this.handleSubmit} type="primary">提交</Button>
+          <Button onClick={this.handleSubmit} type="primary">
+            提交
+          </Button>
         </FooterToolbar>
       </PageHeaderLayout>
     );

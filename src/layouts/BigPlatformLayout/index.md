@@ -6,3 +6,4 @@
 * extra={companyName} 头部左边的内容，如企业名称或选择框等
 * contentStyle={{}} 内容样式
 * headerStyle={{}} 头部样式
+* titleStyle 标题样式

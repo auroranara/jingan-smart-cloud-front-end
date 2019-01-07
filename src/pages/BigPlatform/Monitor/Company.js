@@ -4,9 +4,11 @@ import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
 import styles from './Company.less';
 import FcModule from '../FireControl/FcModule';
-import VideoSection from './sections/VideoSection';
+// import VideoSection from './sections/VideoSection';
 import GasSection from './sections/GasSection';
 import GasBackSection from './sections/GasBackSection';
+import StorageTankMonitor from './sections/StorageTankMonitor';
+import StorageTankDrawer from './sections/StorageTankDrawer';
 import VideoPlay from './sections/VideoPlay';
 import { ALL } from './components/gasStatus';
 
@@ -19,6 +21,8 @@ import TopCenter from './sections/TopCenter.js';
 import AlarmHistory from './sections/AlarmHistory.js';
 
 import ElectricityCharts from './Sections/ElectricityCharts';
+
+import videoBtn from './imgs/videoBtn.png';
 
 const DELAY = 5 * 1000;
 // const WATER_DELAY = 5 * 60 * 1000;
@@ -42,6 +46,7 @@ export default class App extends PureComponent {
     chartSelectVal: '',
     selectedDeviceType: 1,
     smokeStatus: ALL,
+    storageDrawerVisible: false,
   };
 
   componentDidMount() {
@@ -105,6 +110,18 @@ export default class App extends PureComponent {
       payload: { companyId, overFlag: 0 },
     });
 
+    // 获取储罐统计
+    dispatch({
+      type: 'monitor/fetchTankMessageData',
+      payload: { companyId },
+    });
+
+    // 储罐统计下钻
+    dispatch({
+      type: 'monitor/fetchTankMessageList',
+      payload: { companyId },
+    });
+
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
     // this.waterTimer = setInterval(this.waterPolling, WATER_DELAY);
@@ -157,6 +174,17 @@ export default class App extends PureComponent {
     dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+    // 获取储罐统计
+    dispatch({
+      type: 'monitor/fetchTankMessageData',
+      payload: { companyId },
+    });
+
+    // 储罐统计下钻
+    dispatch({
+      type: 'monitor/fetchTankMessageList',
+      payload: { companyId },
+    });
   };
 
   waterPolling = () => {
@@ -344,6 +372,11 @@ export default class App extends PureComponent {
     });
   };
 
+  // 查看储罐监测
+  handleStorageDrawer = () => {
+    this.setState({ storageDrawerVisible: true });
+  };
+
   render() {
     // 从props中获取企业名称
     const {
@@ -368,13 +401,14 @@ export default class App extends PureComponent {
         errorDevice,
         smokeCount,
         smokeList,
+        tankData,
+        tankDataList,
         deviceDataHistory,
       },
       unitFireControl: { fireAlarmSystem },
       dispatch,
       historyAlarmLoading,
     } = this.props;
-
     const {
       gasRotated,
       gasStatus,
@@ -383,6 +417,7 @@ export default class App extends PureComponent {
       waterSelectVal,
       chartSelectVal,
       selectedDeviceType,
+      storageDrawerVisible,
     } = this.state;
 
     // let companyName = '暂无信息';
@@ -393,6 +428,18 @@ export default class App extends PureComponent {
         <Header title={projectName} extraContent={companyName ? companyName : '暂无信息'} />
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
+            <div
+              title="视频监控"
+              className={styles.videoBtn}
+              style={{
+                backgroundImage: `url(${videoBtn})`,
+                backgroundRepeat: 'no-repeat',
+                groundPosition: 'center center',
+                backgroundSize: '100% 100%',
+                transform: 'none',
+              }}
+              onClick={() => this.handleVideoShow(allCamera[0].key_id)}
+            />
             <Col span={6} style={{ height: '100%' }}>
               <div
                 style={{
@@ -415,13 +462,17 @@ export default class App extends PureComponent {
                   />
                 </div>
                 <div className={styles.videoMonitorContainer}>
-                  <VideoSection
+                  <StorageTankMonitor
+                    tankData={tankData}
+                    handleStorageDrawer={this.handleStorageDrawer}
+                  />
+                  {/* <VideoSection
                     data={allCamera}
                     showVideo={this.handleVideoShow}
                     style={{ transform: 'none' }}
                     backTitle="更多"
                     handleBack={() => this.handleVideoShow()}
-                  />
+                  /> */}
                 </div>
               </div>
               <div
@@ -513,6 +564,15 @@ export default class App extends PureComponent {
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
+        />
+        <StorageTankDrawer
+          tankDataList={tankDataList}
+          visible={storageDrawerVisible}
+          onClose={() => {
+            this.setState({
+              storageDrawerVisible: false,
+            });
+          }}
         />
       </div>
     );

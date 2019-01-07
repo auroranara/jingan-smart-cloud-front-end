@@ -52,16 +52,22 @@ export default class PersonFileList extends PureComponent {
     });
   }
 
-  // 跳转到考试档案页面
-  goMyExamList = (id, name) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/myFileList?studentId=${id}&&name=${name}`));
+  // 跳转到人员档案页面
+  goMyExamList = id => {
+    const { dispatch, companyId } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/training/generalFile/myFile/myFileList?studentId=${id}&&companyId=${companyId}`
+      )
+    );
   };
 
   // 跳转到综合分析报告页面
   goMySynthesisReport = (id, name) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/myFile/mySynthesis?studentId=${id}&&name=${name}`));
+    dispatch(
+      routerRedux.push(`/training/generalFile/myFile/mySynthesis?studentId=${id}&&name=${name}`)
+    );
   };
 
   handleTableData = (list = [], indexBase) => {
@@ -182,21 +188,24 @@ export default class PersonFileList extends PureComponent {
         dataIndex: 'passCount',
         key: 'passCount',
         align: 'center',
-        render: val => {
-          return `${val}%`;
-        },
       },
       {
         title: '不合格次数',
         dataIndex: 'noPassCount',
         key: 'noPassCount',
         align: 'center',
+        render: val => {
+          return +val === 0 ? val : <span style={{ color: 'red' }}>{val}</span>;
+        },
       },
       {
         title: '弃考次数',
         dataIndex: 'giveUpCount',
         key: 'giveUpCount',
         align: 'center',
+        render: val => {
+          return +val === 0 ? val : <span style={{ color: 'red' }}>{val}</span>;
+        },
       },
       {
         title: '最高正确率',
@@ -204,7 +213,7 @@ export default class PersonFileList extends PureComponent {
         key: 'maxScore',
         align: 'center',
         render: val => {
-          return val ? `${val.toFixed(2)}%` : '---';
+          return val === null ? '---' : `${val.toFixed(2)}%`;
         },
       },
       {
@@ -214,7 +223,7 @@ export default class PersonFileList extends PureComponent {
         align: 'center',
         // width: 150,
         render: val => {
-          return val ? `${val.toFixed(2)}%` : '---';
+          return val === null ? '---' : `${val.toFixed(2)}%`;
         },
       },
       {
@@ -226,7 +235,7 @@ export default class PersonFileList extends PureComponent {
         width: 240,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goMyExamList(rows.id, rows.name)}>考试档案</a>
+            <a onClick={() => this.goMyExamList(rows.id)}>考试档案</a>
             <Divider type="vertical" />
             <a onClick={() => this.goMySynthesisReport(rows.id, rows.name)}>人员分析</a>
           </span>

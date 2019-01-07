@@ -46,9 +46,8 @@ export default class PendingInformation extends PureComponent {
             </Ellipsis>
           </div>
           <div className={styles.lastLine}>
-            <div className={styles.location}>
-              <span><Icon type="environment" theme="outlined" />{device_address}</span>
-            </div>
+            <span><Icon type="environment" theme="outlined" /></span>
+            <Ellipsis lines={1} tooltip className={styles.location}><span>{device_address}</span></Ellipsis>
             <div className={styles.time}><span>{t}</span></div>
           </div>
         </div>
@@ -81,9 +80,8 @@ export default class PendingInformation extends PureComponent {
           </Ellipsis>
         </div>
         <div className={styles.lastLine}>
-          <div className={styles.location}>
-            <span><Icon type="environment" theme="outlined" />{install_address}</span>
-          </div>
+          <span><Icon type="environment" theme="outlined" /></span>
+          <Ellipsis lines={1} tooltip className={styles.location}><span>{install_address}</span></Ellipsis>
           <div className={styles.time}><span>{t}</span></div>
         </div>
       </div>

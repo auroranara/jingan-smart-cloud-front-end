@@ -54,9 +54,13 @@ export default class ExamFileList extends PureComponent {
   }
 
   // 跳转到考试详情页面
-  goExamDetail = id => {
+  goExamDetail = (id, name, startTime, endTime, examLimit, percentOfPass) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/training/generalFile/examDetailList/${id}`));
+    dispatch(
+      routerRedux.push(
+        `/training/generalFile/examDetailList/${id}?id=${id}&&name=${name}&&startTime=${startTime}&&endTime=${endTime}&&examLimit=${examLimit}&&percentOfPass=${percentOfPass}`
+      )
+    );
   };
 
   // 跳转到考试成绩综合分析报告
@@ -262,7 +266,20 @@ export default class ExamFileList extends PureComponent {
         width: 140,
         render: (text, rows) => (
           <span>
-            <a onClick={() => this.goExamDetail(rows.id)}>查看</a>
+            <a
+              onClick={() =>
+                this.goExamDetail(
+                  rows.id,
+                  rows.name,
+                  rows.startTime,
+                  rows.endTime,
+                  rows.examLimit,
+                  rows.percentOfPass
+                )
+              }
+            >
+              查看
+            </a>
             <Divider type="vertical" />
             <a onClick={() => this.goExamReport(rows.id)}>分析报告</a>
           </span>
