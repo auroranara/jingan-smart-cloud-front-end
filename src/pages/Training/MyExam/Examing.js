@@ -233,7 +233,7 @@ export default class Examing extends PureComponent {
               <span className={styles.rect} />
               答题卡
             </div>
-            <div className={styles.side}>
+            <div className={styles.side1}>
               <PersonCard
                 src={personIcon}
                 name={userName || NO_DATA}
@@ -266,6 +266,7 @@ export default class Examing extends PureComponent {
                 <Clock counting restTime={restTime} handleStop={this.handleStop} />
               </div>
               <Subject
+                style={{ minHeight: 'calc(100vh - 510px)' }}
                 index={showIndex}
                 value={value}
                 question={question.stem || NO_DATA}
