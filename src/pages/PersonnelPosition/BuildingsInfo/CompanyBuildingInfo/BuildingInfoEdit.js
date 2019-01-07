@@ -250,7 +250,7 @@ export default class BuildingInfoEdit extends PureComponent {
         ),
       },
       {
-        name: 'safetyFourPicture',
+        name: 'photoUrl',
         cName: '现场照片',
         span: 24,
         formItemLayout: itemLayout1,
@@ -258,7 +258,8 @@ export default class BuildingInfoEdit extends PureComponent {
           <Upload
             name="files"
             accept=".jpg,.png" // 接受的文件格式
-            headers={{ 'JA-Token': getToken() }}
+            headers={{ 'JA-Token': getToken() }} // 上传的请求头部
+            data={{ folder: 'buidingInfo' }} // 附带参数
             onChange={this.handlePicChange}
           >
             <Button loading={picLoading} type="primary">
@@ -269,7 +270,7 @@ export default class BuildingInfoEdit extends PureComponent {
         ),
       },
       {
-        name: 'companyLogo',
+        name: 'drawingUrl',
         cName: '图纸附件',
         span: 24,
         formItemLayout: itemLayout1,
@@ -283,7 +284,7 @@ export default class BuildingInfoEdit extends PureComponent {
         ),
       },
       {
-        name: 'level',
+        name: 'remark',
         cName: '备注',
         span: 24,
         formItemLayout: itemLayout1,
