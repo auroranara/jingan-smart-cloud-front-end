@@ -43,6 +43,7 @@ export default class App extends PureComponent {
     videoVisible: false,
     videoKeyId: undefined,
     waterSelectVal: '',
+    exhaustSelectVal: '',
     chartSelectVal: '',
     selectedDeviceType: 1,
     smokeStatus: ALL,
@@ -75,6 +76,22 @@ export default class App extends PureComponent {
         dispatch({ type: 'monitor/fetchDeviceConfig', payload: { deviceId: firstDeviceId } });
         // 获取传感器实时数据和状态
         dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: firstDeviceId } });
+      },
+    });
+
+    // 获取废气监测数据 4 废气
+    dispatch({
+      type: 'monitor/fetchCompanyDevices',
+      payload: { companyId, type: 4 },
+      callback: firstDeviceId => {
+        this.setState({ exhaustSelectVal: firstDeviceId });
+        // 获取传感器监测参数
+        dispatch({ type: 'monitor/fetchExhaustConfig', payload: { deviceId: firstDeviceId } });
+        // 获取传感器实时数据和状态
+        dispatch({
+          type: 'monitor/fetchExhaustRealTimeData',
+          payload: { deviceId: firstDeviceId },
+        });
       },
     });
 
@@ -162,7 +179,7 @@ export default class App extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-    const { waterSelectVal } = this.state;
+    const { waterSelectVal, exhaustSelectVal } = this.state;
 
     dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0 } });
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
@@ -172,8 +189,15 @@ export default class App extends PureComponent {
     dispatch({ type: 'unitFireControl/fetchFireAlarmSystem', payload: { companyId } });
     // 获取独立烟感监测数据
     dispatch({ type: 'monitor/fetchSmokeCount', payload: { companyId, type: 6 } });
+    // 获取废水监测数据
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+    // 获取废气监测数据
+    exhaustSelectVal &&
+      dispatch({
+        type: 'monitor/fetchExhaustRealTimeData',
+        payload: { deviceId: exhaustSelectVal },
+      });
     // 获取储罐统计
     dispatch({
       type: 'monitor/fetchTankMessageData',
@@ -193,6 +217,17 @@ export default class App extends PureComponent {
 
     waterSelectVal &&
       dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: waterSelectVal } });
+  };
+
+  exhaustPolling = () => {
+    const { dispatch } = this.props;
+    const { exhaustSelectVal } = this.state;
+
+    exhaustSelectVal &&
+      dispatch({
+        type: 'monitor/fetchExhaustRealTimeData',
+        payload: { deviceId: exhaustSelectVal },
+      });
   };
 
   chartPolling = () => {
@@ -247,6 +282,13 @@ export default class App extends PureComponent {
     this.setState({ waterSelectVal: value });
     dispatch({ type: 'monitor/fetchDeviceConfig', payload: { deviceId: value } });
     dispatch({ type: 'monitor/fetchRealTimeData', payload: { deviceId: value } });
+  };
+
+  handleExhaustSelect = value => {
+    const { dispatch } = this.props;
+    this.setState({ exhaustSelectVal: value });
+    dispatch({ type: 'monitor/fetchExhaustConfig', payload: { deviceId: value } });
+    dispatch({ type: 'monitor/fetchExhaustRealTimeData', payload: { deviceId: value } });
   };
 
   handleChartSelect = value => {
@@ -391,6 +433,9 @@ export default class App extends PureComponent {
         waterCompanyDevicesData,
         waterDeviceConfig,
         waterRealTimeData,
+        exhaustCompanyDevicesData,
+        exhaustDeviceConfig,
+        exhaustRealTimeData,
         countAndExponent,
         realTimeAlarm,
         historyAlarm,
@@ -415,6 +460,7 @@ export default class App extends PureComponent {
       videoVisible,
       videoKeyId,
       waterSelectVal,
+      exhaustSelectVal,
       chartSelectVal,
       selectedDeviceType,
       storageDrawerVisible,
@@ -552,7 +598,11 @@ export default class App extends PureComponent {
                   />
                 </Col>
                 <Col span={8} style={{ height: '100%' }}>
-                  <ExhaustMonitor />
+                  <ExhaustMonitor
+                    selectVal={exhaustSelectVal}
+                    handleSelect={this.handleExhaustSelect}
+                    data={{ exhaustCompanyDevicesData, exhaustDeviceConfig, exhaustRealTimeData }}
+                  />
                 </Col>
               </Row>
             </Col>
