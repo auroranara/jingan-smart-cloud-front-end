@@ -36,6 +36,7 @@ class OverComDrawer extends PureComponent {
           style={{ padding: 0 }}
           maskStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
           zIndex={1333}
+          className={styles.drawer}
         >
           <div className={styles.main} style={{ padding: 0 }}>
             <div

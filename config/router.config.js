@@ -102,7 +102,7 @@ module.exports = env => {
           component: './BigPlatform/Position/RealTime',
         },
         {
-          path: '/big-platform/position/history/:id',
+          path: '/big-platform/position/:companyId/history/:id',
           component: './BigPlatform/Position/History',
         },
       ],

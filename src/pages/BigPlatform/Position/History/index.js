@@ -21,12 +21,13 @@ const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment(
 
 
 /**
- * description: 模板
+ * description: 历史轨迹
  * author: sunkai
  * date: 2018年12月27日
  */
-@connect(({ position }) => ({
+@connect(({ position, user }) => ({
   position,
+  user,
 }))
 export default class History extends PureComponent {
   state = {
@@ -38,6 +39,7 @@ export default class History extends PureComponent {
 
   componentDidMount() {
     const { dispatch, match: { params: { id: cardId } } } = this.props;
+    // 获取最新一条数据
     dispatch({
       type: 'position/fetchLatest',
       payload: {
@@ -56,6 +58,10 @@ export default class History extends PureComponent {
           this.getList(range);
         }
       },
+    });
+    // 获取企业信息
+    dispatch({
+      type: 'user/fetchCurrent',
     });
   }
 
@@ -123,14 +129,14 @@ export default class History extends PureComponent {
   }
 
   render() {
-    const { position: { list } } = this.props;
+    const { position: { list }, user: { currentUser: { companyName } } } = this.props;
     const { range } = this.state;
     const [ startTime, endTime ] = range;
 
     return (
       <BigPlatformLayout
         title="晶安人员定位监控系统"
-        extra="无锡晶安科技有限公司"
+        extra={companyName}
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
         style={{

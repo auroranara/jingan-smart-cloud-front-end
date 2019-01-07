@@ -60,7 +60,7 @@ const PHONE = '13270801232';
 //   time: "2018-12-22 10:30:00",
 // };
 
-@connect(({ personPosition }) => ({ personPosition }))
+@connect(({ personPosition, user }) => ({ personPosition, user }))
 export default class WbTest extends PureComponent {
   state = {
     positions: [], // 地图上的显示的所有点的集合
@@ -140,6 +140,11 @@ export default class WbTest extends PureComponent {
       callback: (data = []) => {
         this.setState({ positions: data });
       },
+    });
+
+    // 获取企业信息
+    dispatch({
+      type: 'user/fetchCurrent',
     });
   }
 
@@ -224,6 +229,8 @@ export default class WbTest extends PureComponent {
   };
 
   render() {
+    // 注意这里额外引了一个model
+    const { match: { params: { companyId } }, user: { currentUser: { companyName } } } = this.props;
     const {
       positions,
       posInfo,
@@ -284,7 +291,7 @@ export default class WbTest extends PureComponent {
     return (
       <BigPlatformLayout
         title="晶安人员定位监控系统"
-        extra="无锡晶安科技有限公司"
+        extra={companyName}
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
         style={{
@@ -317,6 +324,7 @@ export default class WbTest extends PureComponent {
             <PersonInfo
               visible={personInfoVisible}
               data={getPersonInfoItem(infoCardId, positions)}
+              companyId={companyId}
               handleSOS={this.handleSOS}
               handleClose={() => this.handleClose('personInfo')}
             />

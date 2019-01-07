@@ -1,10 +1,11 @@
-import { getList, getLatest } from '../services/position';
+import { getList, getLatest, getCompany } from '../services/position';
 
 export default {
   namespace: 'position',
 
   state: {
     list: [],
+    company: {},
   },
 
   effects: {
@@ -24,6 +25,18 @@ export default {
         yield put({ type: 'save', payload: { list }});
         if (callback) {
           callback(list);
+        }
+      }
+      else if (callback) {
+        callback();
+      }
+    },
+    *fetchCompany({ payload, callback }, { call, put }) {
+      const { code, data } = yield call(getCompany, payload);
+      if (code === 200) {
+        yield put({ type: 'save', payload: { company: data }});
+        if (callback) {
+          callback(data);
         }
       }
       else if (callback) {
