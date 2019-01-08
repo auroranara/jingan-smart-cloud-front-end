@@ -8,7 +8,7 @@ export default {
     projectName: '测试晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -24,7 +24,7 @@ export default {
     projectName: '无锡晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -40,7 +40,7 @@ export default {
     projectName: '徐州晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 117.407812,
       y: 34.501282,
@@ -56,7 +56,7 @@ export default {
     projectName: '常熟晶安智慧云平台',
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.848825,
       y: 31.639258,
@@ -72,7 +72,7 @@ export default {
     projectName: '晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -88,7 +88,7 @@ export default {
     projectName: '校园智慧安全云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -104,7 +104,7 @@ export default {
     projectName: '智慧消防云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -120,7 +120,7 @@ export default {
     projectName: '山西晶安智慧云平台',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.401163,
       y: 31.560116,
@@ -136,7 +136,7 @@ export default {
     projectName: '晶安智慧云平台（演示）',
     servicePhone: '400-928-5656',
     serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10028',
+    webscoketHost: '47.99.76.214:10036',
     location: {
       x: 120.401163,
       y: 31.560116,
