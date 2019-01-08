@@ -21,12 +21,13 @@ const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment(
 
 
 /**
- * description: 模板
+ * description: 历史轨迹
  * author: sunkai
  * date: 2018年12月27日
  */
-@connect(({ position }) => ({
+@connect(({ position, user }) => ({
   position,
+  user,
 }))
 export default class History extends PureComponent {
   state = {
@@ -37,9 +38,31 @@ export default class History extends PureComponent {
   lastRange = defaultRange;
 
   componentDidMount() {
-    // const { match: { params: { id } } } = this.props;
-    // 获取列表
-    this.getList(defaultRange);
+    const { dispatch, match: { params: { id: cardId } } } = this.props;
+    // 获取最新一条数据
+    dispatch({
+      type: 'position/fetchLatest',
+      payload: {
+        cardId,
+      },
+      callback: (data) => {
+        if (data) {
+          const { intime } = data;
+          const minute = 60 * 1000;
+          const queryEndTime = intime%minute === 0 ? intime : Math.ceil(intime/minute)*minute;
+          const queryStartTime = queryEndTime - minute * 2;
+          const range = [moment(queryStartTime), moment(queryEndTime)];
+          this.setState({ range });
+          this.lastRange = range;
+          // 获取列表
+          this.getList(range);
+        }
+      },
+    });
+    // 获取企业信息
+    dispatch({
+      type: 'user/fetchCurrent',
+    });
   }
 
   /**
@@ -106,14 +129,14 @@ export default class History extends PureComponent {
   }
 
   render() {
-    const { position: { list } } = this.props;
+    const { position: { list }, user: { currentUser: { companyName } } } = this.props;
     const { range } = this.state;
     const [ startTime, endTime ] = range;
 
     return (
       <BigPlatformLayout
         title="晶安人员定位监控系统"
-        extra="无锡晶安科技有限公司"
+        extra={companyName}
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
         style={{
@@ -126,6 +149,7 @@ export default class History extends PureComponent {
             <div className={styles.wrapper} style={{ display: 'flex', flexDirection: 'column', backgroundImage: `url(${borderIcon})` }}>
               <div style={{ flex: 'none', marginBottom: 12 }}>
                 <RangePicker
+                  dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker}
                   style={{ width: '100%' }}
                   showTime={{ format: 'HH:mm' }}

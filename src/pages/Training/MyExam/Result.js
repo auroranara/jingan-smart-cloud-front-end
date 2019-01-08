@@ -44,6 +44,7 @@ export default class ExamResult extends PureComponent {
   state = {
     // index: 0,
     spreadStates: [],
+    affixed: false,
   };
 
   componentDidMount() {
@@ -61,7 +62,8 @@ export default class ExamResult extends PureComponent {
           title: KEY_CN[k],
           size: Array.isArray(side[k]) ? side[k].length : 0,
         })).filter(item => item.size);
-        this.setState({ spreadStates: [...Array(categories.length).keys()].map(i => !i) });
+        // this.setState({ spreadStates: [...Array(categories.length).keys()].map(i => !i) });
+        this.setState({ spreadStates: Array(categories.length).fill(true) });
       },
     });
     dispatch({
@@ -85,6 +87,10 @@ export default class ExamResult extends PureComponent {
     }));
   };
 
+  handleAffixChange = affixed => {
+    this.setState({ affixed });
+  };
+
   render() {
     const {
       // loading,
@@ -104,11 +110,12 @@ export default class ExamResult extends PureComponent {
       },
       // user: { currentUser: { userName, userTypeName } },
     } = this.props;
-    console.log(' this.props', this.props);
+    // console.log(' this.props', this.props);
 
     const {
       // index,
       spreadStates,
+      affixed,
     } = this.state;
 
     const breadcrumbList = [
@@ -148,12 +155,15 @@ export default class ExamResult extends PureComponent {
       >
         <Row>
           <Col span={6}>
-            <Affix offsetTop={90}>
+            <Affix
+              offsetTop={90}
+              onChange={this.handleAffixChange}
+            >
               <div className={styles.head}>
                 <span className={styles.rect} />
                 答题卡
               </div>
-              <div className={styles.side}>
+              <div className={styles.side2} style={{ height: `calc(100vh - ${affixed ? 180 : 310}px)` }}>
                 <PersonCard
                   src={personIcon}
                   name={studentName || NO_DATA}

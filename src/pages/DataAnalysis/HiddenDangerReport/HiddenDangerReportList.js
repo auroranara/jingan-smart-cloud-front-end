@@ -127,10 +127,14 @@ export default class App extends PureComponent {
         render: (value) => getLabelByStatus(value),
       },
       {
-        title: '检查人',
+        title: '创建人',
         dataIndex: 'report_user_name',
-        // dataIndex: 'allCheckPersonNames',
-        render: (val) => (<Ellipsis tooltip length={7}>{val}</Ellipsis>),
+        // render: (val) => (<Ellipsis tooltip length={7}>{val}</Ellipsis>),
+      },
+      {
+        title: '检查人',
+        dataIndex: 'allCheckPersonNames',
+        render: (val) => (<Ellipsis tooltip length={7} style={{ lineHeight: '21px' }}>{val}</Ellipsis>),
       },
       {
         title: '创建日期',

@@ -91,6 +91,7 @@ const hostModalFormItems = [
   {
     label: '主机编号',
     name: 'deviceCode',
+    placeholder: '第一个消防主机编号请与装置编号相同',
     // deviceCode为数字，则要设置type=number，不然默认为string
     // type: 'inputNumber',
     // options: { rules: [{ required: true, type: 'number', message: '请输入消防主机编号' }] },

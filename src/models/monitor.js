@@ -47,9 +47,14 @@ export default {
       pagination: { pageNum: 1, pageSize: 20, total: 0 },
       list: [],
     },
+    // 废水
     waterCompanyDevicesData: [],
     waterDeviceConfig: [],
     waterRealTimeData: [],
+    // 废气
+    exhaustCompanyDevicesData: [],
+    exhaustDeviceConfig: [],
+    exhaustRealTimeData: [],
     chartDeviceList: [],
     gsmsHstData: {},
     electricityPieces: {},
@@ -132,6 +137,9 @@ export default {
           case 3:
             yield put({ type: 'saveCompanyDevices', payload: response.data });
             break;
+          case 4:
+            yield put({ type: 'saveExhaustDevices', payload: response.data });
+            break;
           default:
           // do noting;
         }
@@ -156,6 +164,20 @@ export default {
       const response = yield call(getRealTimeData, payload);
       if (response.code === 200) {
         yield put({ type: 'saveRealTimeData', payload: response.data });
+      }
+    },
+    // 获取废气传感器监测参数
+    *fetchExhaustConfig({ payload }, { call, put }) {
+      const response = yield call(getDeviceConfig, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveExhaustConfig', payload: response.data });
+      }
+    },
+    // 获取废气传感器实时数据和状态
+    *fetchExhaustRealTimeData({ payload }, { call, put }) {
+      const response = yield call(getRealTimeData, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveExhaustRealTimeData', payload: response.data });
       }
     },
     // 获取监测指数和设备数量等信息
@@ -331,11 +353,20 @@ export default {
     saveCompanyDevices(state, action) {
       return { ...state, waterCompanyDevicesData: action.payload };
     },
+    saveExhaustDevices(state, action) {
+      return { ...state, exhaustCompanyDevicesData: action.payload };
+    },
     saveDeviceConfig(state, action) {
       return { ...state, waterDeviceConfig: action.payload };
     },
     saveRealTimeData(state, action) {
       return { ...state, waterRealTimeData: action.payload };
+    },
+    saveExhaustConfig(state, action) {
+      return { ...state, exhaustDeviceConfig: action.payload };
+    },
+    saveExhaustRealTimeData(state, action) {
+      return { ...state, exhaustRealTimeData: action.payload };
     },
     saveCountAndExponent(state, { payload }) {
       return {
