@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Col, Drawer, Row } from 'antd';
+import { Col, Drawer, Icon, Row } from 'antd';
 
 import styles from './DrawerContainer.less';
 
 const COL_STYLE = { height: '100%' };
+const ICON_STYLE = { position: 'absolute', right: 10, top: 10, fontSize: 18, color: '#FFF', cursor: 'pointer' };
 const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
@@ -22,6 +23,7 @@ export default class DrawerContainer extends PureComponent {
         {...restProps}
       >
         <div className={styles.container} id={id}>
+          <Icon type="close" style={ICON_STYLE} onClick={e => onClose()} />
           <h3 className={styles.title}>
             <span className={styles.rect} />
             {title}
