@@ -230,7 +230,14 @@ export default class WbTest extends PureComponent {
 
   render() {
     // 注意这里额外引了一个model
-    const { match: { params: { companyId } }, user: { currentUser: { companyName } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+      user: {
+        currentUser: { companyName },
+      },
+    } = this.props;
     const {
       positions,
       posInfo,
