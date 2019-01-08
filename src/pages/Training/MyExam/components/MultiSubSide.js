@@ -18,7 +18,7 @@ export default class MultiSubSide extends PureComponent {
   // };
 
   render() {
-    const { colors, categories=[], states, handleClick, handleSpreadClick } = this.props;
+    const { colors, categories=[], states, handleClick, handleSpreadClick, ...restProps } = this.props;
     // const { spreadStates } = this.state;
     // let states = spreadStates;
     // 如果categories已获取，且spreadStates未初始化，还是空数组，则默认展开第一个
@@ -28,7 +28,7 @@ export default class MultiSubSide extends PureComponent {
     let count = 0;
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} {...restProps}>
         {categories.map(({ title, size }, i) => {
           const temp = count;
           count += size;
