@@ -18,3 +18,13 @@
   width: 19.0625%;
   z-index: 9999;
 }
+.scroll {
+  flex: 1;
+  display: flex;
+  height: auto !important;
+
+  & > :first-child {
+    position: static !important;
+    flex: 1;
+  }
+}

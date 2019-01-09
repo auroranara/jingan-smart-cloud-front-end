@@ -280,7 +280,7 @@ export default class Scroll extends PureComponent {
    * 修改滚动条样式
    */
   renderThumb = ({ style }) => {
-    const { thumbStyle={ backgroundColor: `rgba(255, 255, 255, 0.65)` }, autoScroll } = this.props;
+    const { thumbStyle={ backgroundColor: `rgba(9, 103, 211, 0.5)` }, autoScroll } = this.props;
     const { isMouseEnter } = this.state;
     return <div style={{ ...style, display: autoScroll && !isMouseEnter ? 'none' : undefined, borderRadius: '10px', ...thumbStyle }} />;
   }

@@ -2,12 +2,22 @@ import React, { PureComponent } from 'react';
 import { Input } from 'antd';
 import { Map, Marker } from 'react-amap';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import NewSection from '@/components/NewSection';
 import headerBg from '@/assets/new-header-bg.png';
-import Section from '../NewUnitFireControl/Section';
 // 引入样式文件
 import styles from './index.less';
 
 const { Search } = Input
+
+// 告警信息
+const Message = function({  }) {
+  return (
+    <div className={styles.message}>
+
+    </div>
+  );
+};
+
 /**
  * description: 用电监测
  * author:
@@ -67,21 +77,30 @@ export default class ElectricityMonitor extends PureComponent {
         {/* 搜索框 */}
         <Search placeholder="单位名称" enterButton="搜索" className={styles.left} style={{ top: 'calc(9.62963% + 24px)' }} />
         {/* 接入单位统计 */}
-        <Section title="接入单位统计" className={styles.left} style={{ top: 'calc(9.62963% + 68px)', height: '13.611111%' }}>
+        <NewSection title="接入单位统计" className={styles.left} style={{ top: 'calc(9.62963% + 68px)', height: '13.611111%' }}>
         123
-        </Section>
+        </NewSection>
         {/* 实时报警统计 */}
-        <Section title="实时报警统计" className={styles.left} style={{ top: 'calc(23.24% + 80px)', height: '21.944444%' }}>
+        <NewSection title="实时报警统计" className={styles.left} style={{ top: 'calc(23.24% + 80px)', height: '21.944444%' }}>
         123
-        </Section>
+        </NewSection>
         {/* 近半年内告警统计 */}
-        <Section title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
+        <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
         123
-        </Section>
+        </NewSection>
         {/* 告警信息 */}
-        <Section title="告警信息" className={styles.right} style={{ height: 'auto', maxHeight: 'calc(91.37037% - 92px)' }}>
-        123
-        </Section>
+        <NewSection
+          title="告警信息"
+          className={styles.right}
+          style={{ display: 'flex', flexDirection: 'column', height: 'auto', maxHeight: 'calc(91.37037% - 92px)' }}
+          titleStyle={{ flex: 'none' }}
+          contentStyle={{ flex: '1', display: 'flex', height: 'auto' }}
+          scroll={{
+            className: styles.scroll,
+          }}
+        >
+          <div style={{ height: 800, backgroundColor: '#f28800' }}>这是一段很长的话这是一段很长的话这是一段很长的话这是一段很长的话</div>
+        </NewSection>
       </BigPlatformLayout>
     );
   }
