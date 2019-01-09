@@ -1,3 +1,25 @@
+.drawer {
+  :global {
+    .ant-drawer-header {
+      display: none;
+    }
+
+    .ant-drawer-content {
+      background: url('http://data.jingan-china.cn/v2/big-platform/safety/com/company-bg.png')
+        no-repeat center center / 100% 100%;
+    }
+
+    .ant-drawer-body {
+      padding: 0;
+      height: 100%;
+    }
+    .ant-drawer-wrapper-body {
+      overflow: hidden;
+      height: 100%;
+    }
+  }
+}
+
 .content {
   height: 100%;
 
@@ -19,6 +41,23 @@
   div:last-child {
     margin-bottom: 0;
   }
+}
+
+//滚动条整体部分
+.cardContainer::-webkit-scrollbar {
+  width: 12px;
+  background-color: rgb(2, 36, 80);
+  border-radius: 25px;
+}
+// 滚动条的轨道（里面装有Thumb）
+.cardContainer::-webkit-scrollbar-track {
+  background-color: rgb(2, 36, 80);
+  border-radius: 25px;
+}
+//  滚动条里面的小方块，能向上向下移动（或向左向右移动）
+.cardContainer::-webkit-scrollbar-thumb {
+  background-color: rgb(6, 72, 151);
+  border-radius: 25px;
 }
 
 .noCards {

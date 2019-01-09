@@ -36,7 +36,7 @@ export default function OvDangerCards(props) {
             title="总数"
             num={total}
             zeroLength={3}
-            onClick={e => handleClick && handleClick(0)}
+            onClick={total ? e => handleClick && handleClick(0) : null}
           />
         </Col>
         <Col style={{ height: '100%' }} span={12}>
@@ -49,7 +49,7 @@ export default function OvDangerCards(props) {
                 style={style1}
                 titleContainerStyle={style1}
                 numContainerStyle={styleNum1}
-                onClick={e => handleClick && handleClick(1)}
+                onClick={total ? e => handleClick && handleClick(1) : null}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -60,7 +60,7 @@ export default function OvDangerCards(props) {
                 style={style2}
                 titleContainerStyle={style2}
                 numContainerStyle={styleNum2}
-                onClick={e => handleClick && handleClick(2)}
+                onClick={total ? e => handleClick && handleClick(2) : null}
               />
             </Col>
             <Col style={{ height: '100%' }} span={8}>
@@ -70,7 +70,7 @@ export default function OvDangerCards(props) {
                 style={style3}
                 titleContainerStyle={style3}
                 numContainerStyle={styleNum3}
-                onClick={e => handleClick && handleClick(3)}
+                onClick={total ? e => handleClick && handleClick(3) : null}
               />
             </Col>
             {/* <span className={styles.divider} />

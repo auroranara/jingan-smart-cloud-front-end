@@ -1,11 +1,8 @@
 .drawerOfHiddenDanger {
   width: 100%;
   height: 100%;
-  :global {
-    .ant-spin-container {
-      height: 100%;
-    }
-  }
+  overflow-y: auto;
+  position: relative;
   &::-webkit-scrollbar {
     width: 8px;
     background-color: transparent;
@@ -17,6 +14,11 @@
   &::-webkit-scrollbar-track {
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
     background-color: transparent;
+  }
+  :global {
+    .ant-spin-container {
+      height: 100%;
+    }
   }
   .hiddenDangerRecord {
     display: flex;

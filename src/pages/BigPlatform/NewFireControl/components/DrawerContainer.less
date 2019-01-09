@@ -11,6 +11,16 @@
       background-color: rgb(3, 48, 105);
     }
 
+    // 关闭按钮被修改到header里面了，为了不显示header，直接将其不显示，但要自定义close按钮
+    .ant-drawer-header {
+      display: none;
+    }
+
+    .ant-drawer-body {
+      padding: 0;
+      height: 100%;
+    }
+
     .ant-drawer-close {
       color: #FFF;
     }
@@ -41,6 +51,7 @@
 .container {
   padding: 16px;
   height: 100%;
+  position: relative;
   // border: 1px solid @color;
   // background-color: rgb(3, 48, 105);
   // box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);

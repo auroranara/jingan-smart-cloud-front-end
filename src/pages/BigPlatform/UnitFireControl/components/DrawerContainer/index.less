@@ -12,6 +12,13 @@
     .ant-drawer-close {
       color: #FFF;
     }
+    .ant-drawer-header {
+      display: none;
+    }
+    .ant-drawer-body {
+      padding: 0;
+      height: 100%;
+    }
   }
   .container {
     padding: 16px;
@@ -19,6 +26,7 @@
     // background-color: rgb(3, 48, 105);
     // box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
     // border-radius: 10px;
+    position: relative;
     .content {
       width: 100%;
       overflow-y: auto;
@@ -50,6 +58,14 @@
         position: relative;
         top: 3px;
       }
+    }
+    .closeTag {
+      position: absolute;
+      right: 13px;
+      top: 12px;
+      cursor: pointer;
+      color: white;
+      font-size: 23px;
     }
   }
 }

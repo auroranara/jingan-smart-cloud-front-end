@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Icon } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
 import styles from './index.less';
@@ -47,6 +48,12 @@ export default class App extends PureComponent {
       contentStyle,
       // 标题样式
       titleStyle,
+      // 是否显示设置按钮
+      settable,
+      // 设置按钮样式
+      setStyle,
+      // 设置按钮点击事件
+      onSet,
     } = this.props;
     const { currentTime } = this.state;
     // 合并以后的容器类名
@@ -58,6 +65,7 @@ export default class App extends PureComponent {
           <div className={styles.headerTitle} style={titleStyle}>{autoSpace ? title.split('').join(' ') : title}</div>
           <div className={styles.headerTime}>{currentTime}</div>
           {extra && <div className={styles.headerExtra}>{extra}</div>}
+          {settable && <Icon style={setStyle} className={styles.setButton} type="setting" onClick={onSet} />}
         </div>
         <div className={styles.content} style={contentStyle}>
           {children}
