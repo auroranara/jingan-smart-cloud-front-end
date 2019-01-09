@@ -8,7 +8,7 @@ export async function queryCompanyList(params) {
 
 /* 获取字典 */
 export async function queryDict(params) {
-  return request(`/acloud_new/v2/sys/dict/list?${stringify(params)}`);
+  return request(`/acloud_new/v2/sys/dict/listOld?${stringify(params)}`);
 }
 
 // 获取建筑物列表

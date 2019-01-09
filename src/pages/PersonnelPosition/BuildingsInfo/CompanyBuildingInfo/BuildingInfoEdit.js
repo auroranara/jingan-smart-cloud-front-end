@@ -1,32 +1,24 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import { routerRedux } from 'dva/router';
-import { Button, Card, Col, Form, Icon, Input, Upload, Select, InputNumber } from 'antd';
+import router from 'umi/router';
+
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Icon,
+  Input,
+  Upload,
+  Select,
+  InputNumber,
+  message,
+  AutoComplete,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 // import urls from 'utils/urls';
 import { getToken } from 'utils/authority';
-
-//面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '人员定位',
-    name: '人员定位',
-  },
-  {
-    title: '建筑物信息列表',
-    name: '建筑物信息列表',
-  },
-  {
-    title: '新增建筑物',
-    name: '新增建筑物',
-  },
-];
 
 const { TextArea } = Input;
 const { Item: FormItem } = Form;
@@ -71,8 +63,8 @@ function generateRules(cName, msg = '输入', ...rules) {
 }
 
 function getOptions(options = []) {
-  return options.map(({ id, label }) => (
-    <Option key={id} value={id}>
+  return options.map(({ value, label }) => (
+    <Option key={value} value={value}>
       {label}
     </Option>
   ));
@@ -118,14 +110,81 @@ export default class BuildingInfoEdit extends PureComponent {
     });
   }
 
-  handleClickValidate = () => {};
+  handleClickValidate = () => {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+      location: {
+        query: { name: company_name, companyId: company_Id },
+      },
+      form: { validateFieldsAndScroll },
+    } = this.props;
+
+    const success = () => {
+      message.success(id ? '编辑成功' : '新增成功');
+      router.push(`/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`);
+    };
+
+    const error = () => {
+      message.error(id ? '编辑失败' : '新增失败');
+    };
+
+    validateFieldsAndScroll((errors, values) => {
+      if (!errors) {
+        const {
+          buildingType,
+          buildingName,
+          floorNumber,
+          fireDangerType,
+          buildingArea,
+          fireRating,
+          photoUrl,
+          drawingUrl,
+          remark,
+          floorLevel,
+        } = values;
+
+        const payload = {
+          companyId: company_Id,
+          buildingType,
+          buildingName,
+          floorNumber,
+          fireDangerType,
+          buildingArea,
+          fireRating,
+          photoUrl,
+          drawingUrl,
+          floorLevel,
+          remark,
+        };
+        // 如果新增
+        if (!id) {
+          dispatch({
+            type: 'buildingsInfo/insertBuilding',
+            payload,
+            success,
+            error,
+          });
+        } else {
+          dispatch({
+            type: 'buildingsInfo/editBuilding',
+            payload: { id, ...payload },
+            success,
+            error,
+          });
+        }
+      }
+    });
+  };
 
   // 渲染表单
   renderFormItems(items) {
     const { getFieldDecorator } = this.props.form;
     return items.map(
       ({ name, cName, span = 12, formItemLayout = itemLayout, rules, component }) => (
-        <Col span={span} key={name}>
+        <Col span={span} key={name} style={{ height: '50px' }}>
           <FormItem label={cName} {...formItemLayout}>
             {getFieldDecorator(name, { rules })(component)}
           </FormItem>
@@ -133,18 +192,17 @@ export default class BuildingInfoEdit extends PureComponent {
       )
     );
   }
-  photoAddress;
+
   render() {
     const {
+      match: {
+        params: { id },
+      },
       location: {
-        query: { name: company_name },
+        query: { name: company_name, companyId: company_Id },
       },
       form: { getFieldDecorator },
       buildingsInfo: {
-        buildingType = [],
-        fireDangerType = [],
-        fireRating = [],
-        floorNumber = [],
         detail: {
           data: {
             buildingTypeName,
@@ -153,8 +211,13 @@ export default class BuildingInfoEdit extends PureComponent {
             fireDangerTypeName,
             buildingArea,
             fireRatingName,
+            floorLevel,
           },
         },
+        buildingType = [],
+        fireDangerType = [],
+        fireRating = [],
+        floorNumber = [],
       },
     } = this.props;
 
@@ -162,18 +225,18 @@ export default class BuildingInfoEdit extends PureComponent {
 
     const defaultItems = [
       {
-        name: 'CompanyName',
+        name: 'companyId',
         cName: '企业名称',
         component: (
           <div>
-            {company_name ? (
+            {id ? (
+              ''
+            ) : (
               <div>
                 {getFieldDecorator('companyId', { initialValue: company_name })(
                   <Input disabled placeholder="请输入企业名称" />
                 )}
               </div>
-            ) : (
-              ''
             )}
           </div>
         ),
@@ -208,8 +271,7 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('建筑结构'),
         component: (
           <div>
-            {getFieldDecorator('floorNumber', { initialValue: floorNumberName })(
-              <Select placeholder="请选择建筑结构">{getOptions(floorNumber)}</Select>
+            <AutoComplete placeholder="请选择建筑结构">{getOptions(floorNumber)}</AutoComplete>
             )}
           </div>
         ),
@@ -221,7 +283,9 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('fireDangerType', { initialValue: fireDangerTypeName })(
-              <Select placeholder="请选择火灾危险性分类">{getOptions(fireDangerType)}</Select>
+              <AutoComplete placeholder="请选择火灾危险性分类">
+                {getOptions(fireDangerType)}
+              </AutoComplete>
             )}
           </div>
         ),
@@ -244,7 +308,19 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('fireRating', { initialValue: fireRatingName })(
-              <Select placeholder="请选择耐火等级">{getOptions(fireRating)}</Select>
+              <AutoComplete placeholder="请选择耐火等级">{getOptions(fireRating)}</AutoComplete>
+            )}
+          </div>
+        ),
+      },
+      {
+        name: 'floorLevel',
+        cName: '建筑层数',
+        rules: generateRules('建筑层数'),
+        component: (
+          <div>
+            {getFieldDecorator('floorLevel', { initialValue: floorLevel })(
+              <Input placeholder="请输入建筑层数" />
             )}
           </div>
         ),
@@ -294,6 +370,28 @@ export default class BuildingInfoEdit extends PureComponent {
     ];
 
     const formItems = [...defaultItems];
+
+    //面包屑
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+      {
+        title: '人员定位',
+        name: '人员定位',
+      },
+      {
+        title: '建筑物信息列表',
+        name: '建筑物信息列表',
+        href: `/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`,
+      },
+      {
+        title: '新增建筑物',
+        name: '新增建筑物',
+      },
+    ];
 
     return (
       <PageHeaderLayout title="新增建筑物" breadcrumbList={breadcrumbList}>

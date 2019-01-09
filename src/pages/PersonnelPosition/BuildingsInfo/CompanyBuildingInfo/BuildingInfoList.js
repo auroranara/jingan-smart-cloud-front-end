@@ -190,6 +190,9 @@ export default class BuildingInfoList extends PureComponent {
       location: {
         query: { name },
       },
+      match: {
+        params: { id: companyId },
+      },
       buildingsInfo: { buildingType = [], fireDangerType = [], fireRating = [], floorNumber = [] },
     } = this.props;
 
@@ -277,7 +280,7 @@ export default class BuildingInfoList extends PureComponent {
               <FormItem style={{ float: 'right' }}>
                 <Button
                   type="primary"
-                  href={`#/personnel-position/buildings-info/add?name=${name}`}
+                  href={`#/personnel-position/buildings-info/add?companyId=${companyId}&&name=${name}`}
                 >
                   新增
                 </Button>
@@ -312,20 +315,24 @@ export default class BuildingInfoList extends PureComponent {
               fireRatingName,
               floorNumberName,
               floorLevel,
-              photoWebUrl,
+              photoWebUrl = [],
             } = item;
             return (
               <List.Item key={id}>
                 <Card title={buildingName} className={styles.card}>
                   <Row>
                     <Col span={10} style={{ cursor: 'pointer' }}>
-                      <div
-                        className={styles.detailpic}
-                        style={{
-                          backgroundImage: `url(${photoWebUrl[0].webUrl.split(',')[0]})`,
-                          backgroundSize: 'cover',
-                        }}
-                      />
+                      {photoWebUrl.length > 0 ? (
+                        <div
+                          className={styles.detailpic}
+                          style={{
+                            backgroundImage: `url(${photoWebUrl[0].webUrl.split(',')[0]})`,
+                            backgroundSize: 'cover',
+                          }}
+                        />
+                      ) : (
+                        <div className={styles.detailpic} />
+                      )}
                     </Col>
                     <Col span={14} style={{ cursor: 'pointer' }}>
                       <p>

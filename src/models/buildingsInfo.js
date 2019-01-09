@@ -37,6 +37,7 @@ export default {
         fireDangerTypeName: undefined,
         buildingArea: undefined,
         fireRatingName: undefined,
+        floorLevel: undefined,
       },
     },
   },
@@ -72,11 +73,11 @@ export default {
     // 获取字典
     *fetchDict({ payload, success, error }, { call, put }) {
       const response = yield call(queryDict, payload);
-      if (response.error.code === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveDict',
           payload: {
-            [payload.type]: response.result,
+            [payload.type]: response.data.list,
           },
         });
         if (success) {
@@ -116,13 +117,12 @@ export default {
 
     // 新增建筑
     *insertBuilding({ payload, success, error }, { call, put }) {
+      console.log('payloadpayload', payload);
       const response = yield call(addBuildings, payload);
       const { code, data } = response;
-      if (code === 200) {
-        yield put({ type: 'addBuilding', payload: data });
-        if (success) {
-          success();
-        }
+      yield put({ type: 'addBuilding', payload: data });
+      if (success) {
+        success();
       } else if (error) {
         error(response.msg);
       }
@@ -228,7 +228,10 @@ export default {
     addBuilding(state, { payload }) {
       return {
         ...state,
-        detail: payload,
+        detail: {
+          ...state.detail,
+          data: payload,
+        },
       };
     },
 
