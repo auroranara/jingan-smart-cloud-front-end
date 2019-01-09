@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Spin, Col, Row, Select } from 'antd';
+import { Form, List, Card, Button, Input, Spin, Col, Row, Select, Icon, message } from 'antd';
 // import { routerRedux } from 'dva/router';
 // import { AuthLink } from '@/utils/customAuth';
 import InfiniteScroll from 'react-infinite-scroller';
-// import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
+import codesMap from '@/utils/codes';
+import { AuthButton } from '@/utils/customAuth';
 import styles from './CompanyInfo.less';
 
 const FormItem = Form.Item;
@@ -183,6 +184,39 @@ export default class BuildingInfoList extends PureComponent {
       },
     });
   };
+
+  /* 删除 */
+  handleShowDeleteConfirm = id => {
+    const {
+      dispatch,
+      buildingsInfo: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+      match: {
+        params: { id: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'buildingsInfo/removeBuilding',
+      payload: { id },
+      callback: response => {
+        if (response && response.code === 200) {
+          dispatch({
+            type: 'buildingsInfo/fetchBuildingList',
+            payload: {
+              company_id: companyId,
+              pageSize,
+              pageNum: 1,
+            },
+          });
+          message.success('删除成功！');
+        } else message.warning('删除失败！');
+      },
+    });
+  };
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -215,7 +249,7 @@ export default class BuildingInfoList extends PureComponent {
                 })(
                   <Select style={{ width: '330px' }} placeholder="请选择建筑物类型">
                     {buildingType.map(item => (
-                      <Option value={item.id} key={item.id}>
+                      <Option value={item.value} key={item.value}>
                         {item.label}
                       </Option>
                     ))}
@@ -230,7 +264,7 @@ export default class BuildingInfoList extends PureComponent {
                 })(
                   <Select style={{ width: '330px' }} placeholder="请选择火灾危险性分类">
                     {fireDangerType.map(item => (
-                      <Option value={item.id} key={item.id}>
+                      <Option value={item.value} key={item.value}>
                         {item.label}
                       </Option>
                     ))}
@@ -245,7 +279,7 @@ export default class BuildingInfoList extends PureComponent {
                 })(
                   <Select style={{ width: '330px' }} placeholder="请选择耐火等级">
                     {fireRating.map(item => (
-                      <Option value={item.id} key={item.id}>
+                      <Option value={item.value} key={item.value}>
                         {item.label}
                       </Option>
                     ))}
@@ -260,7 +294,7 @@ export default class BuildingInfoList extends PureComponent {
                 })(
                   <Select style={{ width: '330px' }} placeholder="请选择建筑结构">
                     {floorNumber.map(item => (
-                      <Option value={item.id} key={item.id}>
+                      <Option value={item.value} key={item.value}>
                         {item.label}
                       </Option>
                     ))}
@@ -319,14 +353,29 @@ export default class BuildingInfoList extends PureComponent {
             } = item;
             return (
               <List.Item key={id}>
-                <Card title={buildingName} className={styles.card}>
+                <Card
+                  title={buildingName}
+                  className={styles.card}
+                  extra={
+                    <AuthButton
+                      code={codesMap.personnelPosition.buildingsInfo.delete}
+                      onClick={() => {
+                        this.handleShowDeleteConfirm(id);
+                      }}
+                      shape="circle"
+                      style={{ border: 'none', fontSize: '16px' }}
+                    >
+                      <Icon type="close" />
+                    </AuthButton>
+                  }
+                >
                   <Row>
                     <Col span={10} style={{ cursor: 'pointer' }}>
                       {photoWebUrl.length > 0 ? (
                         <div
                           className={styles.detailpic}
                           style={{
-                            backgroundImage: `url(${photoWebUrl[0].webUrl.split(',')[0]})`,
+                            backgroundImage: `url(${photoWebUrl[0].webUrl})`,
                             backgroundSize: 'cover',
                           }}
                         />
@@ -355,7 +404,9 @@ export default class BuildingInfoList extends PureComponent {
                         层数：
                         {floorLevel || getEmptyData()}
                       </p>
-                      <Button>楼层管理</Button>
+                      <Button href={`#/personnel-position/buildings-info/floor/list/${id}`}>
+                        楼层管理
+                      </Button>
                     </Col>
                   </Row>
                 </Card>

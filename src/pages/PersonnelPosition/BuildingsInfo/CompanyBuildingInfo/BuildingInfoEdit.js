@@ -32,7 +32,7 @@ const { Option } = Select;
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 上传文件夹
-const folder = 'safetyInfo';
+const folder = 'buildingsInfo';
 
 const UploadIcon = <Icon type="upload" />;
 
@@ -74,8 +74,10 @@ function getOptions(options = []) {
 @Form.create()
 export default class BuildingInfoEdit extends PureComponent {
   state = {
-    picLoading: false,
-    fileLoading: false,
+    picLoading: false, // 图片上传状态
+    uploading: false, // 文件上传状态
+    fileList: [], // 图片上传列表
+    drawList: [], // 文件上传列表
   };
 
   componentDidMount() {
@@ -132,6 +134,7 @@ export default class BuildingInfoEdit extends PureComponent {
     };
 
     validateFieldsAndScroll((errors, values) => {
+      const { fileList, drawList } = this.state;
       if (!errors) {
         const {
           buildingType,
@@ -140,8 +143,6 @@ export default class BuildingInfoEdit extends PureComponent {
           fireDangerType,
           buildingArea,
           fireRating,
-          photoUrl,
-          drawingUrl,
           remark,
           floorLevel,
         } = values;
@@ -154,8 +155,8 @@ export default class BuildingInfoEdit extends PureComponent {
           fireDangerType,
           buildingArea,
           fireRating,
-          photoUrl,
-          drawingUrl,
+          photoUrl: fileList.map(file => file.dbUrl).join(','),
+          drawingUrl: drawList.map(file => file.dbUrl).join(','),
           floorLevel,
           remark,
         };
@@ -179,12 +180,148 @@ export default class BuildingInfoEdit extends PureComponent {
     });
   };
 
+  // 处理上传照片
+  handlePicChange = ({ fileList, file }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done') {
+      if (file.response.code === 200) {
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
+          this.setState({
+            fileList: fileList.map(item => {
+              if (!item.url && item.response) {
+                return {
+                  ...item,
+                  url: result.webUrl,
+                  dbUrl: result.dbUrl,
+                };
+              }
+              return item;
+            }),
+          });
+        } else {
+          // 没有返回值
+          message.error('上传失败！');
+          this.setState({
+            fileList: fileList.filter(item => {
+              return !item.response || item.response.data.list.length !== 0;
+            }),
+          });
+        }
+      } else {
+        // code为500
+        message.error('上传失败！');
+        this.setState({
+          fileList: fileList.filter(item => {
+            return !item.response || item.response.code !== 200;
+          }),
+        });
+      }
+      this.setState({
+        uploading: false,
+      });
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        fileList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        fileList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
+      });
+    }
+  };
+
+  // 处理图纸附件附件
+  handleFileChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done') {
+      if (file.response.code === 200) {
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
+          this.setState({
+            drawList: fileList.map(item => {
+              if (!item.url && item.response) {
+                return {
+                  ...item,
+                  url: result.webUrl,
+                  dbUrl: result.dbUrl,
+                };
+              }
+              return item;
+            }),
+          });
+        } else {
+          // 没有返回值
+          message.error('上传失败！');
+          this.setState({
+            drawList: fileList.filter(item => {
+              return !item.response || item.response.data.list.length !== 0;
+            }),
+          });
+        }
+      } else {
+        // code为500
+        message.error('上传失败！');
+        this.setState({
+          drawList: fileList.filter(item => {
+            return !item.response || item.response.code !== 200;
+          }),
+        });
+      }
+      this.setState({
+        uploading: false,
+      });
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        drawList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        drawList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
+      });
+    }
+  };
+
   // 渲染表单
   renderFormItems(items) {
     const { getFieldDecorator } = this.props.form;
     return items.map(
       ({ name, cName, span = 12, formItemLayout = itemLayout, rules, component }) => (
-        <Col span={span} key={name} style={{ height: '50px' }}>
+        <Col span={span} key={name}>
           <FormItem label={cName} {...formItemLayout}>
             {getFieldDecorator(name, { rules })(component)}
           </FormItem>
@@ -221,7 +358,7 @@ export default class BuildingInfoEdit extends PureComponent {
       },
     } = this.props;
 
-    const { picLoading, fileLoading } = this.state;
+    const { uploading, fileList, drawList } = this.state;
 
     const defaultItems = [
       {
@@ -271,7 +408,8 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('建筑结构'),
         component: (
           <div>
-            <AutoComplete placeholder="请选择建筑结构">{getOptions(floorNumber)}</AutoComplete>
+            {getFieldDecorator('floorNumber', { initialValue: floorNumberName })(
+              <AutoComplete placeholder="请选择建筑结构">{getOptions(floorNumber)}</AutoComplete>
             )}
           </div>
         ),
@@ -335,10 +473,12 @@ export default class BuildingInfoEdit extends PureComponent {
             name="files"
             accept=".jpg,.png" // 接受的文件格式
             headers={{ 'JA-Token': getToken() }} // 上传的请求头部
-            data={{ folder: 'buidingInfo' }} // 附带参数
+            data={{ folder }} // 附带参数
+            action={uploadAction} // 上传地址
+            fileList={fileList}
             onChange={this.handlePicChange}
           >
-            <Button loading={picLoading} type="primary">
+            <Button type="primary">
               {UploadIcon}
               选择图片
             </Button>
@@ -351,8 +491,15 @@ export default class BuildingInfoEdit extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         component: (
-          <Upload onChange={this.handleFileChange}>
-            <Button loading={fileLoading} type="primary">
+          <Upload
+            name="files"
+            headers={{ 'JA-Token': getToken() }}
+            data={{ folder }} // 附带的参数
+            action={uploadAction} // 上传地址
+            onChange={this.handleFileChange}
+            fileList={drawList}
+          >
+            <Button type="primary">
               {UploadIcon}
               选择文件
             </Button>
@@ -398,12 +545,12 @@ export default class BuildingInfoEdit extends PureComponent {
         <Card>
           <Form>
             {this.renderFormItems(formItems)}
-            <Col span={24}>
+            <Col span={24} style={{ marginTop: '40px' }}>
               <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
                 <Button type="primary" onClick={this.handleClickValidate}>
                   确定
                 </Button>
-                <Button type="primary" style={{ marginLeft: '10px' }}>
+                <Button loading={uploading} type="primary" style={{ marginLeft: '10px' }}>
                   返回
                 </Button>
               </FormItem>

@@ -1452,7 +1452,7 @@ module.exports = env => {
                 {
                   name: 'floorList',
                   code: 'personnelPosition.buildingsInfo.listView',
-                  path: '/personnel-position/buildings-info/floor/list',
+                  path: '/personnel-position/buildings-info/floor/list/:id',
                   component:
                     './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
                 },

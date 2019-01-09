@@ -52,7 +52,7 @@ export async function addFloor(params) {
   });
 }
 
-// 编辑建筑物
+// 编辑楼层
 export async function editFloor(params) {
   return request('/acloud_new/v2/buildingInfo/updateFloor.json', {
     method: 'PUT',
@@ -60,7 +60,7 @@ export async function editFloor(params) {
   });
 }
 
-// 删除建筑物
+// 删除楼层
 export async function deleteFloor({ id }) {
   return request(`/acloud_new/v2/buildingInfo/delete.json/${id}`, {
     method: 'DELETE',

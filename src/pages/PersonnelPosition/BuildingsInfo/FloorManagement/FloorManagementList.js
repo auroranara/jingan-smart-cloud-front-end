@@ -36,10 +36,10 @@ const defaultFormData = {
 
 // const PAGE_SIZE = 10;
 
-@connect(({ lawDatabase, user, loading }) => ({
-  lawDatabase,
+@connect(({ buildingsInfo, user, loading }) => ({
+  buildingsInfo,
   user,
-  loading: loading.models.lawDatabase,
+  loading: loading.models.buildingsInfo,
 }))
 @Form.create()
 export default class FloorManagementList extends PureComponent {
@@ -52,24 +52,20 @@ export default class FloorManagementList extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      // lawDatabase: {
-      //   data: {
-      //     pagination: { pageSize },
-      //   },
-      // },
+      buildingsInfo: {
+        floorData: {
+          pagination: { pageSize },
+        },
+      },
     } = this.props;
-    // 获取记录列表
-    // dispatch({
-    //   type: 'lawDatabase/fetch',
-    //   payload: {
-    //     pageSize,
-    //     pageNum: 1,
-    //   },
-    // });
-    // 获取初始化选项
-    // dispatch({
-    //   type: 'lawDatabase/fetchOptions',
-    // });
+    // 获取列表
+    dispatch({
+      type: 'buildingsInfo/fetchFloorList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+    });
   }
 
   // 跳转到详情页面
@@ -231,25 +227,14 @@ export default class FloorManagementList extends PureComponent {
   renderTable() {
     const {
       tableLoading,
-      lawDatabase: {
-        data: {
+      buildingsInfo: {
+        floorData: {
+          list,
           pagination: { total, pageSize, pageNum },
         },
       },
     } = this.props;
 
-    const list = [
-      {
-        floorName: '一楼',
-        number: '1',
-        pic: '查看附件',
-      },
-      {
-        floorName: '一楼',
-        number: '1',
-        pic: '查看附件',
-      },
-    ];
     /* 配置描述 */
     const COLUMNS = [
       {
@@ -261,8 +246,8 @@ export default class FloorManagementList extends PureComponent {
       },
       {
         title: '楼层编号',
-        dataIndex: 'number',
-        key: 'number',
+        dataIndex: 'floorNumber',
+        key: 'floorNumber',
         align: 'center',
         width: '15%',
       },
@@ -336,10 +321,8 @@ export default class FloorManagementList extends PureComponent {
 
   render() {
     const {
-      lawDatabase: {
-        data: {
-          pagination: { total },
-        },
+      buildingsInfo: {
+        floorData: { list },
       },
     } = this.props;
     return (
@@ -349,7 +332,7 @@ export default class FloorManagementList extends PureComponent {
         content={
           <div>
             列表记录：
-            {total}{' '}
+            {list.length}{' '}
           </div>
         }
       >

@@ -4,6 +4,8 @@ import {
   queryBuildingsList,
   addBuildings,
   editBuildings,
+  deleteBuildings,
+  queryFloorList,
 } from '../services/personnelPosition/buildingsInfo';
 
 export default {
@@ -38,6 +40,14 @@ export default {
         buildingArea: undefined,
         fireRatingName: undefined,
         floorLevel: undefined,
+      },
+    },
+    floorData: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 24,
+        pageNum: 1,
       },
     },
   },
@@ -119,7 +129,7 @@ export default {
     *insertBuilding({ payload, success, error }, { call, put }) {
       console.log('payloadpayload', payload);
       const response = yield call(addBuildings, payload);
-      const { code, data } = response;
+      const { data } = response;
       yield put({ type: 'addBuilding', payload: data });
       if (success) {
         success();
@@ -141,6 +151,29 @@ export default {
         }
       } else if (error) {
         error(response.msg);
+      }
+    },
+
+    // 删除建筑
+    *removeBuilding({ payload, callback }, { call, put }) {
+      const response = yield call(deleteBuildings, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'delete',
+          payload: payload.id,
+        });
+        if (callback) callback(response);
+      }
+    },
+
+    // 楼层列表
+    *fetchFloorList({ payload }, { call, put }) {
+      const response = yield call(queryFloorList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveFloorList',
+          payload: response.data,
+        });
       }
     },
   },
@@ -243,6 +276,27 @@ export default {
           ...state.detail,
           data: payload,
         },
+      };
+    },
+
+    // 删除建筑
+    delete(state, { payload: id }) {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          list: state.data.list.filter(item => item.id !== id),
+        },
+      };
+    },
+
+    // 楼层列表
+    saveFloorList(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        floorData: payload,
       };
     },
   },
