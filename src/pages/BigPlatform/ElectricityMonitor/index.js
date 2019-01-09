@@ -4,19 +4,12 @@ import { Map, Marker } from 'react-amap';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
 import headerBg from '@/assets/new-header-bg.png';
+// 告警信息
+import WarningMessage from './WarningMessage';
 // 引入样式文件
 import styles from './index.less';
 
 const { Search } = Input
-
-// 告警信息
-const Message = function({  }) {
-  return (
-    <div className={styles.message}>
-
-    </div>
-  );
-};
 
 /**
  * description: 用电监测
@@ -53,6 +46,13 @@ export default class ElectricityMonitor extends PureComponent {
   }
 
   /**
+   * 点击设置按钮
+   */
+  handleClickSetButton = () => {
+    console.log(1);
+  }
+
+  /**
    * 渲染
    */
   render() {
@@ -65,6 +65,8 @@ export default class ElectricityMonitor extends PureComponent {
         headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 9999, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
+        settable
+        onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <Map
@@ -89,18 +91,7 @@ export default class ElectricityMonitor extends PureComponent {
         123
         </NewSection>
         {/* 告警信息 */}
-        <NewSection
-          title="告警信息"
-          className={styles.right}
-          style={{ display: 'flex', flexDirection: 'column', height: 'auto', maxHeight: 'calc(91.37037% - 92px)' }}
-          titleStyle={{ flex: 'none' }}
-          contentStyle={{ flex: '1', display: 'flex', height: 'auto' }}
-          scroll={{
-            className: styles.scroll,
-          }}
-        >
-          <div style={{ height: 800, backgroundColor: '#f28800' }}>这是一段很长的话这是一段很长的话这是一段很长的话这是一段很长的话</div>
-        </NewSection>
+        <WarningMessage data={[]} className={styles.right} />
       </BigPlatformLayout>
     );
   }
