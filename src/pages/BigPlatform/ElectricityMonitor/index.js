@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Input } from 'antd';
+import { Form, Input } from 'antd';
 import { Map, Marker } from 'react-amap';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
@@ -8,8 +8,12 @@ import headerBg from '@/assets/new-header-bg.png';
 import WarningMessage from './WarningMessage';
 // 引入样式文件
 import styles from './index.less';
+import {
+  SettingModal,
+  UnitDrawer,
+} from './sections/Components';
 
-const { Search } = Input
+const { Search } = Input;
 
 /**
  * description: 用电监测
@@ -20,7 +24,8 @@ export default class ElectricityMonitor extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-
+      setttingModalVisible: false,
+      unitDrawerVisible: true,
     };
   }
 
@@ -49,13 +54,30 @@ export default class ElectricityMonitor extends PureComponent {
    * 点击设置按钮
    */
   handleClickSetButton = () => {
-    console.log(1);
-  }
+    this.setState({ setttingModalVisible: true });
+  };
+
+  handleSettingOk = e => {
+    this.setState({ setttingModalVisible: false });
+  };
+
+  handleSettingCancel = e => {
+    this.setState({ setttingModalVisible: false });
+  };
+
+  handleDrawerVisibleChange = (name, rest) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+      ...rest,
+    }));
+  };
 
   /**
    * 渲染
    */
   render() {
+    const { setttingModalVisible, unitDrawerVisible } = this.state;
 
     return (
       <BigPlatformLayout
@@ -92,6 +114,15 @@ export default class ElectricityMonitor extends PureComponent {
         </NewSection>
         {/* 告警信息 */}
         <WarningMessage data={[]} className={styles.right} />
+        <SettingModal
+          visible={setttingModalVisible}
+          handleOk={this.handleSettingOk}
+          handleCancel={this.handleSettingCancel}
+        />
+        <UnitDrawer
+          visible={unitDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
       </BigPlatformLayout>
     );
   }
