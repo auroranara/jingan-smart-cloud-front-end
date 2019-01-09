@@ -82,6 +82,13 @@ function handleRiskPoints(pointsObj) {
   }, []);
 }
 
+function getRestTime(t) {
+  const time = Math.floor(t / 1000);
+  const min = Math.floor(time / 60);
+  const sec = time % 60;
+  return min ? `${min}分${sec}秒` : `${sec}秒`;
+}
+
 export default {
   namespace: 'bigFireControl',
 
@@ -250,8 +257,9 @@ export default {
     *postLookingUp({ payload, callback }, { call, put }) {
       let response = yield call(postLookingUp, payload);
       response = response || EMPTY_OBJECT;
-      const { code = DEFAULT_CODE, msg = '暂无信息' } = response;
-      callback && callback(code, msg);
+      const { code = DEFAULT_CODE, data, msg } = response;
+      const newMsg = typeof data === 'number' ? `${msg}，还有${getRestTime(data)}可以查岗` : msg;
+      callback && callback(code, newMsg);
     },
     *fetchOffGuard({ payload }, { call, put }) {
       let response = yield call(queryOffGuard, payload);
