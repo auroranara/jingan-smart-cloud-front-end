@@ -19,3 +19,62 @@
   width: 19.0625%;
   z-index: 9999;
 }
+
+/* 通知提醒框 */
+.notification {
+  padding: 12px 20px;
+  background-color: rgba(22, 22, 22, 0.902);
+  box-shadow: 0 0 20px #f83329;
+  animation: redShadow 1s linear infinite;
+
+  :global {
+    .ant-notification-notice-close {
+      top: 12px;
+      right: 16px;
+      color: #fff;
+    }
+    .ant-notification-close-icon {
+      font-size: 16px;
+    }
+    .ant-notification-notice-message {
+      margin-bottom: 6px;
+    }
+  }
+  .notificationTitle {
+    color: #f83329;
+    font-size: 16px;
+
+    .notificationIcon {
+      margin-right: 6px;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  }
+  .notificationContent {
+    line-height: 24px;
+    color: #fff;
+    font-size: 16px;
+
+    .notificationText {
+      padding: 3px 0;
+      overflow: hidden;
+
+      .notificationTextFirst {
+        float: left;
+        margin-right: 20px;
+      }
+      .notificationTextSecond {
+        float: left;
+        color: #f83329;
+      }
+    }
+  }
+}
+
+
+@keyframes redShadow
+{
+  0%   {box-shadow: 0px 0px 20px #f83329;}
+  50%  {box-shadow: 0px 0px 0px #f83329;}
+  100% {box-shadow: 0px 0px 20px #f83329;}
+}
