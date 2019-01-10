@@ -29,9 +29,11 @@ export default function NewSection ({
   scroll,
   // 不属于内容的内容
   other,
+  // 点击事件
+  onClick,
 }) {
   return (
-    <div className={className?`${styles.container} ${className}`:styles.container} style={style}>
+    <div className={className?`${styles.container} ${className}`:styles.container} style={style} onClick={onClick}>
       <div className={styles.title} style={{ backgroundImage: `url(${titleBg})`, ...titleStyle }}>
         {title}
         {extra && <span className={styles.extra}>{extra}</span>}

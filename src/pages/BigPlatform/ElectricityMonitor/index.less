@@ -10,6 +10,18 @@
   width: 25.46875%;
   z-index: 9999;
 }
+/* 接入单位统计 */
+.accessUnitStatistics {
+  top: calc(~'9.62963% + 68px');
+  height: 13.611111%;
+  cursor: pointer;
+}
+/* 实时报警统计 */
+.realTimeAlarmStatistics {
+  top: calc(~'23.24% + 80px');
+  height: 21.944444%;
+  cursor: pointer;
+}
 .right {
   position: absolute;
   top: calc(~'9.62963% + 68px');
@@ -22,12 +34,23 @@
 
 /* 通知提醒框 */
 .notification {
-  padding: 12px 20px;
+  padding: 0;
   background-color: rgba(22, 22, 22, 0.902);
-  box-shadow: 0 0 20px #f83329;
-  animation: redShadow 1s linear infinite;
+  box-shadow: none;
+  overflow: visible;
+
+  & > div:first-child {
+    animation: redShadow 2s linear infinite;
+  }
 
   :global {
+
+    .ant-notification-notice-content {
+      padding: 12px 20px;
+      box-shadow: 0 0 20px #f83329;
+      border-radius: 4px;
+      overflow: hidden;
+    }
     .ant-notification-notice-close {
       top: 12px;
       right: 16px;
@@ -70,11 +93,9 @@
     }
   }
 }
-
-
 @keyframes redShadow
 {
   0%   {box-shadow: 0px 0px 20px #f83329;}
-  50%  {box-shadow: 0px 0px 0px #f83329;}
+  50%  {box-shadow: 0px 0px 5px #f83329;}
   100% {box-shadow: 0px 0px 20px #f83329;}
 }

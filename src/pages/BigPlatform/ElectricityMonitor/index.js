@@ -8,12 +8,23 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
+// 接入单位统计
+import AccessUnitStatistics from './AccessUnitStatistics';
+// 实时报警统计
+import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
 // 告警信息
 import WarningMessage from './WarningMessage';
 // 引入样式文件
 import styles from './index.less';
+import {
+  SettingModal,
+  UnitDrawer,
+  AlarmDrawer,
+} from './sections/Components';
 
-const { Search } = Input
+const ALARM_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
+
+const { Search } = Input;
 
 // websocket配置
 const options = {
@@ -35,7 +46,9 @@ export default class ElectricityMonitor extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-
+      setttingModalVisible: false,
+      unitDrawerVisible: false,
+      alarmDrawerVisible: false,
     };
   }
 
@@ -50,9 +63,11 @@ export default class ElectricityMonitor extends PureComponent {
     // 获取告警信息列表
     dispatch({
       type: 'electricityMonitor/fetchMessages',
-      callback: () => {
-        this.showWarningNotification();
-      },
+    });
+
+    // 获取单位数据
+    dispatch({
+      type: 'electricityMonitor/fetchUnitData',
     });
 
     // 获取网格点id
@@ -67,8 +82,8 @@ export default class ElectricityMonitor extends PureComponent {
           env: 'dev',
           type: 3,
         };
-        // const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-        const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
+        const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+        // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
 
         // 链接webscoket
         const ws = new WebsocketHeartbeatJs({ url, ...options });
@@ -82,9 +97,36 @@ export default class ElectricityMonitor extends PureComponent {
           // 判断是否是心跳
           if (!e.data || e.data.indexOf('heartbeat') > -1) return;
           try {
-            const data = JSON.parse(e.data);
+            const data = JSON.parse(e.data).data;
             console.log(data);
-
+            const { type } = data;
+            // 如果数据为告警或恢复，则将数据插入到列表的第一个
+            if ([31, 32].includes(type)) {
+              const { electricityMonitor: { messages } } = this.props;
+              dispatch({
+                type: 'electricityMonitor/save',
+                payload: { messages: [data].concat(messages) },
+              });
+              // 如果发生告警，弹出通知框，否则关闭通知框
+              if (type === 32) {
+                this.showWarningNotification(data);
+              }
+              else {
+                this.hideWarningNotification(data);
+              }
+            }
+            // 如果为33，则修改单位状态
+            if (type === 33) {
+              const { companyId, status } = data;
+              const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
+              const index = unitIds.indexOf(companyId);
+              if (index > -1 && units[index].status !== status) {
+                dispatch({
+                  type: 'electricityMonitor/saveUnitData',
+                  payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
+                });
+              }
+            }
           } catch (error) {
             console.log('error', error);
           }
@@ -94,12 +136,6 @@ export default class ElectricityMonitor extends PureComponent {
           console.log('reconnecting...');
         };
       },
-    });
-    // 显示提醒框
-    this.showWarningNotification({
-      addTime: 1547023558026,
-      companyName: "无锡晶安智慧科技有限公司",
-      location: "2#配电柜",
     });
   }
 
@@ -120,14 +156,9 @@ export default class ElectricityMonitor extends PureComponent {
   /**
    * 显示告警通知提醒框
    */
-  showWarningNotification = data => {
-    const {
-      addTime,
-      companyName,
-      location,
-    } = data;
+  showWarningNotification = ({ addTime, companyName, area, location, paramName, messageFlag, paramCode }) => {
     const options = {
-      key: 1,
+      key: `${messageFlag}_${paramCode}`,
       duration: null,
       placement: 'bottomLeft',
       className: styles.notification,
@@ -144,67 +175,55 @@ export default class ElectricityMonitor extends PureComponent {
             <div className={styles.notificationTextSecond}>{companyName}</div>
           </div>
           <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{location}</div>
+            <div className={styles.notificationTextFirst}>{`${area}${location}${paramName}`}</div>
             <div className={styles.notificationTextSecond}>发生报警！</div>
           </div>
         </div>
       ),
     };
     notification.open(options);
-    // const { type, messageId } = item;
-    // if (type === 5 || type === 6) {
-    //   // 5 火警， 6 故障
-    //   const msgItem = msgInfo[type.toString()];
-    //   const style = {
-    //     boxShadow: `0px 0px 20px ${msgItem.color}`,
-    //   };
-    //   const styleAnimation = {
-    //     ...style,
-    //     animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
-    //   };
-    //   const options = {
-    //     key: messageId,
-    //     className: styles.notification,
-    //     message: this.renderNotificationTitle(item),
-    //     description: this.renderNotificationMsg(item),
-    //     style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
-    //   };
-    //   notification.open({
-    //     ...options,
-    //   });
-
-    //   setTimeout(() => {
-    //     // 解决加入animation覆盖notification自身显示动效时长问题
-    //     notification.open({
-    //       ...options,
-    //       style: this.fireNode
-    //         ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
-    //         : { ...styleAnimation },
-    //       onClose: () => {
-    //         notification.open({
-    //           ...options,
-    //         });
-    //         setTimeout(() => {
-    //           notification.close(messageId);
-    //         }, 200);
-    //       },
-    //     });
-    //   }, 800);
-    // }
   };
+
+  /**
+   * 关闭通知框
+   */
+  hideWarningNotification = ({ messageFlag, paramCode }) => {
+    notification.close(`${messageFlag}_${paramCode}`);
+  }
 
   /**
    * 点击设置按钮
    */
   handleClickSetButton = () => {
-    console.log(1);
-  }
+    this.setState({ setttingModalVisible: true });
+  };
+
+  handleSettingOk = e => {
+    this.setState({ setttingModalVisible: false });
+  };
+
+  handleSettingCancel = e => {
+    this.setState({ setttingModalVisible: false });
+  };
+
+  handleDrawerVisibleChange = (name, rest) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+      ...rest,
+    }));
+  };
 
   /**
    * 渲染
    */
   render() {
-    const { electricityMonitor: { messages } } = this.props;
+    const { electricityMonitor: { messages, statisticsData, unitSet } } = this.props;
+    const {
+      setttingModalVisible,
+      unitDrawerVisible,
+      alarmDrawerVisible,
+    } = this.state;
 
     return (
       <BigPlatformLayout
@@ -228,19 +247,38 @@ export default class ElectricityMonitor extends PureComponent {
         {/* 搜索框 */}
         <Search placeholder="单位名称" enterButton="搜索" className={styles.left} style={{ top: 'calc(9.62963% + 24px)' }} />
         {/* 接入单位统计 */}
-        <NewSection title="接入单位统计" className={styles.left} style={{ top: 'calc(9.62963% + 68px)', height: '13.611111%' }}>
-        123
-        </NewSection>
+        <AccessUnitStatistics
+          data={statisticsData}
+          className={`${styles.left} ${styles.accessUnitStatistics}`}
+          onClick={e => this.handleDrawerVisibleChange('unit')}
+        />
         {/* 实时报警统计 */}
-        <NewSection title="实时报警统计" className={styles.left} style={{ top: 'calc(23.24% + 80px)', height: '21.944444%' }}>
-        123
-        </NewSection>
+        <RealTimeAlarmStatistics
+          data={unitSet}
+          className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
+          onClick={e => this.handleDrawerVisibleChange('alarm')}
+        />
         {/* 近半年内告警统计 */}
         <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
         123
         </NewSection>
         {/* 告警信息 */}
         <WarningMessage data={messages} className={styles.right} />
+        <SettingModal
+          visible={setttingModalVisible}
+          handleOk={this.handleSettingOk}
+          handleCancel={this.handleSettingCancel}
+        />
+        <UnitDrawer
+          // data={UNIT_DATA}
+          visible={unitDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <AlarmDrawer
+          data={ALARM_DATA}
+          visible={alarmDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
       </BigPlatformLayout>
     );
   }
