@@ -1450,6 +1450,13 @@ module.exports = env => {
                     './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
                 },
                 {
+                  name: 'edit',
+                  code: 'personnelPosition.buildingsInfo.edit',
+                  path: '/personnel-position/buildings-info/edit/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
                   name: 'floorList',
                   code: 'personnelPosition.buildingsInfo.listView',
                   path: '/personnel-position/buildings-info/floor/list/:id',
@@ -1462,6 +1469,20 @@ module.exports = env => {
                   path: '/personnel-position/buildings-info/floor/add',
                   component:
                     './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorEdit',
+                  code: 'personnelPosition.buildingsInfo.edit',
+                  path: '/personnel-position/buildings-info/floor/edit/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorDetail',
+                  code: 'personnelPosition.buildingsInfo.view',
+                  path: '/personnel-position/buildings-info/floor/detail/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
                 },
               ],
             },

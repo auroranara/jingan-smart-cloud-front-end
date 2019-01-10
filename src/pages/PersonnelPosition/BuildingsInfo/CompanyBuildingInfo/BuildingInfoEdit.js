@@ -2,31 +2,22 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 
-import {
-  Button,
-  Card,
-  Col,
-  Form,
-  Icon,
-  Input,
-  Upload,
-  Select,
-  InputNumber,
-  message,
-  AutoComplete,
-} from 'antd';
+import { Button, Card, Col, Form, Icon, Input, Upload, Select, InputNumber, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
+import CompanyModal from '../../../BaseInfo/Company/CompanyModal';
 // import urls from 'utils/urls';
 import { getToken } from 'utils/authority';
 
 const { TextArea } = Input;
 const { Item: FormItem } = Form;
 const { Option } = Select;
+const PAGE_SIZE = 10;
 
-// const UPLOADERS = ['companyLogo', 'reachGradeAccessory'];
-// const UPLOADERS = ['companyLogo', 'reachGradeAccessory', 'safetyFourPicture'];
-// const UPLOADERS_MAP = { companyLogo: 'logoList', reachGradeAccessory: 'standardList' };
+// 编辑页面标题
+const editTitle = '编辑建筑';
+// 添加页面标题
+const addTitle = '新增建筑';
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -70,18 +61,63 @@ function getOptions(options = []) {
   ));
 }
 
-@connect(({ buildingsInfo, loading }) => ({ buildingsInfo, loading: loading.models.buildingsInfo }))
+@connect(({ buildingsInfo, loading, videoMonitor }) => ({
+  buildingsInfo,
+  videoMonitor,
+  loading: loading.models.buildingsInfo,
+}))
 @Form.create()
 export default class BuildingInfoEdit extends PureComponent {
   state = {
-    picLoading: false, // 图片上传状态
     uploading: false, // 文件上传状态
     fileList: [], // 图片上传列表
     drawList: [], // 文件上传列表
+    visible: false, // 企业弹框
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+      form: { setFieldsValue },
+    } = this.props;
+    // 如果存在Id，则为编辑，否则为新增
+    if (id) {
+      // 获取详情
+      dispatch({
+        type: 'buildingsInfo/fetchBuildingList',
+        payload: {
+          buildingId: id,
+          pageSize: 10,
+          pageNum: 1,
+        },
+        success: ({ photoUrl, darwingUrl, photoWebUrl, darwingWebUrl }) => {
+          console.log(photoUrl, darwingUrl);
+
+          setFieldsValue({
+            photoUrl: { webUrl: photoWebUrl, dbUrl: darwingUrl },
+            darwingUrl: { webUrl: darwingWebUrl, dbUrl: photoUrl },
+          });
+          this.setState({
+            fileList: [
+              {
+                uid: '1',
+                url: photoWebUrl,
+                name: name,
+                status: 'done',
+              },
+            ],
+          });
+        },
+      });
+    } else {
+      // 清空详情
+      dispatch({
+        type: 'buildingsInfo/clearDetail',
+      });
+    }
     // 获取建筑物类型字典
     dispatch({
       type: 'buildingsInfo/fetchDict',
@@ -110,8 +146,64 @@ export default class BuildingInfoEdit extends PureComponent {
         type: 'floorNumber',
       },
     });
+    const payload = { pageSize: PAGE_SIZE, pageNum: 1 };
+    this.fetchCompany({ payload });
   }
 
+  // 获取企业列表
+  fetchCompany = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'videoMonitor/fetchModelList', payload });
+  };
+
+  // 显示企业弹出框
+  handleCompanyModal = e => {
+    e.target.blur();
+    const { dispatch } = this.props;
+    this.setState({ visible: true });
+    dispatch({
+      type: 'videoMonitor/fetchModelList',
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  };
+
+  // 企业选择
+  handleSelect = item => {
+    const { setFieldsValue } = this.props.form;
+    const { id, name } = item;
+    this.companyId = id;
+    setFieldsValue({ companyId: name });
+    this.handleClose();
+  };
+
+  // 关闭企业弹出框
+  handleClose = () => {
+    this.setState({ visible: false });
+  };
+
+  // 渲染选择企业弹出框
+  renderCompanyModal() {
+    const {
+      videoMonitor: { modal },
+      loading,
+    } = this.props;
+    const { visible } = this.state;
+    return (
+      <CompanyModal
+        loading={loading}
+        visible={visible}
+        modal={modal}
+        fetch={this.fetchCompany}
+        onSelect={this.handleSelect}
+        onClose={this.handleClose}
+      />
+    );
+  }
+
+  // 提交
   handleClickValidate = () => {
     const {
       dispatch,
@@ -135,6 +227,7 @@ export default class BuildingInfoEdit extends PureComponent {
 
     validateFieldsAndScroll((errors, values) => {
       const { fileList, drawList } = this.state;
+
       if (!errors) {
         const {
           buildingType,
@@ -156,7 +249,7 @@ export default class BuildingInfoEdit extends PureComponent {
           buildingArea,
           fireRating,
           photoUrl: fileList.map(file => file.dbUrl).join(','),
-          drawingUrl: drawList.map(file => file.dbUrl).join(','),
+          darwingUrl: drawList.map(file => file.dbUrl).join(','),
           floorLevel,
           remark,
         };
@@ -252,7 +345,7 @@ export default class BuildingInfoEdit extends PureComponent {
   handleFileChange = ({ file, fileList }) => {
     if (file.status === 'uploading') {
       this.setState({
-        fileList,
+        drawList: fileList,
         uploading: true,
       });
     } else if (file.status === 'done') {
@@ -340,17 +433,7 @@ export default class BuildingInfoEdit extends PureComponent {
       },
       form: { getFieldDecorator },
       buildingsInfo: {
-        detail: {
-          data: {
-            buildingTypeName,
-            buildingName,
-            floorNumberName,
-            fireDangerTypeName,
-            buildingArea,
-            fireRatingName,
-            floorLevel,
-          },
-        },
+        buildingData: { list },
         buildingType = [],
         fireDangerType = [],
         fireRating = [],
@@ -360,18 +443,40 @@ export default class BuildingInfoEdit extends PureComponent {
 
     const { uploading, fileList, drawList } = this.state;
 
+    const editDetail = list.find(d => d.id === id) || {};
+    const {
+      buildingTypeName,
+      buildingName,
+      floorNumberName,
+      fireDangerTypeName,
+      buildingArea,
+      fireRatingName,
+      floorLevel,
+      remark,
+    } = editDetail;
+
     const defaultItems = [
       {
         name: 'companyId',
         cName: '企业名称',
         component: (
           <div>
-            {id ? (
-              ''
-            ) : (
+            {company_Id ? (
               <div>
                 {getFieldDecorator('companyId', { initialValue: company_name })(
                   <Input disabled placeholder="请输入企业名称" />
+                )}
+              </div>
+            ) : (
+              <div>
+                {getFieldDecorator('companyId', { initialValue: company_name })(
+                  <Input
+                    ref={input => {
+                      this.CompanyIdInput = input;
+                    }}
+                    placeholder="请输入企业名称"
+                    onClick={this.handleCompanyModal}
+                  />
                 )}
               </div>
             )}
@@ -409,7 +514,7 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('floorNumber', { initialValue: floorNumberName })(
-              <AutoComplete placeholder="请选择建筑结构">{getOptions(floorNumber)}</AutoComplete>
+              <Select placeholder="请选择建筑结构">{getOptions(floorNumber)}</Select>
             )}
           </div>
         ),
@@ -421,9 +526,7 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('fireDangerType', { initialValue: fireDangerTypeName })(
-              <AutoComplete placeholder="请选择火灾危险性分类">
-                {getOptions(fireDangerType)}
-              </AutoComplete>
+              <Select placeholder="请选择火灾危险性分类">{getOptions(fireDangerType)}</Select>
             )}
           </div>
         ),
@@ -446,7 +549,7 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('fireRating', { initialValue: fireRatingName })(
-              <AutoComplete placeholder="请选择耐火等级">{getOptions(fireRating)}</AutoComplete>
+              <Select placeholder="请选择耐火等级">{getOptions(fireRating)}</Select>
             )}
           </div>
         ),
@@ -486,7 +589,7 @@ export default class BuildingInfoEdit extends PureComponent {
         ),
       },
       {
-        name: 'drawingUrl',
+        name: 'darwingUrl',
         cName: '图纸附件',
         span: 24,
         formItemLayout: itemLayout1,
@@ -496,8 +599,8 @@ export default class BuildingInfoEdit extends PureComponent {
             headers={{ 'JA-Token': getToken() }}
             data={{ folder }} // 附带的参数
             action={uploadAction} // 上传地址
-            onChange={this.handleFileChange}
             fileList={drawList}
+            onChange={this.handleFileChange}
           >
             <Button type="primary">
               {UploadIcon}
@@ -512,11 +615,19 @@ export default class BuildingInfoEdit extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         rules: generateRules('备注'),
-        component: <TextArea placeholder="请输入备注" rows={3} maxLength="5000" />,
+        component: (
+          <div>
+            {getFieldDecorator('floorLevel', { initialValue: remark })(
+              <TextArea placeholder="请输入备注" rows={3} maxLength="5000" />
+            )}
+          </div>
+        ),
       },
     ];
 
     const formItems = [...defaultItems];
+
+    const title = id ? editTitle : addTitle;
 
     //面包屑
     const breadcrumbList = [
@@ -530,9 +641,11 @@ export default class BuildingInfoEdit extends PureComponent {
         name: '人员定位',
       },
       {
-        title: '建筑物信息列表',
-        name: '建筑物信息列表',
-        href: `/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`,
+        title: company_Id ? '建筑物信息列表' : '建筑物信息',
+        name: company_Id ? '建筑物信息列表' : '建筑物信息',
+        href: company_Id
+          ? `/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`
+          : '/personnel-position/buildings-info/list',
       },
       {
         title: '新增建筑物',
@@ -541,7 +654,7 @@ export default class BuildingInfoEdit extends PureComponent {
     ];
 
     return (
-      <PageHeaderLayout title="新增建筑物" breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card>
           <Form>
             {this.renderFormItems(formItems)}
@@ -550,13 +663,30 @@ export default class BuildingInfoEdit extends PureComponent {
                 <Button type="primary" onClick={this.handleClickValidate}>
                   确定
                 </Button>
-                <Button loading={uploading} type="primary" style={{ marginLeft: '10px' }}>
-                  返回
-                </Button>
+                {company_Id ? (
+                  <Button
+                    loading={uploading}
+                    href={`#/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`}
+                    type="primary"
+                    style={{ marginLeft: '10px' }}
+                  >
+                    返回
+                  </Button>
+                ) : (
+                  <Button
+                    loading={uploading}
+                    href="#/personnel-position/buildings-info/list"
+                    type="primary"
+                    style={{ marginLeft: '10px' }}
+                  >
+                    返回
+                  </Button>
+                )}
               </FormItem>
             </Col>
           </Form>
         </Card>
+        {this.renderCompanyModal()}
       </PageHeaderLayout>
     );
   }

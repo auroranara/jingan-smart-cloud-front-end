@@ -6,6 +6,9 @@ import {
   editBuildings,
   deleteBuildings,
   queryFloorList,
+  addFloor,
+  editFloor,
+  deleteFloor,
 } from '../services/personnelPosition/buildingsInfo';
 
 export default {
@@ -46,8 +49,14 @@ export default {
       list: [],
       pagination: {
         total: 0,
-        pageSize: 24,
+        pageSize: 10,
         pageNum: 1,
+      },
+    },
+    floorDetail: {
+      data: {
+        floorName: undefined,
+        floorNumber: undefined,
       },
     },
   },
@@ -62,7 +71,7 @@ export default {
           payload: response.data,
         });
         if (success) {
-          success();
+          success(response.data);
         }
       } else if (error) {
         error(response.msg);
@@ -107,7 +116,7 @@ export default {
           payload: response.data,
         });
         if (success) {
-          success();
+          success(response.data.list[0]);
         }
       } else if (error) {
         error(response.msg);
@@ -127,7 +136,6 @@ export default {
 
     // 新增建筑
     *insertBuilding({ payload, success, error }, { call, put }) {
-      console.log('payloadpayload', payload);
       const response = yield call(addBuildings, payload);
       const { data } = response;
       yield put({ type: 'addBuilding', payload: data });
@@ -174,6 +182,46 @@ export default {
           type: 'saveFloorList',
           payload: response.data,
         });
+      }
+    },
+
+    // 新增楼层
+    *insertFloor({ payload, success, error }, { call, put }) {
+      const response = yield call(addFloor, payload);
+      const { data } = response;
+      yield put({ type: 'saveAddFloor', payload: data });
+      if (success) {
+        success();
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 编辑楼层
+    *editFloor({ payload, success, error }, { call, put }) {
+      const response = yield call(editFloor, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveEditFloor',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 删除楼层
+    *removeFloor({ payload, callback }, { call, put }) {
+      const response = yield call(deleteFloor, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'deleteFloor',
+          payload: payload.id,
+        });
+        if (callback) callback(response);
       }
     },
   },
@@ -290,6 +338,14 @@ export default {
       };
     },
 
+    // 清除详情
+    clearDetail(state) {
+      return {
+        ...state,
+        detail: { data: {} },
+      };
+    },
+
     // 楼层列表
     saveFloorList(state, { payload }) {
       const { list } = payload;
@@ -297,6 +353,47 @@ export default {
         ...state,
         list,
         floorData: payload,
+      };
+    },
+
+    // 新增楼层
+    saveAddFloor(state, { payload }) {
+      return {
+        ...state,
+        floorDetail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    // 编辑楼层
+    saveEditFloor(state, { payload }) {
+      return {
+        ...state,
+        floorDetail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    // 清除详情
+    clearFloorDetail(state) {
+      return {
+        ...state,
+        floorDetail: { data: {} },
+      };
+    },
+
+    // 删除楼层
+    deleteFloor(state, { payload: id }) {
+      return {
+        ...state,
+        floorData: {
+          ...state.data,
+          list: state.data.list.filter(item => item.id !== id),
+        },
       };
     },
   },

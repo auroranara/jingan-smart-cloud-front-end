@@ -7,7 +7,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import codesMap from '@/utils/codes';
-import { AuthButton } from '@/utils/customAuth';
+import { AuthButton, AuthLink } from '@/utils/customAuth';
 import styles from './CompanyInfo.less';
 
 const FormItem = Form.Item;
@@ -332,6 +332,15 @@ export default class BuildingInfoList extends PureComponent {
       buildingsInfo: {
         buildingData: { list },
       },
+      user: {
+        currentUser: { permissionCodes: codes },
+      },
+      location: {
+        query: { name },
+      },
+      match: {
+        params: { id: companyId },
+      },
     } = this.props;
 
     return (
@@ -356,9 +365,19 @@ export default class BuildingInfoList extends PureComponent {
                 <Card
                   title={buildingName}
                   className={styles.card}
+                  actions={[
+                    <AuthLink
+                      code={codesMap.personnelPosition.buildingsInfo.edit}
+                      codes={codes}
+                      to={`/personnel-position/buildings-info/edit/${id}?companyId=${companyId}&&name=${name}`}
+                    >
+                      编辑
+                    </AuthLink>,
+                  ]}
                   extra={
                     <AuthButton
                       code={codesMap.personnelPosition.buildingsInfo.delete}
+                      codes={codes}
                       onClick={() => {
                         this.handleShowDeleteConfirm(id);
                       }}
@@ -404,7 +423,9 @@ export default class BuildingInfoList extends PureComponent {
                         层数：
                         {floorLevel || getEmptyData()}
                       </p>
-                      <Button href={`#/personnel-position/buildings-info/floor/list/${id}`}>
+                      <Button
+                        href={`#/personnel-position/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
+                      >
                         楼层管理
                       </Button>
                     </Col>

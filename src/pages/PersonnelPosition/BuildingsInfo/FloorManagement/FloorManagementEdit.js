@@ -1,13 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Form, Input, Button, Card, Col, Select } from 'antd';
+import router from 'umi/router';
+import { Form, Input, Button, Card, Col, Icon, InputNumber, Upload, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import { getToken } from 'utils/authority';
 
 import styles from '../BuildingsInfo.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 // 编辑页面标题
 const editTitle = '编辑楼层';
@@ -17,9 +18,16 @@ const addTitle = '新增楼层';
 // 表单标签
 const fieldLabels = {
   floorName: '楼层名称',
-  floorNum: '楼层编号',
-  floorPic: '楼层平面图',
+  floorNumber: '楼层编号',
+  floorUrl: '楼层平面图',
 };
+
+// 上传文件地址
+const uploadAction = '/acloud_new/v2/uploadFile';
+
+// 上传文件夹
+const folder = 'floorInfo';
+const UploadIcon = <Icon type="upload" />;
 
 @connect(({ buildingsInfo, user, loading }) => ({
   buildingsInfo,
@@ -29,13 +37,8 @@ const fieldLabels = {
 @Form.create()
 export default class FloorManagementEdit extends PureComponent {
   state = {
-    submitting: false,
-  };
-
-  // 返回到列表页面
-  goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(``));
+    uploading: false,
+    floorList: [], // 楼层平面图上传列表
   };
 
   // 挂载后
@@ -70,15 +73,138 @@ export default class FloorManagementEdit extends PureComponent {
   handleTrim = e => e.target.value.trim();
 
   // 点击提交按钮验证表单信息
-  handleClickValidate = () => {};
+  handleClickValidate = () => {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+      location: {
+        query: { id: buildingId, name, companyId },
+      },
+      form: { validateFieldsAndScroll },
+    } = this.props;
 
+    const success = () => {
+      message.success(id ? '编辑成功' : '新增成功');
+      router.push(
+        `/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`
+      );
+    };
+
+    const error = () => {
+      message.error(id ? '编辑失败' : '新增失败');
+    };
+
+    validateFieldsAndScroll((errors, values) => {
+      const { floorList } = this.state;
+
+      if (!errors) {
+        const { floorName, floorNumber } = values;
+
+        const payload = {
+          buildingId,
+          floorName,
+          floorNumber,
+          floorUrl: floorList.map(file => file.dbUrl).join(','),
+        };
+        // 如果新增
+        if (!id) {
+          dispatch({
+            type: 'buildingsInfo/insertFloor',
+            payload,
+            success,
+            error,
+          });
+        } else {
+          dispatch({
+            type: 'buildingsInfo/editFloor',
+            payload: { id, ...payload },
+            success,
+            error,
+          });
+        }
+      }
+    });
+  };
+
+  // 处理平面图上传
+  handleFileChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        floorList: fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done') {
+      if (file.response.code === 200) {
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
+          this.setState({
+            floorList: fileList.map(item => {
+              if (!item.url && item.response) {
+                return {
+                  ...item,
+                  url: result.webUrl,
+                  dbUrl: result.dbUrl,
+                };
+              }
+              return item;
+            }),
+          });
+        } else {
+          // 没有返回值
+          message.error('上传失败！');
+          this.setState({
+            floorList: fileList.filter(item => {
+              return !item.response || item.response.data.list.length !== 0;
+            }),
+          });
+        }
+      } else {
+        // code为500
+        message.error('上传失败！');
+        this.setState({
+          floorList: fileList.filter(item => {
+            return !item.response || item.response.code !== 200;
+          }),
+        });
+      }
+      this.setState({
+        uploading: false,
+      });
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        floorList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        floorList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
+      });
+    }
+  };
   // 渲染信息
   renderLawsInfo() {
     const {
       form: { getFieldDecorator },
+      location: {
+        query: { id: buildingId, name, companyId },
+      },
     } = this.props;
 
-    const { submitting } = this.state;
+    const { uploading, floorList } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -108,52 +234,46 @@ export default class FloorManagementEdit extends PureComponent {
             </Col>
           </FormItem>
 
-          <FormItem {...formItemLayout} label={fieldLabels.floorNum}>
-            {getFieldDecorator('floorNum', {
+          <FormItem {...formItemLayout} label={fieldLabels.floorNumber}>
+            {getFieldDecorator('floorNumber', {
               rules: [
                 {
                   required: true,
                   message: '请选择楼层编号',
                 },
               ],
-            })(
-              <Select placeholder="请选择楼层编号">
-                {[].map(item => (
-                  <Option value={item.id} key={item.id}>
-                    {item.label}
-                  </Option>
-                ))}
-              </Select>
-            )}
+            })(<InputNumber style={{ width: '100%' }} placeholder="请选择楼层编号" />)}
           </FormItem>
-          <FormItem {...formItemLayout} label={fieldLabels.floorNum}>
-            {getFieldDecorator('floorNum', {
-              rules: [
-                {
-                  required: true,
-                  message: '请选择楼层编号',
-                },
-              ],
-            })(
-              <Select placeholder="请选择楼层编号">
-                {[].map(item => (
-                  <Option value={item.id} key={item.id}>
-                    {item.label}
-                  </Option>
-                ))}
-              </Select>
+          <FormItem {...formItemLayout} label={fieldLabels.floorUrl}>
+            {getFieldDecorator('floorUrl', {})(
+              <Upload
+                name="files"
+                headers={{ 'JA-Token': getToken() }}
+                data={{ folder }} // 附带的参数
+                listType="picture "
+                action={uploadAction} // 上传地址
+                fileList={floorList}
+                onChange={this.handleFileChange}
+              >
+                <Button type="primary">
+                  {UploadIcon}
+                  选择文件
+                </Button>
+              </Upload>
             )}
           </FormItem>
         </Form>
 
         <div style={{ textAlign: 'center' }}>
-          <Button
-            type="primary"
-            loading={submitting}
-            size="large"
-            onClick={this.handleClickValidate}
-          >
+          <Button type="primary" loading={uploading} onClick={this.handleClickValidate}>
             提交
+          </Button>
+          <Button
+            loading={uploading}
+            href={`/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
+            style={{ marginLeft: '10px' }}
+          >
+            返回
           </Button>
         </div>
       </Card>
@@ -166,10 +286,13 @@ export default class FloorManagementEdit extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { id: buildingId, name, companyId },
+      },
     } = this.props;
     const title = id ? editTitle : addTitle;
 
-    // 面包屑
+    //面包屑
     const breadcrumbList = [
       {
         title: '首页',
@@ -177,15 +300,19 @@ export default class FloorManagementEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '楼层管理列表',
-        name: '楼层管理列表',
+        title: '人员定位',
+        name: '人员定位',
       },
       {
-        title,
+        title: '楼层管理列表',
+        name: '楼层管理列表',
+        href: `/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`,
+      },
+      {
+        title: '新增楼层',
         name: '新增楼层',
       },
     ];
-
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderLawsInfo()}
