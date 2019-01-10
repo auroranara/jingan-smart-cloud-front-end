@@ -8,6 +8,10 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
+// 接入单位统计
+import AccessUnitStatistics from './AccessUnitStatistics';
+// 实时报警统计
+import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
 // 告警信息
 import WarningMessage from './WarningMessage';
 // 引入样式文件
@@ -50,6 +54,11 @@ export default class ElectricityMonitor extends PureComponent {
     // 获取告警信息列表
     dispatch({
       type: 'electricityMonitor/fetchMessages',
+    });
+
+    // 获取单位数据
+    dispatch({
+      type: 'electricityMonitor/fetchUnitData',
     });
 
     // 获取网格点id
@@ -95,6 +104,18 @@ export default class ElectricityMonitor extends PureComponent {
               }
               else {
                 this.hideWarningNotification(data);
+              }
+            }
+            // 如果为33，则修改单位状态
+            if (type === 33) {
+              const { companyId, status } = data;
+              const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
+              const index = unitIds.indexOf(companyId);
+              if (index > -1 && units[index].status !== status) {
+                dispatch({
+                  type: 'electricityMonitor/saveUnitData',
+                  payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
+                });
               }
             }
           } catch (error) {
@@ -172,7 +193,7 @@ export default class ElectricityMonitor extends PureComponent {
    * 渲染
    */
   render() {
-    const { electricityMonitor: { messages } } = this.props;
+    const { electricityMonitor: { messages, statisticsData, unitSet } } = this.props;
 
     return (
       <BigPlatformLayout
@@ -196,13 +217,9 @@ export default class ElectricityMonitor extends PureComponent {
         {/* 搜索框 */}
         <Search placeholder="单位名称" enterButton="搜索" className={styles.left} style={{ top: 'calc(9.62963% + 24px)' }} />
         {/* 接入单位统计 */}
-        <NewSection title="接入单位统计" className={styles.left} style={{ top: 'calc(9.62963% + 68px)', height: '13.611111%' }}>
-        123
-        </NewSection>
+        <AccessUnitStatistics data={statisticsData} className={`${styles.left} ${styles.accessUnitStatistics}`} />
         {/* 实时报警统计 */}
-        <NewSection title="实时报警统计" className={styles.left} style={{ top: 'calc(23.24% + 80px)', height: '21.944444%' }}>
-        123
-        </NewSection>
+        <RealTimeAlarmStatistics data={unitSet} className={`${styles.left} ${styles.realTimeAlarmStatistics}`} />
         {/* 近半年内告警统计 */}
         <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
         123
