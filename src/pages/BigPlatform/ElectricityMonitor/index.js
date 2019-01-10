@@ -11,9 +11,10 @@ import styles from './index.less';
 import {
   SettingModal,
   UnitDrawer,
+  AlarmDrawer,
 } from './sections/Components';
 
-const UNIT_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
+const ALARM_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
 
 const { Search } = Input;
 
@@ -28,6 +29,7 @@ export default class ElectricityMonitor extends PureComponent {
     this.state = {
       setttingModalVisible: false,
       unitDrawerVisible: true,
+      alarmDrawerVisible: false,
     };
   }
 
@@ -79,7 +81,11 @@ export default class ElectricityMonitor extends PureComponent {
    * 渲染
    */
   render() {
-    const { setttingModalVisible, unitDrawerVisible } = this.state;
+    const {
+      setttingModalVisible,
+      unitDrawerVisible,
+      alarmDrawerVisible,
+    } = this.state;
 
     return (
       <BigPlatformLayout
@@ -122,8 +128,13 @@ export default class ElectricityMonitor extends PureComponent {
           handleCancel={this.handleSettingCancel}
         />
         <UnitDrawer
-          data={UNIT_DATA}
+          // data={UNIT_DATA}
           visible={unitDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <AlarmDrawer
+          data={ALARM_DATA}
+          visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
       </BigPlatformLayout>
