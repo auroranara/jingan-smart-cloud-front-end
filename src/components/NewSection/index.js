@@ -27,6 +27,8 @@ export default function NewSection ({
   children,
   // 滚动条相关设置属性，请查看Scroll组件
   scroll,
+  // 不属于内容的内容
+  other,
 }) {
   return (
     <div className={className?`${styles.container} ${className}`:styles.container} style={style}>
@@ -41,6 +43,7 @@ export default function NewSection ({
           </Scroll>
         ) : children}
       </div>
+      {other}
     </div>
   );
 }
