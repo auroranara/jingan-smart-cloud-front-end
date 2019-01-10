@@ -50,9 +50,6 @@ export default class ElectricityMonitor extends PureComponent {
     // 获取告警信息列表
     dispatch({
       type: 'electricityMonitor/fetchMessages',
-      callback: () => {
-        this.showWarningNotification();
-      },
     });
 
     // 获取网格点id
@@ -67,8 +64,8 @@ export default class ElectricityMonitor extends PureComponent {
           env: 'dev',
           type: 3,
         };
-        // const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-        const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
+        const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+        // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
 
         // 链接webscoket
         const ws = new WebsocketHeartbeatJs({ url, ...options });
@@ -82,9 +79,24 @@ export default class ElectricityMonitor extends PureComponent {
           // 判断是否是心跳
           if (!e.data || e.data.indexOf('heartbeat') > -1) return;
           try {
-            const data = JSON.parse(e.data);
+            const data = JSON.parse(e.data).data;
             console.log(data);
-
+            const { type } = data;
+            // 如果数据为告警或恢复，则将数据插入到列表的第一个
+            if ([31, 32].includes(type)) {
+              const { electricityMonitor: { messages } } = this.props;
+              dispatch({
+                type: 'electricityMonitor/save',
+                payload: { messages: [data].concat(messages) },
+              });
+              // 如果发生告警，弹出通知框，否则关闭通知框
+              if (type === 32) {
+                this.showWarningNotification(data);
+              }
+              else {
+                this.hideWarningNotification(data);
+              }
+            }
           } catch (error) {
             console.log('error', error);
           }
@@ -94,12 +106,6 @@ export default class ElectricityMonitor extends PureComponent {
           console.log('reconnecting...');
         };
       },
-    });
-    // 显示提醒框
-    this.showWarningNotification({
-      addTime: 1547023558026,
-      companyName: "无锡晶安智慧科技有限公司",
-      location: "2#配电柜",
     });
   }
 
@@ -120,14 +126,9 @@ export default class ElectricityMonitor extends PureComponent {
   /**
    * 显示告警通知提醒框
    */
-  showWarningNotification = data => {
-    const {
-      addTime,
-      companyName,
-      location,
-    } = data;
+  showWarningNotification = ({ addTime, companyName, area, location, paramName, messageFlag, paramCode }) => {
     const options = {
-      key: 1,
+      key: `${messageFlag}_${paramCode}`,
       duration: null,
       placement: 'bottomLeft',
       className: styles.notification,
@@ -144,54 +145,21 @@ export default class ElectricityMonitor extends PureComponent {
             <div className={styles.notificationTextSecond}>{companyName}</div>
           </div>
           <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{location}</div>
+            <div className={styles.notificationTextFirst}>{`${area}${location}${paramName}`}</div>
             <div className={styles.notificationTextSecond}>发生报警！</div>
           </div>
         </div>
       ),
     };
     notification.open(options);
-    // const { type, messageId } = item;
-    // if (type === 5 || type === 6) {
-    //   // 5 火警， 6 故障
-    //   const msgItem = msgInfo[type.toString()];
-    //   const style = {
-    //     boxShadow: `0px 0px 20px ${msgItem.color}`,
-    //   };
-    //   const styleAnimation = {
-    //     ...style,
-    //     animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
-    //   };
-    //   const options = {
-    //     key: messageId,
-    //     className: styles.notification,
-    //     message: this.renderNotificationTitle(item),
-    //     description: this.renderNotificationMsg(item),
-    //     style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
-    //   };
-    //   notification.open({
-    //     ...options,
-    //   });
-
-    //   setTimeout(() => {
-    //     // 解决加入animation覆盖notification自身显示动效时长问题
-    //     notification.open({
-    //       ...options,
-    //       style: this.fireNode
-    //         ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
-    //         : { ...styleAnimation },
-    //       onClose: () => {
-    //         notification.open({
-    //           ...options,
-    //         });
-    //         setTimeout(() => {
-    //           notification.close(messageId);
-    //         }, 200);
-    //       },
-    //     });
-    //   }, 800);
-    // }
   };
+
+  /**
+   * 关闭通知框
+   */
+  hideWarningNotification = ({ messageFlag, paramCode }) => {
+    notification.close(`${messageFlag}_${paramCode}`);
+  }
 
   /**
    * 点击设置按钮
