@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Input, notification, Icon } from 'antd';
 import { connect } from 'dva';
-import { Map, Marker } from 'react-amap';
+import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
 import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
@@ -14,6 +14,10 @@ import AccessUnitStatistics from './AccessUnitStatistics';
 import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
 // 告警信息
 import WarningMessage from './WarningMessage';
+
+import AlarmChart from './AlarmChart';
+import ElectricityMap from './ElectricityMap';
+import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
 import {
@@ -49,7 +53,21 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
+      infoWindowShow: false,
+      infoWindow: {
+        address: '',
+        aqy1Name: '',
+        aqy1Phone: '',
+        companyName: '',
+        comapnyId: '',
+        longitude: 0,
+        latitude: 0,
+      },
+      selectList: [],
+      searchValue: '',
+      mapInstance: undefined,
     };
+    this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
   }
 
   /**
@@ -60,7 +78,15 @@ export default class ElectricityMonitor extends PureComponent {
     const {
       dispatch,
     } = this.props;
-    // 获取告警信息列表
+    // // 获取告警信息列表
+    // dispatch({
+    //   type: 'electricityMonitor/fetchMessages',
+    //   callback: () => {
+    //     this.showWarningNotification();
+    //   },
+    // });
+
+    // 企业统计及数组
     dispatch({
       type: 'electricityMonitor/fetchMessages',
     });
@@ -68,6 +94,7 @@ export default class ElectricityMonitor extends PureComponent {
     // 获取单位数据
     dispatch({
       type: 'electricityMonitor/fetchUnitData',
+      // type: 'electricityMonitor/fetchCompanyInfoDto',
     });
 
     // 获取网格点id
@@ -111,16 +138,16 @@ export default class ElectricityMonitor extends PureComponent {
               if (type === 32) {
                 this.showWarningNotification(data);
               }
-              else {
-                this.hideWarningNotification(data);
-              }
+              // else {
+              //   this.hideWarningNotification(data);
+              // }
             }
             // 如果为33，则修改单位状态
             if (type === 33) {
               const { companyId, status } = data;
               const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
               const index = unitIds.indexOf(companyId);
-              if (index > -1 && units[index].status !== status) {
+              if (index > -1/* && units[index].status !== status*/) {
                 dispatch({
                   type: 'electricityMonitor/saveUnitData',
                   payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
@@ -156,7 +183,7 @@ export default class ElectricityMonitor extends PureComponent {
   /**
    * 显示告警通知提醒框
    */
-  showWarningNotification = ({ addTime, companyName, area, location, paramName, messageFlag, paramCode }) => {
+  showWarningNotification = ({ companyId, addTime, companyName, area, location, paramName, messageFlag, paramCode }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
       duration: null,
@@ -180,6 +207,10 @@ export default class ElectricityMonitor extends PureComponent {
           </div>
         </div>
       ),
+      onClick: () => {
+        const { electricityMonitor: { unitSet: { units } } } = this.props;
+        this.handleMapClick(companyId, units.filter(item => item.companyId === companyId)[0]);
+      },
     };
     notification.open(options);
   };
@@ -214,17 +245,69 @@ export default class ElectricityMonitor extends PureComponent {
     }));
   };
 
+  handleMapClick = (companyId, item) => {
+    const { dispatch } = this.props;
+    const { mapInstance } = this.state;
+    dispatch({
+      type: 'electricityMonitor/fetchDeviceStatusCount',
+      payload: { companyId },
+      success: res => {
+        this.setState({
+          infoWindowShow: true,
+          infoWindow: {
+            ...item,
+          },
+        });
+        mapInstance.setZoomAndCenter(18, [item.longitude, item.latitude]);
+      },
+    });
+  }
+
+  fetchMapSearchData = value => {
+    const { electricityMonitor: { companyInfoDto: { companyInfoDtoList } } } = this.props;
+    const list = companyInfoDtoList;
+    // console.log('value',value);
+    // console.log('list',list);
+// console.log('itemcompanyName',list.filter(item => !item.companyName));
+// return;
+    const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
+    console.log('selectList',selectList);
+
+    // console.log('fetchData selectList', selectList);
+    this.setState({
+      searchValue: value,
+      selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
+    });
+  };
+
+  handleMapSearchChange = value => {
+    this.debouncedFetchData(value);
+    this.setState({
+      searchValue: value,
+    });
+  };
+
+  handleMapSearchSelect = item => {
+    this.handleMapClick(item.companyId, item);
+  }
+
   /**
    * 渲染
    */
   render() {
-    const { electricityMonitor: { messages, statisticsData, unitSet } } = this.props;
+    const { electricityMonitor: { messages, statisticsData, unitSet, deviceStatusCount, companyInfoDto } } = this.props;
     const {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
+      infoWindowShow,
+      selectList,
+      searchValue,
+      infoWindow,
     } = this.state;
 
+    // const { electricityMonitor: { messages, companyInfoDto, deviceStatusCount } } = this.props;
+    // const { infoWindowShow, selectList, searchValue, infoWindow } = this.state;
     return (
       <BigPlatformLayout
         title="晶安智慧用电监测平台"
@@ -237,15 +320,27 @@ export default class ElectricityMonitor extends PureComponent {
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
-        <Map
-          amapkey="665bd904a802559d49a33335f1e4aa0d"
-          plugins={['Scale', { name: 'ToolBar', options: { locate: false } }]}
-          // center={'无锡'}
-          useAMapUI
-        >
-        </Map>
+        <ElectricityMap
+          // mapData={companyInfoDto.companyInfoDtoList}
+          mapData={unitSet}
+          handleMapClick={this.handleMapClick}
+          infoWindowShow={infoWindowShow}
+          infoWindow={infoWindow}
+          deviceStatusCount={deviceStatusCount}
+          handleParentChange={(newState) => {
+            this.setState({ ...newState });
+          }}
+        />
         {/* 搜索框 */}
-        <Search placeholder="单位名称" enterButton="搜索" className={styles.left} style={{ top: 'calc(9.62963% + 24px)' }} />
+        <MapSearch
+          className={styles.mapSearch}
+          style={{ top: 'calc(9.62963% + 24px)', position: 'absolute', left: '24px', width: '25.46875%', zIndex: 9999 }}
+          selectList={selectList}
+          value={searchValue}
+          handleChange={this.handleMapSearchChange}
+          handleSelect={this.handleMapSearchSelect}
+        />
+        {/* <Search placeholder="单位名称" enterButton="搜索" className={styles.left} style={{ top: 'calc(9.62963% + 24px)' }} /> */}
         {/* 接入单位统计 */}
         <AccessUnitStatistics
           data={statisticsData}
@@ -260,7 +355,7 @@ export default class ElectricityMonitor extends PureComponent {
         />
         {/* 近半年内告警统计 */}
         <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
-        123
+          <AlarmChart />
         </NewSection>
         {/* 告警信息 */}
         <WarningMessage data={messages} className={styles.right} />

@@ -17,3 +17,13 @@ export async function getCompanyId(params) {
 export async function getUnitData(params) {
   return request(`${URL_PREFIX}/screen/elecSafe/companyList`);
 }
+
+// 企业统计及数组
+export async function getCompanyList(params) {
+  return request(`${URL_PREFIX}/screen/elecSafe/companyList`);
+}
+
+// 获取企业设备统计数
+export async function getDeviceStatusCount(params) {
+  return request(`${URL_PREFIX}/screen/elecSafe/deviceStatusCount?${stringify(params)}`);
+}
