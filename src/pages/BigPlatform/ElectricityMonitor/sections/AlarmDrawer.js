@@ -20,7 +20,7 @@ import unitYellowIcon from '../imgs/unitYellow.png';
 const ICON_WIDTH = 42;
 const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
-const TYPE = 'unit';
+const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];

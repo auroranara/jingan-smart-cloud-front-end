@@ -48,7 +48,7 @@ export default class ElectricityMonitor extends PureComponent {
     this.state = {
       setttingModalVisible: false,
       unitDrawerVisible: false,
-      alarmDrawerVisible: true,
+      alarmDrawerVisible: false,
     };
   }
 
@@ -247,9 +247,17 @@ export default class ElectricityMonitor extends PureComponent {
         {/* 搜索框 */}
         <Search placeholder="单位名称" enterButton="搜索" className={styles.left} style={{ top: 'calc(9.62963% + 24px)' }} />
         {/* 接入单位统计 */}
-        <AccessUnitStatistics data={statisticsData} className={`${styles.left} ${styles.accessUnitStatistics}`} />
+        <AccessUnitStatistics
+          data={statisticsData}
+          className={`${styles.left} ${styles.accessUnitStatistics}`}
+          onClick={e => this.handleDrawerVisibleChange('unit')}
+        />
         {/* 实时报警统计 */}
-        <RealTimeAlarmStatistics data={unitSet} className={`${styles.left} ${styles.realTimeAlarmStatistics}`} />
+        <RealTimeAlarmStatistics
+          data={unitSet}
+          className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
+          onClick={e => this.handleDrawerVisibleChange('alarm')}
+        />
         {/* 近半年内告警统计 */}
         <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
         123
