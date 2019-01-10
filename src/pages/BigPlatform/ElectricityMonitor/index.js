@@ -28,8 +28,8 @@ export default class ElectricityMonitor extends PureComponent {
     super(props);
     this.state = {
       setttingModalVisible: false,
-      unitDrawerVisible: true,
-      alarmDrawerVisible: false,
+      unitDrawerVisible: false,
+      alarmDrawerVisible: true,
     };
   }
 

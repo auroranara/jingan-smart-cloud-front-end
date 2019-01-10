@@ -9,6 +9,7 @@ import {
   DrawerSection,
   GraphSwitch,
   OvProgress,
+  OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
@@ -23,6 +24,7 @@ const TYPE = 'unit';
 const NO_DATA = '暂无信息';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
+const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
 
 const CARDS = [...Array(10).keys()].map(i => ({
   companyId: i,
@@ -39,10 +41,20 @@ const CARDS = [...Array(10).keys()].map(i => ({
 const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: i + 1, value: Math.floor(Math.random() * 100) }));
 
 export default class AlarmDrawer extends PureComponent {
-  state={ graph: 0, searchValue: '' };
+  state={ graph: 0, selected: 0, searchValue: '' };
 
   handleSwitch = i => {
     this.setState({ graph: i });
+  };
+
+  handleSelectChange = i => {
+    this.setState({ selected: i });
+  };
+
+  genProgressClick = v => {
+    return e => {
+      this.handleSelectChange(v);
+    };
   };
 
   handleSearch = v => {
@@ -52,7 +64,7 @@ export default class AlarmDrawer extends PureComponent {
   handleClose = () => {
     const { handleDrawerVisibleChange } = this.props;
     handleDrawerVisibleChange(TYPE);
-    this.setState({ searchValue: '' });
+    this.setState({ searchValue: '', grahp: 0, selected: 0 });
   };
 
   render() {
@@ -61,7 +73,7 @@ export default class AlarmDrawer extends PureComponent {
       // handleSearch,
       data: { list=CARDS, graphList=GRAPH_LIST, alarmNum=0, warnNum=0, commonNum=0 }={},
     } = this.props;
-    const { graph, searchValue } = this.state;
+    const { graph, selected, searchValue } = this.state;
 
     const filteredList = list.filter(({ name }) => name.includes(searchValue));
 
@@ -69,6 +81,9 @@ export default class AlarmDrawer extends PureComponent {
     const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(n => total ? n / total * 100 : 0);
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
+    const select = (
+      <OvSelect cssType={1} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
+    );
 
     const left = (
       <Fragment>
@@ -78,22 +93,27 @@ export default class AlarmDrawer extends PureComponent {
             percent={alarmPercent}
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
-            style={{ marginTop: 40 }}
+            style={{ marginTop: 40, cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            onClick={this.genProgressClick(2)}
           />
           <OvProgress
             title="预警单位"
             percent={warnPercent}
             quantity={warnNum}
             strokeColor="rgb(246,181,78)"
+            style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitYellowIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            onClick={this.genProgressClick(3)}
           />
           <OvProgress
             title="正常单位"
             percent={commonPercent}
             quantity={commonNum}
             strokeColor="rgb(0,251,252)"
+            style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            onClick={this.genProgressClick(1)}
           />
         </DrawerSection>
         <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>
@@ -107,6 +127,7 @@ export default class AlarmDrawer extends PureComponent {
         // value={value}
         onSearch={this.handleSearch}
         // onChange={this.handleChange}
+        extra={select}
       >
         {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
           <DrawerCard
