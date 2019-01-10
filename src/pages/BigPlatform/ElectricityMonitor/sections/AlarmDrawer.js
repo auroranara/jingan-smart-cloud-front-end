@@ -75,7 +75,22 @@ export default class AlarmDrawer extends PureComponent {
     } = this.props;
     const { graph, selected, searchValue } = this.state;
 
-    const filteredList = list.filter(({ name }) => name.includes(searchValue));
+    const filteredList = list.filter(({ name }) => name.includes(searchValue)).filter(item => {
+      switch(selected) {
+        case 0:
+          return true;
+        case 1:
+          return item.common;
+        case 2:
+          return item.alarm;
+        case 3:
+          return item.warn;
+        case 4:
+          return item.noAccess;
+        default:
+          return false;
+      }
+    });
 
     const total = alarmNum + commonNum + warnNum;
     const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(n => total ? n / total * 100 : 0);
