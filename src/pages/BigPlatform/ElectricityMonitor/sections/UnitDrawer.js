@@ -107,8 +107,8 @@ export default class UnitDrawer extends PureComponent {
             iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
           />
         </DrawerSection>
-        <DrawerSection title="火警趋势图" titleInfo="最近12个月" extra={extra}>
-          {graph ? <ChartBar data={graphList} /> : <ChartLine data={graphList} />}
+        <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>
+          {graph ? <ChartBar data={graphList} labelRotate={0} sameColor /> : <ChartLine data={graphList} labelRotate={0} />}
         </DrawerSection>
       </Fragment>
     );

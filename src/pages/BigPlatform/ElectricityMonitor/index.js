@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Input } from 'antd';
+import { Input } from 'antd';
 import { Map, Marker } from 'react-amap';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
@@ -12,6 +12,8 @@ import {
   SettingModal,
   UnitDrawer,
 } from './sections/Components';
+
+const UNIT_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
 
 const { Search } = Input;
 
@@ -84,7 +86,7 @@ export default class ElectricityMonitor extends PureComponent {
         title="晶安智慧用电监测平台"
         extra="无锡市"
         style={{ backgroundImage: 'none' }}
-        headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 9999, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
+        headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 999, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
         settable
@@ -120,6 +122,7 @@ export default class ElectricityMonitor extends PureComponent {
           handleCancel={this.handleSettingCancel}
         />
         <UnitDrawer
+          data={UNIT_DATA}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
