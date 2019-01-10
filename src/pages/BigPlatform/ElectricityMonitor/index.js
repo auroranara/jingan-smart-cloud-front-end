@@ -16,8 +16,15 @@ import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
 import WarningMessage from './WarningMessage';
 // 引入样式文件
 import styles from './index.less';
+import {
+  SettingModal,
+  UnitDrawer,
+  AlarmDrawer,
+} from './sections/Components';
 
-const { Search } = Input
+const ALARM_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
+
+const { Search } = Input;
 
 // websocket配置
 const options = {
@@ -39,7 +46,9 @@ export default class ElectricityMonitor extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-
+      setttingModalVisible: false,
+      unitDrawerVisible: false,
+      alarmDrawerVisible: true,
     };
   }
 
@@ -186,14 +195,35 @@ export default class ElectricityMonitor extends PureComponent {
    * 点击设置按钮
    */
   handleClickSetButton = () => {
-    console.log(1);
-  }
+    this.setState({ setttingModalVisible: true });
+  };
+
+  handleSettingOk = e => {
+    this.setState({ setttingModalVisible: false });
+  };
+
+  handleSettingCancel = e => {
+    this.setState({ setttingModalVisible: false });
+  };
+
+  handleDrawerVisibleChange = (name, rest) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+      ...rest,
+    }));
+  };
 
   /**
    * 渲染
    */
   render() {
     const { electricityMonitor: { messages, statisticsData, unitSet } } = this.props;
+    const {
+      setttingModalVisible,
+      unitDrawerVisible,
+      alarmDrawerVisible,
+    } = this.state;
 
     return (
       <BigPlatformLayout
@@ -226,6 +256,21 @@ export default class ElectricityMonitor extends PureComponent {
         </NewSection>
         {/* 告警信息 */}
         <WarningMessage data={messages} className={styles.right} />
+        <SettingModal
+          visible={setttingModalVisible}
+          handleOk={this.handleSettingOk}
+          handleCancel={this.handleSettingCancel}
+        />
+        <UnitDrawer
+          // data={UNIT_DATA}
+          visible={unitDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <AlarmDrawer
+          data={ALARM_DATA}
+          visible={alarmDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
       </BigPlatformLayout>
     );
   }

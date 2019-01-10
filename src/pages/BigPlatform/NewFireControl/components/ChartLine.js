@@ -8,7 +8,7 @@ const LINE_STYLE =  { width: 2, color: 'rgb(64, 95, 135)' };
 export default class ChartLine extends PureComponent {
   render() {
     // const list = LIST;
-    const { data: list } = this.props;
+    const { data: list, labelRotate=-35 } = this.props;
 
     // const xData = [...Array(10).keys()].map(i => `无锡新吴机械${i}`);
     // const seriesData = LIST.map((n, i) => ({ value: n, name: `无锡新吴机械${i}` }));
@@ -24,7 +24,7 @@ export default class ChartLine extends PureComponent {
           type: 'category',
           data: xData,
           axisLine: { lineStyle: LINE_STYLE },
-          axisLabel: { rotate: -35 },
+          axisLabel: { rotate: labelRotate },
       },
       yAxis: {
         type: 'value',

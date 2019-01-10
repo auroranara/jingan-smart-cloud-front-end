@@ -1,19 +1,20 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
-const LIST = [
-  { value: 0, name: '已超期', itemStyle: { color: 'rgb(232, 103, 103)' } },
-  { value: 0, name: '待整改', itemStyle: { color: 'rgb(246, 181, 78)' } },
-  { value: 0, name: '待复查', itemStyle: { color: 'rgb(42, 139, 213)' } },
-];
+// const LIST = [
+//   { value: 0, name: '已超期', itemStyle: { color: 'rgb(232, 103, 103)' } },
+//   { value: 0, name: '待整改', itemStyle: { color: 'rgb(246, 181, 78)' } },
+//   { value: 0, name: '待复查', itemStyle: { color: 'rgb(42, 139, 213)' } },
+// ];
 
-const LABELS = ['已超期', '待整改', '待复查'];
+// const LABELS = ['已超期', '待整改', '待复查'];
 
 export default class ChartRing extends PureComponent {
   render() {
-    const { data } = this.props;
+    const { data: list = [] } = this.props;
 
-    const list = LIST.map((item, i) => ({ ...item, value: data[i] }));
+    // const list = LIST.map((item, i) => ({ ...item, value: data[i] }));
+    const lengeds = list.map(({ name }) => ({ name, icon: 'circle' }));
 
     const option = {
       // tooltip: {
@@ -24,8 +25,10 @@ export default class ChartRing extends PureComponent {
           bottom: 0,
           selectedMode: false,
           textStyle: { color: '#FFF' },
-          data:[{name: '已超期', icon: 'circle'},{name: '待整改', icon: 'circle'} ,{name: '待复查', icon: 'circle'}],
-          formatter: name => `${name} ${data[LABELS.indexOf(name)]}`,
+          // data:[{name: '已超期', icon: 'circle'},{name: '待整改', icon: 'circle'} ,{name: '待复查', icon: 'circle'}],
+          data: lengeds,
+          // formatter: name => `${name} ${data[LABELS.indexOf(name)]}`,
+          formatter: name => `${name} ${list.find(item => item.name === name).value}`,
       },
       series: [
           {
