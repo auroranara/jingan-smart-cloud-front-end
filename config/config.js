@@ -1,7 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 
 // https://umijs.org/config/
-
+import os from 'os';
 const path = require('path');
 const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
@@ -30,7 +30,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.sqz}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -59,19 +59,25 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie9'],
         dynamicImport: true,
-        dll: {
-          include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-          exclude: ['@babel/runtime'],
-        },
-        hardSource: true,
+        ...(!process.env.TEST && os.platform() === 'darwin'
+          ? {
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: true,
+            }
+          : {}),
       },
     ],
   ],
 
   // 路由配置
   routes: initRouters(process.env.PROJECT_ENV),
+  targets: {
+    ie: 11,
+  },
   history: 'hash',
   hash: true,
   publicPath: '/acloud_new/',
@@ -93,6 +99,7 @@ export default {
   lessLoaderOptions: {
     javascriptEnabled: true,
   },
+  disableRedirectHoist: true,
   cssLoaderOptions: {
     modules: true,
     getLocalIdent: (context, localIdentName, localName) => {
@@ -120,21 +127,10 @@ export default {
     'process.env.PROJECT_ENV': process.env.PROJECT_ENV || 'default',
   },
   manifest: {
-    name: 'jing-an-smart-cloud',
-    background_color: '#FFF',
-    description: '',
-    display: 'standalone',
-    start_url: '/index.html',
-    icons: [
-      {
-        src: '/acloud_new/static/favicon.png',
-        sizes: '48x48',
-        type: 'image/png',
-      },
-    ],
+    basePath: '/',
   },
   chainWebpack: webpackplugin,
-  cssnano: {
-    mergeRules: false,
-  },
+  // cssnano: {
+  //   mergeRules: false,
+  // },
 };
