@@ -1,6 +1,5 @@
 @import '~antd/lib/style/themes/default.less';
 @import '../../../utils/utils.less';
-
 .card {
   margin-bottom: 24px;
 }
@@ -70,7 +69,7 @@
 }
 
 // custom footer for fixed footer toolbar
-.advancedForm + div {
+.advancedForm+div {
   padding-bottom: 64px;
 }
 
@@ -80,9 +79,11 @@
 }
 
 /* 返回按钮 */
+
 .backButton {
   float: right;
 }
+
 .maintenanceIdForm {
   :global {
     #maintenanceId {
@@ -95,7 +96,18 @@
   height: 69px;
 }
 
-.mTree {
+.dpTitle {
   color: rgba(0, 0, 0, 0.85);
   margin-bottom: 8px;
+}
+
+.dpContent {
+  width: 100%;
+  padding: 0 0 0 1em;
+  .line {
+    line-height: 40px;
+    &>span {
+      margin-right: 2em;
+    }
+  }
 }
