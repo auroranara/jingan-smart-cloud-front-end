@@ -11,6 +11,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
+import { sortCardList } from '../utils';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
@@ -54,18 +55,20 @@ export default class UnitDrawer extends PureComponent {
     const {
       visible,
       // handleSearch,
-      data: { list=CARDS }={},
+      data: { list=CARDS, statisticsData: { accessUnitStatistics=0, jurisdictionalUnitStatistics=0 } }={},
     } = this.props;
     const { selected, searchValue } = this.state;
 
-    const rings = [20, 200].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
-    const barList = list.slice(0, 10).map(({ companyId, name, common }, i) => {
+    const restStatistics = jurisdictionalUnitStatistics - accessUnitStatistics;
+    const rings = [restStatistics, accessUnitStatistics].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
+    const sortedList = sortCardList(list);
+    const barList = sortedList.slice(0, 10).map(({ companyId, name, equipment }, i) => {
       let newName = name;
       if (i === 9 && name.length > 10)
         newName = `${name.slice(0, 10)}...`;
-      return { id: companyId, name: newName, value: common };
+      return { id: companyId, name: newName, value: equipment };
     });
-    const filteredList = list.filter(({ name }) => name.includes(searchValue)).filter(({ equipment }) => {
+    const filteredList = sortedList.filter(({ name }) => name.includes(searchValue)).filter(({ equipment }) => {
       switch(selected) {
         case 0:
           return true;
@@ -117,9 +120,9 @@ export default class UnitDrawer extends PureComponent {
               }
               more={
                 <p className={styles.more}>
-                  {[common, alarm, warn, noAccess].map((n, i) => (
+                  {equipment ? [common, alarm, warn, noAccess].map((n, i) => (
                     <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                  ))}
+                  )) : ' '}
                 </p>
               }
             />

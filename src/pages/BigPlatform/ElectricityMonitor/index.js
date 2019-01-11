@@ -25,8 +25,9 @@ import {
   UnitDrawer,
   AlarmDrawer,
 } from './sections/Components';
+import { genCardsInfo, getAlarmUnits } from './utils';
 
-const ALARM_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
+// const ALARM_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
 
 const { Search } = Input;
 
@@ -95,6 +96,13 @@ export default class ElectricityMonitor extends PureComponent {
     dispatch({
       type: 'electricityMonitor/fetchUnitData',
       // type: 'electricityMonitor/fetchCompanyInfoDto',
+      callback: data => {
+        if (!data)
+          return;
+
+        const { unitSet: { units=[] } } = data;
+        this.cardsInfo = genCardsInfo(units);
+      },
     });
 
     // 获取网格点id
@@ -179,6 +187,8 @@ export default class ElectricityMonitor extends PureComponent {
   componentWillUnmount() {
 
   }
+
+  cardsInfo = [];
 
   /**
    * 显示告警通知提醒框
@@ -307,7 +317,11 @@ export default class ElectricityMonitor extends PureComponent {
     } = this.state;
 
     // const { electricityMonitor: { messages, companyInfoDto, deviceStatusCount } } = this.props;
-    // const { infoWindowShow, selectList, searchValue, infoWindow } = this.state;
+    // const { infoWindowShow, selectList, searchValue, infoWindow } = this.state;\
+
+    console.log(this.props.electricityMonitor);
+    const cardsInfo = this.cardsInfo;
+
     return (
       <BigPlatformLayout
         title="晶安智慧用电监测平台"
@@ -365,12 +379,12 @@ export default class ElectricityMonitor extends PureComponent {
           handleCancel={this.handleSettingCancel}
         />
         <UnitDrawer
-          // data={UNIT_DATA}
+          data={{ list: cardsInfo, statisticsData }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <AlarmDrawer
-          data={ALARM_DATA}
+          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

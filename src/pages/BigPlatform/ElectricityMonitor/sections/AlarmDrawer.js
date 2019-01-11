@@ -13,6 +13,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
+import { sortList } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
 import unitBlueIcon from '../imgs/unitBlue.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
@@ -25,6 +26,7 @@ const NO_DATA = '暂无信息';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
+const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
 
 const CARDS = [...Array(10).keys()].map(i => ({
   companyId: i,
@@ -38,7 +40,7 @@ const CARDS = [...Array(10).keys()].map(i => ({
   noAccess: Math.floor(Math.random() * 10),
 }));
 
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: i + 1, value: Math.floor(Math.random() * 100) }));
+const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
 
 export default class AlarmDrawer extends PureComponent {
   state={ graph: 0, selected: 0, searchValue: '' };
@@ -71,7 +73,13 @@ export default class AlarmDrawer extends PureComponent {
     const {
       visible,
       // handleSearch,
-      data: { list=CARDS, graphList=GRAPH_LIST, alarmNum=0, warnNum=0, commonNum=0 }={},
+      data: {
+        list=CARDS,
+        graphList=GRAPH_LIST,
+        alarmUnit: alarmNum=0,
+        earlyWarningUnit: warnNum=0,
+        normalUnit: commonNum=0,
+      }={},
     } = this.props;
     const { graph, selected, searchValue } = this.state;
 
@@ -91,6 +99,8 @@ export default class AlarmDrawer extends PureComponent {
           return false;
       }
     });
+
+    sortList(filteredList, SELECTED_PROPS[selected])
 
     const total = alarmNum + commonNum + warnNum;
     const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(n => total ? n / total * 100 : 0);

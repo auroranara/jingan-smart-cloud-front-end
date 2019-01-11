@@ -35,7 +35,7 @@ export default class SettingModal extends PureComponent {
             <FormItem label="标题名称显示">
               {getFieldDecorator('title', { initialValue: 0 })(
                 <RadioGroup>
-                  <Radio value={0}>晶安智慧消防维保平台</Radio>
+                  <Radio value={0}>晶安智慧用电监测平台</Radio>
                   <Radio value={1}><Input placeholder="请输入自定义平台名" /></Radio>
                 </RadioGroup>
               )}
@@ -49,7 +49,7 @@ export default class SettingModal extends PureComponent {
               )}
             </FormItem>
             <FormItem label="地图主题">
-              {getFieldDecorator('theme', { initialValue: 0 })(
+              {getFieldDecorator('theme', { initialValue: 1 })(
                 <RadioGroup>
                   <Radio value={0}>标准</Radio>
                   <Radio value={1}>静蓝</Radio>
@@ -65,7 +65,7 @@ export default class SettingModal extends PureComponent {
               )}
             </FormItem>
             <FormItem label="消息提醒">
-              {getFieldDecorator('message', { initialValue: [0] })(
+              {getFieldDecorator('message', { initialValue: [1] })(
                 <CheckboxGroup>
                   <Checkbox value={0}>预警提示</Checkbox>
                   <Checkbox value={1}>告警提示</Checkbox>
