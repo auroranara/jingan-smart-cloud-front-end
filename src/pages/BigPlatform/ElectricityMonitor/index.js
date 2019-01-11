@@ -147,7 +147,7 @@ export default class ElectricityMonitor extends PureComponent {
               const { companyId, status } = data;
               const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
               const index = unitIds.indexOf(companyId);
-              if (index > -1/* && units[index].status !== status*/) {
+              if (index > -1 && units[index].status !== status) {
                 dispatch({
                   type: 'electricityMonitor/saveUnitData',
                   payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
