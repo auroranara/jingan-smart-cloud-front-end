@@ -75,6 +75,8 @@ const transformHiddenDangerFields = ({
   companyBuildingItem,
   business_type,
   review_time,
+  report_source_name,
+  item_name,
 }) => {
   let background,
     operator_name = '';
@@ -104,6 +106,8 @@ const transformHiddenDangerFields = ({
       source_type_name,
     businessType: business_type,
     fcsj: moment(+review_time).format('YYYY-MM-DD'),
+    item_name,
+    report_source_name,
   };
 };
 
