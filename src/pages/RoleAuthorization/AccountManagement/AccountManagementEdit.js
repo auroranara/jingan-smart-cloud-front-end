@@ -590,8 +590,9 @@ export default class accountManagementEdit extends PureComponent {
       subExpandedKeys: [],
       searchSerValue: '',
       searchSubValue: '',
+      checkedRootKey: undefined,
     })
-    resetFields(['serCheckedKeys', 'subCheckedKeys'])
+    resetFields(['serCheckedKeys', 'subCheckedKeys', 'isCheckAll', 'isCheckAllSub', 'isCheckAllSer'])
     // 只有类型是维保单位的时候才请求维保树
     // console.log(unitTypeChecked);
     unitTypeChecked === 1 && this.getMaintenanceTree(value.key);
@@ -683,20 +684,13 @@ export default class accountManagementEdit extends PureComponent {
         maintenanceSubTree = [],
       },
     } = this.props
-    let serCheckedKeys = []
-    let subCheckedKeys = []
+    const serCheckedKeys = isCheckAll ? maintenanceSerTree.map(item => item.key) : []
+    const subCheckedKeys = isCheckAll ? maintenanceSubTree.map(item => item.key) : []
     const isCheckAllSub = isCheckAll, isCheckAllSer = isCheckAll
-    if (isCheckAll) {
-      serCheckedKeys = maintenanceSerTree.map(item => item.key)
-      subCheckedKeys = maintenanceSubTree.map(item => item.key)
-    }
-    setFieldsValue({
-      isCheckAll,
-      isCheckAllSub,
-      isCheckAllSer,
-      serCheckedKeys,
-      subCheckedKeys,
-    })
+    let fields = { isCheckAll }
+    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer, serCheckedKeys })
+    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub, subCheckedKeys })
+    setFieldsValue(fields)
     this.setState({ checkedRootKey: isCheckAll ? checkedRootKey : undefined })
   }
 
@@ -707,14 +701,16 @@ export default class accountManagementEdit extends PureComponent {
       account: {
         maintenanceTree: { list: treeList = [] },
         maintenanceSerTree = [],
+        maintenanceSubTree = [],
       },
     } = this.props
     const checked = e.target.checked
     if (checked) {
-      const isCheckAllSub = getFieldValue('isCheckAllSub')
+      const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub')
       // 服务单位第一层keys
       const serCheckedKeys = maintenanceSerTree.map(item => item.key)
-      setFieldsValue({ isCheckAll: isCheckAllSub, serCheckedKeys })
+      // 如果分公司没有数据，服务单位就是全选状态
+      setFieldsValue({ isCheckAll: maintenanceSubTree.length === 0 || isCheckAllSub, serCheckedKeys })
       this.setState({ checkedRootKey: isCheckAllSub ? treeList[0].key : undefined })
     } else {
       setFieldsValue({ isCheckAll: false, serCheckedKeys: [] })
@@ -728,15 +724,16 @@ export default class accountManagementEdit extends PureComponent {
       form: { setFieldsValue, getFieldValue },
       account: {
         maintenanceTree: { list: treeList = [] },
+        maintenanceSerTree = [],
         maintenanceSubTree = [],
       },
     } = this.props
     const checked = e.target.checked
     if (checked) {
-      const isCheckAllSer = getFieldValue('isCheckAllSer')
+      const isCheckAllSer = maintenanceSerTree.length === 0 || getFieldValue('isCheckAllSer')
       // 分公司第一次层keys
       const subCheckedKeys = maintenanceSubTree.map(item => item.key)
-      setFieldsValue({ isCheckAll: isCheckAllSer, subCheckedKeys })
+      setFieldsValue({ isCheckAll: maintenanceSerTree.length === 0 || isCheckAllSer, subCheckedKeys })
       this.setState({ checkedRootKey: isCheckAllSer ? treeList[0].key : undefined })
     } else {
       setFieldsValue({ isCheckAll: false, subCheckedKeys: [] })
@@ -788,7 +785,7 @@ export default class accountManagementEdit extends PureComponent {
       <Card title="账号基本信息" className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+            <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.loginName}>
                 {getFieldDecorator('loginName', {
                   initialValue: loginName,
@@ -813,7 +810,7 @@ export default class accountManagementEdit extends PureComponent {
               </Form.Item>
             </Col>
             {id ? null : (
-              <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+              <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.password}>
                   {getFieldDecorator('password', {
                     rules: [
@@ -863,7 +860,7 @@ export default class accountManagementEdit extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+            <Col lg={8} md={12} sm={24} >
               <Form.Item label={fieldLabels.userName}>
                 {getFieldDecorator('userName', {
                   initialValue: userName,
@@ -879,7 +876,7 @@ export default class accountManagementEdit extends PureComponent {
                 })(<Input placeholder="请输入姓名" min={1} max={10} />)}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
+            <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.phoneNumber}>
                 {getFieldDecorator('phoneNumber', {
                   initialValue: phoneNumber,
@@ -1158,13 +1155,17 @@ export default class accountManagementEdit extends PureComponent {
       account: {
         maintenanceTree: { list = [] },
         maintenanceSerTree = [], // 服务单位公司列表
+        maintenanceSubTree = [],   // 分公司列表
       },
     } = this.props;
+    // 因为服务单位理论上没有children，所以判断length
     const isCheckAllSer = maintenanceSerTree.length === serCheckedKeys.length
-    const isCheckAllSub = getFieldValue('isCheckAllSub')
+    // 如果分公司无数据，默认当作全选状态
+    const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub')
     const isCheckAll = isCheckAllSer && isCheckAllSub
-
-    setFieldsValue({ serCheckedKeys, isCheckAll, isCheckAllSer, isCheckAllSub });
+    let fields = { serCheckedKeys, isCheckAll, isCheckAllSer }
+    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub })
+    setFieldsValue(fields);
     this.setState({ checkedRootKey: isCheckAll ? list[0].title : undefined })
   };
 
@@ -1174,6 +1175,7 @@ export default class accountManagementEdit extends PureComponent {
       form: { setFieldsValue, getFieldValue },
       account: {
         maintenanceTree: { list = [] },
+        maintenanceSerTree = [],
         maintenanceSubTree = [], // 分公司单位列表
       },
     } = this.props;
@@ -1181,8 +1183,9 @@ export default class accountManagementEdit extends PureComponent {
     const isCheckAllSer = getFieldValue('isCheckAllSer')
     const isCheckAllSub = this.isAContentsB(subCheckedKeys, subKeys)
     const isCheckAll = isCheckAllSer && isCheckAllSub
-
-    setFieldsValue({ subCheckedKeys, isCheckAll, isCheckAllSer, isCheckAllSub });
+    let fields = { subCheckedKeys, isCheckAll, isCheckAllSub }
+    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer })
+    setFieldsValue(fields);
     this.setState({ checkedRootKey: isCheckAll ? list[0].title : undefined })
   };
 
