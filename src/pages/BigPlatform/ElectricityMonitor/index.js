@@ -164,6 +164,7 @@ export default class ElectricityMonitor extends PureComponent {
         };
       },
     });
+    this.showWarningNotification({ companyId: 1, addTime: +moment(), companyName: 1, area:1, location:1, paramName:1, messageFlag:1, paramCode:1 });
   }
 
   /**
@@ -196,7 +197,7 @@ export default class ElectricityMonitor extends PureComponent {
         </div>
       ),
       description: (
-        <div className={styles.notificationContent}>
+        <div className={styles.notificationContent} onClick={() => {this.handleClickNotification(companyId)}}>
           <div className={styles.notificationText}>
             <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
             <div className={styles.notificationTextSecond}>{companyName}</div>
@@ -207,10 +208,6 @@ export default class ElectricityMonitor extends PureComponent {
           </div>
         </div>
       ),
-      onClick: () => {
-        const { electricityMonitor: { unitSet: { units } } } = this.props;
-        this.handleMapClick(companyId, units.filter(item => item.companyId === companyId)[0]);
-      },
     };
     notification.open(options);
   };
@@ -289,6 +286,11 @@ export default class ElectricityMonitor extends PureComponent {
 
   handleMapSearchSelect = item => {
     this.handleMapClick(item.companyId, item);
+  }
+
+  handleClickNotification = (companyId) => {
+    const { electricityMonitor: { unitSet: { units } } } = this.props;
+    this.handleMapClick(companyId, units.filter(item => item.companyId === companyId)[0]);
   }
 
   /**

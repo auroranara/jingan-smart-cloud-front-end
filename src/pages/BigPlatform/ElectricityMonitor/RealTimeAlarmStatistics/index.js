@@ -80,7 +80,7 @@ export default class RealTimeAlarmStatistics extends PureComponent {
             <div className={styles.item} key={name}>
               <div className={styles.left}>{name}</div>
               <div className={styles.center}>
-                <Progress showInfo={false} strokeColor={color} percent={value / units.length * 100} status="active" />
+                <Progress showInfo={false} strokeColor={color} percent={units.length > 0 ? value / units.length * 100 : 0} status="active" />
               </div>
               <div className={styles.right} style={{ color }}>{value}</div>
             </div>

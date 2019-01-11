@@ -5,8 +5,8 @@ import VideoPlay from '../../FireControl/section/VideoPlay.js';
 
 import newPointNormal from '@/assets/new-point-normal.png';
 import newPointAbnormal from '@/assets/new-point-abnormal.png';
-import newVideo from '@/assets/new-video.png';
-import newLegendVideo from '@/assets/new-legend-video.png';
+import newVideo from '@/assets/new-video2.png';
+import newLegendVideo from '@/assets/new-legend-video2.png';
 import newLegendPoint from '@/assets/new-legend-point.png';
 import newLegendAbnormal from '@/assets/new-legend-abnormal.png';
 
