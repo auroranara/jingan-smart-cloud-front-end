@@ -114,8 +114,9 @@ export default class Dashboard extends PureComponent {
       // 运营
       case 3:
         this.setState({
-          safetyProduction: 1 && safetyAuth,
-          fireService: 1 && fireControlAuth,
+          safetyProduction: safetyAuth,
+          fireService: fireControlAuth,
+          electricityMonitor: electricityMonitorAuth,
         });
         break;
 
