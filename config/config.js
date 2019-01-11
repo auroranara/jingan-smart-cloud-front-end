@@ -30,7 +30,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.sqz}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -61,11 +61,11 @@ export default {
         },
         polyfills: ['ie9'],
         dynamicImport: true,
-        dll: {
-          include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-          exclude: ['@babel/runtime'],
-        },
-        hardSource: true,
+        // dll: {
+        //   include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+        //   exclude: ['@babel/runtime'],
+        // },
+        // hardSource: true,
       },
     ],
   ],
