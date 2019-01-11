@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -16,6 +16,7 @@ import {
   Transfer,
   Tree,
   AutoComplete,
+  Checkbox,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
@@ -247,11 +248,13 @@ export default class AssociatedUnit extends PureComponent {
   }
 
   state = {
-    unitTypeChecked: 4,
+    unitTypeChecked: undefined,
     submitting: false,
-    expandedKeys: [],
+    subExpandedKeys: [],
     searchValue: '',
-    autoExpandParent: true,
+    searchSerValue: '',
+    searchSubValue: '',
+    checkedRootKey: undefined,
   };
 
   /* 生命周期函数 */
@@ -276,19 +279,19 @@ export default class AssociatedUnit extends PureComponent {
     const success = userId
       ? undefined
       : ({ unitType: unitTypes }) => {
-          // 默认选取第一个类型
-          unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
-          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-          unitTypes &&
-            unitTypes.length &&
-            fetchUnitsFuzzy({
-              payload: {
-                unitType: unitTypes[0].id,
-                pageNum: 1,
-                pageSize: defaultPageSize,
-              },
-            });
-        };
+        // 默认选取第一个类型
+        unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
+        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+        unitTypes &&
+          unitTypes.length &&
+          fetchUnitsFuzzy({
+            payload: {
+              unitType: unitTypes[0].id,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+      };
 
     // 清空权限树
     dispatch({ type: 'account/saveMaintenanceTree', payload: {} });
@@ -300,7 +303,7 @@ export default class AssociatedUnit extends PureComponent {
         payload: {
           userId,
         },
-        success: ({ unitType, unitId, regulatoryClassification, roleIds, permissions = '' }) => {
+        success: ({ unitType, unitId, regulatoryClassification, roleIds, permissions = '', maintenacePermissions = [] }) => {
           this.setState(
             {
               unitTypeChecked: unitType,
@@ -318,7 +321,46 @@ export default class AssociatedUnit extends PureComponent {
           });
 
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
-          unitType === 1 && this.getMaintenanceTree(unitId);
+          unitType === 1 && this.getMaintenanceTree({
+            payload: { companyId: unitId },
+            callback: ({ list: treeList = [], maintenanceSerTree, maintenanceSubTree }) => {
+              if (treeList.length === 0) return
+              this.childrenMap = getTreeListChildrenMap(treeList);
+              let serCheckedKeys = []
+              let subCheckedKeys = []
+              const [{ children } = {}] = treeList
+              const rootKey = treeList[0].key || null
+              // 服务单位keys
+              const serKeys = maintenanceSerTree.map(item => item.key)
+              const subKeys = maintenanceSubTree.map(item => item.key)
+              const isCheckAll = maintenacePermissions.includes(rootKey)
+              // 将maintenacePermissions拆分成服务单位和分公司及下属
+              if (isCheckAll) {
+                serCheckedKeys = serKeys
+                subCheckedKeys = subKeys
+              } else {
+                const newPermission = maintenacePermissions.filter(item => item !== rootKey)
+                if (newPermission.length > 0) {
+                  for (const item of newPermission) {
+                    const index = serKeys.indexOf(item)
+                    if (index > -1) {
+                      serCheckedKeys.push(item)
+                    } else {
+                      subCheckedKeys.push(item)
+                    }
+                  }
+                }
+              }
+              const isCheckAllSer = isCheckAll || serCheckedKeys.length === maintenanceSerTree.length
+              const isCheckAllSub = isCheckAll || this.isArrContentSame(subCheckedKeys, subKeys)
+              setFieldsValue({ serCheckedKeys, subCheckedKeys, isCheckAll, isCheckAllSer, isCheckAllSub })
+              // 分公司树
+              const subsidiaryUnits = Array.isArray(children) ? children.filter(({ type }) => type === '1') : []
+              const subExpandedKeys = getInitParentKeys(subsidiaryUnits, subCheckedKeys)
+              // 展开分公司tree
+              this.setState({ subExpandedKeys, checkedRootKey: isCheckAll ? rootKey : undefined })
+            },
+          });
 
           // 获取roleIds对应的权限，并设置权限树的初值
           this.authTreeCheckedKeys = handleKeysString(permissions);
@@ -411,34 +453,17 @@ export default class AssociatedUnit extends PureComponent {
     [this.parentIdMap, this.idMap] = idMaps;
   };
 
+  // 判断两个字符串数组内容是否一样
+  isArrContentSame = (first, second) => {
+    return first.sort().join(',') === second.sort().join(',')
+  }
+
   //获取维保权限树
-  getMaintenanceTree = companyId => {
-    const {
-      dispatch,
-      form: { setFieldsValue },
-    } = this.props;
+  getMaintenanceTree = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'account/fetchMaintenanceTree',
-      payload: { companyId },
-      callback: ({ list: treeList = [] }) => {
-        const {
-          account: {
-            detail: {
-              data: { maintenacePermissions = [] },
-            },
-          },
-        } = this.props;
-
-        this.childrenMap = getTreeListChildrenMap(treeList);
-
-        setFieldsValue({ maintenacePermissions });
-        const expandedKeys = getInitParentKeys(treeList, maintenacePermissions);
-        // console.log(expandedKeys);
-        this.setState({
-          expandedKeys,
-          autoExpandParent: true,
-        });
-      },
+      ...actions,
     });
   };
 
@@ -465,7 +490,7 @@ export default class AssociatedUnit extends PureComponent {
         },
       },
     } = this.props;
-    const { unitTypeChecked } = this.state;
+    const { unitTypeChecked, checkedRootKey } = this.state;
 
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -479,7 +504,7 @@ export default class AssociatedUnit extends PureComponent {
           unitType,
           unitId,
           treeIds,
-          maintenacePermissions,
+          // maintenacePermissions,
           roleIds,
           departmentId,
           userType,
@@ -487,12 +512,18 @@ export default class AssociatedUnit extends PureComponent {
           execCertificateCode = null,
           regulatoryClassification,
           permissions,
+          serCheckedKeys = [],
+          subCheckedKeys = [],
+          isCheckAll,
         }
       ) => {
         if (!error) {
           this.setState({
             submitting: true,
           });
+          // 数据权限所有选中的key值
+          const checkedKeys = [...serCheckedKeys, ...subCheckedKeys]
+          const maintenacePermissions = handleMtcTree(checkedKeys, this.childrenMap)
           let payload = {
             loginName: loginName.trim(),
             accountStatus,
@@ -501,7 +532,7 @@ export default class AssociatedUnit extends PureComponent {
             unitType,
             unitId: unitId ? (unitTypeChecked === 2 ? unitId.value : unitId.key) : null,
             treeIds: treeIds ? treeIds.key : null,
-            maintenacePermissions: handleMtcTree(maintenacePermissions, this.childrenMap),
+            maintenacePermissions: isCheckAll ? [checkedRootKey] : maintenacePermissions,
             roleIds: roleIds.join(','),
             departmentId: departmentId || '',
             userType,
@@ -517,7 +548,7 @@ export default class AssociatedUnit extends PureComponent {
             ).join(','),
           };
           switch (
-            payload.unitType //单位类型
+          payload.unitType //单位类型
           ) {
             // 维保企业 设置用户类型
             case 1:
@@ -637,7 +668,7 @@ export default class AssociatedUnit extends PureComponent {
   handleDataPermissions = value => {
     const {
       fetchDepartmentList,
-      form: { setFieldsValue },
+      form: { setFieldsValue, resetFields },
     } = this.props;
     const { unitTypeChecked } = this.state;
 
@@ -650,9 +681,17 @@ export default class AssociatedUnit extends PureComponent {
         companyId: value.key,
       },
     });
-
+    // 清空维保权限数据
+    this.setState({
+      subExpandedKeys: [],
+      searchSerValue: '',
+      searchSubValue: '',
+    })
+    resetFields(['serCheckedKeys', 'subCheckedKeys'])
     // 只有类型是维保单位的时候才请求维保树
-    unitTypeChecked === 1 && this.getMaintenanceTree(value.key);
+    unitTypeChecked === 1 && this.getMaintenanceTree({
+      payload: { companyId: value.key },
+    });
   };
 
   handleUnitSelect = ({ value, label }) => {
@@ -1044,36 +1083,71 @@ export default class AssociatedUnit extends PureComponent {
     );
   }
 
-  onCheck = checkedKeys => {
-    const { setFieldsValue } = this.props.form;
-
-    // console.log('onCheck', checkedKeys);
-    setFieldsValue({ maintenacePermissions: checkedKeys });
-  };
-
-  onExpand = expandedKeys => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false,
-    });
-  };
-
-  onTreeSearch = e => {
+  // 勾选服务单位
+  onSerCheck = serCheckedKeys => {
     const {
+      form: { setFieldsValue, getFieldValue },
       account: {
-        maintenanceTree: { list: treeList = [] },
+        maintenanceTree: { list = [] },
+        maintenanceSerTree,
       },
     } = this.props;
+    const isCheckAllSer = maintenanceSerTree.length === serCheckedKeys.length
+    const isCheckAllSub = getFieldValue('isCheckAllSub')
+    const isCheckAll = isCheckAllSer && isCheckAllSub
 
-    const value = e.target.value;
-    const expandedKeys = getParentKeys(treeList, value);
+    setFieldsValue({ serCheckedKeys, isCheckAll, isCheckAllSer, isCheckAllSub });
+    this.setState({ checkedRootKey: isCheckAll ? list[0].title : undefined })
+  };
 
+  // 勾选分公司及服务单位
+  onSubCheck = subCheckedKeys => {
+    const {
+      form: { setFieldsValue, getFieldValue },
+      account: {
+        maintenanceTree: { list = [] },
+        maintenanceSubTree = [],
+      },
+    } = this.props;
+    const subKeys = maintenanceSubTree.map(item => item.key)
+    const isCheckAllSer = getFieldValue('isCheckAllSer')
+    const isCheckAllSub = this.isAContentsB(subCheckedKeys, subKeys)
+    const isCheckAll = isCheckAllSer && isCheckAllSub
+
+    setFieldsValue({ subCheckedKeys, isCheckAll, isCheckAllSer, isCheckAllSub });
+    this.setState({ checkedRootKey: isCheckAll ? list[0].title : undefined })
+  };
+
+  // 展开分公司及服务单位
+  onSubExpand = subExpandedKeys => {
     this.setState({
-      expandedKeys,
-      searchValue: value,
-      autoExpandParent: true,
+      subExpandedKeys,
+    });
+  }
+
+  // 数据权限服务单位搜索
+  onSerTreeSearch = (value, tree) => {
+    this.setState({
+      searchSerValue: value,
     });
   };
+
+  isAContentsB = (a, b) => {
+    for (const item of b) {
+      if (!a.includes(item)) return false
+    }
+    return true
+  }
+
+  // 数据权限子公司及服务单位搜索
+  onSubTreeSearch = (value, tree) => {
+    const subExpandedKeys = getParentKeys(tree, value);
+
+    this.setState({
+      subExpandedKeys,
+      searchSubValue: value,
+    });
+  }
 
   handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
     // console.log(nextTargetKeys);
@@ -1117,6 +1191,76 @@ export default class AssociatedUnit extends PureComponent {
     });
   };
 
+  /* 维保权限全选 */
+  handleCheckAll = (isCheckAll, checkedRootKey) => {
+    const {
+      form: { setFieldsValue },
+      account: {
+        maintenanceSerTree = [],
+        maintenanceSubTree = [],
+      },
+    } = this.props
+    let serCheckedKeys = []
+    let subCheckedKeys = []
+    const isCheckAllSub = isCheckAll, isCheckAllSer = isCheckAll
+    if (isCheckAll) {
+      serCheckedKeys = maintenanceSerTree.map(item => item.key)
+      subCheckedKeys = maintenanceSubTree.map(item => item.key)
+    }
+    setFieldsValue({
+      isCheckAll,
+      isCheckAllSub,
+      isCheckAllSer,
+      serCheckedKeys,
+      subCheckedKeys,
+    })
+    this.setState({ checkedRootKey: isCheckAll ? checkedRootKey : undefined })
+  }
+
+  /* 监听勾选全部服务单位 */
+  handleCheckAllSer = e => {
+    const {
+      form: { setFieldsValue, getFieldValue },
+      account: {
+        maintenanceTree: { list: treeList = [] },
+        maintenanceSerTree = [],
+      },
+    } = this.props
+    const checked = e.target.checked
+    if (checked) {
+      const isCheckAllSub = getFieldValue('isCheckAllSub')
+      // 服务单位第一层keys
+      const serCheckedKeys = maintenanceSerTree.map(item => item.key)
+      setFieldsValue({ isCheckAll: isCheckAllSub, serCheckedKeys })
+      this.setState({ checkedRootKey: isCheckAllSub ? treeList[0].key : undefined })
+    } else {
+      setFieldsValue({ isCheckAll: false, serCheckedKeys: [] })
+      this.setState({ checkedRootKey: undefined })
+    }
+  }
+
+  /* 监听勾选全部分公司 */
+  handleCheckAllSub = e => {
+    const {
+      form: { setFieldsValue, getFieldValue },
+      account: {
+        maintenanceTree: { list: treeList = [] },
+        maintenanceSubTree = [],
+      },
+    } = this.props
+    const checked = e.target.checked
+    if (checked) {
+      const isCheckAllSer = getFieldValue('isCheckAllSer')
+      // 分公司第一次层keys
+      const subCheckedKeys = maintenanceSubTree.map(item => item.key)
+      setFieldsValue({ isCheckAll: isCheckAllSer, subCheckedKeys })
+      this.setState({ checkedRootKey: isCheckAllSer ? treeList[0].key : undefined })
+    } else {
+      setFieldsValue({ isCheckAll: false, subCheckedKeys: [] })
+      this.setState({ checkedRootKey: undefined })
+    }
+  }
+
   /* 渲染角色权限信息 */
   renderRolePermission() {
     const {
@@ -1128,16 +1272,17 @@ export default class AssociatedUnit extends PureComponent {
         },
         roles,
         maintenanceTree: { list: treeList = [] },
+        maintenanceSerTree = [],
+        maintenanceSubTree = [],
       },
       form,
       loading,
     } = this.props;
 
     const { getFieldDecorator } = form;
-    const { expandedKeys, searchValue, autoExpandParent, unitTypeChecked } = this.state;
+    const { subExpandedKeys, searchSerValue, searchSubValue, unitTypeChecked } = this.state;
 
     const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
-
     return (
       <Card title="角色权限配置" className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -1207,7 +1352,7 @@ export default class AssociatedUnit extends PureComponent {
               </Form.Item>
             </Col>
           </Row>
-          {unitTypeChecked === 1 && treeList.length ? (
+          {/* {unitTypeChecked === 1 && treeList.length ? (
             <Row gutter={{ lg: 48, md: 24 }}>
               <Col lg={8} md={12} sm={24}>
                 <p className={styles.mTree}>维保权限</p>
@@ -1231,6 +1376,71 @@ export default class AssociatedUnit extends PureComponent {
                     </Tree>
                   )}
                 </Form.Item>
+              </Col>
+            </Row>
+          ) : null} */}
+          {unitTypeChecked === 1 && treeList.length > 0 ? (
+            <Row gutter={{ lg: 48, md: 24 }}>
+              <Col lg={8} md={12} sm={24}>
+                <p className={styles.dpTitle}>维保权限</p>
+                <div className={styles.dpContent}>
+                  <div className={styles.line}>
+                    <span>本单位：{treeList[0].title}</span>
+                    {getFieldDecorator('isCheckAll', {
+                      valuePropName: 'checked',
+                    })(
+                      <Checkbox onChange={e => this.handleCheckAll(e.target.checked, treeList[0].key)}>全选</Checkbox>
+                    )}
+                  </div>
+                  <div className={styles.line}>
+                    <span>本单位的服务单位：</span>
+                    {maintenanceSerTree.length > 0 && getFieldDecorator('isCheckAllSer', {
+                      valuePropName: 'checked',
+                    })(
+                      <Checkbox onChange={this.handleCheckAllSer}>全选</Checkbox>
+                    )}
+                    {maintenanceSerTree.length > 0 ? (
+                      <Fragment>
+                        <Search placeholder="请输入单位名称查询" onChange={e => this.onSerTreeSearch(e.target.value, maintenanceSerTree)} />
+                        {getFieldDecorator('serCheckedKeys', {
+                          valuePropName: 'checkedKeys',
+                        })(
+                          <Tree
+                            checkable
+                            onCheck={this.onSerCheck}
+                          >
+                            {renderSearchedTreeNodes(maintenanceSerTree, searchSerValue)}
+                          </Tree>
+                        )}
+                      </Fragment>
+                    ) : (<span>暂无数据</span>)}
+                  </div>
+                  <div className={styles.line}>
+                    <span>分公司及其服务单位：</span>
+                    {maintenanceSubTree.length > 0 && getFieldDecorator('isCheckAllSub', {
+                      valuePropName: 'checked',
+                    })(
+                      <Checkbox onChange={this.handleCheckAllSub}>全选</Checkbox>
+                    )}
+                    {maintenanceSubTree.length > 0 ? (
+                      <Fragment>
+                        <Search placeholder="请输入单位名称查询" onChange={e => this.onSubTreeSearch(e.target.value, maintenanceSubTree)} />
+                        {getFieldDecorator('subCheckedKeys', {
+                          valuePropName: 'checkedKeys',
+                        })(
+                          <Tree
+                            checkable
+                            onExpand={this.onSubExpand}
+                            expandedKeys={subExpandedKeys}
+                            onCheck={this.onSubCheck}
+                          >
+                            {renderSearchedTreeNodes(maintenanceSubTree, searchSubValue)}
+                          </Tree>
+                        )}
+                      </Fragment>
+                    ) : (<span>暂无数据</span>)}
+                  </div>
+                </div>
               </Col>
             </Row>
           ) : null}

@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Icon, Row, Col } from 'antd';
+import { Icon } from 'antd';
 import { Map as GDMap, InfoWindow, Markers } from 'react-amap';
-import classNames from 'classnames';
 import styles from './index.less';
-// import MapSearch from '../Components/MapSearch';
 import MapTypeBar from './MapTypeBar';
 
 import pointNormal from './imgs/point-normal.png';
@@ -160,15 +158,8 @@ export default class MapSection extends PureComponent {
         isCustom={false}
         autoMove={true}
         visible={infoWindowShow}
-        events={{
-          close: () => {
-            handleParentChange({ infoWindowShow: false });
-          },
-        }}
       >
-        <div
-          className={styles.comapnyWrapper}
-        >
+        <div className={styles.comapnyWrapper}>
           <h3 className={styles.comapnyName}>{companyName}</h3>
           <div className={styles.info}>
             <span
@@ -213,6 +204,19 @@ export default class MapSection extends PureComponent {
             </div>
           </div>
         </div>
+        <Icon
+          type="close"
+          onClick={() => {
+            handleParentChange({ infoWindowShow: false });
+          }}
+          style={{
+            color: '#FFF',
+            position: 'absolute',
+            right: 10,
+            top: 10,
+            cursor: 'pointer',
+          }}
+        />
       </InfoWindow>
     );
   };
