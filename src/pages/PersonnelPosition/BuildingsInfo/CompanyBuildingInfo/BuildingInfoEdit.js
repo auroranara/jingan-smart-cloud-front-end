@@ -81,7 +81,6 @@ export default class BuildingInfoEdit extends PureComponent {
       match: {
         params: { id },
       },
-      form: { setFieldsValue },
     } = this.props;
     // 如果存在Id，则为编辑，否则为新增
     if (id) {
@@ -93,22 +92,24 @@ export default class BuildingInfoEdit extends PureComponent {
           pageSize: 10,
           pageNum: 1,
         },
-        success: ({ photoUrl, darwingUrl, photoWebUrl, darwingWebUrl }) => {
-          console.log(photoUrl, darwingUrl);
-
-          setFieldsValue({
-            photoUrl: { webUrl: photoWebUrl, dbUrl: darwingUrl },
-            darwingUrl: { webUrl: darwingWebUrl, dbUrl: photoUrl },
-          });
+        success: ({ photoWebUrl, darwingWebUrl }) => {
+          const photoWebUrlList = photoWebUrl ? photoWebUrl : [];
+          const darwingWebUrlList = darwingWebUrl ? darwingWebUrl : [];
           this.setState({
-            fileList: [
-              {
-                uid: '1',
-                url: photoWebUrl,
-                name: name,
-                status: 'done',
-              },
-            ],
+            fileList: photoWebUrlList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `照片${index + 1}`,
+              url: webUrl,
+              dbUrl,
+            })),
+            drawList: darwingWebUrlList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              url: webUrl,
+              dbUrl,
+            })),
           });
         },
       });

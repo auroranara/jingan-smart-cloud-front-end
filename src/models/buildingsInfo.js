@@ -175,13 +175,18 @@ export default {
     },
 
     // 楼层列表
-    *fetchFloorList({ payload }, { call, put }) {
+    *fetchFloorList({ payload, success, error }, { call, put }) {
       const response = yield call(queryFloorList, payload);
       if (response.code === 200) {
         yield put({
           type: 'saveFloorList',
           payload: response.data,
         });
+        if (success) {
+          success(response.data.list[0]);
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 

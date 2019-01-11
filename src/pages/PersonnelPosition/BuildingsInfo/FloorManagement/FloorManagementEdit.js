@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { routerRedux } from 'dva/router';
+// import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import { Form, Input, Button, Card, Col, Icon, InputNumber, Upload, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -43,30 +43,41 @@ export default class FloorManagementEdit extends PureComponent {
 
   // 挂载后
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   match: {
-    //     params: { id },
-    //   },
-    // } = this.props;
-    // if (id) {
-    //   // 根据id获取详情
-    //   dispatch({
-    //     type: 'buildingsInfo/fetchLawsDetail',
-    //     payload: {
-    //       id,
-    //     },
-    //   });
-    // } else {
-    //   // 清空详情
-    //   dispatch({
-    //     type: 'buildingsInfo/clearDetail',
-    //   });
-    // }
-    // // 获取初始化选项
-    // dispatch({
-    //   type: 'buildingsInfo/fetchOptions',
-    // });
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    if (id) {
+      // 根据id获取详情
+      dispatch({
+        type: 'buildingsInfo/fetchFloorList',
+        payload: {
+          floorId: id,
+          pageSize: 10,
+          pageNum: 1,
+        },
+        success: ({ floorWebUrl }) => {
+          console.log(floorWebUrl);
+          const floorWebUrlList = floorWebUrl ? floorWebUrl : [];
+          this.setState({
+            floorList: floorWebUrlList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `平面图${index + 1}`,
+              url: webUrl,
+              dbUrl,
+            })),
+          });
+        },
+      });
+    } else {
+      // 清空详情
+      dispatch({
+        type: 'buildingsInfo/clearFloorDetail',
+      });
+    }
   }
 
   /* 去除左右两边空白 */
@@ -198,14 +209,21 @@ export default class FloorManagementEdit extends PureComponent {
   // 渲染信息
   renderLawsInfo() {
     const {
+      match: {
+        params: { id },
+      },
       form: { getFieldDecorator },
       location: {
         query: { id: buildingId, name, companyId },
       },
+      buildingsInfo: {
+        floorData: { list },
+      },
     } = this.props;
 
     const { uploading, floorList } = this.state;
-
+    const editDetail = list.find(d => d.id === id) || {};
+    const { floorName, floorNumber } = editDetail;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -224,6 +242,7 @@ export default class FloorManagementEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.floorName}>
             <Col span={24}>
               {getFieldDecorator('floorName', {
+                initialValue: floorName,
                 rules: [
                   {
                     required: true,
@@ -236,6 +255,7 @@ export default class FloorManagementEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label={fieldLabels.floorNumber}>
             {getFieldDecorator('floorNumber', {
+              initialValue: floorNumber,
               rules: [
                 {
                   required: true,
@@ -245,7 +265,7 @@ export default class FloorManagementEdit extends PureComponent {
             })(<InputNumber style={{ width: '100%' }} placeholder="请选择楼层编号" />)}
           </FormItem>
           <FormItem {...formItemLayout} label={fieldLabels.floorUrl}>
-            {getFieldDecorator('floorUrl', {})(
+            {getFieldDecorator('floorUrl')(
               <Upload
                 name="files"
                 headers={{ 'JA-Token': getToken() }}
