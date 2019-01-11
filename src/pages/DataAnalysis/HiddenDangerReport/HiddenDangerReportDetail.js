@@ -274,8 +274,10 @@ export default class App extends PureComponent {
             business_type,
             // 隐患等级
             level_name,
-            // 检查人
+            // 创建人
             report_user_name,
+            // 检查人
+            allCheckPersonNames,
             // 创建日期
             report_time,
             // 检查内容
@@ -354,7 +356,7 @@ export default class App extends PureComponent {
                   <Description term="点位名称"><Ellipsis tooltip={!!item_name} lines={1} style={{ height: 22 }}>{item_name || getEmptyData()}</Ellipsis></Description>
                   <Description term="业务分类"><Ellipsis tooltip={!!business_type} lines={1} style={{ height: 22 }}>{business_type ? getLabelByBusinessType(business_type) : getEmptyData()}</Ellipsis></Description>
                   <Description term="隐患等级"><Ellipsis tooltip={!!level_name} lines={1} style={{ height: 22 }}>{level_name || getEmptyData()}</Ellipsis></Description>
-                  <Description term="检查人"><Ellipsis tooltip={!!report_user_name} lines={1} style={{ height: 22 }}>{report_user_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="检查人"><Ellipsis tooltip={!!allCheckPersonNames} lines={1} style={{ height: 22 }}>{allCheckPersonNames || getEmptyData()}</Ellipsis></Description>
                   <Description term="创建日期"><Ellipsis tooltip={!!report_time} lines={1} style={{ height: 22 }}>{report_time ? moment(+report_time).format('YYYY-MM-DD') : getEmptyData()}</Ellipsis></Description>
                 </DescriptionList>
                 <DescriptionList style={{ marginBottom: 16 }} col={1}>
