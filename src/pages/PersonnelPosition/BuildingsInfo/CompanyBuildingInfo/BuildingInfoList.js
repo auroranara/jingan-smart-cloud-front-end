@@ -186,21 +186,18 @@ export default class BuildingInfoList extends PureComponent {
   };
 
   /* 删除 */
-  handleShowDeleteConfirm = id => {
+  handleShowDeleteConfirm = buildingId => {
     const {
       dispatch,
-      buildingsInfo: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
       match: {
         params: { id: companyId },
       },
     } = this.props;
     dispatch({
       type: 'buildingsInfo/removeBuilding',
-      payload: { id },
+      payload: {
+        buildingId,
+      },
       callback: response => {
         if (response && response.code === 200) {
           dispatch({

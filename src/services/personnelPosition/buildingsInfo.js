@@ -33,9 +33,9 @@ export async function editBuildings(params) {
 }
 
 // 删除建筑物
-export async function deleteBuildings({ id }) {
-  return request(`/acloud_new/v2/buildingInfo/updateBuilding.json/${id}`, {
-    method: 'DELETE',
+export async function deleteBuildings({ buildingId }) {
+  return request(`/acloud_new/v2/buildingInfo/deleteBuilding.json/${buildingId}`, {
+    method: 'POST',
   });
 }
 
@@ -61,8 +61,8 @@ export async function editFloor(params) {
 }
 
 // 删除楼层
-export async function deleteFloor({ id }) {
-  return request(`/acloud_new/v2/buildingInfo/delete.json/${id}`, {
-    method: 'DELETE',
+export async function deleteFloor({ floorId }) {
+  return request(`/acloud_new/v2/buildingInfo/delete.json/${floorId}`, {
+    method: 'POST',
   });
 }

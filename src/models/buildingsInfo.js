@@ -336,9 +336,9 @@ export default {
     delete(state, { payload: id }) {
       return {
         ...state,
-        data: {
-          ...state.data,
-          list: state.data.list.filter(item => item.id !== id),
+        buildingData: {
+          ...state.buildingData,
+          list: state.buildingData.list.filter(item => item.id !== id),
         },
       };
     },
@@ -396,8 +396,8 @@ export default {
       return {
         ...state,
         floorData: {
-          ...state.data,
-          list: state.data.list.filter(item => item.id !== id),
+          ...state.floorData,
+          list: state.floorData.list.filter(item => item.id !== id),
         },
       };
     },

@@ -115,7 +115,7 @@ export default class FloorManagementEdit extends PureComponent {
         const { floorName, floorNumber } = values;
 
         const payload = {
-          buildingId,
+          buildingId: newbuildingId || buildingId,
           floorName,
           floorNumber,
           floorUrl: floorList.map(file => file.dbUrl).join(','),
@@ -133,7 +133,6 @@ export default class FloorManagementEdit extends PureComponent {
             type: 'buildingsInfo/editFloor',
             payload: {
               id,
-              buildingId,
               ...payload,
             },
             success,

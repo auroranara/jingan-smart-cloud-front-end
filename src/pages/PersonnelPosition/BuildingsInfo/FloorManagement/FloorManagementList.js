@@ -211,15 +211,19 @@ export default class FloorManagementList extends PureComponent {
           pagination: { pageSize },
         },
       },
+      match: {
+        params: { id: buildingId },
+      },
     } = this.props;
     dispatch({
       type: 'buildingsInfo/removeFloor',
-      payload: { id },
+      payload: { floorId: id },
       callback: response => {
         if (response && response.code === 200) {
           dispatch({
             type: 'buildingsInfo/fetchFloorList',
             payload: {
+              building_id: buildingId,
               pageSize,
               pageNum: 1,
             },
@@ -371,10 +375,7 @@ export default class FloorManagementList extends PureComponent {
               编辑
             </AuthA>
             <Divider type="vertical" />
-            <Popconfirm
-              title="确认要删除该法律法规吗？"
-              onConfirm={() => this.handleDelete(rows.id)}
-            >
+            <Popconfirm title="确认要删除该楼层吗？" onConfirm={() => this.handleDelete(rows.id)}>
               <AuthA code={codesMap.lawEnforcement.laws.delete}>删除</AuthA>
             </Popconfirm>
           </span>
