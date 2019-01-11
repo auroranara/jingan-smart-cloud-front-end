@@ -164,7 +164,6 @@ export default class ElectricityMonitor extends PureComponent {
         };
       },
     });
-    this.showWarningNotification({ companyId: 1, addTime: +moment(), companyName: 1, area:1, location:1, paramName:1, messageFlag:1, paramCode:1 });
   }
 
   /**
