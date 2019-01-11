@@ -80,14 +80,6 @@ export default class ElectricityMonitor extends PureComponent {
       dispatch,
     } = this.props;
     // // 获取告警信息列表
-    // dispatch({
-    //   type: 'electricityMonitor/fetchMessages',
-    //   callback: () => {
-    //     this.showWarningNotification();
-    //   },
-    // });
-
-    // 企业统计及数组
     dispatch({
       type: 'electricityMonitor/fetchMessages',
     });
@@ -95,11 +87,9 @@ export default class ElectricityMonitor extends PureComponent {
     // 获取单位数据
     dispatch({
       type: 'electricityMonitor/fetchUnitData',
-      // type: 'electricityMonitor/fetchCompanyInfoDto',
       callback: data => {
         if (!data)
           return;
-
         const { unitSet: { units=[] } } = data;
         this.cardsInfo = genCardsInfo(units);
       },
@@ -251,6 +241,7 @@ export default class ElectricityMonitor extends PureComponent {
     }));
   };
 
+  // 地图点击
   handleMapClick = (companyId, item) => {
     const { dispatch } = this.props;
     const { mapInstance } = this.state;
@@ -269,17 +260,11 @@ export default class ElectricityMonitor extends PureComponent {
     });
   }
 
+  // 地图搜索
   fetchMapSearchData = value => {
     const { electricityMonitor: { companyInfoDto: { companyInfoDtoList } } } = this.props;
     const list = companyInfoDtoList;
-    // console.log('value',value);
-    // console.log('list',list);
-// console.log('itemcompanyName',list.filter(item => !item.companyName));
-// return;
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
-    console.log('selectList',selectList);
-
-    // console.log('fetchData selectList', selectList);
     this.setState({
       searchValue: value,
       selectList: selectList.length > 10 ? selectList.slice(0, 9) : selectList,
@@ -306,7 +291,7 @@ export default class ElectricityMonitor extends PureComponent {
    * 渲染
    */
   render() {
-    const { electricityMonitor: { messages, statisticsData, unitSet, deviceStatusCount, companyInfoDto } } = this.props;
+    const { electricityMonitor: { messages, statisticsData, unitSet, deviceStatusCount } } = this.props;
     const {
       setttingModalVisible,
       unitDrawerVisible,
@@ -316,9 +301,6 @@ export default class ElectricityMonitor extends PureComponent {
       searchValue,
       infoWindow,
     } = this.state;
-
-    // const { electricityMonitor: { messages, companyInfoDto, deviceStatusCount } } = this.props;
-    // const { infoWindowShow, selectList, searchValue, infoWindow } = this.state;\
 
     console.log(this.props.electricityMonitor);
     const cardsInfo = this.cardsInfo;
@@ -336,7 +318,6 @@ export default class ElectricityMonitor extends PureComponent {
       >
         {/* 地图 */}
         <ElectricityMap
-          // mapData={companyInfoDto.companyInfoDtoList}
           mapData={unitSet}
           handleMapClick={this.handleMapClick}
           infoWindowShow={infoWindowShow}
@@ -355,7 +336,6 @@ export default class ElectricityMonitor extends PureComponent {
           handleChange={this.handleMapSearchChange}
           handleSelect={this.handleMapSearchSelect}
         />
-        {/* <Search placeholder="单位名称" enterButton="搜索" className={styles.left} style={{ top: 'calc(9.62963% + 24px)' }} /> */}
         {/* 接入单位统计 */}
         <AccessUnitStatistics
           data={statisticsData}
