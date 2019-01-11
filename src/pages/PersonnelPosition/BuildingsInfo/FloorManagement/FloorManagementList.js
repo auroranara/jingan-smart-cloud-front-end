@@ -91,8 +91,17 @@ export default class FloorManagementList extends PureComponent {
 
   // 跳转到编辑页面
   goFloorEdit = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/personnel-position/buildings-info/floor/edit/${id}`));
+    const {
+      dispatch,
+      match: {
+        params: { id: buildingId },
+      },
+    } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/personnel-position/buildings-info/floor/edit/${id}?buildingId=${buildingId}`
+      )
+    );
   };
 
   // 查看附件

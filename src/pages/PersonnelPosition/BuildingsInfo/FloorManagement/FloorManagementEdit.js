@@ -91,7 +91,7 @@ export default class FloorManagementEdit extends PureComponent {
         params: { id },
       },
       location: {
-        query: { id: buildingId, name, companyId },
+        query: { id: newbuildingId, name, companyId, buildingId },
       },
       form: { validateFieldsAndScroll },
     } = this.props;
@@ -99,7 +99,8 @@ export default class FloorManagementEdit extends PureComponent {
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
       router.push(
-        `/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`
+        `/personnel-position/buildings-info/floor/list/${newbuildingId ||
+          buildingId}?companyId=${companyId}&&name=${name}`
       );
     };
 
@@ -130,7 +131,11 @@ export default class FloorManagementEdit extends PureComponent {
         } else {
           dispatch({
             type: 'buildingsInfo/editFloor',
-            payload: { id, ...payload },
+            payload: {
+              id,
+              buildingId,
+              ...payload,
+            },
             success,
             error,
           });
