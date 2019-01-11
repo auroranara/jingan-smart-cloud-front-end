@@ -59,6 +59,7 @@ export default class InspectionPoint extends PureComponent {
               hiddenStatus,
               // typeName,
               // risk_level,
+              report_source_name,
             }) => (
               <HiddenDanger
                 key={_id}
@@ -76,6 +77,7 @@ export default class InspectionPoint extends PureComponent {
                   business_type,
                   status: hiddenStatus,
                   hiddenDangerRecordDto: [{ fileWebUrl: path }],
+                  report_source_name,
                 }}
                 /* isSourceShow */
               />

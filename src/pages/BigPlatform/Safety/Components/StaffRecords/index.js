@@ -199,6 +199,7 @@ export default class App extends PureComponent {
               hiddenStatus,
               // typeName,
               // risk_level,
+              report_source_name,
             }) => (
               <HiddenDanger
                 key={_id}
@@ -217,6 +218,7 @@ export default class App extends PureComponent {
                   business_type,
                   status: hiddenStatus,
                   hiddenDangerRecordDto: [{ fileWebUrl: path }],
+                  report_source_name,
                 }}
               />
             ))}
