@@ -106,7 +106,7 @@ export default class ElectricityMonitor extends PureComponent {
         }
         const params = {
           companyId,
-          env: 'dev',
+          env,
           type: 3,
         };
         const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
