@@ -1,6 +1,17 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, InputNumber, Divider, Col, Popconfirm } from 'antd';
+import {
+  Form,
+  Card,
+  Button,
+  Input,
+  Table,
+  InputNumber,
+  Divider,
+  Col,
+  Popconfirm,
+  message,
+} from 'antd';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -184,30 +195,30 @@ export default class FloorManagementList extends PureComponent {
 
   /* 删除 */
   handleDelete = id => {
-    // const {
-    //   dispatch,
-    //   buildingsInfo: {
-    //     floorData: {
-    //       pagination: { pageSize },
-    //     },
-    //   },
-    // } = this.props;
-    // dispatch({
-    //   type: 'buildingsInfo/removeFloor',
-    //   payload: { id },
-    //   callback: response => {
-    //     if (response && response.code === 200) {
-    //       dispatch({
-    //         type: 'buildingsInfo/fetchFloorList',
-    //         payload: {
-    //           pageSize,
-    //           pageNum: 1,
-    //         },
-    //       });
-    //       message.success('删除成功！');
-    //     } else message.warning('删除失败！');
-    //   },
-    // });
+    const {
+      dispatch,
+      buildingsInfo: {
+        floorData: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    dispatch({
+      type: 'buildingsInfo/removeFloor',
+      payload: { id },
+      callback: response => {
+        if (response && response.code === 200) {
+          dispatch({
+            type: 'buildingsInfo/fetchFloorList',
+            payload: {
+              pageSize,
+              pageNum: 1,
+            },
+          });
+          message.success('删除成功！');
+        } else message.warning('删除失败！');
+      },
+    });
   };
 
   // 处理翻页
