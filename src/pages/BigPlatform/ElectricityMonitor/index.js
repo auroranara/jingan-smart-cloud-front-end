@@ -53,7 +53,8 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
-      monitorDrawerVisible: true,
+      // monitorDrawerVisible: true,
+      monitorDrawerTitleIndex: 0,
       videoVisible: false,
       infoWindowShow: false,
       infoWindow: {
@@ -290,7 +291,7 @@ export default class ElectricityMonitor extends PureComponent {
       });
     }
     // 显示弹出框
-    this.setState({ unitDetail });
+    this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId });
   }
 
   /**
@@ -457,7 +458,8 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
-      videoVisible,
+      monitorDrawerTitleIndex,
+      // videoVisible,
       infoWindowShow,
       selectList,
       searchValue,
@@ -541,6 +543,7 @@ export default class ElectricityMonitor extends PureComponent {
             deviceHistoryData,
             cameraList,
           }}
+          titleIndex={monitorDrawerTitleIndex}
           visible={!!unitDetail}
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}

@@ -14,6 +14,7 @@ import personIcon from '../imgs/person.png';
 import cameraIcon from '../imgs/camera.png';
 
 // const TYPE = 'monitor';
+const TITLES = ['单位监测信息', '报警信息'];
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
@@ -37,6 +38,7 @@ export default class MonitorDrawer extends PureComponent {
   render() {
     const {
       visible,
+      titleIndex,
       data: {
         unitDetail: {
           companyName,
@@ -61,7 +63,7 @@ export default class MonitorDrawer extends PureComponent {
       },
       handleSelect,
       handleClose,
-      handleClickCamera,
+      // handleClickCamera,
     } = this.props;
     const { videoVisible } = this.state;
     // 实时数据列表
@@ -136,7 +138,7 @@ export default class MonitorDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="报警信息"
+        title={TITLES[titleIndex]}
         width={700}
         visible={visible}
         left={left}
