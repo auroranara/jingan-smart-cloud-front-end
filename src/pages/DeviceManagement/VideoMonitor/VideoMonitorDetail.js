@@ -45,8 +45,15 @@ export default class VideoMonitorDetail extends PureComponent {
 
   // 跳转到编辑页面
   goToEdit = id => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/device-management/video-monitor/edit/${id}`));
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    dispatch(
+      routerRedux.push(`/device-management/video-monitor/edit/${id}?companyId=${companyId}`)
+    );
   };
 
   // 渲染单位详情
@@ -54,11 +61,22 @@ export default class VideoMonitorDetail extends PureComponent {
     const {
       videoMonitor: {
         detail: {
-          data: { deviceId, keyId, name, rtspAddress, photoAddress, isInspection, xNum, yNum },
+          data: {
+            deviceId,
+            keyId,
+            name,
+            rtspAddress,
+            photoAddress,
+            isInspection,
+            xNum,
+            yNum,
+            xFire,
+            yFire,
+          },
         },
       },
     } = this.props;
-    // console.log('11', this.props);
+
     return (
       <Card title="视频设备信息详情" bordered={false}>
         <DescriptionList col={3}>
@@ -77,6 +95,8 @@ export default class VideoMonitorDetail extends PureComponent {
           </Description>
           <Description term="四色图坐标-X">{xNum || getEmptyData()}</Description>
           <Description term="四色图坐标-Y">{yNum || getEmptyData()}</Description>
+          <Description term="消防平面图坐标-X">{xFire || getEmptyData()}</Description>
+          <Description term="消防平面图坐标-Y">{yFire || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
     );
@@ -89,6 +109,7 @@ export default class VideoMonitorDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
+
     return (
       <FooterToolbar>
         <AuthButton

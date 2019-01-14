@@ -35,6 +35,8 @@ export default {
         isInspection: undefined,
         xNum: undefined,
         yNum: undefined,
+        xFire: undefined,
+        yFire: undefined,
       },
     },
     categories: [],
