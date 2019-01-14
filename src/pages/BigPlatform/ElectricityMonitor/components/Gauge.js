@@ -4,28 +4,42 @@ import styles from './Gauge.less';
 import { ChartGauge } from '../components/Components';
 
 const COLORS = ['#37a460', '#f9b206', '#f73329'];
+const RANGES = {
+  'A相温度': [0, 150],
+  'B相温度': [0, 150],
+  'C相温度': [0, 150],
+  '零线温度': [0, 150],
+  '漏电电流': [0, 1500],
+};
 
 export default function Gauge(props) {
-  const { title, value, range: [start, end]=[0, 100], unit, limit, status } = props;
-  const [{ status: statu1, limitValue: limitValue1 }={}, { status: status2, limitValue: limitValue2 }={}] = limit;
+  const { data: { desc: title, value, unit, limit, status } } = props;
+  const [start, end] = RANGES[title];
+  const [value1, value2] = limit;
   const axisLineColor = [];
-  if (limitValue1 !== undefined) {
-    axisLineColor.push([ limitValue1/end, COLORS[0] ]);
-    if (limitValue2 !== undefined) {
-      axisLineColor.push([ limitValue2/end, COLORS[1] ]);
-      axisLineColor.push([ 1, COLORS[2] ]);
-    }
-    else {
-      axisLineColor.push([ 1, COLORS[1] ]);
-    }
+  const isOutOfContact = +status === -1;
+  if (isOutOfContact) {
+    axisLineColor.push([1, '#ccc']);
   }
   else {
-    if (limitValue2 !== undefined) {
-      axisLineColor.push([ limitValue2/end, COLORS[0] ]);
-      axisLineColor.push([ 1, COLORS[2] ]);
+    if (value1 !== null) {
+      axisLineColor.push([ value1/end, COLORS[0] ]);
+      if (value2 !== null) {
+        axisLineColor.push([ value2/end, COLORS[1] ]);
+        axisLineColor.push([ 1, COLORS[2] ]);
+      }
+      else {
+        axisLineColor.push([ 1, COLORS[1] ]);
+      }
     }
     else {
-      axisLineColor.push([ 1, COLORS[0] ]);
+      if (value2 !== null) {
+        axisLineColor.push([ value2/end, COLORS[0] ]);
+        axisLineColor.push([ 1, COLORS[2] ]);
+      }
+      else {
+        axisLineColor.push([ 1, COLORS[0] ]);
+      }
     }
   }
 
@@ -36,8 +50,8 @@ export default function Gauge(props) {
       </div>
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>
-        <p>实时温度值：<span style={{ color: COLORS[status] }}>{value}{unit}</span></p>
-        <p>参考范围值：{start} ~ {Math.min(...limit.filter(item => item).map(({ limitValue }) => limitValue))}{unit}</p>
+        <p>实时温度值：<span style={{ color: isOutOfContact?undefined:COLORS[status] }}>{isOutOfContact ? '--' : `${value}${unit}`}</span></p>
+        <p>参考范围值：{isOutOfContact ? '--' : `${start} ~ ${Math.min(end, ...limit.filter(item => item !== null))}${unit}`}</p>
       </div>
     </div>
   );

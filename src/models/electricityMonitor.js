@@ -188,7 +188,8 @@ export default {
     },
     // 获取设备历史数据
     *fetchDeviceHistoryData({ payload, callback }, { call, put }) {
-      const { code, data: { list } } = yield call(getDeviceHistoryData, payload)
+      const { code, data } = yield call(getDeviceHistoryData, payload);
+      const list = data && data.list ? data.list: [];
       if (code === 200) {
         yield put({
           type: 'save',

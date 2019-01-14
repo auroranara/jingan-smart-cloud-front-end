@@ -212,7 +212,7 @@ export default class ElectricityMonitor extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: "electricityMonitor/fetchDeviceHistoryData",
-      payload: { deviceId },
+      payload: { deviceId, type: 1 },
     });
   }
 
@@ -414,6 +414,7 @@ export default class ElectricityMonitor extends PureComponent {
   }
 
   handleSelectDevice = (deviceId) => {
+    console.log(deviceId);
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
@@ -449,7 +450,6 @@ export default class ElectricityMonitor extends PureComponent {
       unitDetail,
     } = this.state;
 
-    console.log(this.props.electricityMonitor);
     const cardsInfo = this.cardsInfo;
 
     return (

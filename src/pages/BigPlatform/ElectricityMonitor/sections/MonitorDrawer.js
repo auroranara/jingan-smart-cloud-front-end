@@ -14,13 +14,7 @@ const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
-const RANGES = {
-  'A相温度': [0, 150],
-  'B相温度': [0, 150],
-  'C相温度': [0, 150],
-  '零线温度': [0, 150],
-  '漏电电流': [0, 1500],
-};
+
 
 export default class MonitorDrawer extends PureComponent {
   render() {
@@ -55,11 +49,10 @@ export default class MonitorDrawer extends PureComponent {
     deviceDataForAppList.forEach(({ desc, code, value, unit, status }) => {
       const index = CHART_LABELS.indexOf(desc);
       if (index > -1) {
-        const limit = [undefined, undefined];
-        deviceConfig.forEach((item) => {
-          const { code: code2, level } = item;
+        const limit = [null, null];
+        deviceConfig.forEach(({ code: code2, level, limitValue }) => {
           if (code2 === code) {
-            limit[level-1] = item;
+            limit[level-1] = limitValue;
           }
         });
         list[index] = {
@@ -71,9 +64,6 @@ export default class MonitorDrawer extends PureComponent {
         };
       }
     });
-
-    console.log(devices);
-
 
     const left = (
       <Fragment>
@@ -92,8 +82,8 @@ export default class MonitorDrawer extends PureComponent {
         </div>
         <DrawerSection title="实时监测数据" >
           <div className={styles.gauges}>
-            {list.map(({ desc, value, unit, limit, status }, i) => (
-              <Gauge key={desc} title={desc} value={value} range={RANGES[desc]} limit={limit} unit={unit} status={status} />
+            {list.map((item) => (
+              <Gauge key={item.desc} data={item} />
             ))}
           </div>
         </DrawerSection>
