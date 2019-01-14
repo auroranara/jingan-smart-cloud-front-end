@@ -261,9 +261,6 @@ export default class BuildingInfoEdit extends PureComponent {
           fireRating,
           photoUrl: fileList.map(file => file.dbUrl).join(','),
           darwingUrl: drawList.map(file => file.dbUrl).join(','),
-          // JSON.stringify(
-          //   firePictureList.map(({ name, webUrl, dbUrl }) => ({ fileName: name, webUrl, dbUrl }))
-          // ),
           floorLevel,
           remark,
         };

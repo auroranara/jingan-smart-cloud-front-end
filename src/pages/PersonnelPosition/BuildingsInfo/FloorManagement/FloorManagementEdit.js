@@ -311,10 +311,11 @@ export default class FloorManagementEdit extends PureComponent {
         params: { id },
       },
       location: {
-        query: { id: buildingId, name, companyId },
+        query: { id: buildingId, name, companyId, buildingId: editBuildingId },
       },
     } = this.props;
     const title = id ? editTitle : addTitle;
+    console.log('this.props', this.props);
 
     //面包屑
     const breadcrumbList = [
@@ -330,11 +331,13 @@ export default class FloorManagementEdit extends PureComponent {
       {
         title: '楼层管理列表',
         name: '楼层管理列表',
-        href: `/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`,
+        href: id
+          ? `/personnel-position/buildings-info/floor/list/${editBuildingId}?companyId=${companyId}&&name=${name}`
+          : `/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`,
       },
       {
-        title: '新增楼层',
-        name: '新增楼层',
+        title: id ? editTitle : addTitle,
+        name: id ? editTitle : addTitle,
       },
     ];
     return (

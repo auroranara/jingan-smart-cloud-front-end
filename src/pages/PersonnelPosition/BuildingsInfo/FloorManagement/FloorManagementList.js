@@ -96,10 +96,13 @@ export default class FloorManagementList extends PureComponent {
       match: {
         params: { id: buildingId },
       },
+      location: {
+        query: { name, companyId },
+      },
     } = this.props;
     dispatch(
       routerRedux.push(
-        `/personnel-position/buildings-info/floor/edit/${id}?buildingId=${buildingId}`
+        `/personnel-position/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${name}&&companyId=${companyId}`
       )
     );
   };
