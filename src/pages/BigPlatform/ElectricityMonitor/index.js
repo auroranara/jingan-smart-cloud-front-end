@@ -26,11 +26,8 @@ import {
   AlarmDrawer,
   MonitorDrawer,
 } from './sections/Components';
+
 import { genCardsInfo, getAlarmUnits } from './utils';
-
-// const ALARM_DATA = { alarmNum: 2, warnNum: 198, commonNum: 100 };
-
-const { Search } = Input;
 
 // websocket配置
 const options = {
@@ -56,6 +53,7 @@ export default class ElectricityMonitor extends PureComponent {
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
       monitorDrawerVisible: true,
+      // videoVisible: false,
       infoWindowShow: false,
       infoWindow: {
         address: '',

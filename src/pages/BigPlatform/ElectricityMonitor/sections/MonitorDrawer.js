@@ -5,18 +5,33 @@ import {
   DrawerSection,
   OvSelect,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DotItem, Gauge } from '../components/Components';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
+import cameraIcon from '../imgs/camera.png';
 
 const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
 
+const VIDEO_STYLE = {
+  width: '90%',
+  marginLeft: '-43%',
+};
 
 export default class MonitorDrawer extends PureComponent {
+  handleClickCamera = () => {
+    this.setState({ videoVisible: true });
+  };
+
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false });
+  };
+
+  state={ videoVisible: false };
   render() {
     const {
       visible,
@@ -44,6 +59,7 @@ export default class MonitorDrawer extends PureComponent {
       handleSelect,
       handleClose,
     } = this.props;
+    const { videoVisible } = this.state;
     // 实时数据列表
     const list = [];
     deviceDataForAppList.forEach(({ desc, code, value, unit, status }) => {
@@ -80,7 +96,12 @@ export default class MonitorDrawer extends PureComponent {
         <div className={styles.select}>
           <OvSelect cssType={2} options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))} value={deviceId} handleChange={handleSelect} />
         </div>
-        <DrawerSection title="实时监测数据" >
+        <DrawerSection title="实时监测数据" style={{ position: 'relative' }}>
+          <span
+            className={styles.camera}
+            style={{ backgroundImage: `url(${cameraIcon})` }}
+            onClick={e => this.handleClickCamera()}
+          />
           <div className={styles.gauges}>
             {list.map((item) => (
               <Gauge key={item.desc} data={item} />
@@ -90,6 +111,14 @@ export default class MonitorDrawer extends PureComponent {
         <DrawerSection title="监测趋势图" >
           charts
         </DrawerSection>
+        <VideoPlay
+          showList={false}
+          videoList={[]}
+          visible={videoVisible}
+          keyId={''}
+          style={VIDEO_STYLE}
+          handleVideoClose={this.handleVideoClose}
+        />
       </Fragment>
     );
 
