@@ -29,6 +29,8 @@ const fieldLabels = {
   inspectSentries: '是否用于查岗',
   fourPictureX: '四色图坐标 -X：',
   fourPictureY: '四色图坐标 -Y：',
+  firePictureX: '消防平面图坐标 -X',
+  firePictureY: '消防平面图坐标 -Y',
 };
 
 //  默认分页参数
@@ -38,9 +40,10 @@ const defaultPagination = {
 };
 
 @connect(
-  ({ videoMonitor, user, safety, loading }) => ({
+  ({ videoMonitor, user, company, safety, loading }) => ({
     videoMonitor,
     user,
+    company,
     safety,
     loading: loading.models.videoMonitor,
   }),
@@ -66,6 +69,7 @@ export default class VideoMonitorEdit extends PureComponent {
     isInspection: false,
     coordinate: {
       visible: false,
+      fireVisible: false,
     },
   };
 
@@ -94,12 +98,18 @@ export default class VideoMonitorEdit extends PureComponent {
         type: 'videoMonitor/clearDetail',
       });
     }
-    // 根据id获取四色图
+    // 根据id获取四色图和消防平面图
     if (id || companyId) {
       dispatch({
         type: 'safety/fetch',
         payload: {
           companyId: id ? companyId : undefined || companyId,
+        },
+      });
+      dispatch({
+        type: 'company/fetchCompany',
+        payload: {
+          id: id ? companyId : undefined || companyId,
         },
       });
     }
@@ -157,6 +167,8 @@ export default class VideoMonitorEdit extends PureComponent {
           photoAddress,
           xNum,
           yNum,
+          xFire,
+          yFire,
           isInspection,
         } = values;
 
@@ -174,6 +186,9 @@ export default class VideoMonitorEdit extends PureComponent {
           photoAddress,
           xNum,
           yNum,
+          xFire,
+          yFire,
+          fixFireId: this.fixFireId,
           fixImgId: this.fixImgId,
           isInspection: +isInspection,
         };
@@ -255,7 +270,6 @@ export default class VideoMonitorEdit extends PureComponent {
 
   /* 企业选择按钮点击事件 */
   handleSelectCompany = value => {
-    console.log('111', value);
     const {
       form: { setFieldsValue },
       dispatch,
@@ -270,6 +284,12 @@ export default class VideoMonitorEdit extends PureComponent {
       type: 'safety/fetch',
       payload: {
         companyId: value.id,
+      },
+    });
+    dispatch({
+      type: 'company/fetchCompany',
+      payload: {
+        id: value.id,
       },
     });
     setFieldsValue({ xNum: undefined });
@@ -324,6 +344,60 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     });
   };
+  // 定位模态框确定按钮点击事件
+  handleOk = (value, fourColorImg) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      xNum: value.x.toFixed(3),
+      yNum: value.y.toFixed(3),
+    });
+    this.fixImgId = fourColorImg.id;
+    this.setState({
+      coordinate: {
+        visible: false,
+      },
+    });
+  };
+
+  // 显示消防定位模态框
+  showFireCoordinate = () => {
+    const {
+      company: {
+        detail: {
+          data: { fireIchnographyUrl },
+        },
+      },
+    } = this.props;
+    const fireImgs = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
+    if (fireImgs.length === 0) {
+      message.error('该单位暂无消防平面图！');
+      return;
+    }
+    this.setState({
+      coordinate: {
+        fireVisible: true,
+      },
+    });
+  };
+
+  // 消防定位模态框确定按钮点击事件
+  handleFireOk = (value, fireImgs) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      xFire: value.x.toFixed(3),
+      yFire: value.y.toFixed(3),
+    });
+    this.fixFireId = fireImgs.id;
+    this.setState({
+      coordinate: {
+        visible: false,
+      },
+    });
+  };
 
   // 验证设备Id和摄像头Id
   validatorID = (rule, value, callback) => {
@@ -352,23 +426,6 @@ export default class VideoMonitorEdit extends PureComponent {
     } else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
   };
 
-  // 定位模态框确定按钮点击事件
-  handleOk = (value, fourColorImg) => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({
-      xNum: value.x.toFixed(3),
-      yNum: value.y.toFixed(3),
-    });
-    this.fixImgId = fourColorImg.id;
-    this.setState({
-      coordinate: {
-        visible: false,
-      },
-    });
-  };
-
   // 渲染视频设备信息
   renderVideoInfo() {
     const {
@@ -388,6 +445,8 @@ export default class VideoMonitorEdit extends PureComponent {
             isInspection,
             xNum,
             yNum,
+            xFire,
+            yFire,
           },
         },
       },
@@ -398,13 +457,17 @@ export default class VideoMonitorEdit extends PureComponent {
       safety: {
         detail: { safetyFourPicture },
       },
+      company: {
+        detail: {
+          data: { fireIchnographyUrl },
+        },
+      },
       user: {
         currentUser: { unitType, companyName: defaultName },
       },
     } = this.props;
-
     const {
-      coordinate: { visible },
+      coordinate: { visible, fireVisible },
     } = this.state;
 
     const formItemLayout = {
@@ -419,6 +482,8 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     };
     const fourColorImgs = safetyFourPicture ? JSON.parse(safetyFourPicture) : [];
+
+    const fireImgs = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -599,6 +664,46 @@ export default class VideoMonitorEdit extends PureComponent {
                       this.setState({
                         coordinate: {
                           visible: false,
+                        },
+                      });
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Form>
+
+        <Form layout="vertical">
+          <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative', marginLeft: '19%' }}>
+            <Col span={24}>
+              <Row gutter={12}>
+                <Col span={8}>
+                  <Form.Item label={fieldLabels.firePictureX}>
+                    {getFieldDecorator('xFire', {
+                      initialValue: xFire,
+                      rules: [{ message: '请输入消防平面图坐标—X' }],
+                    })(<Input placeholder="请输入消防平面图坐标—X" />)}
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item label={fieldLabels.firePictureY}>
+                    {getFieldDecorator('yFire', {
+                      initialValue: yFire,
+                      rules: [{ message: '请输入消防平面图坐标—Y' }],
+                    })(<Input placeholder="请输入消防平面图坐标—Y" />)}
+                  </Form.Item>
+                </Col>
+                <Col span={8} style={{ position: 'relative', marginTop: '3%' }}>
+                  <Button onClick={this.showFireCoordinate}>定位</Button>
+                  <Coordinate
+                    visible={fireVisible}
+                    urls={fireImgs}
+                    onOk={this.handleFireOk}
+                    onCancel={() => {
+                      this.setState({
+                        coordinate: {
+                          fireVisible: false,
                         },
                       });
                     }}

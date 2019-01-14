@@ -239,6 +239,8 @@ export default {
     hosts: [],
     // 视频列表
     videoList: [],
+    // 视频列表---消防平面图
+    videoFireList: [],
     // 隐患详情
     riskDetailList: {
       ycq: [],
@@ -272,6 +274,8 @@ export default {
       fourColorImg: [],
       // 点位信息
       riskPointInfo: [],
+      // 消防平面图列表：
+      fireIchnographyUrl: [],
     },
     // 消防设施评分
     systemScore: {},
@@ -290,6 +294,8 @@ export default {
     pointInspectionList: {},
     // 点位
     pointList: [],
+    // 点位---消防平面图
+    firePoint: [],
     // 获取大屏消息
     screenMessage: [],
     // 检查点状态数量
@@ -549,11 +555,21 @@ export default {
       }
     },
     // 获取视频列表
+    // *fetchVideoList({ payload, callback }, { call, put }) {
+    //   const response = yield call(getVideoList, payload);
+    //   yield put({
+    //     type: 'save',
+    //     payload: { videoList: response.list },
+    //   });
+    //   if (callback) {
+    //     callback();
+    //   }
+    // },
     *fetchVideoList({ payload, callback }, { call, put }) {
       const response = yield call(getVideoList, payload);
       yield put({
         type: 'save',
-        payload: { videoList: response.list },
+        payload: { videoFireList: response.list },
       });
       if (callback) {
         callback();
@@ -583,6 +599,12 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
+                ({ id, webUrl }) => /^http/.test(webUrl) && id
+              )
+            : [],
+        fireIchnographyUrl:
+          response.fireIchnographyUrl && response.fireIchnographyUrl.startsWith('[')
+            ? JSON.parse(response.fireIchnographyUrl).filter(
                 ({ id, webUrl }) => /^http/.test(webUrl) && id
               )
             : [],
@@ -737,16 +759,27 @@ export default {
       }
     },
     // 南消：获取点位
+    // *fetchPointList({ payload, callback }, { call, put }) {
+    //   const response = yield call(getPointList, payload);
+    //   yield put({
+    //     type: 'save',
+    //     payload: { pointList: response.data.list },
+    //   });
+    //   if (callback) {
+    //     callback(response.data.list);
+    //   }
+    // },
     *fetchPointList({ payload, callback }, { call, put }) {
       const response = yield call(getPointList, payload);
       yield put({
         type: 'save',
-        payload: { pointList: response.data.list },
+        payload: { firePoint: response.data.list },
       });
       if (callback) {
         callback(response.data.list);
       }
     },
+
     // 获取大屏消息
     *fetchScreenMessage({ payload, success, error }, { call, put }) {
       const response = yield call(getScreenMessage, payload);
@@ -854,10 +887,10 @@ export default {
       }
     },
     // 根据processId查dataId
-    *fetchDataId({ payload, success, error}, { call, put }) {
+    *fetchDataId({ payload, success, error }, { call, put }) {
       const response = yield call(queryDataId, payload);
       if (response && response.code === 200) {
-        if(success) success(response);
+        if (success) success(response);
       } else if (error) {
         error();
       }
