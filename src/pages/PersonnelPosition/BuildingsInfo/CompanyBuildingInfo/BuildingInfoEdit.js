@@ -456,12 +456,12 @@ export default class BuildingInfoEdit extends PureComponent {
 
     const editDetail = list.find(d => d.id === id) || {};
     const {
-      buildingTypeName,
+      buildingType: editBuildingType,
       buildingName,
-      floorNumberName,
-      fireDangerTypeName,
+      floorNumber: editFloorNumber,
+      fireDangerType: editFireDangerType,
+      fireRating: editFireRating,
       buildingArea,
-      fireRatingName,
       floorLevel,
       remark,
     } = editDetail;
@@ -500,9 +500,9 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('建筑物类型'),
         component: (
           <div>
-            {getFieldDecorator('buildingType', { initialValue: buildingTypeName })(
-              <Select placeholder="请选择建筑物类型">{getOptions(buildingType)}</Select>
-            )}
+            {getFieldDecorator('buildingType', {
+              initialValue: editBuildingType,
+            })(<Select placeholder="请选择建筑物类型">{getOptions(buildingType)}</Select>)}
           </div>
         ),
       },
@@ -524,7 +524,7 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('建筑结构'),
         component: (
           <div>
-            {getFieldDecorator('floorNumber', { initialValue: floorNumberName })(
+            {getFieldDecorator('floorNumber', { initialValue: editFloorNumber })(
               <Select placeholder="请选择建筑结构">{getOptions(floorNumber)}</Select>
             )}
           </div>
@@ -536,7 +536,7 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('火灾危险性分类'),
         component: (
           <div>
-            {getFieldDecorator('fireDangerType', { initialValue: fireDangerTypeName })(
+            {getFieldDecorator('fireDangerType', { initialValue: editFireDangerType })(
               <Select placeholder="请选择火灾危险性分类">{getOptions(fireDangerType)}</Select>
             )}
           </div>
@@ -559,7 +559,7 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('耐火等级'),
         component: (
           <div>
-            {getFieldDecorator('fireRating', { initialValue: fireRatingName })(
+            {getFieldDecorator('fireRating', { initialValue: editFireRating })(
               <Select placeholder="请选择耐火等级">{getOptions(fireRating)}</Select>
             )}
           </div>

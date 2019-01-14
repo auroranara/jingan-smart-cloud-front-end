@@ -218,12 +218,13 @@ export default class FloorManagementEdit extends PureComponent {
       },
       form: { getFieldDecorator },
       location: {
-        query: { id: buildingId, name, companyId },
+        query: { id: buildingId, name, companyId, buildingId: editBuilding },
       },
       buildingsInfo: {
         floorData: { list },
       },
     } = this.props;
+    console.log('this.props', this.props);
 
     const { uploading, floorList } = this.state;
     const editDetail = list.find(d => d.id === id) || {};
@@ -292,13 +293,23 @@ export default class FloorManagementEdit extends PureComponent {
           <Button type="primary" loading={uploading} onClick={this.handleClickValidate}>
             提交
           </Button>
-          <Button
-            loading={uploading}
-            href={`/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
-            style={{ marginLeft: '10px' }}
-          >
-            返回
-          </Button>
+          {id ? (
+            <Button
+              loading={uploading}
+              href={`#/personnel-position/buildings-info/floor/list/${editBuilding}?companyId=${companyId}&&name=${name}`}
+              style={{ marginLeft: '10px' }}
+            >
+              返回
+            </Button>
+          ) : (
+            <Button
+              loading={uploading}
+              href={`#/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
+              style={{ marginLeft: '10px' }}
+            >
+              返回
+            </Button>
+          )}
         </div>
       </Card>
     );
