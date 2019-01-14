@@ -229,10 +229,16 @@ export default class ElectricityMonitor extends PureComponent {
    * 2.显示弹出框
    * 3.添加定时器
    */
-  showUnitDetail = (companyId, deviceId) => {
-    const { dispatch, electricityMonitor: { unitSet: { units } } } = this.props;
-    // 如果deviceId存在，则为点击通知框
+  showUnitDetail = (unitDetail, deviceId) => {
+    if (!unitDetail) {
+      return;
+    }
+    const { dispatch } = this.props;
+    const { mapInstance } = this.state;
+    const { companyId, longitude, latitude } = unitDetail;
+    mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.getDeviceStatusCount(companyId);
+    // 如果deviceId存在，则为点击通知框
     if (deviceId) {
       dispatch({
         type: 'electricityMonitor/fetchDevices',
@@ -241,9 +247,7 @@ export default class ElectricityMonitor extends PureComponent {
           type: 1,
         },
       });
-      this.getDeviceRealTimeData(deviceId);
-      this.getDeviceHistoryData(deviceId);
-      this.getDeviceConfig(deviceId);
+      this.handleSelectDevice(deviceId);
       dispatch({
         type: 'electricityMonitor/fetchDeviceConfig',
         payload: { deviceId },
@@ -262,20 +266,31 @@ export default class ElectricityMonitor extends PureComponent {
           companyId,
           type: 1,
         },
-        callback: ([{ deviceId }]) => {
-          this.getDeviceRealTimeData(deviceId);
-          this.getDeviceHistoryData(deviceId);
-          this.getDeviceConfig(deviceId);
-          // 添加定时器
-          this.deviceStatusCountTimer = setInterval(() => {this.getDeviceStatusCount(companyId);}, 2 * 1000);
-          this.deviceRealTimeDataTimer = setInterval(() => {this.getDeviceRealTimeData(deviceId);}, 2 * 1000);
-          this.deviceHistoryDataTimer = setInterval(() => {this.getDeviceHistoryData(deviceId);}, 30 * 60 * 1000);
-          this.deviceConfigTimer = setInterval(() => {this.getDeviceConfig(deviceId);}, 30 * 60 * 1000);
+        callback: ([data]) => {
+          if (data) {
+            const { deviceId } = data;
+            this.handleSelectDevice(deviceId);
+            // 添加定时器
+            this.deviceStatusCountTimer = setInterval(() => {this.getDeviceStatusCount(companyId);}, 2 * 1000);
+            this.deviceRealTimeDataTimer = setInterval(() => {this.getDeviceRealTimeData(deviceId);}, 2 * 1000);
+            this.deviceHistoryDataTimer = setInterval(() => {this.getDeviceHistoryData(deviceId);}, 30 * 60 * 1000);
+            this.deviceConfigTimer = setInterval(() => {this.getDeviceConfig(deviceId);}, 30 * 60 * 1000);
+          }
+          else {
+            dispatch({
+              type: 'electricityMonitor/save',
+              payload: {
+                deviceRealTimeData: {},
+                deviceConfig: [],
+                deviceHistoryData: [],
+              },
+            });
+          }
         },
       });
     }
     // 显示弹出框
-    this.setState({ unitDetail: units.filter(({ companyId: id }) => id === companyId)[0] });
+    this.setState({ unitDetail });
   }
 
   /**
@@ -294,6 +309,7 @@ export default class ElectricityMonitor extends PureComponent {
    * 显示告警通知提醒框
    */
   showWarningNotification = ({ companyId, addTime, companyName, area, location, paramName, messageFlag, paramCode }) => {
+    const { electricityMonitor: { unitSet: { units } } } = this.props;
     const options = {
       key: `${messageFlag}_${paramCode}`,
       duration: null,
@@ -306,7 +322,7 @@ export default class ElectricityMonitor extends PureComponent {
         </div>
       ),
       description: (
-        <div className={styles.notificationContent} onClick={() => {this.handleClickNotification(companyId)}}>
+        <div className={styles.notificationContent} onClick={() => {this.showUnitDetail(units.filter(({ companyId: id }) => id === companyId)[0], messageFlag)}}>
           <div className={styles.notificationText}>
             <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
             <div className={styles.notificationTextSecond}>{companyName}</div>
@@ -397,20 +413,37 @@ export default class ElectricityMonitor extends PureComponent {
     this.handleMapClick(companyId, units.filter(item => item.companyId === companyId)[0]);
   }
 
+  handleSelectDevice = (deviceId) => {
+    this.getDeviceRealTimeData(deviceId);
+    this.getDeviceHistoryData(deviceId);
+    this.getDeviceConfig(deviceId);
+  }
+
   /**
    * 渲染
    */
   render() {
-    const { electricityMonitor: { messages, statisticsData, unitSet, deviceStatusCount } } = this.props;
+    const {
+      electricityMonitor: {
+        messages,
+        statisticsData,
+        unitSet,
+        deviceStatusCount,
+        devices,
+        deviceRealTimeData,
+        deviceConfig,
+        deviceHistoryData,
+      },
+    } = this.props;
     const {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
-      monitorDrawerVisible,
       infoWindowShow,
       selectList,
       searchValue,
       infoWindow,
+      unitDetail,
     } = this.state;
 
     console.log(this.props.electricityMonitor);
@@ -430,7 +463,7 @@ export default class ElectricityMonitor extends PureComponent {
         {/* 地图 */}
         <ElectricityMap
           mapData={unitSet}
-          handleMapClick={this.handleMapClick}
+          handleMapClick={this.showUnitDetail}
           infoWindowShow={infoWindowShow}
           infoWindow={infoWindow}
           deviceStatusCount={deviceStatusCount}
@@ -445,7 +478,7 @@ export default class ElectricityMonitor extends PureComponent {
           selectList={selectList}
           value={searchValue}
           handleChange={this.handleMapSearchChange}
-          handleSelect={this.handleMapSearchSelect}
+          handleSelect={this.showUnitDetail}
         />
         {/* 接入单位统计 */}
         <AccessUnitStatistics
@@ -481,9 +514,17 @@ export default class ElectricityMonitor extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <MonitorDrawer
-          // data={}
-          visible={monitorDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          data={{
+            unitDetail,
+            deviceStatusCount,
+            devices,
+            deviceRealTimeData,
+            deviceConfig,
+            deviceHistoryData,
+          }}
+          visible={!!unitDetail}
+          handleClose={this.hideUnitDetail}
+          handleSelect={this.handleSelectDevice}
         />
       </BigPlatformLayout>
     );

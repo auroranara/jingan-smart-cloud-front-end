@@ -17,18 +17,23 @@ const RANGES = ['0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 1500'];
 const UNITS = ['℃', '℃', '℃', '℃', 'mA'];
 
 export default class MonitorDrawer extends PureComponent {
-  handleClose = () => {
-    const { handleDrawerVisibleChange } = this.props;
-    handleDrawerVisibleChange(TYPE);
-    // this.setState({ searchValue: '', grahp: 0, selected: 0 });
-  };
-
-  handleSelectChange = i => {
-    // this.setState({ selected: i });
-  };
-
   render() {
-    const { visible, selected=0, data } = this.props;
+    const {
+      visible,
+      data: {
+        unitDetail,
+        deviceStatusCount,
+        devices,
+        deviceRealTimeData: {
+          deviceId=undefined,
+          deviceDataForAppList=[],
+        },
+        deviceConfig,
+        deviceHistoryData,
+      },
+      handleSelect,
+      handleClose,
+    } = this.props;
 
     const left = (
       <Fragment>
@@ -42,7 +47,7 @@ export default class MonitorDrawer extends PureComponent {
             ))}
           </p>
         </div>
-        <OvSelect cssType={2} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
+        <OvSelect cssType={2} options={OPTIONS} value={deviceId} handleChange={handleSelect} />
         <DrawerSection title="实时监测数据" >
           <div className={styles.gauges}>
             {CHART_LABELS.map((label, i) => (
@@ -64,7 +69,7 @@ export default class MonitorDrawer extends PureComponent {
         left={left}
         placement="right"
         rowStyle={{ height: 'calc(100% - 70px)' }}
-        onClose={this.handleClose}
+        onClose={handleClose}
       />
     );
   }

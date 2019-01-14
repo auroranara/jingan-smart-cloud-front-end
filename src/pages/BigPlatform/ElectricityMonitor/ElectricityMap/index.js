@@ -85,7 +85,7 @@ export default class MapSection extends PureComponent {
         events={{
           click: (e, marker) => {
             const extData = marker.getExtData();
-            this.props.handleMapClick(extData.companyId, extData);
+            this.props.handleMapClick(extData);
           },
           created: () => {
             if (fitView) {
