@@ -14,8 +14,13 @@ const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
-const RANGES = [[0, 150], [0, 150], [0, 150], [0, 150], [0, 1500]];
-const UNITS = ['℃', '℃', '℃', '℃', 'mA'];
+const RANGES = {
+  'A相温度': [0, 150],
+  'B相温度': [0, 150],
+  'C相温度': [0, 150],
+  '零线温度': [0, 150],
+  '漏电电流': [0, 1500],
+};
 
 export default class MonitorDrawer extends PureComponent {
   render() {
@@ -27,7 +32,7 @@ export default class MonitorDrawer extends PureComponent {
           address,
           aqy1Name,
           aqy1Phone,
-        },
+        }={},
         deviceStatusCount: {
           normal=0,
           earlyWarning=0,
@@ -39,12 +44,36 @@ export default class MonitorDrawer extends PureComponent {
           deviceId=undefined,
           deviceDataForAppList=[],
         },
-        deviceConfig,
+        deviceConfig=[],
         deviceHistoryData,
       },
       handleSelect,
       handleClose,
     } = this.props;
+    // 实时数据列表
+    const list = [];
+    deviceDataForAppList.forEach(({ desc, code, value, unit, status }) => {
+      const index = CHART_LABELS.indexOf(desc);
+      if (index > -1) {
+        const limit = [undefined, undefined];
+        deviceConfig.forEach((item) => {
+          const { code: code2, level } = item;
+          if (code2 === code) {
+            limit[level-1] = item;
+          }
+        });
+        list[index] = {
+          desc,
+          value,
+          unit,
+          limit,
+          status,
+        };
+      }
+    });
+
+    console.log(devices);
+
 
     const left = (
       <Fragment>
@@ -59,12 +88,12 @@ export default class MonitorDrawer extends PureComponent {
           </p>
         </div>
         <div className={styles.select}>
-          <OvSelect cssType={2} options={devices} value={deviceId} handleChange={handleSelect} />
+          <OvSelect cssType={2} options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))} value={deviceId} handleChange={handleSelect} />
         </div>
         <DrawerSection title="实时监测数据" >
           <div className={styles.gauges}>
-            {CHART_LABELS.map((label, i) => (
-              <Gauge key={label} title={label} value={0} range={RANGES[i]} unit={UNITS[i]} />
+            {list.map(({ desc, value, unit, limit, status }, i) => (
+              <Gauge key={desc} title={desc} value={value} range={RANGES[desc]} limit={limit} unit={unit} status={status} />
             ))}
           </div>
         </DrawerSection>

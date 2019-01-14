@@ -1,12 +1,9 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
-const COLORS = ['#37a460', '#f9b206', '#f73329'];
-
 export default class ChartGauge extends PureComponent {
   render() {
-    const { value, limits=[0.2, 0.8, 1] } = this.props;
-    const axisLineColor = COLORS.map((c, i) => [limits[i], c]);
+    const { value, axisLineColor } = this.props;
 
     const option = {
       // tooltip : {

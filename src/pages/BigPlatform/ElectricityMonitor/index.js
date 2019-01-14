@@ -388,8 +388,8 @@ export default class ElectricityMonitor extends PureComponent {
 
   // 地图搜索
   fetchMapSearchData = value => {
-    const { electricityMonitor: { companyInfoDto: { companyInfoDtoList } } } = this.props;
-    const list = companyInfoDtoList;
+    const { electricityMonitor: { unitSet: { units } } } = this.props;
+    const list = units;
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
     this.setState({
       searchValue: value,
@@ -414,6 +414,9 @@ export default class ElectricityMonitor extends PureComponent {
   }
 
   handleSelectDevice = (deviceId) => {
+    clearInterval(this.deviceRealTimeDataTimer);
+    clearInterval(this.deviceHistoryDataTimer);
+    clearInterval(this.deviceConfigTimer);
     this.getDeviceRealTimeData(deviceId);
     this.getDeviceHistoryData(deviceId);
     this.getDeviceConfig(deviceId);
