@@ -50,7 +50,7 @@ export default class CurrentHiddenDanger extends PureComponent {
       seriesIndex: 0,
       dataIndex: params.dataIndex,
     });
-  }
+  };
 
   onMouseOut = ({ dataIndex }, chart) => {
     chart.dispatchAction({
@@ -63,29 +63,29 @@ export default class CurrentHiddenDanger extends PureComponent {
       seriesIndex: 0,
       dataIndex: this.selectedDangerIndex,
     });
-  }
+  };
 
   onChartClick = ({ dataIndex }, chart) => {
-    const { onClickChat } = this.props
+    const { onClickChat } = this.props;
     // 如果点击已选中的区块，取消筛选
     if (this.selectedDangerIndex === dataIndex) {
-      this.selectedDangerIndex = -1
-      onClickChat({ dataIndex: -1 })
+      this.selectedDangerIndex = -1;
+      onClickChat({ dataIndex: -1 });
       chart.dispatchAction({
         type: 'downplay',
         seriesIndex: 0,
         dataIndex: dataIndex,
       });
     } else {
-      this.selectedDangerIndex = dataIndex
-      onClickChat({ dataIndex })
+      this.selectedDangerIndex = dataIndex;
+      onClickChat({ dataIndex });
       chart.dispatchAction({
         type: 'highlight',
         seriesIndex: 0,
         dataIndex: dataIndex,
       });
     }
-  }
+  };
 
   render() {
     const {
@@ -99,9 +99,9 @@ export default class CurrentHiddenDanger extends PureComponent {
       list = [],
     } = this.props;
     const legendInfo = {
-      '已超期': ycq,
-      '未超期': wcq,
-      '待复查': dfc,
+      已超期: ycq,
+      未超期: wcq,
+      待复查: dfc,
     };
     const option = {
       tooltip: {
@@ -112,7 +112,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         top: '82%',
         itemGap: 20,
         itemWidth: 25,
-        selectedMode: false,// 禁选
+        selectedMode: false, // 禁选
         formatter: name => `${name} ${legendInfo[name]}`,
         data: [
           { name: '已超期', icon: 'circle' },
@@ -210,9 +210,9 @@ export default class CurrentHiddenDanger extends PureComponent {
                 style={{ width: '100%', height: '100%' }}
                 option={option}
                 onEvents={{
-                  'mouseover': this.onMouseOver,
-                  'mouseout': this.onMouseOut,
-                  'click': this.onChartClick,
+                  mouseover: this.onMouseOver,
+                  mouseout: this.onMouseOut,
+                  click: this.onChartClick,
                 }}
               />
               <div className={styles.total}>
@@ -229,6 +229,7 @@ export default class CurrentHiddenDanger extends PureComponent {
                   rectify_user_name,
                   real_rectify_time,
                   plan_rectify_time,
+                  report_source_name,
                   item_name,
                   status,
                   hiddenDangerRecordDto,
@@ -264,15 +265,16 @@ export default class CurrentHiddenDanger extends PureComponent {
                                 </span>
                               </Fragment>
                             ) : (
-                                <Fragment>
-                                  {rectify_user_name}
-                                  <span className={+status === 7 ? styles.warningText : styles.text}>
-                                    {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                                  </span>
-                                </Fragment>
-                              ),
+                              <Fragment>
+                                {rectify_user_name}
+                                <span className={+status === 7 ? styles.warningText : styles.text}>
+                                  {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                                </span>
+                              </Fragment>
+                            ),
                         },
-                        { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
+                        { label: '检查点位', value: <span>{item_name || '暂无数据'}</span> },
+                        { label: '来源', value: <span>{report_source_name || '暂无数据'}</span> },
                       ]}
                       statusLogo={this.handleStatusPhoto(status)}
                       photo={hiddenDangerRecordDto[0].fileWebUrl.split(',')[0]}

@@ -7,6 +7,7 @@ import {
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DotItem, Gauge } from '../components/Components';
+import ElectricityCharts from '../components/ElectricityCharts';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
@@ -109,7 +110,14 @@ export default class MonitorDrawer extends PureComponent {
           </div>
         </DrawerSection>
         <DrawerSection title="监测趋势图" >
-          charts
+          <ElectricityCharts
+            noData={devices.length}
+            data={{
+              deviceHistoryData,
+              deviceConfig,
+              chartTabs: ['temp', 'v1'],
+            }}
+          />
         </DrawerSection>
         <VideoPlay
           showList={false}
