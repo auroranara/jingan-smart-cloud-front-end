@@ -42,3 +42,8 @@ export async function getDeviceConfig(params) {
 export async function getDeviceHistoryData(params) {
   return request(`${URL_PREFIX}/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
 }
+
+// 视频列表
+export async function getCameraList(params) {
+  return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
+}

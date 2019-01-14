@@ -26,6 +26,7 @@ import {
   AlarmDrawer,
   MonitorDrawer,
 } from './sections/Components';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
 
@@ -53,7 +54,7 @@ export default class ElectricityMonitor extends PureComponent {
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
       monitorDrawerVisible: true,
-      // videoVisible: false,
+      videoVisible: false,
       infoWindowShow: false,
       infoWindow: {
         address: '',
@@ -236,6 +237,7 @@ export default class ElectricityMonitor extends PureComponent {
     const { companyId, longitude, latitude } = unitDetail;
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.getDeviceStatusCount(companyId);
+    this.getCameraList(companyId);
     // 如果deviceId存在，则为点击通知框
     if (deviceId) {
       dispatch({
@@ -419,7 +421,20 @@ export default class ElectricityMonitor extends PureComponent {
     this.getDeviceRealTimeData(deviceId);
     this.getDeviceHistoryData(deviceId);
     this.getDeviceConfig(deviceId);
-  }
+  };
+
+  getCameraList = id => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'electricityMonitor/fetchCameraList', payload: { company_id: id } });
+  };
+
+  handleClickCamera = () => {
+    this.setState({ videoVisible: true });
+  };
+
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false });
+  };
 
   /**
    * 渲染
@@ -435,12 +450,14 @@ export default class ElectricityMonitor extends PureComponent {
         deviceRealTimeData,
         deviceConfig,
         deviceHistoryData,
+        cameraList,
       },
     } = this.props;
     const {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
+      videoVisible,
       infoWindowShow,
       selectList,
       searchValue,
@@ -522,11 +539,21 @@ export default class ElectricityMonitor extends PureComponent {
             deviceRealTimeData,
             deviceConfig,
             deviceHistoryData,
+            cameraList,
           }}
           visible={!!unitDetail}
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
+          handleClickCamera={this.handleClickCamera}
         />
+        {/* <VideoPlay
+          showList={true}
+          videoList={cameraList}
+          visible={videoVisible}
+          keyId={cameraList.length ? cameraList[0].key_id : ''}
+          style={{ position: 'fixed', zIndex: 99999 }}
+          handleVideoClose={this.handleVideoClose}
+        /> */}
       </BigPlatformLayout>
     );
   }

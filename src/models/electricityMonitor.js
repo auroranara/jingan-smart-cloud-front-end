@@ -1,5 +1,15 @@
 
-import { getMessages, getCompanyId, getUnitData, getDeviceStatusCount, getDevices, getDeviceRealTimeData, getDeviceConfig, getDeviceHistoryData } from '../services/electricityMonitor'
+import {
+  getMessages,
+  getCompanyId,
+  getUnitData,
+  getDeviceStatusCount,
+  getDevices,
+  getDeviceRealTimeData,
+  getDeviceConfig,
+  getDeviceHistoryData,
+  getCameraList,
+} from '../services/electricityMonitor'
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -76,6 +86,8 @@ export default {
     deviceConfig: [],
     // 历史数据
     deviceHistoryData: [],
+    // 摄像头列表
+    cameraList: [],
   },
 
   effects: {
@@ -200,6 +212,11 @@ export default {
         }
       }
     },
+    *fetchCameraList({ payload }, { call, put }) {
+      const response = yield call(getCameraList, payload);
+      const { list } = response;
+      yield put({ type: 'saveCameraList', payload: list });
+    },
   },
   reducers: {
     // 保存
@@ -221,6 +238,9 @@ export default {
         ...state,
         deviceStatusCount: payload,
       };
+    },
+    saveCameraList(state, action) {
+      return { ...state, cameraList: action.payload };
     },
   },
 }
