@@ -24,6 +24,7 @@ import {
   SettingModal,
   UnitDrawer,
   AlarmDrawer,
+  MonitorDrawer,
 } from './sections/Components';
 import { genCardsInfo, getAlarmUnits } from './utils';
 
@@ -54,6 +55,7 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
+      monitorDrawerVisible: false,
       infoWindowShow: false,
       infoWindow: {
         address: '',
@@ -404,6 +406,7 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
+      monitorDrawerVisible,
       infoWindowShow,
       selectList,
       searchValue,
@@ -475,6 +478,11 @@ export default class ElectricityMonitor extends PureComponent {
         <AlarmDrawer
           data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
           visible={alarmDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <MonitorDrawer
+          // data={}
+          visible={monitorDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
       </BigPlatformLayout>
