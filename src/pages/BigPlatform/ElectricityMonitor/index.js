@@ -67,8 +67,18 @@ export default class ElectricityMonitor extends PureComponent {
       selectList: [],
       searchValue: '',
       mapInstance: undefined,
+      // 企业详情
+      unitDetail: undefined,
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
+    // 设备状态统计数定时器
+    this.deviceStatusCountTimer = null;
+    // 设备实时数据定时器
+    this.deviceRealTimeDataTimer = null;
+    // 设备历史数据定时器
+    this.deviceHistoryDataTimer = null;
+    // 设备配置策略定时器
+    this.deviceConfigTimer = null;
   }
 
   /**
@@ -179,6 +189,104 @@ export default class ElectricityMonitor extends PureComponent {
   }
 
   cardsInfo = [];
+
+  getDeviceStatusCount = (companyId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "electricityMonitor/fetchDeviceStatusCount",
+      payload: { companyId },
+    });
+  }
+
+  getDeviceRealTimeData = (deviceId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "electricityMonitor/fetchDeviceRealTimeData",
+      payload: { deviceId },
+    });
+  }
+
+  getDeviceHistoryData = (deviceId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "electricityMonitor/fetchDeviceHistoryData",
+      payload: { deviceId },
+    });
+  }
+
+  getDeviceConfig = (deviceId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "electricityMonitor/fetchDeviceConfig",
+      payload: { deviceId },
+    });
+  }
+
+  /**
+   * 1.获取接口数据
+   * 2.显示弹出框
+   * 3.添加定时器
+   */
+  showUnitDetail = (companyId, deviceId) => {
+    const { dispatch, electricityMonitor: { unitSet: { units } } } = this.props;
+    // 如果deviceId存在，则为点击通知框
+    this.getDeviceStatusCount(companyId);
+    if (deviceId) {
+      dispatch({
+        type: 'electricityMonitor/fetchDevices',
+        payload: {
+          companyId,
+          type: 1,
+        },
+      });
+      this.getDeviceRealTimeData(deviceId);
+      this.getDeviceHistoryData(deviceId);
+      this.getDeviceConfig(deviceId);
+      dispatch({
+        type: 'electricityMonitor/fetchDeviceConfig',
+        payload: { deviceId },
+      });
+      // 添加定时器
+      this.deviceStatusCountTimer = setInterval(() => {this.getDeviceStatusCount(companyId);}, 2 * 1000);
+      this.deviceRealTimeDataTimer = setInterval(() => {this.getDeviceRealTimeData(deviceId);}, 2 * 1000);
+      this.deviceHistoryDataTimer = setInterval(() => {this.getDeviceHistoryData(deviceId);}, 30 * 60 * 1000);
+      this.deviceConfigTimer = setInterval(() => {this.getDeviceConfig(deviceId);}, 30 * 60 * 1000);
+    }
+    // 否则为点击企业，取第一个设备id
+    else {
+      dispatch({
+        type: 'electricityMonitor/fetchDevices',
+        payload: {
+          companyId,
+          type: 1,
+        },
+        callback: ([{ deviceId }]) => {
+          this.getDeviceRealTimeData(deviceId);
+          this.getDeviceHistoryData(deviceId);
+          this.getDeviceConfig(deviceId);
+          // 添加定时器
+          this.deviceStatusCountTimer = setInterval(() => {this.getDeviceStatusCount(companyId);}, 2 * 1000);
+          this.deviceRealTimeDataTimer = setInterval(() => {this.getDeviceRealTimeData(deviceId);}, 2 * 1000);
+          this.deviceHistoryDataTimer = setInterval(() => {this.getDeviceHistoryData(deviceId);}, 30 * 60 * 1000);
+          this.deviceConfigTimer = setInterval(() => {this.getDeviceConfig(deviceId);}, 30 * 60 * 1000);
+        },
+      });
+    }
+    // 显示弹出框
+    this.setState({ unitDetail: units.filter(({ companyId: id }) => id === companyId)[0] });
+  }
+
+  /**
+   * 1.取消定时器
+   * 2.隐藏弹出框
+   */
+  hideUnitDetail = () => {
+    clearInterval(this.deviceStatusCountTimer);
+    clearInterval(this.deviceRealTimeDataTimer);
+    clearInterval(this.deviceHistoryDataTimer);
+    clearInterval(this.deviceConfigTimer);
+    this.setState({ unitDetail: undefined });
+  }
 
   /**
    * 显示告警通知提醒框

@@ -1,5 +1,5 @@
 
-import { getMessages, getCompanyId, getUnitData, getDeviceStatusCount } from '../services/electricityMonitor'
+import { getMessages, getCompanyId, getUnitData, getDeviceStatusCount, getDevices, getDeviceRealTimeData, getDeviceConfig, getDeviceHistoryData } from '../services/electricityMonitor'
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -64,6 +64,18 @@ export default {
       confirmWarning: 0,
       unconnect: 0,
     },
+    // 设备列表
+    devices: [],
+    // 设备实时数据
+    deviceRealTimeData: {
+      status: 0,
+      deviceId: undefined,
+      deviceDataForAppList: [],
+    },
+    // 设备配置策略
+    deviceConfig: [],
+    // 历史数据
+    deviceHistoryData: [],
   },
 
   effects: {
@@ -83,7 +95,7 @@ export default {
         callback();
       }
     },
-    // 获取告警信息列表
+    // 获取网格id
     *fetchCompanyId({ payload, callback }, { call, put }) {
       const { code, data } = yield call(getCompanyId, payload)
       if (code === 200) {
@@ -133,6 +145,58 @@ export default {
         }
       } else if (error) {
         error(response);
+      }
+    },
+    // 获取设备列表
+    *fetchDevices({ payload, callback }, { call, put }) {
+      const { code, data: { list } } = yield call(getDevices, payload)
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: { devices: list },
+        })
+        if (callback) {
+          callback(list);
+        }
+      }
+    },
+    // 获取设备实时数据
+    *fetchDeviceRealTimeData({ payload, callback }, { call, put }) {
+      const { code, data } = yield call(getDeviceRealTimeData, payload)
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: { deviceRealTimeData: data },
+        })
+        if (callback) {
+          callback(data);
+        }
+      }
+    },
+    // 获取设备配置策略
+    *fetchDeviceConfig({ payload, callback }, { call, put }) {
+      const { code, data: { list } } = yield call(getDeviceConfig, payload)
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: { deviceConfig: list },
+        })
+        if (callback) {
+          callback(list);
+        }
+      }
+    },
+    // 获取设备历史数据
+    *fetchDeviceHistoryData({ payload, callback }, { call, put }) {
+      const { code, data: { list } } = yield call(getDeviceHistoryData, payload)
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: { deviceHistoryData: list },
+        })
+        if (callback) {
+          callback(list);
+        }
       }
     },
   },
