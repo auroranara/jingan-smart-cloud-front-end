@@ -1166,7 +1166,7 @@ export default class accountManagementEdit extends PureComponent {
     let fields = { serCheckedKeys, isCheckAll, isCheckAllSer }
     maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub })
     setFieldsValue(fields);
-    this.setState({ checkedRootKey: isCheckAll ? list[0].title : undefined })
+    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined })
   };
 
   // 勾选分公司及服务单位
@@ -1186,7 +1186,7 @@ export default class accountManagementEdit extends PureComponent {
     let fields = { subCheckedKeys, isCheckAll, isCheckAllSub }
     maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer })
     setFieldsValue(fields);
-    this.setState({ checkedRootKey: isCheckAll ? list[0].title : undefined })
+    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined })
   };
 
   isAContentsB = (a, b) => {
