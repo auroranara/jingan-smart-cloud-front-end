@@ -7,13 +7,15 @@ import {
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem, Gauge } from '../components/Components';
 import styles from './MonitorDrawer.less';
+import locationIcon from '../imgs/location.png';
+import personIcon from '../imgs/person.png';
 
 const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
-const CHART_LABELS = ['A线温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
+const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
 const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
-const RANGES = ['0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 1500'];
+const RANGES = [[0, 150], [0, 150], [0, 150], [0, 150], [0, 1500]];
 const UNITS = ['℃', '℃', '℃', '℃', 'mA'];
 
 export default class MonitorDrawer extends PureComponent {
@@ -32,17 +34,19 @@ export default class MonitorDrawer extends PureComponent {
 
     const left = (
       <Fragment>
-        <div>
-          <p>无锡是新吴区机械制造有限公司</p>
-          <p>无锡市新吴区汉江路</p>
-          <p>王长江 13888888888</p>
-          <p>
+        <div className={styles.info}>
+          <p className={styles.name}>无锡市新吴区机械制造有限公司</p>
+          <p><span className={styles.location} style={{ backgroundImage: `url(${locationIcon})` }} />无锡市新吴区汉江路</p>
+          <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />王长江 13888888888</p>
+          <p className={styles.dots}>
             {[0, 0, 0, 0].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
         </div>
-        <OvSelect cssType={2} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
+        <div className={styles.select}>
+          <OvSelect cssType={2} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
+        </div>
         <DrawerSection title="实时监测数据" >
           <div className={styles.gauges}>
             {CHART_LABELS.map((label, i) => (
