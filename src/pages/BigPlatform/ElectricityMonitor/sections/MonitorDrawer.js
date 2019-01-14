@@ -7,12 +7,14 @@ import {
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem, Gauge } from '../components/Components';
 import styles from './MonitorDrawer.less';
+import locationIcon from '../imgs/location.png';
+import personIcon from '../imgs/person.png';
 
 const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
-const CHART_LABELS = ['A线温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
-const RANGES = ['0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 1500'];
+const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
+const RANGES = [[0, 150], [0, 150], [0, 150], [0, 150], [0, 1500]];
 const UNITS = ['℃', '℃', '℃', '℃', 'mA'];
 
 export default class MonitorDrawer extends PureComponent {
@@ -46,17 +48,19 @@ export default class MonitorDrawer extends PureComponent {
 
     const left = (
       <Fragment>
-        <div>
-          <p>{companyName}</p>
-          <p>{address}</p>
-          <p>{`${aqy1Name} ${aqy1Phone}`}</p>
-          <p>
+        <div className={styles.info}>
+          <p className={styles.name}>{companyName}</p>
+          <p><span className={styles.location} style={{ backgroundImage: `url(${locationIcon})` }} />{address}</p>
+          <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />{`${aqy1Name} ${aqy1Phone}`}</p>
+          <p className={styles.dots}>
             {[normal, earlyWarning, confirmWarning, unconnect].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
         </div>
-        <OvSelect cssType={2} options={devices} value={deviceId} handleChange={handleSelect} />
+        <div className={styles.select}>
+          <OvSelect cssType={2} options={devices} value={deviceId} handleChange={handleSelect} />
+        </div>
         <DrawerSection title="实时监测数据" >
           <div className={styles.gauges}>
             {CHART_LABELS.map((label, i) => (
