@@ -12,7 +12,6 @@ const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const CHART_LABELS = ['A线温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
-const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
 const RANGES = ['0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 150', '0 ~ 1500'];
 const UNITS = ['℃', '℃', '℃', '℃', 'mA'];
 
@@ -21,9 +20,19 @@ export default class MonitorDrawer extends PureComponent {
     const {
       visible,
       data: {
-        unitDetail,
-        deviceStatusCount,
-        devices,
+        unitDetail: {
+          companyName,
+          address,
+          aqy1Name,
+          aqy1Phone,
+        },
+        deviceStatusCount: {
+          normal=0,
+          earlyWarning=0,
+          confirmWarning=0,
+          unconnect=0,
+        },
+        devices=[],
         deviceRealTimeData: {
           deviceId=undefined,
           deviceDataForAppList=[],
@@ -38,20 +47,20 @@ export default class MonitorDrawer extends PureComponent {
     const left = (
       <Fragment>
         <div>
-          <p>无锡是新吴区机械制造有限公司</p>
-          <p>无锡市新吴区汉江路</p>
-          <p>王长江 13888888888</p>
+          <p>{companyName}</p>
+          <p>{address}</p>
+          <p>{`${aqy1Name} ${aqy1Phone}`}</p>
           <p>
-            {[0, 0, 0, 0].map((n, i) => (
+            {[normal, earlyWarning, confirmWarning, unconnect].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
         </div>
-        <OvSelect cssType={2} options={OPTIONS} value={deviceId} handleChange={handleSelect} />
+        <OvSelect cssType={2} options={devices} value={deviceId} handleChange={handleSelect} />
         <DrawerSection title="实时监测数据" >
           <div className={styles.gauges}>
             {CHART_LABELS.map((label, i) => (
-              <Gauge title={label} value={0} range={RANGES[i]} unit={UNITS[i]} />
+              <Gauge key={label} title={label} value={0} range={RANGES[i]} unit={UNITS[i]} />
             ))}
           </div>
         </DrawerSection>
