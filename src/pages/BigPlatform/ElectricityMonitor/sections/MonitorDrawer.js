@@ -13,7 +13,7 @@ import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
 import cameraIcon from '../imgs/camera.png';
 
-const TYPE = 'monitor';
+// const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
@@ -24,6 +24,8 @@ const VIDEO_STYLE = {
 };
 
 export default class MonitorDrawer extends PureComponent {
+  state={ videoVisible: false };
+
   handleClickCamera = () => {
     this.setState({ videoVisible: true });
   };
@@ -32,7 +34,6 @@ export default class MonitorDrawer extends PureComponent {
     this.setState({ videoVisible: false });
   };
 
-  state={ videoVisible: false };
   render() {
     const {
       visible,
@@ -56,9 +57,11 @@ export default class MonitorDrawer extends PureComponent {
         },
         deviceConfig=[],
         deviceHistoryData,
+        cameraList,
       },
       handleSelect,
       handleClose,
+      handleClickCamera,
     } = this.props;
     const { videoVisible } = this.state;
     // 实时数据列表
@@ -102,6 +105,7 @@ export default class MonitorDrawer extends PureComponent {
             className={styles.camera}
             style={{ backgroundImage: `url(${cameraIcon})` }}
             onClick={e => this.handleClickCamera()}
+            // onClick={e => handleClickCamera()}
           />
           <div className={styles.gauges}>
             {list.map((item) => (
@@ -121,9 +125,9 @@ export default class MonitorDrawer extends PureComponent {
         </DrawerSection>
         <VideoPlay
           showList={false}
-          videoList={[]}
+          videoList={cameraList}
           visible={videoVisible}
-          keyId={''}
+          keyId={cameraList.length ? cameraList[0].key_id : ''}
           style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
         />
