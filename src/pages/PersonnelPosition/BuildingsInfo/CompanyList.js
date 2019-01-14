@@ -100,7 +100,7 @@ export default class CompanyList extends PureComponent {
         ...data,
         regulatory_classify:
           regulatory_classify && regulatory_classify.length > 0
-            ? regulatory_classify.pop()
+            ? regulatory_classify[regulatory_classify.length - 1]
             : undefined,
       },
     });

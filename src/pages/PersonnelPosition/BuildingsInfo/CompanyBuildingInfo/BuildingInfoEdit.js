@@ -73,6 +73,7 @@ export default class BuildingInfoEdit extends PureComponent {
     fileList: [], // 图片上传列表
     drawList: [], // 文件上传列表
     visible: false, // 企业弹框
+    companyId: undefined,
   };
 
   componentDidMount() {
@@ -177,6 +178,9 @@ export default class BuildingInfoEdit extends PureComponent {
     const { id, name } = item;
     this.companyId = id;
     setFieldsValue({ companyId: name });
+    this.setState({
+      companyId: id,
+    });
     this.handleClose();
   };
 
@@ -219,7 +223,11 @@ export default class BuildingInfoEdit extends PureComponent {
 
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
-      router.push(`/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`);
+      router.push(
+        company_Id
+          ? `/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`
+          : '/personnel-position/buildings-info/list'
+      );
     };
 
     const error = () => {
@@ -241,8 +249,10 @@ export default class BuildingInfoEdit extends PureComponent {
           floorLevel,
         } = values;
 
+        const { companyId } = this.state;
+
         const payload = {
-          companyId: company_Id,
+          companyId: company_Id || companyId,
           buildingType,
           buildingName,
           floorNumber,
@@ -251,6 +261,9 @@ export default class BuildingInfoEdit extends PureComponent {
           fireRating,
           photoUrl: fileList.map(file => file.dbUrl).join(','),
           darwingUrl: drawList.map(file => file.dbUrl).join(','),
+          // JSON.stringify(
+          //   firePictureList.map(({ name, webUrl, dbUrl }) => ({ fileName: name, webUrl, dbUrl }))
+          // ),
           floorLevel,
           remark,
         };
@@ -618,7 +631,7 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('备注'),
         component: (
           <div>
-            {getFieldDecorator('floorLevel', { initialValue: remark })(
+            {getFieldDecorator('remark', { initialValue: remark })(
               <TextArea placeholder="请输入备注" rows={3} maxLength="5000" />
             )}
           </div>
