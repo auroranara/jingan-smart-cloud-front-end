@@ -5,10 +5,12 @@ import {
   DrawerSection,
   OvSelect,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DotItem, Gauge } from '../components/Components';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
+import cameraIcon from '../imgs/camera.png';
 
 const TYPE = 'monitor';
 const LABELS = ['正常', '告警', '预警', '失联'];
@@ -18,7 +20,14 @@ const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) =>
 const RANGES = [[0, 150], [0, 150], [0, 150], [0, 150], [0, 1500]];
 const UNITS = ['℃', '℃', '℃', '℃', 'mA'];
 
+const VIDEO_STYLE = {
+  width: '90%',
+  marginLeft: '-43%',
+};
+
 export default class MonitorDrawer extends PureComponent {
+  state={ videoVisible: false };
+
   handleClose = () => {
     const { handleDrawerVisibleChange } = this.props;
     handleDrawerVisibleChange(TYPE);
@@ -29,8 +38,17 @@ export default class MonitorDrawer extends PureComponent {
     // this.setState({ selected: i });
   };
 
+  handleClickCamera = () => {
+    this.setState({ videoVisible: true });
+  };
+
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false });
+  };
+
   render() {
     const { visible, selected=0, data } = this.props;
+    const { videoVisible } = this.state;
 
     const left = (
       <Fragment>
@@ -47,7 +65,12 @@ export default class MonitorDrawer extends PureComponent {
         <div className={styles.select}>
           <OvSelect cssType={2} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
         </div>
-        <DrawerSection title="实时监测数据" >
+        <DrawerSection title="实时监测数据" style={{ position: 'relative' }}>
+          <span
+            className={styles.camera}
+            style={{ backgroundImage: `url(${cameraIcon})` }}
+            onClick={e => this.handleClickCamera()}
+          />
           <div className={styles.gauges}>
             {CHART_LABELS.map((label, i) => (
               <Gauge title={label} value={0} range={RANGES[i]} unit={UNITS[i]} />
@@ -57,6 +80,14 @@ export default class MonitorDrawer extends PureComponent {
         <DrawerSection title="监测趋势图" >
           charts
         </DrawerSection>
+        <VideoPlay
+          showList={false}
+          videoList={[]}
+          visible={videoVisible}
+          keyId={''}
+          style={VIDEO_STYLE}
+          handleVideoClose={this.handleVideoClose}
+        />
       </Fragment>
     );
 
