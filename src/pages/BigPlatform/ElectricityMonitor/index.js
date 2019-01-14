@@ -14,6 +14,7 @@ import AccessUnitStatistics from './AccessUnitStatistics';
 import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
 // 告警信息
 import WarningMessage from './WarningMessage';
+import MyTooltip from './components/Tooltip';
 
 import AlarmChart from './AlarmChart';
 import ElectricityMap from './ElectricityMap';
@@ -71,6 +72,9 @@ export default class ElectricityMonitor extends PureComponent {
       mapInstance: undefined,
       // 企业详情
       unitDetail: undefined,
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -437,6 +441,23 @@ export default class ElectricityMonitor extends PureComponent {
     this.setState({ videoVisible: false });
   };
 
+  showTooltip = (e, name) => {
+    const offset = e.getBoundingClientRect();
+    this.setState({
+      tooltipName: name,
+      tooltipVisible: true,
+      tooltipPosition: [offset.left, offset.top],
+    });
+  };
+
+  hideTooltip = () => {
+    this.setState({
+      tooltipName: '',
+      tooltipVisible: false,
+      tooltipPosition: [0, 0],
+    });
+  };
+
   /**
    * 渲染
    */
@@ -465,6 +486,9 @@ export default class ElectricityMonitor extends PureComponent {
       searchValue,
       infoWindow,
       unitDetail,
+      tooltipName,
+      tooltipVisible,
+      tooltipPosition,
     } = this.state;
 
     const cardsInfo = this.cardsInfo;
@@ -487,6 +511,8 @@ export default class ElectricityMonitor extends PureComponent {
           infoWindowShow={infoWindowShow}
           infoWindow={infoWindow}
           deviceStatusCount={deviceStatusCount}
+          showTooltip={this.showTooltip}
+          hideTooltip={this.hideTooltip}
           handleParentChange={(newState) => {
             this.setState({ ...newState });
           }}
@@ -557,6 +583,12 @@ export default class ElectricityMonitor extends PureComponent {
           style={{ position: 'fixed', zIndex: 99999 }}
           handleVideoClose={this.handleVideoClose}
         /> */}
+        <MyTooltip
+          visible={tooltipVisible}
+          title={tooltipName}
+          position={tooltipPosition}
+          offset={[15, 42]}
+        />
       </BigPlatformLayout>
     );
   }

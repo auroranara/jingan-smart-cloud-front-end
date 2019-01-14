@@ -64,6 +64,8 @@ export default class MapSection extends PureComponent {
   renderMarkers = lvl => {
     const {
       mapData: { units = [] },
+      hideTooltip,
+      showTooltip,
     } = this.props;
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
@@ -86,6 +88,16 @@ export default class MapSection extends PureComponent {
           click: (e, marker) => {
             const extData = marker.getExtData();
             this.props.handleMapClick(extData);
+          },
+          mouseover: (e, marker) => {
+            if (marker.getContentDom() === this.lastTarget) return;
+            const extData = marker.getExtData();
+            const { companyName } = extData;
+            this.lastTarget = marker.getContentDom();
+            showTooltip(this.lastTarget, companyName);
+          },
+          mouseout: () => {
+            hideTooltip();
           },
           created: () => {
             if (fitView) {
