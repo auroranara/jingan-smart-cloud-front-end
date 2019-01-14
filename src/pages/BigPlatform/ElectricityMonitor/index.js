@@ -55,7 +55,7 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
-      monitorDrawerVisible: true,
+      monitorDrawerVisible: false,
       infoWindowShow: false,
       infoWindow: {
         address: '',
