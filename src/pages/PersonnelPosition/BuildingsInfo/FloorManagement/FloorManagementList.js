@@ -244,11 +244,15 @@ export default class FloorManagementList extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      match: {
+        params: { id },
+      },
     } = this.props;
     const data = getFieldsValue();
     dispatch({
       type: 'buildingsInfo/fetchFloorList',
       payload: {
+        building_id: id,
         pageSize,
         pageNum,
         ...data,
