@@ -57,6 +57,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     remark = null,
                     rectify_company_name = null,
                     review_company_name = null,
+                    operator_company_name = null,
                   },
                   index
                 ) => {
@@ -137,6 +138,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                             <Description className={styles.line} term="整改人">
                               {operator_name || getEmptyData()}
                             </Description>
+                            <Description className={styles.line} term="整改单位">
+                              {operator_company_name || getEmptyData()}
+                            </Description>
                             <Description className={styles.line} term="实际整改日期">
                               {create_time_str || getEmptyData()}
                             </Description>
@@ -169,6 +173,12 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                           <DescriptionList className={styles.lineList} col={1}>
                             <Description className={styles.line} term="复查人">
                               {operator_name || getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="复查单位">
+                              {operator_company_name || getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="指定整改单位">
+                              {rectify_company_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="备注">
                               {remark || getEmptyData()}

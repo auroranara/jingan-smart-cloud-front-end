@@ -64,9 +64,9 @@ export default class MapSection extends PureComponent {
   renderMarkers = lvl => {
     const {
       mapData: { units = [] },
-      hideTooltip,
-      showTooltip,
+      unitDetail: { companyId: selectedCompanyId } = {},
     } = this.props;
+
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
@@ -77,6 +77,7 @@ export default class MapSection extends PureComponent {
           longitude: item.longitude,
           latitude: item.latitude,
         },
+        zIndex: selectedCompanyId === item.comapnyId ? 999 : 100,
       };
     });
 
@@ -88,16 +89,6 @@ export default class MapSection extends PureComponent {
           click: (e, marker) => {
             const extData = marker.getExtData();
             this.props.handleMapClick(extData);
-          },
-          mouseover: (e, marker) => {
-            if (marker.getContentDom() === this.lastTarget) return;
-            const extData = marker.getExtData();
-            const { companyName } = extData;
-            this.lastTarget = marker.getContentDom();
-            showTooltip(this.lastTarget, companyName);
-          },
-          mouseout: () => {
-            hideTooltip();
           },
           created: () => {
             if (fitView) {
@@ -120,14 +111,12 @@ export default class MapSection extends PureComponent {
 
     return (
       <div
-      // onMouseEnter={e => {
-      //   if (infoWindowShow && comapnyId === company_id) {
-      //     this.props.hideTooltip();
-      //     return false;
-      //   }
-      //   this.props.showTooltip(e, company_name);
-      // }}
-      // onMouseLeave={this.props.hideTooltip}
+        onMouseEnter={e => {
+          if (this.target === e.target) return;
+          this.target = e.target;
+          this.props.showTooltip(e, companyName);
+        }}
+        onMouseLeave={this.props.hideTooltip}
       >
         {(+status === 0 || +status === -1) && (
           <img
