@@ -606,7 +606,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
     dispatch({
       type: 'bigFireControl/fetchDangerRecords',
-      payload: { company_id: companyId, businessType: 2 },
+      payload: { company_id: companyId, businessType: 2, reportSource: 2 },
     });
   };
 
