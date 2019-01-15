@@ -111,7 +111,7 @@ export default class MonitorDrawer extends PureComponent {
           <p><span className={styles.location} style={{ backgroundImage: `url(${locationIcon})` }} />{address}</p>
           <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />{(aqy1Name || aqy1Phone) && `${aqy1Name?aqy1Name:'未命名'} ${aqy1Phone?aqy1Phone:''}`}</p>
           <p className={styles.dots}>
-            {[normal, earlyWarning, confirmWarning, unconnect].map((n, i) => (
+            {[normal, confirmWarning, earlyWarning, unconnect].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
