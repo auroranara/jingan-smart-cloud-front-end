@@ -59,7 +59,6 @@ export default class FloorManagementEdit extends PureComponent {
           pageNum: 1,
         },
         success: ({ floorWebUrl }) => {
-          console.log(floorWebUrl);
           const floorWebUrlList = floorWebUrl ? floorWebUrl : [];
           this.setState({
             floorList: floorWebUrlList.map(({ dbUrl, webUrl }, index) => ({
@@ -211,7 +210,7 @@ export default class FloorManagementEdit extends PureComponent {
     }
   };
   // 渲染信息
-  renderLawsInfo() {
+  renderInfo() {
     const {
       match: {
         params: { id },
@@ -224,7 +223,6 @@ export default class FloorManagementEdit extends PureComponent {
         floorData: { list },
       },
     } = this.props;
-    console.log('this.props', this.props);
 
     const { uploading, floorList } = this.state;
     const editDetail = list.find(d => d.id === id) || {};
@@ -326,7 +324,6 @@ export default class FloorManagementEdit extends PureComponent {
       },
     } = this.props;
     const title = id ? editTitle : addTitle;
-    console.log('this.props', this.props);
 
     //面包屑
     const breadcrumbList = [
@@ -353,7 +350,7 @@ export default class FloorManagementEdit extends PureComponent {
     ];
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        {this.renderLawsInfo()}
+        {this.renderInfo()}
       </PageHeaderLayout>
     );
   }

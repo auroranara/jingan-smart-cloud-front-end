@@ -399,7 +399,7 @@ export default class BuildingInfoList extends PureComponent {
                         <div className={styles.detailpic} />
                       )}
                     </Col>
-                    <Col span={14} style={{ cursor: 'pointer' }}>
+                    <Col span={14}>
                       <p>
                         建筑物类型：
                         {buildingTypeName || getEmptyData()}
@@ -421,6 +421,7 @@ export default class BuildingInfoList extends PureComponent {
                         {floorLevel || getEmptyData()}
                       </p>
                       <Button
+                        style={{ cursor: 'pointer' }}
                         href={`#/personnel-position/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
                       >
                         楼层管理

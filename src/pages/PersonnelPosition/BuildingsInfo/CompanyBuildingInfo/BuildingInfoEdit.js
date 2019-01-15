@@ -425,6 +425,20 @@ export default class BuildingInfoEdit extends PureComponent {
     const { getFieldDecorator } = this.props.form;
     return items.map(
       ({ name, cName, span = 12, formItemLayout = itemLayout, rules, component }) => (
+        <Col span={span} key={name} style={{ height: '53px' }}>
+          <FormItem label={cName} {...formItemLayout}>
+            {getFieldDecorator(name, { rules })(component)}
+          </FormItem>
+        </Col>
+      )
+    );
+  }
+
+  // 渲染表单
+  renderMoreItems(items) {
+    const { getFieldDecorator } = this.props.form;
+    return items.map(
+      ({ name, cName, span = 12, formItemLayout = itemLayout, rules, component }) => (
         <Col span={span} key={name}>
           <FormItem label={cName} {...formItemLayout}>
             {getFieldDecorator(name, { rules })(component)}
@@ -565,6 +579,9 @@ export default class BuildingInfoEdit extends PureComponent {
           </div>
         ),
       },
+    ];
+
+    const moreItems = [
       {
         name: 'floorLevel',
         cName: '建筑层数',
@@ -635,8 +652,9 @@ export default class BuildingInfoEdit extends PureComponent {
         ),
       },
     ];
-
     const formItems = [...defaultItems];
+
+    const moreForemItems = [...moreItems];
 
     const title = id ? editTitle : addTitle;
 
@@ -669,6 +687,7 @@ export default class BuildingInfoEdit extends PureComponent {
         <Card>
           <Form>
             {this.renderFormItems(formItems)}
+            {this.renderMoreItems(moreForemItems)}
             <Col span={24} style={{ marginTop: '40px' }}>
               <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
                 <Button type="primary" onClick={this.handleClickValidate}>

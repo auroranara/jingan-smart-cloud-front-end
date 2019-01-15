@@ -169,7 +169,7 @@ export default class FloorManagementDetail extends PureComponent {
         query: { buildingId, companyId, name: companyName },
       },
     } = this.props;
-    console.log('this.propsthis.props', this.props);
+
     /* 面包屑*/
     const breadcrumbList = [
       {

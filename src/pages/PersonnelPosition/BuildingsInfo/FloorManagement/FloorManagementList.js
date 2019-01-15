@@ -76,15 +76,17 @@ export default class FloorManagementList extends PureComponent {
     const {
       dispatch,
       location: {
-        query: { name },
+        query: { name, companyId },
       },
       match: {
         params: { id: buildingId },
       },
     } = this.props;
+    // console.log('companyId', this.props);
+
     dispatch(
       routerRedux.push(
-        `/personnel-position/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${id}&&name=${name}`
+        `/personnel-position/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${companyId}&&name=${name}`
       )
     );
   };
@@ -435,7 +437,7 @@ export default class FloorManagementList extends PureComponent {
         query: { name, companyId },
       },
     } = this.props;
-
+    // console.log('this.props', this.props);
     //面包屑
     const breadcrumbList = [
       {
