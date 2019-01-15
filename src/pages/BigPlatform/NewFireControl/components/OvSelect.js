@@ -9,7 +9,7 @@ const CLASSNAME = ['zero', 'one', 'two'];
 
 export default class OvSelect extends PureComponent {
   render() {
-    const { options, cssType=0, value=0, handleChange, ...restProps } = this.props;
+    const { options, cssType=0, value, handleChange, ...restProps } = this.props;
 
     return (
       <div className={styles[CLASSNAME[cssType]]} {...restProps}>

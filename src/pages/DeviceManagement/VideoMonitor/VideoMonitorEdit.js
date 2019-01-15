@@ -657,6 +657,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8} style={{ position: 'relative', marginTop: '3%' }}>
                   <Button onClick={this.showModalCoordinate}>定位</Button>
                   <Coordinate
+                    width="760px"
                     visible={visible}
                     urls={fourColorImgs}
                     onOk={this.handleOk}
@@ -697,6 +698,8 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8} style={{ position: 'relative', marginTop: '3%' }}>
                   <Button onClick={this.showFireCoordinate}>定位</Button>
                   <Coordinate
+                    title="消防平面图坐标定位"
+                    width="760px"
                     visible={fireVisible}
                     urls={fireImgs}
                     onOk={this.handleFireOk}

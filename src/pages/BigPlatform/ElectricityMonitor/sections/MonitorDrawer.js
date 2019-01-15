@@ -99,8 +99,7 @@ export default class MonitorDrawer extends PureComponent {
     });
 
     let gauges = <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />;
-    const equipmentExist = !!list.length;
-    if (equipmentExist)
+    if (list.length)
       gauges = list.map((item) => (
         <Gauge key={item.desc} data={item} />
       ));
@@ -110,7 +109,7 @@ export default class MonitorDrawer extends PureComponent {
         <div className={styles.info}>
           <p className={styles.name}>{companyName}</p>
           <p><span className={styles.location} style={{ backgroundImage: `url(${locationIcon})` }} />{address}</p>
-          <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />{`${aqy1Name} ${aqy1Phone}`}</p>
+          <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />{(aqy1Name || aqy1Phone) && `${aqy1Name?aqy1Name:'未命名'} ${aqy1Phone?aqy1Phone:''}`}</p>
           <p className={styles.dots}>
             {[normal, earlyWarning, confirmWarning, unconnect].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
@@ -121,7 +120,7 @@ export default class MonitorDrawer extends PureComponent {
           <h3 className={styles.chartTitle}>
             <span className={styles.rectIcon} />
             数据监测
-            {equipmentExist && (
+            {!!devices.length && (
               <Fragment>
                 <div className={styles.select}>
                   <OvSelect

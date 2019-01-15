@@ -54,7 +54,7 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
-      // monitorDrawerVisible: true,
+      monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
       infoWindowShow: false,
@@ -150,7 +150,18 @@ export default class ElectricityMonitor extends PureComponent {
               });
               // 如果发生告警，弹出通知框，否则关闭通知框
               if (type === 32) {
+                const { electricityMonitor: { deviceRealTimeData: { deviceId: selectedDeviceId }={} } } = this.props;
+                const { monitorDrawerVisible, unitDetail: { companyId: selectedCompanyId } = {} } = this.state;
+                const { companyId, messageFlag: deviceId } = data;
                 this.showWarningNotification(data);
+                if (companyId === selectedCompanyId && monitorDrawerVisible) {
+                  this.getDeviceStatusCount(companyId);
+                  if (deviceId === selectedDeviceId) {
+                    this.getDeviceRealTimeData(deviceId);
+                    this.getDeviceHistoryData(deviceId);
+                    this.getDeviceConfig(deviceId);
+                  }
+                }
               }
               // else {
               //   this.hideWarningNotification(data);
@@ -297,7 +308,7 @@ export default class ElectricityMonitor extends PureComponent {
       });
     }
     // 显示弹出框
-    this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId });
+    this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId, monitorDrawerVisible: true });
   }
 
   /**
@@ -309,7 +320,7 @@ export default class ElectricityMonitor extends PureComponent {
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
-    this.setState({ unitDetail: undefined });
+    this.setState({ unitDetail: undefined, monitorDrawerVisible: false });
   }
 
   /**
@@ -421,7 +432,6 @@ export default class ElectricityMonitor extends PureComponent {
   }
 
   handleSelectDevice = (deviceId) => {
-    // console.log(deviceId);
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
@@ -444,7 +454,7 @@ export default class ElectricityMonitor extends PureComponent {
   };
 
   showTooltip = (e, name) => {
-    const offset = e.getBoundingClientRect();
+    const offset = e.target.getBoundingClientRect();
     this.setState({
       tooltipName: name,
       tooltipVisible: true,
@@ -453,6 +463,8 @@ export default class ElectricityMonitor extends PureComponent {
   };
 
   hideTooltip = () => {
+    console.log('hideTooltip');
+
     this.setState({
       tooltipName: '',
       tooltipVisible: false,
@@ -481,6 +493,7 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
+      monitorDrawerVisible,
       monitorDrawerTitleIndex,
       // videoVisible,
       infoWindowShow,
@@ -515,6 +528,7 @@ export default class ElectricityMonitor extends PureComponent {
           deviceStatusCount={deviceStatusCount}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
+          unitDetail={unitDetail}
           handleParentChange={(newState) => {
             this.setState({ ...newState });
           }}
@@ -572,7 +586,7 @@ export default class ElectricityMonitor extends PureComponent {
             cameraList,
           }}
           titleIndex={monitorDrawerTitleIndex}
-          visible={!!unitDetail}
+          visible={monitorDrawerVisible}
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}

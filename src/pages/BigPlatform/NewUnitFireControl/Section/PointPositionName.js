@@ -105,7 +105,7 @@ export default class PointPositionName extends PureComponent {
         report_user_name,
         report_time,
         rectify_user_name,
-        item_name,
+        report_source_name,
         plan_rectify_time,
         real_rectify_time,
         status,
@@ -152,7 +152,7 @@ export default class PointPositionName extends PureComponent {
                   </Fragment>
                 ),
             },
-            { label: '检查点', value: <span>{item_name || '暂无数据'}</span> },
+            { label: '来源', value: <span>{report_source_name || '暂无数据'}</span> },
           ]}
           statusLogo={this.handleStatusPhoto(status)}
           photo={hiddenDangerRecordDto[0].fileWebUrl.split(',')[0]}
