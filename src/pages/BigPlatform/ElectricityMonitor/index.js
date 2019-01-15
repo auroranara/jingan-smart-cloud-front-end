@@ -256,6 +256,7 @@ export default class ElectricityMonitor extends PureComponent {
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.getDeviceStatusCount(companyId);
     this.getCameraList(companyId);
+    this.hideTooltip();
     // 如果deviceId存在，则为点击通知框
     if (deviceId) {
       dispatch({
