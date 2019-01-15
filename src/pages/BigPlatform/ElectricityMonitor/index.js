@@ -150,7 +150,18 @@ export default class ElectricityMonitor extends PureComponent {
               });
               // 如果发生告警，弹出通知框，否则关闭通知框
               if (type === 32) {
+                const { electricityMonitor: { deviceRealTimeData: { deviceId: selectedDeviceId }={} } } = this.props;
+                const { monitorDrawerVisible, unitDetail: { companyId: selectedCompanyId } = {} } = this.state;
+                const { companyId, messageFlag: deviceId } = data;
                 this.showWarningNotification(data);
+                if (companyId === selectedCompanyId && monitorDrawerVisible) {
+                  this.getDeviceStatusCount(companyId);
+                  if (deviceId === selectedDeviceId) {
+                    this.getDeviceRealTimeData(deviceId);
+                    this.getDeviceHistoryData(deviceId);
+                    this.getDeviceConfig(deviceId);
+                  }
+                }
               }
               // else {
               //   this.hideWarningNotification(data);

@@ -92,16 +92,18 @@ export default class MonitorDrawer extends PureComponent {
         <div className={styles.info}>
           <p className={styles.name}>{companyName}</p>
           <p><span className={styles.location} style={{ backgroundImage: `url(${locationIcon})` }} />{address}</p>
-          <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />{`${aqy1Name} ${aqy1Phone}`}</p>
+          <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />{(aqy1Name || aqy1Phone) && `${aqy1Name?aqy1Name:'未命名'} ${aqy1Phone?aqy1Phone:''}`}</p>
           <p className={styles.dots}>
             {[normal, earlyWarning, confirmWarning, unconnect].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
         </div>
-        <div className={styles.select}>
-          <OvSelect cssType={2} options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))} value={deviceId} handleChange={handleSelect} />
-        </div>
+        {devices.length > 0 && (
+          <div className={styles.select}>
+            <OvSelect cssType={2} options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))} value={deviceId} handleChange={handleSelect} />
+          </div>
+        )}
         <DrawerSection title="实时监测数据" style={{ position: 'relative' }}>
           <span
             className={styles.camera}
