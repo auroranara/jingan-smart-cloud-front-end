@@ -39,6 +39,8 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     rectify_user_name = null,
                     plan_rectify_time = null,
                     review_user_name = null,
+                    report_source_name = null,
+                    item_name = null,
                     // 2是整改，3是复查
                     type = null,
                     // 人
@@ -53,6 +55,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     files = [],
                     // 备注
                     remark = null,
+                    rectify_company_name = null,
+                    review_company_name = null,
+                    operator_company_name = null,
                   },
                   index
                 ) => {
@@ -77,6 +82,12 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                       >
                         <div className={styles.contentContainer}>
                           <DescriptionList className={styles.lineList} col={1}>
+                            <Description className={styles.line} term="隐患来源">
+                              {report_source_name || getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="检查点位">
+                              {item_name || getEmptyData()}
+                            </Description>
                             <Description className={styles.line} term="隐患等级">
                               {level_name || getEmptyData()}
                             </Description>
@@ -86,6 +97,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                             <Description className={styles.line} term="隐患描述">
                               {desc || getEmptyData()}
                             </Description>
+                            <Description className={styles.line} term="指定整改单位">
+                              {rectify_company_name || getEmptyData()}
+                            </Description>
                             <Description className={styles.line} term="指定整改人">
                               {rectify_user_name || getEmptyData()}
                             </Description>
@@ -93,6 +107,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                               {plan_rectify_time
                                 ? moment(+plan_rectify_time).format('YYYY-MM-DD')
                                 : getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="指定复查单位">
+                              {review_company_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="指定复查人">
                               {review_user_name || getEmptyData()}
@@ -120,6 +137,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                           <DescriptionList className={styles.lineList} col={1}>
                             <Description className={styles.line} term="整改人">
                               {operator_name || getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="整改单位">
+                              {operator_company_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="实际整改日期">
                               {create_time_str || getEmptyData()}
@@ -153,6 +173,12 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                           <DescriptionList className={styles.lineList} col={1}>
                             <Description className={styles.line} term="复查人">
                               {operator_name || getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="复查单位">
+                              {operator_company_name || getEmptyData()}
+                            </Description>
+                            <Description className={styles.line} term="指定整改单位">
+                              {rectify_company_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="备注">
                               {remark || getEmptyData()}

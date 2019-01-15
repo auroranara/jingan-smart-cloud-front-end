@@ -131,16 +131,16 @@ export default {
     /* 隐患来源列表 */
     sourceList: [
       {
+        key: '1',
+        value: '企业自查',
+      },
+      {
         key: '2',
-        value: '随手拍',
+        value: '政府监督',
       },
       {
         key: '3',
-        value: '风险点上报',
-      },
-      {
-        key: '4',
-        value: '监督点上报',
+        value: '维保检查',
       },
     ],
     /* 隐患状态列表 */

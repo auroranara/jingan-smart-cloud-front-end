@@ -145,7 +145,7 @@ export default class CheckingDrawer extends PureComponent {
     });
 
     const left = (
-      <div className={styles.container}>
+      <div className={styles.container} style={{ display: 'flex', flexDirection: 'column' }}>
         <div className={styles.circleContainer}>
           <div
             className={isSelected ? styles.totalSelectd : styles.circle}
@@ -166,7 +166,7 @@ export default class CheckingDrawer extends PureComponent {
             />
           ))}
         </div>
-        <div className={styles.cards}>
+        <div className={styles.cards} style={{ flex: 1 }}>
           {checkLists.length ? (
             cards
           ) : (

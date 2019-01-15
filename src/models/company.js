@@ -103,6 +103,8 @@ export default {
         economicType: undefined,
         groupName: undefined,
         industryCategory: undefined,
+        fireIchnographyDetails: undefined,
+        fireIchnographyUrl: undefined,
         latitude: undefined,
         licenseType: undefined,
         longitude: undefined,

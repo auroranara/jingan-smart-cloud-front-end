@@ -99,7 +99,7 @@ class ElectricityCharts extends PureComponent {
       data: {
         electricityPieces,
         chartParams: { list = [] },
-        deviceDataHistory=[],
+        deviceDataHistory = [],
       },
     } = this.props;
     let iaList = [],
@@ -177,7 +177,7 @@ class ElectricityCharts extends PureComponent {
     let option = {};
     if (!deviceDataHistory.length) return { ...option, ...noData };
     const defaultOption = {
-      color: ['#5ebeff', '#f7e68a', '#e38b3d', '#9893ff'],
+      color: ['#f7e68a', '#00a181', '#ff4848', '#00a8ff'],
       grid: {
         top: 35,
         right: 30,

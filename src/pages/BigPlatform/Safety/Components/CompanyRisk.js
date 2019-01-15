@@ -73,9 +73,7 @@ class CompanyRisk extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const {
-      hiddenDangerListByDate, //: { ycq = [], wcq = [], dfc = [], ygb = [] },
-    } = this.props;
+    const { hiddenDangerListByDate } = this.props;
     const {
       id,
       description,
@@ -217,6 +215,39 @@ class CompanyRisk extends PureComponent {
                       </Ellipsis>
                     </div>
                   )}
+                  <div
+                    className={styles.riskMsg}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      lineHeight: '24px',
+                    }}
+                  >
+                    <span style={{ color: '#00A8FF' }}>
+                      来<span style={{ opacity: 0 }}>啊啊</span>
+                      源：
+                    </span>
+                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
+                      <span style={{ marginRight: '20px' }}>
+                        {item.report_source_name || '- -'}
+                      </span>
+                    </Ellipsis>
+                  </div>
+                  <div
+                    className={styles.riskMsg}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      lineHeight: '24px',
+                    }}
+                  >
+                    <span style={{ color: '#00A8FF' }}>检查点位：</span>
+                    <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
+                      <span style={{ marginRight: '20px' }}>{item.item_name || '- -'}</span>
+                    </Ellipsis>
+                  </div>
                 </div>
               </div>
             </div>

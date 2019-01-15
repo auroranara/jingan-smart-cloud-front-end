@@ -68,6 +68,7 @@ const fieldLabels = {
   businessScope: '经营范围',
   code: '社会信用代码',
   companyIchnography: '单位平面图',
+  fireIchnography: '消防平面图',
   companyStatus: '单位状态',
   companyType: '单位类型',
   createTime: '成立时间',
@@ -188,6 +189,7 @@ const defaultCompanyNature = '一般企业';
 export default class CompanyDetail extends PureComponent {
   state = {
     ichnographyList: [],
+    firePictureList: [],
     isCompany: true,
     submitting: false,
     uploading: false,
@@ -239,12 +241,13 @@ export default class CompanyDetail extends PureComponent {
           practicalCity,
           practicalDistrict,
           companyIchnography,
+          fireIchnographyDetails,
           companyNatureLabel,
           gridId,
           companyType,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-
+          const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
           // 若idMap已获取则设值，未获取时则在获取idMap后设值
           this.gridId = gridId;
           Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
@@ -265,6 +268,13 @@ export default class CompanyDetail extends PureComponent {
                   uid: index,
                   status: 'done',
                 })),
+            firePictureList: fireIchnographyList.map(({ dbUrl, webUrl, fileName }, index) => ({
+              uid: index,
+              status: 'done',
+              name: fileName,
+              url: webUrl,
+              dbUrl,
+            })),
             isCompany: companyNatureLabel === defaultCompanyNature,
           });
           // 获取注册地址列表
@@ -458,7 +468,7 @@ export default class CompanyDetail extends PureComponent {
           this.setState({
             submitting: true,
           });
-          const { ichnographyList } = this.state;
+          const { ichnographyList, firePictureList } = this.state;
           const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
           const payload = {
             ...restFields,
@@ -475,6 +485,9 @@ export default class CompanyDetail extends PureComponent {
             createTime: createTime && createTime.format('YYYY-MM-DD'),
             companyIchnography: JSON.stringify(
               ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
+            ),
+            fireIchnography: JSON.stringify(
+              firePictureList.map(({ name, webUrl, dbUrl }) => ({ fileName: name, webUrl, dbUrl }))
             ),
             longitude,
             latitude,
@@ -574,6 +587,73 @@ export default class CompanyDetail extends PureComponent {
       message.error('上传失败！');
       this.setState({
         ichnographyList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        uploading: false,
+      });
+    }
+  };
+
+  /* 上传消防平面图 */
+  handleUploadfireIchnography = ({ fileList, file }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        firePictureList: fileList,
+        uploading: true,
+      });
+    } else if (file.status === 'done') {
+      if (file.response.code === 200) {
+        const {
+          data: {
+            list: [result],
+          },
+        } = file.response;
+        if (result) {
+          this.setState({
+            firePictureList: fileList.map(item => {
+              if (!item.url && item.response) {
+                return {
+                  ...item,
+                  url: result.webUrl,
+                  dbUrl: result.dbUrl,
+                };
+              }
+              return item;
+            }),
+          });
+        } else {
+          // 没有返回值
+          message.error('上传失败！');
+          this.setState({
+            firePictureList: fileList.filter(item => {
+              return !item.response || item.response.data.list.length !== 0;
+            }),
+          });
+        }
+      } else {
+        // code为500
+        message.error('上传失败！');
+        this.setState({
+          firePictureList: fileList.filter(item => {
+            return !item.response || item.response.code !== 200;
+          }),
+        });
+      }
+      this.setState({
+        uploading: false,
+      });
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        firePictureList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        firePictureList: fileList.filter(item => {
           return item.status !== 'error';
         }),
         uploading: false,
@@ -831,7 +911,7 @@ export default class CompanyDetail extends PureComponent {
       },
       form: { getFieldDecorator },
     } = this.props;
-    const { ichnographyList, isCompany, gridTree } = this.state;
+    const { ichnographyList, firePictureList, isCompany, gridTree } = this.state;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -1027,6 +1107,16 @@ export default class CompanyDetail extends PureComponent {
                 {this.renderUploadButton({
                   fileList: ichnographyList,
                   onChange: this.handleUploadIchnography,
+                })}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.fireIchnography}>
+                {this.renderUploadButton({
+                  fileList: firePictureList,
+                  onChange: this.handleUploadfireIchnography,
                 })}
               </Form.Item>
             </Col>

@@ -105,6 +105,10 @@ module.exports = env => {
           path: '/big-platform/position/:companyId/history/:id',
           component: './BigPlatform/Position/History',
         },
+        {
+          path: '/big-platform/electricity-monitor',
+          component: './BigPlatform/ElectricityMonitor',
+        },
       ],
     },
 

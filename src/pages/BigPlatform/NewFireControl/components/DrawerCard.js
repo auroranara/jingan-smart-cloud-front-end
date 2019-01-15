@@ -5,7 +5,7 @@ import locationIcon from '../img/cardLocation.png';
 import personIcon from '../img/cardPerson.png';
 
 export default function DrawerCard(props) {
-  const { name, location, person, phone, status, statusLabels, info, more, hover, ...restProps } = props;
+  const { name, location, person, phone, status, statusLabels, info, infoStyle, more, hover, ...restProps } = props;
   // 0 -> 正常  1 -> 不正常
   const isNormal = !status;
 
@@ -25,7 +25,7 @@ export default function DrawerCard(props) {
           {phone}
         </p>
         {status !== undefined && <span className={isNormal ? styles.normal : styles.abnormal}>{isNormal ? statusLabels[0] : statusLabels[1]}</span>}
-        {info && <p className={styles.info}>{info}</p>}
+        {info && <p className={styles.info} style={infoStyle}>{info}</p>}
         {more}
       </div>
     </div>

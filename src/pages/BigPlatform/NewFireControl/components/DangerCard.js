@@ -24,6 +24,7 @@ export default function DangerCard(props) {
       real_rectify_time, // 实际整改时间
       rectify_user_name, // 整改人
       review_user_name, // 复查人
+      report_source_name, //
     },
       ...restProps
     } = props;
@@ -55,6 +56,7 @@ export default function DangerCard(props) {
               <p>复<span className={styles.space} />查：<span className={styles.info}>{review_user_name}</span></p>
             </Fragment>
           )}
+          <p>来<span className={styles.space} />源：<span className={styles.info}>{report_source_name}</span></p>
         </Col>
       </Row>
     </div>

@@ -1,0 +1,35 @@
+/* 容器 */
+.list {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 100%;
+
+  .item {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    .left {
+      width: 48px;
+      height: 48px;
+      border: 1px solid #04fdff;
+      border-radius: 10px;
+      background: no-repeat center;
+      background-size: 30px 30px;
+    }
+    .right {
+      padding-left: 10px;
+      line-height: 1.5;
+      .name {
+        font-size: 14;
+        color: #fff;
+      }
+      .value {
+        font-size: 22px;
+        color: #04fdff;
+      }
+    }
+  }
+}

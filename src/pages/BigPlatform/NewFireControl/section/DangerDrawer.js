@@ -21,6 +21,8 @@ import { fillZero, sortDangerRecords } from '../utils';
 const TYPE = 'danger';
 const STATUS = [['-1'], ['7'], ['1', '2'], ['3']];
 STATUS['-1'] = ['-1'];
+const RING_COLORS = ['232, 103, 103', '246, 181, 78', '42, 139, 213'];
+const RING_LABELS = ['已超期', '待整改', '待复查'];
 
 // const CARDS = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -61,7 +63,7 @@ export default class DangerDrawer extends PureComponent {
     } = this.props;
     const { searchValue } = this.state;
 
-    const rings = [overdueNum, rectifyNum, reviewNum];
+    const rings = [overdueNum, rectifyNum, reviewNum].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
     const list = dangerList.slice(0, 10).map(({ companyId, companyName: name, total }, i) => {
       let newName = name;
       if (i === 9 && name.length > 10)
@@ -77,7 +79,7 @@ export default class DangerDrawer extends PureComponent {
         <DrawerSection title="隐患状态统计" style={{ marginBottom: 50, position: 'relative' }}>
           <ChartRing data={rings} />
           <div className={styles.total}>
-            <p className={styles.num}>{fillZero(rings.reduce((prev, next) => prev + next), 3)}</p>
+            <p className={styles.num}>{fillZero(rings.reduce((prev, next) => prev + next.value, 0), 3)}</p>
             <p className={styles.text}>总数</p>
           </div>
         </DrawerSection>
