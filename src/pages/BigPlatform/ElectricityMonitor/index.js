@@ -54,7 +54,7 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
-      // monitorDrawerVisible: true,
+      monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
       infoWindowShow: false,
@@ -295,7 +295,7 @@ export default class ElectricityMonitor extends PureComponent {
       });
     }
     // 显示弹出框
-    this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId });
+    this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId, monitorDrawerVisible: true });
   }
 
   /**
@@ -307,7 +307,7 @@ export default class ElectricityMonitor extends PureComponent {
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
-    this.setState({ unitDetail: undefined });
+    this.setState({ unitDetail: undefined, monitorDrawerVisible: false });
   }
 
   /**
@@ -419,7 +419,6 @@ export default class ElectricityMonitor extends PureComponent {
   }
 
   handleSelectDevice = (deviceId) => {
-    console.log(deviceId);
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
@@ -479,6 +478,7 @@ export default class ElectricityMonitor extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
+      monitorDrawerVisible,
       monitorDrawerTitleIndex,
       // videoVisible,
       infoWindowShow,
@@ -513,6 +513,7 @@ export default class ElectricityMonitor extends PureComponent {
           deviceStatusCount={deviceStatusCount}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
+          unitDetail={unitDetail}
           handleParentChange={(newState) => {
             this.setState({ ...newState });
           }}
@@ -570,7 +571,7 @@ export default class ElectricityMonitor extends PureComponent {
             cameraList,
           }}
           titleIndex={monitorDrawerTitleIndex}
-          visible={!!unitDetail}
+          visible={monitorDrawerVisible}
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}

@@ -66,7 +66,9 @@ export default class MapSection extends PureComponent {
       mapData: { units = [] },
       hideTooltip,
       showTooltip,
+      unitDetail: { companyId: selectedCompanyId }={},
     } = this.props;
+
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
@@ -77,6 +79,7 @@ export default class MapSection extends PureComponent {
           longitude: item.longitude,
           latitude: item.latitude,
         },
+        zIndex: selectedCompanyId === item.comapnyId ? 999 : 100,
       };
     });
 
