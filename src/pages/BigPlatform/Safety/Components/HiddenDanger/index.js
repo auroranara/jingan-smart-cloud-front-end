@@ -33,6 +33,7 @@ const defaultFieldNames = {
   background: 'background',
   source: 'source',
   businessType: 'businessType',
+  jcdw: 'jcdw',
 };
 // 获取图章
 const getSeal = status => {
@@ -51,7 +52,7 @@ const getSeal = status => {
   }
 };
 // 根据业务分类获取对应图标
-const getIconByBusinessType = function(businessType) {
+const getIconByBusinessType = function (businessType) {
   switch (+businessType) {
     case 1:
       return safety;
@@ -76,9 +77,10 @@ export default class App extends PureComponent {
       data,
       fieldNames,
       isSourceShow,
+      isShowPoint,
     } = this.props;
 
-    const { description, sbr, sbsj, zgr, plan_zgsj, real_zgsj, fcr, fcsj, status, background, source, businessType } = { ...defaultFieldNames, ...fieldNames };
+    const { description, sbr, sbsj, zgr, plan_zgsj, real_zgsj, fcr, fcsj, status, background, source, businessType, jcdw } = { ...defaultFieldNames, ...fieldNames };
     const isYCQ = +data[status] === 7;
     const isDFC = +data[status] === 3;
     const isYGB = +data[status] === 4;
@@ -94,11 +96,12 @@ export default class App extends PureComponent {
               <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0, 168, 255, 0.3)' }} />
             </div>
           </div>
-          <div style={{ flex: 1  }}>
+          <div style={{ flex: 1 }}>
             <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>上<span style={{ opacity: 0 }}>隐藏</span>报：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[sbr]}</span>{data[sbsj]}</Ellipsis></div>
-            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>{(isDFC || isYGB)?'实际整改：':'计划整改：'}</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} ><span className={styles.riskDetailItemTextFirstChild}>{data[zgr]}</span><span style={{ color: isYCQ?'#ff4848':undefined }}>{(isDFC || isYGB)?data[real_zgsj]:data[plan_zgsj]}</span></Ellipsis></div>
+            <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>{(isDFC || isYGB) ? '实际整改：' : '计划整改：'}</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', lineHeight: 1 }} ><span className={styles.riskDetailItemTextFirstChild}>{data[zgr]}</span><span style={{ color: isYCQ ? '#ff4848' : undefined }}>{(isDFC || isYGB) ? data[real_zgsj] : data[plan_zgsj]}</span></Ellipsis></div>
             {(isDFC || isYGB) && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>复<span style={{ opacity: 0 }}>隐藏</span>查：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[fcr]}</span>{isDFC ? null : data[fcsj]}</Ellipsis></div>}
             {isSourceShow && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>来<span style={{ opacity: 0 }}>隐藏</span>源：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[source]}</span></Ellipsis></div>}
+            {isShowPoint && <div className={styles.riskDetailItemTextWrapper}><span style={{ color: '#00A8FF' }}>检查点位：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff' }} ><span className={styles.riskDetailItemTextFirstChild}>{data[jcdw]}</span></Ellipsis></div>}
           </div>
         </div>
       </div>

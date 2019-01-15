@@ -99,13 +99,15 @@ const HiddenDangerRecord = ({ data }) => {
     risk_level_name, // 风险点等级名称
     source_type,     // 隐患来源 2:监督点
     risk_level,     // 风险点等级 未评级为null
+    item_name,
+    report_source_name,  // 来源
   } = data;
   // TODO:如果hiddenDangerRecordDto第一个元素的web_url不是图片
   let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
   fileWebUrl = fileWebUrl ? fileWebUrl.split(',')[0] : '';
   const { badge, icon, color } = getIconByStatus(status);
   // 来源
-  const source = source_type_name === '风险点上报' ? `${getLabelByLevel(risk_level)}风险点${name ? `（${name}）` : ''}` : source_type_name;
+  // const source = source_type_name === '风险点上报' ? `${getLabelByLevel(risk_level)}风险点${name ? `（${name}）` : ''}` : source_type_name;
   const isYCQ = +status === 7; // 已超期
   const isDFC = +status === 3  // 待复查
   const isYGB = +status === 4; // 已关闭
@@ -180,10 +182,14 @@ const HiddenDangerRecord = ({ data }) => {
           </span>
           {/* 先判断隐患来源是不是2（网格点），如果是2 直接显示 监督点上报 ，不是2 再判断有没有评级 是这样吗 */}
           <Ellipsis lines={1} tooltip>
-            <span>{source}</span>
+            <span>{report_source_name}</span>
             {/* <span>{+source_type === 2 ? '监督点上报' : risk_level ? `${risk_level_name}色风险点` : '风险点'}</span> */}
             {/* <span>{`（${name}）`}</span> */}
           </Ellipsis>
+        </div>
+        <div className={styles.line}>
+          <span>检查点位：</span>
+          <Ellipsis lines={1} tooltip><span>{item_name}</span></Ellipsis>
         </div>
       </div>
     </div>

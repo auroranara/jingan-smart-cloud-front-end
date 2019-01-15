@@ -54,41 +54,42 @@ export default class PendingInformation extends PureComponent {
         <div className={styles.topRightPurpleTag}>指派维保</div>
         <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>
       </Col>
-    ) : (<Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
-      <div className={styles.innerItem}>
-        <div className={styles.alarmTitle}>
-          <div className={styles.title}>
-            <div className={styles.icon} style={{
-              backgroundImage: `url(${icon})`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center center',
-              backgroundSize: '65% 65%',
-            }}></div>
-            {+fire_state === 1 ? (
-              <div className={styles.redText}>{status === '待处理' ? pendingInfoType : (+ntype === 1 && '误报火警') || (+ntype === 2 && '真实火警')}</div>
-            ) : (
-                <div className={styles.blueText}>{pendingInfoType}</div>
-              )}
+    ) : (
+        <Col key={i} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
+          <div className={styles.innerItem}>
+            <div className={styles.alarmTitle}>
+              <div className={styles.title}>
+                <div className={styles.icon} style={{
+                  backgroundImage: `url(${icon})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: '65% 65%',
+                }}></div>
+                {+fire_state === 1 ? (
+                  <div className={styles.redText}>{status === '待处理' ? pendingInfoType : (+ntype === 1 && '误报火警') || (+ntype === 2 && '真实火警')}</div>
+                ) : (
+                    <div className={styles.blueText}>{pendingInfoType}</div>
+                  )}
+              </div>
+            </div>
+            <div className={styles.alarmDetail}>
+              {component_region}回路{component_no}号
           </div>
-        </div>
-        <div className={styles.alarmDetail}>
-          {component_region}回路{component_no}号
+            <div className={styles.alarmDetail}>
+              <Ellipsis lines={1} tooltip>
+                <span>{label}</span>
+              </Ellipsis>
+            </div>
+            <div className={styles.lastLine}>
+              <span><Icon type="environment" theme="outlined" /></span>
+              <Ellipsis lines={1} tooltip className={styles.location}><span>{install_address}</span></Ellipsis>
+              <div className={styles.time}><span>{t}</span></div>
+            </div>
           </div>
-        <div className={styles.alarmDetail}>
-          <Ellipsis lines={1} tooltip>
-            <span>{label}</span>
-          </Ellipsis>
-        </div>
-        <div className={styles.lastLine}>
-          <span><Icon type="environment" theme="outlined" /></span>
-          <Ellipsis lines={1} tooltip className={styles.location}><span>{install_address}</span></Ellipsis>
-          <div className={styles.time}><span>{t}</span></div>
-        </div>
-      </div>
-      {ntype && ntype === '4' && (<div className={styles.topRightPurpleTag}>指派维保</div>)}
-      {ntype && ntype === '3' && (<div className={styles.topRightBlueTag}>自处理</div>)}
-      <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>
-    </Col>
+          {ntype && ntype === '4' && (<div className={styles.topRightPurpleTag}>指派维保</div>)}
+          {ntype && ntype === '3' && (<div className={styles.topRightBlueTag}>自处理</div>)}
+          <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>
+        </Col>
       ))
   }
 
