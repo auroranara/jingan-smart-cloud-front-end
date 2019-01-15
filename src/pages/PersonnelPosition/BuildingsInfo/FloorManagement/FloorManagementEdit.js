@@ -275,7 +275,7 @@ export default class FloorManagementEdit extends PureComponent {
                 name="files"
                 headers={{ 'JA-Token': getToken() }}
                 data={{ folder }} // 附带的参数
-                listType="picture "
+                // listType="picture "
                 action={uploadAction} // 上传地址
                 fileList={floorList}
                 onChange={this.handleFileChange}
