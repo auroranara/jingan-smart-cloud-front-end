@@ -441,7 +441,7 @@ export default class ElectricityMonitor extends PureComponent {
   };
 
   showTooltip = (e, name) => {
-    const offset = e.getBoundingClientRect();
+    const offset = e.target.getBoundingClientRect();
     this.setState({
       tooltipName: name,
       tooltipVisible: true,
@@ -450,6 +450,8 @@ export default class ElectricityMonitor extends PureComponent {
   };
 
   hideTooltip = () => {
+    console.log('hideTooltip');
+
     this.setState({
       tooltipName: '',
       tooltipVisible: false,
