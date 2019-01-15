@@ -47,6 +47,7 @@ class CheckInfo extends PureComponent {
         date: checksMonth,
         userId: userId || '',
         gridId,
+        report_source: 2,
       },
       success: res => {
         handleParentChange({

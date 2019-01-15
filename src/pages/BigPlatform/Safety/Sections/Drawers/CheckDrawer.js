@@ -36,6 +36,7 @@ class CheckDrawer extends PureComponent {
       payload: {
         date: checksMonth,
         userId: userId || '',
+        report_source: 2,
         gridId,
       },
       success: res => {
