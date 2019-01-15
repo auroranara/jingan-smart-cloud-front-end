@@ -70,7 +70,7 @@ export default class MonitorDrawer extends PureComponent {
         },
         deviceConfig=[],
         deviceHistoryData,
-        cameraList,
+        cameraList=[],
       },
       handleSelect,
       handleClose,
@@ -121,22 +121,22 @@ export default class MonitorDrawer extends PureComponent {
             <span className={styles.rectIcon} />
             数据监测
             {!!devices.length && (
-              <Fragment>
-                <div className={styles.select}>
-                  <OvSelect
-                    cssType={1}
-                    options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))}
-                    value={deviceId}
-                    handleChange={handleSelect}
-                  />
-                </div>
-                <span
-                  className={styles.camera}
-                  style={{ backgroundImage: `url(${cameraIcon})` }}
-                  onClick={e => this.handleClickCamera()}
-                  // onClick={e => handleClickCamera()}
+              <div className={styles.select}>
+                <OvSelect
+                  cssType={1}
+                  options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))}
+                  value={deviceId}
+                  handleChange={handleSelect}
                 />
-              </Fragment>
+              </div>
+            )}
+            {!!devices.length && !!cameraList.length && (
+              <span
+                className={styles.camera}
+                style={{ backgroundImage: `url(${cameraIcon})` }}
+                onClick={e => this.handleClickCamera()}
+                // onClick={e => handleClickCamera()}
+              />
             )}
           </h3>
           <div className={styles.section}>
