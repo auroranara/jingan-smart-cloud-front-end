@@ -3,38 +3,40 @@ import ReactEcharts from 'echarts-for-react';
 
 export default class ChartGauge extends PureComponent {
   render() {
-    const { value, axisLineColor } = this.props;
+    const { value, max, axisLineColor } = this.props;
+    const val = value || 0;
 
     const option = {
-      // tooltip : {
-      //   formatter: "{a} <br/>{b} : {c}%",
-      // },
-      // toolbox: {
-      //   feature: {
-      //     restore: {},
-      //     saveAsImage: {},
-      //   },
-      // },
       series: [
         {
           name: '业务指标',
           type: 'gauge',
           radius: '80%',
-          axisLabel: { show: false },
+          min: 0,
+          max,
+          splitNumber: 5,
+          axisLabel: {
+            distance: 0,
+            fontSize: 9,
+          },
           axisLine: {
             lineStyle: {
               width: 6,
               color: axisLineColor,
             },
           },
-          splitLine: { show: false },
+          splitLine: {
+            length: 12,
+            lineStyle: { color: 'auto' },
+          },
           axisTick: { show: false },
           pointer: { width: 4 },
           itemStyle: {
-            color: '#0FF',
+            // color: '#0FF',
+            color: 'auto',
           },
           detail: { show: false },
-          data: [{ value, name: '' }],
+          data: [{ value: val, name: '' }],
         },
       ],
   };

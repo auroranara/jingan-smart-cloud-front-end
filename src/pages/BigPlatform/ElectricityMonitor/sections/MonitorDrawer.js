@@ -1,8 +1,9 @@
 import React, { Fragment, PureComponent } from 'react';
+import { Icon } from 'antd';
 
 import {
   DrawerContainer,
-  DrawerSection,
+  // DrawerSection,
   OvSelect,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
@@ -12,6 +13,7 @@ import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
 import cameraIcon from '../imgs/camera.png';
+import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
 
 // const TYPE = 'monitor';
 const TITLES = ['单位监测信息', '报警信息'];
@@ -23,6 +25,15 @@ const VIDEO_STYLE = {
   width: '90%',
   marginLeft: '-43%',
 };
+
+function DoubleRight(props) {
+  return (
+    <Icon
+      type="double-right"
+      style={{ color: '#0FF' }}
+    />
+  );
+}
 
 export default class MonitorDrawer extends PureComponent {
   state={ videoVisible: false };
@@ -87,6 +98,13 @@ export default class MonitorDrawer extends PureComponent {
       }
     });
 
+    let gauges = <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />;
+    const equipmentExist = !!list.length;
+    if (equipmentExist)
+      gauges = list.map((item) => (
+        <Gauge key={item.desc} data={item} />
+      ));
+
     const left = (
       <Fragment>
         <div className={styles.info}>
@@ -99,32 +117,53 @@ export default class MonitorDrawer extends PureComponent {
             ))}
           </p>
         </div>
-        <div className={styles.select}>
-          <OvSelect cssType={2} options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))} value={deviceId} handleChange={handleSelect} />
-        </div>
-        <DrawerSection title="实时监测数据" style={{ position: 'relative' }}>
-          <span
-            className={styles.camera}
-            style={{ backgroundImage: `url(${cameraIcon})` }}
-            onClick={e => this.handleClickCamera()}
-            // onClick={e => handleClickCamera()}
-          />
-          <div className={styles.gauges}>
-            {list.map((item) => (
-              <Gauge key={item.desc} data={item} />
-            ))}
+        <div className={styles.chartContainer}>
+          <h3 className={styles.chartTitle}>
+            <span className={styles.rectIcon} />
+            数据监测
+            {equipmentExist && (
+              <Fragment>
+                <div className={styles.select}>
+                  <OvSelect
+                    cssType={1}
+                    options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))}
+                    value={deviceId}
+                    handleChange={handleSelect}
+                  />
+                </div>
+                <span
+                  className={styles.camera}
+                  style={{ backgroundImage: `url(${cameraIcon})` }}
+                  onClick={e => this.handleClickCamera()}
+                  // onClick={e => handleClickCamera()}
+                />
+              </Fragment>
+            )}
+          </h3>
+          <div className={styles.section}>
+            <h4 className={styles.secTitle}>
+              <DoubleRight />
+              实时监测数据
+            </h4>
+            <div className={styles.gauges}>
+              {gauges}
+            </div>
           </div>
-        </DrawerSection>
-        <DrawerSection title="监测趋势图" >
-          <ElectricityCharts
-            noData={devices.length}
-            data={{
-              deviceHistoryData,
-              deviceConfig,
-              chartTabs: ['temp', 'v1'],
-            }}
-          />
-        </DrawerSection>
+          <div className={styles.section}>
+            <h4 className={styles.secTitle1}>
+              <DoubleRight />
+              监测趋势图
+            </h4>
+            <ElectricityCharts
+              noData={devices.length}
+              data={{
+                deviceHistoryData,
+                deviceConfig,
+                chartTabs: ['temp', 'v1'],
+              }}
+            />
+          </div>
+        </div>
         <VideoPlay
           showList={false}
           videoList={cameraList}

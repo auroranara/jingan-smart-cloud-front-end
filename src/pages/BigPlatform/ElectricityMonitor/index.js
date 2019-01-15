@@ -240,6 +240,8 @@ export default class ElectricityMonitor extends PureComponent {
     const { dispatch } = this.props;
     const { mapInstance } = this.state;
     const { companyId, longitude, latitude } = unitDetail;
+    // console.log('unitDetail', unitDetail, deviceId);
+    // console.log('mapInstance', mapInstance);
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.getDeviceStatusCount(companyId);
     this.getCameraList(companyId);
@@ -419,7 +421,7 @@ export default class ElectricityMonitor extends PureComponent {
   }
 
   handleSelectDevice = (deviceId) => {
-    console.log(deviceId);
+    // console.log(deviceId);
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);

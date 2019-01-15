@@ -46,7 +46,7 @@ export default function Gauge(props) {
   return (
     <div className={styles.container}>
       <div className={styles.chart}>
-        <ChartGauge value={value / end * 100} axisLineColor={axisLineColor} />
+        <ChartGauge value={value} max={end} axisLineColor={axisLineColor} />
       </div>
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>
