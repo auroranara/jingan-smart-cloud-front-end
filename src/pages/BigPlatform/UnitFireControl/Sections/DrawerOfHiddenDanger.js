@@ -182,7 +182,7 @@ const HiddenDangerRecord = ({ data }) => {
           </span>
           {/* 先判断隐患来源是不是2（网格点），如果是2 直接显示 监督点上报 ，不是2 再判断有没有评级 是这样吗 */}
           <Ellipsis lines={1} tooltip>
-            <span>{report_source_name}</span>
+            <span>{report_source_name || '暂无数据'}</span>
             {/* <span>{+source_type === 2 ? '监督点上报' : risk_level ? `${risk_level_name}色风险点` : '风险点'}</span> */}
             {/* <span>{`（${name}）`}</span> */}
           </Ellipsis>
