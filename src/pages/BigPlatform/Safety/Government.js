@@ -317,7 +317,7 @@ class GovernmentBigPlatform extends Component {
       payload: {
         date: month,
         gridId,
-        report_source: 2,
+        reportSource: 2,
       },
     });
 

@@ -271,7 +271,7 @@ class HiddenDangerPie extends PureComponent {
       type: 'bigPlatform/fetchHiddenDangerCompany',
       payload: {
         gridId,
-        report_source: 2,
+        reportSource: 2,
       },
       success: () => {
         handleParentChange({
