@@ -16,6 +16,7 @@ import cameraIcon from '../imgs/camera.png';
 import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
 
 // const TYPE = 'monitor';
+const TEMPERATURE = '温度';
 const TITLES = ['单位监测信息', '报警信息'];
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
@@ -100,8 +101,8 @@ export default class MonitorDrawer extends PureComponent {
 
     let gauges = <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />;
     if (list.length)
-      gauges = list.map((item) => (
-        <Gauge key={item.desc} data={item} />
+      gauges = list.map((item, i) => (
+        <Gauge key={item.desc} data={item} labelFontSize={item.desc.includes(TEMPERATURE) ? 10 : 8} />
       ));
 
     const left = (
