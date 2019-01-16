@@ -454,6 +454,7 @@ export default class App extends PureComponent {
       type: 'newUnitFireControl/fetchCompanyMessage',
       payload: {
         company_id: companyId,
+        type: '2',
         month: moment().format('YYYY-MM'),
       },
     });

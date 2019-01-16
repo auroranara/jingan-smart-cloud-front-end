@@ -590,10 +590,10 @@ export default {
         point:
           response.point &&
           response.point.filter(
-            ({ itemId, xNum, yNum }) =>
+            ({ itemId, xFire, yFire }) =>
               itemId &&
-              (xNum || Number.parseFloat(xNum) === 0) &&
-              (yNum || Number.parseFloat(yNum) === 0)
+              (xFire || Number.parseFloat(xFire) === 0) &&
+              (yFire || Number.parseFloat(yFire) === 0)
           ),
         // 移除地址不合法的四色图
         fourColorImg:
