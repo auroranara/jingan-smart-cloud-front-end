@@ -208,7 +208,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                       status: +hiddenStatus,
                       background: path,
                       businessType: business_type,
-                      source: report_source_name,
+                      source: report_source_name || '暂无数据',
                       jcdw: item_name,
                     }}
                   />

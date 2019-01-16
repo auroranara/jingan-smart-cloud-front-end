@@ -50,8 +50,16 @@ export default function Gauge(props) {
       </div>
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>
-        <p>实时温度值：<span style={{ color: isOutOfContact?undefined:COLORS[status] }}>{isOutOfContact ? '--' : `${value}${unit}`}</span></p>
-        <p>参考范围值：{isOutOfContact ? '--' : `${start} ~ ${Math.min(end, ...limit.filter(item => item !== null))}${unit}`}</p>
+        <p>
+          实时温度值：
+          <span style={{ color: isOutOfContact?undefined:COLORS[status] }}>
+            {isOutOfContact || value === null || value === undefined ? '--' : `${value}${unit}`}
+          </span>
+        </p>
+        <p>
+          参考范围值：
+          {isOutOfContact ? '--' : `${start} ~ ${Math.min(end, ...limit.filter(item => item !== null))}${unit}`}
+        </p>
       </div>
     </div>
   );
