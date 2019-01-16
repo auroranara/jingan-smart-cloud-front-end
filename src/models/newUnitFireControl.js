@@ -146,12 +146,13 @@ const transformHiddenDangerFields = ({
   real_rectify_time,
   review_user_name,
   status,
-  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
+  hiddenDangerRecordDto, //: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
   source_type_name,
   companyBuildingItem,
   business_type,
   review_time,
 }) => {
+  const background = (hiddenDangerRecordDto[0] || { fileWebUrl: '' }).fileWebUrl;
   const { object_title, risk_level } = companyBuildingItem || {};
   return {
     id,
