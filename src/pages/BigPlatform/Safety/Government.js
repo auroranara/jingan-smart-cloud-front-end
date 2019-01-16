@@ -558,8 +558,8 @@ class GovernmentBigPlatform extends Component {
     this.setState({ ...drawVisible });
   };
 
-  handleMapParentChange = newState => {
-    this.setState(newState);
+  handleParentChange = newState => {
+    this.setState({ ...newState });
   };
 
   render() {
@@ -675,9 +675,7 @@ class GovernmentBigPlatform extends Component {
                 dispatch={dispatch}
                 countDangerLocation={countDangerLocation}
                 goComponent={this.goComponent}
-                handleParentChange={newState => {
-                  this.setState(newState);
-                }}
+                handleParentChange={this.handleParentChange}
                 gridId={gridId}
               /> */}
 
@@ -686,9 +684,7 @@ class GovernmentBigPlatform extends Component {
                 goComponent={this.goComponent}
                 hiddenDangerCompanyAll={hiddenDangerCompanyAll}
                 listForMap={listForMapForOptimize}
-                handleParentChange={newState => {
-                  this.setState(newState);
-                }}
+                handleParentChange={this.handleParentChange}
                 gridId={gridId}
                 closeAllDrawers={this.closeAllDrawers}
               />
@@ -697,9 +693,7 @@ class GovernmentBigPlatform extends Component {
                 dispatch={dispatch}
                 goComponent={this.goComponent}
                 data={securityCheck}
-                handleParentChange={newState => {
-                  this.setState(newState);
-                }}
+                handleParentChange={this.handleParentChange}
                 fetchCheckMsgs={this.fetchCheckMsgs}
                 closeAllDrawers={this.closeAllDrawers}
               />
@@ -717,9 +711,7 @@ class GovernmentBigPlatform extends Component {
                 selfCheckPointTotal={selfCheckPointTotal}
                 selectOvertimeItemNum={selectOvertimeItemNum}
                 checkedCompanyInfo={checkNum}
-                handleParentChange={newState => {
-                  this.setState(newState);
-                }}
+                handleParentChange={this.handleParentChange}
                 fetchCheckMsgs={this.fetchCheckMsgs}
                 closeAllDrawers={this.closeAllDrawers}
               />
@@ -742,7 +734,7 @@ class GovernmentBigPlatform extends Component {
                 showTooltip={this.showTooltip}
                 hideTooltip={this.hideTooltip}
                 handleHideInfoWindow={this.handleHideInfoWindow}
-                handleParentChange={this.handleMapParentChange}
+                handleParentChange={this.handleParentChange}
                 goCompany={this.goCompany}
               />
               {/* </div>
@@ -864,9 +856,7 @@ class GovernmentBigPlatform extends Component {
                 dangerCompanyOver={hiddenDangerOverTime}
                 goBack={this.goBack}
                 goComponent={this.goComponent}
-                handleParentChange={newState => {
-                  this.setState(newState);
-                }}
+               handleParentChange={this.handleParentChange}
                 fetchCheckMsgs={this.fetchCheckMsgs}
                 checksMonth={checksMonth}
                 gridId={gridId}
@@ -900,18 +890,14 @@ class GovernmentBigPlatform extends Component {
           goComponent={this.goComponent}
           data={selfCheckPoint}
           riskColorSummary={riskColorSummary}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
           closeAllDrawers={this.closeAllDrawers}
         />
 
         {/* 风险点-企业 */}
         <RiskPointCompany
           visible={riskPointCompany}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
           closeAllDrawers={this.closeAllDrawers}
           companyName={riskComName}
         />
@@ -927,9 +913,7 @@ class GovernmentBigPlatform extends Component {
           month={checksMonth}
           checkUserId={checkUserId}
           gridId={gridId}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
           dangerCoTitle={dangerCoTitle}
         />
 
@@ -942,9 +926,7 @@ class GovernmentBigPlatform extends Component {
           dangerCompany={hiddenDangerCompanyMonth}
           dangerCompanyOver={hiddenDangerOverTime}
           goComponent={this.goComponent}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
           fetchCheckMsgs={this.fetchCheckMsgs}
           checksMonth={checksMonth}
           gridId={gridId}
@@ -956,9 +938,7 @@ class GovernmentBigPlatform extends Component {
           hiddenDangerListByDate={hiddenDangerListByDate}
           riskDetailList={riskDetailNoOrder}
           lastSection={dangerCompanyLast}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
         />
 
         {/* 已超时单位 */}
@@ -966,9 +946,7 @@ class GovernmentBigPlatform extends Component {
           visible={overComDrawer}
           listData={hiddenDangerOverTime}
           goCompany={this.goCompany}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
         />
 
         {/* 单位概况 */}
@@ -976,9 +954,7 @@ class GovernmentBigPlatform extends Component {
           visible={comInDrawer}
           goCompany={this.goCompany}
           searchAllCompany={searchAllCompany}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
         />
 
         {/* 监管人员 */}
@@ -987,9 +963,7 @@ class GovernmentBigPlatform extends Component {
           goComponent={this.goComponent}
           listData={fulltimeWorkerList}
           fulltimeWorker={fulltimeWorker}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
         />
 
         {/* 已超期隐患单位 */}
@@ -1000,9 +974,7 @@ class GovernmentBigPlatform extends Component {
           listData={overRectifyCompany}
           overRectifyNum={overRectifyNum}
           gridId={gridId}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
         />
 
         {/* 单位概况 */}
@@ -1015,9 +987,7 @@ class GovernmentBigPlatform extends Component {
           specialEquipment={specialEquipment}
           hiddenDangerListByDate={riskDetailNoOrder}
           onRef={this.companyInfoRef}
-          handleParentChange={newState => {
-            this.setState(newState);
-          }}
+          handleParentChange={this.handleParentChange}
         />
       </div>
     );
