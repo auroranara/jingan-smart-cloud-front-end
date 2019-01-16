@@ -103,7 +103,7 @@ export default class App extends PureComponent {
       },
       {
         title: '隐患来源',
-        dataIndex: 'source_type_name',
+        dataIndex: 'report_source_name',
       },
       {
         title: '点位名称',
