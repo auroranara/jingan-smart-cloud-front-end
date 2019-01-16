@@ -175,7 +175,7 @@ export default class App extends PureComponent {
                 },
               });
 
-              this.fetchViewFireAlarm();
+              if(this.state.fireAlarmVisible) this.fetchViewFireAlarm();
             }
 
             // 四色图隐患
