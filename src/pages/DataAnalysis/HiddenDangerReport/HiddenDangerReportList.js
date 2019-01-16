@@ -103,7 +103,7 @@ export default class App extends PureComponent {
       },
       {
         title: '隐患来源',
-        dataIndex: 'source_type_name',
+        dataIndex: 'report_source_name',
       },
       {
         title: '点位名称',
@@ -134,7 +134,7 @@ export default class App extends PureComponent {
       {
         title: '检查人',
         dataIndex: 'allCheckPersonNames',
-        render: (val) => (<Ellipsis tooltip length={7} style={{ lineHeight: '21px' }}>{val}</Ellipsis>),
+        render: (val) => <Ellipsis tooltip length={7} style={{ overflow: 'visible' }}>{val}</Ellipsis>,
       },
       {
         title: '创建日期',

@@ -83,7 +83,7 @@ export default class SmokeDetector extends PureComponent {
         companyName,
         typeLabel: TYPE_LABEL,
         type: 'dataAnalysis/fetchExport',
-        payload: { ...handleFormVals(formVals), type: TYPE, companyId: id },
+        payload: { ...handleFormVals(formVals), classType: TYPE, companyId: id },
       });
     else
       notification.warning({
@@ -111,7 +111,7 @@ export default class SmokeDetector extends PureComponent {
         params: { id },
       },
     } = this.props;
-    let payload = { pageSize: PAGE_SIZE, pageNum, type: TYPE, companyId: id };
+    let payload = { pageSize: PAGE_SIZE, pageNum, classType: TYPE, companyId: id };
     if (values) payload = { ...payload, ...handleFormVals(values) };
     dispatch({
       type: 'dataAnalysis/fetchData',

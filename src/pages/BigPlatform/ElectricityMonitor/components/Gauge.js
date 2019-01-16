@@ -13,7 +13,10 @@ const RANGES = {
 };
 
 export default function Gauge(props) {
-  const { data: { desc: title, value, unit, limit, status } } = props;
+  const {
+    labelFontSize,
+    data: { desc: title, value, unit, limit, status },
+  } = props;
   const [start, end] = RANGES[title];
   const [value1, value2] = limit;
   const axisLineColor = [];
@@ -46,7 +49,7 @@ export default function Gauge(props) {
   return (
     <div className={styles.container}>
       <div className={styles.chart}>
-        <ChartGauge value={value} max={end} axisLineColor={axisLineColor} />
+        <ChartGauge value={value} max={end} axisLineColor={axisLineColor} labelFontSize={labelFontSize} />
       </div>
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>
