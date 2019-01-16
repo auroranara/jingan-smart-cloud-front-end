@@ -242,7 +242,7 @@ export default class App extends PureComponent {
    */
   handleSearch = () => {
     const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageSize } } }, user: { currentUser: { id } } } = this.props;
-    const { createTime, documentTypeIds, ...rest } = getFieldsValue();
+    const { createTime, documentTypeIds,source_type, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime || [];
     const payload = {
       ...rest,
@@ -251,6 +251,7 @@ export default class App extends PureComponent {
       query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
       documentTypeIds: documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
+      report_source:source_type,
     };
     // 获取隐患列表
     dispatch({
