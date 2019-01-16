@@ -37,14 +37,21 @@ function DoubleRight(props) {
 }
 
 export default class MonitorDrawer extends PureComponent {
-  state={ videoVisible: false };
+  state={
+    videoVisible: false,
+    videoKeyId: '',
+  };
 
   handleClickCamera = () => {
-    this.setState({ videoVisible: true });
+    const { data: { cameraList=[] } } = this.props;
+    this.setState({
+      videoVisible: true,
+      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+    });
   };
 
   handleVideoClose = () => {
-    this.setState({ videoVisible: false });
+    this.setState({ videoVisible: false, videoKeyId: '' });
   };
 
   render() {
@@ -77,7 +84,10 @@ export default class MonitorDrawer extends PureComponent {
       handleClose,
       // handleClickCamera,
     } = this.props;
-    const { videoVisible } = this.state;
+    const { videoVisible, videoKeyId } = this.state;
+
+    console.log(videoKeyId);
+
     // 实时数据列表
     const list = [];
     deviceDataForAppList.forEach(({ desc, code, value, unit, status }) => {
@@ -168,7 +178,7 @@ export default class MonitorDrawer extends PureComponent {
           showList={false}
           videoList={cameraList}
           visible={videoVisible}
-          keyId={cameraList.length ? cameraList[0].key_id : ''}
+          keyId={videoKeyId}
           style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
         />
