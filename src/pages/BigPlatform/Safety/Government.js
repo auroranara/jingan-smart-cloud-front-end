@@ -558,6 +558,10 @@ class GovernmentBigPlatform extends Component {
     this.setState({ ...drawVisible });
   };
 
+  handleMapParentChange = newState => {
+    this.setState(newState);
+  };
+
   render() {
     const {
       communityCom,
@@ -738,9 +742,7 @@ class GovernmentBigPlatform extends Component {
                 showTooltip={this.showTooltip}
                 hideTooltip={this.hideTooltip}
                 handleHideInfoWindow={this.handleHideInfoWindow}
-                handleParentChange={newState => {
-                  this.setState(newState);
-                }}
+                handleParentChange={this.handleMapParentChange}
                 goCompany={this.goCompany}
               />
               {/* </div>
