@@ -39,31 +39,37 @@ function MapLegend(props) {
   );
 }
 export default class MapSection extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchValue: '',
-      legendActive: null,
-      filter: 'All',
-      infoWindowShow: false,
-      infoWindow: {
-        companyId: '',
-        companyName: '',
-        level: '',
-        address: '',
-        longitude: 120.366011,
-        latitude: 31.544389,
-      },
-      tooltipName: '',
-      tooltipVisible: false,
-      tooltipPosition: [0, 0],
-    };
-    this.infoWindow = { longitude: 0, latitude: 0 };
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     searchValue: '',
+  //     legendActive: null,
+  //     filter: 'All',
+  //     infoWindowShow: false,
+  //     infoWindow: {
+  //       companyId: '',
+  //       companyName: '',
+  //       level: '',
+  //       address: '',
+  //       longitude: 120.366011,
+  //       latitude: 31.544389,
+  //     },
+  //     tooltipName: '',
+  //     tooltipVisible: false,
+  //     tooltipPosition: [0, 0],
+  //   };
+  //   this.infoWindow = { longitude: 0, latitude: 0 };
+  // }
+
+  // componentDidUpdate(prevProps, prevState) {
+  //   console.log('prevProps', prevProps);
+  //   console.log('props', this.props);
+  // }
 
   renderMarkers = lvl => {
     const {
-      mapData: { units = [] },
+      // mapData: { units = [] },
+      units=[],
       unitDetail: { companyId: selectedCompanyId } = {},
     } = this.props;
 
@@ -254,9 +260,20 @@ export default class MapSection extends PureComponent {
             },
           }}
         >
-          {this.renderInfoWindow()}
+          {/* {this.renderInfoWindow()} */}
           {this.renderMarkers()}
           <MapTypeBar />
+          <div
+            className={styles.allPoint}
+            onClick={() => {
+              this.mapInstance.setFitView(
+                this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
+              );
+            }}
+          >
+            <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
+            重置
+          </div>
         </GDMap>
 
         <MapLegend />
