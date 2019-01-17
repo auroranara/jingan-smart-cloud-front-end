@@ -242,7 +242,7 @@ export default class App extends PureComponent {
    */
   handleSearch = () => {
     const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageSize } } }, user: { currentUser: { id } } } = this.props;
-    const { createTime, documentTypeIds,source_type, ...rest } = getFieldsValue();
+    const { createTime, documentTypeIds, source_type, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime || [];
     const payload = {
       ...rest,
@@ -251,7 +251,7 @@ export default class App extends PureComponent {
       query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
       documentTypeIds: documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
-      report_source:source_type,
+      report_source: source_type,
     };
     // 获取隐患列表
     dispatch({
@@ -348,19 +348,19 @@ export default class App extends PureComponent {
     };
     const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = fieldsValue;
     // 重置控件
-    setFieldsValue({
-      grid_id: undefined,
-      company_name: undefined,
-      code: undefined,
-      source_type: undefined,
-      status: undefined,
-      business_type: undefined,
-      item_name: undefined,
-      level: undefined,
-      createTime: query_start_time && query_end_time ? [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')] : [],
-      documentTypeIds: documentTypeIds && documentTypeIds.split(','),
-      ...rest,
-    });
+    // setFieldsValue({
+    //   grid_id: undefined,
+    //   company_name: undefined,
+    //   code: undefined,
+    //   source_type: undefined,
+    //   status: undefined,
+    //   business_type: undefined,
+    //   item_name: undefined,
+    //   level: undefined,
+    //   createTime: query_start_time && query_end_time ? [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')] : [],
+    //   documentTypeIds: documentTypeIds && documentTypeIds.split(','),
+    //   ...rest,
+    // });
     // console.log(pageNum);
     // 获取隐患列表
     dispatch({
