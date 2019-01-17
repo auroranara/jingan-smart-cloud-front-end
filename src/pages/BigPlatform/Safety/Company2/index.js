@@ -19,6 +19,7 @@ import StaffRecords from '../Components/StaffRecords';
 import VideoPlay from '../../FireControl/section/VideoPlay';
 
 import styles from './index.less';
+import { IndexDrawer } from './sections/Components';
 
 // 1 当没有四色图时，默认显示当前隐患模块        ----------> companyMessage
 // 2 当有四色图时
@@ -70,6 +71,7 @@ export default class App extends PureComponent {
     videoVisible: false,
     // 视频keyId
     keyId: undefined,
+    indexDrawerVisible: true, // 安全指数弹框
   }
 
   componentDidMount() {
@@ -325,7 +327,7 @@ export default class App extends PureComponent {
         }
       },
     });
-  }
+  };
 
   /**
    * 隐藏巡查点位
@@ -335,7 +337,7 @@ export default class App extends PureComponent {
       rightQueue: rightQueue.slice(0, -1),
       inspectionPointVisible: false,
     }));
-  }
+  };
 
   /**
    * 显示视频
@@ -345,7 +347,15 @@ export default class App extends PureComponent {
       videoVisible: true,
       keyId,
     });
-  }
+  };
+
+  handleDrawerVisibleChange = (name, rest) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+      ...rest,
+    }));
+  };
 
   render() {
     const { monitorDataLoading, unitSafety } = this.props;
@@ -366,6 +376,7 @@ export default class App extends PureComponent {
       rightQueue,
       videoVisible,
       keyId,
+      indexDrawerVisible,
     } = this.state;
 
     return (
@@ -386,6 +397,7 @@ export default class App extends PureComponent {
                   handleClickCount={this.handleChange}
                   handleClickCurrentHiddenDanger={this.handleShowCurrentHiddenDanger}
                   currentHiddenDangerVisible={currentHiddenDangerVisible}
+                  handleDrawerVisibleChange={this.handleDrawerVisibleChange}
                 />
                 {/* 风险点信息 */}
                 <PointInfo
@@ -525,6 +537,10 @@ export default class App extends PureComponent {
             )}
           </Col>
         </Row>
+        <IndexDrawer
+          visible={indexDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
         {/* 视频播放 */}
         <VideoPlay
           style={{ zIndex: 99999999 }}

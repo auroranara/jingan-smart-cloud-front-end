@@ -21,6 +21,11 @@ const hdIcon = `${iconPrefix}hd-icon.png`;
  * date: 2018年12月10日
  */
 export default class CompanyInfo extends PureComponent {
+  showIndexDrawer = e => {
+    const { handleDrawerVisibleChange } = this.props;
+    handleDrawerVisibleChange('index');
+  };
+
   render() {
     const {
       // 样式
@@ -109,7 +114,9 @@ export default class CompanyInfo extends PureComponent {
                   right: 0,
                   bottom: 0,
                   height: 70,
+                  cursor: 'pointer',
                 }}
+                onClick={this.showIndexDrawer}
                 format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 22, marginBottom: 4 }}>{percent}</div><div style={{ fontSize: 12 }}>安全指数</div></div>}
               />
             )}
