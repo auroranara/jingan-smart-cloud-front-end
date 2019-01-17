@@ -25,6 +25,17 @@ import {
   getSafetyIndex,
 } from '../services/unitSafety';
 
+function getRiskList(response) {
+  if (!response)
+    return [];
+
+  return ['red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
+    const value = response[`${next}DangerResult`];
+    const list = Array.isArray(value) ? value.map(item => ({ ...item, flag: next })) : [];
+    return prev.concat(list);
+  }, []);
+}
+
 export default {
   namespace: 'unitSafety',
 
@@ -81,6 +92,10 @@ export default {
     safetyIndex: undefined,
     // 隐患巡查单条记录对应的隐患列表
     inspectionRecordData: {},
+    // 风险点数组
+    riskList: [],
+    // 隐患排查数组
+    dangerList: [],
   },
 
   effects: {
@@ -164,15 +179,10 @@ export default {
         // .sort((a, b) => {
         //   return +b.real_rectify_time - a.real_rectify_time;
         // });
+      yield put({ type: 'save', payload:  { hiddenDangerList : { ycq, wcq, dfc } } });
       yield put({
-        type: 'save',
-        payload:  {
-          hiddenDangerList : {
-            ycq,
-            wcq,
-            dfc,
-          },
-        },
+        type: 'saveDangerList',
+        payload: response && Array.isArray(response.hiddenDangers) ? response.hiddenDangers.filter(({ status }) => status !== '4') : [],
       });
       if (callback) {
         callback();
@@ -210,6 +220,7 @@ export default {
         blueDangerResult,
         notRatedDangerResult = [],
       } = response;
+
       const redList = {
         normal: redDangerResult.filter(({ status }) => +status === 1),
         checking: redDangerResult.filter(({ status }) => +status === 3),
@@ -255,6 +266,7 @@ export default {
           },
         },
       });
+      yield put({ type: 'saveRiskList', payload: getRiskList(response) });
       if (callback) {
         callback();
       }
@@ -350,6 +362,12 @@ export default {
         ...state,
         ...payload,
       };
+    },
+    saveRiskList(state, action) {
+      return { ...state, riskList: action.payload };
+    },
+    saveDangerList(state, action) {
+      return { ...state, dangerList: action.payload };
     },
   },
 }

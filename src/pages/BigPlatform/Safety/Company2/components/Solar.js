@@ -17,13 +17,13 @@ const PLANET_STYLES = [
 ];
 
 export default function Solar(props) {
-  const { index=90 } = props;
+  const { index } = props;
 
   return (
     <div className={styles.container}>
       <div className={styles.circle}>
         <div className={styles.solar}>
-          <p className={styles.index}>{index}</p>
+          <p className={styles.index}>{index || 0}</p>
           <p className={styles.safe}>安全指数</p>
         </div>
         {PLANET_STYLES.map(s => <span key={s.backgroundColor} className={styles.planet} style={s} />)}
