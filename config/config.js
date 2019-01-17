@@ -35,12 +35,12 @@ export default {
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/mock': {
-      target: `http://${hosts.gj}`,
+      target: `http://${hosts.mock}`,
       changeOrigin: true,
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.sqz}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -65,7 +65,7 @@ export default {
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
           exclude: ['@babel/runtime'],
         },
-        hardSource: true,
+        hardSource: false,
       },
     ],
   ],

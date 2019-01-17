@@ -4,6 +4,8 @@ import { connect } from 'dva';
 // import Carousel3d from './Carousel3d';
 import codes from '@/utils/codes';
 import styles from './Dashboard.less';
+// 用电安全驾驶舱图
+import electricImg from '../../assets/dashboard-electricity.png'
 
 // const fire = 'http://data.jingan-china.cn/v2/dashboard/fire-control.png';
 // const safe = 'http://data.jingan-china.cn/v2/dashboard/safety.png';
@@ -16,6 +18,7 @@ const safeItem = { src: safe, url: '', label: '安全驾驶舱' };
 const fireItem = { src: fire, url: '', label: '消防驾驶舱' };
 const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' }
 const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' }
+const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' }
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
@@ -28,6 +31,7 @@ export default class Dashboard extends PureComponent {
     fireService: 0,         // 消防可见
     monitorService: 0,      // 动态监测可见
     personnelPositioning: 0, // 人员定位可见
+    electricityMonitor: 0, // 用电安全可见
   };
 
   componentDidMount() {
@@ -45,7 +49,7 @@ export default class Dashboard extends PureComponent {
 
     // const regulatoryClassification = ['1', '2'];
     const classification = Array.isArray(regulatoryClassification) && regulatoryClassification.map(n => Number.parseInt(n, 10)) || [];
-    const [safetyAuth, fireControlAuth, dynamicMonitorAuth, personnelPositionAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
+    const [safetyAuth, fireControlAuth, dynamicMonitorAuth, personnelPositionAuth, electricityMonitorAuth] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应)
     const [clfcSafetyAuth, clfcFireControlAuth, clfcEnviromentAuth] = [1, 2, 3].map(k => classification.includes(k));
@@ -54,6 +58,7 @@ export default class Dashboard extends PureComponent {
     safeItem.url = `${window.publicPath}#/big-platform/safety/government/index`
     // fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`
+    electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor`
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
     // if (unitType === 2) {
@@ -102,14 +107,16 @@ export default class Dashboard extends PureComponent {
         this.setState({
           safetyProduction: safetyProduction && safetyAuth && clfcSafetyAuth,
           fireService: fireService && fireControlAuth && clfcFireControlAuth,
+          electricityMonitor: electricityMonitorAuth,
         });
         break;
 
       // 运营
       case 3:
         this.setState({
-          safetyProduction: 1 && safetyAuth,
-          fireService: 1 && fireControlAuth,
+          safetyProduction: safetyAuth,
+          fireService: fireControlAuth,
+          electricityMonitor: electricityMonitorAuth,
         });
         break;
 
@@ -133,7 +140,7 @@ export default class Dashboard extends PureComponent {
   }
 
   render() {
-    const { safetyProduction, fireService, monitorService, personnelPositioning } = this.state;
+    const { safetyProduction, fireService, monitorService, personnelPositioning, electricityMonitor } = this.state;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =
@@ -153,8 +160,8 @@ export default class Dashboard extends PureComponent {
     //   imgWrapper.push(monitorItem)
     // }
 
-    const items = [safeItem, fireItem, monitorItem, positionItem];
-    const imgWrapper = [safetyProduction, fireService, monitorService, personnelPositioning].reduce((prev, next, i) => {
+    const items = [safeItem, fireItem, monitorItem, positionItem, electricItem];
+    const imgWrapper = [safetyProduction, fireService, monitorService, personnelPositioning, electricityMonitor].reduce((prev, next, i) => {
       next && prev.push(items[i]);
       return prev;
     }, []);

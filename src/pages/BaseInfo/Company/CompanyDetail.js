@@ -65,6 +65,7 @@ const fieldLabels = {
   businessScope: '经营范围',
   code: '社会信用代码',
   companyIchnography: '单位平面图',
+  fireIchnography: '消防平面图',
   companyStatus: '单位状态',
   createTime: '成立时间',
   economicType: '经济类型',
@@ -175,8 +176,7 @@ export default class CompanyDetail extends PureComponent {
     const textMap = this.textMap;
     const { gridId, gotMenus } = this.state;
 
-    if (gridId && gotMenus && idMap[gridId])
-      return idMap[gridId].map(id => textMap[id]).join('-');
+    if (gridId && gotMenus && idMap[gridId]) return idMap[gridId].map(id => textMap[id]).join('-');
     return '暂无信息';
   };
 
@@ -232,6 +232,7 @@ export default class CompanyDetail extends PureComponent {
             latitude,
             companyNatureLabel,
             companyIchnography,
+            fireIchnographyDetails,
             registerAddress,
             registerProvinceLabel,
             registerCityLabel,
@@ -270,6 +271,9 @@ export default class CompanyDetail extends PureComponent {
       : JSON.parse(companyIchnographyList.dbUrl);
     // console.log(typeof companyIchnographyList);
 
+    let fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
+    fireIchnographyList = fireIchnographyList ? fireIchnographyList : fireIchnographyList.dbUrl;
+
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
@@ -288,18 +292,22 @@ export default class CompanyDetail extends PureComponent {
           <Description term={fieldLabels.gridId}>{this.getGridLabel()}</Description>
           <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
             {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
-              {registerAddressLabel || getEmptyData()}
+            {registerAddressLabel || getEmptyData()}
             {/* </Ellipsis> */}
           </Description>
           <Description term={fieldLabels.practicalAddress} style={{ height: 38 }}>
             {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
-              {practicalAddressLabel || getEmptyData()}
+            {practicalAddressLabel || getEmptyData()}
             {/* </Ellipsis> */}
           </Description>
         </DescriptionList>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
-          <Description term={fieldLabels.importantHost}>{IMPORTANT_TYPES[importantHost]}</Description>
-          <Description term={fieldLabels.importantSafety}>{IMPORTANT_TYPES[importantSafety]}</Description>
+          <Description term={fieldLabels.importantHost}>
+            {IMPORTANT_TYPES[importantHost]}
+          </Description>
+          <Description term={fieldLabels.importantSafety}>
+            {IMPORTANT_TYPES[importantSafety]}
+          </Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>
@@ -308,6 +316,17 @@ export default class CompanyDetail extends PureComponent {
                   <div key={url}>
                     <a href={url} target="_blank" rel="noopener noreferrer">
                       {name || '预览'}
+                    </a>
+                  </div>
+                ))
+              : getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.fireIchnography}>
+            {fireIchnographyList.length !== 0
+              ? fireIchnographyList.map(({ fileName, webUrl }, index) => (
+                  <div key={webUrl}>
+                    <a href={webUrl} target="_blank" rel="noopener noreferrer">
+                      {fileName || '预览'}
                     </a>
                   </div>
                 ))

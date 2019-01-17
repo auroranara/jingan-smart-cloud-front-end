@@ -11,9 +11,48 @@
 }
 /* 告警信息子项 */
 .message {
-  &:not(:first-child) {
-    border-bottom: 2px solid transparent;
-    border-image: linear-gradient( 0deg, rgb(255,255,255) 0%, rgb(0,0,0) 100%);
-    opacity: 0.2;
+  padding: 8px 12px 8px 16px;
+  line-height: 20px;
+
+  &:not(:last-child) {
+    border-bottom: 2px solid rgba(9, 103, 211, 0.2);
   }
+
+  .messageTitle {
+    display: flex;
+    padding: 3px 0;
+    color: rgb(4, 253, 255);
+
+    .messageTitleLeft {
+      flex: 1;
+    }
+    .messageTitleRight {
+      flex: none;
+    }
+  }
+
+  .messageContent {
+    div {
+      padding: 3px 0;
+    }
+  }
+}
+/* 扩展按钮 */
+.expandButton {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  font-size: 16px;
+  color: rgb(4, 253, 255);
+  transform: translate(-50%, 0) rotate(90deg);
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+}
+/* 空数据 */
+.emptyData {
+  padding: 12px 0;
+  text-align: center;
 }

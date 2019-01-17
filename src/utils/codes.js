@@ -4,6 +4,7 @@ export default {
     fireControl: 'dashboard.fireControlView',
     dynamicMonitor: 'dashboard.dynamicMonitorView',
     personnelPosition: 'dashboard.personnelPositioningView',
+    electricityMonitor: 'dashboard.electricityMonitorView',
   },
   role: {
     list: 'roleAuthorization.role.listView',

@@ -160,7 +160,8 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                   </div>
                 </Col>
               ) : null}
-            </div>) : (<div className={styles.noContent}><span>暂无数据</span></div>)}
+            </div>
+          ) : (<div className={styles.noContent}><span>暂无数据</span></div>)}
           {cardVisible && (
             <Switcher
               visible={true}
@@ -187,10 +188,14 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                 business_type = null,
                 path = null,
                 real_reviewer_name = null,
+                item_name = null,
+                report_source_name = null,
               }, i) => (
                   <HiddenDanger
                     key={i}
                     style={{ marginBottom: 0, background: '#033069' }}
+                    isSourceShow={true}
+                    isShowPoint={true}
                     data={{
                       description: _desc,
                       sbr: _report_user_name,
@@ -203,6 +208,8 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                       status: +hiddenStatus,
                       background: path,
                       businessType: business_type,
+                      source: report_source_name || '暂无数据',
+                      jcdw: item_name,
                     }}
                   />
                 ))}

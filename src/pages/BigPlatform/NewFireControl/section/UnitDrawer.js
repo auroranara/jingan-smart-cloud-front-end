@@ -166,8 +166,8 @@ export default class UnitDrawer extends PureComponent {
                   </span>
                 </p>
               }
-            />)
-          )}
+            />
+          ))}
         </SearchBar>
     );
 

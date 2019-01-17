@@ -34,6 +34,20 @@ const breadcrumbList = [
   },
 ];
 
+/* 标记 */
+const markList = {
+  1: 'processing-mark',
+  2: 'error-mark',
+  3: 'warning-mark',
+  4: 'default-mark',
+};
+const markLabelList = {
+  1: '服务中',
+  2: '即将到期',
+  3: '已到期',
+  4: '未开始',
+};
+
 // 默认页面显示数量
 const pageSize = 18;
 
@@ -225,29 +239,18 @@ export default class ServiceUnitList extends PureComponent {
               industryCategoryLabel,
               safetyName,
               safetyPhone,
+              status,
             } = item;
             return (
               <List.Item key={companyId}>
                 <Card
                   title={name}
                   className={styles.card}
-                  extra={
-                    <a
-                      onClick={() => {
-                        this.goToCompanyScreen(companyId);
-                      }}
-                    >
-                      驾驶舱
-                    </a>
-                  }
                   style={{ dispaly: 'block' }}
-                  hoverable
+                  hoverable={![3, 4].includes(status)}
                 >
                   <div
-                    onClick={() => {
-                      this.goToCompany(companyId);
-                    }}
-                    style={{ cursor: 'pointer' }}
+                    onClick={[3, 4].includes(status) ? null : () => this.goToCompany(companyId)}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       地址：
@@ -265,7 +268,24 @@ export default class ServiceUnitList extends PureComponent {
                       联系电话：
                       {safetyPhone || getEmptyData()}
                     </p>
+                    <div style={{ marginBottom: '12px' }}>
+                      <Button
+                        disabled={[3, 4].includes(status)}
+                        onClick={[3, 4].includes(status) ? null : (e) => {
+                          e.stopPropagation()
+                          this.goToCompanyScreen(companyId)
+                        }}
+                        type="primary"
+                        ghost>
+                        驾驶舱
+                      </Button>
+                    </div>
                   </div>
+                  {status && (
+                    <div className={styles[markList[status]]}>
+                      {markLabelList[status]}
+                    </div>
+                  )}
                 </Card>
               </List.Item>
             );

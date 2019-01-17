@@ -147,6 +147,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { gridId, businessType: 2 } });
+    // dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { gridId, businessType: 2, reportSource: 2 } });
     dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
@@ -155,6 +156,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchDanger', payload: { gridId, businessType: 2 } });
 
     dispatch({ type: 'bigFireControl/fetchDangerList', payload: { gridId, businessType: 2 } });
+    // dispatch({ type: 'bigFireControl/fetchDangerList', payload: { gridId, businessType: 2, reportSource: 2 } });
     dispatch({ type: 'bigFireControl/fetchHostAlarmTrend', payload: { gridId } });
 
     this.fetchInitLookUp();
@@ -467,6 +469,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({
       type: 'bigFireControl/fetchOvDangerCounts',
       payload: { company_id: id, gridId, businessType: 2 },
+      // payload: { company_id: id, gridId, businessType: 2, reportSource: 2 },
     });
     dispatch({ type: 'bigFireControl/fetchCompanyOv', payload: { company_id: id, gridId } });
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { companyId: id, gridId } });
@@ -607,6 +610,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({
       type: 'bigFireControl/fetchDangerRecords',
       payload: { company_id: companyId, businessType: 2 },
+      // payload: { company_id: companyId, businessType: 2, reportSource: 2 },
     });
   };
 

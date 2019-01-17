@@ -66,6 +66,8 @@ export default {
     user: {},
     searchInfo: null,
     maintenanceTree: {},
+    maintenanceSerTree: [],
+    maintenanceSubTree: [],
   },
 
   effects: {
@@ -294,9 +296,18 @@ export default {
     *fetchMaintenanceTree({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceTree, payload);
       if (response && response.code === 200) {
-        yield put({ type: 'saveMaintenanceTree', payload: response.data });
+        const list = response.data.list || []
+        if (list.length < 1) return
+        const [{ children } = {}] = list
+        const maintenanceSerTree = Array.isArray(children) && children.filter(item => item.type === '0') || []
+        const maintenanceSubTree = Array.isArray(children) && children.filter(({ type }) => type === '1') || []
+        const payload = { ...response.data, maintenanceSerTree, maintenanceSubTree }
+        yield put({
+          type: 'saveMaintenanceTree',
+          payload,
+        });
         // callback放后面，因为callback中有setFieldsValue，所以要先等上面先保存好值，先渲染好表单中的Tree，不如可能会报错，在注册组建前设置其值
-        callback && callback(response.data);
+        callback && callback(payload);
       }
     },
   },
@@ -454,8 +465,13 @@ export default {
         searchInfo: payload || null,
       }
     },
-    saveMaintenanceTree(state, { payload }) {
-      return { ...state, maintenanceTree: payload };
+    saveMaintenanceTree(state, { payload: { list, maintenanceSerTree, maintenanceSubTree } }) {
+      return {
+        ...state,
+        maintenanceTree: { list },
+        maintenanceSerTree,
+        maintenanceSubTree,
+      };
     },
     initPageNum(state, { payload }) {
       return {

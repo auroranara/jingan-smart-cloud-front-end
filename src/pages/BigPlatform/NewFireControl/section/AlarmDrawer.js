@@ -139,8 +139,8 @@ export default class AlarmDrawer extends PureComponent {
                   {moment(saveTime).format('YYYY-MM-DD HH:mm')}
                 </Fragment>
               }
-            />)
-          )}
+            />
+          ))}
         </SearchBar>
     );
 
