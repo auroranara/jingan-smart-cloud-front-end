@@ -62,7 +62,7 @@ const fieldLabels = {
   company_name: '单位名称',
   code: '隐患编号',
   createTime: '创建时间',
-  source_type: '隐患来源',
+  report_source: '隐患来源',
   status: '隐患状态',
   business_type: '业务分类',
   item_name: '点位名称',
@@ -242,7 +242,7 @@ export default class App extends PureComponent {
    */
   handleSearch = () => {
     const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageSize } } }, user: { currentUser: { id } } } = this.props;
-    const { createTime, documentTypeIds,source_type, ...rest } = getFieldsValue();
+    const { createTime, documentTypeIds,report_source, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime || [];
     const payload = {
       ...rest,
@@ -251,7 +251,7 @@ export default class App extends PureComponent {
       query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
       documentTypeIds: documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
-      report_source:source_type,
+      report_source:report_source,
     };
     // 获取隐患列表
     dispatch({
@@ -274,7 +274,7 @@ export default class App extends PureComponent {
       company_name: undefined,
       code: undefined,
       createTime: undefined,
-      source_type: undefined,
+      report_source: undefined,
       status: undefined,
       business_type: undefined,
       item_name: undefined,
@@ -352,7 +352,7 @@ export default class App extends PureComponent {
       grid_id: undefined,
       company_name: undefined,
       code: undefined,
-      source_type: undefined,
+      report_source: undefined,
       status: undefined,
       business_type: undefined,
       item_name: undefined,
@@ -460,8 +460,8 @@ export default class App extends PureComponent {
           </Col>
           {/* 隐患来源 */}
           <Col xl={8} md={12} sm={24} xs={24}>
-            <Form.Item label={fieldLabels.source_type}>
-              {getFieldDecorator('source_type')(
+            <Form.Item label={fieldLabels.report_source}>
+              {getFieldDecorator('report_source')(
                 <Select
                   placeholder="请选择"
                   getPopupContainer={getRootChild}
