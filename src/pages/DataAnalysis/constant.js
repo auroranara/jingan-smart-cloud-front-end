@@ -350,7 +350,7 @@ export const STORAGE_TANK_PARAMS = [
   // { name: '压力', key: 3 },
   // { name: '温度', key: 4 },
   { name: '液位', key: 'lt' },
-  { name: '液压', key: 'pt' },
+  { name: '压力', key: 'pt' },
   { name: '温度', key: 'ct' },
 ];
 
