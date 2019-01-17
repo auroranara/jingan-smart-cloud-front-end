@@ -242,44 +242,55 @@ export const WASTE_WATER_COLUMNS = [
 
 export const WASTE_GAS_PARAMS = [
   { name: '全部', key: 0 },
-  {
-    name: (
-      <span>
-        SO
-        <sub>2</sub>
-      </span>
-    ),
-    key: 1,
-  },
-  {
-    name: (
-      <span>
-        NO
-        <sub>x</sub>
-      </span>
-    ),
-    key: 2,
-  },
-  {
-    name: (
-      <span>
-        SO
-        <sub>2</sub>
-        折算
-      </span>
-    ),
-    key: 3,
-  },
-  {
-    name: (
-      <span>
-        NO
-        <sub>x</sub>
-        折算
-      </span>
-    ),
-    key: 4,
-  },
+  // {
+  //   name: (
+  //     <span>
+  //       SO
+  //       <sub>2</sub>
+  //     </span>
+  //   ),
+  //   key: 1,
+  // },
+  // {
+  //   name: (
+  //     <span>
+  //       NO
+  //       <sub>x</sub>
+  //     </span>
+  //   ),
+  //   key: 2,
+  // },
+  // {
+  //   name: (
+  //     <span>
+  //       SO
+  //       <sub>2</sub>
+  //       折算
+  //     </span>
+  //   ),
+  //   key: 3,
+  // },
+  // {
+  //   name: (
+  //     <span>
+  //       NO
+  //       <sub>x</sub>
+  //       折算
+  //     </span>
+  //   ),
+  //   key: 4,
+  // },
+  { name: '烟气流速', key: 'a01011' },
+  { name: '烟气温度', key: 'a01012' },
+  { name: '烟气压力', key: 'a01013' },
+  { name: '烟气湿度', key: 'a01014' },
+  // { name: <span>CH<sub>4</sub></span>, key: 'a05002' },
+  { name: '甲烷', key: 'a05002' },
+  { name: <span>SO<sub>2</sub></span>, key: 'a21026' },
+  // { name: '二氧化硫', key: 'a21026' },
+  { name: '碳氢化合物', key: 'a24087' },
+  { name: '非甲烷总烃', key: 'a24088' },
+  { name: '烟尘', key: 'a34013' },
 ];
 
 export const WASTE_GAS_COLUMNS = [
