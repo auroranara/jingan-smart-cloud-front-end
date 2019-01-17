@@ -18,7 +18,7 @@ const CARD_COMPONENTS = [RiskCard, DangerCard, MonitorCard, SafeCard];
 const LABELS = ['安全巡查', '隐患排查', '动态监测', '安全档案'];
 const BAR_COLORS = ['85,134,244', '233,102,108', '244,185,85', '2,252,250'];
 
-const BAR_LIST = LABELS.map(label => ({ name: label, value: Math.floor(Math.random() * 100) }));
+// const BAR_LIST = LABELS.map(label => ({ name: label, value: Math.floor(Math.random() * 100) }));
 const DEFAULT_LIST = [...Array(10).keys()].map(i => ({ id: i }));
 
 export default class IndexDrawer extends PureComponent {
@@ -38,13 +38,15 @@ export default class IndexDrawer extends PureComponent {
     const { selected } = this.state;
 
     const titleIcon = <Rect color='#0967d3' />;
+    const barLists = [riskList, dangerList, monitorList, safeList];
+    const barListData = LABELS.map((label, i) => ({ name: label, value: Array.isArray(barLists[i]) ? barLists[i].length : 0 }))
     const left = (
       <Fragment>
         <DrawerSection title="构成">
           <Solar index={safetyIndex} />
         </DrawerSection>
         <DrawerSection title="分值">
-          <ChartBar barWidth={30} barColors={BAR_COLORS} labelRotate={0} data={BAR_LIST} />
+          <ChartBar barWidth={30} barColors={BAR_COLORS} labelRotate={0} data={barListData} />
         </DrawerSection>
       </Fragment>
     );
