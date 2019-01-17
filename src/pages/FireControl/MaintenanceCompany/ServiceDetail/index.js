@@ -22,7 +22,12 @@ const IMPORTANT_TYPES = ['否', '是'];
 // 获取title
 const {
   home: homeTitle,
-  maintenance: { list: listTitle, menu: menuTitle, serviceList: serviceListTitle, serviceDetail: title },
+  maintenance: {
+    list: listTitle,
+    menu: menuTitle,
+    serviceList: serviceListTitle,
+    serviceDetail: title,
+  },
 } = titles;
 // 获取链接地址
 const {
@@ -35,6 +40,7 @@ const fieldLabels = {
   businessScope: '经营范围',
   code: '社会信用代码',
   companyIchnography: '单位平面图',
+  fireIchnography: '消防平面图',
   companyStatus: '单位状态',
   createTime: '成立时间',
   economicType: '经济类型',
@@ -162,8 +168,7 @@ export default class App extends PureComponent {
     const textMap = this.textMap;
     const { gridId, gotMenus } = this.state;
 
-    if (gridId && gotMenus && idMap[gridId])
-      return idMap[gridId].map(id => textMap[id]).join('-');
+    if (gridId && gotMenus && idMap[gridId]) return idMap[gridId].map(id => textMap[id]).join('-');
     return '暂无信息';
   };
 
@@ -178,6 +183,7 @@ export default class App extends PureComponent {
           latitude,
           companyNatureLabel,
           companyIchnography,
+          fireIchnographyUrl,
           registerAddress,
           registerProvinceLabel,
           registerCityLabel,
@@ -192,6 +198,8 @@ export default class App extends PureComponent {
         },
       },
     } = this.props;
+    console.log(' this.props;', this.props);
+
     const { isCompany } = this.state;
 
     const [importantHost, importantSafety] = getImportantTypes(companyType);
@@ -215,6 +223,11 @@ export default class App extends PureComponent {
       : JSON.parse(companyIchnographyList.dbUrl);
     // console.log(typeof companyIchnographyList);
 
+    let fireIchnographyList = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
+    fireIchnographyList = Array.isArray(fireIchnographyList)
+      ? fireIchnographyList
+      : fireIchnographyList.dbUrl;
+
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
@@ -224,9 +237,7 @@ export default class App extends PureComponent {
           </Description>
           <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.coordinate}>
-            {longitude && latitude ? `${longitude},${latitude}` : (
-              getEmptyData()
-            )}
+            {longitude && latitude ? `${longitude},${latitude}` : getEmptyData()}
           </Description>
           {/* <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
             <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
@@ -245,18 +256,22 @@ export default class App extends PureComponent {
           <Description term={fieldLabels.gridId}>{this.getGridLabel()}</Description>
           <Description term={fieldLabels.registerAddress} style={{ height: 38 }}>
             {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
-              {registerAddressLabel || getEmptyData()}
+            {registerAddressLabel || getEmptyData()}
             {/* </Ellipsis> */}
           </Description>
           <Description term={fieldLabels.practicalAddress} style={{ height: 38 }}>
             {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
-              {practicalAddressLabel || getEmptyData()}
+            {practicalAddressLabel || getEmptyData()}
             {/* </Ellipsis> */}
           </Description>
         </DescriptionList>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
-          <Description term={fieldLabels.importantHost}>{IMPORTANT_TYPES[importantHost]}</Description>
-          <Description term={fieldLabels.importantSafety}>{IMPORTANT_TYPES[importantSafety]}</Description>
+          <Description term={fieldLabels.importantHost}>
+            {IMPORTANT_TYPES[importantHost]}
+          </Description>
+          <Description term={fieldLabels.importantSafety}>
+            {IMPORTANT_TYPES[importantSafety]}
+          </Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>
@@ -265,6 +280,17 @@ export default class App extends PureComponent {
                   <div key={url}>
                     <a href={url} target="_blank" rel="noopener noreferrer">
                       {name || '预览'}
+                    </a>
+                  </div>
+                ))
+              : getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.fireIchnography}>
+            {fireIchnographyList.length !== 0
+              ? fireIchnographyList.map(({ fileName, webUrl }, index) => (
+                  <div key={webUrl}>
+                    <a href={webUrl} target="_blank" rel="noopener noreferrer">
+                      {fileName || '预览'}
                     </a>
                   </div>
                 ))
@@ -432,7 +458,7 @@ export default class App extends PureComponent {
       {
         title: serviceListTitle,
         name: serviceListTitle,
-        href: serviceListUrl+id,
+        href: serviceListUrl + id,
       },
       {
         title,
