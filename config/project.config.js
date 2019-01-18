@@ -73,11 +73,11 @@ export default class Config {
     switch (env) {
       case 'default':
         this.config.projectName += '（测试）';
-        this.config.projectShortName += '（测试）';
+        this.config.projectShortName += '测试';
         break;
       case 'yanshi':
         this.config.projectName += '（演示）';
-        this.config.projectShortName += '（演示）';
+        this.config.projectShortName += '演示';
         break;
       default:
         break;
