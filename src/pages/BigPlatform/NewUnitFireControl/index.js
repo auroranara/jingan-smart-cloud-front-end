@@ -33,6 +33,7 @@ import AlarmDynamicMsgDrawer from './Section/AlarmDynamicMsgDrawer';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 
+const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;
 // const CHART_DELAY = 10 * 60 * 1000;
 
@@ -166,7 +167,7 @@ export default class App extends PureComponent {
               });
             }
 
-            if( type === 18 ) {
+            if (type === 18) {
               // 获取消防设施评分
               dispatch({
                 type: 'newUnitFireControl/fetchSystemScore',
@@ -175,7 +176,7 @@ export default class App extends PureComponent {
                 },
               });
 
-              if(this.state.fireAlarmVisible) this.fetchViewFireAlarm();
+              if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
             }
 
             // 四色图隐患
@@ -896,7 +897,7 @@ export default class App extends PureComponent {
         companyId,
       },
     });
-  }
+  };
 
   render() {
     // 从props中获取数据
@@ -968,7 +969,7 @@ export default class App extends PureComponent {
 
     return (
       <BigPlatformLayout
-        title="智慧消防云平台"
+        title={projectName}
         headerStyle={{ fontSize: 16 }}
         style={{
           backgroundImage:
