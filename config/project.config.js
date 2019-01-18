@@ -6,7 +6,7 @@ const defaultConfig = {
   mail: 'jazh@jingan-china.cn',
   mainWeb: 'https://www.jingan-china.cn',
   projectKey: 'v2_test',
-  projectShortName: '测试晶安智慧云',
+  projectShortName: '晶安智慧云',
   servicePhone: '400-928-5656',
   serviceSupport: '无锡晶安智慧科技有限公司',
   webscoketHost: '47.99.76.214:10036',
@@ -70,6 +70,18 @@ export default class Config {
   constructor(env) {
     this.config = { ...defaultConfig, ...configs[env] };
     this.config.projectName = `${this.config.projectShortName}平台`;
+    switch (env) {
+      case 'default':
+        this.config.projectName += '（测试）';
+        this.config.projectShortName += '（测试）';
+        break;
+      case 'yanshi':
+        this.config.projectName += '（演示）';
+        this.config.projectShortName += '（演示）';
+        break;
+      default:
+        break;
+    }
   }
   toValue() {
     return this.config;
