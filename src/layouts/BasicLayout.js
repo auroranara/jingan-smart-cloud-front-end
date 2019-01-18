@@ -11,8 +11,10 @@ import { enquireScreen, unenquireScreen } from 'enquire-js';
 import { formatMessage } from 'umi/locale';
 import SiderMenu from '@/components/SiderMenu';
 import Authorized from '@/utils/Authorized';
-import SettingDrawer from '@/components/SettingDrawer';
-import logo from '../assets/logo.svg';
+// import SettingDrawer from '@/components/SettingDrawer';
+// import logo from '../assets/logo.svg';
+
+// import nanxiaoLogo from '../assets/nanxiao-logo.svg';
 import Footer from './Footer';
 import Header from './Header';
 import Context from './MenuContext';
@@ -26,7 +28,7 @@ import styles from '../index.less';
 
 const { Content } = Layout;
 const { check } = Authorized;
-
+const { projectShortName, logo } = global.PROJECT_CONFIG;
 // Conversion router to menu.
 function formatter(data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
@@ -166,13 +168,13 @@ class BasicLayout extends React.PureComponent {
       }
     });
     if (!currRouterData) {
-      return '晶安智慧云';
+      return projectShortName;
     }
     const message = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name,
     });
-    return `${message} - 晶安智慧云`;
+    return `${message} - ${projectShortName}`;
   };
 
   getLayoutStyle = () => {

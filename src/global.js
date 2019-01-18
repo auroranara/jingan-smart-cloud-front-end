@@ -1,7 +1,6 @@
 // import './polyfill';
 import 'moment/locale/zh-cn';
-import configs from '../config/project.config';
-// import Performance from 'web-report';
+import Config from '../config/project.config';
 
 // Performance({
 //   domain: 'http://192.168.10.68:8001/api/v1/report/web',
@@ -11,12 +10,7 @@ import configs from '../config/project.config';
 // });
 
 const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
-global.PROJECT_CONFIG = configs[PROJECT_ENV] || {};
-
-// 如果是build模式
-// if (process.env.NODE_ENV === 'production') {
-//   window.frontjsConfig.token = '60015f494561deeb785f3e6216d779bd';
-// }
-
-// console.log('PROJECT_ENV', PROJECT_ENV);
+const config = new Config(PROJECT_ENV);
+global.PROJECT_CONFIG = config.toValue();
+// console.log('PROJECT_ENV', global.PROJECT_CONFIG);
 // console.log('window.publicPath', window.publicPath);
