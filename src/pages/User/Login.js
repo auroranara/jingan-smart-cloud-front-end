@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Link } from 'dva/router';
-import { Alert, Icon, Card, Row, Col, List } from 'antd';
+import { Alert, Icon, Card, /* Row, Col,*/ List } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
