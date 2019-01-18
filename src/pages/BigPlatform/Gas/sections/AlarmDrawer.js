@@ -40,10 +40,14 @@ const CARDS = [...Array(10).keys()].map(i => ({
   noAccess: Math.floor(Math.random() * 10),
 }));
 
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
+const GRAPH_LIST = [...Array(12).keys()].map(i => ({
+  id: i,
+  name: (i + 2) % 12 || 12,
+  value: Math.floor(Math.random() * 100),
+}));
 
 export default class AlarmDrawer extends PureComponent {
-  state={ graph: 0, selected: 0, searchValue: '' };
+  state = { graph: 0, selected: 0, searchValue: '' };
 
   handleSwitch = i => {
     this.setState({ graph: i });
@@ -74,17 +78,17 @@ export default class AlarmDrawer extends PureComponent {
       visible,
       // handleSearch,
       data: {
-        list=CARDS,
-        graphList=GRAPH_LIST,
-        alarmUnit: alarmNum=0,
-        earlyWarningUnit: warnNum=0,
-        normalUnit: commonNum=0,
-      }={},
+        list = CARDS,
+        graphList = GRAPH_LIST,
+        alarmUnit: alarmNum = 0,
+        earlyWarningUnit: warnNum = 0,
+        normalUnit: commonNum = 0,
+      } = {},
     } = this.props;
     const { graph, selected, searchValue } = this.state;
 
     const filteredList = list.filter(({ name }) => name.includes(searchValue)).filter(item => {
-      switch(selected) {
+      switch (selected) {
         case 0:
           return true;
         case 1:
@@ -100,14 +104,21 @@ export default class AlarmDrawer extends PureComponent {
       }
     });
 
-    sortList(filteredList, SELECTED_PROPS[selected])
+    sortList(filteredList, SELECTED_PROPS[selected]);
 
     const total = alarmNum + commonNum + warnNum;
-    const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(n => total ? n / total * 100 : 0);
+    const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(
+      n => (total ? (n / total) * 100 : 0)
+    );
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const select = (
-      <OvSelect cssType={1} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
+      <OvSelect
+        cssType={1}
+        options={OPTIONS}
+        value={selected}
+        handleChange={this.handleSelectChange}
+      />
     );
 
     const left = (
@@ -119,7 +130,12 @@ export default class AlarmDrawer extends PureComponent {
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
             style={{ marginTop: 40, cursor: 'pointer' }}
-            iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitRedIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
             onClick={this.genProgressClick(2)}
           />
           <OvProgress
@@ -128,7 +144,12 @@ export default class AlarmDrawer extends PureComponent {
             quantity={warnNum}
             strokeColor="rgb(246,181,78)"
             style={{ cursor: 'pointer' }}
-            iconStyle={{ backgroundImage: `url(${unitYellowIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitYellowIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
             onClick={this.genProgressClick(3)}
           />
           <OvProgress
@@ -137,12 +158,21 @@ export default class AlarmDrawer extends PureComponent {
             quantity={commonNum}
             strokeColor="rgb(0,251,252)"
             style={{ cursor: 'pointer' }}
-            iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitBlueIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
             onClick={this.genProgressClick(1)}
           />
         </DrawerSection>
-        <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>
-          {graph ? <ChartBar data={graphList} labelRotate={0} sameColor /> : <ChartLine data={graphList} labelRotate={0} />}
+        <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
+          {graph ? (
+            <ChartBar data={graphList} labelRotate={0} sameColor />
+          ) : (
+            <ChartLine data={graphList} labelRotate={0} />
+          )}
         </DrawerSection>
       </Fragment>
     );
@@ -154,29 +184,31 @@ export default class AlarmDrawer extends PureComponent {
         // onChange={this.handleChange}
         extra={select}
       >
-        {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
-          <DrawerCard
-            key={companyId}
-            name={name || NO_DATA}
-            location={address || NO_DATA}
-            person={safetyMan || NO_DATA}
-            phone={safetyPhone || NO_DATA}
-            style={{ cursor: 'auto' }}
-            more={
-              <p className={styles.more}>
-                {[common, alarm, warn, noAccess].map((n, i) => (
-                  <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                ))}
-              </p>
-            }
-          />
-        ))}
+        {filteredList.map(
+          ({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
+            <DrawerCard
+              key={companyId}
+              name={name || NO_DATA}
+              location={address || NO_DATA}
+              person={safetyMan || NO_DATA}
+              phone={safetyPhone || NO_DATA}
+              style={{ cursor: 'auto' }}
+              more={
+                <p className={styles.more}>
+                  {[common, alarm, warn, noAccess].map((n, i) => (
+                    <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+                  ))}
+                </p>
+              }
+            />
+          )
+        )}
       </SearchBar>
     );
 
     return (
       <DrawerContainer
-        title="实时报警统计"
+        title="异常单位统计"
         visible={visible}
         left={left}
         right={right}

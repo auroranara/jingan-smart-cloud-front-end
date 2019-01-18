@@ -10,8 +10,8 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 // 接入单位统计
 import AccessUnitStatistics from './AccessUnitStatistics';
-// 实时报警统计
-import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
+// 异常单位统计
+import AbnormalUnitStatistics from './AbnormalUnitStatistics';
 // 告警信息
 import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
@@ -21,12 +21,7 @@ import ElectricityMap from './ElectricityMap';
 import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
-import {
-  SettingModal,
-  UnitDrawer,
-  AlarmDrawer,
-  MonitorDrawer,
-} from './sections/Components';
+import { SettingModal, UnitDrawer, AlarmDrawer, MonitorDrawer } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
@@ -92,9 +87,7 @@ export default class Gas extends PureComponent {
    */
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
-    const {
-      dispatch,
-    } = this.props;
+    const { dispatch } = this.props;
     // // 获取告警信息列表
     dispatch({
       type: 'gas/fetchMessages',
@@ -104,9 +97,10 @@ export default class Gas extends PureComponent {
     dispatch({
       type: 'gas/fetchUnitData',
       callback: data => {
-        if (!data)
-          return;
-        const { unitSet: { units=[] } } = data;
+        if (!data) return;
+        const {
+          unitSet: { units = [] },
+        } = data;
         this.cardsInfo = genCardsInfo(units);
       },
     });
@@ -114,7 +108,7 @@ export default class Gas extends PureComponent {
     // 获取网格点id
     dispatch({
       type: 'gas/fetchCompanyId',
-      callback: (companyId) => {
+      callback: companyId => {
         if (!companyId) {
           return;
         }
@@ -143,15 +137,22 @@ export default class Gas extends PureComponent {
             const { type } = data;
             // 如果数据为告警或恢复，则将数据插入到列表的第一个
             if ([31, 32].includes(type)) {
-              const { gas: { messages } } = this.props;
+              const {
+                gas: { messages },
+              } = this.props;
               dispatch({
                 type: 'gas/save',
                 payload: { messages: [data].concat(messages) },
               });
               // 如果发生告警，弹出通知框，否则关闭通知框
               if (type === 32) {
-                const { gas: { deviceRealTimeData: { deviceId: selectedDeviceId }={} } } = this.props;
-                const { monitorDrawerVisible, unitDetail: { companyId: selectedCompanyId } = {} } = this.state;
+                const {
+                  gas: { deviceRealTimeData: { deviceId: selectedDeviceId } = {} },
+                } = this.props;
+                const {
+                  monitorDrawerVisible,
+                  unitDetail: { companyId: selectedCompanyId } = {},
+                } = this.state;
                 const { companyId, messageFlag: deviceId } = data;
                 this.showWarningNotification(data);
                 if (companyId === selectedCompanyId && monitorDrawerVisible) {
@@ -170,12 +171,21 @@ export default class Gas extends PureComponent {
             // 如果为33，则修改单位状态
             if (type === 33) {
               const { companyId, status } = data;
-              const { gas: { unitIds, unitSet: { units } } } = this.props;
+              const {
+                gas: {
+                  unitIds,
+                  unitSet: { units },
+                },
+              } = this.props;
               const index = unitIds.indexOf(companyId);
               if (index > -1 && units[index].status !== status) {
                 dispatch({
                   type: 'gas/saveUnitData',
-                  payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
+                  payload: [
+                    ...units.slice(0, index),
+                    { ...units[index], status },
+                    ...units.slice(index + 1),
+                  ],
                 });
               }
             }
@@ -194,50 +204,46 @@ export default class Gas extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() {
-
-  }
+  componentDidUpdate() {}
 
   /**
    * 销毁前
    */
-  componentWillUnmount() {
-
-  }
+  componentWillUnmount() {}
 
   cardsInfo = [];
 
-  getDeviceStatusCount = (companyId) => {
+  getDeviceStatusCount = companyId => {
     const { dispatch } = this.props;
     dispatch({
-      type: "gas/fetchDeviceStatusCount",
+      type: 'gas/fetchDeviceStatusCount',
       payload: { companyId },
     });
-  }
+  };
 
-  getDeviceRealTimeData = (deviceId) => {
+  getDeviceRealTimeData = deviceId => {
     const { dispatch } = this.props;
     dispatch({
-      type: "gas/fetchDeviceRealTimeData",
+      type: 'gas/fetchDeviceRealTimeData',
       payload: { deviceId },
     });
-  }
+  };
 
-  getDeviceHistoryData = (deviceId) => {
+  getDeviceHistoryData = deviceId => {
     const { dispatch } = this.props;
     dispatch({
-      type: "gas/fetchDeviceHistoryData",
+      type: 'gas/fetchDeviceHistoryData',
       payload: { deviceId, type: 1 },
     });
-  }
+  };
 
-  getDeviceConfig = (deviceId) => {
+  getDeviceConfig = deviceId => {
     const { dispatch } = this.props;
     dispatch({
-      type: "gas/fetchDeviceConfig",
+      type: 'gas/fetchDeviceConfig',
       payload: { deviceId },
     });
-  }
+  };
 
   /**
    * 1.获取接口数据
@@ -272,10 +278,18 @@ export default class Gas extends PureComponent {
         payload: { deviceId },
       });
       // 添加定时器
-      this.deviceStatusCountTimer = setInterval(() => {this.getDeviceStatusCount(companyId);}, 2 * 1000);
-      this.deviceRealTimeDataTimer = setInterval(() => {this.getDeviceRealTimeData(deviceId);}, 2 * 1000);
-      this.deviceHistoryDataTimer = setInterval(() => {this.getDeviceHistoryData(deviceId);}, 30 * 60 * 1000);
-      this.deviceConfigTimer = setInterval(() => {this.getDeviceConfig(deviceId);}, 30 * 60 * 1000);
+      this.deviceStatusCountTimer = setInterval(() => {
+        this.getDeviceStatusCount(companyId);
+      }, 2 * 1000);
+      this.deviceRealTimeDataTimer = setInterval(() => {
+        this.getDeviceRealTimeData(deviceId);
+      }, 2 * 1000);
+      this.deviceHistoryDataTimer = setInterval(() => {
+        this.getDeviceHistoryData(deviceId);
+      }, 30 * 60 * 1000);
+      this.deviceConfigTimer = setInterval(() => {
+        this.getDeviceConfig(deviceId);
+      }, 30 * 60 * 1000);
     }
     // 否则为点击企业，取第一个设备id
     else {
@@ -290,12 +304,19 @@ export default class Gas extends PureComponent {
             const { deviceId } = data;
             this.handleSelectDevice(deviceId);
             // 添加定时器
-            this.deviceStatusCountTimer = setInterval(() => {this.getDeviceStatusCount(companyId);}, 2 * 1000);
-            this.deviceRealTimeDataTimer = setInterval(() => {this.getDeviceRealTimeData(deviceId);}, 2 * 1000);
-            this.deviceHistoryDataTimer = setInterval(() => {this.getDeviceHistoryData(deviceId);}, 30 * 60 * 1000);
-            this.deviceConfigTimer = setInterval(() => {this.getDeviceConfig(deviceId);}, 30 * 60 * 1000);
-          }
-          else {
+            this.deviceStatusCountTimer = setInterval(() => {
+              this.getDeviceStatusCount(companyId);
+            }, 2 * 1000);
+            this.deviceRealTimeDataTimer = setInterval(() => {
+              this.getDeviceRealTimeData(deviceId);
+            }, 2 * 1000);
+            this.deviceHistoryDataTimer = setInterval(() => {
+              this.getDeviceHistoryData(deviceId);
+            }, 30 * 60 * 1000);
+            this.deviceConfigTimer = setInterval(() => {
+              this.getDeviceConfig(deviceId);
+            }, 30 * 60 * 1000);
+          } else {
             dispatch({
               type: 'gas/save',
               payload: {
@@ -310,7 +331,7 @@ export default class Gas extends PureComponent {
     }
     // 显示弹出框
     this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId, monitorDrawerVisible: true });
-  }
+  };
 
   /**
    * 1.取消定时器
@@ -322,13 +343,26 @@ export default class Gas extends PureComponent {
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
     this.setState({ unitDetail: undefined, monitorDrawerVisible: false });
-  }
+  };
 
   /**
    * 显示告警通知提醒框
    */
-  showWarningNotification = ({ companyId, addTime, companyName, area, location, paramName, messageFlag, paramCode }) => {
-    const { gas: { unitSet: { units } } } = this.props;
+  showWarningNotification = ({
+    companyId,
+    addTime,
+    companyName,
+    area,
+    location,
+    paramName,
+    messageFlag,
+    paramCode,
+  }) => {
+    const {
+      gas: {
+        unitSet: { units },
+      },
+    } = this.props;
     const options = {
       key: `${messageFlag}_${paramCode}`,
       duration: null,
@@ -341,7 +375,15 @@ export default class Gas extends PureComponent {
         </div>
       ),
       description: (
-        <div className={styles.notificationContent} onClick={() => {this.showUnitDetail(units.filter(({ companyId: id }) => id === companyId)[0], messageFlag)}}>
+        <div
+          className={styles.notificationContent}
+          onClick={() => {
+            this.showUnitDetail(
+              units.filter(({ companyId: id }) => id === companyId)[0],
+              messageFlag
+            );
+          }}
+        >
           <div className={styles.notificationText}>
             <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
             <div className={styles.notificationTextSecond}>{companyName}</div>
@@ -361,7 +403,7 @@ export default class Gas extends PureComponent {
    */
   hideWarningNotification = ({ messageFlag, paramCode }) => {
     notification.close(`${messageFlag}_${paramCode}`);
-  }
+  };
 
   /**
    * 点击设置按钮
@@ -403,11 +445,15 @@ export default class Gas extends PureComponent {
         mapInstance.setZoomAndCenter(18, [item.longitude, item.latitude]);
       },
     });
-  }
+  };
 
   // 地图搜索
   fetchMapSearchData = value => {
-    const { gas: { unitSet: { units } } } = this.props;
+    const {
+      gas: {
+        unitSet: { units },
+      },
+    } = this.props;
     const list = units;
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
     this.setState({
@@ -425,14 +471,18 @@ export default class Gas extends PureComponent {
 
   handleMapSearchSelect = item => {
     this.handleMapClick(item.companyId, item);
-  }
+  };
 
-  handleClickNotification = (companyId) => {
-    const { gas: { unitSet: { units } } } = this.props;
+  handleClickNotification = companyId => {
+    const {
+      gas: {
+        unitSet: { units },
+      },
+    } = this.props;
     this.handleMapClick(companyId, units.filter(item => item.companyId === companyId)[0]);
-  }
+  };
 
-  handleSelectDevice = (deviceId) => {
+  handleSelectDevice = deviceId => {
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
@@ -501,10 +551,10 @@ export default class Gas extends PureComponent {
       monitorDrawerVisible,
       monitorDrawerTitleIndex,
       // videoVisible,
-      infoWindowShow,
+      // infoWindowShow,
       selectList,
       searchValue,
-      infoWindow,
+      // infoWindow,
       unitDetail,
       tooltipName,
       tooltipVisible,
@@ -518,7 +568,16 @@ export default class Gas extends PureComponent {
         title="晶安智慧用电监测平台"
         extra="无锡市"
         style={{ backgroundImage: 'none' }}
-        headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 99, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
+        headerStyle={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          fontSize: 16,
+          zIndex: 99,
+          backgroundImage: `url(${headerBg})`,
+          backgroundSize: '100% 100%',
+        }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
         settable
@@ -540,7 +599,13 @@ export default class Gas extends PureComponent {
         {/* 搜索框 */}
         <MapSearch
           className={styles.mapSearch}
-          style={{ top: 'calc(9.62963% + 24px)', position: 'absolute', left: '24px', width: '25.46875%', zIndex: 9999 }}
+          style={{
+            top: 'calc(9.62963% + 24px)',
+            position: 'absolute',
+            left: '24px',
+            width: '25.46875%',
+            zIndex: 9999,
+          }}
           selectList={selectList}
           value={searchValue}
           handleChange={this.handleMapSearchChange}
@@ -552,14 +617,18 @@ export default class Gas extends PureComponent {
           className={`${styles.left} ${styles.accessUnitStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('unit')}
         />
-        {/* 实时报警统计 */}
-        <RealTimeAlarmStatistics
+        {/* 异常单位统计 */}
+        <AbnormalUnitStatistics
           data={unitSet}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
         {/* 近半年内告警统计 */}
-        <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
+        <NewSection
+          title="近半年内告警统计"
+          className={styles.left}
+          style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}
+        >
           <AlarmChart />
         </NewSection>
         {/* 告警信息 */}
