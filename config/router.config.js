@@ -109,6 +109,10 @@ module.exports = env => {
           path: '/big-platform/electricity-monitor',
           component: './BigPlatform/ElectricityMonitor',
         },
+        {
+          path: '/big-platform/gas',
+          component: './BigPlatform/Gas',
+        },
       ],
     },
 
