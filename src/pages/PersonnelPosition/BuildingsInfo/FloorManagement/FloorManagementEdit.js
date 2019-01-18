@@ -262,10 +262,10 @@ export default class FloorManagementEdit extends PureComponent {
               rules: [
                 {
                   required: true,
-                  message: '请选择楼层编号',
+                  message: '请输入楼层编号',
                 },
               ],
-            })(<InputNumber style={{ width: '100%' }} placeholder="请选择楼层编号" />)}
+            })(<InputNumber style={{ width: '100%' }} placeholder="请输入楼层编号" />)}
           </FormItem>
           <FormItem {...formItemLayout} label={fieldLabels.floorUrl}>
             {getFieldDecorator('floorUrl')(
