@@ -484,6 +484,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'companyId',
         cName: '企业名称',
+        rules: generateRules('企业名称'),
         component: (
           <div>
             {company_Id ? (
