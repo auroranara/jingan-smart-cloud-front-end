@@ -23,6 +23,8 @@ import {
   getSafetyOfficer,
   // 获取安全指数
   getSafetyIndex,
+  // 获取安全档案
+  getSafeFiles,
 } from '../services/unitSafety';
 
 function getRiskList(response) {
@@ -96,6 +98,8 @@ export default {
     riskList: [],
     // 隐患排查数组
     dangerList: [],
+    // 安全档案
+    safeList: [],
   },
 
   effects: {
@@ -353,6 +357,14 @@ export default {
         callback();
       }
     },
+    // 获取安全档案
+    *fetchSafeFiles({ payload, callback }, { call, put }) {
+      let response = yield call(getSafeFiles, payload);
+      response = response || {};
+      const { code=500, data } = response;
+      if (code === 200 && Array.isArray(data))
+        yield put({ type: 'saveSafeFiles', payload: data });
+    },
   },
 
   reducers: {
@@ -368,6 +380,9 @@ export default {
     },
     saveDangerList(state, action) {
       return { ...state, dangerList: action.payload };
+    },
+    saveSafeFiles(state, action) {
+      return { ...state, fileList: action.payload };
     },
   },
 }

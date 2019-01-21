@@ -357,6 +357,13 @@ export default class App extends PureComponent {
     }));
   };
 
+  showIndexDrawer = e => {
+    const { dispatch, match: { params: { companyId } } } = this.props;
+
+    this.handleDrawerVisibleChange('index');
+    dispatch({ type: 'unitSafety/fetchSafeFiles', payload: { companyId } });
+  };
+
   render() {
     const { monitorDataLoading, unitSafety } = this.props;
     const { companyMessage: { companyMessage: { companyName }, fourColorImg=[] }={}, staffList, staffRecords, inspectionPointData, videoList, inspectionRecordData } = unitSafety;
@@ -399,7 +406,7 @@ export default class App extends PureComponent {
                   handleClickCount={this.handleChange}
                   handleClickCurrentHiddenDanger={this.handleShowCurrentHiddenDanger}
                   currentHiddenDangerVisible={currentHiddenDangerVisible}
-                  handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+                  showIndexDrawer={this.showIndexDrawer}
                 />
                 {/* 风险点信息 */}
                 <PointInfo
