@@ -62,6 +62,7 @@ export default class CompanyInfo extends PureComponent {
       currentHiddenDangerVisible,
       // 点击当前隐患统计
       handleClickCurrentHiddenDanger,
+      showIndexDrawer,
     } = this.props;
     // 计算当前隐患总数
     const hiddenDangerCount = ycq.length + wcq.length + dfc.length;
@@ -109,7 +110,9 @@ export default class CompanyInfo extends PureComponent {
                   right: 0,
                   bottom: 0,
                   height: 70,
+                  cursor: 'pointer',
                 }}
+                onClick={showIndexDrawer}
                 format={percent => <div style={{ color: '#fff' }}><div style={{ fontSize: 22, marginBottom: 4 }}>{percent}</div><div style={{ fontSize: 12 }}>安全指数</div></div>}
               />
             )}

@@ -1,0 +1,41 @@
+@red: rgb(255, 72, 72);
+
+.empty {
+  color: #FFF;
+  font-size: 16px;
+  text-align: center;
+  margin: 0;
+}
+
+.right {
+  height: 100%;
+  padding-right: 10px;
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.label {
+  color: #FFF;
+  text-align: center;
+  padding: 5px 18px;
+  border-radius: 18px;
+  background-color: rgb(5, 71, 149);
+  cursor: pointer;
+}
+
+.labelSelected:extend(.label) {
+  background-color: rgb(9, 103, 211);
+}
+
+.desc {
+  color: @red;
+  margin: 10px 0;
+}
+
+.cards {
+  height: calc(100% - 72px);
+  overflow: auto;
+}
