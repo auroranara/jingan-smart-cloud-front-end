@@ -1,46 +1,33 @@
-export default {
-  default: {
-    logo: '',
-    region: '无锡市',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
-    projectKey: 'v2_test',
-    projectName: '测试晶安智慧云平台',
-    servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.401163,
-      y: 31.560116,
-      zoom: 13,
-    },
+import logo from '../src/assets/logo.svg';
+import nanxiaoLogo from '../src/assets/nanxiao-logo.svg';
+const defaultConfig = {
+  logo,
+  region: '无锡市',
+  mail: 'jazh@jingan-china.cn',
+  mainWeb: 'https://www.jingan-china.cn',
+  projectKey: 'v2_test',
+  projectShortName: '晶安智慧云',
+  servicePhone: '400-928-5656',
+  serviceSupport: '无锡晶安智慧科技有限公司',
+  webscoketHost: '47.99.76.214:10036',
+  location: {
+    x: 120.401163,
+    y: 31.560116,
+    zoom: 13,
   },
+};
+
+const configs = {
+  default: {},
   jiangxi: {
     region: '无锡市',
-    logo: '',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'jiangxi_pro',
-    projectName: '无锡晶安智慧云平台',
-    servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.401163,
-      y: 31.560116,
-      zoom: 13,
-    },
+    projectShortName: '无锡晶安智慧云',
   },
   xuzhou: {
-    logo: '',
     region: '徐州市',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'xuzhou_pro',
-    projectName: '徐州晶安智慧云平台',
-    servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
+    projectShortName: '徐州晶安智慧云',
     location: {
       x: 117.407812,
       y: 34.501282,
@@ -48,99 +35,55 @@ export default {
     },
   },
   changshu: {
-    logo: '',
     region: '常熟市',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'changshu_pro',
-    projectName: '常熟晶安智慧云平台',
+    projectShortName: '常熟晶安智慧云',
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.848825,
-      y: 31.639258,
-      zoom: 13,
-    },
   },
-  eye: {
-    logo: '',
-    region: '',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
-    projectKey: 'eye',
-    projectName: '晶安智慧云平台',
-    servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.401163,
-      y: 31.560116,
-      zoom: 13,
-    },
-  },
+  eye: {},
   xuexiao: {
-    region: '无锡市',
-    logo: '',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'v2_test',
-    projectName: '校园智慧安全云平台',
+    projectShortName: '校园智慧安全云',
     servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.401163,
-      y: 31.560116,
-      zoom: 13,
-    },
   },
   nanxiao: {
-    region: '无锡',
-    logo: '',
+    region: '徐州',
+    logo: nanxiaoLogo,
     mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'nanxiao_pro',
-    projectName: '智慧消防云平台',
-    servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.401163,
-      y: 31.560116,
-      zoom: 13,
-    },
+    projectShortName: '南消智慧云',
   },
   shanxi: {
     region: '山西',
-    logo: '',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'shanxi',
-    projectName: '山西晶安智慧云平台',
-    servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.401163,
-      y: 31.560116,
-      zoom: 13,
-    },
+    projectShortName: '山西晶安智慧云',
   },
   yanshi: {
     region: '无锡',
-    logo: '',
-    mail: 'jazh@jingan-china.cn',
-    mainWeb: 'https://www.jingan-china.cn',
     projectKey: 'yanshi_pro',
-    projectName: '晶安智慧云平台（演示）',
-    servicePhone: '400-928-5656',
-    serviceSupport: '无锡晶安智慧科技有限公司',
-    webscoketHost: '47.99.76.214:10036',
-    location: {
-      x: 120.401163,
-      y: 31.560116,
-      zoom: 13,
-    },
+    projectShortName: '晶安智慧云',
   },
 };
+
+export default class Config {
+  constructor(env) {
+    this.config = { ...defaultConfig, ...configs[env] };
+    this.config.projectName = `${this.config.projectShortName}平台`;
+    switch (env) {
+      case 'default':
+        this.config.projectName += '（测试）';
+        this.config.projectShortName += '测试';
+        break;
+      case 'yanshi':
+        this.config.projectName += '（演示）';
+        this.config.projectShortName += '演示';
+        break;
+      default:
+        break;
+    }
+  }
+  toValue() {
+    return this.config;
+  }
+}

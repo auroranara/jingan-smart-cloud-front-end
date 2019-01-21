@@ -39,7 +39,8 @@ export function handleFormVals(vals) {
   if (!vals.code || vals.code === '0') delete newVals.code;
 
   // 储罐异常参数查询时，若没有参数，或者参数选择的是全部，即modelCode=0，将modelCode属性删除，默认全部
-  if (!vals.modelCode || vals.modelCode === '0') delete newVals.modelCode;
+  // if (!vals.modelCode || vals.modelCode === '0') delete newVals.modelCode;
+  if (!vals.newModel || vals.newModel === '0') delete newVals.newModel;
 
   // [newVals.startTime, newVals.endTime] = vals.date.map(m => +m);
   [newVals.startTime, newVals.endTime] = vals.date.map(m => m.format(DATE_FORMAT));

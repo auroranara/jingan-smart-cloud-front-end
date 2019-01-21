@@ -13,7 +13,10 @@ const RANGES = {
 };
 
 export default function Gauge(props) {
-  const { data: { desc: title, value, unit, limit, status } } = props;
+  const {
+    labelFontSize,
+    data: { desc: title, value, unit, limit, status },
+  } = props;
   const [start, end] = RANGES[title];
   const [value1, value2] = limit;
   const axisLineColor = [];
@@ -46,12 +49,20 @@ export default function Gauge(props) {
   return (
     <div className={styles.container}>
       <div className={styles.chart}>
-        <ChartGauge value={value} max={end} axisLineColor={axisLineColor} />
+        <ChartGauge value={value} max={end} axisLineColor={axisLineColor} labelFontSize={labelFontSize} />
       </div>
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>
-        <p>实时温度值：<span style={{ color: isOutOfContact?undefined:COLORS[status] }}>{isOutOfContact ? '--' : `${value}${unit}`}</span></p>
-        <p>参考范围值：{isOutOfContact ? '--' : `${start} ~ ${Math.min(end, ...limit.filter(item => item !== null))}${unit}`}</p>
+        <p>
+          实时温度值：
+          <span style={{ color: isOutOfContact?undefined:COLORS[status] }}>
+            {isOutOfContact || value === null || value === undefined ? '--' : `${value}${unit}`}
+          </span>
+        </p>
+        <p>
+          参考范围值：
+          {isOutOfContact ? '--' : `${start} ~ ${Math.min(end, ...limit.filter(item => item !== null))}${unit}`}
+        </p>
       </div>
     </div>
   );

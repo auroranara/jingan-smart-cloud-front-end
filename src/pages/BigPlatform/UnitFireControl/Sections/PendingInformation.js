@@ -82,6 +82,23 @@ export default class PendingInformation extends PureComponent {
                 </div>
               </div>
             </div>
+            {systemTypeValue && <div className={styles.alarmDetail}>{systemTypeValue}</div>}
+            <div className={styles.alarmDetail}>
+              <Ellipsis lines={1} tooltip>
+                <span>{device_name}</span>
+              </Ellipsis>
+            </div>
+            <div className={styles.lastLine}>
+              <span>
+                <Icon type="environment" theme="outlined" />
+              </span>
+              <Ellipsis lines={1} tooltip className={styles.location}>
+                <span>{device_address}</span>
+              </Ellipsis>
+              <div className={styles.time}>
+                <span>{t}</span>
+              </div>
+            </div>
             <div className={styles.topRightPurpleTag}>指派维保</div>
             <div className={styles.videoPlayButton} onClick={handleClick}>
               <img src={videoIcon} alt="" />

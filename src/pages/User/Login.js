@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Link } from 'dva/router';
-import { Alert, Icon, Card, Row, Col, List } from 'antd';
+import { Alert, Icon, Card, /* Row, Col,*/ List } from 'antd';
 import Login from 'components/Login';
 import styles from './Login.less';
 import { aesEncrypt } from '../../utils/utils';
@@ -52,7 +52,7 @@ export default class LoginPage extends Component {
     const { type } = this.state;
     if (!err) {
       const { dispatch } = this.props;
-      const pass = aesEncrypt(values.password)
+      const pass = aesEncrypt(values.password);
       dispatch({
         type: 'login/login',
         payload: {
@@ -61,14 +61,14 @@ export default class LoginPage extends Component {
           type,
         },
         error: msg => {
-          this.setState({ notice: msg })
+          this.setState({ notice: msg });
         },
         handleMoreUser: () => {
           this.setState({
             isMoreUser: true,
             username: values.username,
             password: pass,
-          })
+          });
         },
       });
     }
@@ -88,9 +88,9 @@ export default class LoginPage extends Component {
     return <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />;
   };
 
-  handleSelect = (userId) => {
-    const { dispatch } = this.props
-    const { username, password } = this.state
+  handleSelect = userId => {
+    const { dispatch } = this.props;
+    const { username, password } = this.state;
     dispatch({
       type: 'login/loginWithUserId',
       payload: {
@@ -98,9 +98,8 @@ export default class LoginPage extends Component {
         username,
         password,
       },
-    })
-
-  }
+    });
+  };
 
   renderLogin = () => {
     const { submitting } = this.props;
@@ -145,16 +144,16 @@ export default class LoginPage extends Component {
         )}
         <Submit style={{ marginTop: '15px' }} loading={submitting}>
           登录
-          </Submit>
+        </Submit>
         <div className={styles.downloadContainer}>
           <span onClick={this.handleToDownload} className={styles.download}>
             <Icon type="download" />
             APP下载
-            </span>
+          </span>
         </div>
       </Login>
-    )
-  }
+    );
+  };
 
   /* renderMoreUser = () => {
     const { login: { users } } = this.props
@@ -169,8 +168,10 @@ export default class LoginPage extends Component {
   } */
 
   renderMoreUser = () => {
-    let { login: { users } } = this.props
-    users = users.slice(0, 5)
+    let {
+      login: { users },
+    } = this.props;
+    users = users.slice(0, 5);
     return (
       <List
         dataSource={users}
@@ -178,30 +179,25 @@ export default class LoginPage extends Component {
         renderItem={item => (
           <List.Item key={item.userId} className={styles.listItem}>
             <Card.Grid onClick={() => this.handleSelect(item.userId)} className={styles.cardGrid}>
-              {item.unitName ? (<span>{item.unitName}</span>) : '运营企业'}
+              {item.unitName ? <span>{item.unitName}</span> : '运营企业'}
             </Card.Grid>
           </List.Item>
         )}
-      >
-
-      </List>
-    )
-  }
+      />
+    );
+  };
 
   render() {
-    const { isMoreUser } = this.state
+    const { isMoreUser } = this.state;
     return (
       <div style={{ marginTop: '90px' }}>
         {isMoreUser ? (
           <div className={styles.mainContainer}>
-            <div className={styles.container}>
-              {this.renderMoreUser()}
-            </div>
-          </div>) : (
-            <div className={styles.main}>
-              {this.renderLogin()}
-            </div>
-          )}
+            <div className={styles.container}>{this.renderMoreUser()}</div>
+          </div>
+        ) : (
+          <div className={styles.main}>{this.renderLogin()}</div>
+        )}
       </div>
     );
   }

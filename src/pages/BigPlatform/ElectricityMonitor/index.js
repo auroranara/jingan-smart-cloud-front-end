@@ -27,7 +27,7 @@ import {
   AlarmDrawer,
   MonitorDrawer,
 } from './sections/Components';
-import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+// import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
 
@@ -256,6 +256,7 @@ export default class ElectricityMonitor extends PureComponent {
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.getDeviceStatusCount(companyId);
     this.getCameraList(companyId);
+    this.hideTooltip();
     // 如果deviceId存在，则为点击通知框
     if (deviceId) {
       dispatch({
@@ -463,13 +464,17 @@ export default class ElectricityMonitor extends PureComponent {
   };
 
   hideTooltip = () => {
-    console.log('hideTooltip');
+    // console.log('hideTooltip');
 
     this.setState({
       tooltipName: '',
       tooltipVisible: false,
       tooltipPosition: [0, 0],
     });
+  };
+
+  handleMapParentChange = newState => {
+    this.setState({ ...newState });
   };
 
   /**
@@ -521,17 +526,16 @@ export default class ElectricityMonitor extends PureComponent {
       >
         {/* 地图 */}
         <ElectricityMap
-          mapData={unitSet}
+          // mapData={unitSet}
+          units={Array.isArray(unitSet.units) ? unitSet.units : []}
           handleMapClick={this.showUnitDetail}
-          infoWindowShow={infoWindowShow}
-          infoWindow={infoWindow}
-          deviceStatusCount={deviceStatusCount}
+          // infoWindowShow={infoWindowShow}
+          // infoWindow={infoWindow}
+          // deviceStatusCount={deviceStatusCount}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
           unitDetail={unitDetail}
-          handleParentChange={(newState) => {
-            this.setState({ ...newState });
-          }}
+          handleParentChange={this.handleMapParentChange}
         />
         {/* 搜索框 */}
         <MapSearch

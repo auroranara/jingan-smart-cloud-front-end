@@ -146,12 +146,13 @@ const transformHiddenDangerFields = ({
   real_rectify_time,
   review_user_name,
   status,
-  hiddenDangerRecordDto: [{ fileWebUrl: background }] = [{}],
+  hiddenDangerRecordDto, //: [{ fileWebUrl: background }] = [{ fileWebUrl: '' }],
   source_type_name,
   companyBuildingItem,
   business_type,
   review_time,
 }) => {
+  const background = (hiddenDangerRecordDto[0] || { fileWebUrl: '' }).fileWebUrl;
   const { object_title, risk_level } = companyBuildingItem || {};
   return {
     id,
@@ -590,10 +591,10 @@ export default {
         point:
           response.point &&
           response.point.filter(
-            ({ itemId, xNum, yNum }) =>
+            ({ itemId, xFire, yFire }) =>
               itemId &&
-              (xNum || Number.parseFloat(xNum) === 0) &&
-              (yNum || Number.parseFloat(yNum) === 0)
+              (xFire || Number.parseFloat(xFire) === 0) &&
+              (yFire || Number.parseFloat(yFire) === 0)
           ),
         // 移除地址不合法的四色图
         fourColorImg:

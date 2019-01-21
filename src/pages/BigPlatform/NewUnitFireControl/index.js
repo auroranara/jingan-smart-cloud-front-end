@@ -33,7 +33,8 @@ import AlarmDynamicMsgDrawer from './Section/AlarmDynamicMsgDrawer';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 
-const DELAY = 5 * 1000;
+const { projectName } = global.PROJECT_CONFIG;
+// const DELAY = 5 * 1000;
 // const CHART_DELAY = 10 * 60 * 1000;
 
 notification.config({
@@ -164,6 +165,18 @@ export default class App extends PureComponent {
                 type: 'newUnitFireControl/fetchHiddenDangerNum',
                 payload: { companyId },
               });
+            }
+
+            if (type === 18) {
+              // 获取消防设施评分
+              dispatch({
+                type: 'newUnitFireControl/fetchSystemScore',
+                payload: {
+                  companyId,
+                },
+              });
+
+              if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
             }
 
             // 四色图隐患
@@ -454,6 +467,7 @@ export default class App extends PureComponent {
       type: 'newUnitFireControl/fetchCompanyMessage',
       payload: {
         company_id: companyId,
+        type: '2',
         month: moment().format('YYYY-MM'),
       },
     });
@@ -858,25 +872,30 @@ export default class App extends PureComponent {
 
   // 查看火灾自动报警抽屉
   handleViewFireAlarm = ({ sysId, sysName }) => {
+    this.fetchViewFireAlarm(sysId);
+    this.setState({
+      fireAlarmVisible: true,
+      fireAlarmTitle: sysName,
+      sysId,
+    });
+  };
+
+  fetchViewFireAlarm = systemId => {
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
     } = this.props;
+    const { sysId } = this.state;
     dispatch({
       type: 'newUnitFireControl/fetchCheckRecord',
       payload: {
         pageNum: 1,
         pageSize: 10,
-        sysId,
+        sysId: systemId || sysId,
         companyId,
       },
-    });
-
-    this.setState({
-      fireAlarmVisible: true,
-      fireAlarmTitle: sysName,
     });
   };
 
@@ -950,7 +969,7 @@ export default class App extends PureComponent {
 
     return (
       <BigPlatformLayout
-        title="智慧消防云平台"
+        title={projectName}
         headerStyle={{ fontSize: 16 }}
         style={{
           backgroundImage:

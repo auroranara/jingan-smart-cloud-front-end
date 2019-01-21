@@ -161,16 +161,17 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
             onNext={this.handleNext}
             onPrev={this.handlePrev}
             isFirst={isFirst}
-            isLast={isLast} />)}
+            isLast={isLast} />
+        )}
       </div>
     );
   }
 
   render() {
     const {
-      ssp = 0,
-      fxd = 0,
-      jdd = 0,
+      zfjd = 0,
+      qyzc = 0,
+      wbjc = 0,
       cqwzg = 0,
       dfc = 0,
       dzg = 0,
@@ -286,9 +287,9 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
             },
           },
           data: [
-            { value: ssp, name: '随手拍', itemStyle: { color: '#00ABC9' }, source_type: 2 },
-            { value: fxd, name: '风险点', itemStyle: { color: '#E86767' }, source_type: 3 },
-            { value: jdd, name: '监督点', itemStyle: { color: '#2787D5' }, source_type: 4 },
+            { value: wbjc, name: '维保检查', itemStyle: { color: '#00ABC9' }, source_type: 2 },
+            { value: qyzc, name: '企业自查', itemStyle: { color: '#E86767' }, source_type: 3 },
+            { value: zfjd, name: '政府监督', itemStyle: { color: '#2787D5' }, source_type: 4 },
           ],
         },
       ],
@@ -324,8 +325,8 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
                   <div className={styles.blueIcon}></div>
                 </div>
                 <div className={styles.text}>
-                  <div><span>监督点</span></div>
-                  <div><span>{jdd}</span></div>
+                  <div><span>政府监督</span></div>
+                  <div><span>{zfjd}</span></div>
                 </div>
               </div>
               <div className={styles.item}>
@@ -333,16 +334,16 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
                   <div className={styles.redIcon}></div>
                 </div>
                 <div className={styles.text}>
-                  <div><span>风险点</span></div>
-                  <div><span>{fxd}</span></div>
+                  <div><span>企业自查</span></div>
+                  <div><span>{qyzc}</span></div>
                 </div>
               </div><div className={styles.item}>
                 <div className={styles.iconContainer}>
                   <div className={styles.ligntBlueIcon}></div>
                 </div>
                 <div className={styles.text}>
-                  <div><span>随手拍</span></div>
-                  <div><span>{ssp}</span></div>
+                  <div><span>维保检查</span></div>
+                  <div><span>{wbjc}</span></div>
                 </div>
               </div>
             </div>

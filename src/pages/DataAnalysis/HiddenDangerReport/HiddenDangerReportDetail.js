@@ -267,7 +267,7 @@ export default class App extends PureComponent {
             // 状态
             status,
             // 隐患来源
-            source_type_name,
+            report_source_name,
             // 点位名称
             item_name,
             // 业务分类
@@ -352,7 +352,7 @@ export default class App extends PureComponent {
               </Card>
               <Card title="隐患信息" className={styles.card} bordered={false}>
                 <DescriptionList style={{ marginBottom: 16 }}>
-                  <Description term="隐患来源"><Ellipsis tooltip={!!source_type_name} lines={1} style={{ height: 22 }}>{source_type_name || getEmptyData()}</Ellipsis></Description>
+                  <Description term="隐患来源"><Ellipsis tooltip={!!report_source_name} lines={1} style={{ height: 22 }}>{report_source_name || getEmptyData()}</Ellipsis></Description>
                   <Description term="点位名称"><Ellipsis tooltip={!!item_name} lines={1} style={{ height: 22 }}>{item_name || getEmptyData()}</Ellipsis></Description>
                   <Description term="业务分类"><Ellipsis tooltip={!!business_type} lines={1} style={{ height: 22 }}>{business_type || getEmptyData()}</Ellipsis></Description>
                   <Description term="隐患等级"><Ellipsis tooltip={!!level_name} lines={1} style={{ height: 22 }}>{level_name || getEmptyData()}</Ellipsis></Description>

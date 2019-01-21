@@ -668,23 +668,26 @@ export default class App extends PureComponent {
       dangerStatistics: {
         dangerType: [
           {
-            // 随手拍
+            /* // 随手拍
             random_photo = 0,
             // 风险点
             from_self_check_point = 0,
             // 监督点
-            from_grid_point = 0,
+            from_grid_point = 0, */
+            company_self_check = 0, // 企业自查
+            gov_check = 0,          // 政府监督
+            maintenance_check = 0,  // 维保检查
           } = {},
         ] = [],
         dangerDto: {
-          // 已超期
+          /* // 已超期
           over_rectify_num = 0,
           // 待复查
           rectify_num = 0,
           // 待整改
           total_num = 0,
           // 已关闭
-          count_closed_danger = 0,
+          count_closed_danger = 0, */
           overRectifyNum = 0,
           reviewNum = 0,
           rectifyNum = 0,
@@ -698,9 +701,9 @@ export default class App extends PureComponent {
         type={hiddenDangerType}
         handleClickChat={this.handleClickChat}
         onSwitch={this.handleSwitchHiddenDangerType}
-        ssp={random_photo}
-        fxd={from_self_check_point}
-        jdd={from_grid_point}
+        qyzc={company_self_check}
+        zfjd={gov_check}
+        wbjc={maintenance_check}
         // cqwzg={over_rectify_num}
         // dfc={rectify_num}
         // dzg={total_num - over_rectify_num - rectify_num - count_closed_danger}

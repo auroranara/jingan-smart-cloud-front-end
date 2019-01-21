@@ -247,13 +247,10 @@ export default class ServiceUnitList extends PureComponent {
                   title={name}
                   className={styles.card}
                   style={{ dispaly: 'block' }}
-                  hoverable
+                  hoverable={![3, 4].includes(status)}
                 >
                   <div
-                    onClick={() => {
-                      this.goToCompany(companyId);
-                    }}
-                    style={{ cursor: 'pointer' }}
+                    onClick={[3, 4].includes(status) ? null : () => this.goToCompany(companyId)}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       地址：

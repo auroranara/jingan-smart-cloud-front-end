@@ -9,7 +9,7 @@ import { urlToList } from '../_utils/pathTools';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 const { Sider } = Layout;
-
+const { projectShortName } = global.PROJECT_CONFIG;
 /**
  * 获得菜单子节点
  * @memberof SiderMenu
@@ -95,12 +95,7 @@ export default class SiderMenu extends PureComponent {
       backgroundColor: `rgba(255, 255, 255, 0.65)`,
       borderRadius: '10px',
     };
-    return (
-      <div
-        style={{ ...style, ...thumbStyle }}
-        {...props}
-      />
-    );
+    return <div style={{ ...style, ...thumbStyle }} {...props} />;
   }
 
   render() {
@@ -131,10 +126,15 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} id="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>晶安智慧云</h1>
+            <h1>{projectShortName}</h1>
           </Link>
         </div>
-        <Scrollbars style={{ width: '100%', height: 'calc(100vh - 64px)' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb} autoHide>
+        <Scrollbars
+          style={{ width: '100%', height: 'calc(100vh - 64px)' }}
+          renderThumbHorizontal={this.renderThumb}
+          renderThumbVertical={this.renderThumb}
+          autoHide
+        >
           <BaseMenu
             {...this.props}
             mode="inline"
@@ -143,7 +143,7 @@ export default class SiderMenu extends PureComponent {
             style={{ padding: '16px 0', width: '100%', height: 'auto', overflow: 'visible' }}
             {...defaultProps}
           />
-      </Scrollbars>
+        </Scrollbars>
       </Sider>
     );
   }

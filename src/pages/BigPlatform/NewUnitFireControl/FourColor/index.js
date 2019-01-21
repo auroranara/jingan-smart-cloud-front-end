@@ -69,6 +69,7 @@ export default class App extends PureComponent {
       // 显示点位隐患
       handleShowHiddenDanger,
     } = this.props;
+    console.log('this.props', this.props);
 
     const { videoVisible, videoKeyId } = this.state;
     // // 晒选当前四色图上的点位

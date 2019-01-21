@@ -97,9 +97,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                             <Description className={styles.line} term="隐患描述">
                               {desc || getEmptyData()}
                             </Description>
-                            <Description className={styles.line} term="指定整改单位">
+                            {/* <Description className={styles.line} term="指定整改单位">
                               {rectify_company_name || getEmptyData()}
-                            </Description>
+                            </Description> */}
                             <Description className={styles.line} term="指定整改人">
                               {rectify_user_name || getEmptyData()}
                             </Description>
@@ -108,9 +108,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                                 ? moment(+plan_rectify_time).format('YYYY-MM-DD')
                                 : getEmptyData()}
                             </Description>
-                            <Description className={styles.line} term="指定复查单位">
+                            {/* <Description className={styles.line} term="指定复查单位">
                               {review_company_name || getEmptyData()}
-                            </Description>
+                            </Description> */}
                             <Description className={styles.line} term="指定复查人">
                               {review_user_name || getEmptyData()}
                             </Description>
@@ -138,9 +138,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                             <Description className={styles.line} term="整改人">
                               {operator_name || getEmptyData()}
                             </Description>
-                            <Description className={styles.line} term="整改单位">
+                            {/* <Description className={styles.line} term="整改单位">
                               {operator_company_name || getEmptyData()}
-                            </Description>
+                            </Description> */}
                             <Description className={styles.line} term="实际整改日期">
                               {create_time_str || getEmptyData()}
                             </Description>
@@ -174,12 +174,12 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                             <Description className={styles.line} term="复查人">
                               {operator_name || getEmptyData()}
                             </Description>
-                            <Description className={styles.line} term="复查单位">
+                            {/* <Description className={styles.line} term="复查单位">
                               {operator_company_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="指定整改单位">
                               {rectify_company_name || getEmptyData()}
-                            </Description>
+                            </Description> */}
                             <Description className={styles.line} term="备注">
                               {remark || getEmptyData()}
                             </Description>

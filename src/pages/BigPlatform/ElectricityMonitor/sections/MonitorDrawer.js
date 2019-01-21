@@ -16,6 +16,7 @@ import cameraIcon from '../imgs/camera.png';
 import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
 
 // const TYPE = 'monitor';
+const TEMPERATURE = '温度';
 const TITLES = ['单位监测信息', '报警信息'];
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
@@ -36,14 +37,21 @@ function DoubleRight(props) {
 }
 
 export default class MonitorDrawer extends PureComponent {
-  state={ videoVisible: false };
+  state={
+    videoVisible: false,
+    videoKeyId: '',
+  };
 
   handleClickCamera = () => {
-    this.setState({ videoVisible: true });
+    const { data: { cameraList=[] } } = this.props;
+    this.setState({
+      videoVisible: true,
+      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+    });
   };
 
   handleVideoClose = () => {
-    this.setState({ videoVisible: false });
+    this.setState({ videoVisible: false, videoKeyId: '' });
   };
 
   render() {
@@ -76,7 +84,10 @@ export default class MonitorDrawer extends PureComponent {
       handleClose,
       // handleClickCamera,
     } = this.props;
-    const { videoVisible } = this.state;
+    const { videoVisible, videoKeyId } = this.state;
+
+    console.log(videoKeyId);
+
     // 实时数据列表
     const list = [];
     deviceDataForAppList.forEach(({ desc, code, value, unit, status }) => {
@@ -100,8 +111,8 @@ export default class MonitorDrawer extends PureComponent {
 
     let gauges = <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />;
     if (list.length)
-      gauges = list.map((item) => (
-        <Gauge key={item.desc} data={item} />
+      gauges = list.map((item, i) => (
+        <Gauge key={item.desc} data={item} labelFontSize={item.desc.includes(TEMPERATURE) ? 10 : 8} />
       ));
 
     const left = (
@@ -111,7 +122,7 @@ export default class MonitorDrawer extends PureComponent {
           <p><span className={styles.location} style={{ backgroundImage: `url(${locationIcon})` }} />{address}</p>
           <p><span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />{(aqy1Name || aqy1Phone) && `${aqy1Name?aqy1Name:'未命名'} ${aqy1Phone?aqy1Phone:''}`}</p>
           <p className={styles.dots}>
-            {[normal, earlyWarning, confirmWarning, unconnect].map((n, i) => (
+            {[normal, confirmWarning, earlyWarning, unconnect].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
@@ -167,7 +178,7 @@ export default class MonitorDrawer extends PureComponent {
           showList={false}
           videoList={cameraList}
           visible={videoVisible}
-          keyId={cameraList.length ? cameraList[0].key_id : ''}
+          keyId={videoKeyId}
           style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
         />
