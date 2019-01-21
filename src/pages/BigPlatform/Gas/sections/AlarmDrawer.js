@@ -15,7 +15,7 @@ import {
 import { DotItem } from '../components/Components';
 import { sortList } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
-import unitBlueIcon from '../imgs/unitBlue.png';
+import unitBlueIconGrey from '../imgs/unitBlueIconGrey.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
 
 const ICON_WIDTH = 42;
@@ -125,7 +125,7 @@ export default class AlarmDrawer extends PureComponent {
       <Fragment>
         <DrawerSection title="单位状态统计">
           <OvProgress
-            title="告警单位"
+            title="报警单位"
             percent={alarmPercent}
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
@@ -139,7 +139,7 @@ export default class AlarmDrawer extends PureComponent {
             onClick={this.genProgressClick(2)}
           />
           <OvProgress
-            title="预警单位"
+            title="故障单位"
             percent={warnPercent}
             quantity={warnNum}
             strokeColor="rgb(246,181,78)"
@@ -153,13 +153,13 @@ export default class AlarmDrawer extends PureComponent {
             onClick={this.genProgressClick(3)}
           />
           <OvProgress
-            title="正常单位"
+            title="失联单位"
             percent={commonPercent}
             quantity={commonNum}
-            strokeColor="rgb(0,251,252)"
+            strokeColor="rgb(159,159,159)"
             style={{ cursor: 'pointer' }}
             iconStyle={{
-              backgroundImage: `url(${unitBlueIcon})`,
+              backgroundImage: `url(${unitBlueIconGrey})`,
               width: ICON_WIDTH,
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,

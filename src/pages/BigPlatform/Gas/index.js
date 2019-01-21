@@ -12,11 +12,13 @@ import headerBg from '@/assets/new-header-bg.png';
 import AccessUnitStatistics from './AccessUnitStatistics';
 // 异常单位统计
 import AbnormalUnitStatistics from './AbnormalUnitStatistics';
+import ProcessingBusiness from './ProcessingBusiness';
+
 // 告警信息
 import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
 
-import AlarmChart from './AlarmChart';
+// import AlarmChart from './AlarmChart';
 import ElectricityMap from './ElectricityMap';
 import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
@@ -623,13 +625,13 @@ export default class Gas extends PureComponent {
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
-        {/* 近半年内告警统计 */}
+        {/* 待处理业务 */}
         <NewSection
-          title="近半年内告警统计"
+          title="待处理业务"
           className={styles.left}
-          style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}
+          style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%' }}
         >
-          <AlarmChart />
+          <ProcessingBusiness />
         </NewSection>
         {/* 告警信息 */}
         <WarningMessage data={messages} className={styles.right} />
