@@ -71,7 +71,7 @@ export default class App extends PureComponent {
     videoVisible: false,
     // 视频keyId
     keyId: undefined,
-    indexDrawerVisible: true, // 安全指数弹框
+    indexDrawerVisible: false, // 安全指数弹框
   }
 
   componentDidMount() {
@@ -362,6 +362,7 @@ export default class App extends PureComponent {
 
     this.handleDrawerVisibleChange('index');
     dispatch({ type: 'unitSafety/fetchSafeFiles', payload: { companyId } });
+    dispatch({ type: 'unitSafety/fetchMonitorList', payload: { companyId } });
   };
 
   render() {
@@ -386,7 +387,7 @@ export default class App extends PureComponent {
       indexDrawerVisible,
     } = this.state;
 
-    const { safetyIndex, riskList, dangerList } = unitSafety;
+    const { safetyIndex, riskList, dangerList, monitorList, safeList } = unitSafety;
 
     return (
       <Layout>
@@ -547,7 +548,7 @@ export default class App extends PureComponent {
           </Col>
         </Row>
         <IndexDrawer
-          data={{ safetyIndex, riskList, dangerList }}
+          data={{ safetyIndex, riskList, dangerList, monitorList, safeList }}
           visible={indexDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

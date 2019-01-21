@@ -34,7 +34,7 @@ export default class IndexDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, data: { safetyIndex, riskList, dangerList, monitorList=DEFAULT_LIST, safeList=DEFAULT_LIST } } = this.props;
+    const { visible, data: { safetyIndex, riskList, dangerList, monitorList, safeList=DEFAULT_LIST } } = this.props;
     const { selected } = this.state;
 
     const titleIcon = <Rect color='#0967d3' />;
