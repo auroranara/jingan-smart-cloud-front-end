@@ -2,7 +2,6 @@ import React, { PureComponent, Fragment } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import styles from './AlarmDrawer.less';
 import {
-  ChartLine,
   DrawerCard,
   DrawerContainer,
   DrawerSection,
@@ -11,7 +10,7 @@ import {
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
-import { DotItem } from '../components/Components';
+import { DotItem, ChartLine } from '../components/Components';
 import { sortList } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
 import unitBlueIconGrey from '../imgs/unitBlueIconGrey.png';

@@ -2,8 +2,6 @@ import React, { PureComponent, Fragment } from 'react';
 
 import styles from './AlarmDrawer.less';
 import {
-  ChartBar,
-  ChartLine,
   DrawerCard,
   DrawerContainer,
   DrawerSection,
@@ -11,7 +9,13 @@ import {
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
-import { DotItem } from '../components/Components';
+import {
+  DotItem,
+  BussinessChartBar,
+  BussinessChartLine,
+  AlarmChartBar,
+  AlarmChartLine,
+} from '../components/Components';
 import { sortList } from '../utils';
 
 const TYPE = 'business';
@@ -40,10 +44,14 @@ const GRAPH_LIST = [...Array(12).keys()].map(i => ({
 }));
 
 export default class BusinessDrawer extends PureComponent {
-  state = { graph: 0, selected: 0, searchValue: '' };
+  state = { graph: 0, otherGraph: 0, selected: 0, searchValue: '' };
 
   handleSwitch = i => {
     this.setState({ graph: i });
+  };
+
+  handleSwitchAlarm = i => {
+    this.setState({ otherGraph: i });
   };
 
   handleSelectChange = i => {
@@ -72,7 +80,7 @@ export default class BusinessDrawer extends PureComponent {
       // handleSearch,
       data: { list = CARDS, graphList = GRAPH_LIST } = {},
     } = this.props;
-    const { graph, selected, searchValue } = this.state;
+    const { graph, selected, searchValue, otherGraph } = this.state;
 
     const filteredList = list.filter(({ name }) => name.includes(searchValue)).filter(item => {
       switch (selected) {
@@ -94,6 +102,7 @@ export default class BusinessDrawer extends PureComponent {
     sortList(filteredList, SELECTED_PROPS[selected]);
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
+    const extraOther = <GraphSwitch handleSwitch={this.handleSwitchAlarm} />;
     const select = (
       <OvSelect
         cssType={1}
@@ -107,16 +116,16 @@ export default class BusinessDrawer extends PureComponent {
       <Fragment>
         <DrawerSection title="报警业务处理统计" titleInfo="最近12个月" extra={extra}>
           {graph ? (
-            <ChartBar data={graphList} labelRotate={0} sameColor />
+            <BussinessChartBar data={graphList} labelRotate={0} />
           ) : (
-            <ChartLine data={graphList} labelRotate={0} />
+            <BussinessChartLine data={graphList} labelRotate={0} />
           )}
         </DrawerSection>
-        <DrawerSection title="故障业务处理统计" titleInfo="最近12个月" extra={extra}>
-          {graph ? (
-            <ChartBar data={graphList} labelRotate={0} sameColor />
+        <DrawerSection title="故障业务处理统计" titleInfo="最近12个月" extra={extraOther}>
+          {otherGraph ? (
+            <AlarmChartBar data={graphList} labelRotate={0} />
           ) : (
-            <ChartLine data={graphList} labelRotate={0} />
+            <AlarmChartLine data={graphList} labelRotate={0} />
           )}
         </DrawerSection>
       </Fragment>
