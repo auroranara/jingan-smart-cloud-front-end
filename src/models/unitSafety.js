@@ -29,12 +29,12 @@ import {
   getSafeFiles,
 } from '../services/unitSafety';
 
-function getRiskList(response) {
+function handleRiskList(response) {
   if (!response)
     return [];
 
-  const result = ['red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
-    const value = response[`${next}DangerResult`];
+  const result = ['supervision', 'red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
+    const value = response[`${next}${next !== 'supervision' ? 'Danger' : ''}Result`];
     const list = Array.isArray(value) ? value.map(item => ({ ...item, flag: next })) : [];
     return prev.concat(list);
   }, []).filter(item => item.status === 4);
@@ -60,14 +60,24 @@ function getRiskList(response) {
 //   return result;
 // }
 
-// 0 火警 1 故障 2 失联
+function getStatus(params) {
+  if (params === '故障')
+    return 0;
+
+  if (params.includes('火警'))
+    return 1;
+
+  return 2;
+}
+
+// 0 消防主机故障 1 消防主机火警 2 其他监测设备报警 3 失联
 function handleMonitorList(list) {
   const loss = Array.isArray(list.lossDevice) ? list.lossDevice.map(({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
     id: deviceId,
     type: typeName,
     number: relationDeviceId,
     params: '失联',
-    status: 2,
+    status: 3,
     time: statusTime,
     location: `${area}${location || ''}`,
   })) : [];
@@ -76,7 +86,7 @@ function handleMonitorList(list) {
     type: typeName,
     number: relationDeviceId,
     params: unormalParams,
-    status: unormalParams.includes('火警') ? 0 : 1,
+    status: getStatus(unormalParams),
     location: `${area}${location || ''}`,
   })) : [];
 
@@ -357,7 +367,7 @@ export default {
           },
         },
       });
-      yield put({ type: 'saveRiskList', payload: getRiskList(response) });
+      yield put({ type: 'saveRiskList', payload: handleRiskList(response) });
       if (callback) {
         callback();
       }
