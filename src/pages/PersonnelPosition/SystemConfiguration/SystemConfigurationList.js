@@ -54,7 +54,7 @@ export default class SystemConfiguration extends PureComponent {
   state = {
     modalVisible: false, // 添加或编辑弹窗可见
     isAdd: true, // 是否编辑
-    companyVisible: false, // 选择企业可见
+    companyVisible: false, // 选择单位可见
     currentId: null, // 当前编辑的系统配置id
   };
 
@@ -72,7 +72,7 @@ export default class SystemConfiguration extends PureComponent {
     });
   };
 
-  // 获取企业列表
+  // 获取单位列表
   fetchCompanyList = actions => {
     const { dispatch } = this.props;
     dispatch({
@@ -193,7 +193,7 @@ export default class SystemConfiguration extends PureComponent {
     });
   };
 
-  // 选择企业
+  // 选择单位
   handleSelectCompany = company => {
     const {
       form: { setFieldsValue },
@@ -202,14 +202,14 @@ export default class SystemConfiguration extends PureComponent {
     setFieldsValue({ company });
   };
 
-  // 关闭选择企业弹窗
+  // 关闭选择单位弹窗
   handleCompanyModalCLose = () => {
     this.setState({
       companyVisible: false,
     });
   };
 
-  // 点击打开选择企业弹窗
+  // 点击打开选择单位弹窗
   handleViewCompanyModal = () => {
     this.fetchCompanyList({
       payload: { pageNum: 1, pageSize: defaultPageSize },
@@ -273,7 +273,7 @@ export default class SystemConfiguration extends PureComponent {
   validateCompany = (rule, value, callback) => {
     if (value && value.id) {
       callback();
-    } else callback('请选择企业');
+    } else callback('请选择单位');
   };
 
   render() {
@@ -287,7 +287,7 @@ export default class SystemConfiguration extends PureComponent {
       personnelPosition: {
         systemConfiguration: {
           list = [],
-          pagination: { pageNum, pageSize, total },
+          pagination: { pageNum, pageSize, total = 0 },
         },
         companyList = [],
       },
@@ -308,7 +308,7 @@ export default class SystemConfiguration extends PureComponent {
 
     const columns = [
       {
-        title: '企业名称',
+        title: '单位名称',
         dataIndex: 'companyName',
         key: 'companyName',
         align: 'center',
@@ -343,22 +343,22 @@ export default class SystemConfiguration extends PureComponent {
                 <a>删除</a>
               </Popconfirm>
             ) : (
-              <a className={styles.disabled}>删除</a>
-            )}
+                <a className={styles.disabled}>删除</a>
+              )}
           </span>
         ),
       },
     ];
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={`列表记录：${total}`}>
         {/* 删选栏 */}
         <Card>
           <Form>
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                  {getFieldDecorator('searchName')(<Input placeholder="请输入企业名称" />)}
+                  {getFieldDecorator('searchName')(<Input placeholder="请输入单位名称" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24} xs={24}>
@@ -412,7 +412,7 @@ export default class SystemConfiguration extends PureComponent {
           onOk={this.handleSubmit}
         >
           <Form>
-            <FormItem label="企业名称">
+            <FormItem label="单位名称">
               {getFieldDecorator('company', {
                 rules: [{ required: true, validator: this.validateCompany }],
               })(
@@ -447,7 +447,7 @@ export default class SystemConfiguration extends PureComponent {
             </FormItem>
           </Form>
         </Modal>
-        {/* 选择企业弹窗 */}
+        {/* 选择单位弹窗 */}
         <CompanyModal
           title="选择单位"
           loading={companyLoading}

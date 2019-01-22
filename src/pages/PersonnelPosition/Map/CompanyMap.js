@@ -58,7 +58,7 @@ export default class MapManagementList extends PureComponent {
     this.fetchMaps({ payload: { pageNum: 1, pageSize: defaultPageSize, companyId } })
   }
 
-  // 获取企业列表
+  // 获取单位列表
   fetchCompanyList = (actions) => {
     const { dispatch } = this.props
     dispatch({

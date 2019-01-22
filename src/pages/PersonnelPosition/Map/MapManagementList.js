@@ -33,11 +33,11 @@ const {
 export default class MapManagementList extends PureComponent {
 
   componentDidMount() {
-    // 获取地图企业列表
+    // 获取地图单位列表
     this.fetchMapCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } })
   }
 
-  // 获取地图企业列表
+  // 获取地图单位列表
   fetchMapCompanies = (actions) => {
     const { dispatch } = this.props
     dispatch({
@@ -54,7 +54,7 @@ export default class MapManagementList extends PureComponent {
     router.push(`/personnel-position/map-management/company-map/${id}`)
   }
 
-  // 加载更多地图企业数据
+  // 加载更多地图单位数据
   handleLoadMore = () => {
     const {
       form: { getFieldValue },
@@ -73,7 +73,7 @@ export default class MapManagementList extends PureComponent {
       user: { currentUser: { permissionCodes } },
       personnelPosition: {
         map: {
-          mapCompanies = [],// 地图企业列表
+          mapCompanies = [],// 地图单位列表
           pagination: {
             pageNum,
             pageSize,
@@ -94,7 +94,7 @@ export default class MapManagementList extends PureComponent {
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
                   {getFieldDecorator('name')(
-                    <Input placeholder="请输入企业名称" />
+                    <Input placeholder="请输入单位名称" />
                   )}
                 </FormItem>
               </Col>
@@ -106,7 +106,7 @@ export default class MapManagementList extends PureComponent {
             </Row>
           </Form>
         </Card>
-        {/* 信标企业列表 */}
+        {/* 信标单位列表 */}
         <InfiniteScroll
           initialLoad={false}
           pageStart={0}

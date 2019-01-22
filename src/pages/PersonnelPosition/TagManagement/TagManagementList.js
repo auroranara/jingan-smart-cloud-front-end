@@ -77,7 +77,7 @@ export default class TagManagement extends PureComponent {
 
   state = {
     modalVisible: false, // 弹窗可见
-    employeeModalVisible: false,// 选择企业弹窗可见
+    employeeModalVisible: false,// 选择单位弹窗可见
     currentPersonnelList: [],   // 当前分页下人员列表
     selectedPersonnerlKeys: [],           // 选中的人员列表
     pagination: {               // 人员分页信息
@@ -327,7 +327,7 @@ export default class TagManagement extends PureComponent {
         },
       })
     } else {
-      message.error('未选择企业')
+      message.error('未选择单位')
     }
   }
 
@@ -345,7 +345,7 @@ export default class TagManagement extends PureComponent {
       selectedRows = [],
     } = this.state
     if (!selectedRows || selectedRows.length <= 0) {
-      message.error('请选择企业')
+      message.error('请选择单位')
       return
     }
     const [personnel] = selectedRows,
@@ -363,12 +363,12 @@ export default class TagManagement extends PureComponent {
     } = this.props
     // type 0  普通卡 1 临时卡 临时卡没有领卡退卡
     if (+type !== 0) return
-    // 获取该企业下系统配置
+    // 获取该单位下系统配置
     dispatch({
       type: 'personnelPosition/fetchSystemConfiguration',
       payload: { pageNum: 1, pageSize: 0, companyId },
     })
-    // 获取企业人员
+    // 获取单位人员
     dispatch({
       type: 'personnelPosition/fetchEmployees',
       payload: { companyId },
@@ -437,7 +437,7 @@ export default class TagManagement extends PureComponent {
       pagination: {
         pageNum,
         pageSize,
-        total,
+        total = 0,
       },
       selectedPersonnerlKeys,
     } = this.state
@@ -464,8 +464,7 @@ export default class TagManagement extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={(
           <div style={{ overflow: 'hidden' }}>
-            <Button style={{ float: 'right' }} type="primary">模板下载</Button>
-            <Button style={{ float: 'right', marginRight: '10px' }} disabled={!addAuth} type="primary">批量导入</Button>
+            <span style={{ lineHeight: '32px' }}>标签数量：{total}</span>
           </div>
         )}
       >
@@ -507,6 +506,8 @@ export default class TagManagement extends PureComponent {
                   <Button type="primary" onClick={() => this.handleQuery(true)}>查询</Button>
                   <Button className={styles.ml10} onClick={this.handleReset}>重置</Button>
                   <Button type="primary" className={styles.ml10} disabled={!addAuth} onClick={this.handleToAdd}>新增</Button>
+                  <Button className={styles.ml10} type="primary">模板下载</Button>
+                  <Button className={styles.ml10} disabled={!addAuth} type="primary">批量导入</Button>
                 </FormItem>
               </Col>
             </Row>
@@ -631,7 +632,7 @@ export default class TagManagement extends PureComponent {
                 <Input disabled {...itemStyles} />
               )}
             </FormItem>
-            <FormItem label="所属企业" {...formItemLayout}>
+            <FormItem label="所属单位" {...formItemLayout}>
               {getFieldDecorator('company', {
                 // initialValue: id ? { id: detail.companyId, name: detail.companyName } : undefined,
               })(
