@@ -230,7 +230,7 @@ export default class CompanyList extends PureComponent {
               company_id,
               company_name,
               industryName,
-              principal_name,
+              head_of_security,
               principal_phone,
               buildingNum,
             } = item;
@@ -245,7 +245,7 @@ export default class CompanyList extends PureComponent {
                       </Ellipsis>
                       <p>
                         安全负责人：
-                        {principal_name || getEmptyData()}
+                        {head_of_security || getEmptyData()}
                       </p>
                       <p>
                         联系电话：
