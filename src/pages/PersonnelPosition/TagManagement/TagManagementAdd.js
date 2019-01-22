@@ -29,8 +29,8 @@ export default class TagManagementAdd extends PureComponent {
 
   state = {
     employModalVisible: false, // 选择持卡人弹窗可见
-    company: {},               // 选中的企业信息
-    companyVisible: false,      // 选择企业弹窗
+    company: {},               // 选中的单位信息
+    companyVisible: false,      // 选择单位弹窗
     currentPersonnelList: [],    // 分页后当前显示的人员
     pagination: {
       pageNum: 1,
@@ -53,7 +53,7 @@ export default class TagManagementAdd extends PureComponent {
         type: 'personnelPosition/fetchTagDetail',
         payload: { pageNum: 1, pageSize: 0, cardId: id },
         callback: ({ code = null, companyId = null, companyName = null, sysId = null, type = null, userId = null, userName = null, phoneNumber = null }) => {
-          // 获取企业下的系统配置和人员
+          // 获取单位下的系统配置和人员
           this.fetchEmployees({ payload: { companyId } })
           this.fetchSystems({ payload: { pageNum: 1, pageSize: 0, companyId } })
           this.setState({
@@ -65,7 +65,7 @@ export default class TagManagementAdd extends PureComponent {
     }
   }
 
-  // 获取企业列表
+  // 获取单位列表
   fetchCompanyList = (actions) => {
     const { dispatch } = this.props
     dispatch({
@@ -74,7 +74,7 @@ export default class TagManagementAdd extends PureComponent {
     })
   }
 
-  // 获取企业人员
+  // 获取单位人员
   fetchEmployees = (actions) => {
     const { dispatch } = this.props
     dispatch({
@@ -92,7 +92,7 @@ export default class TagManagementAdd extends PureComponent {
     })
   }
 
-  // 点击关闭选择企业弹窗
+  // 点击关闭选择单位弹窗
   handleCloseEmployeeModal = () => {
     this.setState({
       employeeModalVisible: false,
@@ -120,11 +120,11 @@ export default class TagManagementAdd extends PureComponent {
         },
       })
     } else {
-      message.error('请先选择企业')
+      message.error('请先选择单位')
     }
   }
 
-  // 点击打开选择企业弹窗
+  // 点击打开选择单位弹窗
   handleViewCompanyModal = () => {
     this.fetchCompanyList({
       payload: { pageNum: 1, pageSize: defaultPageSize },
@@ -136,14 +136,14 @@ export default class TagManagementAdd extends PureComponent {
     })
   }
 
-  // 关闭选择企业弹窗
+  // 关闭选择单位弹窗
   handleCompanyModalCLose = () => {
     this.setState({
       companyVisible: false,
     })
   }
 
-  // 选择企业并关闭弹窗
+  // 选择单位并关闭弹窗
   handleSelectCompany = (company) => {
     const {
       form: { setFieldsValue, resetFields },
@@ -155,9 +155,10 @@ export default class TagManagementAdd extends PureComponent {
         this.setState({
           companyVisible: false,
           company,
+          personnel: {},
         })
-        setFieldsValue({ company })
         resetFields(['sysId', 'personnel', 'phoneNumber'])
+        setFieldsValue({ company, sysId: undefined, phoneNumber: undefined, personnel: undefined })
       },
     })
     // 获取人员列表
@@ -196,7 +197,7 @@ export default class TagManagementAdd extends PureComponent {
       selectedRows = [],
     } = this.state
     if (!selectedRows || selectedRows.length <= 0) {
-      message.error('请选择企业')
+      message.error('请选择单位')
       return
     }
     const [personnel] = selectedRows,
@@ -324,14 +325,14 @@ export default class TagManagementAdd extends PureComponent {
                 <Input placeholder="请输入" {...itemStyles} />
               )}
             </FormItem>
-            <FormItem label="所属企业" {...formItemLayout}>
+            <FormItem label="所属单位" {...formItemLayout}>
               {getFieldDecorator('company', {
                 initialValue: id ? { id: detail.companyId, name: detail.companyName } : undefined,
-                rules: [{ required: true, type: 'object', message: '请选择所属企业' }],
+                rules: [{ required: true, type: 'object', message: '请选择所属单位' }],
               })(
                 <div style={{ display: 'inline-block', width: '100%' }}>
                   <Input value={company.name} placeholder="请选择" disabled {...itemStyles} />
-                  <Button type="primary" onClick={this.handleViewCompanyModal}>选择企业</Button>
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>选择单位</Button>
                 </div>
               )}
             </FormItem>
@@ -413,9 +414,9 @@ export default class TagManagementAdd extends PureComponent {
                 },
               }}
             ></Table>
-          ) : this.emptyTip('请先选择企业')}
+          ) : this.emptyTip('请先选择单位')}
         </Modal>
-        {/* 选择企业弹窗 */}
+        {/* 选择单位弹窗 */}
         <CompanyModal
           title="选择单位"
           loading={companyLoading}
