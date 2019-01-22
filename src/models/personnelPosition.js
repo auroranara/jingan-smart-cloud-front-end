@@ -124,7 +124,7 @@ export default {
           type: 'saveSystemConfiguration',
           payload: response.data,
         });
-        if (callback) callback();
+        if (callback) callback(response.data.list);
       }
     },
     // 添加系统配置

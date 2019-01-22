@@ -24,6 +24,10 @@ const formItemLayout = {
 }))
 export default class TagManagementDetail extends PureComponent {
 
+  state = {
+    newSysName: '',
+  }
+
   componentDidMount() {
     const {
       dispatch,
@@ -36,7 +40,28 @@ export default class TagManagementDetail extends PureComponent {
         pageSize: 0,
         cardId: id,
       },
+      callback: (detail) => {
+        // 获取系统配置列表
+        dispatch({
+          type: 'personnelPosition/fetchSystemConfiguration',
+          payload: { pageNum: 1, pageSize: 0, companyId: detail.companyId },
+          callback: (list = []) => {
+            if (list.length === 0) {
+              this.setState({ newSysName: '' })
+              return
+            }
+            const newSysName = this.generateSysName(detail.sysId, list)
+            this.setState({ newSysName })
+          },
+        })
+      },
     })
+  }
+
+  // 根据系统id获取系统名称
+  generateSysName = (id, list) => {
+    const [item] = list.filter(item => item.id === id)
+    return item.sysName || '暂无数据'
   }
 
   render() {
@@ -45,14 +70,17 @@ export default class TagManagementDetail extends PureComponent {
         tag: {
           detail: {
             code,
+            sysId,
             sysName,
             userName,
             phoneNumber,
             type,        // 分类 0 普通卡 1 临时卡
           } = {},
         },
+        systemConfiguration: { sysList = [] },
       },
     } = this.props
+    const { newSysName } = this.state
     return (
       <PageHeaderLayout
         title={title}
@@ -64,10 +92,10 @@ export default class TagManagementDetail extends PureComponent {
               <span>{code}</span>
             </FormItem>
             <FormItem label="所属系统" {...formItemLayout}>
-              <span>{code}</span>
+              <span>{newSysName}</span>
             </FormItem>
             <FormItem label="标签分类" {...formItemLayout}>
-              <span>{!!type ? '临时卡' : '普通卡'}</span>
+              <span>{+type === 0 ? '普通卡' : '临时卡'}</span>
             </FormItem>
             {+type === 0 && (
               <Fragment>

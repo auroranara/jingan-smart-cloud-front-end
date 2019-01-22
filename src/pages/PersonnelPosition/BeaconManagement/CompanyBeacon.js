@@ -45,8 +45,6 @@ const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 export default class CompanyBeacon extends PureComponent {
 
   state = {
-    beaconStatus: undefined, // 筛选栏信标状态
-    beaconCode: undefined,   // 筛选栏信标编号
     detail: {},               // 信标详情
   }
 
@@ -99,6 +97,7 @@ export default class CompanyBeacon extends PureComponent {
   // 点击查询
   handleQuery = () => {
     const {
+      form: { getFieldsValue },
       match: { params: { id: companyId } },
       personnelPosition: {
         beaconManagement: {
@@ -106,17 +105,26 @@ export default class CompanyBeacon extends PureComponent {
         },
       },
     } = this.props
-    const { beaconCode, beaconStatus } = this.state
+    const { searchBeaconCode, searchBeaconStatus } = getFieldsValue()
     const payload = {
       pageNum: 1,
       pageSize,
       companyId,
-      beaconCode,
-      status: beaconStatus,
+      beaconCode: searchBeaconCode,
+      status: searchBeaconStatus,
     }
     this.fetchBeacons({
       payload,
     })
+  }
+
+  // 点击重置
+  handleReset = () => {
+    const {
+      form: { resetFields },
+    } = this.props
+    resetFields(['searchBeaconCode', 'searchBeaconStatus'])
+    this.handleQuery()
   }
 
   // 更新state,key为键值
@@ -133,7 +141,7 @@ export default class CompanyBeacon extends PureComponent {
       match: { params: { id: companyId } },
       form: { resetFields },
     } = this.props
-    // 获取当前企业的系统配置
+    // 获取当前单位的系统配置
     dispatch({
       type: 'personnelPosition/fetchSystemConfiguration',
       payload: { pageNum: 1, pageSize: 100, companyId },
@@ -190,21 +198,12 @@ export default class CompanyBeacon extends PureComponent {
   handleDelete = (id) => {
     const {
       dispatch,
-      match: { params: { id: companyId } },
-      personnelPosition: {
-        beaconManagement: {
-          beaconPagination: { pageSize },
-        },
-      },
     } = this.props
-    const { beaconStatus, beaconCode } = this.state
     dispatch({
       type: 'personnelPosition/deleteBeacon',
       payload: { id },
       success: () => {
-        this.fetchBeacons({
-          payload: { pageNum: 1, pageSize, companyId, status: beaconStatus, beaconCode },
-        })
+        this.handleQuery()
       },
       error: () => {
         message.error('删除失败')
@@ -218,22 +217,15 @@ export default class CompanyBeacon extends PureComponent {
       dispatch,
       form: { validateFields },
       match: { params: { id: companyId } },
-      personnelPosition: {
-        beaconManagement: {
-          beaconPagination: { pageSize },
-        },
-      },
     } = this.props
-    const { detail = {}, beaconCode, beaconStatus } = this.state
+    const { detail = {} } = this.state
     const success = () => {
       message.success(detail.id ? '编辑成功' : '新增成功')
       this.setState({
         modalVisible: false,
         detail: {},
       }, () => {
-        this.fetchBeacons({
-          payload: { pageNum: 1, pageSize, companyId, status: beaconStatus, beaconCode },
-        })
+        this.handleQuery()
       })
     }
     const error = (msg) => {
@@ -241,7 +233,7 @@ export default class CompanyBeacon extends PureComponent {
     }
     validateFields((err, values) => {
       if (err) return
-      const { area, ...others } = values
+      const { area, searchBeaconCode, searchBeaconStatus, ...others } = values
       const payload = { ...others, companyId }
       // 如果编辑
       if (detail.id) {
@@ -274,7 +266,7 @@ export default class CompanyBeacon extends PureComponent {
         /* 信标管理 */
         beaconManagement: {
           beaconList,
-          beaconPagination: { pageNum, pageSize, total },
+          beaconPagination: { pageNum, pageSize, total = 0 },
         },
         /* 系统配置 */
         systemConfiguration: {
@@ -313,7 +305,7 @@ export default class CompanyBeacon extends PureComponent {
         title: '状态',
         dataIndex: 'status',
         align: 'center',
-        render: (val) => (<span>{val ? !!val ? '在线' : '离线' : '暂无数据'}</span>),
+        render: (val) => (<span>{val ? +val === 1 ? '在线' : '离线' : '暂无数据'}</span>),
         width: 120,
       },
       {
@@ -347,22 +339,28 @@ export default class CompanyBeacon extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        content={`信标总数：${total}`}
       >
         {/* 上方筛选栏 */}
         <Card>
           <Row gutter={18}>
             <Col {...colWrapper} style={{ padding: '4px 8px' }}>
-              <Input placeholder="信标号码" onChange={(e) => this.changeState('beaconCode', e.target.value)} />
+              {getFieldDecorator('searchBeaconCode')(
+                <Input placeholder="信标编号" />
+              )}
             </Col>
             <Col {...colWrapper} style={{ padding: '4px 8px' }}>
-              <Select placeholder="信标状态" style={{ width: '100%' }} onChange={(value) => this.changeState('beaconStatus', value)}>
-                {statusInfo.map((item, i) => (
-                  <Option key={i} value={item.value}>{item.label}</Option>
-                ))}
-              </Select>
+              {getFieldDecorator('searchBeaconStatus')(
+                <Select placeholder="信标状态" style={{ width: '100%' }}>
+                  {statusInfo.map((item, i) => (
+                    <Option key={i} value={item.value}>{item.label}</Option>
+                  ))}
+                </Select>
+              )}
             </Col>
             <Col {...colWrapper} style={{ padding: '4px 8px' }}>
               <Button type="primary" style={{ marginRight: '10px' }} onClick={this.handleQuery}>查询</Button>
+              <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
               <Button type="primary" style={{ marginRight: '10px' }} onClick={this.handleToAdd} disabled={!addAuth}>新增</Button>
               {/* <Button style={{ marginRight: '10px' }} disabled={!deleteAuth}>删除</Button> */}
               {/* <Button type="primary" >导入</Button> */}
