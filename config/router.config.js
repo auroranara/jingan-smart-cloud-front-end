@@ -1422,28 +1422,92 @@ module.exports = env => {
               ],
             },
             /* 信标管理 */
+            {
+              name: 'beaconManagement',
+              path: '/personnel-position/beacon-management',
+              code: 'personnelPosition.beaconManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companies',
+                  path: '/personnel-position/beacon-management',
+                  redirect: '/personnel-position/beacon-management/companies',
+                },
+                {
+                  name: 'companies',
+                  code: 'personnelPosition.beaconManagement.listView',
+                  path: '/personnel-position/beacon-management/companies',
+                  component: './PersonnelPosition/BeaconManagement/index',
+                },
+                {
+                  name: 'companyBeacon',
+                  code: 'personnelPosition.beaconManagement.companyBeacon',
+                  path: '/personnel-position/beacon-management/company/:id',
+                  component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
+                },
+              ],
+            },
+            /* 标签管理 */
+            {
+              name: 'tagManagement',
+              path: '/personnel-position/tag-management',
+              code: 'personnelPosition.tagManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/tag-management',
+                  redirect: '/personnel-position/tag-management/list',
+                },
+                {
+                  name: 'list',
+                  path: '/personnel-position/tag-management/list',
+                  code: 'personnelPosition.tagManagement.listView',
+                  component: './PersonnelPosition/TagManagement/TagManagementList',
+                },
+                {
+                  name: 'add',
+                  path: '/personnel-position/tag-management/add',
+                  code: 'personnelPosition.tagManagement.add',
+                  component: './PersonnelPosition/TagManagement/TagManagementAdd',
+                },
+                {
+                  name: 'edit',
+                  path: '/personnel-position/tag-management/edit/:id',
+                  code: 'personnelPosition.tagManagement.edit',
+                  component: './PersonnelPosition/TagManagement/TagManagementAdd',
+                },
+                {
+                  name: 'detail',
+                  path: '/personnel-position/tag-management/detail',
+                  code: 'personnelPosition.tagManagement.view',
+                  component: './PersonnelPosition/TagManagement/TagManagementDetail',
+                },
+              ],
+            },
+            /* 地图管理 */
             // {
-            //   name: 'beaconManagement',
-            //   path: '/personnel-position/beacon-management',
-            //   code: 'personnelPosition.beaconManagement',
+            //   name: 'map',
+            //   path: '/personnel-position/map-management',
+            //   code: 'personnelPosition.mapManagement',
             //   hideChildrenInMenu: true,
             //   routes: [
             //     {
-            //       name: 'companies',
-            //       path: '/personnel-position/beacon-management',
-            //       redirect: '/personnel-position/beacon-management/companies',
+            //       name: 'list',
+            //       path: '/personnel-position/map-management',
+            //       redirect: '/personnel-position/map-management/list',
             //     },
             //     {
-            //       name: 'companies',
-            //       code: 'personnelPosition.beaconManagement.listView',
-            //       path: '/personnel-position/beacon-management/companies',
-            //       component: './PersonnelPosition/BeaconManagement/index',
+            //       name: 'list',
+            //       path: '/personnel-position/map-management/list',
+            //       code: 'personnelPosition.mapManagement.listView',
+            //       component: './PersonnelPosition/Map/MapManagementList',
             //     },
             //     {
-            //       name: 'companyBeacon',
-            //       code: 'personnelPosition.beaconManagement.companyBeacon',
-            //       path: '/personnel-position/beacon-management/company/:id',
-            //       component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
+            //       name: 'companyMap',
+            //       path: '/personnel-position/map-management/company-map/:id',
+            //       code: 'personnelPosition.mapManagement.companyMap',
+            //       component: './PersonnelPosition/Map/CompanyMap',
             //     },
             //   ],
             // },

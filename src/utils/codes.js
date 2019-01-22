@@ -151,5 +151,22 @@ export default {
       edit: 'personnelPosition.beaconManagement.edit',
       delete: 'personnelPosition.beaconManagement.delete',
     },
+    // 标签管理
+    tag: {
+      list: 'personnelPosition.tagManagement.listView',
+      add: 'personnelPosition.tagManagement.add',
+      edit: 'personnelPosition.tagManagement.edit',
+      delete: 'personnelPosition.tagManagement.delete',
+      detail: 'personnelPosition.tagManagement.view',
+    },
+    // 地图管理
+    map: {
+      list: 'personnelPosition.mapManagement.listView',
+      companyMap: 'personnelPosition.mapManagement.companyMap',
+      add: 'personnelPosition.mapManagement.add',
+      edit: 'personnelPosition.mapManagement.edit',
+      delete: 'personnelPosition.mapManagement.delete',
+      associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
+    },
   },
 };

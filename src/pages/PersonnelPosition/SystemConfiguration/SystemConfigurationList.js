@@ -271,10 +271,9 @@ export default class SystemConfiguration extends PureComponent {
       personnelPosition: {
         systemConfiguration: {
           list = [],
-          isLast,
-          companyList = [],
           pagination: { pageNum, pageSize, total },
         },
+        companyList = [],
       },
     } = this.props
     const { modalVisible, isAdd, companyVisible } = this.state
