@@ -1,7 +1,21 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { Card, Button, Input, Form, Row, Col, List, Spin, Popconfirm, Modal, message, Table, Divider } from 'antd';
+import {
+  Card,
+  Button,
+  Input,
+  Form,
+  Row,
+  Col,
+  List,
+  Spin,
+  Popconfirm,
+  Modal,
+  message,
+  Table,
+  Divider,
+} from 'antd';
 // import Ellipsis from '@/components/Ellipsis';
 // import { Link } from 'dva/router';
 // import InfiniteScroll from 'react-infinite-scroller';
@@ -13,19 +27,15 @@ import styles from './SystemConfigurationList.less';
 // const ListItem = List.Item;
 const FormItem = Form.Item;
 
-const title = "系统配置"
+const title = '系统配置';
 // 默认页大小
 const defaultPageSize = 10;
 
 const {
   personnelPosition: {
-    systemConfiguration: {
-      add: addCode,
-      edit: editCode,
-      delete: deleteCode,
-    },
+    systemConfiguration: { add: addCode, edit: editCode, delete: deleteCode },
   },
-} = codes
+} = codes;
 
 // 获取无数据
 /* const getEmptyData = () => {
@@ -41,85 +51,86 @@ const {
 @Form.create()
 // 系统配置
 export default class SystemConfiguration extends PureComponent {
-
   state = {
     modalVisible: false, // 添加或编辑弹窗可见
-    isAdd: true,          // 是否编辑
+    isAdd: true, // 是否编辑
     companyVisible: false, // 选择企业可见
-    currentId: null,       // 当前编辑的系统配置id
-  }
+    currentId: null, // 当前编辑的系统配置id
+  };
 
   componentDidMount() {
     // 获取列表
-    this.fetchList({ payload: { pageNum: 1, pageSize: defaultPageSize } })
+    this.fetchList({ payload: { pageNum: 1, pageSize: defaultPageSize } });
   }
 
-
-
   // 获取系统配置列表
-  fetchList = (actions) => {
-    const { dispatch } = this.props
+  fetchList = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/fetchSystemConfiguration',
       ...actions,
-    })
-  }
+    });
+  };
 
   // 获取企业列表
-  fetchCompanyList = (actions) => {
-    const { dispatch } = this.props
+  fetchCompanyList = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/fetchCompanyList',
       ...actions,
-    })
-  }
+    });
+  };
 
   handleToAdd = () => {
     const {
       form: { resetFields },
-    } = this.props
-    resetFields(['company', 'sysName', 'sysKey'])
+    } = this.props;
+    resetFields(['company', 'sysName', 'sysKey']);
     this.setState({
       isAdd: true,
       modalVisible: true,
-    })
-  }
+    });
+  };
 
   // 点击编辑
   handleToEdit = ({ companyId, companyName, sysKey, sysName, id }) => {
     const {
       form: { setFieldsValue },
-    } = this.props
+    } = this.props;
     setFieldsValue({
       company: { id: companyId, name: companyName },
       sysKey,
       sysName,
-    })
+    });
     this.setState({
       isAdd: false,
       modalVisible: true,
       currentId: id,
-    })
-  }
+    });
+  };
 
   // 点击删除
   handleToDelete = ({ id }) => {
     const {
       dispatch,
       personnelPosition: {
-        systemConfiguration: { pagination: { pageSize } },
+        systemConfiguration: {
+          pagination: { pageSize },
+        },
       },
-    } = this.props
+    } = this.props;
     dispatch({
       type: 'personnelPosition/deleteSystemConfiguration',
       payload: { id },
       success: () => {
-        message.success('删除成功')
-        this.fetchList({ payload: { pageNum: 1, pageSize } })
+        message.success('删除成功');
+        this.fetchList({ payload: { pageNum: 1, pageSize } });
       },
-      error: () => { message.error('删除失败') },
-    })
-  }
+      error: () => {
+        message.error('删除失败');
+      },
+    });
+  };
 
   // 加载更多列表数据
   /* handleLoadMore = () => {
@@ -145,69 +156,73 @@ export default class SystemConfiguration extends PureComponent {
         pageNum,
         pageSize,
       },
-    })
-  }
+    });
+  };
 
   // 点击搜索
   handleQuery = () => {
     const {
       form: { getFieldValue },
       personnelPosition: {
-        systemConfiguration: { pagination: { pageSize } },
+        systemConfiguration: {
+          pagination: { pageSize },
+        },
       },
-    } = this.props
-    const value = getFieldValue('searchName')
+    } = this.props;
+    const value = getFieldValue('searchName');
     this.fetchList({
       payload: {
         pageNum: 1,
         pageSize,
         companyName: value || null,
       },
-    })
-  }
+    });
+  };
 
   // 点击重置
   handleResetQuery = () => {
     const {
       form: { resetFields },
-    } = this.props
-    resetFields(['searchName'])
+    } = this.props;
+    resetFields(['searchName']);
     this.fetchList({
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
       },
-    })
-  }
+    });
+  };
 
   // 选择企业
-  handleSelectCompany = (company) => {
+  handleSelectCompany = company => {
     const {
       form: { setFieldsValue },
-    } = this.props
-    this.setState({ companyVisible: false })
-    setFieldsValue({ company })
-  }
+    } = this.props;
+    this.setState({ companyVisible: false });
+    setFieldsValue({ company });
+  };
 
   // 关闭选择企业弹窗
   handleCompanyModalCLose = () => {
     this.setState({
       companyVisible: false,
-    })
-  }
+    });
+  };
 
   // 点击打开选择企业弹窗
   handleViewCompanyModal = () => {
     this.fetchCompanyList({
       payload: { pageNum: 1, pageSize: defaultPageSize },
-      callback: () => { this.setState({ companyVisible: true }) },
-    })
-  }
+      callback: () => {
+        this.setState({ companyVisible: true });
+      },
+    });
+  };
 
   // 点击关闭添加（编辑）弹窗
   handleCloseModal = () => {
-    this.setState({ modalVisible: false, companyVisible: false })
-  }
+    this.setState({ modalVisible: false, companyVisible: false });
+  };
 
   // 点击确认提交（添加、编辑）
   handleSubmit = () => {
@@ -215,25 +230,27 @@ export default class SystemConfiguration extends PureComponent {
       dispatch,
       form: { validateFields },
       personnelPosition: {
-        systemConfiguration: { pagination: { pageSize } },
+        systemConfiguration: {
+          pagination: { pageSize },
+        },
       },
-    } = this.props
-    const { isAdd, currentId } = this.state
+    } = this.props;
+    const { isAdd, currentId } = this.state;
 
     const success = () => {
-      message.success(isAdd ? '新增成功' : '编辑成功')
-      this.setState({ modalVisible: false, companyVisible: false })
-      this.fetchList({ payload: { pageNum: 1, pageSize } })
-    }
+      message.success(isAdd ? '新增成功' : '编辑成功');
+      this.setState({ modalVisible: false, companyVisible: false });
+      this.fetchList({ payload: { pageNum: 1, pageSize } });
+    };
     const error = () => {
-      message.error(isAdd ? '新增失败' : '编辑失败')
-      this.setState({ modalVisible: false, companyVisible: false })
-    }
+      message.error(isAdd ? '新增失败' : '编辑失败');
+      this.setState({ modalVisible: false, companyVisible: false });
+    };
     validateFields((err, values) => {
-      if (err) return
+      if (err) return;
       // 筛选掉搜索栏的数据
-      const { searchName, company, ...others } = values
-      const payload = { ...others, companyId: company.id }
+      const { searchName, company, ...others } = values;
+      const payload = { ...others, companyId: company.id };
       // 新增
       if (isAdd) {
         dispatch({
@@ -241,26 +258,25 @@ export default class SystemConfiguration extends PureComponent {
           payload,
           success,
           error,
-        })
+        });
       } else {
         dispatch({
           type: 'personnelPosition/editSystemConfiguration',
           payload: { ...payload, id: currentId },
           success,
           error,
-        })
+        });
       }
-    })
-  }
+    });
+  };
 
   validateCompany = (rule, value, callback) => {
     if (value && value.id) {
-      callback()
-    } else callback('请选择企业')
-  }
+      callback();
+    } else callback('请选择企业');
+  };
 
   render() {
-
     const {
       listLoading,
       companyLoading,
@@ -275,20 +291,20 @@ export default class SystemConfiguration extends PureComponent {
         },
         companyList = [],
       },
-    } = this.props
-    const { modalVisible, isAdd, companyVisible } = this.state
+    } = this.props;
+    const { modalVisible, isAdd, companyVisible } = this.state;
 
     const breadcrumbList = [
-      { title: '首页', name: '首页', href: "/" },
+      { title: '首页', name: '首页', href: '/' },
       { title: '人员定位', name: '人员定位' },
       { title, name: title },
-    ]
-    const company = getFieldValue('company') || {}
+    ];
+    const company = getFieldValue('company') || {};
 
     // 权限
-    const addAuth = hasAuthority(addCode, permissionCodes)
+    const addAuth = hasAuthority(addCode, permissionCodes);
     // const editAuth = hasAuthority(editCode, permissionCodes)
-    const deleteAuth = hasAuthority(deleteCode, permissionCodes)
+    const deleteAuth = hasAuthority(deleteCode, permissionCodes);
 
     const columns = [
       {
@@ -315,46 +331,52 @@ export default class SystemConfiguration extends PureComponent {
         align: 'center',
         render: (val, row) => (
           <span>
-            <AuthA
-              code={editCode}
-              onClick={() => this.handleToEdit(row)}
-            >
+            <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>
               编辑
             </AuthA>
             <Divider type="vertical" />
             {deleteAuth ? (
-              <Popconfirm title="确认要删除该系统配置吗？" onConfirm={() => this.handleToDelete(row)}>
+              <Popconfirm
+                title="确认要删除该系统配置吗？"
+                onConfirm={() => this.handleToDelete(row)}
+              >
                 <a>删除</a>
               </Popconfirm>
             ) : (
-                <a className={styles.disabled}>删除</a>
-              )}
+              <a className={styles.disabled}>删除</a>
+            )}
           </span>
         ),
       },
-    ]
+    ];
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {/* 删选栏 */}
         <Card>
           <Form>
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                  {getFieldDecorator('searchName')(
-                    <Input placeholder="请输入企业名称" />
-                  )}
+                  {getFieldDecorator('searchName')(<Input placeholder="请输入企业名称" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                  <Button type="primary" onClick={this.handleQuery}>查询</Button>
-                  <Button onClick={this.handleResetQuery} style={{ marginLeft: '10px' }}>重置</Button>
-                  <Button type="primary" disabled={!addAuth} onClick={this.handleToAdd} style={{ marginLeft: '10px' }}>新增</Button>
+                  <Button type="primary" onClick={this.handleQuery}>
+                    查询
+                  </Button>
+                  <Button onClick={this.handleResetQuery} style={{ marginLeft: '10px' }}>
+                    重置
+                  </Button>
+                  <Button
+                    type="primary"
+                    disabled={!addAuth}
+                    onClick={this.handleToAdd}
+                    style={{ marginLeft: '10px' }}
+                  >
+                    新增
+                  </Button>
                 </FormItem>
               </Col>
             </Row>
@@ -407,7 +429,7 @@ export default class SystemConfiguration extends PureComponent {
                     onClick={this.handleViewCompanyModal}
                   >
                     选择单位
-              </Button>
+                  </Button>
                 </Fragment>
               )}
             </FormItem>
@@ -415,17 +437,13 @@ export default class SystemConfiguration extends PureComponent {
               {getFieldDecorator('sysName', {
                 getValueFromEvent: e => e.target.value.trim(),
                 rules: [{ required: true, whitespace: true, message: '请输入系统名称' }],
-              })(
-                <Input />
-              )}
+              })(<Input />)}
             </FormItem>
             <FormItem label="注册号">
               {getFieldDecorator('sysKey', {
                 getValueFromEvent: e => e.target.value.trim(),
                 rules: [{ required: true, whitespace: true, message: '请输入注册号' }],
-              })(
-                <Input />
-              )}
+              })(<Input />)}
             </FormItem>
           </Form>
         </Modal>
@@ -440,6 +458,6 @@ export default class SystemConfiguration extends PureComponent {
           onClose={this.handleCompanyModalCLose}
         />
       </PageHeaderLayout>
-    )
+    );
   }
 }
