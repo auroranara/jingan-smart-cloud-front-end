@@ -1,8 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-
+import ReactEcharts from 'echarts-for-react';
 import styles from './AlarmDrawer.less';
 import {
-  ChartBar,
   ChartLine,
   DrawerCard,
   DrawerContainer,
@@ -71,6 +70,104 @@ export default class AlarmDrawer extends PureComponent {
     const { handleDrawerVisibleChange } = this.props;
     handleDrawerVisibleChange(TYPE);
     this.setState({ searchValue: '', grahp: 0, selected: 0 });
+  };
+
+  getOption = () => {
+    const option = {
+      textStyle: {
+        color: '#fff',
+      },
+      grid: { left: 0, right: '12%', top: 40, containLabel: true },
+      color: ['#e86767', '#5ebeff'],
+      tooltip: {
+        show: true,
+        trigger: 'axis',
+        axisPointer: {
+          // 坐标轴指示器，坐标轴触发有效
+          type: 'shadow', // 默认为直线，可选为：'line' | 'shadow'
+          shadowStyle: {
+            color: 'rgba(46,78,111,0.5)',
+            opacity: 0.6,
+          },
+        },
+        backgroundColor: 'rgba(46,78,111,0.5)',
+        padding: [5, 15, 5, 15],
+      },
+      legend: {
+        data: ['报警', '故障', '失联'],
+        textStyle: {
+          color: '#fff',
+        },
+        orient: 'horizontal',
+        bottom: 20,
+        left: 'center',
+        icon: 'rect',
+      },
+      yAxis: {
+        type: 'value',
+        axisTick: { show: true, inside: true },
+        splitLine: {
+          show: false,
+          lineStyle: {
+            color: '#394456',
+            width: 2,
+          },
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#394456',
+            width: 2,
+          },
+        },
+        axisLabel: {
+          formatter: function(value, index) {
+            if (parseInt(value, 10) !== value) return '';
+            return parseInt(value, 10);
+          },
+        },
+      },
+      xAxis: {
+        type: 'category',
+        axisTick: { show: false },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#394456',
+            width: 2,
+          },
+        },
+        axisLabel: {
+          color: '#fff',
+          fontSize: 14,
+        },
+        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      },
+      series: [
+        {
+          name: '报警',
+          color: '#ff4848',
+          type: 'bar',
+          barWidth: 5,
+          data: [20, 12, 12, 34, 55, 66, 34, 44, 22, 11, 22, 34],
+        },
+        {
+          name: '故障',
+          type: 'bar',
+          color: '#f6b54e',
+          barWidth: 5,
+          data: [20, 13, 12, 36, 52, 66, 34, 44, 22, 11, 22, 34],
+        },
+        {
+          name: '失联',
+          color: '#9f9f9f',
+          type: 'bar',
+          barWidth: 5,
+          data: [20, 13, 12, 36, 52, 66, 34, 44, 22, 11, 22, 34],
+        },
+      ],
+    };
+    return option;
   };
 
   render() {
@@ -169,7 +266,7 @@ export default class AlarmDrawer extends PureComponent {
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
           {graph ? (
-            <ChartBar data={graphList} labelRotate={0} sameColor />
+            <ReactEcharts option={this.getOption()} className="echarts-for-echarts" />
           ) : (
             <ChartLine data={graphList} labelRotate={0} />
           )}
@@ -193,6 +290,20 @@ export default class AlarmDrawer extends PureComponent {
               person={safetyMan || NO_DATA}
               phone={safetyPhone || NO_DATA}
               style={{ cursor: 'auto' }}
+              infoStyle={{
+                width: 70,
+                textAlign: 'center',
+                color: '#FFF',
+                bottom: '50%',
+                right: 25,
+                transform: 'translateY(50%)',
+              }}
+              info={
+                <Fragment>
+                  <div className={styles.equipment}>{2 || '--'}</div>
+                  设备数
+                </Fragment>
+              }
               more={
                 <p className={styles.more}>
                   {[common, alarm, warn, noAccess].map((n, i) => (

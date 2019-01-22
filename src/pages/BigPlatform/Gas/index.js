@@ -23,7 +23,13 @@ import ElectricityMap from './ElectricityMap';
 import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
-import { SettingModal, UnitDrawer, AlarmDrawer, MonitorDrawer } from './sections/Components';
+import {
+  SettingModal,
+  UnitDrawer,
+  AlarmDrawer,
+  BusinessDrawer,
+  MonitorDrawer,
+} from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
@@ -51,6 +57,7 @@ export default class Gas extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
+      businessDrawerVisible: false,
       monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
@@ -550,6 +557,7 @@ export default class Gas extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
+      businessDrawerVisible,
       monitorDrawerVisible,
       monitorDrawerTitleIndex,
       // videoVisible,
@@ -629,7 +637,8 @@ export default class Gas extends PureComponent {
         <NewSection
           title="待处理业务"
           className={styles.left}
-          style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%' }}
+          style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%', cursor: 'pointer' }}
+          onClick={e => this.handleDrawerVisibleChange('business')}
         >
           <ProcessingBusiness />
         </NewSection>
@@ -648,6 +657,11 @@ export default class Gas extends PureComponent {
         <AlarmDrawer
           data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
           visible={alarmDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <BusinessDrawer
+          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          visible={businessDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <MonitorDrawer
