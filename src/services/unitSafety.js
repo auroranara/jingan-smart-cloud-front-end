@@ -111,7 +111,8 @@ export async function getSafetyIndex(params) {
 
 // 获取动态监测
 export async function getMonitorList(params) {
-  return request(`/acloud_new/v2/fireData/systemMessage.json?${stringify(params)}`);
+  // return request(`/acloud_new/v2/fireData/systemMessage.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/fireData/getMonitor?${stringify(params)}`);
 }
 
 // 获取安全档案

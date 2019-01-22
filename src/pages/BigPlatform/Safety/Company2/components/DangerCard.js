@@ -12,7 +12,7 @@ const CARD_STYLE = {
 export default function DangerCard(props) {
   return (
     <div className={styles.container}>
-      <HiddenDanger style={CARD_STYLE} {...props} />
+      <HiddenDanger style={CARD_STYLE} {...props} isSourceShow />
     </div>
   )
 }

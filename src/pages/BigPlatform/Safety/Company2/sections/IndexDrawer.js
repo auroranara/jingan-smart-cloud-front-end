@@ -51,19 +51,20 @@ export default class IndexDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, data: { safetyIndex, riskList, dangerList, monitorList, safeList=DEFAULT_LIST } } = this.props;
+    const { visible, data: { safetyIndex, safetyIndexes, riskList, dangerList, monitorList, safeList=DEFAULT_LIST } } = this.props;
     const { selected } = this.state;
 
     const titleIcon = <Rect color='#0967d3' />;
-    const barLists = [riskList, dangerList, monitorList, safeList];
-    const barListData = LABELS.map((label, i) => ({ name: label, value: Array.isArray(barLists[i]) ? barLists[i].length : 0 }))
+    // const barLists = [riskList, dangerList, monitorList, safeList];
+    // const barListData = LABELS.map((label, i) => ({ name: label, value: Array.isArray(barLists[i]) ? barLists[i].length : 0 }));
+    const barListData = LABELS.map((label, i) => ({ name: label, value: safetyIndexes[i] })).filter(item => item.value !== null);
     const left = (
       <Fragment>
         <DrawerSection title="构成">
           <Solar index={safetyIndex} />
         </DrawerSection>
         <DrawerSection title="分值">
-          <ChartBar barWidth={30} barColors={BAR_COLORS} labelRotate={0} data={barListData} />
+          <ChartBar barWidth={30} barColors={BAR_COLORS} labelRotate={0} data={barListData} yAxisRange={[0, 100]} />
         </DrawerSection>
       </Fragment>
     );

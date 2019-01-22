@@ -33,19 +33,72 @@ function getRiskList(response) {
   if (!response)
     return [];
 
-  return ['red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
+  const result = ['red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
     const value = response[`${next}DangerResult`];
     const list = Array.isArray(value) ? value.map(item => ({ ...item, flag: next })) : [];
     return prev.concat(list);
-  }, []);
+  }, []).filter(item => item.status === 4);
+
+  result.sort((item, item1) => item1.expire - item.expire);
+  return result;
+}
+
+// const MONITOR_PROPS = [
+//   'prepare_elec_state', // 备电
+//   'main_elec_state', // 主电
+//   'main_line_state', // 主线
+//   'fault_state', // 故障
+//   'fire_state', // 火警
+// ];
+// function handleMonitorList(list) {
+//   const result = list.filter(item => {
+//     return MONITOR_PROPS.some(prop => item[prop] === '1');
+//     // 火警标识为报警，其他的都标识为故障
+//   }).map(item => ({ ...item, statusLabel: item.fire_state === '1' ? '报警' : '故障' }));
+
+//   result.sort((item, item1) => item1.save_time - item.save_time);
+//   return result;
+// }
+
+// 0 火警 1 故障 2 失联
+function handleMonitorList(list) {
+  const loss = Array.isArray(list.lossDevice) ? list.lossDevice.map(({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
+    id: deviceId,
+    type: typeName,
+    number: relationDeviceId,
+    params: '失联',
+    status: 2,
+    time: statusTime,
+    location: `${area}${location || ''}`,
+  })) : [];
+  const alarm = Array.isArray(list.abnormalDevice) ? list.abnormalDevice.map(({ deviceId, relationDeviceId, area, location, unormalParams, typeName }) => ({
+    id: deviceId,
+    type: typeName,
+    number: relationDeviceId,
+    params: unormalParams,
+    status: unormalParams.includes('火警') ? 0 : 1,
+    location: `${area}${location || ''}`,
+  })) : [];
+
+  loss.sort((item, item1) => item1.time - item.time);
+  return [...alarm, ...loss];
+}
+
+function handleDangerList(list) {
+  const outed = list.filter(item => item.status === '7');
+  const rectify = list.filter(item => item.status === '1' || item.status === '2');
+  const review = list.filter(item => item.status === '3');
+  [outed, rectify, review].forEach(ls => ls.sort((item, item1) => item1.report_time - item.report_time));
+
+  return [...outed, ...rectify, ...review];
 }
 
 const ITEMS = ['特种设备', '应急物资', '特种作业操作证人员', '企业安全培训信息'];
 const PROPS = {
-  '特种设备': 'recheck_date',
-  '应急物资': 'end_time',
-  '特种作业操作证人员': 'nextDate',
-  '企业安全培训信息': 'nextDate',
+  '特种设备': ['recheck_date', 'data_true_name'],
+  '应急物资': ['end_time', 'emergency_equipment_name'],
+  '特种作业操作证人员': ['nextDate', 'name'],
+  '企业安全培训信息': ['nextDate', 'traineeName'],
 };
 const DAY_MS = 24 * 3600 * 1000;
 
@@ -56,28 +109,15 @@ function handleSafeList(list) {
     if (!ITEMS.includes(next.name) || !Array.isArray(next.list))
       return prev;
 
-    const ls = next.list.map(({ [PROPS[next.name]]: expire }) => ({ name: next.name, expire: Math.floor((now - expire) / DAY_MS) }));
+    const ls = next.list.map(({ [PROPS[next.name][0]]: expire, [PROPS[next.name][1]]: name }) => ({
+      type: next.name,
+      name,
+      expire: Math.floor((now - expire) / DAY_MS),
+    })).filter(item => item.expire >= 0);
     return prev.concat(ls);
   }, []);
 
   result.sort((item, item1) => item1.expire - item.expire);
-  return result;
-}
-
-const MONITOR_PROPS = [
-  'prepare_elec_state', // 备电
-  'main_elec_state', // 主电
-  'main_line_state', // 主线
-  'fault_state', // 故障
-  'fire_state', // 火警
-];
-function handleMonitorList(list) {
-  const result = list.filter(item => {
-    return MONITOR_PROPS.some(prop => item[prop] === '1');
-    // 火警标识为报警，其他的都标识为故障
-  }).map(item => ({ ...item, statusLabel: item.fire_state === '1' ? '报警' : '故障' }));
-
-  result.sort((item, item1) => item1.save_time - item.save_time);
   return result;
 }
 
@@ -135,6 +175,8 @@ export default {
     },
     // 安全指数
     safetyIndex: undefined,
+    // 每个具体的安全指数
+    safetyIndexes: [],
     // 隐患巡查单条记录对应的隐患列表
     inspectionRecordData: {},
     // 风险点数组
@@ -231,7 +273,7 @@ export default {
       yield put({ type: 'save', payload:  { hiddenDangerList : { ycq, wcq, dfc } } });
       yield put({
         type: 'saveDangerList',
-        payload: response && Array.isArray(response.hiddenDangers) ? response.hiddenDangers.filter(({ status }) => status !== '4') : [],
+        payload: response && Array.isArray(response.hiddenDangers) ? handleDangerList(response.hiddenDangers) : [],
       });
       if (callback) {
         callback();
@@ -390,11 +432,16 @@ export default {
     // 获取安全指数
     *fetchSafetyIndex({ payload, callback }, { call, put }) {
       const response = yield call(getSafetyIndex, payload);
-      if (response.code === 200) {
+      if (response && response.code === 200) {
+        const allIndex = response.data || {};
+        const { totalScore: safetyIndex=null, safe_point=null, hidden_record_score=null, monitorScore=null, safetyInfoPoint=null } = allIndex;
+        const safetyIndexes = [safe_point, hidden_record_score, monitorScore, safetyInfoPoint];
         yield put({
           type: 'save',
-          payload: { safetyIndex: response.data },
+          // payload: { safetyIndex: response.data },
+          payload: { safetyIndex },
         });
+        yield put({ type: 'saveSafeIndexes', payload: safetyIndexes });
         if (callback) {
           callback(response.data);
         }
@@ -407,8 +454,10 @@ export default {
       let response = yield call(getMonitorList, payload);
       response = response || {};
       const { code=500, data } = response;
-      if (code === 200 && data && Array.isArray(data.list))
-        yield put({ type: 'saveMonitorList', payload: data.list });
+      // if (code === 200 && data && Array.isArray(data.list))
+      //   yield put({ type: 'saveMonitorList', payload: data.list });
+      if (code === 200 && data)
+        yield put({ type: 'saveMonitorList', payload: data });
     },
     // 获取安全档案
     *fetchSafeFiles({ payload, callback }, { call, put }) {
@@ -439,6 +488,9 @@ export default {
     },
     saveSafeFiles(state, action) {
       return { ...state, safeList: action.payload };
+    },
+    saveSafeIndexes(state, action) {
+      return { ...state, safetyIndexes: action.payload };
     },
   },
 }

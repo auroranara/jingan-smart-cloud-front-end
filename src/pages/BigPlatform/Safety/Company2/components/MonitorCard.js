@@ -3,32 +3,37 @@ import moment from 'moment';
 
 import styles from './MonitorCard.less';
 
+const CLASSNAMES = ['red', 'white', 'yellow'];
+
 export default function MonitorCard(props) {
-  const { data: { label, install_address, component_no, save_time, statusLabel } } = props;
+  // status 0 火警 1 故障 2 失联
+  const { data: { type, number, location, params, time, status } } = props;
 
   return (
     <div className={styles.outer}>
       <div className={styles.container}>
         <p>
           <span className={styles.item}>监测模块</span>
-          {label}
+          {type}
         </p>
         <p>
           <span className={styles.item}>设备号</span>
-          {component_no}
+          {number}
         </p>
         <p>
           <span className={styles.item}>设备状态</span>
-          <span className={styles.red}>{statusLabel}</span>
+          <span className={styles[CLASSNAMES[status]]}>{params}</span>
         </p>
         <p>
           <span className={styles.item}>区域位置</span>
-          {install_address}
+          {location}
         </p>
-        <p>
-          <span className={styles.item}>发生时间</span>
-          {moment(save_time).format('YYYY-MM-DD HH:mm')}
-        </p>
+        {time && (
+          <p>
+            <span className={styles.item}>发生时间</span>
+            {moment(time).format('YYYY-MM-DD HH:mm')}
+          </p>
+        )}
       </div>
     </div>
   );
