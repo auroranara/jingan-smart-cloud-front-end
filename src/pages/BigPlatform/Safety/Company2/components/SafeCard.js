@@ -15,7 +15,7 @@ export default function SafeCard(props) {
           {type}
         </p>
         <p>
-          <span className={styles.item}><span className={styles.space}>名</span>称</span>
+          <span className={styles.item}>名<span className={styles.space} />称</span>
           {name}
         </p>
         <p>
