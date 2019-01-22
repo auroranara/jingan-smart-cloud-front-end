@@ -1,4 +1,4 @@
-// import { routerRedux } from 'dva/router';
+ // import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 // import { stringify } from 'qs';
 import { getFakeCaptcha } from '../services/api';
