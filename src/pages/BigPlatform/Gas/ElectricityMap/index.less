@@ -5,15 +5,14 @@
   width: 100%;
   height: 100%;
   .allPoint {
-    position: absolute;
-    // top: 100px;
+    position: absolute; // top: 100px;
     top: calc(9.62963% + 24px);
     right: 185px;
     height: 32px;
     line-height: 32px;
     padding: 0 12px;
     background-color: #1a6ac2;
-    color: #FFF;
+    color: #fff;
     cursor: pointer;
     border-radius: 5px;
     text-align: center;
@@ -34,7 +33,7 @@
     .legendItem {
       display: inline-block;
       position: relative;
-      &+.legendItem {
+      & + .legendItem {
         margin-left: 15px;
       }
       .legendIcon {
@@ -53,6 +52,33 @@
           border-radius: 50%;
         }
       }
+    }
+  }
+  .alarmTip {
+    // position: absolute; // top: -30px;
+// left: -79px;
+    white-space: nowrap;
+    cursor: pointer;
+    width: 200px;
+    text-align: center;
+    background-color: rgba(22, 22, 22, 0.9);
+    padding: 2px 0px;
+    animation: redShadow 2s linear 0s infinite alternate;
+    .tipMore {
+      color: #04fdff;
+      display: inline-block;
+      margin-left: 8px;
+    }
+  }
+  @keyframes redShadow {
+    0% {
+      box-shadow: 0px 0px 20px #f83329;
+    }
+    50% {
+      box-shadow: 0px 0px 0px #f83329;
+    }
+    100% {
+      box-shadow: 0px 0px 20px #f83329;
     }
   }
   .comapnyWrapper {
@@ -89,8 +115,8 @@
     }
   }
   :global {
-    .amap-zoom-touch-plus>div,
-    .amap-zoom-touch-minus>div {
+    .amap-zoom-touch-plus > div,
+    .amap-zoom-touch-minus > div {
       font-size: 20px;
     }
     .amap-scalecontrol {
@@ -118,8 +144,8 @@
           height: 30px;
           font-size: 20px;
         }
-        .amap-zoom-touch-minus>div,
-        .amap-zoom-touch-plus>div {
+        .amap-zoom-touch-minus > div,
+        .amap-zoom-touch-plus > div {
           color: #fff;
           line-height: 30px;
         }
@@ -137,18 +163,18 @@
         background: url('@{luopanImage}') -462px -52px no-repeat;
       }
       .amap-controlbar-zoom {
-        background:url('@{luopanImage}') -154px -292px no-repeat;
+        background: url('@{luopanImage}') -154px -292px no-repeat;
       }
       .amap-rotateLeft,
       .amap-rotateRight {
-        background:url('@{luopanImage}') -603px -154px no-repeat;
+        background: url('@{luopanImage}') -603px -154px no-repeat;
       }
       .amap-rotate-active {
-        background:url('@{luopanImage}') -557px -153px no-repeat;
+        background: url('@{luopanImage}') -557px -153px no-repeat;
       }
       .amap-pitchDown,
       .amap-pitchUp {
-        background:url('@{luopanImage}') -605px -98px no-repeat;
+        background: url('@{luopanImage}') -605px -98px no-repeat;
       }
     }
     .amap-info-content.amap-info-outer {

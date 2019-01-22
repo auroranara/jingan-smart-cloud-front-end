@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
-import { Map as GDMap, InfoWindow, Markers } from 'react-amap';
+import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
 import styles from './index.less';
 import MapTypeBar from './MapTypeBar';
 
@@ -69,7 +69,7 @@ export default class MapSection extends PureComponent {
   renderMarkers = lvl => {
     const {
       // mapData: { units = [] },
-      units=[],
+      units = [],
       unitDetail: { companyId: selectedCompanyId } = {},
     } = this.props;
 
@@ -84,6 +84,7 @@ export default class MapSection extends PureComponent {
           latitude: item.latitude,
         },
         zIndex: selectedCompanyId === item.comapnyId ? 999 : 100,
+        ...{ zIndex: item.companyId === 'DccBRhlrSiu9gMV7fmvizw' ? 998 : 100 },
       };
     });
 
@@ -92,10 +93,12 @@ export default class MapSection extends PureComponent {
         markers={markers}
         offset={[-15, -42]}
         events={{
-          click: (e, marker) => {
-            const extData = marker.getExtData();
-            this.props.handleMapClick(extData);
-          },
+          // click: (e, marker) => {
+          //   const extData = marker.getExtData();
+          //   // this.props.handleMapClick(extData);
+          //   this.props.handleMapClick(extData.companyId, extData);
+          //   this.props.hideTooltip();
+          // },
           created: () => {
             if (fitView) {
               this.mapInstance.on('complete', () => {
@@ -114,39 +117,85 @@ export default class MapSection extends PureComponent {
 
   renderMarkerLayout = extData => {
     const { status, companyName, companyId } = extData;
-
+    let imgSrc = pointNormal;
+    if (+status === 0 || +status === -1) {
+      imgSrc = pointNormal;
+    } else if (+status === 1) {
+      imgSrc = pointPreAlarm;
+    } else if (+status === 2) {
+      imgSrc = pointAlarm;
+    }
     return (
-      <div
-        onMouseEnter={e => {
-          if (this.target === e.target) return;
-          this.target = e.target;
-          this.props.showTooltip(e, companyName);
-        }}
-        onMouseLeave={this.props.hideTooltip}
-      >
-        {(+status === 0 || +status === -1) && (
-          <img
-            src={pointNormal}
-            alt=""
-            style={{ display: 'block', width: '32px', height: '42px' }}
-          />
-        )}
-        {+status === 1 && (
-          <img
-            src={pointPreAlarm}
-            alt=""
-            style={{ display: 'block', width: '32px', height: '42px' }}
-          />
-        )}
-        {+status === 2 && (
-          <img
-            src={pointAlarm}
-            alt=""
-            style={{ display: 'block', width: '32px', height: '42px' }}
-          />
-        )}
+      // <div style={{ position: 'relative', width: 0, height: 0 }}>
+      <div style={{ position: 'relative' }}>
+        {/* {companyId === 'DccBRhlrSiu9gMV7fmvizw' && (
+          <div
+            className={styles.alarmTip}
+            onMouseEnter={e => {
+              if (this.targetTip === e.target) return;
+              this.targetTip = e.target;
+              this.props.showTooltip(e, companyName);
+            }}
+            onMouseLeave={this.props.hideTooltip}
+          >
+            有一条报警信息！
+            <span className={styles.tipMore}>详情>></span>
+          </div>
+        )} */}
+
+        <img
+          src={imgSrc}
+          alt=""
+          style={{ display: 'block', width: '32px', height: '42px' }}
+          onClick={() => {
+            // const extData = marker.getExtData();
+            // this.props.handleMapClick(extData);
+            this.props.handleMapClick(extData.companyId, extData);
+            this.props.hideTooltip();
+          }}
+          onMouseEnter={e => {
+            if (this.target === e.target) return;
+            this.target = e.target;
+            this.props.showTooltip(e, companyName);
+          }}
+          onMouseLeave={this.props.hideTooltip}
+        />
       </div>
     );
+  };
+
+  renderTips = () => {
+    const { units = [], alarmIds = [] } = this.props;
+    // const tips = units.filter(item => item.companyId === 'DccBRhlrSiu9gMV7fmvizw');
+    const tips = alarmIds.map(id => {
+      return units.find(item => item.companyId === id);
+    });
+    return tips.map((item, index) => {
+      return (
+        <Marker
+          offset={[-100, -72]}
+          position={[item.longitude, item.latitude]}
+          zIndex={1000}
+          extData={item}
+          events={{
+            click: e => {
+              console.log('e', e);
+              const newIds = [...alarmIds];
+              newIds.splice(index, 1);
+              this.props.handleParentChange({ maintenanceDrawerVisible: true, alarmIds: newIds });
+            },
+          }}
+          render={() => {
+            return (
+              <div className={styles.alarmTip}>
+                有一条报警信息！
+                <span className={styles.tipMore}>详情>></span>
+              </div>
+            );
+          }}
+        />
+      );
+    });
   };
 
   // 弹窗渲染
@@ -161,7 +210,7 @@ export default class MapSection extends PureComponent {
     return (
       <InfoWindow
         position={{ longitude, latitude }}
-        offset={[175, 110]}
+        offset={[175, 120]}
         isCustom={false}
         autoMove={true}
         visible={infoWindowShow}
@@ -260,8 +309,9 @@ export default class MapSection extends PureComponent {
             },
           }}
         >
-          {/* {this.renderInfoWindow()} */}
+          {this.renderInfoWindow()}
           {this.renderMarkers()}
+          {this.renderTips()}
           <MapTypeBar />
           <div
             className={styles.allPoint}
@@ -269,6 +319,7 @@ export default class MapSection extends PureComponent {
               this.mapInstance.setFitView(
                 this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
               );
+              handleParentChange({ infoWindowShow: false });
             }}
           >
             <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
