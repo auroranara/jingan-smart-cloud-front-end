@@ -25,14 +25,15 @@ function getDesc(selected, list) {
   switch(selected) {
     case 0:
       const out = list.filter(item => item.status === 4);
-      return `共有${out.length}个点位超时未查`;
+      return `共${out.length}个点位超时未查`;
     case 1:
       const out1 = list.filter(item => item.status === '7');
-      return `共有${list.length}个隐患，其中已超期${out1.length}个`;
+      return `共${list.length}个隐患，其中已超期${out1.length}个`;
     case 2:
-      return `共有${list.length}个报警设备`;
+      const loss = list.filter(item => item.status === 2);
+      return `共${list.length - loss.length}个报警设备，${loss.length}个失联设备`;
     case 3:
-      return `共有${list.length}条过期信息`;
+      return `共${list.length}条过期信息`;
     default:
       return '暂无信息';
   }
