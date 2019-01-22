@@ -1421,6 +1421,75 @@ module.exports = env => {
                 },
               ],
             },
+            /* 建筑物信息 */
+            {
+              name: 'buildingsInfo',
+              path: '/personnel-position/buildings-info',
+              code: 'personnelPosition.buildingsInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/buildings-info',
+                  redirect: '/personnel-position/buildings-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.buildingsInfo.listView',
+                  path: '/personnel-position/buildings-info/list',
+                  component: './PersonnelPosition/BuildingsInfo/CompanyList',
+                },
+                {
+                  name: 'view',
+                  code: 'personnelPosition.buildingsInfo.view',
+                  path: '/personnel-position/buildings-info/detail/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+                },
+                {
+                  name: 'add',
+                  code: 'personnelPosition.buildingsInfo.add',
+                  path: '/personnel-position/buildings-info/add',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'personnelPosition.buildingsInfo.edit',
+                  path: '/personnel-position/buildings-info/edit/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'floorList',
+                  code: 'personnelPosition.buildingsInfo.listView',
+                  path: '/personnel-position/buildings-info/floor/list/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
+                },
+                {
+                  name: 'floorAdd',
+                  code: 'personnelPosition.buildingsInfo.add',
+                  path: '/personnel-position/buildings-info/floor/add',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorEdit',
+                  code: 'personnelPosition.buildingsInfo.edit',
+                  path: '/personnel-position/buildings-info/floor/edit/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorDetail',
+                  code: 'personnelPosition.buildingsInfo.view',
+                  path: '/personnel-position/buildings-info/floor/detail/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
+                },
+              ],
+            },
             /* 信标管理 */
             {
               name: 'beaconManagement',
