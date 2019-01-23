@@ -405,7 +405,6 @@ export default {
     //   };
     // },
     queryDict(state, { payload }) {
-      console.log('3333333333333', payload);
       const { key, list } = payload;
       return {
         ...state,

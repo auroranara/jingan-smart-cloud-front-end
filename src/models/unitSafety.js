@@ -39,7 +39,7 @@ function handleRiskList(response) {
     return prev.concat(list);
   }, []).filter(item => item.status === 4);
 
-  result.sort((item, item1) => item1.expire - item.expire);
+  result.sort((item, item1) => item.check_date_time - item1.check_date_time);
   return result;
 }
 

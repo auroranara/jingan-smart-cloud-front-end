@@ -61,8 +61,9 @@ function getOptions(options = []) {
   ));
 }
 
-@connect(({ buildingsInfo, loading, videoMonitor }) => ({
+@connect(({ buildingsInfo, user, loading, videoMonitor }) => ({
   buildingsInfo,
+  user,
   videoMonitor,
   loading: loading.models.buildingsInfo,
 }))
@@ -72,7 +73,7 @@ export default class BuildingInfoEdit extends PureComponent {
     uploading: false, // 文件上传状态
     fileList: [], // 图片上传列表
     drawList: [], // 文件上传列表
-    visible: false, // 企业弹框
+    visible: false, // 单位弹框
     companyId: undefined,
   };
 
@@ -152,13 +153,13 @@ export default class BuildingInfoEdit extends PureComponent {
     this.fetchCompany({ payload });
   }
 
-  // 获取企业列表
+  // 获取单位列表
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
     dispatch({ type: 'videoMonitor/fetchModelList', payload });
   };
 
-  // 显示企业弹出框
+  // 显示单位弹出框
   handleCompanyModal = e => {
     e.target.blur();
     const { dispatch } = this.props;
@@ -172,7 +173,7 @@ export default class BuildingInfoEdit extends PureComponent {
     });
   };
 
-  // 企业选择
+  // 单位选择
   handleSelect = item => {
     const { setFieldsValue } = this.props.form;
     const { id, name } = item;
@@ -184,12 +185,12 @@ export default class BuildingInfoEdit extends PureComponent {
     this.handleClose();
   };
 
-  // 关闭企业弹出框
+  // 关闭单位弹出框
   handleClose = () => {
     this.setState({ visible: false });
   };
 
-  // 渲染选择企业弹出框
+  // 渲染选择单位弹出框
   renderCompanyModal() {
     const {
       videoMonitor: { modal },
@@ -464,6 +465,9 @@ export default class BuildingInfoEdit extends PureComponent {
         fireRating = [],
         floorNumber = [],
       },
+      user: {
+        currentUser: { unitType, companyName: defaultName },
+      },
     } = this.props;
 
     const { uploading, fileList, drawList } = this.state;
@@ -483,24 +487,32 @@ export default class BuildingInfoEdit extends PureComponent {
     const defaultItems = [
       {
         name: 'companyId',
-        cName: '企业名称',
-        rules: generateRules('企业名称'),
+        cName: '单位名称',
+        rules: generateRules('单位名称'),
         component: (
           <div>
             {company_Id ? (
               <div>
                 {getFieldDecorator('companyId', { initialValue: company_name })(
-                  <Input disabled placeholder="请输入企业名称" />
+                  <Input disabled placeholder="请输入单位名称" />
                 )}
               </div>
             ) : (
               <div>
-                {getFieldDecorator('companyId', { initialValue: company_name })(
+                {getFieldDecorator('companyId', {
+                  initialValue:
+                    unitType === 4 || unitType === 1
+                      ? company_name || defaultName
+                      : company_name
+                        ? company_name
+                        : undefined,
+                })(
                   <Input
                     ref={input => {
                       this.CompanyIdInput = input;
                     }}
-                    placeholder="请输入企业名称"
+                    disabled
+                    placeholder="请输入单位名称"
                     onClick={this.handleCompanyModal}
                   />
                 )}
@@ -563,7 +575,7 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('buildingArea', { initialValue: buildingArea })(
-              <InputNumber style={{ width: '100%' }} placeholder="请输入建筑面积" />
+              <InputNumber style={{ width: '100%' }} placeholder="请输入建筑面积" min={0} />
             )}
           </div>
         ),
@@ -643,7 +655,6 @@ export default class BuildingInfoEdit extends PureComponent {
         cName: '备注',
         span: 24,
         formItemLayout: itemLayout1,
-        rules: generateRules('备注'),
         component: (
           <div>
             {getFieldDecorator('remark', { initialValue: remark })(
