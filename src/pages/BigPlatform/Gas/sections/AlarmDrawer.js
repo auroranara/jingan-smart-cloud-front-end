@@ -1,9 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-
+import ReactEcharts from 'echarts-for-react';
 import styles from './AlarmDrawer.less';
 import {
-  ChartBar,
-  ChartLine,
   DrawerCard,
   DrawerContainer,
   DrawerSection,
@@ -12,10 +10,10 @@ import {
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
-import { DotItem } from '../components/Components';
+import { DotItem, ChartLine } from '../components/Components';
 import { sortList } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
-import unitBlueIcon from '../imgs/unitBlue.png';
+import unitBlueIconGrey from '../imgs/unitBlueIconGrey.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
 
 const ICON_WIDTH = 42;
@@ -40,10 +38,14 @@ const CARDS = [...Array(10).keys()].map(i => ({
   noAccess: Math.floor(Math.random() * 10),
 }));
 
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
+const GRAPH_LIST = [...Array(12).keys()].map(i => ({
+  id: i,
+  name: (i + 2) % 12 || 12,
+  value: Math.floor(Math.random() * 100),
+}));
 
 export default class AlarmDrawer extends PureComponent {
-  state={ graph: 0, selected: 0, searchValue: '' };
+  state = { graph: 0, selected: 0, searchValue: '' };
 
   handleSwitch = i => {
     this.setState({ graph: i });
@@ -69,22 +71,120 @@ export default class AlarmDrawer extends PureComponent {
     this.setState({ searchValue: '', grahp: 0, selected: 0 });
   };
 
+  getOption = () => {
+    const option = {
+      textStyle: {
+        color: '#fff',
+      },
+      grid: { left: 0, right: '12%', top: 40, containLabel: true },
+      color: ['#e86767', '#5ebeff'],
+      tooltip: {
+        show: true,
+        trigger: 'axis',
+        axisPointer: {
+          // 坐标轴指示器，坐标轴触发有效
+          type: 'shadow', // 默认为直线，可选为：'line' | 'shadow'
+          shadowStyle: {
+            color: 'rgba(46,78,111,0.5)',
+            opacity: 0.6,
+          },
+        },
+        backgroundColor: 'rgba(46,78,111,0.5)',
+        padding: [5, 15, 5, 15],
+      },
+      legend: {
+        data: ['报警', '故障', '失联'],
+        textStyle: {
+          color: '#fff',
+        },
+        orient: 'horizontal',
+        bottom: 20,
+        left: 'center',
+        icon: 'rect',
+      },
+      yAxis: {
+        type: 'value',
+        axisTick: { show: true, inside: true },
+        splitLine: {
+          show: false,
+          lineStyle: {
+            color: '#394456',
+            width: 2,
+          },
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#394456',
+            width: 2,
+          },
+        },
+        axisLabel: {
+          formatter: function(value, index) {
+            if (parseInt(value, 10) !== value) return '';
+            return parseInt(value, 10);
+          },
+        },
+      },
+      xAxis: {
+        type: 'category',
+        axisTick: { show: false },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#394456',
+            width: 2,
+          },
+        },
+        axisLabel: {
+          color: '#fff',
+          fontSize: 14,
+        },
+        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      },
+      series: [
+        {
+          name: '报警',
+          color: '#ff4848',
+          type: 'bar',
+          barWidth: 5,
+          data: [20, 12, 12, 34, 55, 66, 34, 44, 22, 11, 22, 34],
+        },
+        {
+          name: '故障',
+          type: 'bar',
+          color: '#f6b54e',
+          barWidth: 5,
+          data: [20, 13, 12, 36, 52, 66, 34, 44, 22, 11, 22, 34],
+        },
+        {
+          name: '失联',
+          color: '#9f9f9f',
+          type: 'bar',
+          barWidth: 5,
+          data: [20, 13, 12, 36, 52, 66, 34, 44, 22, 11, 22, 34],
+        },
+      ],
+    };
+    return option;
+  };
+
   render() {
     const {
       visible,
       // handleSearch,
       data: {
-        list=CARDS,
-        graphList=GRAPH_LIST,
-        alarmUnit: alarmNum=0,
-        earlyWarningUnit: warnNum=0,
-        normalUnit: commonNum=0,
-      }={},
+        list = CARDS,
+        graphList = GRAPH_LIST,
+        alarmUnit: alarmNum = 0,
+        earlyWarningUnit: warnNum = 0,
+        normalUnit: commonNum = 0,
+      } = {},
     } = this.props;
     const { graph, selected, searchValue } = this.state;
 
     const filteredList = list.filter(({ name }) => name.includes(searchValue)).filter(item => {
-      switch(selected) {
+      switch (selected) {
         case 0:
           return true;
         case 1:
@@ -100,49 +200,75 @@ export default class AlarmDrawer extends PureComponent {
       }
     });
 
-    sortList(filteredList, SELECTED_PROPS[selected])
+    sortList(filteredList, SELECTED_PROPS[selected]);
 
     const total = alarmNum + commonNum + warnNum;
-    const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(n => total ? n / total * 100 : 0);
+    const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(
+      n => (total ? (n / total) * 100 : 0)
+    );
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const select = (
-      <OvSelect cssType={1} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
+      <OvSelect
+        cssType={1}
+        options={OPTIONS}
+        value={selected}
+        handleChange={this.handleSelectChange}
+      />
     );
 
     const left = (
       <Fragment>
         <DrawerSection title="单位状态统计">
           <OvProgress
-            title="告警单位"
+            title="报警单位"
             percent={alarmPercent}
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
             style={{ marginTop: 40, cursor: 'pointer' }}
-            iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitRedIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
             onClick={this.genProgressClick(2)}
           />
           <OvProgress
-            title="预警单位"
+            title="故障单位"
             percent={warnPercent}
             quantity={warnNum}
             strokeColor="rgb(246,181,78)"
             style={{ cursor: 'pointer' }}
-            iconStyle={{ backgroundImage: `url(${unitYellowIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitYellowIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
             onClick={this.genProgressClick(3)}
           />
           <OvProgress
-            title="正常单位"
+            title="失联单位"
             percent={commonPercent}
             quantity={commonNum}
-            strokeColor="rgb(0,251,252)"
+            strokeColor="rgb(159,159,159)"
             style={{ cursor: 'pointer' }}
-            iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitBlueIconGrey})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
             onClick={this.genProgressClick(1)}
           />
         </DrawerSection>
-        <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>
-          {graph ? <ChartBar data={graphList} labelRotate={0} sameColor /> : <ChartLine data={graphList} labelRotate={0} />}
+        <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
+          {graph ? (
+            <ReactEcharts option={this.getOption()} className="echarts-for-echarts" />
+          ) : (
+            <ChartLine data={graphList} labelRotate={0} />
+          )}
         </DrawerSection>
       </Fragment>
     );
@@ -154,29 +280,45 @@ export default class AlarmDrawer extends PureComponent {
         // onChange={this.handleChange}
         extra={select}
       >
-        {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
-          <DrawerCard
-            key={companyId}
-            name={name || NO_DATA}
-            location={address || NO_DATA}
-            person={safetyMan || NO_DATA}
-            phone={safetyPhone || NO_DATA}
-            style={{ cursor: 'auto' }}
-            more={
-              <p className={styles.more}>
-                {[common, alarm, warn, noAccess].map((n, i) => (
-                  <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                ))}
-              </p>
-            }
-          />
-        ))}
+        {filteredList.map(
+          ({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
+            <DrawerCard
+              key={companyId}
+              name={name || NO_DATA}
+              location={address || NO_DATA}
+              person={safetyMan || NO_DATA}
+              phone={safetyPhone || NO_DATA}
+              style={{ cursor: 'auto' }}
+              infoStyle={{
+                width: 70,
+                textAlign: 'center',
+                color: '#FFF',
+                bottom: '50%',
+                right: 25,
+                transform: 'translateY(50%)',
+              }}
+              info={
+                <Fragment>
+                  <div className={styles.equipment}>{2 || '--'}</div>
+                  设备数
+                </Fragment>
+              }
+              more={
+                <p className={styles.more}>
+                  {[common, alarm, warn, noAccess].map((n, i) => (
+                    <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+                  ))}
+                </p>
+              }
+            />
+          )
+        )}
       </SearchBar>
     );
 
     return (
       <DrawerContainer
-        title="实时报警统计"
+        title="异常单位统计"
         visible={visible}
         left={left}
         right={right}

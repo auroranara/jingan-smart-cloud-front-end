@@ -10,20 +10,29 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 // 接入单位统计
 import AccessUnitStatistics from './AccessUnitStatistics';
-// 实时报警统计
-import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
+// 异常单位统计
+import AbnormalUnitStatistics from './AbnormalUnitStatistics';
+// 待处理业务
+import ProcessingBusiness from './ProcessingBusiness';
+
 // 告警信息
 import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
 // 故障/报警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
 
-import AlarmChart from './AlarmChart';
+// import AlarmChart from './AlarmChart';
 import ElectricityMap from './ElectricityMap';
 import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
-import { SettingModal, UnitDrawer, AlarmDrawer, MonitorDrawer } from './sections/Components';
+import {
+  SettingModal,
+  UnitDrawer,
+  AlarmDrawer,
+  BusinessDrawer,
+  MonitorDrawer,
+} from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
@@ -62,6 +71,7 @@ export default class Gas extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
+      businessDrawerVisible: false,
       monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
@@ -146,11 +156,11 @@ export default class Gas extends PureComponent {
         };
 
         ws.onmessage = e => {
-          if (!e.data || e.data.indexOf('heartbeat') > -1) {
-            if (this.number < ids.length)
-              this.setState({ alarmIds: [...this.state.alarmIds, ids[this.number]] });
-            this.number += 1;
-          }
+          // if (!e.data || e.data.indexOf('heartbeat') > -1) {
+          //   if (this.number < ids.length)
+          //     this.setState({ alarmIds: [...this.state.alarmIds, ids[this.number]] });
+          //   this.number += 1;
+          // }
           // 判断是否是心跳
           if (!e.data || e.data.indexOf('heartbeat') > -1) return;
           try {
@@ -560,17 +570,20 @@ export default class Gas extends PureComponent {
         cameraList,
       },
     } = this.props;
+    console.log('this.props', statisticsData);
+
     const {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
+      businessDrawerVisible,
       monitorDrawerVisible,
       monitorDrawerTitleIndex,
       // videoVisible,
-      infoWindowShow,
+      // infoWindowShow,
       selectList,
       searchValue,
-      infoWindow,
+      // infoWindow,
       unitDetail,
       tooltipName,
       tooltipVisible,
@@ -677,7 +690,7 @@ export default class Gas extends PureComponent {
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
-        <ElectricityMap
+        {/* <ElectricityMap
           // mapData={unitSet}
           units={Array.isArray(unitSet.units) ? unitSet.units : []}
           // handleMapClick={this.showUnitDetail}
@@ -690,7 +703,7 @@ export default class Gas extends PureComponent {
           unitDetail={unitDetail}
           alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
-        />
+        /> */}
         {/* 搜索框 */}
         <MapSearch
           className={styles.mapSearch}
@@ -712,19 +725,20 @@ export default class Gas extends PureComponent {
           className={`${styles.left} ${styles.accessUnitStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('unit')}
         />
-        {/* 实时报警统计 */}
-        <RealTimeAlarmStatistics
+        {/* 异常单位统计 */}
+        <AbnormalUnitStatistics
           data={unitSet}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
-        {/* 近半年内告警统计 */}
+        {/* 待处理业务 */}
         <NewSection
-          title="近半年内告警统计"
+          title="待处理业务"
           className={styles.left}
-          style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}
+          style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%', cursor: 'pointer' }}
+          onClick={e => this.handleDrawerVisibleChange('business')}
         >
-          {/* <AlarmChart /> */}
+          <ProcessingBusiness />
         </NewSection>
 
         {/* extra info */}
@@ -741,6 +755,11 @@ export default class Gas extends PureComponent {
         <AlarmDrawer
           data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
           visible={alarmDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <BusinessDrawer
+          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          visible={businessDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <MonitorDrawer

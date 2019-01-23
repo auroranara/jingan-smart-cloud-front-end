@@ -3,6 +3,11 @@ import { stringify } from 'qs';
 
 const URL_PREFIX = '/acloud_new/v2';
 
+// 燃气大屏主页面显示
+export async function getBigFlatformData(params) {
+  return request(`${URL_PREFIX}/gasScreen/index?${stringify(params)}`);
+}
+
 // 获取告警信息列表
 export async function getMessages(params) {
   return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3`);
