@@ -26,9 +26,6 @@ export default class App extends PureComponent {
     data: [],
   };
 
-  // 存储点位图层实例，用于websocket推送时显示tooltip
-  pointLayer = {};
-
   componentDidUpdate({ model: { companyMessage: prevCompanyMessage, firePoint: prevFirePoint, videoFireList: prevVideoFireList } }) {
     const { model: { companyMessage, firePoint, videoFireList } } = this.props;
     // 当四色图或数据源发生变化，重置state中的data
@@ -62,9 +59,7 @@ export default class App extends PureComponent {
   }
 
   handleAddPoint = ({ target: layer }) => {
-    const { options: { data: { item_id, object_title, checkName, check_date, dangerCount, status } } } = layer;
-    // 保存实例
-    this.pointLayer[item_id] = layer;
+    const { options: { data: { object_title, checkName, check_date, dangerCount, status } } } = layer;
     // 是否为异常状态
     const isAbnormal = status === 2;
     // 是否已检查
@@ -95,39 +90,30 @@ export default class App extends PureComponent {
 
   handleAddVideo = ({ target: layer }) => {
     const { options: { data: { name } } } = layer;
-    layer.bindTooltip(name, { direction: 'top', offset: [0, -48] });
+    layer.bindTooltip(name, { direction: 'top', offset: [0, -48]/* , permanent: true */ });
+  }
+
+  handleClickMarkerToolTip = ({ originalEvent: { target }, target: { options: { data: { item_id } } } }) => {
+    if (target.tagName === 'SPAN') {
+      const { handleShowHiddenDanger, tips } = this.props;
+      handleShowHiddenDanger(item_id, tips[item_id]);
+    }
+  }
+
+  handleAddMarkerTooltip = ({ target: { _map: map, _latlng: latlng } }) => {
+    map.panTo(latlng);
   }
 
   renderPoint = (item, other) => {
     const {
       item_id,
       status,
-      object_title,
     } = item;
     const { position } = other;
     const { tips={} } = this.props;
     const isAbnormal = status === 2;
     const showTip = !!tips[item_id];
     return (
-      // <Tooltip
-      //   overlayClassName={showTip ? styles.alarmTooltip : undefined}
-      //   placement="top"
-      //   title={
-      //     <div>
-      //       有一条新的隐患！
-      //       <span
-      //         className={styles.alarm}
-      //         onClick={() => {
-      //           handleShowHiddenDanger(item_id, tips[item_id]);
-      //         }}
-      //       >
-      //         详情>>
-      //       </span>
-      //     </div>
-      //   }
-      //   key={item_id}
-      //   visible={showTip}
-      // >
       <Fragment key={item_id}>
         <Marker
           key={item_id}
@@ -155,16 +141,19 @@ export default class App extends PureComponent {
           /* 下面的不能换位置，为了覆盖other中的同名函数 */
           onAdd={this.handleAddPoint}
         />
-        {/* <Marker
-          data={item}
-          position={position}
-          icon={L.divIcon({
-            className: styles.tooltipMarker,
-            html: '测试文字',
-          })}
-        /> */}
+        {showTip && (
+          <Marker
+            data={item}
+            position={position}
+            icon={L.divIcon({
+              className: styles.tooltipMarker,
+              html: `有一条新的隐患！<span class="${styles.alarm}">详情>></span>`,
+            })}
+            onClick={this.handleClickMarkerToolTip}
+            onAdd={this.handleAddMarkerTooltip}
+          />
+        )}
       </Fragment>
-      // </Tooltip>
     );
   }
 
@@ -195,7 +184,7 @@ export default class App extends PureComponent {
         // videoList = [],
         videoFireList = [],
       },
-      // tips = {},
+      tips = {},
       // // 显示点位信息
       // handleShowPointDetail,
       // // 显示点位隐患
@@ -212,6 +201,8 @@ export default class App extends PureComponent {
           data={data}
           zoomControlProps={{ position: 'topright' }}
           onClick={this.handleClickMarker}
+          maxBoundsRatio={1.5}
+          tips={tips}
         />
         {/* {points.map(
           ({

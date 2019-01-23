@@ -210,6 +210,7 @@ class ImageDraw extends PureComponent {
     center: undefined,
     bounds: undefined,
     visible: false,
+    maxBounds: undefined,
     // list: [
     //   { name: '很长很长的阳台名称', type: 'circle', latlng: { lat: 237, lng: 378 }, radius: 200 },
     //   { name: '矩形', type: 'rectangle', latlngs: [{lat: 349, lng: 78}, {lat: 428, lng: 78},{lat: 428, lng: 140},{lat: 349, lng: 140}]},
@@ -238,14 +239,18 @@ class ImageDraw extends PureComponent {
     const { url } = this.props;
     // 当图片地址发生变化时
     if (url !== prevUrl) {
-      const { filled } = this.props;
+      const { filled, maxBoundsRatio=1 } = this.props;
       // 如果使用填充效果
       if (filled) {
         // 按照容器的比例
         const { clientWidth: width, clientHeight: height } =  this.map.container;
         this.setState({
-          center: L.latLng(height/2, width/2),
           bounds: L.latLngBounds([0, 0], [height, width]),
+          maxBounds: L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]),
+        }, () => {
+          this.setState({
+            center: L.latLng(height/2, width/2),
+          });
         });
       }
       else {
@@ -256,6 +261,7 @@ class ImageDraw extends PureComponent {
           const { width, height } = e.path[0];
           this.setState({
             bounds: L.latLngBounds([0, 0], [height, width]),
+            maxBounds: L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]),
           }, () => {
             this.setState({
               center: L.latLng(height/2, width/2),
@@ -542,7 +548,7 @@ class ImageDraw extends PureComponent {
 
   render() {
     const { className, style, mapProps, zoomControlProps, drawable, url, data, form: { getFieldDecorator } } = this.props;
-    const { center, bounds, visible } = this.state;
+    const { center, bounds, visible, maxBounds } = this.state;
 
     return (
       <div className={className} style={{ height: 600, ...style }}>
@@ -557,7 +563,7 @@ class ImageDraw extends PureComponent {
           crs={L.CRS.Simple}
           attributionControl={false}
           bounds={bounds}
-          maxBounds={bounds}
+          maxBounds={maxBounds}
           ref={this.refMap}
           zoomControl={false}
           {...mapProps}
