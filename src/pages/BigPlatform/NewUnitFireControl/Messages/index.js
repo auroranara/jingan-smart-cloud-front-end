@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
-import Section from '../Section';
+import NewSection from '@/components/NewSection';
 import moment from 'moment';
 // import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
@@ -34,6 +34,8 @@ export default class Messages extends PureComponent {
     super(props);
     this.state = {
       thisMin: '',
+      // 是否展开告警信息
+      isExpanded: false,
     };
   }
 
@@ -41,6 +43,10 @@ export default class Messages extends PureComponent {
     setInterval(() => {
       this.setState({ thisMin: moment().format('YYYY-MM-DD HH:mm') });
     }, 120000);
+  }
+
+  handleClickExpandButton = () => {
+    this.setState(({ isExpanded }) => ({ isExpanded: !isExpanded }));
   }
 
   renderMsg = (msg, index) => {
@@ -440,21 +446,33 @@ export default class Messages extends PureComponent {
   render() {
     const {
       model: { screenMessage },
+      className,
     } = this.props;
-    // const { thisMin } = this.state;
-    const sectionHeight = screenMessage.length > 3 ? {} : { height: 'auto' };
+    const { isExpanded } = this.state;
+    // 收缩显示3个，展开最大显示100个
+    const list = isExpanded ? screenMessage.slice(0, 100) : screenMessage.slice(0, 3);
+
     return (
-      <Section title="实时消息" style={{ ...sectionHeight }}>
-        <div className={styles.messages}>
-          {screenMessage.length > 0 ? (
-            screenMessage.map((item, index) => {
+      <NewSection
+        title="实时消息"
+        className={className}
+        style={{ display: 'flex', flexDirection: 'column', height: 'auto' }}
+        titleStyle={{ flex: 'none' }}
+        contentStyle={{ flex: '1', display: 'flex', height: 'auto' /* padding: '16px 0' */ }}
+        scroll={{
+          className: styles.scroll,
+        }}
+        other={screenMessage.length > 3 && <Icon type={isExpanded?'double-left':'double-right'} className={styles.expandButton} onClick={this.handleClickExpandButton} />}
+        planB
+      >
+          {list.length > 0 ? (
+            list.map((item, index) => {
               return this.renderMsg(item, index);
             })
           ) : (
-            <div style={{ textAlign: 'center', margin: '30px 0' }}>暂无消息</div>
+            <div className={styles.emptyData}>暂无消息</div>
           )}
-        </div>
-      </Section>
+      </NewSection>
     );
   }
 }
