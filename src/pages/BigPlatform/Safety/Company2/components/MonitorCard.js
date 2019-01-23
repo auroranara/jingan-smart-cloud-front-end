@@ -17,7 +17,7 @@ export default function MonitorCard(props) {
           {type}
         </p>
         <p>
-          <span className={styles.item}>设备号</span>
+          <span className={styles.item1}>设备号</span>
           {number}
         </p>
         <p>
