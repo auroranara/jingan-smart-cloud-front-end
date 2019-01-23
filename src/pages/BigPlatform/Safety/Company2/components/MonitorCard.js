@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import moment from 'moment';
 
 import styles from './MonitorCard.less';
 
-const CLASSNAMES = ['red', 'white', 'yellow'];
+const CLASSNAMES = ['white', 'red', 'red', 'yellow'];
 
 export default function MonitorCard(props) {
-  // status 0 火警 1 故障 2 失联
+  // 0 消防主机故障 1 消防主机火警 2 其他监测设备报警 2 失联
   const { data: { type, number, location, params, time, status } } = props;
 
   return (
@@ -22,7 +22,10 @@ export default function MonitorCard(props) {
         </p>
         <p>
           <span className={styles.item}>设备状态</span>
-          <span className={styles[CLASSNAMES[status]]}>{params}</span>
+          {status === 2
+          ? <Fragment><span className={styles.red}>报警</span>（{params}）</Fragment>
+          : <span className={styles[CLASSNAMES[status]]}>{params}</span>
+          }
         </p>
         <p>
           <span className={styles.item}>区域位置</span>

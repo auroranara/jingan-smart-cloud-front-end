@@ -20,6 +20,7 @@ const LABEL_STYLE = {
   notRated: { color: '#fff', backgroundColor: '#4F6793' },
 };
 const FLAG_CN = { red: '红', orange: '橙', yellow: '黄', blue: '蓝', notRated: '未评级' };
+const SUPERVISION = 'supervision';
 
 export default class RiskCard extends PureComponent {
   render() {
@@ -44,7 +45,7 @@ export default class RiskCard extends PureComponent {
             {FLAG_CN[flag]}
           </div>
           <div className={styles.riskPointItemNameWrapper}>
-            <div className={styles.riskPointItemName}>风险点</div>
+            <div className={styles.riskPointItemName}>{flag === SUPERVISION ? '监督' : '风险'}点</div>
             <div className={styles.riskPointItemValue}><Ellipsis tooltip lines={1} style={{ height: 36 }}>{name || NO_DATA}</Ellipsis></div>
           </div>
           <div className={styles.riskPointItemNameWrapper}>

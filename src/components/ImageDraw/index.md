@@ -1,0 +1,9 @@
+* className 容器类名
+* style 容器样式
+* url 图片地址
+* data 数据源
+* drawable 是否显示绘制按钮
+* onClick 图片上的标记的点击事件
+* mapProps 地图参数
+* zoomControlProps 缩放控制器参数
+* filled 是否按照容器比例拉伸图片
