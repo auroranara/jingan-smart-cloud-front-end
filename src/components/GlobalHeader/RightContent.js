@@ -77,9 +77,9 @@ export default class GlobalHeaderRight extends PureComponent {
       payload: { id: userId },
       success: () => {
         message.success('切换成功！');
-        // setTimeout(() => {
-        //   window.location.reload(true);
-        // }, 500);
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 500);
       },
       error: () => {
         message.error('切换失败！');
@@ -126,6 +126,8 @@ export default class GlobalHeaderRight extends PureComponent {
     );
     // const noticeData = this.getNoticeData();
     let className = styles.right;
+    console.log('currentUser', currentUser.id);
+
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
     }
