@@ -14,6 +14,7 @@ import {
 } from '../components/Components';
 
 const TYPE = 'index';
+const LOSS_STATUS = 3;
 const CARD_COMPONENTS = [RiskCard, DangerCard, MonitorCard, SafeCard];
 const LABELS = ['安全巡查', '隐患排查', '动态监测', '安全档案'];
 const BAR_COLORS = ['85,134,244', '233,102,108', '244,185,85', '2,252,250'];
@@ -30,7 +31,7 @@ function getDesc(selected, list) {
       const out1 = list.filter(item => item.status === '7');
       return `共${list.length}个隐患，其中已超期${out1.length}个`;
     case 2:
-      const loss = list.filter(item => item.status === 2);
+      const loss = list.filter(item => item.status === LOSS_STATUS);
       return `共${list.length - loss.length}个报警设备，${loss.length}个失联设备`;
     case 3:
       return `共${list.length}条过期信息`;
