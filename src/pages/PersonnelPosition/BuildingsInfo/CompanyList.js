@@ -163,7 +163,7 @@ export default class CompanyList extends PureComponent {
             {getFieldDecorator('company_name', {
               initialValue: defaultFormData.company_name,
               getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入企业名称" />)}
+            })(<Input placeholder="请输入单位名称" />)}
           </FormItem>
           <FormItem>
             {getFieldDecorator('regulatory_classify', {
@@ -231,7 +231,7 @@ export default class CompanyList extends PureComponent {
               company_name,
               industryName,
               head_of_security,
-              principal_phone,
+              head_of_security_phone,
               buildingNum,
             } = item;
             return (
@@ -249,7 +249,7 @@ export default class CompanyList extends PureComponent {
                       </p>
                       <p>
                         联系电话：
-                        {principal_phone || getEmptyData()}
+                        {head_of_security_phone || getEmptyData()}
                       </p>
                     </Col>
                     <Col
