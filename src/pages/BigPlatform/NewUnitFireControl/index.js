@@ -32,6 +32,7 @@ import AlarmDynamicMsgDrawer from './Section/AlarmDynamicMsgDrawer';
 
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
+import headerBg from '@/assets/new-header-bg.png';
 
 const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;
@@ -970,64 +971,54 @@ export default class App extends PureComponent {
     return (
       <BigPlatformLayout
         title={projectName}
-        headerStyle={{ fontSize: 16 }}
-        style={{
-          backgroundImage:
-            'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
-        }}
+        style={{ backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)' }}
+        headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 99, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
+        titleStyle={{ fontSize: 46 }}
+        contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
       >
-        <div className={styles.container}>
-          <div className={styles.top}>
-            <div className={styles.topItem} style={{ left: 0, zIndex: 100 }}>
-              <div className={styles.inner}>
-                {/* 企业基本信息 */}
-                <CompanyInfo
-                  handleViewCurrentDanger={this.handleViewCurrentDanger}
-                  handleCheckDrawer={this.handleCheckDrawer}
-                  model={this.props.newUnitFireControl}
-                />
-              </div>
-            </div>
-            <div className={styles.topMain}>
-              <div className={styles.inner}>
-                {/* 四色图 */}
-                <FourColor
-                  model={this.props.newUnitFireControl}
-                  handleShowPointDetail={(checkItemId, checkStatus, checkPointName) => {
-                    this.handlePointRecordList(checkItemId);
-                    this.handleDrawerVisibleChange('point', {
-                      checkItemId,
-                      checkStatus,
-                      checkPointName,
-                    });
-                  }}
-                  handleShowHiddenDanger={(id, hiddenDangerId) => {
-                    this.handleViewDangerDetail({ id: hiddenDangerId });
-                    this.removeFourColorTip(id, hiddenDangerId);
-                  }}
-                  tips={fourColorTips}
-                />
-              </div>
-            </div>
-            <div className={styles.topItem} style={{ right: 0, zIndex: 100 }}>
-              <div className={styles.inner}>
-                {/* 实时消息 */}
-                <Messages
-                  model={this.props.newUnitFireControl}
-                  handleParentChange={newState => {
-                    this.setState({ ...newState });
-                  }}
-                  handleViewDangerDetail={this.handleViewDangerDetail}
-                  fetchData={this.fetchMaintenanceCheck}
-                  handleClickMessage={this.handleClickMessage}
-                  handleFaultClick={this.handleFaultClick}
-                  handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
-                  handleFireMessage={this.handleFireMessage}
-                />
-              </div>
-            </div>
+        {/* 四色图 */}
+        <FourColor
+          model={this.props.newUnitFireControl}
+          handleShowPointDetail={(checkItemId, checkStatus, checkPointName) => {
+            this.handlePointRecordList(checkItemId);
+            this.handleDrawerVisibleChange('point', {
+              checkItemId,
+              checkStatus,
+              checkPointName,
+            });
+          }}
+          handleShowHiddenDanger={(id, hiddenDangerId) => {
+            this.handleViewDangerDetail({ id: hiddenDangerId });
+            this.removeFourColorTip(id, hiddenDangerId);
+          }}
+          tips={fourColorTips}
+        />
+        <div className={styles.companyInfo}>
+          <div className={styles.inner}>
+            {/* 企业基本信息 */}
+            <CompanyInfo
+              handleViewCurrentDanger={this.handleViewCurrentDanger}
+              handleCheckDrawer={this.handleCheckDrawer}
+              model={this.props.newUnitFireControl}
+            />
           </div>
-          <div className={styles.bottom}>
+        </div>
+        {/* 实时消息 */}
+        <Messages
+          className={styles.realTimeMessage}
+          model={this.props.newUnitFireControl}
+          handleParentChange={newState => {
+            this.setState({ ...newState });
+          }}
+          handleViewDangerDetail={this.handleViewDangerDetail}
+          fetchData={this.fetchMaintenanceCheck}
+          handleClickMessage={this.handleClickMessage}
+          handleFaultClick={this.handleFaultClick}
+          handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
+          handleFireMessage={this.handleFireMessage}
+        />
+        <div className={styles.bottom}>
+          <div className={styles.bottomInner}>
             <div className={styles.item}>
               <div className={styles.inner} ref={node => (this.fireNode = node)}>
                 {/* 消防主机监测 */}
@@ -1078,153 +1069,153 @@ export default class App extends PureComponent {
               </div>
             </div>
           </div>
-          <VideoPlay
-            showList={showVideoList}
-            videoList={allCamera}
-            visible={videoVisible}
-            keyId={videoKeyId} // keyId
-            handleVideoClose={this.handleVideoClose}
-          />
-          <RiskDrawer
-            visible={riskDrawerVisible}
-            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />
-          {/**检查点抽屉 */}
-          <CheckingDrawer
-            visible={checkDrawerVisible}
-            companyId={companyId}
-            checkCount={checkCount}
-            checkList={checkList}
-            handlePointDrawer={this.handlePointDrawer}
-            onClose={() => {
-              this.setState({
-                checkDrawerVisible: false,
-              });
-            }}
-          />
-          {/**点位名称抽屉 */}
-          <PointPositionName
-            visible={pointDrawerVisible}
-            pointRecordLists={pointRecordLists}
-            checkAbnormal={checkAbnormal}
-            currentHiddenDanger={currentHiddenDanger}
-            checkStatus={checkStatus}
-            checkPointName={checkPointName}
-            checkItemId={checkItemId}
-            count={count}
-            handlePointDangerDetail={this.handleViewDangerDetail}
-            onClose={() => {
-              this.setState({
-                pointDrawerVisible: false,
-              });
-            }}
-          />
-          <AlarmDynamicDrawer
-            data={alarmHandleMessage}
-            visible={alarmMessageDrawerVisible}
-            onClose={() => this.setState({ alarmMessageDrawerVisible: false })}
-          />
-          <FaultMessageDrawer
-            data={faultMessage}
-            model={this.props.newUnitFireControl}
-            visible={faultMessageDrawerVisible}
-            onClose={() => this.setState({ faultMessageDrawerVisible: false })}
-          />
-          <AlarmDynamicDrawer
-            data={alarmHandleList}
-            visible={alarmDynamicDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
-          />
-          <AlarmDynamicDrawer
-            // data={alarmHandleHistory}
-            data={
-              alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory
-            }
-            visible={alarmHistoryDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('alarmHistory')}
-          />
-          {/* <PointPositionName
-            visible={pointDrawerVisible}
-            handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          />*/}
-          <PointInspectionDrawer
-            date={pointInspectionDrawerSelectedDate}
-            handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
-            model={this.props.newUnitFireControl}
-            loadData={this.fetchPointInspectionList}
-            visible={pointInspectionDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('pointInspection')}
-          />
-          {/* 当前隐患抽屉 */}
-          <CurrentHiddenDanger
-            visible={currentDrawerVisible}
-            onClose={this.handleCloseCurrentDrawer}
-            onCardClick={this.handleViewDangerDetail}
-            onClickChat={this.handleFilterCurrentDanger}
-            {...currentHiddenDanger}
-          />
-          {/* 隐患详情抽屉 */}
-          <DrawerHiddenDangerDetail
-            visible={dangerDetailVisible}
-            onClose={this.handleCloseDetailOfDanger}
-            data={timestampList}
-          />
-          <WorkOrderDrawer
-            data={{ workOrderList1, workOrderList2, workOrderList7 }}
-            type={drawerType}
-            visible={workOrderDrawerVisible}
-            handleLabelChange={this.handleWorkOrderLabelChange}
-            onClose={() => this.handleDrawerVisibleChange('workOrder')}
-            handleCardClick={this.handleWorkOrderCardClick}
-          />
-          <MaintenanceDrawer
-            title="维保处理动态"
-            type={drawerType}
-            data={workOrderDetail}
-            visible={maintenanceDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('maintenance')}
-          />
-          <MaintenanceMsgDrawer
-            title={maintenanceTitle}
-            type={drawerType}
-            data={workOrderDetail}
-            processIds={processIds}
-            visible={maintenanceMsgDrawerVisible}
-            fetchFaultDetail={this.fetchFaultDetail}
-            onClose={() => {
-              this.handleDrawerVisibleChange('maintenanceMsg');
-              setTimeout(() => {
-                this.setState({ maintenanceTitle: '维保处理动态' });
-              }, 200);
-            }}
-          />
-          <AlarmDynamicMsgDrawer
-            data={alarmHandleMessage}
-            visible={alarmDynamicMsgDrawerVisible}
-            processIds={fireProcessIds}
-            handleFetchDataId={this.handleFetchDataId}
-            handleFetchAlarmHandle={this.handleFetchAlarmHandle}
-            onClose={() => this.handleDrawerVisibleChange('alarmDynamicMsg')}
-          />
-          <DrawerOfFireAlarm
-            visible={fireAlarmVisible}
-            onClose={this.handleCloseFireAlarm}
-            title={fireAlarmTitle}
-            {...fireAlarm}
-          />
-          <MaintenanceDrawer
-            title="故障处理动态"
-            type={drawerType}
-            data={faultList}
-            visible={faultDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('fault')}
-          />
-          <MaintenanceCheckDrawer
-            model={this.props.newUnitFireControl}
-            visible={maintenanceCheckDrawerVisible}
-            onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
-          />
         </div>
+        <VideoPlay
+          showList={showVideoList}
+          videoList={allCamera}
+          visible={videoVisible}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
+        />
+        <RiskDrawer
+          visible={riskDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        {/**检查点抽屉 */}
+        <CheckingDrawer
+          visible={checkDrawerVisible}
+          companyId={companyId}
+          checkCount={checkCount}
+          checkList={checkList}
+          handlePointDrawer={this.handlePointDrawer}
+          onClose={() => {
+            this.setState({
+              checkDrawerVisible: false,
+            });
+          }}
+        />
+        {/**点位名称抽屉 */}
+        <PointPositionName
+          visible={pointDrawerVisible}
+          pointRecordLists={pointRecordLists}
+          checkAbnormal={checkAbnormal}
+          currentHiddenDanger={currentHiddenDanger}
+          checkStatus={checkStatus}
+          checkPointName={checkPointName}
+          checkItemId={checkItemId}
+          count={count}
+          handlePointDangerDetail={this.handleViewDangerDetail}
+          onClose={() => {
+            this.setState({
+              pointDrawerVisible: false,
+            });
+          }}
+        />
+        <AlarmDynamicDrawer
+          data={alarmHandleMessage}
+          visible={alarmMessageDrawerVisible}
+          onClose={() => this.setState({ alarmMessageDrawerVisible: false })}
+        />
+        <FaultMessageDrawer
+          data={faultMessage}
+          model={this.props.newUnitFireControl}
+          visible={faultMessageDrawerVisible}
+          onClose={() => this.setState({ faultMessageDrawerVisible: false })}
+        />
+        <AlarmDynamicDrawer
+          data={alarmHandleList}
+          visible={alarmDynamicDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+        />
+        <AlarmDynamicDrawer
+          // data={alarmHandleHistory}
+          data={
+            alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory
+          }
+          visible={alarmHistoryDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('alarmHistory')}
+        />
+        {/* <PointPositionName
+          visible={pointDrawerVisible}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />*/}
+        <PointInspectionDrawer
+          date={pointInspectionDrawerSelectedDate}
+          handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
+          model={this.props.newUnitFireControl}
+          loadData={this.fetchPointInspectionList}
+          visible={pointInspectionDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('pointInspection')}
+        />
+        {/* 当前隐患抽屉 */}
+        <CurrentHiddenDanger
+          visible={currentDrawerVisible}
+          onClose={this.handleCloseCurrentDrawer}
+          onCardClick={this.handleViewDangerDetail}
+          onClickChat={this.handleFilterCurrentDanger}
+          {...currentHiddenDanger}
+        />
+        {/* 隐患详情抽屉 */}
+        <DrawerHiddenDangerDetail
+          visible={dangerDetailVisible}
+          onClose={this.handleCloseDetailOfDanger}
+          data={timestampList}
+        />
+        <WorkOrderDrawer
+          data={{ workOrderList1, workOrderList2, workOrderList7 }}
+          type={drawerType}
+          visible={workOrderDrawerVisible}
+          handleLabelChange={this.handleWorkOrderLabelChange}
+          onClose={() => this.handleDrawerVisibleChange('workOrder')}
+          handleCardClick={this.handleWorkOrderCardClick}
+        />
+        <MaintenanceDrawer
+          title="维保处理动态"
+          type={drawerType}
+          data={workOrderDetail}
+          visible={maintenanceDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('maintenance')}
+        />
+        <MaintenanceMsgDrawer
+          title={maintenanceTitle}
+          type={drawerType}
+          data={workOrderDetail}
+          processIds={processIds}
+          visible={maintenanceMsgDrawerVisible}
+          fetchFaultDetail={this.fetchFaultDetail}
+          onClose={() => {
+            this.handleDrawerVisibleChange('maintenanceMsg');
+            setTimeout(() => {
+              this.setState({ maintenanceTitle: '维保处理动态' });
+            }, 200);
+          }}
+        />
+        <AlarmDynamicMsgDrawer
+          data={alarmHandleMessage}
+          visible={alarmDynamicMsgDrawerVisible}
+          processIds={fireProcessIds}
+          handleFetchDataId={this.handleFetchDataId}
+          handleFetchAlarmHandle={this.handleFetchAlarmHandle}
+          onClose={() => this.handleDrawerVisibleChange('alarmDynamicMsg')}
+        />
+        <DrawerOfFireAlarm
+          visible={fireAlarmVisible}
+          onClose={this.handleCloseFireAlarm}
+          title={fireAlarmTitle}
+          {...fireAlarm}
+        />
+        <MaintenanceDrawer
+          title="故障处理动态"
+          type={drawerType}
+          data={faultList}
+          visible={faultDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('fault')}
+        />
+        <MaintenanceCheckDrawer
+          model={this.props.newUnitFireControl}
+          visible={maintenanceCheckDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
+        />
       </BigPlatformLayout>
     );
   }
