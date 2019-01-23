@@ -1554,6 +1554,50 @@ module.exports = env => {
                 },
               ],
             },
+            //
+            {
+              name: 'alarmManagement',
+              path: '/personnel-position/alarm-management',
+              code: 'personnelPosition.alarmManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'index',
+                  path: '/personnel-position/alarm-management',
+                  redirect: '/personnel-position/alarm-management/index',
+                },
+                {
+                  name: 'index',
+                  path: '/personnel-position/alarm-management/index',
+                  code: 'personnelPosition.alarmManagement.companyListView',
+                  component: './PersonnelPosition/AlarmManagement/CompanyList',
+                },
+                {
+                  name: 'alarmList',
+                  path: '/personnel-position/alarm-management/list/:id',
+                  code: 'personnelPosition.alarmManagement.alarmListView',
+                  component: './PersonnelPosition/AlarmManagement/AlarmList',
+                },
+                {
+                  name: 'add',
+                  path: '/personnel-position/alarm-management/add',
+                  code: 'personnelPosition.alarmManagement.add',
+                  component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
+                },
+                {
+                  name: 'edit',
+                  path: '/personnel-position/alarm-management/edit/:id',
+                  code: 'personnelPosition.alarmManagement.edit',
+                  component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
+                },
+                {
+                  name: 'detail',
+                  path: '/personnel-position/alarm-management/detail/:id',
+                  code: 'personnelPosition.alarmManagement.view',
+                  component: './PersonnelPosition/AlarmManagement/AlarmDetail',
+                },
+              ],
+            },
             /* 地图管理 */
             // {
             //   name: 'map',
