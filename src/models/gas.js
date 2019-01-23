@@ -1,4 +1,3 @@
-
 import {
   getMessages,
   getCompanyId,
@@ -9,7 +8,8 @@ import {
   getDeviceConfig,
   getDeviceHistoryData,
   getCameraList,
-} from '../services/gas'
+  getBigFlatformData, //大屏主页面数据
+} from '../services/gas';
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -18,17 +18,17 @@ const getUnitSet = function(units) {
   const earlyWarningUnit = [];
   // 正常单位
   const normalUnit = [];
-  units.forEach((unit) => {
-    switch(+unit.status) {
+  units.forEach(unit => {
+    switch (+unit.status) {
       case 2:
-      alarmUnit.push(unit);
-      break;
+        alarmUnit.push(unit);
+        break;
       case 1:
-      earlyWarningUnit.push(unit);
-      break;
+        earlyWarningUnit.push(unit);
+        break;
       default:
-      normalUnit.push(unit);
-      break;
+        normalUnit.push(unit);
+        break;
     }
   });
   return {
@@ -93,54 +93,68 @@ export default {
   effects: {
     // 获取告警信息列表
     *fetchMessages({ payload, callback }, { call, put }) {
-      const { code, data: { list } } = yield call(getMessages, payload)
+      const {
+        code,
+        data: { list },
+      } = yield call(getMessages, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { messages: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
-      }
-      else if (callback) {
+      } else if (callback) {
         callback();
       }
     },
     // 获取网格id
     *fetchCompanyId({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getCompanyId, payload)
+      const { code, data } = yield call(getCompanyId, payload);
       if (code === 200) {
         if (callback) {
           callback(data);
         }
-      }
-      else if (callback) {
+      } else if (callback) {
         callback();
       }
     },
     // 获取单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
-      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics } } = yield call(getUnitData, payload)
+      const {
+        code,
+        data: {
+          companys: units,
+          companyNum: jurisdictionalUnitStatistics,
+          importingCompanyNum: accessUnitStatistics,
+        },
+      } = yield call(getBigFlatformData, payload);
       const statisticsData = {
         // 管辖单位统计数
         jurisdictionalUnitStatistics,
         // 接入单位统计数
         accessUnitStatistics,
         // 接入率
-        accessRate: jurisdictionalUnitStatistics > 0 ? `${Math.round(accessUnitStatistics / jurisdictionalUnitStatistics * 100)}%` : '--',
+        accessRate:
+          jurisdictionalUnitStatistics > 0
+            ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
+            : '--',
       };
-      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId) };
+      const pay = {
+        unitSet: getUnitSet(units),
+        statisticsData,
+        unitIds: units.map(({ company_id }) => company_id),
+      };
       if (code === 200) {
         yield put({
           type: 'save',
           payload: pay,
-        })
+        });
         if (callback) {
           callback(pay);
         }
-      }
-      else if (callback) {
+      } else if (callback) {
         callback();
       }
     },
@@ -161,12 +175,15 @@ export default {
     },
     // 获取设备列表
     *fetchDevices({ payload, callback }, { call, put }) {
-      const { code, data: { list } } = yield call(getDevices, payload)
+      const {
+        code,
+        data: { list },
+      } = yield call(getDevices, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { devices: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
@@ -174,12 +191,12 @@ export default {
     },
     // 获取设备实时数据
     *fetchDeviceRealTimeData({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getDeviceRealTimeData, payload)
+      const { code, data } = yield call(getDeviceRealTimeData, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { deviceRealTimeData: data },
-        })
+        });
         if (callback) {
           callback(data);
         }
@@ -187,12 +204,15 @@ export default {
     },
     // 获取设备配置策略
     *fetchDeviceConfig({ payload, callback }, { call, put }) {
-      const { code, data: { list } } = yield call(getDeviceConfig, payload)
+      const {
+        code,
+        data: { list },
+      } = yield call(getDeviceConfig, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { deviceConfig: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
@@ -201,12 +221,12 @@ export default {
     // 获取设备历史数据
     *fetchDeviceHistoryData({ payload, callback }, { call, put }) {
       const { code, data } = yield call(getDeviceHistoryData, payload);
-      const list = data && data.list ? data.list: [];
+      const list = data && data.list ? data.list : [];
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { deviceHistoryData: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
@@ -243,4 +263,4 @@ export default {
       return { ...state, cameraList: action.payload };
     },
   },
-}
+};

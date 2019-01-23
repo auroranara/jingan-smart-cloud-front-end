@@ -12,6 +12,7 @@ import headerBg from '@/assets/new-header-bg.png';
 import AccessUnitStatistics from './AccessUnitStatistics';
 // 异常单位统计
 import AbnormalUnitStatistics from './AbnormalUnitStatistics';
+// 待处理业务
 import ProcessingBusiness from './ProcessingBusiness';
 
 // 告警信息
@@ -553,6 +554,8 @@ export default class Gas extends PureComponent {
         cameraList,
       },
     } = this.props;
+    console.log('this.props', statisticsData);
+
     const {
       setttingModalVisible,
       unitDrawerVisible,
