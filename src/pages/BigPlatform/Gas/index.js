@@ -597,7 +597,7 @@ export default class Gas extends PureComponent {
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
-        <ElectricityMap
+        {/* <ElectricityMap
           // mapData={unitSet}
           units={Array.isArray(unitSet.units) ? unitSet.units : []}
           handleMapClick={this.showUnitDetail}
@@ -608,7 +608,7 @@ export default class Gas extends PureComponent {
           hideTooltip={this.hideTooltip}
           unitDetail={unitDetail}
           handleParentChange={this.handleMapParentChange}
-        />
+        /> */}
         {/* 搜索框 */}
         <MapSearch
           className={styles.mapSearch}

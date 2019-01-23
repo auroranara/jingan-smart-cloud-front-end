@@ -18,24 +18,24 @@ const getUnitSet = function(units) {
   const earlyWarningUnit = [];
   // 正常单位
   const normalUnit = [];
-  units.forEach(unit => {
-    switch (+unit.status) {
-      case 2:
-        alarmUnit.push(unit);
-        break;
-      case 1:
-        earlyWarningUnit.push(unit);
-        break;
-      default:
-        normalUnit.push(unit);
-        break;
-    }
-  });
+  // units.forEach(unit => {
+  //   switch (+unit.status) {
+  //     case 2:
+  //       alarmUnit.push(unit);
+  //       break;
+  //     case 1:
+  //       earlyWarningUnit.push(unit);
+  //       break;
+  //     default:
+  //       normalUnit.push(unit);
+  //       break;
+  //   }
+  // });
   return {
     units,
-    alarmUnit,
-    earlyWarningUnit,
-    normalUnit,
+    // alarmUnit,
+    // earlyWarningUnit,
+    // normalUnit,
   };
 };
 
@@ -120,7 +120,7 @@ export default {
         callback();
       }
     },
-    // 获取单位数据
+    // 获取燃气大屏单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
       const {
         code,
