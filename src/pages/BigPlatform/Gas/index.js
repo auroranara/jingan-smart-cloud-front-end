@@ -75,21 +75,10 @@ export default class Gas extends PureComponent {
       monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
-      infoWindowShow: false,
-      infoWindow: {
-        address: '',
-        aqy1Name: '',
-        aqy1Phone: '',
-        companyName: '',
-        comapnyId: '',
-        longitude: 0,
-        latitude: 0,
-      },
       selectList: [],
       searchValue: '',
       mapInstance: undefined,
       // 企业详情
-      unitDetail: undefined,
       tooltipName: '',
       tooltipVisible: false,
       tooltipPosition: [0, 0],
@@ -579,11 +568,8 @@ export default class Gas extends PureComponent {
       businessDrawerVisible,
       monitorDrawerVisible,
       monitorDrawerTitleIndex,
-      // videoVisible,
-      // infoWindowShow,
       selectList,
       searchValue,
-      // infoWindow,
       unitDetail,
       tooltipName,
       tooltipVisible,
@@ -690,20 +676,15 @@ export default class Gas extends PureComponent {
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
-        {/* <ElectricityMap
-          // mapData={unitSet}
+        <ElectricityMap
           units={Array.isArray(unitSet.units) ? unitSet.units : []}
-          // handleMapClick={this.showUnitDetail}
-          handleMapClick={this.handleMapClick}
-          infoWindowShow={infoWindowShow}
-          infoWindow={infoWindow}
           deviceStatusCount={deviceStatusCount}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
           unitDetail={unitDetail}
           alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
-        /> */}
+        />
         {/* 搜索框 */}
         <MapSearch
           className={styles.mapSearch}

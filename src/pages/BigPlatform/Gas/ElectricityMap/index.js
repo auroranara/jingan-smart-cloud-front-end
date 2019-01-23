@@ -39,39 +39,29 @@ function MapLegend(props) {
   );
 }
 export default class MapSection extends PureComponent {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     searchValue: '',
-  //     legendActive: null,
-  //     filter: 'All',
-  //     infoWindowShow: false,
-  //     infoWindow: {
-  //       companyId: '',
-  //       companyName: '',
-  //       level: '',
-  //       address: '',
-  //       longitude: 120.366011,
-  //       latitude: 31.544389,
-  //     },
-  //     tooltipName: '',
-  //     tooltipVisible: false,
-  //     tooltipPosition: [0, 0],
-  //   };
-  //   this.infoWindow = { longitude: 0, latitude: 0 };
-  // }
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   console.log('prevProps', prevProps);
-  //   console.log('props', this.props);
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+      infoWindowShow: false,
+      infoWindow: {
+        companyId: '',
+        companyName: '',
+        principalName: '',
+        principalPhone: '',
+        count: 0,
+        normal: 0,
+        unnormal: 0,
+        faultNum: 0,
+        outContact: 0,
+        address: '',
+        longitude: 120.366011,
+        latitude: 31.544389,
+      },
+    };
+  }
 
   renderMarkers = lvl => {
-    const {
-      // mapData: { units = [] },
-      units = [],
-      unitDetail: { companyId: selectedCompanyId } = {},
-    } = this.props;
+    const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
 
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
@@ -93,12 +83,6 @@ export default class MapSection extends PureComponent {
         markers={markers}
         offset={[-15, -42]}
         events={{
-          // click: (e, marker) => {
-          //   const extData = marker.getExtData();
-          //   // this.props.handleMapClick(extData);
-          //   this.props.handleMapClick(extData.companyId, extData);
-          //   this.props.hideTooltip();
-          // },
           created: () => {
             if (fitView) {
               this.mapInstance.on('complete', () => {
@@ -126,31 +110,13 @@ export default class MapSection extends PureComponent {
       imgSrc = pointAlarm;
     }
     return (
-      // <div style={{ position: 'relative', width: 0, height: 0 }}>
-      <div style={{ position: 'relative' }}>
-        {/* {companyId === 'DccBRhlrSiu9gMV7fmvizw' && (
-          <div
-            className={styles.alarmTip}
-            onMouseEnter={e => {
-              if (this.targetTip === e.target) return;
-              this.targetTip = e.target;
-              this.props.showTooltip(e, companyName);
-            }}
-            onMouseLeave={this.props.hideTooltip}
-          >
-            有一条报警信息！
-            <span className={styles.tipMore}>详情>></span>
-          </div>
-        )} */}
-
+      <div style={{ position: 'relative' }} key={companyId}>
         <img
           src={imgSrc}
           alt=""
           style={{ display: 'block', width: '32px', height: '42px' }}
           onClick={() => {
-            // const extData = marker.getExtData();
-            // this.props.handleMapClick(extData);
-            this.props.handleMapClick(extData.companyId, extData);
+            this.handleMapClick(extData);
             this.props.hideTooltip();
           }}
           onMouseEnter={e => {
@@ -164,9 +130,18 @@ export default class MapSection extends PureComponent {
     );
   };
 
+  handleMapClick = extData => {
+    if (extData.comapnyId === this.state.infoWindow.companyId) return;
+    this.setState({
+      infoWindowShow: true,
+      infoWindow: {
+        ...extData,
+      },
+    });
+  };
+
   renderTips = () => {
     const { units = [], alarmIds = [] } = this.props;
-    // const tips = units.filter(item => item.companyId === 'DccBRhlrSiu9gMV7fmvizw');
     const tips = alarmIds.map(id => {
       return units.find(item => item.companyId === id);
     });
@@ -202,11 +177,21 @@ export default class MapSection extends PureComponent {
   renderInfoWindow = () => {
     const {
       infoWindowShow,
-      infoWindow: { address, aqy1Name, aqy1Phone, companyName, comapnyId, longitude, latitude },
-      handleParentChange,
-      deviceStatusCount: { count, normal, earlyWarning, confirmWarning, unconnect },
-    } = this.props;
-
+      infoWindow: {
+        address,
+        principalName,
+        principalPhone,
+        companyName,
+        comapnyId,
+        longitude,
+        latitude,
+        count,
+        normal,
+        unnormal,
+        faultNum,
+        outContact,
+      },
+    } = this.state;
     return (
       <InfoWindow
         position={{ longitude, latitude }}
@@ -214,6 +199,7 @@ export default class MapSection extends PureComponent {
         isCustom={false}
         autoMove={true}
         visible={infoWindowShow}
+        key={comapnyId}
       >
         <div className={styles.comapnyWrapper}>
           <h3 className={styles.comapnyName}>{companyName}</h3>
@@ -235,8 +221,8 @@ export default class MapSection extends PureComponent {
                 backgroundSize: '100% 100%',
               }}
             />
-            {aqy1Name}
-            <span style={{ marginLeft: '10px' }}>{aqy1Phone}</span>
+            {principalName}
+            <span style={{ marginLeft: '10px' }}>{principalPhone}</span>
           </div>
           <div style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}>
             设备数量 {count}
@@ -248,22 +234,22 @@ export default class MapSection extends PureComponent {
             </div>
             <div className={styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-              告警 {confirmWarning}
+              报警 {unnormal}
             </div>
             <div className={styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
-              预警 {earlyWarning}
+              故障 {faultNum}
             </div>
             <div className={styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
-              失联 {unconnect}
+              失联 {outContact}
             </div>
           </div>
         </div>
         <Icon
           type="close"
           onClick={() => {
-            handleParentChange({ infoWindowShow: false });
+            this.setState({ infoWindowShow: false });
           }}
           style={{
             color: '#FFF',
