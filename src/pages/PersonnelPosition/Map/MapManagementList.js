@@ -1,126 +1,92 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'dva';
-import { Card, Form, Row, Col, Input, Button, List, Spin } from 'antd';
+import { PureComponent } from 'react';
+import { Card, Button, Form, Col, Row, Input, List, Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from 'components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';
-import router from 'umi/router';
-import codes from '@/utils/codes';
+import codes from '@/utils/codes'
 import { hasAuthority } from '@/utils/customAuth';
-import styles from './index.less';
+import { connect } from 'dva';
+import router from 'umi/router';
+import styles from './MapManagementList.less'
 
 const FormItem = Form.Item;
 
-// 权限代码
+const title = "地图管理";
+const breadcrumbList = [
+  { name: '首页', title: '首页', href: '/' },
+  { name: '人员定位', title: '人员定位' },
+  { name: title, title },
+];
+const defaultPageSize = 10;
 const {
   personnelPosition: {
-    beaconManagement: {
-      companyBeacon: beaconCode,
-    },
+    map: { companyMap: companyMapCode },
   },
 } = codes
-
-const title = "信标管理"
-const breadcrumbList = [
-  { title: '首页', name: '首页', href: "/" },
-  { title: '人员定位', name: '人员定位' },
-  { title, name: title },
-]
-const defaultPageSize = 18;
 
 @Form.create()
 @connect(({ personnelPosition, user, loading }) => ({
   personnelPosition,
   user,
-  loading: loading.effects['personnelPosition/fetchBeaconCompanyList'],
+  loading: loading.effects['personnelPosition/fetchMapCompanies'],
 }))
-export default class BeaconManagement extends PureComponent {
+export default class MapManagementList extends PureComponent {
 
   componentDidMount() {
-    this.fetchCompanyList({
-      payload: {
-        pageNum: 1,
-        pageSize: defaultPageSize,
-      },
-    })
-
+    // 获取地图单位列表
+    this.fetchMapCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } })
   }
 
-  // 获取信标单位列表
-  fetchCompanyList = (actions) => {
-    const {
-      dispatch,
-    } = this.props
+  // 获取地图单位列表
+  fetchMapCompanies = (actions) => {
+    const { dispatch } = this.props
     dispatch({
-      type: 'personnelPosition/fetchBeaconCompanyList',
+      type: 'personnelPosition/fetchMapCompanies',
       ...actions,
     })
   }
 
+  // 点击查询
+  handleQuery = () => { }
+
+  // 点击跳转到地图列表
+  handleViewBeacons = ({ id }) => {
+    router.push(`/personnel-position/map-management/company-map/${id}`)
+  }
+
+  // 加载更多地图单位数据
   handleLoadMore = () => {
     const {
+      form: { getFieldValue },
       personnelPosition: {
-        beaconManagement: {
-          pagination: { pageNum, pageSize },
-        },
+        map: { pagination: { pageNum, pageSize } },
       },
-      form: { getFieldValue },
     } = this.props
     const name = getFieldValue('name')
-    this.fetchCompanyList({
-      payload: { pageNum: pageNum + 1, pageSize, name },
-    })
-  }
-
-  // 点击查询
-  handleQuery = () => {
-    const {
-      form: { getFieldValue },
-    } = this.props
-    const name = getFieldValue('name')
-    this.fetchCompanyList({
-      payload: { pageNum: 1, pageSize: defaultPageSize, name },
-    })
-  }
-
-  // 点击重置
-  handleReset = () => {
-    const {
-      form: { resetFields },
-    } = this.props
-    resetFields(['name'])
-    this.handleQuery()
-  }
-
-  // 点击查看信标列表
-  handleViewBeacons = ({ id }) => {
-    router.push(`/personnel-position/beacon-management/company/${id}`)
+    this.fetchMapCompanies({ payload: { pageNum: pageNum + 1, pageSize, name } })
   }
 
   render() {
     const {
       loading,
       form: { getFieldDecorator },
+      user: { currentUser: { permissionCodes } },
       personnelPosition: {
-        beaconManagement: {
-          list = [],  // 信标单位列表
+        map: {
+          mapCompanies = [],// 地图单位列表
+          pagination: {
+            pageNum,
+            pageSize,
+            total,
+          },
           isLast,
         },
       },
-      user: {
-        currentUser: { permissionCodes },
-      },
     } = this.props
-
-    // 查看信标权限
-    const viewAuth = hasAuthority(beaconCode, permissionCodes)
+    const viewAuth = hasAuthority(companyMapCode, permissionCodes)
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-        content={`单位总数：${list.length}`}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {/* 筛选栏 */}
         <Card>
           <Form>
@@ -135,7 +101,6 @@ export default class BeaconManagement extends PureComponent {
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
                   <Button type="primary" onClick={this.handleQuery}>查询</Button>
-                  <Button style={{ marginLeft: '10px' }} onClick={this.handleReset}>重置</Button>
                 </FormItem>
               </Col>
             </Row>
@@ -160,11 +125,11 @@ export default class BeaconManagement extends PureComponent {
             </div>
           }
         >
-          <div className={styles.beaconManagementList}>
+          <div className={styles.mapManagement}>
             <List
               rowKey="id"
               grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-              dataSource={list}
+              dataSource={mapCompanies}
               renderItem={item => {
                 const {
                   id,
@@ -172,7 +137,7 @@ export default class BeaconManagement extends PureComponent {
                   safetyName = null,
                   safetyPhone = null,
                   practicalAddress = null, // 地址
-                  beaconCount = 0,         // 信标数
+                  mapCount = 0,         // 地图数
                 } = item
                 return (
                   <List.Item key={id}>
@@ -190,8 +155,8 @@ export default class BeaconManagement extends PureComponent {
                       {practicalAddress || '暂无信息'}
                       </Ellipsis>
                       <div className={styles.countContainer} onClick={viewAuth ? () => this.handleViewBeacons(item) : null}>
-                        <div className={styles.count}>{beaconCount}</div>
-                        <p className={styles.text}>信标数</p>
+                        <div className={styles.count}>{mapCount}</div>
+                        <p className={styles.text}>地图数</p>
                       </div>
                     </Card>
                   </List.Item>

@@ -18,12 +18,13 @@ const PLANET_STYLES = [
 
 export default function Solar(props) {
   const { index } = props;
+  const idx = index || 0;
 
   return (
     <div className={styles.container}>
       <div className={styles.circle}>
-        <div className={styles.solar}>
-          <p className={styles.index}>{index || 0}</p>
+        <div className={index > 80 ? styles.solar : styles.solar1}>
+          <p className={styles.index}>{idx}</p>
           <p className={styles.safe}>安全指数</p>
         </div>
         {PLANET_STYLES.map(s => <span key={s.backgroundColor} className={styles.planet} style={s} />)}

@@ -387,7 +387,7 @@ export default class App extends PureComponent {
       indexDrawerVisible,
     } = this.state;
 
-    const { safetyIndex, riskList, dangerList, monitorList, safeList } = unitSafety;
+    const { safetyIndex, safetyIndexes, riskList, dangerList, monitorList, safeList } = unitSafety;
 
     return (
       <Layout>
@@ -548,7 +548,7 @@ export default class App extends PureComponent {
           </Col>
         </Row>
         <IndexDrawer
-          data={{ safetyIndex, riskList, dangerList, monitorList, safeList }}
+          data={{ safetyIndex, safetyIndexes, riskList, dangerList, monitorList, safeList }}
           visible={indexDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
