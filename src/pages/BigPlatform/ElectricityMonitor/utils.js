@@ -2,7 +2,7 @@ function rand(n, m) {
   return Math.floor(Math.random() * (m - n)) + n;
 }
 
-function isOverHalf(n=0.5) {
+function isOverHalf(n = 0.5) {
   return Math.random() > n;
 }
 
@@ -10,7 +10,7 @@ function getRandNum() {
   return isOverHalf() ? 0 : rand(1, 10);
 }
 
-export function genCardsInfo(list=[]) {
+export function genCardsInfo(list = []) {
   return list.map(({ companyId, companyName, address, aqy1Name, aqy1Phone }) => {
     const [common, alarm, warn, noAccess] = [...Array(4).keys()].map(i => getRandNum());
     return {
@@ -32,10 +32,8 @@ export function sortCardList(list) {
   const newList = Array.from(list);
   newList.sort((item, item1) => {
     const compare = item1.equipment - item.equipment;
-    if (compare)
-      return compare;
-    return item.name.localeCompare(item1.name, 'zh-Hans-CN', {sensitivity: 'accent'}
-    );
+    if (compare) return compare;
+    return item.name.localeCompare(item1.name, 'zh-Hans-CN', { sensitivity: 'accent' });
   });
 
   return newList;

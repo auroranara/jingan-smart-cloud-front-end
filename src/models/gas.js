@@ -1,7 +1,8 @@
 import {
   getMessages,
   getCompanyId,
-  getUnitData,
+  // getUnitData,
+  getImportingTotal,
   getDeviceStatusCount,
   getDevices,
   getDeviceRealTimeData,
@@ -56,8 +57,18 @@ export default {
       // 正常单位
       normalUnit: [],
     },
+    gasUnitSet: {
+      importingUnits: [],
+    },
     // 单位id列表
     unitIds: [],
+    // 接入单位统计-饼图
+    AccessStatistics: {
+      Importing: 0,
+      unImporting: 0,
+    },
+    // 接入单位统计-树状图
+    AccessCount: [],
     // 统计数据
     statisticsData: {
       // 管辖单位统计数
@@ -158,6 +169,41 @@ export default {
         callback();
       }
     },
+
+    // 燃气大屏接入单位统计
+    *fetchImportingTotal({ payload, callback }, { call, put }) {
+      const {
+        code,
+        data: {
+          // 饼图数据
+          AccessStatistics: { Importing, unImporting },
+          companys: importingUnits,
+          AccessCount,
+        },
+      } = yield call(getImportingTotal, payload);
+      const AccessStatistics = {
+        Importing,
+        unImporting,
+      };
+      const pay = {
+        gasUnitSet: getUnitSet(importingUnits),
+        AccessCount,
+        AccessStatistics,
+        unitIds: importingUnits.map(({ company_id }) => company_id),
+      };
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: pay,
+        });
+        if (callback) {
+          callback(pay);
+        }
+      } else if (callback) {
+        callback();
+      }
+    },
+
     // 获取企业设备统计数
     *fetchDeviceStatusCount({ payload, success, error }, { call, put }) {
       const response = yield call(getDeviceStatusCount, payload);

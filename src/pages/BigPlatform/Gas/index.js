@@ -115,6 +115,22 @@ export default class Gas extends PureComponent {
       },
     });
 
+    // 获取接入单位统计
+    dispatch({
+      type: 'gas/fetchImportingTotal',
+      // payload: {
+      //   status,
+      // },
+      // callback: data => {
+      //   if (!data) return;
+      //   const {
+      //     gasUnitSet: { units = [] },
+      //   } = data;
+
+      //   this.importCardsInfo = genCardsInfo(units);
+      // },
+    });
+
     // 获取网格点id
     dispatch({
       type: 'gas/fetchCompanyId',
@@ -222,7 +238,7 @@ export default class Gas extends PureComponent {
   componentWillUnmount() {}
 
   cardsInfo = [];
-
+  importCardsInfo = [];
   getDeviceStatusCount = companyId => {
     const { dispatch } = this.props;
     dispatch({
@@ -545,6 +561,9 @@ export default class Gas extends PureComponent {
       gas: {
         messages,
         statisticsData,
+        AccessStatistics,
+        AccessCount,
+        gasUnitSet: { units },
         unitSet,
         deviceStatusCount,
         devices,
@@ -554,7 +573,7 @@ export default class Gas extends PureComponent {
         cameraList,
       },
     } = this.props;
-    console.log('this.props', statisticsData);
+    console.log('lalalall,', this.props);
 
     const {
       setttingModalVisible,
@@ -575,10 +594,11 @@ export default class Gas extends PureComponent {
     } = this.state;
 
     const cardsInfo = this.cardsInfo;
+    const importCardsInfo = this.importCardsInfo;
 
     return (
       <BigPlatformLayout
-        title="晶安智慧用电监测平台"
+        title="晶安智慧燃气平台"
         extra="无锡市"
         style={{ backgroundImage: 'none' }}
         headerStyle={{
@@ -597,18 +617,18 @@ export default class Gas extends PureComponent {
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
-        {/* <ElectricityMap
+        <ElectricityMap
           // mapData={unitSet}
-          units={Array.isArray(unitSet.units) ? unitSet.units : []}
-          handleMapClick={this.showUnitDetail}
-          // infoWindowShow={infoWindowShow}
-          // infoWindow={infoWindow}
-          // deviceStatusCount={deviceStatusCount}
-          showTooltip={this.showTooltip}
-          hideTooltip={this.hideTooltip}
-          unitDetail={unitDetail}
+          // units={Array.isArray(unitSet.units) ? unitSet.units : []}
+          // handleMapClick={this.showUnitDetail}
+          // // infoWindowShow={infoWindowShow}
+          // // infoWindow={infoWindow}
+          // // deviceStatusCount={deviceStatusCount}
+          // showTooltip={this.showTooltip}
+          // hideTooltip={this.hideTooltip}
+          // unitDetail={unitDetail}
           handleParentChange={this.handleMapParentChange}
-        /> */}
+        />
         {/* 搜索框 */}
         <MapSearch
           className={styles.mapSearch}
@@ -653,7 +673,7 @@ export default class Gas extends PureComponent {
           handleCancel={this.handleSettingCancel}
         />
         <UnitDrawer
-          data={{ list: cardsInfo, statisticsData }}
+          data={{ units, AccessStatistics, AccessCount }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

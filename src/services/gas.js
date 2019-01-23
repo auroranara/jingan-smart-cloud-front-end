@@ -8,6 +8,11 @@ export async function getBigFlatformData(params) {
   return request(`${URL_PREFIX}/gasScreen/index?${stringify(params)}`);
 }
 
+// 接入单位统计
+export async function getImportingTotal(params) {
+  return request(`${URL_PREFIX}/gasScreen/Importing?${stringify(params)}`);
+}
+
 // 获取告警信息列表
 export async function getMessages(params) {
   return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3`);
