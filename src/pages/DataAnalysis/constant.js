@@ -286,7 +286,15 @@ export const WASTE_GAS_PARAMS = [
   { name: '烟气湿度', key: 'a01014' },
   // { name: <span>CH<sub>4</sub></span>, key: 'a05002' },
   { name: '甲烷', key: 'a05002' },
-  { name: <span>SO<sub>2</sub></span>, key: 'a21026' },
+  {
+    name: (
+      <span>
+        SO
+        <sub>2</sub>
+      </span>
+    ),
+    key: 'a21026',
+  },
   // { name: '二氧化硫', key: 'a21026' },
   { name: '碳氢化合物', key: 'a24087' },
   { name: '非甲烷总烃', key: 'a24088' },
@@ -579,7 +587,7 @@ export function getFields(type, params, methods) {
         },
         {
           // id: 'modelCode',
-          id: 'newModel',
+          id: 'classModel',
           label: '异常参数：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
