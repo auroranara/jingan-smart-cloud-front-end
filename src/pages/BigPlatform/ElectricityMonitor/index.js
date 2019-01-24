@@ -106,10 +106,13 @@ export default class ElectricityMonitor extends PureComponent {
       callback: data => {
         if (!data)
           return;
-        const { unitSet: { units=[] } } = data;
-        this.cardsInfo = genCardsInfo(units);
+        const { unitSet: { units=[] }, allCompanyList } = data;
+        this.cardsInfo = genCardsInfo(units, allCompanyList);
       },
     });
+
+    // 获取报警趋势
+    dispatch({ type: 'electricityMonitor/fetchWarningTrend', payload: { queryMonth: 12 } });
 
     // 获取网格点id
     dispatch({
@@ -492,6 +495,8 @@ export default class ElectricityMonitor extends PureComponent {
         deviceConfig,
         deviceHistoryData,
         cameraList,
+        warningTrendList, // 12个月报警趋势
+        warningTrendList1, // 6个月报警趋势
       },
     } = this.props;
     const {
@@ -560,7 +565,7 @@ export default class ElectricityMonitor extends PureComponent {
         />
         {/* 近半年内告警统计 */}
         <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
-          <AlarmChart />
+          <AlarmChart data={warningTrendList1.map(({ count }) => count)} xLabels={warningTrendList1.map(({ timeFlag }) => `${moment(timeFlag).format('M')}月`)} />
         </NewSection>
         {/* 告警信息 */}
         <WarningMessage data={messages} className={styles.right} />
@@ -575,7 +580,7 @@ export default class ElectricityMonitor extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <AlarmDrawer
-          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          data={{ list: cardsInfo, ...getAlarmUnits(unitSet), graphList: warningTrendList }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

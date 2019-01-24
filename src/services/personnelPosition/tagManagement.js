@@ -31,3 +31,8 @@ export async function editTag(params) {
     body: params,
   })
 }
+
+// 标签-选择企业时获取的企业列表
+export async function fetchTagCompanies(params){
+  return request(`/acloud_new/v2/accessCard/accessCardInfo/companies?${stringify(params)}`)
+}

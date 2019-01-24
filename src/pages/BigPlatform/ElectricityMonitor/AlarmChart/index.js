@@ -1,30 +1,21 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import moment from 'moment';
+// import moment from 'moment';
 
 // import styles from './index.less';
-const months = Array(6)
-  .fill(true)
-  .map((_, index) => {
-    return (
-      moment()
-        .month(index - 5)
-        .format('M') + '月'
-    );
-  });
+// const months = Array(6)
+//   .fill(true)
+//   .map((_, index) => {
+//     return (
+//       moment()
+//         .month(index - 5)
+//         .format('M') + '月'
+//     );
+//   });
 
 export default class AlarmChart extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
   getChartOption() {
-    const { data } = this.props;
+    const { data=[], xLabels=[] } = this.props;
     const option = {
       color: ['#00ffff'],
       tooltip: {
@@ -72,7 +63,8 @@ export default class AlarmChart extends PureComponent {
           color: '#fff',
           fontSize: 14,
         },
-        data: months,
+        // data: months,
+        data: xLabels,
       },
       yAxis: [
         {
@@ -106,7 +98,8 @@ export default class AlarmChart extends PureComponent {
           name: '报警次数',
           type: 'line',
           symbol: 'circle',
-          data: [26, 18, 12, 34, 17, 24],
+          // data: [26, 18, 12, 34, 17, 24],
+          data,
         },
       ],
     };

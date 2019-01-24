@@ -423,8 +423,13 @@ export default class TagManagement extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
       personnelPosition: {
         tag: {
+          // 标签列表
           list,
           isLast,
+          // 标签分页数据
+          pagination:{
+            total:tagTotal=0,
+          },
         },
         systemConfiguration: { list: systemList },
       },
@@ -434,10 +439,11 @@ export default class TagManagement extends PureComponent {
       modalVisible,
       employeeModalVisible,
       currentPersonnelList,
+      // 选择人员分页数据
       pagination: {
         pageNum,
         pageSize,
-        total = 0,
+        total,
       },
       selectedPersonnerlKeys,
     } = this.state
@@ -464,7 +470,7 @@ export default class TagManagement extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={(
           <div style={{ overflow: 'hidden' }}>
-            <span style={{ lineHeight: '32px' }}>标签数量：{total}</span>
+            <span style={{ lineHeight: '32px' }}>标签数量：{tagTotal}</span>
           </div>
         )}
       >
@@ -547,6 +553,7 @@ export default class TagManagement extends PureComponent {
                   code,             // 编号
                   userName = null,   // 持卡人
                   status,          // 1 在线 0 离线
+                  visitorName=null,  // 临时卡持卡人
                 } = item
                 return (
                   <List.Item key={id}>
@@ -571,7 +578,11 @@ export default class TagManagement extends PureComponent {
                         <div className={styles.detail}>
                           <Ellipsis lines={1} tooltip className={styles.title}>{code}</Ellipsis>
                           <div className={styles.line}>卡分类：{+type === 0 ? '普通卡' : '临时卡'}</div>
-                          <div className={styles.line}>持卡人：{userName || '暂无信息'}</div>
+                          {+type===0?(
+                            <div className={styles.line}>持卡人：{userName || '暂无信息'}</div>
+                          ):(
+                            <div className={styles.line}>持卡人：{visitorName || '暂无信息'}</div>
+                          )}
                           <div className={styles.line}>
                             电<span style={{ visibility: 'hidden' }}>隐</span>量：
                           <span style={{ color: !battery ? 'inherit' : +battery >= 25 ? 'green' : 'red' }}>{battery ? `${battery}%` : '暂无信息'}</span>

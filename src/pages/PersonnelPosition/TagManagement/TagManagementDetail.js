@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Form, Button, Card } from 'antd';
+import { Form, Button, Card, Row, Col } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import { connect } from 'dva';
@@ -17,6 +17,11 @@ const formItemLayout = {
   labelCol: { span: 10 },
   wrapperCol: { span: 12 },
 };
+
+const rowStyle = {
+  marginBottom: '24px',
+  lineHeight: '1.5',
+}
 
 @Form.create()
 @connect(({ personnelPosition }) => ({
@@ -64,6 +69,14 @@ export default class TagManagementDetail extends PureComponent {
     return item.sysName || '暂无数据'
   }
 
+  renderRow = (label, content) => {
+    return (
+      <Row style={rowStyle}>
+        <Col span={24} style={{ textAlign: 'center', color: 'rgba(0,0,0,0.85)' }}>{label}：{content}</Col>
+      </Row>
+    )
+  }
+
   render() {
     const {
       personnelPosition: {
@@ -87,30 +100,18 @@ export default class TagManagementDetail extends PureComponent {
         breadcrumblist={breadcrumblist}
       >
         <Card>
-          <Form>
-            <FormItem label="标签号" {...formItemLayout}>
-              <span>{code}</span>
-            </FormItem>
-            <FormItem label="所属系统" {...formItemLayout}>
-              <span>{newSysName}</span>
-            </FormItem>
-            <FormItem label="标签分类" {...formItemLayout}>
-              <span>{+type === 0 ? '普通卡' : '临时卡'}</span>
-            </FormItem>
-            {+type === 0 && (
-              <Fragment>
-                <FormItem label="持卡人" {...formItemLayout}>
-                  <span>{userName || '暂无数据'}</span>
-                </FormItem>
-                <FormItem label="联系方式" {...formItemLayout}>
-                  <span>{phoneNumber || '暂无数据'}</span>
-                </FormItem>
-              </Fragment>
-            )}
-          </Form>
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+          {this.renderRow('标签号', code)}
+          {this.renderRow('所属系统', newSysName)}
+          {this.renderRow('标签分类', +type === 0 ? '普通卡' : '临时卡')}
+          {+type === 0 && (
+            <Fragment>
+              {this.renderRow('持卡人', userName || '暂无数据')}
+              {this.renderRow('联系方式', phoneNumber || '暂无数据')}
+            </Fragment>
+          )}
+          {/* <div style={{ marginTop: '24px', textAlign: 'center' }}>
             <Button onClick={() => { router.push('/personnel-position/tag-management/list') }}>返回</Button>
-          </div>
+          </div> */}
         </Card>
       </PageHeaderLayout>
     )

@@ -10,20 +10,41 @@ function getRandNum() {
   return isOverHalf() ? 0 : rand(1, 10);
 }
 
-export function genCardsInfo(list=[]) {
-  return list.map(({ companyId, companyName, address, aqy1Name, aqy1Phone }) => {
-    const [common, alarm, warn, noAccess] = [...Array(4).keys()].map(i => getRandNum());
+// export function genCardsInfo(list=[]) {
+//   return list.map(({ companyId, companyName, address, aqy1Name, aqy1Phone }) => {
+//     const [common, alarm, warn, noAccess] = [...Array(4).keys()].map(i => getRandNum());
+//     return {
+//       companyId,
+//       name: companyName,
+//       address: address,
+//       safetyMan: aqy1Name,
+//       safetyPhone: aqy1Phone,
+//       common,
+//       alarm,
+//       warn,
+//       noAccess,
+//       equipment: isOverHalf(0.15) ? common + alarm + warn + noAccess : 0,
+//     };
+//   });
+// }
+
+export function genCardsInfo(connectedList=[], allCompanyList=[]) {
+  const connectedCompanyIds = connectedList.map(({ companyId }) => companyId);
+  const unconnectedList = allCompanyList.filter(({ companyId }) => !connectedCompanyIds.includes(companyId));
+  return [...connectedList, ...unconnectedList].map(({ companyId, companyName, address, aqy1Name, aqy1Phone, deviceCount }) => {
+    let counts = { equipment: 0 };
+    if (deviceCount) {
+      const  { count, normal, confirmWarning, earlyWarning, unconnect } = deviceCount;
+      counts = { common: normal, alarm: confirmWarning, warn: earlyWarning, noAccess: unconnect, equipment: count };
+    }
+
     return {
       companyId,
       name: companyName,
       address: address,
       safetyMan: aqy1Name,
       safetyPhone: aqy1Phone,
-      common,
-      alarm,
-      warn,
-      noAccess,
-      equipment: isOverHalf(0.15) ? common + alarm + warn + noAccess : 0,
+      ...counts,
     };
   });
 }
