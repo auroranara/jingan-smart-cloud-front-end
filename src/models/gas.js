@@ -16,27 +16,34 @@ const getUnitSet = function(units) {
   // 告警单位
   const alarmUnit = [];
   // 预警单位
-  const earlyWarningUnit = [];
+  const faultUnit = [];
   // 正常单位
   const normalUnit = [];
-  // units.forEach(unit => {
-  //   switch (+unit.status) {
-  //     case 2:
-  //       alarmUnit.push(unit);
-  //       break;
-  //     case 1:
-  //       earlyWarningUnit.push(unit);
-  //       break;
-  //     default:
-  //       normalUnit.push(unit);
-  //       break;
-  //   }
-  // });
+  const newList = units.map(item => {
+    const { company_id, company_name, principal_name, principal_phone } = item;
+    return {
+      ...item,
+      companyId: company_id,
+      companyName: company_name,
+      principalName: principal_name,
+      principalPhone: principal_phone,
+    };
+  });
+  newList.forEach(unit => {
+    const { unnormal, faultNum } = unit;
+    if (+unnormal) {
+      alarmUnit.push(unit);
+    } else if (+faultNum) {
+      faultUnit.push(unit);
+    } else {
+      normalUnit.push(unit);
+    }
+  });
   return {
-    units,
-    // alarmUnit,
-    // earlyWarningUnit,
-    // normalUnit,
+    units: newList,
+    alarmUnit,
+    faultUnit,
+    normalUnit,
   };
 };
 
@@ -53,7 +60,7 @@ export default {
       // 告警单位
       alarmUnit: [],
       // 预警单位
-      earlyWarningUnit: [],
+      faultUnit: [],
       // 正常单位
       normalUnit: [],
     },

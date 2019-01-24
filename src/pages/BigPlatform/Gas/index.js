@@ -18,6 +18,8 @@ import ProcessingBusiness from './ProcessingBusiness';
 // 告警信息
 import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
+// 故障/报警处理动态
+import MaintenanceDrawer from './sections/MaintenanceDrawer';
 
 // import AlarmChart from './AlarmChart';
 import ElectricityMap from './ElectricityMap';
@@ -43,6 +45,17 @@ const options = {
   pingMsg: 'heartbeat',
 };
 
+const ids = [
+  'JIQ6gDpvQZipWzxz_OPHkw',
+  'q2gaRblYQWyVOWb009ssAA',
+  '2Msqxm1tT1CYSZP72kYhuA',
+  'tnWeDmZxQK6mFhBZp7uaQw',
+  'Fj_1XoafSjKGo3WJDhHsDw',
+  '417MvXHqTK_Es0n2I9C3eg',
+  'ehhHqz8gRn_X_ka7007WCw',
+  '7KhsYnGqTNCK0P15xh2KYA',
+];
+
 /**
  * description: 用电监测
  * author:
@@ -62,24 +75,16 @@ export default class Gas extends PureComponent {
       monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
-      infoWindowShow: false,
-      infoWindow: {
-        address: '',
-        aqy1Name: '',
-        aqy1Phone: '',
-        companyName: '',
-        comapnyId: '',
-        longitude: 0,
-        latitude: 0,
-      },
       selectList: [],
       searchValue: '',
       mapInstance: undefined,
       // 企业详情
-      unitDetail: undefined,
       tooltipName: '',
       tooltipVisible: false,
       tooltipPosition: [0, 0],
+      maintenanceDrawerVisible: false,
+      drawerType: '', // alarm,fault
+      alarmIds: [],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -90,6 +95,7 @@ export default class Gas extends PureComponent {
     this.deviceHistoryDataTimer = null;
     // 设备配置策略定时器
     this.deviceConfigTimer = null;
+    this.number = 0;
   }
 
   /**
@@ -154,11 +160,15 @@ export default class Gas extends PureComponent {
         };
 
         ws.onmessage = e => {
+          // if (!e.data || e.data.indexOf('heartbeat') > -1) {
+          //   if (this.number < ids.length)
+          //     this.setState({ alarmIds: [...this.state.alarmIds, ids[this.number]] });
+          //   this.number += 1;
+          // }
           // 判断是否是心跳
           if (!e.data || e.data.indexOf('heartbeat') > -1) return;
           try {
             const data = JSON.parse(e.data).data;
-            console.log(data);
             const { type } = data;
             // 如果数据为告警或恢复，则将数据插入到列表的第一个
             if ([31, 32].includes(type)) {
@@ -282,8 +292,6 @@ export default class Gas extends PureComponent {
     const { dispatch } = this.props;
     const { mapInstance } = this.state;
     const { companyId, longitude, latitude } = unitDetail;
-    // console.log('unitDetail', unitDetail, deviceId);
-    // console.log('mapInstance', mapInstance);
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.getDeviceStatusCount(companyId);
     this.getCameraList(companyId);
@@ -539,8 +547,6 @@ export default class Gas extends PureComponent {
   };
 
   hideTooltip = () => {
-    // console.log('hideTooltip');
-
     this.setState({
       tooltipName: '',
       tooltipVisible: false,
@@ -558,7 +564,6 @@ export default class Gas extends PureComponent {
   render() {
     const {
       gas: {
-        messages,
         statisticsData,
         AccessStatistics,
         AccessCount,
@@ -579,20 +584,95 @@ export default class Gas extends PureComponent {
       businessDrawerVisible,
       monitorDrawerVisible,
       monitorDrawerTitleIndex,
-      // videoVisible,
-      // infoWindowShow,
       selectList,
       searchValue,
-      // infoWindow,
       unitDetail,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
+      maintenanceDrawerVisible,
+      drawerType,
+      alarmIds,
     } = this.state;
 
     const cardsInfo = this.cardsInfo;
     const importCardsInfo = this.importCardsInfo;
     console.log('pppimportCardsInfo', importCardsInfo);
+
+    const faultList = [
+      {
+        disaster_desc: '绿绿',
+        fault_state: '1',
+        config_state: '0',
+        loop_number: 101,
+        type: '4',
+        executor: 'db4j3p32u6jv9n7v',
+        create_company_name: '无锡蓝天电子有限公司',
+        id: '5dul5e69ebfaayeq',
+        create_date: 1546506655480,
+        safetyPerson: '张湾',
+        install_address: '5号5楼消防展示厅',
+        self_check_state: '0',
+        del_flag: '0',
+        do_test_state: '0',
+        createByName: '法人',
+        create_time: 1546506056000,
+        createByPhone: '13852323212',
+        feedback_state: '0',
+        manual_fire_state: '0',
+        safetyPhone: '13906184255',
+        delayed_state: '0',
+        server_addr: 1,
+        update_date: 1546506718153,
+        reset_time: 1546506121520,
+        unit_name: '无锡维保公司',
+        phone: '13852012127',
+        save_time: 1546506062453,
+        parent_id: 'b5FoMRn7TOGnMbSB4SjpQg',
+        prepare_elec_state: '0',
+        part_number: 2,
+        dataSource: '2',
+        status: '1',
+        muffling_state: '0',
+        end_date: 1546506718150,
+        d_d_c: 1,
+        component_model: 'TY-GD-G3',
+        start_state: '0',
+        executor_name: '无锡维保',
+        normal_state: '0',
+        remark: '',
+        component_region: 101,
+        unit_type: 31,
+        create_by: 'Fw_0Fih6T4aEeXdRcNshEw',
+        shield_state: '0',
+        lookup_state: '0',
+        data_id: 'EBJq3Y_qt11Nw9eVkwgFmA',
+        line_number: 3,
+        main_elec_state: '0',
+        nstatus: '1',
+        update_by: 'db4j3p32u6jv9n7v',
+        unit_id: 'oEjYOOqkSkmExQCpEEAAMw',
+        value: '31',
+        site_photo: '@@IPEXP_IMP_FILES_WEB/gsafe/fault/190103-171157-032V.jpg',
+        start_date: 1546506676597,
+        fire_state: '0',
+        manual_state: '0',
+        company_id: 'DccBRhlrSiu9gMV7fmvizw',
+        close_fire_state: '0',
+        label: '点型感温火灾探测器',
+        host_id: 'cbuxdh4tv9g477qa',
+        supervise_state: '0',
+        t_d_c: 1,
+        sitePhotos: ['http://data.jingan-china.cn/hello/gsafe/fault/190103-171157-032V.jpg'],
+        client_addr: 1,
+        data_type: '2',
+        install_floor: 5,
+        component_no: 2,
+        main_line_state: '0',
+        reset_state: '0',
+      },
+    ];
+
     return (
       <BigPlatformLayout
         title="晶安智慧燃气平台"
@@ -615,15 +695,12 @@ export default class Gas extends PureComponent {
       >
         {/* 地图 */}
         <ElectricityMap
-          // mapData={unitSet}
-          // units={Array.isArray(unitSet.units) ? unitSet.units : []}
-          // handleMapClick={this.showUnitDetail}
-          // // infoWindowShow={infoWindowShow}
-          // // infoWindow={infoWindow}
-          // // deviceStatusCount={deviceStatusCount}
-          // showTooltip={this.showTooltip}
-          // hideTooltip={this.hideTooltip}
-          // unitDetail={unitDetail}
+          units={Array.isArray(unitSet.units) ? unitSet.units : []}
+          deviceStatusCount={deviceStatusCount}
+          showTooltip={this.showTooltip}
+          hideTooltip={this.hideTooltip}
+          unitDetail={unitDetail}
+          alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
         />
         {/* 搜索框 */}
@@ -662,8 +739,8 @@ export default class Gas extends PureComponent {
         >
           <ProcessingBusiness />
         </NewSection>
-        {/* 告警信息 */}
-        <WarningMessage data={messages} className={styles.right} />
+
+        {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}
           handleOk={this.handleSettingOk}
@@ -700,6 +777,16 @@ export default class Gas extends PureComponent {
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
         />
+        <MaintenanceDrawer
+          title="故障处理动态"
+          // type={drawerType}
+          type={'alarm'}
+          data={faultList}
+          visible={maintenanceDrawerVisible}
+          // visible={true}
+          companyName={'晶安'}
+          onClose={() => this.handleDrawerVisibleChange('maintenance')}
+        />
         {/* <VideoPlay
           showList={true}
           videoList={cameraList}
@@ -713,6 +800,7 @@ export default class Gas extends PureComponent {
           title={tooltipName}
           position={tooltipPosition}
           offset={[15, 42]}
+          style={{ zIndex: 150 }}
         />
       </BigPlatformLayout>
     );
