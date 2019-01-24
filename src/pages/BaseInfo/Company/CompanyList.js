@@ -328,6 +328,8 @@ export default class CompanyList extends PureComponent {
     if (isLast) {
       return;
     }
+    console.log('pageNum', pageNum);
+
     // 请求数据
     appendFetch({
       payload: {
