@@ -1462,28 +1462,28 @@ module.exports = env => {
                 },
                 {
                   name: 'floorList',
-                  code: 'personnelPosition.floorManagement.listView',
+                  code: 'personnelPosition.buildingsInfo.floorListView',
                   path: '/personnel-position/buildings-info/floor/list/:id',
                   component:
                     './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
                 },
                 {
                   name: 'floorAdd',
-                  code: 'personnelPosition.floorManagement.add',
+                  code: 'personnelPosition.buildingsInfo.floorAdd',
                   path: '/personnel-position/buildings-info/floor/add',
                   component:
                     './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
                 },
                 {
                   name: 'floorEdit',
-                  code: 'personnelPosition.floorManagement.edit',
+                  code: 'personnelPosition.buildingsInfo.floorEdit',
                   path: '/personnel-position/buildings-info/floor/edit/:id',
                   component:
                     './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
                 },
                 {
                   name: 'floorDetail',
-                  code: 'personnelPosition.floorManagement.view',
+                  code: 'personnelPosition.buildingsInfo.floorView',
                   path: '/personnel-position/buildings-info/floor/detail/:id',
                   component:
                     './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
