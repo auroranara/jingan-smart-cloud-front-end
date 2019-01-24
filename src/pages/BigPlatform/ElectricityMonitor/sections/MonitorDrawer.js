@@ -86,7 +86,7 @@ export default class MonitorDrawer extends PureComponent {
     } = this.props;
     const { videoVisible, videoKeyId } = this.state;
 
-    console.log(videoKeyId);
+    // console.log(videoKeyId);
 
     // 实时数据列表
     const list = [];

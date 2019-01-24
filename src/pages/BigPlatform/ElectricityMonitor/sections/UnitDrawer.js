@@ -21,18 +21,18 @@ const OPTIONS = ['全部', '未接入', '已接入'].map((d, i) => ({ value: i, 
 const RING_COLORS = ['159,159,159', '0,255,255'];
 const RING_LABELS = ['未接入', '已接入'];
 
-const CARDS = [...Array(10).keys()].map(i => ({
-  companyId: i,
-  name: '无锡市新吴区机械制造有限公司',
-  address: '无锡市新吴区汉江路与龙江路交叉口5号',
-  safetyMan: '王长江',
-  safetyPhone: '13288888888',
-  common: Math.floor(Math.random() * 10),
-  alarm: Math.floor(Math.random() * 10),
-  warn: Math.floor(Math.random() * 10),
-  noAccess: Math.floor(Math.random() * 10),
-  equipment: Math.random() > 0.5 ? 0 : 14,
-}));
+// const CARDS = [...Array(10).keys()].map(i => ({
+//   companyId: i,
+//   name: '无锡市新吴区机械制造有限公司',
+//   address: '无锡市新吴区汉江路与龙江路交叉口5号',
+//   safetyMan: '王长江',
+//   safetyPhone: '13288888888',
+//   common: Math.floor(Math.random() * 10),
+//   alarm: Math.floor(Math.random() * 10),
+//   warn: Math.floor(Math.random() * 10),
+//   noAccess: Math.floor(Math.random() * 10),
+//   equipment: Math.random() > 0.5 ? 0 : 14,
+// }));
 
 export default class UnitDrawer extends PureComponent {
   state={ selected: 0, searchValue: '' };
@@ -55,14 +55,14 @@ export default class UnitDrawer extends PureComponent {
     const {
       visible,
       // handleSearch,
-      data: { list=CARDS, statisticsData: { accessUnitStatistics=0, jurisdictionalUnitStatistics=0 } }={},
+      data: { list=[], statisticsData: { accessUnitStatistics=0, jurisdictionalUnitStatistics=0 } }={},
     } = this.props;
     const { selected, searchValue } = this.state;
 
     const restStatistics = jurisdictionalUnitStatistics - accessUnitStatistics;
     const rings = [restStatistics, accessUnitStatistics].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
     const sortedList = sortCardList(list);
-    const barList = sortedList.slice(0, 10).map(({ companyId, name, equipment }, i) => {
+    const barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => {
       let newName = name;
       if (i === 9 && name.length > 10)
         newName = `${name.slice(0, 10)}...`;

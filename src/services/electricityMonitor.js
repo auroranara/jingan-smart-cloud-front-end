@@ -47,3 +47,8 @@ export async function getDeviceHistoryData(params) {
 export async function getCameraList(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
+
+// 获取报警趋势
+export async function getWarningTrend(params) {
+  return request(`${URL_PREFIX}/screen/elecSafe/warningMap?${stringify(params)}`);
+}
