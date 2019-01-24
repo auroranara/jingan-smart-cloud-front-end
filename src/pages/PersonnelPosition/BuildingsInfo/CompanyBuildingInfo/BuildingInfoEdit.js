@@ -223,9 +223,12 @@ export default class BuildingInfoEdit extends PureComponent {
       location: {
         query: { name: company_name, companyId: company_Id },
       },
+      user: {
+        currentUser: { companyId: newCompanyId },
+      },
       form: { validateFieldsAndScroll },
     } = this.props;
-
+    console.log('12', this.props);
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
       router.push(
@@ -257,7 +260,7 @@ export default class BuildingInfoEdit extends PureComponent {
         const { companyId } = this.state;
 
         const payload = {
-          companyId: company_Id || companyId,
+          companyId: company_Id || companyId || newCompanyId,
           buildingType,
           buildingName,
           floorNumber,
