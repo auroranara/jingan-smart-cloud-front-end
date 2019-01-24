@@ -17,6 +17,7 @@ export default class ChartGauge extends PureComponent {
           splitNumber: 5,
           axisLabel: {
             distance: 0,
+            color: '#FFF',
             fontSize: labelFontSize,
           },
           axisLine: {

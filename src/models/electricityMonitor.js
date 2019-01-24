@@ -8,7 +8,8 @@ import {
   getDeviceConfig,
   getDeviceHistoryData,
   getCameraList,
-} from '../services/electricityMonitor';
+  getWarningTrend,
+} from '../services/electricityMonitor'
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -87,6 +88,8 @@ export default {
     deviceHistoryData: [],
     // 摄像头列表
     cameraList: [],
+    warningTrendList: [], // 报警趋势列表(12个月)
+    warningTrendList1: [], // 报警趋势列表(6个月)
   },
 
   effects: {
@@ -121,14 +124,7 @@ export default {
     },
     // 获取单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: {
-          companyInfoDtoList: units,
-          countNum: jurisdictionalUnitStatistics,
-          linkNum: accessUnitStatistics,
-        },
-      } = yield call(getUnitData, payload);
+      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics, allCompanyInfoDtoList=[] } } = yield call(getUnitData, payload);
       const statisticsData = {
         // 管辖单位统计数
         jurisdictionalUnitStatistics,
@@ -140,11 +136,7 @@ export default {
             ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
             : '--',
       };
-      const pay = {
-        unitSet: getUnitSet(units),
-        statisticsData,
-        unitIds: units.map(({ companyId }) => companyId),
-      };
+      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId), allCompanyList: allCompanyInfoDtoList };
       if (code === 200) {
         yield put({
           type: 'save',
@@ -236,6 +228,16 @@ export default {
       const { list } = response;
       yield put({ type: 'saveCameraList', payload: list });
     },
+    *fetchWarningTrend({ payload }, { call, put }) {
+      const response = yield call(getWarningTrend, payload);
+      const { code=500, data } = response || {};
+      const list = data && Array.isArray(data.list) ? data.list : [];
+      list.sort((item, item1) => item.timeFlag - item1.timeFlag);
+      if (code === 200) {
+        yield put({ type: 'saveWarningTrend', payload: list });
+        yield put({ type: 'saveWarningTrend1', payload: list.slice(6, 12) });
+      }
+    },
   },
   reducers: {
     // 保存
@@ -260,6 +262,12 @@ export default {
     },
     saveCameraList(state, action) {
       return { ...state, cameraList: action.payload };
+    },
+    saveWarningTrend(state, action) {
+      return { ...state, warningTrendList: action.payload };
+    },
+    saveWarningTrend1(state, action) {
+      return { ...state, warningTrendList1: action.payload };
     },
   },
 };

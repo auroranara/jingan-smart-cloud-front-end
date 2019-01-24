@@ -143,6 +143,20 @@ export default {
       edit: 'personnelPosition.systemConfiguration.edit',
       delete: 'personnelPosition.systemConfiguration.delete',
     },
+    // 建筑物信息
+    buildingsInfo: {
+      list: 'personnelPosition.buildingsInfo.listView',
+      view: 'personnelPosition.buildingsInfo.view',
+      add: 'personnelPosition.buildingsInfo.add',
+      edit: 'personnelPosition.buildingsInfo.edit',
+      delete: 'personnelPosition.buildingsInfo.delete',
+      // 楼层
+      floorListView: 'personnelPosition.buildingsInfo.floorListView',
+      floorAdd: 'personnelPosition.buildingsInfo.floorAdd',
+      floorEdit: 'personnelPosition.buildingsInfo.floorEdit',
+      floorView: 'personnelPosition.buildingsInfo.floorView',
+      floorDelete: 'personnelPosition.buildingsInfo.floorDelete',
+    },
     // 信标管理
     beaconManagement: {
       list: 'personnelPosition.beaconManagement.listView',
@@ -150,6 +164,23 @@ export default {
       add: 'personnelPosition.beaconManagement.add',
       edit: 'personnelPosition.beaconManagement.edit',
       delete: 'personnelPosition.beaconManagement.delete',
+    },
+    // 标签管理
+    tag: {
+      list: 'personnelPosition.tagManagement.listView',
+      add: 'personnelPosition.tagManagement.add',
+      edit: 'personnelPosition.tagManagement.edit',
+      delete: 'personnelPosition.tagManagement.delete',
+      detail: 'personnelPosition.tagManagement.view',
+    },
+    // 地图管理
+    map: {
+      list: 'personnelPosition.mapManagement.listView',
+      companyMap: 'personnelPosition.mapManagement.companyMap',
+      add: 'personnelPosition.mapManagement.add',
+      edit: 'personnelPosition.mapManagement.edit',
+      delete: 'personnelPosition.mapManagement.delete',
+      associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
     },
   },
 };

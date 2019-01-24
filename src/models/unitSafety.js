@@ -23,7 +23,113 @@ import {
   getSafetyOfficer,
   // 获取安全指数
   getSafetyIndex,
+  // 获取动态监测
+  getMonitorList,
+  // 获取安全档案
+  getSafeFiles,
 } from '../services/unitSafety';
+
+function handleRiskList(response) {
+  if (!response)
+    return [];
+
+  const result = ['supervision', 'red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
+    const value = response[`${next}${next !== 'supervision' ? 'Danger' : ''}Result`];
+    const list = Array.isArray(value) ? value.map(item => ({ ...item, flag: next })) : [];
+    return prev.concat(list);
+  }, []).filter(item => item.status === 4);
+
+  result.sort((item, item1) => item.check_date_time - item1.check_date_time);
+  return result;
+}
+
+// const MONITOR_PROPS = [
+//   'prepare_elec_state', // 备电
+//   'main_elec_state', // 主电
+//   'main_line_state', // 主线
+//   'fault_state', // 故障
+//   'fire_state', // 火警
+// ];
+// function handleMonitorList(list) {
+//   const result = list.filter(item => {
+//     return MONITOR_PROPS.some(prop => item[prop] === '1');
+//     // 火警标识为报警，其他的都标识为故障
+//   }).map(item => ({ ...item, statusLabel: item.fire_state === '1' ? '报警' : '故障' }));
+
+//   result.sort((item, item1) => item1.save_time - item.save_time);
+//   return result;
+// }
+
+function getStatus(params) {
+  if (params === '故障')
+    return 0;
+
+  if (params.includes('火警'))
+    return 1;
+
+  return 2;
+}
+
+// 0 消防主机故障 1 消防主机火警 2 其他监测设备报警 3 失联
+function handleMonitorList(list) {
+  const loss = Array.isArray(list.lossDevice) ? list.lossDevice.map(({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
+    id: deviceId,
+    type: typeName,
+    number: relationDeviceId,
+    params: '失联',
+    status: 3,
+    time: statusTime,
+    location: `${area}${location || ''}`,
+  })) : [];
+  const alarm = Array.isArray(list.abnormalDevice) ? list.abnormalDevice.map(({ deviceId, relationDeviceId, area, location, unormalParams, typeName }) => ({
+    id: deviceId,
+    type: typeName,
+    number: relationDeviceId,
+    params: unormalParams,
+    status: getStatus(unormalParams),
+    location: `${area}${location || ''}`,
+  })) : [];
+
+  loss.sort((item, item1) => item1.time - item.time);
+  return [...alarm, ...loss];
+}
+
+function handleDangerList(list) {
+  const outed = list.filter(item => item.status === '7');
+  const rectify = list.filter(item => item.status === '1' || item.status === '2');
+  const review = list.filter(item => item.status === '3');
+  [outed, rectify, review].forEach(ls => ls.sort((item, item1) => item1.report_time - item.report_time));
+
+  return [...outed, ...rectify, ...review];
+}
+
+const ITEMS = ['特种设备', '应急物资', '特种作业操作证人员', '企业安全培训信息'];
+const PROPS = {
+  '特种设备': ['recheck_date', 'data_true_name'],
+  '应急物资': ['end_time', 'emergency_equipment_name'],
+  '特种作业操作证人员': ['nextDate', 'name'],
+  '企业安全培训信息': ['nextDate', 'traineeName'],
+};
+const DAY_MS = 24 * 3600 * 1000;
+
+function handleSafeList(list) {
+  const now = Date.now();
+
+  const result = list.reduce((prev, next) => {
+    if (!ITEMS.includes(next.name) || !Array.isArray(next.list))
+      return prev;
+
+    const ls = next.list.map(({ [PROPS[next.name][0]]: expire, [PROPS[next.name][1]]: name }) => ({
+      type: next.name,
+      name,
+      expire: Math.floor((now - expire) / DAY_MS),
+    })).filter(item => item.expire >= 0);
+    return prev.concat(ls);
+  }, []);
+
+  result.sort((item, item1) => item1.expire - item.expire);
+  return result;
+}
 
 export default {
   namespace: 'unitSafety',
@@ -79,8 +185,18 @@ export default {
     },
     // 安全指数
     safetyIndex: undefined,
+    // 每个具体的安全指数
+    safetyIndexes: [],
     // 隐患巡查单条记录对应的隐患列表
     inspectionRecordData: {},
+    // 风险点数组
+    riskList: [],
+    // 隐患排查数组
+    dangerList: [],
+    // 动态监测
+    monitorList: [],
+    // 安全档案
+    safeList: [],
   },
 
   effects: {
@@ -164,15 +280,10 @@ export default {
         // .sort((a, b) => {
         //   return +b.real_rectify_time - a.real_rectify_time;
         // });
+      yield put({ type: 'save', payload:  { hiddenDangerList : { ycq, wcq, dfc } } });
       yield put({
-        type: 'save',
-        payload:  {
-          hiddenDangerList : {
-            ycq,
-            wcq,
-            dfc,
-          },
-        },
+        type: 'saveDangerList',
+        payload: response && Array.isArray(response.hiddenDangers) ? handleDangerList(response.hiddenDangers) : [],
       });
       if (callback) {
         callback();
@@ -210,6 +321,7 @@ export default {
         blueDangerResult,
         notRatedDangerResult = [],
       } = response;
+
       const redList = {
         normal: redDangerResult.filter(({ status }) => +status === 1),
         checking: redDangerResult.filter(({ status }) => +status === 3),
@@ -255,6 +367,7 @@ export default {
           },
         },
       });
+      yield put({ type: 'saveRiskList', payload: handleRiskList(response) });
       if (callback) {
         callback();
       }
@@ -329,17 +442,40 @@ export default {
     // 获取安全指数
     *fetchSafetyIndex({ payload, callback }, { call, put }) {
       const response = yield call(getSafetyIndex, payload);
-      if (response.code === 200) {
+      if (response && response.code === 200) {
+        const allIndex = response.data || {};
+        const { totalScore: safetyIndex=null, safe_point=null, hidden_record_score=null, monitorScore=null, safetyInfoPoint=null } = allIndex;
+        const safetyIndexes = [safe_point, hidden_record_score, monitorScore, safetyInfoPoint];
         yield put({
           type: 'save',
-          payload: { safetyIndex: response.data },
+          // payload: { safetyIndex: response.data },
+          payload: { safetyIndex },
         });
+        yield put({ type: 'saveSafeIndexes', payload: safetyIndexes });
         if (callback) {
           callback(response.data);
         }
       } else if (callback) {
         callback();
       }
+    },
+    // 获取动态监测
+    *fetchMonitorList({ payload, callback }, { call, put }) {
+      let response = yield call(getMonitorList, payload);
+      response = response || {};
+      const { code=500, data } = response;
+      // if (code === 200 && data && Array.isArray(data.list))
+      //   yield put({ type: 'saveMonitorList', payload: data.list });
+      if (code === 200 && data)
+        yield put({ type: 'saveMonitorList', payload: data });
+    },
+    // 获取安全档案
+    *fetchSafeFiles({ payload, callback }, { call, put }) {
+      let response = yield call(getSafeFiles, payload);
+      response = response || {};
+      const { code=500, data } = response;
+      if (code === 200 && data && Array.isArray(data.list))
+        yield put({ type: 'saveSafeFiles', payload: handleSafeList(data.list) });
     },
   },
 
@@ -350,6 +486,21 @@ export default {
         ...state,
         ...payload,
       };
+    },
+    saveRiskList(state, action) {
+      return { ...state, riskList: action.payload };
+    },
+    saveDangerList(state, action) {
+      return { ...state, dangerList: action.payload };
+    },
+    saveMonitorList(state, action) {
+      return { ...state, monitorList: handleMonitorList(action.payload) };
+    },
+    saveSafeFiles(state, action) {
+      return { ...state, safeList: action.payload };
+    },
+    saveSafeIndexes(state, action) {
+      return { ...state, safetyIndexes: action.payload };
     },
   },
 }
