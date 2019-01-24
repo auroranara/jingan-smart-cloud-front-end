@@ -119,7 +119,12 @@ export default class HiddenDanger extends PureComponent {
 
     return (
       <div className={styles.riskDetailItem} style={style}>
-        <div className={styles.riskDetailItemTitleWrapper}><div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})` }} /><Ellipsis lines={1} tooltip className={styles.riskDetailItemTitle} style={{ color: isYCQ ? '#ff4848' : '#fff', height: 24 }} >{desc || '暂无隐患描述'}</Ellipsis></div>
+        <div className={styles.riskDetailItemTitleWrapper}>
+          <div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})` }} />
+            <Ellipsis lines={1} tooltip className={styles.riskDetailItemTitle} style={{ color: isYCQ ? '#ff4848' : '#fff', height: 24 }} >
+              {desc || '暂无隐患描述'}
+            </Ellipsis>
+          </div>
         <div className={styles.riskDetailItemContentWrapper}>
           <div className={styles.riskDetailItemImageWrapper} style={{ backgroundImage: `url(${noPhotoIcon})` }}>
             <div style={{ position: 'relative', width: '100%' }}>
@@ -128,11 +133,70 @@ export default class HiddenDanger extends PureComponent {
             </div>
           </div>
           <div className={styles.riskDetailItemInfoWrapper}>
-            <div className={styles.riskDetailItemTextWrapper}><span style={{ flex: 'none', color: '#00A8FF' }}>上<span style={{ opacity: 0 }}>隐藏</span>报：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }} ><span className={styles.riskDetailItemTextFirstChild}>{report_user_name}</span>{moment(report_time).format('YYYY-MM-DD')}</Ellipsis></div>
-            <div className={styles.riskDetailItemTextWrapper}><span style={{ flex: 'none', color: '#00A8FF' }}>{(isDFC || isYGB)?'实际整改：':'计划整改：'}</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }} ><span className={styles.riskDetailItemTextFirstChild}>{rectify_user_name}</span><span style={{ color: isYCQ?'#ff4848':undefined }}>{(isDFC || isYGB)?moment(real_rectify_time).format('YYYY-MM-DD'):moment(plan_rectify_time).format('YYYY-MM-DD')}</span></Ellipsis></div>
-            {(isDFC || isYGB) && <div className={styles.riskDetailItemTextWrapper}><span style={{ flex: 'none', color: '#00A8FF' }}>复<span style={{ opacity: 0 }}>隐藏</span>查：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }} ><span className={styles.riskDetailItemTextFirstChild}>{review_user_name}</span>{isYGB ? moment(review_time).format('YYYY-MM-DD') : undefined}</Ellipsis></div>}
-            <div className={styles.riskDetailItemTextWrapper}><span style={{ flex: 'none', color: '#00A8FF' }}>来<span style={{ opacity: 0 }}>隐藏</span>源：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }} ><span className={styles.riskDetailItemTextFirstChild}>{report_source_name}</span></Ellipsis></div>
-            {isSourceShow && <div className={styles.riskDetailItemTextWrapper}><span style={{ flex: 'none', color: '#00A8FF' }}>检查点位：</span><Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }} ><span className={styles.riskDetailItemTextFirstChild}>{item_name}</span></Ellipsis></div>}
+            <div className={styles.riskDetailItemTextWrapper}>
+              <span style={{ flex: 'none', color: '#00A8FF' }}>
+                上
+                <span style={{ opacity: 0 }}>隐藏</span>
+                报：
+              </span>
+              <Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }} >
+                <span className={styles.riskDetailItemTextFirstChild}>
+                  {report_user_name}
+                </span>
+                {moment(report_time).format('YYYY-MM-DD')}
+              </Ellipsis>
+            </div>
+            <div className={styles.riskDetailItemTextWrapper}>
+              <span style={{ flex: 'none', color: '#00A8FF' }}>
+                {(isDFC || isYGB)?'实际整改：':'计划整改：'}
+              </span>
+              <Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }} >
+                <span className={styles.riskDetailItemTextFirstChild}>
+                  {rectify_user_name}
+                </span>
+                <span style={{ color: isYCQ?'#ff4848':undefined }}>
+                  {(isDFC || isYGB)?moment(real_rectify_time).format('YYYY-MM-DD'):moment(plan_rectify_time).format('YYYY-MM-DD')}
+                </span>
+              </Ellipsis>
+            </div>
+            {(isDFC || isYGB) && (
+              <div className={styles.riskDetailItemTextWrapper}>
+                <span style={{ flex: 'none', color: '#00A8FF' }}>
+                  复
+                  <span style={{ opacity: 0 }}>隐藏</span>
+                  查：
+                </span>
+                <Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }}>
+                  <span className={styles.riskDetailItemTextFirstChild}>
+                    {review_user_name}
+                  </span>
+                  {isYGB ? moment(review_time).format('YYYY-MM-DD') : undefined}
+                </Ellipsis>
+              </div>
+            )}
+            <div className={styles.riskDetailItemTextWrapper}>
+              <span style={{ flex: 'none', color: '#00A8FF' }}>
+                来
+                <span style={{ opacity: 0 }}>隐藏</span>
+                源：</span>
+              <Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }}>
+                <span className={styles.riskDetailItemTextFirstChild}>
+                  {report_source_name}
+                </span>
+              </Ellipsis>
+            </div>
+            {isSourceShow && (
+              <div className={styles.riskDetailItemTextWrapper}>
+                <span style={{ flex: 'none', color: '#00A8FF' }}>
+                  检查点位：
+                </span>
+                <Ellipsis tooltip lines={1} style={{ flex: 1, color: '#fff', height: 24 }}>
+                  <span className={styles.riskDetailItemTextFirstChild}>
+                    {item_name}
+                  </span>
+                </Ellipsis>
+              </div>
+            )}
           </div>
         </div>
         <div className={styles.riskDetailItemSealWrapper} style={{ backgroundImage: `url(${getSeal(status)})` }} />

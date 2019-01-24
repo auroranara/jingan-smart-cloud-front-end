@@ -1,0 +1,65 @@
+.tagFilter {
+  .formItem {
+    padding: 4px 0;
+    margin: 0;
+  }
+}
+
+.tagContainer {
+  margin-top: 24px;
+  :global {
+    .ant-card-body {
+      padding: 15px;
+    }
+    .ant-card-bordered:hover {
+      box-shadow: 0 0 3px 1px #e2e2e2;
+    }
+  }
+  .cardContent {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    .imgConatiner {
+      width: 105px;
+      height: 135px;
+      background-color: rgba(228, 228, 228, 0.753);
+      flex: none;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+    .detail {
+      flex: 1;
+      overflow: hidden;
+      padding-left: 1em;
+      .title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .line {
+        line-height: 25px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+    }
+    .fixedButton {
+      position: absolute;
+      right: 36px;
+      top: 36px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #f0f2f5;
+      text-align: center;
+      line-height: 50px;
+    }
+    .enableButton {
+      position: absolute;
+      right: 17px;
+      top: 100px;
+    }
+  }
+}
+
+.ml10 {
+  margin-left: 10px;
+}

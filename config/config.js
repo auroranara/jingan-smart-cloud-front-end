@@ -23,6 +23,7 @@ const hosts = {
   jiangxi: '58.215.178.100:12083',
   xuzhou: '58.215.178.100:12081',
   shanxi: '58.215.178.100:12085',
+  nanxiao: '58.215.178.100:12084',
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
 };
@@ -35,12 +36,12 @@ export default {
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/mock': {
-      target: `http://${hosts.sj}`,
+      target: `http://${hosts.mock}`,
       changeOrigin: true,
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.sj}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

@@ -1,12 +1,14 @@
-import { routerRedux } from 'dva/router';
+// import { routerRedux } from 'dva/router';
 import router from 'umi/router';
-import { stringify } from 'qs';
+// import { stringify } from 'qs';
 import { getFakeCaptcha } from '../services/api';
 import { setAuthority, setToken } from '../utils/authority';
 // import { getPageQuery } from '../utils/utils';
 import { reloadAuthorized } from '../utils/Authorized';
 
 import { accountLogin, accountLoginGsafe, fetchFooterInfo, changerUser } from '../services/account';
+
+const FIRE_CONTROL_URL = '/fire-control/maintenance-company/list';
 
 export default {
   namespace: 'login',
@@ -30,30 +32,32 @@ export default {
           });
           if (handleMoreUser) handleMoreUser();
         } else {
+          const { unitType } = response.data;
           // 如果不是多用户，直接登录进去
           yield put({
             type: 'changeLoginStatus',
-            payload: { type: payload.type, status: true, ...response.data },
+            payload: { ...response.data },
           });
           // 登录1.0
           yield call(accountLoginGsafe, payload);
           reloadAuthorized();
-          yield put(routerRedux.replace({ pathname: '/' }));
+          router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
         }
       } else error(response.msg);
     },
 
     *loginWithUserId({ payload }, { call, put }) {
       const response = yield call(accountLogin, payload);
+      const { unitType } = response.data;
       if (response && response.code === 200) {
         yield put({
           type: 'changeLoginStatus',
-          payload: { type: payload.type, status: true, ...response.data },
+          payload: { ...response.data },
         });
         // 登录1.0
         yield call(accountLoginGsafe, payload);
         reloadAuthorized();
-        yield put(routerRedux.replace({ pathname: '/' }));
+        router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
       }
     },
 
@@ -92,10 +96,12 @@ export default {
     },
     *changerUser({ payload, success, error }, { call, put }) {
       const response = yield call(changerUser, payload);
+      const { unitType } = response.data;
       if (response && response.code === 200 && response.data && response.data.webToken) {
         yield setToken(response.data.webToken);
+        yield put({ type: 'user/saveCurrentUser' });
         reloadAuthorized();
-        yield put(routerRedux.replace({ pathname: '/' }));
+        router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
         if (success) success();
       } else if (error) error();
     },
@@ -107,8 +113,6 @@ export default {
       setToken(payload.token);
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
       };
     },
     saveFooterInfo(state, { payload }) {

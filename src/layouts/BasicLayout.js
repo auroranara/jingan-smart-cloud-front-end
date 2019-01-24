@@ -232,7 +232,7 @@ class BasicLayout extends React.PureComponent {
       authorityFn,
       currentUserLoaded,
     } = this.props;
-    const { rendering, isMobile } = this.state;
+    const { /*rendering,*/ isMobile } = this.state;
     const isTop = PropsLayout === 'topmenu';
     const menuData = this.getMenuData();
 

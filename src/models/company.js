@@ -398,12 +398,14 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    queryDict(
-      state,
-      {
-        payload: { key, list },
-      }
-    ) {
+    // queryDict(state,{payload: { key, list }}) {
+    //   return {
+    //     ...state,
+    //     [key]: list,
+    //   };
+    // },
+    queryDict(state, { payload }) {
+      const { key, list } = payload;
       return {
         ...state,
         [key]: list,

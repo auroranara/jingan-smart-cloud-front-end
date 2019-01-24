@@ -109,3 +109,33 @@ export async function getSafetyIndex(params) {
   });
 }
 
+// 获取动态监测
+export async function getMonitorList(params) {
+  // return request(`/acloud_new/v2/fireData/systemMessage.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/fireData/getMonitor?${stringify(params)}`);
+}
+
+// 获取安全档案
+export async function getSafeFiles(params) {
+  return request(`/acloud_new/v2/sfm/getCompanyFiles`, {
+    method: 'POST',
+    body: {
+      ...params,
+      "functionList": [
+        "special_equipment",
+        "emergency_material",
+        "special_people",
+        "company_training",
+        "major_danger",
+        "material_info",
+        "dust_info",
+        "limit_space",
+        "metallurgy",
+        "ammonia",
+        "occupational",
+        "tank_info",
+      ],
+    },
+  });
+}
+
