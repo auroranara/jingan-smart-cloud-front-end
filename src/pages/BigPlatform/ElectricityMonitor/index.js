@@ -75,6 +75,7 @@ export default class ElectricityMonitor extends PureComponent {
       tooltipName: '',
       tooltipVisible: false,
       tooltipPosition: [0, 0],
+      cardsInfo: [], // 抽屉中的企业列表卡片信息
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -107,7 +108,8 @@ export default class ElectricityMonitor extends PureComponent {
         if (!data)
           return;
         const { unitSet: { units=[] }, allCompanyList } = data;
-        this.cardsInfo = genCardsInfo(units, allCompanyList);
+        const cardsInfo = genCardsInfo(units, allCompanyList);
+        this.setState({ cardsInfo });
       },
     });
 
@@ -194,21 +196,19 @@ export default class ElectricityMonitor extends PureComponent {
     });
   }
 
-  /**
-   * 更新后
-   */
-  componentDidUpdate() {
-
-  }
-
-  /**
-   * 销毁前
-   */
-  componentWillUnmount() {
-
-  }
-
-  cardsInfo = [];
+  getCardsInfo = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'electricityMonitor/fetchUnitData',
+      callback: data => {
+        if (!data)
+          return;
+        const { unitSet: { units=[] }, allCompanyList } = data;
+        const cardsInfo = genCardsInfo(units, allCompanyList);
+        this.setState({ cardsInfo });
+      },
+    });
+  };
 
   getDeviceStatusCount = (companyId) => {
     const { dispatch } = this.props;
@@ -480,6 +480,16 @@ export default class ElectricityMonitor extends PureComponent {
     this.setState({ ...newState });
   };
 
+  handleUnitStatisticsClick = e => {
+    this.getCardsInfo();
+    this.handleDrawerVisibleChange('unit');
+  };
+
+  handleAlarmStatisticsClick = e => {
+    this.getCardsInfo();
+    this.handleDrawerVisibleChange('alarm');
+  }
+
   /**
    * 渲染
    */
@@ -506,17 +516,16 @@ export default class ElectricityMonitor extends PureComponent {
       monitorDrawerVisible,
       monitorDrawerTitleIndex,
       // videoVisible,
-      infoWindowShow,
+      // infoWindowShow,
       selectList,
       searchValue,
-      infoWindow,
+      // infoWindow,
       unitDetail,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
+      cardsInfo,
     } = this.state;
-
-    const cardsInfo = this.cardsInfo;
 
     return (
       <BigPlatformLayout
@@ -555,13 +564,13 @@ export default class ElectricityMonitor extends PureComponent {
         <AccessUnitStatistics
           data={statisticsData}
           className={`${styles.left} ${styles.accessUnitStatistics}`}
-          onClick={e => this.handleDrawerVisibleChange('unit')}
+          onClick={this.handleUnitStatisticsClick}
         />
         {/* 实时报警统计 */}
         <RealTimeAlarmStatistics
           data={unitSet}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
-          onClick={e => this.handleDrawerVisibleChange('alarm')}
+          onClick={this.handleAlarmStatisticsClick}
         />
         {/* 近半年内告警统计 */}
         <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
