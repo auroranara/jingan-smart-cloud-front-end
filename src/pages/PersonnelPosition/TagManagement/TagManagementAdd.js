@@ -197,7 +197,7 @@ export default class TagManagementAdd extends PureComponent {
       selectedRows = [],
     } = this.state
     if (!selectedRows || selectedRows.length <= 0) {
-      message.error('请选择单位')
+      message.error('请选择持卡人')
       return
     }
     const [personnel] = selectedRows,

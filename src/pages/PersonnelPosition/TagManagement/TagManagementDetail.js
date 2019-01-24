@@ -7,16 +7,12 @@ import { connect } from 'dva';
 const FormItem = Form.Item;
 
 const title = "标签详情"
-const breadcrumblist = [
+const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员定位', name: '人员定位' },
   { title: '标签管理', name: '标签管理', href: '/personnel-position/tag-management/list' },
   { title, name: title },
 ]
-const formItemLayout = {
-  labelCol: { span: 10 },
-  wrapperCol: { span: 12 },
-};
 
 const rowStyle = {
   marginBottom: '24px',
@@ -97,7 +93,7 @@ export default class TagManagementDetail extends PureComponent {
     return (
       <PageHeaderLayout
         title={title}
-        breadcrumblist={breadcrumblist}
+        breadcrumbList={breadcrumbList}
       >
         <Card>
           {this.renderRow('标签号', code)}

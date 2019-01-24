@@ -421,7 +421,7 @@ export default class TagManagement extends PureComponent {
   handleCheckOut = (item) => {
     confirm({
       title: '系统提示',
-      content: item.userId ? '该卡已有持卡人，禁用后则自动解除，您确定要禁用该卡？' : '您确定要进行退卡操作？',
+      content: item.visitorName ? '该卡已有持卡人，禁用后则自动解除，您确定要禁用该卡？' : '您确定要进行退卡操作？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.checkOut(item),
