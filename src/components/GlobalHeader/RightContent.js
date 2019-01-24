@@ -89,6 +89,8 @@ export default class GlobalHeaderRight extends PureComponent {
 
   render() {
     const { currentUser, onMenuClick, theme } = this.props;
+    console.log('currentUser', currentUser.moreUser);
+
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         <Menu.Item key="changePassword">
@@ -119,13 +121,15 @@ export default class GlobalHeaderRight extends PureComponent {
               onClick={() => this.handleChangeUser(item.userId)}
               key={item.userId}
             >
-              {item.unitName}
+              {item.unitName || '运营企业'}
             </Menu.Item>
           ))}
       </Menu>
     );
     // const noticeData = this.getNoticeData();
     let className = styles.right;
+    console.log('currentUser', currentUser.id);
+
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
     }
