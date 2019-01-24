@@ -94,52 +94,52 @@ export default class AlarmList extends PureComponent {
       transform(value) {
         return value.trim();
       },
-    }, {
-      id: 'areaName',
-      span: 6,
-      render(onSearch, onReset) {
-        return (
-          <Input placeholder="区域名称" />
-        );
+      }, {
+        id: 'areaName',
+        span: 6,
+        render(onSearch, onReset) {
+          return (
+            <Input placeholder="区域名称" />
+          );
+        },
+        transform(value) {
+          return value.trim();
+        },
+      }, {
+        id: 'mapId',
+        span: 6,
+        render(onSearch, onReset) {
+          return (
+            <Select placeholder="报警地图">
+              <Option value="0">全部报警地图</Option>
+            </Select>
+          );
+        },
+        transform(value) {
+          return value.trim();
+        },
+      }, {
+        id: 'type',
+        span: 6,
+        render(onSearch, onReset) {
+          return (
+            <Select placeholder="所属类型">
+              <Option value="0">全部报警类型</Option>
+            </Select>
+          );
+        },
+        transform(value) {
+          return value.trim();
+        },
       },
-      transform(value) {
-        return value.trim();
-      },
-    }, {
-      id: 'mapId',
-      span: 6,
-      render(onSearch, onReset) {
-        return (
-          <Select placeholder="报警地图">
-            <Option value="0">全部报警地图</Option>
-          </Select>
-        );
-      },
-      transform(value) {
-        return value.trim();
-      },
-    }, {
-      id: 'type',
-      span: 6,
-      render(onSearch, onReset) {
-        return (
-          <Select placeholder="所属类型">
-            <Option value="0">全部报警类型</Option>
-          </Select>
-        );
-      },
-      transform(value) {
-        return value.trim();
-      },
-    },
-  ];
+    ];
 
-  const buttons = (
-    <ButtonGroup>
-      <Button type="primary" ghost>新增</Button>
-      <Button type="primary" ghost>删除</Button>
-    </ButtonGroup>
-  );
+    const buttons = (
+      <ButtonGroup>
+        <Button type="primary" ghost>新增</Button>
+        <Button type="primary" ghost>删除</Button>
+      </ButtonGroup>
+    );
 
     return (
       <PageHeaderLayout
