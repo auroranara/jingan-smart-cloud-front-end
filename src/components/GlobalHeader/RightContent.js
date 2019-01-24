@@ -89,7 +89,7 @@ export default class GlobalHeaderRight extends PureComponent {
 
   render() {
     const { currentUser, onMenuClick, theme } = this.props;
-    console.log('currentUser', currentUser.moreUser);
+    // console.log('currentUser', currentUser.moreUser);
 
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
@@ -128,7 +128,7 @@ export default class GlobalHeaderRight extends PureComponent {
     );
     // const noticeData = this.getNoticeData();
     let className = styles.right;
-    console.log('currentUser', currentUser.id);
+    // console.log('currentUser', currentUser.id);
 
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
