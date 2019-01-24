@@ -83,7 +83,7 @@ export default class Gas extends PureComponent {
       tooltipVisible: false,
       tooltipPosition: [0, 0],
       maintenanceDrawerVisible: false,
-      drawerType: '', // alarm,fault
+      // drawerType: '', // alarm,fault
       alarmIds: [],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
@@ -591,13 +591,12 @@ export default class Gas extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       maintenanceDrawerVisible,
-      drawerType,
+      // drawerType,
       alarmIds,
     } = this.state;
 
     const cardsInfo = this.cardsInfo;
     const importCardsInfo = this.importCardsInfo;
-    console.log('pppimportCardsInfo', importCardsInfo);
 
     const faultList = [
       {
@@ -726,7 +725,7 @@ export default class Gas extends PureComponent {
         />
         {/* 异常单位统计 */}
         <AbnormalUnitStatistics
-          data={unitSet}
+          data={statisticsData}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />

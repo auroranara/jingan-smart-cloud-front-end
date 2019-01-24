@@ -3,14 +3,24 @@ import { stringify } from 'qs';
 
 const URL_PREFIX = '/acloud_new/v2';
 
-// 燃气大屏主页面显示
+// 燃气--大屏主页面显示
 export async function getBigFlatformData(params) {
   return request(`${URL_PREFIX}/gasScreen/index?${stringify(params)}`);
 }
 
-// 接入单位统计
+// 燃气--接入单位统计
 export async function getImportingTotal(params) {
   return request(`${URL_PREFIX}/gasScreen/Importing?${stringify(params)}`);
+}
+
+// 燃气--异常单位统计
+export async function getAbnormalingTotal(params) {
+  return request(`${URL_PREFIX}/gasScreen/abnormaling?${stringify(params)}`);
+}
+
+// 燃气--待处理业务
+export async function getPendingMission(params) {
+  return request(`${URL_PREFIX}/gasScreen/pendingMission?${stringify(params)}`);
 }
 
 // 获取告警信息列表

@@ -2,14 +2,17 @@ import {
   getMessages,
   getCompanyId,
   // getUnitData,
-  getImportingTotal,
   getDeviceStatusCount,
   getDevices,
   getDeviceRealTimeData,
   getDeviceConfig,
   getDeviceHistoryData,
   getCameraList,
+  // 燃气大屏
   getBigFlatformData, //大屏主页面数据
+  getImportingTotal, // 接入单位统计
+  getAbnormalingTotal, // 异常单位统计
+  // getPendingMission, // 待处理业务
 } from '../services/gas';
 // 获取单位集
 const getUnitSet = function(units) {
@@ -86,6 +89,12 @@ export default {
       accessUnitStatistics: 0,
       // 接入率
       accessRate: '--',
+      // 报警单位
+      unnormalCompanyNum: 0,
+      // 故障单位
+      faultCompanyNum: 0,
+      // 失联单位
+      outContacts: 0,
     },
     deviceStatusCount: {
       count: 0,
@@ -140,6 +149,7 @@ export default {
         callback();
       }
     },
+
     // 获取燃气大屏单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
       const {
@@ -148,6 +158,9 @@ export default {
           companys: units,
           companyNum: jurisdictionalUnitStatistics,
           importingCompanyNum: accessUnitStatistics,
+          unnormalCompanyNum,
+          faultCompanyNum,
+          outContacts,
         },
       } = yield call(getBigFlatformData, payload);
       const statisticsData = {
@@ -160,6 +173,12 @@ export default {
           jurisdictionalUnitStatistics > 0
             ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
             : '--',
+        // 报警单位
+        unnormalCompanyNum,
+        // 故障单位
+        faultCompanyNum,
+        // 失联单位
+        outContacts,
       };
       const pay = {
         unitSet: getUnitSet(units),
@@ -190,6 +209,39 @@ export default {
           AccessCount,
         },
       } = yield call(getImportingTotal, payload);
+      const AccessStatistics = {
+        Importing,
+        unImporting,
+      };
+      const pay = {
+        gasUnitSet: { importingUnits },
+        AccessCount,
+        AccessStatistics,
+      };
+      if (code === 200) {
+        yield put({
+          type: 'saveUnitData',
+          payload: pay,
+        });
+        if (callback) {
+          callback(pay);
+        }
+      } else if (callback) {
+        callback();
+      }
+    },
+
+    // 燃气大屏异常单位统计
+    *fetchAbnormalingTotal({ payload, callback }, { call, put }) {
+      const {
+        code,
+        data: {
+          // 饼图数据
+          AccessStatistics: { Importing, unImporting },
+          companys: importingUnits,
+          AccessCount,
+        },
+      } = yield call(getAbnormalingTotal, payload);
       const AccessStatistics = {
         Importing,
         unImporting,
@@ -302,7 +354,6 @@ export default {
     },
     // 接入单位统计
     saveUnitData(state, { payload }) {
-      console.log('model', payload);
       return {
         ...state,
         ...payload,
