@@ -31,6 +31,8 @@ import {
   addTag,
   // 编辑标签卡
   editTag,
+  // 标签中获取企业列表
+  fetchTagCompanies,
 } from '../services/personnelPosition/tagManagement';
 import {
   // 获取建筑列表
@@ -91,6 +93,15 @@ export default {
       // 企业列表
       list: [],
       pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
+    // 标签-企业
+    tagCompany:{
+      list:[],
+      pagination:{
         pageNum: 1,
         pageSize: 10,
         total: 0,
@@ -295,6 +306,17 @@ export default {
         });
       }
     },
+    // 标签获取企业列表
+    *fetchTagCompanies({payload,callback},{call,put}){
+      const response=yield call(fetchTagCompanies,payload)
+      if (response && response.code === 200) {
+        yield put({
+          type:'saveTagCompanies',
+          payload:response.data,
+        })
+        if(callback)callback()
+      }
+    },
   },
   reducers: {
     saveSystemConfiguration(
@@ -481,6 +503,16 @@ export default {
           floors: payload,
         },
       };
+    },
+    saveTagCompanies(state,{payload:{list=[],pagination={}}}){
+      return{
+        ...state,
+        tagCompany:{
+          ...state.tagCompany,
+          list,
+          pagination,
+        },
+      }
     },
   },
 };
