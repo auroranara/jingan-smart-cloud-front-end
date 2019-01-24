@@ -303,6 +303,7 @@ export default class TagManagement extends PureComponent {
       pagination: {
         ...this.state.pagination,
         pageNum,
+        pageSize,
       },
     })
   }
@@ -416,6 +417,17 @@ export default class TagManagement extends PureComponent {
     })
   }
 
+  // 点击退卡
+  handleCheckOut = (item) => {
+    confirm({
+      title: '系统提示',
+      content: item.userId ? '该卡已有持卡人，禁用后则自动解除，您确定要禁用该卡？' : '您确定要进行退卡操作？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.checkOut(item),
+    })
+  }
+
   render() {
 
     const {
@@ -427,8 +439,8 @@ export default class TagManagement extends PureComponent {
           list,
           isLast,
           // 标签分页数据
-          pagination:{
-            total:tagTotal=0,
+          pagination: {
+            total: tagTotal = 0,
           },
         },
         systemConfiguration: { list: systemList },
@@ -553,7 +565,7 @@ export default class TagManagement extends PureComponent {
                   code,             // 编号
                   userName = null,   // 持卡人
                   status,          // 1 在线 0 离线
-                  visitorName=null,  // 临时卡持卡人
+                  visitorName = null,  // 临时卡持卡人
                 } = item
                 return (
                   <List.Item key={id}>
@@ -578,11 +590,11 @@ export default class TagManagement extends PureComponent {
                         <div className={styles.detail}>
                           <Ellipsis lines={1} tooltip className={styles.title}>{code}</Ellipsis>
                           <div className={styles.line}>卡分类：{+type === 0 ? '普通卡' : '临时卡'}</div>
-                          {+type===0?(
+                          {+type === 0 ? (
                             <div className={styles.line}>持卡人：{userName || '暂无信息'}</div>
-                          ):(
-                            <div className={styles.line}>持卡人：{visitorName || '暂无信息'}</div>
-                          )}
+                          ) : (
+                              <div className={styles.line}>持卡人：{visitorName || '暂无信息'}</div>
+                            )}
                           <div className={styles.line}>
                             电<span style={{ visibility: 'hidden' }}>隐</span>量：
                           <span style={{ color: !battery ? 'inherit' : +battery >= 25 ? 'green' : 'red' }}>{battery ? `${battery}%` : '暂无信息'}</span>
@@ -593,15 +605,7 @@ export default class TagManagement extends PureComponent {
                           </div>
                         </div>
                         {+type === 0 && ((+cardStatus === 0 && (
-                          <div onClick={() => {
-                            confirm({
-                              title: '系统提示',
-                              content: '您确定要进行退卡操作？',
-                              okText: '确认',
-                              cancelText: '取消',
-                              onOk: () => this.checkOut(item),
-                            })
-                          }}
+                          <div onClick={() => this.handleCheckOut(item)}
                             className={styles.fixedButton} style={{ cursor: 'pointer' }}>
                             <span>退卡</span>
                           </div>
