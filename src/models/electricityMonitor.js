@@ -148,11 +148,6 @@ export default {
         unitSet: getUnitSet(units),
         statisticsData,
         unitIds: units.map(({ companyId }) => companyId),
-      };
-      const pay = {
-        unitSet: getUnitSet(units),
-        statisticsData,
-        unitIds: units.map(({ companyId }) => companyId),
         allCompanyList: allCompanyInfoDtoList,
       };
       if (code === 200) {
