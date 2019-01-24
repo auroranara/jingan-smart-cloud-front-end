@@ -297,7 +297,7 @@ export default class FloorManagementList extends PureComponent {
             <FormItem style={{ float: 'right' }}>
               <AuthButton
                 type="primary"
-                code={codesMap.personnelPosition.buildingsInfo.add}
+                code={codesMap.personnelPosition.floorManagement.add}
                 href={`#/personnel-position/buildings-info/floor/add?id=${id}&&name=${name}&&companyId=${companyId}`}
               >
                 新增
@@ -349,7 +349,7 @@ export default class FloorManagementList extends PureComponent {
             <Fragment>
               {floorWebUrl && floorWebUrl.length ? (
                 <AuthA
-                  code={codesMap.personnelPosition.buildingsInfo.view}
+                  code={codesMap.personnelPosition.floorManagement.view}
                   onClick={() => {
                     this.handleShowModal(floorWebUrl);
                   }}
@@ -371,21 +371,21 @@ export default class FloorManagementList extends PureComponent {
         render: (record, rows) => (
           <span>
             <AuthA
-              code={codesMap.lawEnforcement.laws.detail}
+              code={codesMap.personnelPosition.floorManagement.view}
               onClick={() => this.goFloorDetail(rows.id)}
             >
               查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA
-              code={codesMap.lawEnforcement.laws.edit}
+              code={codesMap.personnelPosition.floorManagement.edit}
               onClick={() => this.goFloorEdit(rows.id)}
             >
               编辑
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm title="确认要删除该楼层吗？" onConfirm={() => this.handleDelete(rows.id)}>
-              <AuthA code={codesMap.lawEnforcement.laws.delete}>删除</AuthA>
+              <AuthA code={codesMap.personnelPosition.floorManagement.delete}>删除</AuthA>
             </Popconfirm>
           </span>
         ),
@@ -435,7 +435,9 @@ export default class FloorManagementList extends PureComponent {
   render() {
     const {
       buildingsInfo: {
-        floorData: { list },
+        floorData: {
+          pagination: { total },
+        },
       },
       location: {
         query: { name, companyId },
@@ -467,7 +469,7 @@ export default class FloorManagementList extends PureComponent {
         content={
           <div>
             列表记录：
-            {list.length}{' '}
+            {total}{' '}
           </div>
         }
       >

@@ -53,6 +53,10 @@ function generateRules(cName, msg = '输入', ...rules) {
   return [{ required: true, message: `请${msg}${cName}` }, ...rules];
 }
 
+function generateRulesSelect(cName, msg = '选择', ...rules) {
+  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+}
+
 function getOptions(options = []) {
   return options.map(({ value, label }) => (
     <Option key={value} value={value}>
@@ -488,13 +492,13 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'companyId',
         cName: '单位名称',
-        rules: generateRules('单位名称'),
+        rules: generateRulesSelect('单位名称'),
         component: (
           <div>
             {company_Id ? (
               <div>
                 {getFieldDecorator('companyId', { initialValue: company_name })(
-                  <Input disabled placeholder="请输入单位名称" />
+                  <Input disabled placeholder="请选择单位名称" />
                 )}
               </div>
             ) : (
@@ -511,7 +515,6 @@ export default class BuildingInfoEdit extends PureComponent {
                     ref={input => {
                       this.CompanyIdInput = input;
                     }}
-                    disabled
                     placeholder="请输入单位名称"
                     onClick={this.handleCompanyModal}
                   />
@@ -524,7 +527,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'buildingType',
         cName: '建筑物类型',
-        rules: generateRules('建筑物类型'),
+        rules: generateRulesSelect('建筑物类型'),
         component: (
           <div>
             {getFieldDecorator('buildingType', {
@@ -548,7 +551,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'floorNumber',
         cName: '建筑结构',
-        rules: generateRules('建筑结构'),
+        rules: generateRulesSelect('建筑结构'),
         component: (
           <div>
             {getFieldDecorator('floorNumber', { initialValue: editFloorNumber })(
@@ -560,7 +563,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'fireDangerType',
         cName: '火灾危险性分类',
-        rules: generateRules('火灾危险性分类'),
+        rules: generateRulesSelect('火灾危险性分类'),
         component: (
           <div>
             {getFieldDecorator('fireDangerType', { initialValue: editFireDangerType })(
@@ -583,7 +586,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'fireRating',
         cName: '耐火等级',
-        rules: generateRules('耐火等级'),
+        rules: generateRulesSelect('耐火等级'),
         component: (
           <div>
             {getFieldDecorator('fireRating', { initialValue: editFireRating })(

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { routerRedux } from 'dva/router';
 import router from 'umi/router';
-import { Form, Input, Button, Card, Col, Icon, InputNumber, Upload, message } from 'antd';
+import { Form, Input, Button, Card, Col, Icon, Upload, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
 
@@ -265,7 +265,7 @@ export default class FloorManagementEdit extends PureComponent {
                   message: '请输入楼层编号',
                 },
               ],
-            })(<InputNumber style={{ width: '100%' }} placeholder="请输入楼层编号" />)}
+            })(<Input style={{ width: '100%' }} placeholder="请输入楼层编号" />)}
           </FormItem>
           <FormItem {...formItemLayout} label={fieldLabels.floorUrl}>
             {getFieldDecorator('floorUrl')(

@@ -309,12 +309,13 @@ export default class BuildingInfoList extends PureComponent {
                 <Button onClick={this.handleClickToReset}>重置</Button>
               </FormItem>
               <FormItem style={{ float: 'right' }}>
-                <Button
+                <AuthButton
                   type="primary"
+                  code={codesMap.personnelPosition.buildingsInfo.add}
                   href={`#/personnel-position/buildings-info/add?companyId=${companyId}&&name=${name}`}
                 >
                   新增
-                </Button>
+                </AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -420,12 +421,13 @@ export default class BuildingInfoList extends PureComponent {
                         层数：
                         {floorLevel || getEmptyData()}
                       </p>
-                      <Button
+                      <AuthButton
+                        code={codesMap.personnelPosition.floorManagement.add}
                         style={{ cursor: 'pointer' }}
                         href={`#/personnel-position/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
                       >
                         楼层管理
-                      </Button>
+                      </AuthButton>
                     </Col>
                   </Row>
                 </Card>
