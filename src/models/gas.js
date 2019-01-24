@@ -57,9 +57,7 @@ export default {
       // 正常单位
       normalUnit: [],
     },
-    gasUnitSet: {
-      importingUnits: [],
-    },
+
     // 单位id列表
     unitIds: [],
     // 接入单位统计-饼图
@@ -69,6 +67,10 @@ export default {
     },
     // 接入单位统计-树状图
     AccessCount: [],
+    // 接入单位统计-卡片列表
+    gasUnitSet: {
+      importingUnits: [],
+    },
     // 统计数据
     statisticsData: {
       // 管辖单位统计数
@@ -186,14 +188,13 @@ export default {
         unImporting,
       };
       const pay = {
-        gasUnitSet: getUnitSet(importingUnits),
+        gasUnitSet: { importingUnits },
         AccessCount,
         AccessStatistics,
-        unitIds: importingUnits.map(({ company_id }) => company_id),
       };
       if (code === 200) {
         yield put({
-          type: 'save',
+          type: 'saveUnitData',
           payload: pay,
         });
         if (callback) {
@@ -292,11 +293,12 @@ export default {
         ...payload,
       };
     },
-    // 保存单位数据
+    // 接入单位统计
     saveUnitData(state, { payload }) {
+      console.log('model', payload);
       return {
         ...state,
-        unitSet: getUnitSet(payload),
+        ...payload,
       };
     },
     deviceStatusCount(state, { payload }) {

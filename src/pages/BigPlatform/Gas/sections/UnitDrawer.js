@@ -10,8 +10,9 @@ import {
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
+import { connect } from 'dva';
 import { DotItem } from '../components/Components';
-import { sortCardList } from '../utils';
+// import { sortCardList } from '../utils';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
@@ -34,11 +35,20 @@ const CARDS = [...Array(10).keys()].map(i => ({
   count: Math.random() > 0.5 ? 0 : 14,
 }));
 
+@connect(({ gas }) => ({
+  gas,
+}))
 export default class UnitDrawer extends PureComponent {
   state = { selected: 0, searchValue: '' };
 
   handleSelectChange = i => {
-    console.log('111111111', i);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'gas/fetchImportingTotal',
+      payload: {
+        status: i,
+      },
+    });
     this.setState({ selected: i });
   };
 
@@ -56,7 +66,7 @@ export default class UnitDrawer extends PureComponent {
     const {
       visible,
       data: {
-        units = CARDS,
+        list = CARDS,
         AccessCount = [],
         AccessStatistics: { Importing = 0, unImporting = 0 },
       } = {},
@@ -69,14 +79,14 @@ export default class UnitDrawer extends PureComponent {
       itemStyle: { color: `rgb(${RING_COLORS[i]})` },
     }));
 
-    const sortedList = sortCardList(units);
+    // const sortedList = sortCardList(list);
     const barList = AccessCount.slice(0, 10).map(({ company_id, company_name, count }, i) => {
       let newName = company_name;
       if (i === 9 && name.length > 10) newName = `${name.slice(0, 10)}...`;
       return { id: company_id, name: newName, value: count };
     });
 
-    const filteredList = sortedList
+    const filteredList = list
       .filter(({ company_name }) => company_name.includes(searchValue))
       .filter(({ count }) => {
         switch (selected) {

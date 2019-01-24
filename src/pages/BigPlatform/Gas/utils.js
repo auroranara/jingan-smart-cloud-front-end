@@ -11,7 +11,6 @@
 // }
 
 export function genCardsInfo(list = []) {
-  console.log('genCardsInfo1', list);
   return list.map(
     ({
       company_id,

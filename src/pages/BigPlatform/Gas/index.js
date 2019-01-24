@@ -118,17 +118,16 @@ export default class Gas extends PureComponent {
     // 获取接入单位统计
     dispatch({
       type: 'gas/fetchImportingTotal',
-      // payload: {
-      //   status,
-      // },
-      // callback: data => {
-      //   if (!data) return;
-      //   const {
-      //     gasUnitSet: { units = [] },
-      //   } = data;
-
-      //   this.importCardsInfo = genCardsInfo(units);
-      // },
+      payload: {
+        status,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasUnitSet: { importingUnits = [] },
+        } = data;
+        this.importCardsInfo = genCardsInfo(importingUnits);
+      },
     });
 
     // 获取网格点id
@@ -563,7 +562,6 @@ export default class Gas extends PureComponent {
         statisticsData,
         AccessStatistics,
         AccessCount,
-        gasUnitSet: { units },
         unitSet,
         deviceStatusCount,
         devices,
@@ -573,7 +571,6 @@ export default class Gas extends PureComponent {
         cameraList,
       },
     } = this.props;
-    console.log('lalalall,', this.props);
 
     const {
       setttingModalVisible,
@@ -595,7 +592,7 @@ export default class Gas extends PureComponent {
 
     const cardsInfo = this.cardsInfo;
     const importCardsInfo = this.importCardsInfo;
-
+    console.log('pppimportCardsInfo', importCardsInfo);
     return (
       <BigPlatformLayout
         title="晶安智慧燃气平台"
@@ -673,7 +670,7 @@ export default class Gas extends PureComponent {
           handleCancel={this.handleSettingCancel}
         />
         <UnitDrawer
-          data={{ units, AccessStatistics, AccessCount }}
+          data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
