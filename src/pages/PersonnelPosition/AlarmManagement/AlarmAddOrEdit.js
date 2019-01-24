@@ -4,7 +4,7 @@ import router from 'umi/router';
 import { Button, Card, Checkbox, Form, Input, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-// import styles from './CompanyList.less';
+import styles from './AlarmAddOrEdit.less';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -12,12 +12,32 @@ const { Group: CheckboxGroup } = Checkbox;
 
 const CK_VALUES = [0, 1, 2, 3];
 const CK_OPTIONS = ['越界', '长时间不动', '超员', '缺员'].map((label, i) => ({ label, value: CK_VALUES[i] }));
+const FORMITEM_LAYOUT1 = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 12 },
+  },
+};
+const FORMITEM_LAYOUT = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 4 },
+  },
+};
 
 @connect(({ personPositionAlarm, loading }) => ({ personPositionAlarm, loading: loading.effects['personPositionAlarm/fetchAlarmList'] }))
 @Form.create()
-export default class AlarmList extends PureComponent {
+export default class AlarmAddOrEdit extends PureComponent {
   state = {
-    checkedValues: [],
+    checkedValues: CK_VALUES,
   };
 
   componentDidMount() {
@@ -47,7 +67,7 @@ export default class AlarmList extends PureComponent {
     const infoTitle = (
       <Fragment>
         报警策略配置
-        <CheckboxGroup options={CK_OPTIONS} onChange={this.handleCkChange} />
+        <CheckboxGroup options={CK_OPTIONS} defaultValue={CK_VALUES} onChange={this.handleCkChange} className={styles.checks} />
       </Fragment>
     )
 
@@ -78,12 +98,12 @@ export default class AlarmList extends PureComponent {
             )
           }
         </Card>
-        <Card title={infoTitle}>
+        <Card title={infoTitle} className={styles.card}>
           <Form>
             {checkedValues.includes(CK_VALUES[0]) && (
               <Fragment>
-                报警类型：越界
-                <FormItem label="允许进入人员">
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT}>越界</FormItem>
+                <FormItem label="允许进入人员" {...FORMITEM_LAYOUT1}>
                   {getFieldDecorator('canEnterUsers')(
                     <Select mode="multiple">
                       <Option value="0">张三</Option>
@@ -94,40 +114,40 @@ export default class AlarmList extends PureComponent {
             )}
             {checkedValues.includes(CK_VALUES[1]) && (
               <Fragment>
-                报警类型：长时间不动
-                <FormItem label="不动时长(小时)">
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>长时间不动</FormItem>
+                <FormItem label="不动时长" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('fixedlyTimeLimit')(
-                    <Input />
+                    <Input placeholder="单位为小时" />
                   )}
                 </FormItem>
               </Fragment>
             )}
             {checkedValues.includes(CK_VALUES[2]) && (
               <Fragment>
-                报警类型：超员
-                <FormItem label="超员人数">
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>超员</FormItem>
+                <FormItem label="超员人数" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('outstripNumLimit')(
-                    <Input />
+                    <Input placeholder="大于该人数时报警" />
                   )}
                 </FormItem>
               </Fragment>
             )}
             {checkedValues.includes(CK_VALUES[3]) && (
               <Fragment>
-                报警类型：缺员
-                <FormItem label="缺员人数">
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>缺员</FormItem>
+                <FormItem label="缺员人数" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('lackNumLimit')(
-                    <Input />
+                    <Input placeholder="小于该人数时报警" />
                   )}
                 </FormItem>
-                <FormItem label="缺员时长(小时)">
+                <FormItem label="缺员时长" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('lackTimeLimit')(
-                    <Input />
+                    <Input placeholder="单位为小时" />
                   )}
                 </FormItem>
               </Fragment>
             )}
-            <FormItem>
+            <FormItem style={{ textAlign: 'center', marginTop: 24 }}>
               {!!checkedValues.length && (
                 <Button type="primary" htmlType="submit">
                   提交
