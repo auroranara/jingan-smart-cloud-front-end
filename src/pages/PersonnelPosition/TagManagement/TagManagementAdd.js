@@ -23,7 +23,7 @@ const defaultPageSize = 10;
 @Form.create()
 @connect(({ personnelPosition, loading }) => ({
   personnelPosition,
-  companyLoading: loading.effects['personnelPosition/fetchCompanyList'],
+  companyLoading: loading.effects['personnelPosition/fetchTagCompanies'],
 }))
 export default class TagManagementAdd extends PureComponent {
 
@@ -66,10 +66,10 @@ export default class TagManagementAdd extends PureComponent {
   }
 
   // 获取单位列表
-  fetchCompanyList = (actions) => {
+  fetchTagCompanies = (actions) => {
     const { dispatch } = this.props
     dispatch({
-      type: 'personnelPosition/fetchCompanyList',
+      type: 'personnelPosition/fetchTagCompanies',
       ...actions,
     })
   }
@@ -126,7 +126,7 @@ export default class TagManagementAdd extends PureComponent {
 
   // 点击打开选择单位弹窗
   handleViewCompanyModal = () => {
-    this.fetchCompanyList({
+    this.fetchTagCompanies({
       payload: { pageNum: 1, pageSize: defaultPageSize },
       callback: () => {
         this.setState({
@@ -260,7 +260,7 @@ export default class TagManagementAdd extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
       personnelPosition: {
         systemConfiguration: { list: systemList },
-        companyList = {},
+        tagCompany = {},
         tag: { detail = {} },
       },
       match: { params: { id } },
@@ -421,8 +421,8 @@ export default class TagManagementAdd extends PureComponent {
           title="选择单位"
           loading={companyLoading}
           visible={companyVisible}
-          modal={companyList}
-          fetch={this.fetchCompanyList}
+          modal={tagCompany}
+          fetch={this.fetchTagCompanies}
           onSelect={this.handleSelectCompany}
           onClose={this.handleCompanyModalCLose}
         />

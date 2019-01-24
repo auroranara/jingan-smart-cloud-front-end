@@ -174,6 +174,13 @@ export default class CompanyBeacon extends PureComponent {
   // 验证信标坐标
   valiteArea = (rule, value = {}, callback) => {
     if (value.xarea && value.yarea && value.zarea) {
+      const isXErr=isNaN(value.xarea),
+      isYErr=isNaN( value.yarea),
+      isZErr=isNaN(value.zarea)
+      if(isXErr||isYErr||isZErr){
+        callback('请输入数字')
+        return
+      }
       callback()
     } else callback('请输入信标坐标')
   }
