@@ -402,7 +402,13 @@ export default class BuildingInfoList extends PureComponent {
                         this.handleShowDeleteConfirm(id);
                       }}
                       shape="circle"
-                      style={{ border: 'none', fontSize: '16px' }}
+                      style={{
+                        border: 'none',
+                        fontSize: '16px',
+                        position: 'absolute',
+                        right: '8px',
+                        top: '12px',
+                      }}
                     >
                       <Icon type="close" />
                     </AuthButton>

@@ -621,7 +621,7 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('floorLevel', { initialValue: floorLevel })(
-              <Input placeholder="请输入建筑层数" />
+              <InputNumber style={{ width: '100%' }} placeholder="请输入建筑层数" />
             )}
           </div>
         ),
