@@ -52,6 +52,11 @@ export async function addFloor(params) {
   });
 }
 
+// 获取楼层编号
+export async function queryFloorNumber(params) {
+  return request(`/acloud_new/v2/buildingInfo/floorNumberList?${stringify(params)}`);
+}
+
 // 编辑楼层
 export async function editFloor(params) {
   return request('/acloud_new/v2/buildingInfo/updateFloor.json', {

@@ -498,31 +498,44 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRulesSelect('单位名称'),
         component: (
           <div>
-            {company_Id ? (
-              <div>
-                {getFieldDecorator('companyId', { initialValue: company_name })(
-                  <Input disabled placeholder="请选择单位名称" />
-                )}
-              </div>
-            ) : (
-              <div>
-                {getFieldDecorator('companyId', {
-                  initialValue:
-                    unitType === 4 || unitType === 1
-                      ? company_name || defaultName
-                      : company_name
-                        ? company_name
-                        : undefined,
-                })(
-                  <Input
-                    ref={input => {
-                      this.CompanyIdInput = input;
-                    }}
-                    placeholder="请输入单位名称"
-                    onClick={this.handleCompanyModal}
-                  />
-                )}
-              </div>
+            <Col span={23}>
+              {company_Id ? (
+                <div>
+                  {getFieldDecorator('companyId', { initialValue: company_name })(
+                    <Input disabled placeholder="请选择单位名称" />
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {getFieldDecorator('companyId', {
+                    initialValue:
+                      unitType === 4 || unitType === 1
+                        ? company_name || defaultName
+                        : company_name
+                          ? company_name
+                          : undefined,
+                  })(
+                    <Input
+                      disabled
+                      ref={input => {
+                        this.CompanyIdInput = input;
+                      }}
+                      placeholder="请选择单位名称"
+                    />
+                  )}
+                </div>
+              )}
+            </Col>
+            {defaultName || (company_Id && unitType !== 2) ? null : (
+              <Col span={1}>
+                <Button
+                  type="primary"
+                  onClick={this.handleCompanyModal}
+                  style={{ marginLeft: '10%' }}
+                >
+                  选择单位
+                </Button>
+              </Col>
             )}
           </div>
         ),
