@@ -57,6 +57,10 @@ function generateRulesSelect(cName, msg = '选择', ...rules) {
   return [{ required: true, message: `请${msg}${cName}` }, ...rules];
 }
 
+// function generateRulesInput(cName, msg = '输入', ...rules) {
+//   return [{ required: true, message: `请${msg}${cName}，必须是整数` }, ...rules];
+// }
+
 function getOptions(options = []) {
   return options.map(({ value, label }) => (
     <Option key={value} value={value}>
@@ -620,8 +624,15 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('建筑层数'),
         component: (
           <div>
-            {getFieldDecorator('floorLevel', { initialValue: floorLevel })(
-              <InputNumber style={{ width: '100%' }} placeholder="请输入建筑层数" />
+            {getFieldDecorator('floorLevel', {
+              initialValue: floorLevel,
+            })(
+              <InputNumber
+                style={{ width: '100%' }}
+                placeholder="请输入建筑层数"
+                formatter={value => value.replace(/^(\d+\.\d)+$/)}
+                parser={value => value.replace(/^(\d+\.\d)+$/)}
+              />
             )}
           </div>
         ),

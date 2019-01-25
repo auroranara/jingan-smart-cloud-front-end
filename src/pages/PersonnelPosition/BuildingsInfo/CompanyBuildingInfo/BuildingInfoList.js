@@ -450,7 +450,7 @@ export default class BuildingInfoList extends PureComponent {
                         {floorLevel || getEmptyData()}
                       </p>
                       <AuthButton
-                        code={codesMap.personnelPosition.buildingsInfo.floorAdd}
+                        code={codesMap.personnelPosition.buildingsInfo.floorListView}
                         style={{ cursor: 'pointer' }}
                         href={`#/personnel-position/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
                       >
