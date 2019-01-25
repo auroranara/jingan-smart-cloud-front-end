@@ -41,7 +41,7 @@ const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
 //   noAccess: Math.floor(Math.random() * 10),
 // }));
 
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
+// const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
 
 export default class AlarmDrawer extends PureComponent {
   state={ graph: 0, selected: 0, searchValue: '' };

@@ -10,7 +10,8 @@ import {
   getDeviceHistoryData,
   getCameraList,
   getWarningTrend,
-} from '../services/electricityMonitor'
+} from '../services/electricityMonitor';
+// import { getGrids } from '../services/bigPlatform/fireControl';
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -91,6 +92,7 @@ export default {
     cameraList: [],
     warningTrendList: [], // 报警趋势列表(12个月)
     warningTrendList1: [], // 报警趋势列表(6个月)
+    grids: [], // 网格点列表
   },
 
   effects: {
@@ -230,6 +232,13 @@ export default {
         yield put({ type: 'saveWarningTrend1', payload: list.slice(6, 12) });
       }
     },
+    // *fetchGrids({ payload, callback }, { call, put }) {
+    //   const response = yield call(getGrids);
+    //   if (Array.isArray(response)) {
+    //     yield put({ type: 'saveGrids', payload: response });
+    //     callback && callback(response);
+    //   }
+    // },
   },
   reducers: {
     // 保存
@@ -261,5 +270,8 @@ export default {
     saveWarningTrend1(state, action) {
       return { ...state, warningTrendList1: action.payload };
     },
+    // saveGrids(state, action) {
+    //   return { ...state, grids: action.payload };
+    // },
   },
 }

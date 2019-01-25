@@ -22,11 +22,12 @@ import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
 import {
-  SettingModal,
-  UnitDrawer,
   AlarmDrawer,
   MonitorDrawer,
+  SettingModal,
+  UnitDrawer,
 } from './sections/Components';
+import { GridSelect } from './components/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
@@ -527,10 +528,12 @@ export default class ElectricityMonitor extends PureComponent {
       cardsInfo,
     } = this.state;
 
+    // const extra = <GridSelect dispatch={dispatch} data={grids} gridId={gridId} />;
+
     return (
       <BigPlatformLayout
         title="晶安智慧用电监测平台"
-        extra="无锡市"
+        // extra={extra}
         style={{ backgroundImage: 'none' }}
         headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 99, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
         titleStyle={{ fontSize: 46 }}

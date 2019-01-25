@@ -11,7 +11,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
-import { sortCardList } from '../utils';
+import { sortCardList, handleChartLabel } from '../utils';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
@@ -20,19 +20,6 @@ const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const OPTIONS = ['全部', '未接入', '已接入'].map((d, i) => ({ value: i, desc: d }));
 const RING_COLORS = ['159,159,159', '0,255,255'];
 const RING_LABELS = ['未接入', '已接入'];
-
-// const CARDS = [...Array(10).keys()].map(i => ({
-//   companyId: i,
-//   name: '无锡市新吴区机械制造有限公司',
-//   address: '无锡市新吴区汉江路与龙江路交叉口5号',
-//   safetyMan: '王长江',
-//   safetyPhone: '13288888888',
-//   common: Math.floor(Math.random() * 10),
-//   alarm: Math.floor(Math.random() * 10),
-//   warn: Math.floor(Math.random() * 10),
-//   noAccess: Math.floor(Math.random() * 10),
-//   equipment: Math.random() > 0.5 ? 0 : 14,
-// }));
 
 export default class UnitDrawer extends PureComponent {
   state={ selected: 0, searchValue: '' };
@@ -62,12 +49,14 @@ export default class UnitDrawer extends PureComponent {
     const restStatistics = jurisdictionalUnitStatistics - accessUnitStatistics;
     const rings = [restStatistics, accessUnitStatistics].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
     const sortedList = sortCardList(list);
-    const barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => {
-      let newName = name;
-      if (i === 9 && name.length > 10)
-        newName = `${name.slice(0, 10)}...`;
-      return { id: companyId, name: newName, value: equipment };
-    });
+    // const barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => {
+    //   let newName = name;
+    //   if (i === 9 && name.length > 10)
+    //     newName = `${name.slice(0, 10)}...`;
+    //   return { id: companyId, name: newName, value: equipment };
+    // });
+    let barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => ({ id: companyId, name, value: equipment}));
+    barList = handleChartLabel(barList);
     const filteredList = sortedList.filter(({ name }) => name.includes(searchValue)).filter(({ equipment }) => {
       switch(selected) {
         case 0:
