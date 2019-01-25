@@ -9,14 +9,15 @@ import styles from './GasBackSection.less';
 
 import { ALL, NORMAL, ABNORMAL, LOSS } from '../components/gasStatus';
 
-const tempList = [
-  { id: 0, status: 0, desc: '厂区九车间：氯乙烷压缩机东', time: '2018-09-06 09:11:32' },
-  { id: 0, status: 1, desc: '厂区九车间：氯乙烷压缩机东', time: '2018-09-06 09:11:32' },
-  { id: 0, status: 2, desc: '厂区九车间：氯乙烷压缩机东', time: '2018-09-06 09:11:32' },
-];
-
-//将原始数据的状态修正， 0 失联 1 正常 2 异常 => 0 正常 1 异常 2 失联
-const STATUS_FIX = [2, 0, 1];
+// 将原始数据的状态修正， 0 失联 1 正常 2 异常 => 0 正常 1 异常 2 失联 (废弃)
+// 将原始数据的状态修正， -1 失联 0 正常 1 预警 2 告警 => 0 正常 1 异常(预警 告警) 2 失联
+// const STATUS_FIX = [2, 0, 1];
+const STATUS_FIX = {
+  '-1': 2,
+  0: 0,
+  1: 1,
+  2: 1,
+};
 
 function handleGasList(list=[], status=ALL) {
   if (!list.length)
@@ -47,7 +48,7 @@ function getStatusLength(list=[], filteredStatus) {
   return list.filter(({ status }) => status === filteredStatus).length;
 }
 
-export default class GasSection extends PureComponent {
+export default class GasBackSection extends PureComponent {
   state = {
     inputVal: '',
   };
