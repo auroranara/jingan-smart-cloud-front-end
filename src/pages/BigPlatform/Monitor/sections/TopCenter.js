@@ -92,6 +92,8 @@ const NORMAL = 1; //正常
 const ABNORMAL = 2; // 异常
 const ALL = 3; // 全部
 
+const STATUSES = [-1, 0, 2];
+
 const smokeColumns = [
   {
     title: '设备号',
@@ -105,7 +107,7 @@ const smokeColumns = [
     dataIndex: 'status',
     align: 'center',
     render: val => {
-      return +val === 0 ? '失联' : +val === 1 ? '正常' : '异常';
+      return +val === -1 ? '失联' : +val === 0 ? '正常' : '异常';
     },
   },
   {
@@ -190,12 +192,14 @@ export default class TopCenter extends PureComponent {
   // 打开烟感弹窗
   handleSmokeModal = status => {
     const { dispatch, companyId } = this.props;
+    const sts = {};
+    sts.status = STATUSES[status];
     dispatch({
       type: 'monitor/fetchSmokeList',
       payload: {
         companyId,
         deviceType: 6,
-        status: status,
+        ...sts,
       },
     });
     this.setState({ smokeModalVisible: true, status: status });
@@ -213,24 +217,17 @@ export default class TopCenter extends PureComponent {
   // 处理烟感状态按钮
   handleLabelOnClick = s => {
     const { dispatch, companyId } = this.props;
-    if (+s === 3) {
-      dispatch({
-        type: 'monitor/fetchSmokeList',
-        payload: {
-          companyId,
-          deviceType: 6,
-        },
-      });
-    } else {
-      dispatch({
-        type: 'monitor/fetchSmokeList',
-        payload: {
-          companyId,
-          deviceType: 6,
-          status: s,
-        },
-      });
-    }
+    const sts = {};
+    if (+s !== 3) sts.status = STATUSES[s];
+    dispatch({
+      type: 'monitor/fetchSmokeList',
+      payload: {
+        companyId,
+        deviceType: 6,
+        ...sts,
+      },
+    });
+
     this.setState({
       status: s,
     });
