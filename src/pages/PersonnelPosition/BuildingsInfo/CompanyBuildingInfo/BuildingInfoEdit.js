@@ -629,9 +629,10 @@ export default class BuildingInfoEdit extends PureComponent {
             })(
               <InputNumber
                 style={{ width: '100%' }}
+                min={0}
                 placeholder="请输入建筑层数"
-                formatter={value => value.replace(/^(\d+\.\d)+$/)}
-                parser={value => value.replace(/^(\d+\.\d)+$/)}
+                formatter={value => (isNaN(value) ? '' : Math.round(value))}
+                parser={value => (isNaN(value) ? '' : Math.round(value))}
               />
             )}
           </div>
