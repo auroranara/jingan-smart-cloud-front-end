@@ -70,19 +70,31 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   genTimeLimitCheck = (min, max) => {
     return function (rule, value, callback) {
-      const val = Number.parseFloat(value.trim());
+      const val = Number(value.trim());
       if (!val || val < 0) {
         callback('设定的值必须为一个大于0的数字');
         return;
       }
 
-      if (min && !max && val >= min || !min && max && val <= max || min && max && val >=min && val <= max) {
+      if (min && !max && val >= min || !min && max && val <= max || min && max && val >=min && val <= max || !min && !max) {
         callback();
         return;
       }
 
       callback(`设定的值必须大于等于下级区域设定的最小值${min}且必须小于等于上级区域设置的最大值${max}`);
     };
+  };
+
+  handleSubmit = e => {
+    const { form: { validateFields } } = this.props;
+    e.preventDefault();
+
+    validateFields((err, values) => {
+      if (!err)
+        return;
+
+      console.log(values);
+    });
   };
 
   render() {
@@ -156,7 +168,7 @@ export default class AlarmAddOrEdit extends PureComponent {
           }
         </Card>
         <Card title={infoTitle} className={styles.card}>
-          <Form>
+          <Form onSubmit={this.handleSubmit}>
             {checkedValues.includes(CK_VALUES[0]) && (
               <Fragment>
                 <FormItem label="报警类型" {...FORMITEM_LAYOUT}>越界</FormItem>
@@ -179,7 +191,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                     { required: true, message: '请设置不动时长' },
                     { validator: this.genTimeLimitCheck(minTLongLimitTime, maxTLongLimitTime) },
                   ] })(
-                    <Input placeholder="单位为小时" />
+                    <Input style={{ width: 150 }} placeholder="单位为小时" />
                   )}
                 </FormItem>
               </Fragment>
@@ -192,7 +204,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                     { required: true, message: '请设置超员人数' },
                     { validator: this.genTimeLimitCheck(minLimitOutstripNum, maxLimitOutstripNum) },
                   ] })(
-                    <Input placeholder="大于该人数时报警" />
+                    <Input style={{ width: 150 }} placeholder="大于该人数时报警" />
                   )}
                 </FormItem>
               </Fragment>
@@ -205,14 +217,14 @@ export default class AlarmAddOrEdit extends PureComponent {
                     { required: true, message: '请设置缺员人数' },
                     { validator: this.genTimeLimitCheck(minLimitLackNum, maxLimitLackNum) },
                   ] })(
-                    <Input placeholder="小于该人数时报警" />
+                    <Input style={{ width: 150 }} placeholder="小于该人数时报警" />
                   )}
                 </FormItem>
                 <FormItem label="缺员时长" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('lackTimeLimit', { rules: [
                     { required: true, message: '请设置缺员时长' },
                   ] })(
-                    <Input placeholder="单位为小时" />
+                    <Input style={{ width: 150 }} placeholder="单位为小时" />
                   )}
                 </FormItem>
               </Fragment>
