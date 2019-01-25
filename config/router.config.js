@@ -1554,7 +1554,7 @@ module.exports = env => {
                 },
               ],
             },
-            //
+            // 报警管理
             {
               name: 'alarmManagement',
               path: '/personnel-position/alarm-management',
@@ -1574,25 +1574,25 @@ module.exports = env => {
                 },
                 {
                   name: 'alarmList',
-                  path: '/personnel-position/alarm-management/list/:id',
+                  path: '/personnel-position/alarm-management/list/:companyId',
                   code: 'personnelPosition.alarmManagement.alarmListView',
                   component: './PersonnelPosition/AlarmManagement/AlarmList',
                 },
                 {
                   name: 'add',
-                  path: '/personnel-position/alarm-management/add',
+                  path: '/personnel-position/alarm-management/add/:companyId',
                   code: 'personnelPosition.alarmManagement.add',
                   component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
                 },
                 {
                   name: 'edit',
-                  path: '/personnel-position/alarm-management/edit/:id',
+                  path: '/personnel-position/alarm-management/edit/:companyId/:alarmId',
                   code: 'personnelPosition.alarmManagement.edit',
                   component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
                 },
                 {
                   name: 'detail',
-                  path: '/personnel-position/alarm-management/detail/:id',
+                  path: '/personnel-position/alarm-management/detail/:alarmId',
                   code: 'personnelPosition.alarmManagement.view',
                   component: './PersonnelPosition/AlarmManagement/AlarmDetail',
                 },

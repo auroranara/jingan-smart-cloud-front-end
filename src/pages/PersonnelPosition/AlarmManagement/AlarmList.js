@@ -51,10 +51,10 @@ export default class AlarmList extends PureComponent {
   }
 
   fetchList = (pageNum) => {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const { dispatch, match: { params: { companyId } } } = this.props;
     dispatch({
       type: 'personPositionAlarm/fetchAlarmList',
-      payload: { pageNum, pageSize: PAGE_SIZE, companyId: id },
+      payload: { pageNum, pageSize: PAGE_SIZE, companyId },
     });
   };
 
@@ -67,10 +67,19 @@ export default class AlarmList extends PureComponent {
     this.fetchList(pagination.current);
   };
 
+  handleAdd = e => {
+    const { match: { params: { companyId } } } = this.props;
+    router.push(`/personnel-position/alarm-management/add/${companyId}`);
+  };
+
+  handleDelete = e => {
+
+  };
+
   render() {
     const {
       loading,
-      personPositionAlarm,
+      personPositionAlarm: { alarmList },
     } = this.props;
     const { selectedRowKeys, current, total } = this.state;
 
@@ -81,7 +90,7 @@ export default class AlarmList extends PureComponent {
 
     const pagination = { current, total, pageSize: PAGE_SIZE };
 
-    const list =  Array.isArray(personPositionAlarm.alarmList) ? personPositionAlarm.alarmList : [];
+    const list =  Array.isArray(alarmList) ? alarmList : [];
 
     const fields = [{
       id: 'areaCode',
@@ -136,8 +145,8 @@ export default class AlarmList extends PureComponent {
 
     const buttons = (
       <ButtonGroup>
-        <Button type="primary" ghost>新增</Button>
-        <Button type="primary" ghost>删除</Button>
+        <Button type="primary" ghost onClick={this.handleAdd}>新增</Button>
+        <Button type="primary" ghost onClick={this.handleDelete}>删除</Button>
       </ButtonGroup>
     );
 

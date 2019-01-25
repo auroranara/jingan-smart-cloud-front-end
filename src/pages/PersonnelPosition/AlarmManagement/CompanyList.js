@@ -150,8 +150,8 @@ export default class CompanyList extends PureComponent {
               id,
               company_id,
               name,
-              safetyName,
-              safetyPhone,
+              principalName,
+              principalPhone,
               practicalAddress,
             } = item;
 
@@ -164,11 +164,11 @@ export default class CompanyList extends PureComponent {
                 >
                   <p>
                     主要负责人：
-                    {safetyName || NO_DATA}
+                    {principalName || NO_DATA}
                   </p>
                   <p>
                     联系电话：
-                    {safetyPhone || NO_DATA}
+                    {principalPhone || NO_DATA}
                   </p>
                   {practicalAddress
                     ? <Ellipsis lines={1} tooltip style={{ height: 24 }}>地址：{practicalAddress}</Ellipsis>
