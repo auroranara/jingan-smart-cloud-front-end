@@ -21,8 +21,9 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
 const defaultPageSize = 10;
 
 @Form.create()
-@connect(({ personnelPosition, loading }) => ({
+@connect(({ personnelPosition, user, loading }) => ({
   personnelPosition,
+  user,
   companyLoading: loading.effects['personnelPosition/fetchTagCompanies'],
 }))
 export default class TagManagementAdd extends PureComponent {
@@ -40,12 +41,16 @@ export default class TagManagementAdd extends PureComponent {
     selectedPersonnerlKeys: [],    // 选中的人员keys
     selectedRows: [],               // 选中人员列表
     personnel: {},       // 选中的人员信息
+    searchUserName: null,
+    searchPhoneNumber: null,
   }
 
   componentDidMount() {
     const {
       dispatch,
       match: { params: { id } },
+      form: { setFieldsValue },
+      user: { currentUser: { unitType, companyId, companyName } },
     } = this.props
     if (id) {
       // 获取详情
@@ -62,6 +67,17 @@ export default class TagManagementAdd extends PureComponent {
           })
         },
       })
+    } else {
+      // 企业用户默认选择当前企业
+      if (unitType === 1 || unitType === 4) {
+        // 获取单位下的系统配置和人员
+        this.fetchEmployees({ payload: { companyId } })
+        this.fetchSystems({ payload: { pageNum: 1, pageSize: 0, companyId } })
+        this.setState({
+          company: { id: companyId, name: companyName },
+        })
+        setFieldsValue({ company: { id: companyId, name: companyName } })
+      }
     }
   }
 
@@ -167,6 +183,13 @@ export default class TagManagementAdd extends PureComponent {
     })
   }
 
+  // 更新state
+  changeState = (key, value) => {
+    const item = {}
+    item[key] = value
+    this.setState(item)
+  }
+
   // 人员列表页面变化
   handlePageChange = (pageNum, pageSize) => {
     const {
@@ -179,6 +202,7 @@ export default class TagManagementAdd extends PureComponent {
       pagination: {
         ...this.state.pagination,
         pageNum,
+        pageSize,
       },
     })
   }
@@ -252,6 +276,36 @@ export default class TagManagementAdd extends PureComponent {
         })
       }
     })
+  }
+
+  // 点击搜素持卡人
+  handleSearchPersonnel = () => {
+    const { searchUserName: userName = null, searchPhoneNumber: phoneNumber = null, company = {} } = this.state
+    // 获取单位人员
+    this.fetchEmployees({
+      payload: { companyId: company.id, userName, phoneNumber },
+      callback: (list) => {
+        if (!list) return
+        const currentPersonnelList = list.slice(0, defaultPageSize)
+        this.setState({
+          currentPersonnelList,
+          pagination: {
+            pageNum: 1,
+            pageSize: defaultPageSize,
+            total: list ? list.length : 0,
+          },
+        })
+      },
+    })
+  }
+
+  // 标签分类变化
+  handleTypeChange = (value) => {
+    const {
+      form: { resetFields },
+    } = this.props
+    resetFields(['personnel', 'phoneNumber'])
+    this.setState({ personnel: {} })
   }
 
   render() {
@@ -353,7 +407,7 @@ export default class TagManagementAdd extends PureComponent {
                 initialValue: id ? detail.type : undefined,
                 rules: [{ required: true, message: '请选择标签分类' }],
               })(
-                <Select placeholder="请选择" {...itemStyles} notFoundContent="暂无数据">
+                <Select placeholder="请选择" {...itemStyles} notFoundContent="暂无数据" onChange={this.handleTypeChange}>
                   {typesInfo.map(({ value, label }, i) => (
                     <Option key={i} value={value}>{label}</Option>
                   ))}
@@ -395,25 +449,32 @@ export default class TagManagementAdd extends PureComponent {
           onOk={this.selectPersonnel}
         >
           {company.id ? (
-            <Table
-              rowKey="id"
-              style={{ marginTop: '10px' }}
-              columns={columns}
-              dataSource={currentPersonnelList}
-              bordered
-              rowSelection={rowSelection}
-              pagination={{
-                current: pageNum,
-                pageSize,
-                total,
-                showQuickJumper: true,
-                showSizeChanger: true,
-                onChange: this.handlePageChange,
-                onShowSizeChange: (num, size) => {
-                  this.handlePageChange(1, size);
-                },
-              }}
-            ></Table>
+            <Fragment>
+              <div style={{ marginBottom: '24px', width: '100%' }}>
+                <Input style={{ width: '300px' }} placeholder="请输入用户名" onChange={e => this.changeState('searchUserName', e.target.value)} />
+                <Input style={{ marginLeft: '10px', width: '300px' }} placeholder="请输入手机号" onChange={e => this.changeState('searchPhoneNumber', e.target.value)} />
+                <Button style={{ marginLeft: '10px' }} type="primary" onClick={this.handleSearchPersonnel}>查询</Button>
+              </div>
+              <Table
+                rowKey="id"
+                style={{ marginTop: '10px' }}
+                columns={columns}
+                dataSource={currentPersonnelList}
+                bordered
+                rowSelection={rowSelection}
+                pagination={{
+                  current: pageNum,
+                  pageSize,
+                  total,
+                  showQuickJumper: true,
+                  showSizeChanger: true,
+                  onChange: this.handlePageChange,
+                  onShowSizeChange: (num, size) => {
+                    this.handlePageChange(1, size);
+                  },
+                }}
+              ></Table>
+            </Fragment>
           ) : this.emptyTip('请先选择单位')}
         </Modal>
         {/* 选择单位弹窗 */}

@@ -7,6 +7,8 @@ import {
   editSystemConfiguration,
   // 删除系统配置
   deleteSystemConfiguration,
+  // 系统配置选择企业时获取企业列表
+  fetchSysCompanies,
 } from '../services/personnelPosition/systemConfiguration';
 import {
   // 获取信标企业列表
@@ -99,9 +101,9 @@ export default {
       },
     },
     // 标签-企业
-    tagCompany:{
-      list:[],
-      pagination:{
+    tagCompany: {
+      list: [],
+      pagination: {
         pageNum: 1,
         pageSize: 10,
         total: 0,
@@ -124,6 +126,16 @@ export default {
         total: 0,
       },
       mapIsLast: true,
+    },
+    // 系统配置企业列表
+    sysCompany: {
+      // 企业列表
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
     },
   },
   effects: {
@@ -197,7 +209,7 @@ export default {
       const response = yield call(addBeacon, payload);
       if (response && response.code === 200) {
         if (success) success();
-      } else if (error) error();
+      } else if (error) error(response.msg);
     },
     // 编辑信标
     *editBeacon({ payload, success, error }, { call }) {
@@ -307,14 +319,25 @@ export default {
       }
     },
     // 标签获取企业列表
-    *fetchTagCompanies({payload,callback},{call,put}){
-      const response=yield call(fetchTagCompanies,payload)
+    *fetchTagCompanies({ payload, callback }, { call, put }) {
+      const response = yield call(fetchTagCompanies, payload)
       if (response && response.code === 200) {
         yield put({
-          type:'saveTagCompanies',
-          payload:response.data,
+          type: 'saveTagCompanies',
+          payload: response.data,
         })
-        if(callback)callback()
+        if (callback) callback()
+      }
+    },
+    // 系统配置选择企业时获取企业列表
+    *fetchSysCompanies({ payload, callback }, { call, put }) {
+      const response = yield call(fetchSysCompanies, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveSysCompanies',
+          payload: response.data,
+        })
+        if (callback) callback()
       }
     },
   },
@@ -504,14 +527,20 @@ export default {
         },
       };
     },
-    saveTagCompanies(state,{payload:{list=[],pagination={}}}){
-      return{
+    saveTagCompanies(state, { payload: { list = [], pagination = {} } }) {
+      return {
         ...state,
-        tagCompany:{
+        tagCompany: {
           ...state.tagCompany,
           list,
           pagination,
         },
+      }
+    },
+    saveSysCompanies(state, { payload }) {
+      return {
+        ...state,
+        sysCompany: payload,
       }
     },
   },
