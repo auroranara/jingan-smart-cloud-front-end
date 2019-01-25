@@ -57,9 +57,9 @@ export default class CompanyBeacon extends PureComponent {
       payload: { pageNum: 1, pageSize: defaultPageSize, companyId },
     })
     // 获取系统列表
-    /* this.fetchSystemConfiguration({
+    this.fetchSystemConfiguration({
       payload: { pageNum: 1, pageSize: 50, companyId },
-    }) */
+    })
   }
 
   // 获取信标列表
@@ -137,15 +137,13 @@ export default class CompanyBeacon extends PureComponent {
   // 点击打开新增弹窗
   handleToAdd = () => {
     const {
-      dispatch,
       match: { params: { id: companyId } },
       form: { resetFields },
     } = this.props
     // 获取当前单位的系统配置
-    dispatch({
-      type: 'personnelPosition/fetchSystemConfiguration',
+    /* this.fetchSystemConfiguration({
       payload: { pageNum: 1, pageSize: 100, companyId },
-    })
+    }) */
     this.setState({
       modalVisible: true,
       detail: {},
