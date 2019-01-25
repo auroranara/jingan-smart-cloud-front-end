@@ -174,10 +174,10 @@ export default class CompanyBeacon extends PureComponent {
   // 验证信标坐标
   valiteArea = (rule, value = {}, callback) => {
     if (value.xarea && value.yarea && value.zarea) {
-      const isXErr=isNaN(value.xarea),
-      isYErr=isNaN( value.yarea),
-      isZErr=isNaN(value.zarea)
-      if(isXErr||isYErr||isZErr){
+      const isXErr = isNaN(value.xarea),
+        isYErr = isNaN(value.yarea),
+        isZErr = isNaN(value.zarea)
+      if (isXErr || isYErr || isZErr) {
         callback('请输入数字')
         return
       }
@@ -332,7 +332,7 @@ export default class CompanyBeacon extends PureComponent {
               <Popconfirm title="确认要删除该信标吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
-            ) : (<a style={{ cursor: 'not-allowed' }}>删除</a>)}
+            ) : (<a style={{ cursor: 'not-allowed', color: '#b3b3b3' }}>删除</a>)}
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
