@@ -1,0 +1,381 @@
+@import '~antd/lib/style/themes/default.less';
+/* 容器 */
+.container {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+
+  // 轮播图容器
+  .carouselWrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+  // 中间容器
+  .wrapper {
+    position: relative;
+    margin: 12.59259vh 9.6875vw 0 8.958333vw; // 136px 186px 0 172px
+    text-align: right;
+    box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+  }
+  // 右侧主要区域
+  .main {
+    position: relative;
+    display: inline-block;
+    width: 544px;
+    min-height: 68.51852vh; // 740px
+    text-align: left;
+    color: #666;
+    vertical-align: top;
+    background: #fff;
+    box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.5);
+    z-index: 9;
+    overflow: hidden;
+  }
+  // 图标
+  .logo {
+    padding-top: 11.666667vh; // 126px;
+    padding-bottom: 2.777778vh; // 30px
+    height: 56px;
+    background: url('@/assets/nanxiao_download_logo.png') no-repeat center 11.666667vh;
+    background-size: auto 56px;
+    box-sizing: content-box;
+  }
+  // 警告文字容器
+  .alertWrapper {
+    height: 40px;
+    margin-bottom: 24px;
+  }
+  // 表单
+  .formWrapper {
+    padding: 0 78px;
+
+    .icon {
+      color: #bfbfbf;
+    }
+  }
+  // 下载
+  .downloadContainer {
+    display: block;
+    text-align: center;
+    line-height: 22px;
+
+    .download {
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+
+      &:hover {
+        color: @primary-color;
+      }
+
+      .downloadIcon {
+        margin-right: 7px;
+      }
+    }
+  }
+  // 底部版权信息
+  .footer {
+    position: relative;
+    display: table;
+    width: 100%;
+    height: 18.518519vh; // 200px
+    // margin-top: 6.481481vh; // 70px
+    // margin-bottom: 5.555556vh; // 60vh
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    line-height: 1;
+    z-index: 9;
+
+    & > div {
+      display: table-cell;
+      vertical-align: middle;
+
+      div:first-child {
+        padding-top: 10px;
+        line-height: 42px;
+        span:first-child {
+          margin-right: 10px;
+        }
+      }
+      div:last-child {
+        line-height: 28px;
+        span:first-child {
+          margin-right: 26px;
+        }
+      }
+    }
+  }
+
+  // 更多用户
+  .cardGrid {
+    padding: 20px 24px;
+    width: 100%;
+    font-size: 14px;
+    text-align: center;
+    line-height: 1;
+    // background-color: #fff;
+    background-color: #1890ff;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+    }
+    &:active {
+      background-color: #40a9ff;
+    }
+  }
+}
+
+/************************************************* 手机端开始********************************************/
+.mobileContainer {
+  height: 100%;
+
+  .main {
+    position: relative;
+    padding-bottom: 30.963vh;
+    min-height: 100%;
+    color: #666;
+    background-color: #E7E8EA;
+    overflow: hidden;
+
+    // 图标
+    .logo {
+      height: 20.9vh; // 338px
+      background: url('@/assets/nanxiao_download_logo.png') no-repeat center;
+      background-size: auto 28.994%; // 98px
+    }
+    // 表单容器
+    .formWrapper {
+      margin: 0 auto;
+      margin-top: -1.1vh;
+      width: 60.926%;
+
+      .icon {
+        color: #bfbfbf;
+      }
+    }
+  }
+
+  /* 轮播容器 */
+  .carouselWrapper {
+    position: absolute;
+    bottom: 2.3515vh;
+    left: 0;
+    right: 0;
+    height: 25.99vh; // 420px
+    margin: 0 2.3515vh; // 38px
+    border-radius: 1vh;
+    overflow: hidden;
+  }
+
+  // 更多用户
+  .listItem {
+    padding: 8px 0;
+    .cardGrid {
+      padding: 12px 16px;
+      width: 100%;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1;
+      background-color: #1890ff;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+      }
+      &:active {
+        background-color: #40a9ff;
+      }
+    }
+  }
+
+  // 下载
+  .downloadContainer {
+    display: block;
+
+    .download {
+      display: block;
+      color: #000;
+      font-size: 14px;
+      line-height: 38px;
+      text-align: center;
+      border: 1px solid #BFBFBF;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        border-color: @primary-color;
+        color: @primary-color;
+      }
+      &:active {
+        border-color: @primary-color;
+        color: @primary-color;
+      }
+
+      .downloadIcon {
+        display: none;
+      }
+    }
+  }
+
+  .submitFormItem {
+    margin-bottom: 16px;
+  }
+  .downloadFormItem {
+    margin-bottom: 0;
+  }
+}
+/************************************************* 手机端结束********************************************/
+
+/******************************************** 通用样式开始 ***************************************************/
+.main {
+  color: #666;
+  transform: translate(0, 0);
+  :global {
+    .ant-modal-mask {
+      background-color: transparent;
+    }
+    .ant-form {
+      color: #666;
+
+      .ant-checkbox-wrapper {
+        color: #666;
+      }
+    }
+  }
+}
+/* 背景容器 */
+.carouselWrapper {
+  :global {
+    .ant-carousel {
+      height: 100%;
+    }
+    .slick-slider {
+      height: 100%;
+    }
+    .slick-list {
+      height: 100%;
+    }
+    .slick-track {
+      height: 100%;
+    }
+    .slick-slide > div {
+      height: 100%;
+    }
+  }
+}
+/* 图片 */
+.image() {
+  height: 100%;
+  background: no-repeat left;
+  background-size: cover;
+}
+.image1 {
+  .image;
+  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/1.png');
+}
+.image2 {
+  .image;
+  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/2.png');
+}
+.image3 {
+  .image;
+  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/3.png');
+}
+.blurImage1 {
+  .image;
+  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/1_blur.png');
+}
+.blurImage2 {
+  .image;
+  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/2_blur.png');
+}
+.blurImage3 {
+  .image;
+  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/3_blur.png');
+}
+// 账号删除按钮
+.accountDeleleButton {
+  float: right;
+  cursor: pointer;
+
+  &:hover {
+    color: @primary-color;
+  }
+  &:active {
+    color: @primary-color;
+  }
+}
+// 快捷登录
+.quickLoginButton {
+  cursor: pointer;
+
+  &:hover {
+    color: @primary-color;
+  }
+  &:active {
+    color: @primary-color;
+  }
+}
+// 复选框
+.checkboxFormItem {
+  margin-bottom: 12px;
+
+  :global {
+    .ant-form-item-control {
+      line-height: 1;
+    }
+  }
+}
+// 常用账号
+.commonAccountWrapper {
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+/******************************************** 通用样式结束 ***************************************************/
+
+/*************************************************** 暂存样式开始 ****************************************** */
+// // 遮盖层
+// .cover {
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   bottom: 0;
+//   left: 0;
+//   background-color: rgba(0, 0, 0, 0.3);
+//   z-index: 2;
+// }
+// // 顶部标题栏
+// .titleWrapper {
+//   margin-top: 11.666667vh; // 126px;
+//   margin-bottom: 2.777778vh; // 30px
+//   text-align: center;
+//   .logo {
+//     display: inline-block;
+//     margin-right: 15px;
+//     width: 56px;
+//     height: 56px;
+//     background: url('@/assets/nanxiao-logo.png') no-repeat center;
+//     background-size: 100%;
+//     vertical-align: top;
+//   }
+//   .title {
+//     display: inline-block;
+//     height: 56px;
+//     line-height: 56px;
+//     font-size: 36px; // 36px
+//     color: #333;
+//     vertical-align: top;
+//   }
+// }
+/*************************************************** 暂存样式结束 ****************************************** */

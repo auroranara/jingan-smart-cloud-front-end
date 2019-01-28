@@ -3,10 +3,10 @@ module.exports = env => {
     // user
     {
       path: '/user',
-      component: '../layouts/UserLayout',
+      // component: '../layouts/UserLayout',
       routes: [
         { path: '/user', redirect: '/user/login' },
-        { path: '/user/login', component: '/User/Login' },
+        { path: '/user/login', component: '/User/NanXiaoLogin' },
         { path: '/user/redirect-login', component: '/User/RedirectLogin' },
         { path: '/user/register', component: './User/Register' },
         { path: '/user/register-result', component: './User/RegisterResult' },
@@ -57,6 +57,36 @@ module.exports = env => {
               component: './User/Activation/Result',
             },
           ],
+        },
+      ],
+    },
+    // 南消
+    {
+      path: '/nanxiao',
+      routes: [
+        { path: '/nanxiao', redirect: '/nanxiao/user/login' },
+        {
+          path: '/nanxiao/user/login',
+          component: './User/NanXiaoLogin',
+        },
+        {
+          path: '/nanxiao/download',
+          component: './User/NanXiaoDownload',
+        },
+      ],
+    },
+    // 利民
+    {
+      path: '/limin',
+      routes: [
+        { path: '/limin', redirect: '/limin/user/login' },
+        {
+          path: '/limin/user/login',
+          component: './User/LiMinLogin',
+        },
+        {
+          path: '/limin/download',
+          component: './User/LiMinDownload',
         },
       ],
     },
