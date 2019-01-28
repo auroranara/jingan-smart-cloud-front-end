@@ -1,11 +1,7 @@
 @color: rgb(255, 255, 255);
-@size: 18px;
+@size: 16px;
 
-.treeContainer {
-  // position: absolute;
-  // width: 92%;
-  // left: 8%;
-  // bottom: 10%;
+.container {
   color: @color;
   font-size: @size;
 
@@ -31,20 +27,16 @@
   box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
 
   :global {
-    .ant-select-tree {
-      color: @color;
+    .ant-select-dropdown-menu-item {
+      color: #FFF;
+    }
 
-      li .ant-select-tree-node-content-wrapper {
-        color: @color;
-      }
+    .ant-select-dropdown-menu-item-active {
+      background-color: rgba(4, 73, 140, 0.5);
+    }
 
-      li .ant-select-tree-node-content-wrapper:hover {
-        background-color: rgba(4, 73, 140, 0.5);
-      }
-
-      li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
-        background-color: rgb(4, 73, 140);
-      }
+    .ant-select-dropdown-menu-item-selected, .ant-select-dropdown-menu-item-selected:hover {
+      background-color: rgb(4, 73, 140);
     }
   }
 }

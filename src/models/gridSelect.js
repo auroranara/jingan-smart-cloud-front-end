@@ -1,7 +1,7 @@
 import { getGrids } from '../services/bigPlatform/gridSelect';
 
 export default {
-  namespace: 'bigFireControl',
+  namespace: 'gridSelect',
 
   state: {
     grids: [],

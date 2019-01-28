@@ -113,17 +113,17 @@ export default {
       }
     },
     // 获取网格id
-    *fetchCompanyId({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getCompanyId, payload)
-      if (code === 200) {
-        if (callback) {
-          callback(data);
-        }
-      }
-      else if (callback) {
-        callback();
-      }
-    },
+    // *fetchCompanyId({ payload, callback }, { call, put }) {
+    //   const { code, data } = yield call(getCompanyId, payload)
+    //   if (code === 200) {
+    //     if (callback) {
+    //       callback(data);
+    //     }
+    //   }
+    //   else if (callback) {
+    //     callback();
+    //   }
+    // },
     // 获取单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
       const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics, allCompanyInfoDtoList=[] } } = yield call(getUnitData, payload);

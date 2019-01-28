@@ -93,6 +93,7 @@ export default class ElectricityMonitor extends PureComponent {
    * 挂载后
    */
   componentDidMount() {
+    const { match: { params: { gridId } } } = this.props;
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const {
       dispatch,
@@ -100,11 +101,13 @@ export default class ElectricityMonitor extends PureComponent {
     // // 获取告警信息列表
     dispatch({
       type: 'electricityMonitor/fetchMessages',
+      payload: { gridId },
     });
 
     // 获取单位数据
     dispatch({
       type: 'electricityMonitor/fetchUnitData',
+      payload: { gridId },
       callback: data => {
         if (!data)
           return;
@@ -115,92 +118,84 @@ export default class ElectricityMonitor extends PureComponent {
     });
 
     // 获取报警趋势
-    dispatch({ type: 'electricityMonitor/fetchWarningTrend', payload: { queryMonth: 12 } });
+    dispatch({ type: 'electricityMonitor/fetchWarningTrend', payload: { queryMonth: 12, gridId } });
 
-    // 获取网格点id
-    dispatch({
-      type: 'electricityMonitor/fetchCompanyId',
-      callback: (companyId) => {
-        if (!companyId) {
-          return;
-        }
-        const params = {
-          companyId,
-          env,
-          type: 3,
-        };
-        const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-        // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
+    const params = {
+      companyId: gridId,
+      env,
+      type: 3,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+    // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
 
-        // 链接webscoket
-        const ws = new WebsocketHeartbeatJs({ url, ...options });
+    // 链接webscoket
+    const ws = new WebsocketHeartbeatJs({ url, ...options });
 
-        ws.onopen = () => {
-          console.log('connect success');
-          ws.send('heartbeat');
-        };
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
 
-        ws.onmessage = e => {
-          // 判断是否是心跳
-          if (!e.data || e.data.indexOf('heartbeat') > -1) return;
-          try {
-            const data = JSON.parse(e.data).data;
-            console.log(data);
-            const { type } = data;
-            // 如果数据为告警或恢复，则将数据插入到列表的第一个
-            if ([31, 32].includes(type)) {
-              const { electricityMonitor: { messages } } = this.props;
-              dispatch({
-                type: 'electricityMonitor/save',
-                payload: { messages: [data].concat(messages) },
-              });
-              // 如果发生告警，弹出通知框，否则关闭通知框
-              if (type === 32) {
-                const { electricityMonitor: { deviceRealTimeData: { deviceId: selectedDeviceId }={} } } = this.props;
-                const { monitorDrawerVisible, unitDetail: { companyId: selectedCompanyId } = {} } = this.state;
-                const { companyId, messageFlag: deviceId } = data;
-                this.showWarningNotification(data);
-                if (companyId === selectedCompanyId && monitorDrawerVisible) {
-                  this.getDeviceStatusCount(companyId);
-                  if (deviceId === selectedDeviceId) {
-                    this.getDeviceRealTimeData(deviceId);
-                    this.getDeviceHistoryData(deviceId);
-                    this.getDeviceConfig(deviceId);
-                  }
-                }
-              }
-              // else {
-              //   this.hideWarningNotification(data);
-              // }
-            }
-            // 如果为33，则修改单位状态
-            if (type === 33) {
-              const { companyId, status } = data;
-              const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
-              const index = unitIds.indexOf(companyId);
-              if (index > -1 && units[index].status !== status) {
-                dispatch({
-                  type: 'electricityMonitor/saveUnitData',
-                  payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
-                });
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data).data;
+        console.log(data);
+        const { type } = data;
+        // 如果数据为告警或恢复，则将数据插入到列表的第一个
+        if ([31, 32].includes(type)) {
+          const { electricityMonitor: { messages } } = this.props;
+          dispatch({
+            type: 'electricityMonitor/save',
+            payload: { messages: [data].concat(messages) },
+          });
+          // 如果发生告警，弹出通知框，否则关闭通知框
+          if (type === 32) {
+            const { electricityMonitor: { deviceRealTimeData: { deviceId: selectedDeviceId }={} } } = this.props;
+            const { monitorDrawerVisible, unitDetail: { companyId: selectedCompanyId } = {} } = this.state;
+            const { companyId, messageFlag: deviceId } = data;
+            this.showWarningNotification(data);
+            if (companyId === selectedCompanyId && monitorDrawerVisible) {
+              this.getDeviceStatusCount(companyId);
+              if (deviceId === selectedDeviceId) {
+                this.getDeviceRealTimeData(deviceId);
+                this.getDeviceHistoryData(deviceId);
+                this.getDeviceConfig(deviceId);
               }
             }
-          } catch (error) {
-            console.log('error', error);
           }
-        };
+          // else {
+          //   this.hideWarningNotification(data);
+          // }
+        }
+        // 如果为33，则修改单位状态
+        if (type === 33) {
+          const { companyId, status } = data;
+          const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
+          const index = unitIds.indexOf(companyId);
+          if (index > -1 && units[index].status !== status) {
+            dispatch({
+              type: 'electricityMonitor/saveUnitData',
+              payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
+            });
+          }
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
 
-        ws.onreconnect = () => {
-          console.log('reconnecting...');
-        };
-      },
-    });
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
   }
 
   getCardsInfo = () => {
-    const { dispatch } = this.props;
+    const { match: { params: { gridId } }, dispatch } = this.props;
     dispatch({
       type: 'electricityMonitor/fetchUnitData',
+      payload: { gridId },
       callback: data => {
         if (!data)
           return;
@@ -496,6 +491,7 @@ export default class ElectricityMonitor extends PureComponent {
    */
   render() {
     const {
+      match: { params: { gridId } },
       electricityMonitor: {
         messages,
         statisticsData,
@@ -528,13 +524,14 @@ export default class ElectricityMonitor extends PureComponent {
       cardsInfo,
     } = this.state;
 
-    // const extra = <GridSelect dispatch={dispatch} data={grids} gridId={gridId} />;
+    const extra = <GridSelect gridId={gridId} urlBase="/big-platform/electricity-monitor" />;
 
     return (
       <BigPlatformLayout
         title="晶安智慧用电监测平台"
-        // extra={extra}
+        extra={extra}
         style={{ backgroundImage: 'none' }}
+        extraStyle={{ padding: '10px 0' }}
         headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 99, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}

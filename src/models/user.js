@@ -6,6 +6,7 @@ import {
   verifyCode,
   updatePwd,
 } from '../services/user';
+import { getGrids } from '../services/bigPlatform/gridSelect';
 
 export default {
   namespace: 'user',
@@ -13,7 +14,7 @@ export default {
   state: {
     list: [],
     currentUser: {},
-    // currentUser: { permissionCodes: [] },
+    grids: [],
   },
 
   effects: {
@@ -58,6 +59,13 @@ export default {
       const response = yield call(updatePwd, payload);
       if (callback) callback(response);
     },
+    *fetchGrids({ payload, callback }, { call, put }) {
+      const response = yield call(getGrids);
+      if (Array.isArray(response)) {
+        yield put({ type: 'saveGrids', payload: response });
+        callback && callback(response);
+      }
+    },
   },
 
   reducers: {
@@ -81,6 +89,9 @@ export default {
           notifyCount: action.payload,
         },
       };
+    },
+    saveGrids(state, action) {
+      return { ...state, grids: action.payload };
     },
   },
 };

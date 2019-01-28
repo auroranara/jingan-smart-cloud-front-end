@@ -85,6 +85,33 @@ export default class UnitDrawer extends PureComponent {
       </Fragment>
     );
 
+    let cards = <p className={styles.empty}>暂无数据</p>;
+    if (filteredList.length)
+      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess, equipment }) => (
+        <DrawerCard
+          key={companyId}
+          name={name || NO_DATA}
+          location={address || NO_DATA}
+          person={safetyMan || NO_DATA}
+          phone={safetyPhone || NO_DATA}
+          style={{ cursor: 'auto' }}
+          infoStyle={{ width: 70, textAlign: 'center', color: '#FFF', bottom: '50%', right: 25, transform: 'translateY(50%)' }}
+          info={
+            <Fragment>
+              <div className={styles.equipment}>{equipment || '--'}</div>
+              设备数
+            </Fragment>
+          }
+          more={
+            <p className={styles.more}>
+              {equipment ? [common, alarm, warn, noAccess].map((n, i) => (
+                <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+              )) : ' '}
+            </p>
+          }
+        />
+      ));
+
     const right = (
         <SearchBar
           // value={value}
@@ -92,30 +119,7 @@ export default class UnitDrawer extends PureComponent {
           // onChange={this.handleChange}
           extra={select}
         >
-          {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess, equipment }) => (
-            <DrawerCard
-              key={companyId}
-              name={name || NO_DATA}
-              location={address || NO_DATA}
-              person={safetyMan || NO_DATA}
-              phone={safetyPhone || NO_DATA}
-              style={{ cursor: 'auto' }}
-              infoStyle={{ width: 70, textAlign: 'center', color: '#FFF', bottom: '50%', right: 25, transform: 'translateY(50%)' }}
-              info={
-                <Fragment>
-                  <div className={styles.equipment}>{equipment || '--'}</div>
-                  设备数
-                </Fragment>
-              }
-              more={
-                <p className={styles.more}>
-                  {equipment ? [common, alarm, warn, noAccess].map((n, i) => (
-                    <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                  )) : ' '}
-                </p>
-              }
-            />
-          ))}
+          {cards}
         </SearchBar>
     );
 

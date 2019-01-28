@@ -5,58 +5,46 @@ import { Select } from 'antd';
 
 import styles from './GridSelect.less';
 
-const FONT_SIZE = 18;
+const FONT_SIZE = 16;
+const { Option } = Select;
 
 @connect(({ gridSelect }) => ({ grid: gridSelect }))
 export default class GridSelect extends PureComponent {
-  state = {
-    value: '',
-  };
-
   componentDidMount() {
-    const { dispatch, gridId } = this.props;
-    const isIndex = !gridId;
+    const { dispatch } = this.props;
 
-    // 是首页则获取网格点数组后第一个，不是首页则将值设为传入的gridId
-    !isIndex && this.setState({ treeValue: gridId });
-
-    dispatch({
-      type: 'bigFireControl/fetchGrids',
-      callback: isIndex ? data => this.setState({ treeValue: data && data.length ? data[0].key : '' }) : null,
-    });
+    dispatch({ type: 'gridSelect/fetchGrids' });
   }
 
   onChange = value => {
     const { urlBase } = this.props;
-    const { treeValue: formerValue } = this.state;
 
     // 选择的值与之前相同时，不做处理
-    if (value === formerValue)
-      return;
+    // if (value === formerValue)
+    //   return;
 
-    this.setState({ treeValue: value });
     router.push(`${urlBase}/${value}`);
     location.reload();
   };
 
   render() {
-    const { data } = this.props;
-    const { treeValue } = this.state;
+    const { grid: { grids }, gridId } = this.props;
 
     // 对data进行处理，data不为数组或为空数组则赋为含有一个暂无信息元素的数组
-    const list = Array.isArray(data) && data.length ? data : [{ title: '暂无信息' }];
+    const list = grids.length ? grids : [{ title: '暂无信息' }];
 
     return (
-      <div className={styles.treeContainer}>
+      <div className={styles.container}>
         {list.length > 1 ? (
           <Select
             style={{ width: 300, fontSize: FONT_SIZE }}
-            value={treeValue}
+            value={gridId}
             dropdownClassName={styles.dropdown}
-            treeData={list}
             treeDefaultExpandAll
             onChange={this.onChange}
-          />
+          >
+            {grids.map(({ title, value }) => <Option value={value} key={value}>{title}</Option>)}
+          </Select>
         ) : list[0].title}
       </div>
     );

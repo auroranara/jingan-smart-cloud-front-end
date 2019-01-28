@@ -52,6 +52,10 @@ export default class App extends PureComponent {
       settable,
       // 设置按钮样式
       setStyle,
+      // 时间样式
+      timeStyle,
+      // extra样式
+      extraStyle,
       // 设置按钮点击事件
       onSet,
     } = this.props;
@@ -63,8 +67,8 @@ export default class App extends PureComponent {
       <div className={containerClassName} style={{ backgroundImage: `url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png)`, ...style}}>
         <div className={styles.header} style={{ backgroundImage: `url(${headerBg})`, ...headerStyle }}>
           <div className={styles.headerTitle} style={titleStyle}>{autoSpace ? title.split('').join(' ') : title}</div>
-          <div className={styles.headerTime}>{currentTime}</div>
-          {extra && <div className={styles.headerExtra}>{extra}</div>}
+          <div className={styles.headerTime} style={timeStyle}>{currentTime}</div>
+          {extra && <div className={styles.headerExtra} style={extraStyle}>{extra}</div>}
           {settable && <Icon style={setStyle} className={styles.setButton} type="setting" onClick={onSet} />}
         </div>
         <div className={styles.content} style={contentStyle}>

@@ -106,7 +106,7 @@ module.exports = env => {
           component: './BigPlatform/Position/History',
         },
         {
-          path: '/big-platform/electricity-monitor',
+          path: '/big-platform/electricity-monitor/:gridId',
           component: './BigPlatform/ElectricityMonitor',
         },
       ],

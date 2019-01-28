@@ -150,6 +150,25 @@ export default class AlarmDrawer extends PureComponent {
       </Fragment>
     );
 
+    let cards = <p className={styles.empty}>暂无数据</p>;
+    if (filteredList.length)
+      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
+        <DrawerCard
+          key={companyId}
+          name={name || NO_DATA}
+          location={address || NO_DATA}
+          person={safetyMan || NO_DATA}
+          phone={safetyPhone || NO_DATA}
+          style={{ cursor: 'auto' }}
+          more={
+            <p className={styles.more}>
+              {[common, alarm, warn, noAccess].map((n, i) => (
+                <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+              ))}
+            </p>
+          }
+        />
+      ));
     const right = (
       <SearchBar
         // value={value}
@@ -157,23 +176,7 @@ export default class AlarmDrawer extends PureComponent {
         // onChange={this.handleChange}
         extra={select}
       >
-        {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
-          <DrawerCard
-            key={companyId}
-            name={name || NO_DATA}
-            location={address || NO_DATA}
-            person={safetyMan || NO_DATA}
-            phone={safetyPhone || NO_DATA}
-            style={{ cursor: 'auto' }}
-            more={
-              <p className={styles.more}>
-                {[common, alarm, warn, noAccess].map((n, i) => (
-                  <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                ))}
-              </p>
-            }
-          />
-        ))}
+        {cards}
       </SearchBar>
     );
 

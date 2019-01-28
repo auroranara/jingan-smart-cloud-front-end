@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 const DEFAULT_COLORS = ['232, 103, 103', '246, 181, 78', '42, 139, 213', '2, 252, 250'];
-// const LIST = [120, 200, 150, 80, 70, 110, 130, 20, 10, 150];
 
 const LINE_STYLE =  { width: 2, color: 'rgb(64, 95, 135)' };
 
@@ -53,13 +52,12 @@ export default class ChartBar extends PureComponent {
     };
 
 
-    let chartComponent = null;
+    let chartComponent = <p style={{ textAlign: 'center' }}>暂无数据</p>;
     if (list.length)
       chartComponent = (
         <ReactEcharts
           option={option}
           style={{ height: 400 }}
-          // style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: -1 }}
           onChartReady={chart => { this.chart = chart; }}
         />
       );
