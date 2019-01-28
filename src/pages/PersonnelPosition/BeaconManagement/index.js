@@ -8,6 +8,7 @@ import router from 'umi/router';
 import codes from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
 import styles from './index.less';
+import { message } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -93,8 +94,12 @@ export default class BeaconManagement extends PureComponent {
   }
 
   // 点击查看信标列表
-  handleViewBeacons = ({ id }) => {
-    router.push(`/personnel-position/beacon-management/company/${id}`)
+  handleViewBeacons = ({ id }, auth) => {
+    if (auth) {
+      router.push(`/personnel-position/beacon-management/company/${id}`)
+      return
+    }
+    message.warning('您没有权限访问对应页面')
   }
 
   render() {
@@ -188,7 +193,7 @@ export default class BeaconManagement extends PureComponent {
                           地址：{practicalAddress || '暂无信息'}
                         </Ellipsis>
                       </div>
-                      <div className={styles.countContainer} onClick={viewAuth ? () => this.handleViewBeacons(item) : null}>
+                      <div className={styles.countContainer} onClick={() => this.handleViewBeacons(item, viewAuth)}>
                         <div className={styles.count}>{beaconCount}</div>
                         <p className={styles.text}>信标数</p>
                       </div>

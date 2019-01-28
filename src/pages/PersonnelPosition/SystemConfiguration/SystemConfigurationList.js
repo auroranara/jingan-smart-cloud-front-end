@@ -424,6 +424,7 @@ export default class SystemConfiguration extends PureComponent {
                     value={company.name}
                   />
                   <Button
+                    disabled={!isAdd}
                     type="primary"
                     style={{ marginLeft: '5px' }}
                     onClick={this.handleViewCompanyModal}
