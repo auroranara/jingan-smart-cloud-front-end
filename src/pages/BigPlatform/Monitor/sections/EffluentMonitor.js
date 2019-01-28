@@ -12,7 +12,7 @@ import waterBg from '../imgs/waterBg.png';
 const Option = Select.Option;
 
 const warningColor = 'rgb(200, 70, 70)';
-const defaultColor = 'rgb(9,103,211)';
+const defaultColor = 'rgb(0,168,255)';
 
 function getDayTime(t) {
   return moment(t).format('YYYY-MM-DD');
@@ -32,7 +32,6 @@ export default function EffluentMonitor(props) {
       waterRealTimeData: { status, updateTime, realTimeData = {}, unnormalCodes = [] },
     },
   } = props;
-  console.log('props', props);
 
   let rtData = realTimeData;
   if (status === '-1') rtData = {};
