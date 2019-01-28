@@ -1,16 +1,17 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Checkbox, Form, Input, Select, TreeSelect, message } from 'antd';
+import { Button, Card, Checkbox, Form, Input, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AlarmAddOrEdit.less';
+import { msgCallback } from './utils';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
 const { Group: CheckboxGroup } = Checkbox;
 
-const CK_VALUES = [0, 1, 2, 3];
+const CK_VALUES = [2, 3, 4, 5];
 const CK_OPTIONS = ['越界', '长时间不动', '超员', '缺员'].map((label, i) => ({ label, value: CK_VALUES[i] }));
 const FORMITEM_LAYOUT1 = {
   labelCol: {
@@ -39,11 +40,14 @@ export default class AlarmAddOrEdit extends PureComponent {
   state = {
     checkedValues: CK_VALUES,
     mapUrl: '',
+    mapId: undefined,
+    areaId: undefined,
   };
 
   componentDidMount() {
     const { dispatch, match: { params: { companyId, alarmId } } } = this.props;
     dispatch({ type: 'personPositionAlarm/fetchMapList', payload: { companyId, pageSize: 0 } });
+    dispatch({ type: 'personPositionAlarm/fetchAllCards', payload: { companyId, pageSize: 0 } });
   }
 
   isAdd = () => {
@@ -57,7 +61,14 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   handleMapChange = value => {
     const { dispatch, personPositionAlarm: { mapList } } = this.props;
-    dispatch({ type: 'personPositionAlarm/fetchSectionList', payload: { mapId: value, pageSize: 0 } });
+    this.setState({ mapId: value });
+    dispatch({
+      type: 'personPositionAlarm/fetchSectionList',
+      payload: { mapId: value, pageSize: 0 },
+      callback: areas => {
+        this.setState({ areaId: areas.length ? areas[0].id : '' });
+      },
+    });
 
     const url = mapList.find(({ id }) => id === value).mapPhotoUrl;
     this.setState({ mapUrl: url });
@@ -65,7 +76,26 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   handleSectionChange = value => {
     const { dispatch, personPositionAlarm } = this.props;
-    dispatch({ type: 'personPositionAlarm/fetchSectionLimits', payload: value });
+    this.setState({ areaId: value });
+    dispatch({
+      type: 'personPositionAlarm/fetchSectionLimits',
+      payload: value,
+      callback: ({ minCanEnterUsers }) => {
+        this.setCards(minCanEnterUsers);
+      },
+    });
+  };
+
+  handleCardsChange = values => {
+    // console.log(values);
+    const { personPositionAlarm: { sectionLimits: { minCanEnterUsers } } } = this.props;
+    this.setCards(minCanEnterUsers, values);
+  };
+
+  setCards = (minCanEnterUsers, values=[]) => {
+    const { form: { setFieldsValue } } = this.props;
+    const min = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
+    setFieldsValue({ canEnterUsers: [...min, ...values] });
   };
 
   genTimeLimitCheck = (min, max) => {
@@ -86,14 +116,35 @@ export default class AlarmAddOrEdit extends PureComponent {
   };
 
   handleSubmit = e => {
-    const { form: { validateFields } } = this.props;
+    const { dispatch, form: { validateFields }, match: { params: { companyId, alarmId } } } = this.props;
+    const { checkedValues, areaId } = this.state;
+    const isAdd = this.isAdd();
+
     e.preventDefault();
 
     validateFields((err, values) => {
-      if (!err)
+      console.log(err, values);
+      if (err)
         return;
 
-      console.log(values);
+      const newValues = { ...values };
+      newValues.areaId = areaId;
+      newValues.typeList = checkedValues;
+      if (values.canEnterUsers)
+        newValues.canEnterUsers = values.canEnterUsers.map((cardId) => ({ cardId }));
+      if (!isAdd)
+        newValues.id = alarmId;
+
+      // console.log(newValues);
+      dispatch({
+        type: `personPositionAlarm/${isAdd ? 'add' : 'edit'}AlarmStrategy`,
+        payload: newValues,
+        callback: (code, msg) => {
+          msgCallback(code, msg);
+          if (code === 200)
+            router.push(`/personnel-position/alarm-management/list/${companyId}`);
+        },
+      });
     });
   };
 
@@ -105,7 +156,7 @@ export default class AlarmAddOrEdit extends PureComponent {
         mapList,
         sectionList,
         sectionLimits: {
-          minCanEnterUsers, // 最小允许进入范围
+          // minCanEnterUsers, // 最小允许进入范围
           maxCanEnterUsers, // 最大允许进入范围
           minTLongLimitTime, // 最小停留时间
           maxTLongLimitTime, // 最大停留时间
@@ -114,9 +165,10 @@ export default class AlarmAddOrEdit extends PureComponent {
           minLimitLackNum, // 最小缺员人数
           maxLimitLackNum, // 最大缺员人数
         },
+        allCards,
       },
     } = this.props;
-    const { checkedValues, mapUrl } = this.state;
+    const { checkedValues, mapId, areaId, mapUrl } = this.state;
 
     const isAdd = this.isAdd();
     const title = isAdd ? '新增' : '编辑';
@@ -128,10 +180,18 @@ export default class AlarmAddOrEdit extends PureComponent {
       { title, name: title },
     ];
 
+    const cardList = maxCanEnterUsers ? maxCanEnterUsers : allCards;
+
     const infoTitle = (
       <Fragment>
         报警策略配置
-        <CheckboxGroup options={CK_OPTIONS} defaultValue={CK_VALUES} onChange={this.handleCkChange} className={styles.checks} />
+        <CheckboxGroup
+          // disabled={!areaId}
+          options={CK_OPTIONS}
+          defaultValue={CK_VALUES}
+          onChange={this.handleCkChange}
+          className={styles.checks}
+        />
       </Fragment>
     )
 
@@ -146,13 +206,13 @@ export default class AlarmAddOrEdit extends PureComponent {
               <Fragment>
                 <div className={styles.map}>
                   所属地图：
-                  <Select placeholder="请选择地图" style={{ width: 200 }} onChange={this.handleMapChange}>
+                  <Select placeholder="请选择地图" style={{ width: 200 }} onChange={this.handleMapChange} value={mapId}>
                     {mapList.map(({ id, mapName }) => <Option value={id} key={id}>{mapName}</Option>)}
                   </Select>
                 </div>
                 <div>
                   区域名称：
-                  <Select placeholder="请选择区域" style={{ width: 200 }} onChange={this.handleSectionChange}>
+                  <Select placeholder="请选择区域" style={{ width: 200 }} onChange={this.handleSectionChange} value={areaId}>
                     {sectionList.map(({ id, name }) => <Option value={id} key={id}>{name}</Option>)}
                   </Select>
                 </div>
@@ -176,8 +236,8 @@ export default class AlarmAddOrEdit extends PureComponent {
                   {getFieldDecorator('canEnterUsers', { rules: [
                     { required: true, message: '请选择允许进入人员' },
                   ] })(
-                    <Select mode="multiple">
-                      <Option value="0">张三</Option>
+                    <Select mode="multiple" onChange={this.handleCardsChange}>
+                      {cardList.map(({ cardId, cardCode, userName }) => <Option value={cardId} key={cardId}>{cardCode}({userName})</Option>)}
                     </Select>
                   )}
                 </FormItem>
@@ -191,8 +251,9 @@ export default class AlarmAddOrEdit extends PureComponent {
                     { required: true, message: '请设置不动时长' },
                     { validator: this.genTimeLimitCheck(minTLongLimitTime, maxTLongLimitTime) },
                   ] })(
-                    <Input style={{ width: 150 }} placeholder="单位为小时" />
+                    <Input style={{ width: 150 }} placeholder="请输入不动时长" />
                   )}
+                  <span className={styles.hour}>小时</span>
                 </FormItem>
               </Fragment>
             )}
@@ -224,14 +285,15 @@ export default class AlarmAddOrEdit extends PureComponent {
                   {getFieldDecorator('lackTimeLimit', { rules: [
                     { required: true, message: '请设置缺员时长' },
                   ] })(
-                    <Input style={{ width: 150 }} placeholder="单位为小时" />
+                    <Input style={{ width: 150 }} placeholder="请输入缺员时长" />
                   )}
+                  <span className={styles.hour}>小时</span>
                 </FormItem>
               </Fragment>
             )}
             <FormItem style={{ textAlign: 'center', marginTop: 24 }}>
               {!!checkedValues.length && (
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" disabled={!areaId}>
                   提交
                 </Button>
               )}

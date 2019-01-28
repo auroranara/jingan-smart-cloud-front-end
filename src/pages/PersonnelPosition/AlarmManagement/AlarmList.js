@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Input, Select, Table, message } from 'antd';
+import Link from 'umi/link';
+import { Button, Card, Input, Select, Table, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
-// import styles from './CompanyList.less';
+import styles from './CompanyList.less';
 
 const { Group: ButtonGroup } = Button;
 const { Option } = Select;
@@ -19,24 +20,7 @@ const breadcrumbList = [
 ];
 
 const NO_DATA = '暂无信息';
-const PAGE_SIZE = 18;
-const COLUMNS = [{
-  title: '区域编号',
-  dataIndex: 'areaCode',
-}, {
-  title: '区域名称',
-  dataIndex: 'areaName',
-}, {
-  title: '所属地图',
-  dataIndex: 'mapName',
-}, {
-  title: '报警类型',
-  dataIndex: 'typeNameList',
-}, {
-  title: '操作',
-  dataIndex: 'operation',
-  render: (text, record) => (<span>编辑</span>),
-}];
+const PAGE_SIZE = 10;
 
 @connect(({ personPositionAlarm, loading }) => ({ personPositionAlarm, loading: loading.effects['personPositionAlarm/fetchAlarmList'] }))
 export default class AlarmList extends PureComponent {
@@ -47,8 +31,33 @@ export default class AlarmList extends PureComponent {
   };
 
   componentDidMount() {
+    const { match: { params: { companyId } } } = this.props;
+
     this.fetchList(1);
+    this.columns = [{
+      title: '区域编号',
+      dataIndex: 'areaCode',
+    }, {
+      title: '区域名称',
+      dataIndex: 'areaName',
+    }, {
+      title: '所属地图',
+      dataIndex: 'mapName',
+    }, {
+      title: '报警类型',
+      dataIndex: 'typeNameList',
+      render: (text, record) => {
+        // console.log(text);
+        return text.join(',');
+      },
+    }, {
+      title: '操作',
+      dataIndex: 'operation',
+      render: (text, record) => (<Link to={`/personnel-position/alarm-management/edit/${companyId}/${record.alarmId}`}>编辑</Link>),
+    }];
   }
+
+  columns = [];
 
   fetchList = (pageNum) => {
     const { dispatch, match: { params: { companyId } } } = this.props;
@@ -155,15 +164,20 @@ export default class AlarmList extends PureComponent {
         title={title}
         breadcrumbList={breadcrumbList}
       >
-        <ToolBar fields={fields} action={buttons} />
-        <Table
-          loading={loading}
-          columns={COLUMNS}
-          rowSelection={rowSelection}
-          pagination={pagination}
-          dataSource={list}
-          onChange={this.handlePageChange}
-        />
+        <Card>
+          <ToolBar fields={fields} action={buttons} />
+        </Card>
+        <Card className={styles.table}>
+          <Table
+            rowKey="id"
+            loading={loading}
+            columns={this.columns}
+            rowSelection={rowSelection}
+            pagination={pagination}
+            dataSource={list}
+            onChange={this.handlePageChange}
+          />
+        </Card>
       </PageHeaderLayout>
     );
   }

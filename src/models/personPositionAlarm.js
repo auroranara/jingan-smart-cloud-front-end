@@ -4,8 +4,11 @@ import {
   getMapList,
   getSectionList,
   getSectionLimits,
+  getAllCards,
+  postAlarmStrategy,
+  putAlarmStrategy,
 } from '../services/personnelPosition/alarmManagement';
-// import { handleMapList } from '@/pages/PersonnelPosition/AlarmManagement/utils';
+import { handleAllCards } from '@/pages/PersonnelPosition/AlarmManagement/utils';
 
 export default {
   namespace: 'personPositionAlarm',
@@ -16,6 +19,7 @@ export default {
     mapList: [],
     sectionList: [],
     sectionLimits: {},
+    allCards: [], // 所有人员列表
   },
 
   effects: {
@@ -35,7 +39,7 @@ export default {
       let { code=500, data } = response;
       data = data || {};
       if (code === 200)
-        yield put({ type: 'saveAlarmList', payload: data });
+        yield put({ type: 'saveAlarmList', payload: data && Array.isArray(data.list) ? data.list : [] });
     },
     *fetchMapList({ payload, callback }, { call, put }) {
       let response = yield call(getMapList, payload);
@@ -48,8 +52,11 @@ export default {
       let response = yield call(getSectionList, payload);
       response = response || {};
       let { code=500, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveSectionList', payload: data && Array.isArray(data.list) ? data.list : [] });
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({ type: 'saveSectionList', payload: list });
+        callback(list);
+      }
     },
     *fetchSectionLimits({ payload, callback }, { call, put }) {
       let response = yield call(getSectionLimits, payload);
@@ -57,6 +64,25 @@ export default {
       let { code=500, data } = response;
       if (code === 200)
         yield put({ type: 'saveSectionLimits', payload: data || {} });
+    },
+    *fetchAllCards({ payload, callback }, { call, put }) {
+      let response = yield call(getAllCards, payload);
+      response = response || {};
+      let { code=500, data } = response;
+      if (code === 200)
+        yield put({ type: 'saveAllCards', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
+    *addAlarmStrategy({ payload, callback }, { call, put }) {
+      let response = yield call(postAlarmStrategy, payload);
+      response = response || {};
+      let { code, msg } = response;
+      callback(code, msg);
+    },
+    *editAlarmStrategy({ payload, callback }, { call, put }) {
+      let response = yield call(putAlarmStrategy, payload);
+      response = response || {};
+      let { code, msg } = response;
+      callback(code, msg);
     },
   },
 
@@ -84,6 +110,9 @@ export default {
     },
     saveSectionLimits(state, action) {
       return { ...state, sectionLimits: action.payload };
+    },
+    saveAllCards(state, action) {
+      return { ...state, allCards: handleAllCards(action.payload) };
     },
   },
 };

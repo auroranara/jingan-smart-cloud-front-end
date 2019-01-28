@@ -27,3 +27,24 @@ export async function getSectionList(params) {
 export async function getSectionLimits(id) {
   return request(`${URL_BASE}/getLimit/${id}`);
 }
+
+// 获取标签列表
+export async function getAllCards(params) {
+  return request(`/acloud_new/v2/accessCard/accessCardInfoForPage?${stringify(params)}`);
+}
+
+// 新增报警策略
+export async function postAlarmStrategy(params) {
+  return request(`${URL_BASE}/locationWarningStrategy`,  {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑报警策略
+export async function putAlarmStrategy(params) {
+  return request(`${URL_BASE}/locationWarningStrategy`,  {
+    method: 'PUT',
+    body: params,
+  });
+}
