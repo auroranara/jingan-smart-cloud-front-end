@@ -36,6 +36,7 @@ export default class Dashboard extends PureComponent {
 
   componentDidMount() {
     let {
+      dispatch,
       user: {
         currentUser: {
           permissionCodes = [],
@@ -46,6 +47,8 @@ export default class Dashboard extends PureComponent {
         },
       },
     } = this.props;
+
+    dispatch({ type: 'user/fetchGrids' });
 
     // const regulatoryClassification = ['1', '2'];
     const classification = Array.isArray(regulatoryClassification) && regulatoryClassification.map(n => Number.parseInt(n, 10)) || [];
@@ -58,7 +61,7 @@ export default class Dashboard extends PureComponent {
     safeItem.url = `${window.publicPath}#/big-platform/safety/government/index`
     // fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`
-    electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor`
+    // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
     // if (unitType === 2) {
@@ -140,7 +143,10 @@ export default class Dashboard extends PureComponent {
   }
 
   render() {
+    const { user: { grids } } = this.props;
     const { safetyProduction, fireService, monitorService, personnelPositioning, electricityMonitor } = this.state;
+
+    electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${grids.length ? grids[0].value : 'index'}`;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =

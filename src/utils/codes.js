@@ -150,6 +150,12 @@ export default {
       add: 'personnelPosition.buildingsInfo.add',
       edit: 'personnelPosition.buildingsInfo.edit',
       delete: 'personnelPosition.buildingsInfo.delete',
+      // 楼层
+      floorListView: 'personnelPosition.buildingsInfo.floorListView',
+      floorAdd: 'personnelPosition.buildingsInfo.floorAdd',
+      floorEdit: 'personnelPosition.buildingsInfo.floorEdit',
+      floorView: 'personnelPosition.buildingsInfo.floorView',
+      floorDelete: 'personnelPosition.buildingsInfo.floorDelete',
     },
     // 信标管理
     beaconManagement: {

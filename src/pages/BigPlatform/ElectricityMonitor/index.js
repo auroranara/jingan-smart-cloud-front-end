@@ -22,11 +22,12 @@ import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
 import {
-  SettingModal,
-  UnitDrawer,
   AlarmDrawer,
   MonitorDrawer,
+  SettingModal,
+  UnitDrawer,
 } from './sections/Components';
+import { GridSelect } from './components/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, getAlarmUnits } from './utils';
@@ -75,6 +76,7 @@ export default class ElectricityMonitor extends PureComponent {
       tooltipName: '',
       tooltipVisible: false,
       tooltipPosition: [0, 0],
+      cardsInfo: [], // 抽屉中的企业列表卡片信息
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -91,6 +93,7 @@ export default class ElectricityMonitor extends PureComponent {
    * 挂载后
    */
   componentDidMount() {
+    const { match: { params: { gridId } } } = this.props;
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const {
       dispatch,
@@ -98,114 +101,110 @@ export default class ElectricityMonitor extends PureComponent {
     // // 获取告警信息列表
     dispatch({
       type: 'electricityMonitor/fetchMessages',
+      payload: { gridId },
     });
 
     // 获取单位数据
     dispatch({
       type: 'electricityMonitor/fetchUnitData',
+      payload: { gridId },
       callback: data => {
         if (!data)
           return;
-        const { unitSet: { units=[] } } = data;
-        this.cardsInfo = genCardsInfo(units);
+        const { unitSet: { units=[] }, allCompanyList } = data;
+        const cardsInfo = genCardsInfo(units, allCompanyList);
+        this.setState({ cardsInfo });
       },
     });
 
-    // 获取网格点id
-    dispatch({
-      type: 'electricityMonitor/fetchCompanyId',
-      callback: (companyId) => {
-        if (!companyId) {
-          return;
-        }
-        const params = {
-          companyId,
-          env,
-          type: 3,
-        };
-        const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-        // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
+    // 获取报警趋势
+    dispatch({ type: 'electricityMonitor/fetchWarningTrend', payload: { queryMonth: 12, gridId } });
 
-        // 链接webscoket
-        const ws = new WebsocketHeartbeatJs({ url, ...options });
+    const params = {
+      companyId: gridId,
+      env,
+      type: 3,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+    // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
 
-        ws.onopen = () => {
-          console.log('connect success');
-          ws.send('heartbeat');
-        };
+    // 链接webscoket
+    const ws = new WebsocketHeartbeatJs({ url, ...options });
 
-        ws.onmessage = e => {
-          // 判断是否是心跳
-          if (!e.data || e.data.indexOf('heartbeat') > -1) return;
-          try {
-            const data = JSON.parse(e.data).data;
-            console.log(data);
-            const { type } = data;
-            // 如果数据为告警或恢复，则将数据插入到列表的第一个
-            if ([31, 32].includes(type)) {
-              const { electricityMonitor: { messages } } = this.props;
-              dispatch({
-                type: 'electricityMonitor/save',
-                payload: { messages: [data].concat(messages) },
-              });
-              // 如果发生告警，弹出通知框，否则关闭通知框
-              if (type === 32) {
-                const { electricityMonitor: { deviceRealTimeData: { deviceId: selectedDeviceId }={} } } = this.props;
-                const { monitorDrawerVisible, unitDetail: { companyId: selectedCompanyId } = {} } = this.state;
-                const { companyId, messageFlag: deviceId } = data;
-                this.showWarningNotification(data);
-                if (companyId === selectedCompanyId && monitorDrawerVisible) {
-                  this.getDeviceStatusCount(companyId);
-                  if (deviceId === selectedDeviceId) {
-                    this.getDeviceRealTimeData(deviceId);
-                    this.getDeviceHistoryData(deviceId);
-                    this.getDeviceConfig(deviceId);
-                  }
-                }
-              }
-              // else {
-              //   this.hideWarningNotification(data);
-              // }
-            }
-            // 如果为33，则修改单位状态
-            if (type === 33) {
-              const { companyId, status } = data;
-              const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
-              const index = unitIds.indexOf(companyId);
-              if (index > -1 && units[index].status !== status) {
-                dispatch({
-                  type: 'electricityMonitor/saveUnitData',
-                  payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
-                });
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data).data;
+        console.log(data);
+        const { type } = data;
+        // 如果数据为告警或恢复，则将数据插入到列表的第一个
+        if ([31, 32].includes(type)) {
+          const { electricityMonitor: { messages } } = this.props;
+          dispatch({
+            type: 'electricityMonitor/save',
+            payload: { messages: [data].concat(messages) },
+          });
+          // 如果发生告警，弹出通知框，否则关闭通知框
+          if (type === 32) {
+            const { electricityMonitor: { deviceRealTimeData: { deviceId: selectedDeviceId }={} } } = this.props;
+            const { monitorDrawerVisible, unitDetail: { companyId: selectedCompanyId } = {} } = this.state;
+            const { companyId, messageFlag: deviceId } = data;
+            this.showWarningNotification(data);
+            if (companyId === selectedCompanyId && monitorDrawerVisible) {
+              this.getDeviceStatusCount(companyId);
+              if (deviceId === selectedDeviceId) {
+                this.getDeviceRealTimeData(deviceId);
+                this.getDeviceHistoryData(deviceId);
+                this.getDeviceConfig(deviceId);
               }
             }
-          } catch (error) {
-            console.log('error', error);
           }
-        };
+          // else {
+          //   this.hideWarningNotification(data);
+          // }
+        }
+        // 如果为33，则修改单位状态
+        if (type === 33) {
+          const { companyId, status } = data;
+          const { electricityMonitor: { unitIds, unitSet: { units } } } = this.props;
+          const index = unitIds.indexOf(companyId);
+          if (index > -1 && units[index].status !== status) {
+            dispatch({
+              type: 'electricityMonitor/saveUnitData',
+              payload: [...units.slice(0, index), {...units[index], status }, ...units.slice(index+1)],
+            });
+          }
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
 
-        ws.onreconnect = () => {
-          console.log('reconnecting...');
-        };
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+  }
+
+  getCardsInfo = () => {
+    const { match: { params: { gridId } }, dispatch } = this.props;
+    dispatch({
+      type: 'electricityMonitor/fetchUnitData',
+      payload: { gridId },
+      callback: data => {
+        if (!data)
+          return;
+        const { unitSet: { units=[] }, allCompanyList } = data;
+        const cardsInfo = genCardsInfo(units, allCompanyList);
+        this.setState({ cardsInfo });
       },
     });
-  }
-
-  /**
-   * 更新后
-   */
-  componentDidUpdate() {
-
-  }
-
-  /**
-   * 销毁前
-   */
-  componentWillUnmount() {
-
-  }
-
-  cardsInfo = [];
+  };
 
   getDeviceStatusCount = (companyId) => {
     const { dispatch } = this.props;
@@ -477,11 +476,22 @@ export default class ElectricityMonitor extends PureComponent {
     this.setState({ ...newState });
   };
 
+  handleUnitStatisticsClick = e => {
+    this.getCardsInfo();
+    this.handleDrawerVisibleChange('unit');
+  };
+
+  handleAlarmStatisticsClick = e => {
+    this.getCardsInfo();
+    this.handleDrawerVisibleChange('alarm');
+  }
+
   /**
    * 渲染
    */
   render() {
     const {
+      match: { params: { gridId } },
       electricityMonitor: {
         messages,
         statisticsData,
@@ -492,6 +502,8 @@ export default class ElectricityMonitor extends PureComponent {
         deviceConfig,
         deviceHistoryData,
         cameraList,
+        warningTrendList, // 12个月报警趋势
+        warningTrendList1, // 6个月报警趋势
       },
     } = this.props;
     const {
@@ -501,23 +513,25 @@ export default class ElectricityMonitor extends PureComponent {
       monitorDrawerVisible,
       monitorDrawerTitleIndex,
       // videoVisible,
-      infoWindowShow,
+      // infoWindowShow,
       selectList,
       searchValue,
-      infoWindow,
+      // infoWindow,
       unitDetail,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
+      cardsInfo,
     } = this.state;
 
-    const cardsInfo = this.cardsInfo;
+    const extra = <GridSelect gridId={gridId} urlBase="/big-platform/electricity-monitor" />;
 
     return (
       <BigPlatformLayout
         title="晶安智慧用电监测平台"
-        extra="无锡市"
+        extra={extra}
         style={{ backgroundImage: 'none' }}
+        extraStyle={{ padding: '10px 0' }}
         headerStyle={{ position: 'absolute', top: 0, left: 0, width: '100%', fontSize: 16, zIndex: 99, backgroundImage: `url(${headerBg})`, backgroundSize: '100% 100%' }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
@@ -550,17 +564,17 @@ export default class ElectricityMonitor extends PureComponent {
         <AccessUnitStatistics
           data={statisticsData}
           className={`${styles.left} ${styles.accessUnitStatistics}`}
-          onClick={e => this.handleDrawerVisibleChange('unit')}
+          onClick={this.handleUnitStatisticsClick}
         />
         {/* 实时报警统计 */}
         <RealTimeAlarmStatistics
           data={unitSet}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
-          onClick={e => this.handleDrawerVisibleChange('alarm')}
+          onClick={this.handleAlarmStatisticsClick}
         />
         {/* 近半年内告警统计 */}
         <NewSection title="近半年内告警统计" className={styles.left} style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}>
-          <AlarmChart />
+          <AlarmChart data={warningTrendList1.map(({ count }) => count)} xLabels={warningTrendList1.map(({ timeFlag }) => `${moment(timeFlag).format('M')}月`)} />
         </NewSection>
         {/* 告警信息 */}
         <WarningMessage data={messages} className={styles.right} />
@@ -575,7 +589,7 @@ export default class ElectricityMonitor extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <AlarmDrawer
-          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          data={{ list: cardsInfo, ...getAlarmUnits(unitSet), graphList: warningTrendList }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

@@ -100,6 +100,7 @@ export default {
       const { unitType } = response.data;
       if (response && response.code === 200 && response.data && response.data.webToken) {
         yield setToken(response.data.webToken);
+        yield put({ type: 'user/saveCurrentUser' });
         reloadAuthorized();
         router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
         if (success) success();

@@ -169,8 +169,8 @@ export default class BeaconManagement extends PureComponent {
                 const {
                   id,
                   name, // 公司名称
-                  safetyName = null,
-                  safetyPhone = null,
+                  principalName = null,
+                  principalPhone = null,
                   practicalAddress = null, // 地址
                   beaconCount = 0,         // 信标数
                 } = item
@@ -178,17 +178,16 @@ export default class BeaconManagement extends PureComponent {
                   <List.Item key={id}>
                     <Card title={name} className={styles.card}>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                        主要负责人：
-                      {safetyName || '暂无信息'}
+                        主要负责人：{principalName || '暂无信息'}
                       </Ellipsis>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                        联系电话：
-                      {safetyPhone || '暂无信息'}
+                        联系电话：{principalPhone || '暂无信息'}
                       </Ellipsis>
-                      <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                        地址：
-                      {practicalAddress || '暂无信息'}
-                      </Ellipsis>
+                      <div className={styles.lsEllipsis}>
+                        <Ellipsis tooltip lines={1}>
+                          地址：{practicalAddress || '暂无信息'}
+                        </Ellipsis>
+                      </div>
                       <div className={styles.countContainer} onClick={viewAuth ? () => this.handleViewBeacons(item) : null}>
                         <div className={styles.count}>{beaconCount}</div>
                         <p className={styles.text}>信标数</p>

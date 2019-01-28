@@ -10,20 +10,41 @@ function getRandNum() {
   return isOverHalf() ? 0 : rand(1, 10);
 }
 
-export function genCardsInfo(list=[]) {
-  return list.map(({ companyId, companyName, address, aqy1Name, aqy1Phone }) => {
-    const [common, alarm, warn, noAccess] = [...Array(4).keys()].map(i => getRandNum());
+// export function genCardsInfo(list=[]) {
+//   return list.map(({ companyId, companyName, address, aqy1Name, aqy1Phone }) => {
+//     const [common, alarm, warn, noAccess] = [...Array(4).keys()].map(i => getRandNum());
+//     return {
+//       companyId,
+//       name: companyName,
+//       address: address,
+//       safetyMan: aqy1Name,
+//       safetyPhone: aqy1Phone,
+//       common,
+//       alarm,
+//       warn,
+//       noAccess,
+//       equipment: isOverHalf(0.15) ? common + alarm + warn + noAccess : 0,
+//     };
+//   });
+// }
+
+export function genCardsInfo(connectedList=[], allCompanyList=[]) {
+  const connectedCompanyIds = connectedList.map(({ companyId }) => companyId);
+  const unconnectedList = allCompanyList.filter(({ companyId }) => !connectedCompanyIds.includes(companyId));
+  return [...connectedList, ...unconnectedList].map(({ companyId, companyName, address, aqy1Name, aqy1Phone, deviceCount }) => {
+    let counts = { equipment: 0 };
+    if (deviceCount) {
+      const  { count, normal, confirmWarning, earlyWarning, unconnect } = deviceCount;
+      counts = { common: normal, alarm: confirmWarning, warn: earlyWarning, noAccess: unconnect, equipment: count };
+    }
+
     return {
       companyId,
       name: companyName,
       address: address,
       safetyMan: aqy1Name,
       safetyPhone: aqy1Phone,
-      common,
-      alarm,
-      warn,
-      noAccess,
-      equipment: isOverHalf(0.15) ? common + alarm + warn + noAccess : 0,
+      ...counts,
     };
   });
 }
@@ -55,4 +76,16 @@ export function getAlarmUnits(unitSet) {
     prev[next] = Array.isArray(uSet[next]) ? uSet[next].length : 0;
     return prev;
   }, {});
+}
+
+// 将传入图标的数组的横坐标值太长的情况做处理，当大于等于3个项目时，最后一个横坐标的名字大于10个字符时，超出的用省略号替代
+export function handleChartLabel(list) {
+  const length = list.length;
+  return list.map((item, i) => {
+    const name = item.name;
+    return {
+      ...item,
+      name: length > 2 && i === length - 1 && name.length > 10 ? `${name.slice(0, 10)}...` : name,
+    };
+  });
 }

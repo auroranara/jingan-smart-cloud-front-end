@@ -1,17 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  Card,
-  Button,
-  Input,
-  Table,
-  InputNumber,
-  Divider,
-  Col,
-  Popconfirm,
-  message,
-} from 'antd';
+import { Form, Card, Button, Input, Table, Select, Divider, Col, Popconfirm, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -21,6 +10,7 @@ import codesMap from '@/utils/codes';
 import { AuthA, AuthButton } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 // 默认表单值
 const defaultFormData = {
@@ -69,6 +59,13 @@ export default class FloorManagementList extends PureComponent {
         pageNum: 1,
       },
     });
+    // 获取楼层编号
+    dispatch({
+      type: 'buildingsInfo/fetchFloorNumber',
+      payload: {
+        building_id: id,
+      },
+    });
   }
 
   // 跳转到详情页面
@@ -82,8 +79,6 @@ export default class FloorManagementList extends PureComponent {
         params: { id: buildingId },
       },
     } = this.props;
-    // console.log('companyId', this.props);
-
     dispatch(
       routerRedux.push(
         `/personnel-position/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${companyId}&&name=${name}`
@@ -270,6 +265,7 @@ export default class FloorManagementList extends PureComponent {
       match: {
         params: { id },
       },
+      buildingsInfo: { floorNumberLists },
     } = this.props;
     return (
       <Card>
@@ -283,7 +279,13 @@ export default class FloorManagementList extends PureComponent {
             </FormItem>
             <FormItem>
               {getFieldDecorator('floorNumber', {})(
-                <InputNumber style={{ width: '100%' }} placeholder="请选择楼层编号" />
+                <Select style={{ width: '240px' }} placeholder="请选择楼层编号">
+                  {floorNumberLists.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.label}
+                    </Option>
+                  ))}
+                </Select>
               )}
             </FormItem>
             <FormItem>
@@ -297,7 +299,7 @@ export default class FloorManagementList extends PureComponent {
             <FormItem style={{ float: 'right' }}>
               <AuthButton
                 type="primary"
-                code={codesMap.personnelPosition.buildingsInfo.add}
+                code={codesMap.personnelPosition.buildingsInfo.floorAdd}
                 href={`#/personnel-position/buildings-info/floor/add?id=${id}&&name=${name}&&companyId=${companyId}`}
               >
                 新增
@@ -349,7 +351,7 @@ export default class FloorManagementList extends PureComponent {
             <Fragment>
               {floorWebUrl && floorWebUrl.length ? (
                 <AuthA
-                  code={codesMap.personnelPosition.buildingsInfo.view}
+                  code={codesMap.personnelPosition.buildingsInfo.floorView}
                   onClick={() => {
                     this.handleShowModal(floorWebUrl);
                   }}
@@ -371,21 +373,21 @@ export default class FloorManagementList extends PureComponent {
         render: (record, rows) => (
           <span>
             <AuthA
-              code={codesMap.lawEnforcement.laws.detail}
+              code={codesMap.personnelPosition.buildingsInfo.floorView}
               onClick={() => this.goFloorDetail(rows.id)}
             >
               查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA
-              code={codesMap.lawEnforcement.laws.edit}
+              code={codesMap.personnelPosition.buildingsInfo.floorEdit}
               onClick={() => this.goFloorEdit(rows.id)}
             >
               编辑
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm title="确认要删除该楼层吗？" onConfirm={() => this.handleDelete(rows.id)}>
-              <AuthA code={codesMap.lawEnforcement.laws.delete}>删除</AuthA>
+              <AuthA code={codesMap.personnelPosition.buildingsInfo.floorDelete}>删除</AuthA>
             </Popconfirm>
           </span>
         ),
@@ -435,7 +437,9 @@ export default class FloorManagementList extends PureComponent {
   render() {
     const {
       buildingsInfo: {
-        floorData: { list },
+        floorData: {
+          pagination: { total },
+        },
       },
       location: {
         query: { name, companyId },
@@ -467,7 +471,7 @@ export default class FloorManagementList extends PureComponent {
         content={
           <div>
             列表记录：
-            {list.length}{' '}
+            {total}{' '}
           </div>
         }
       >

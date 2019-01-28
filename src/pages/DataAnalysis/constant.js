@@ -286,7 +286,15 @@ export const WASTE_GAS_PARAMS = [
   { name: '烟气湿度', key: 'a01014' },
   // { name: <span>CH<sub>4</sub></span>, key: 'a05002' },
   { name: '甲烷', key: 'a05002' },
-  { name: <span>SO<sub>2</sub></span>, key: 'a21026' },
+  {
+    name: (
+      <span>
+        SO
+        <sub>2</sub>
+      </span>
+    ),
+    key: 'a21026',
+  },
   // { name: '二氧化硫', key: 'a21026' },
   { name: '碳氢化合物', key: 'a24087' },
   { name: '非甲烷总烃', key: 'a24088' },
@@ -464,6 +472,63 @@ function dateValidator(rule, value, callback) {
 export function getFields(type, params, methods) {
   switch (type) {
     case ELECTRICITY_TYPE:
+    return [
+      {
+        id: 'area',
+        label: '区域：',
+        render: () => <Input placeholder="请输入区域" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'location',
+        label: '位置：',
+        render: () => <Input placeholder="请输入位置" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'status',
+        label: '异常类别：',
+        options: { initialValue: '0' },
+        render: () => (
+          <Select placeholder="请选择异常类别">
+            {OPTIONS.map(({ name, key }) => (
+              <Option key={key}>{name}</Option>
+            ))}
+          </Select>
+        ),
+      },
+      // {
+      //   id: 'code',
+      //   label: '异常参数：',
+      //   options: { initialValue: '0' },
+      //   render: () => (
+      //     <Select placeholder="请选择异常参数">
+      //       {params.map(({ name, key }) => (
+      //         <Option key={key}>{name}</Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      // },
+      {
+        id: 'date',
+        label: '日期：',
+        span: { md: 12, sm: 24, xs: 24 },
+        options: {
+          initialValue: getThisMonth(),
+          rules: [{ validator: dateValidator }],
+        },
+        render: () => (
+          <RangePicker
+            format="YYYY-MM-DD HH:mm"
+            placeholder={['开始时间', '结束时间']}
+            showTime={{
+              format: 'HH:mm',
+              defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+            }}
+          />
+        ),
+      },
+    ];
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
       return [
@@ -579,7 +644,7 @@ export function getFields(type, params, methods) {
         },
         {
           // id: 'modelCode',
-          id: 'newModel',
+          id: 'classModel',
           label: '异常参数：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,

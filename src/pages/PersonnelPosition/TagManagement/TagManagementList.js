@@ -86,6 +86,8 @@ export default class TagManagement extends PureComponent {
       total: 0,
     },
     tagDetail: {},       // 领卡时保存的标签详情
+    searchUserName: null,   // 持卡人用户名（搜索用）
+    searchPhoneNumber: null,  // 持卡人手机号（搜索用）
   }
 
   componentDidMount() {
@@ -118,6 +120,22 @@ export default class TagManagement extends PureComponent {
       type: 'personnelPosition/changeTag',
       ...actions,
     })
+  }
+
+  // 获取持卡人
+  fetchEmployees = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'personnelPosition/fetchEmployees',
+      ...actions,
+    })
+  }
+
+  // 更新state
+  changeState = (key, value) => {
+    const item = {}
+    item[key] = value
+    this.setState(item)
   }
 
   // 加载更多列表数据
@@ -220,7 +238,7 @@ export default class TagManagement extends PureComponent {
   }
 
   // 点击启用禁用标签
-  handleEnableChange = (value, { id: cardId, cardStatus, type, userId }) => {
+  handleEnableChange = (value, { id: cardId, cardStatus, type, userId, visitorName = null }) => {
     // type 0 普通卡 1 临时卡;
     // cardStatus 0 已领用 1 未领用 2 禁用;
     // 传递参数 status 1：启用改禁用，2:禁用改启用，3:退卡,4:领卡;
@@ -260,6 +278,13 @@ export default class TagManagement extends PureComponent {
         }
       } else {
         // 临时卡
+        if (visitorName) {
+          confirm({
+            ...settings,
+            content: '该卡已有持卡人，禁用后则自动解除，您确定要禁用该卡？',
+          })
+          return
+        }
         confirm({
           ...settings,
           content: '您确定要禁用该标签卡？',
@@ -303,6 +328,7 @@ export default class TagManagement extends PureComponent {
       pagination: {
         ...this.state.pagination,
         pageNum,
+        pageSize,
       },
     })
   }
@@ -345,7 +371,7 @@ export default class TagManagement extends PureComponent {
       selectedRows = [],
     } = this.state
     if (!selectedRows || selectedRows.length <= 0) {
-      message.error('请选择单位')
+      message.error('请选择持卡人')
       return
     }
     const [personnel] = selectedRows,
@@ -369,8 +395,7 @@ export default class TagManagement extends PureComponent {
       payload: { pageNum: 1, pageSize: 0, companyId },
     })
     // 获取单位人员
-    dispatch({
-      type: 'personnelPosition/fetchEmployees',
+    this.fetchEmployees({
       payload: { companyId },
     })
     // 如果是普通卡 打开弹窗选择持卡人
@@ -416,6 +441,39 @@ export default class TagManagement extends PureComponent {
     })
   }
 
+  // 点击退卡
+  handleCheckOut = (item) => {
+    confirm({
+      title: '系统提示',
+      content: '您确定要进行退卡操作？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.checkOut(item),
+    })
+  }
+
+  // 点击搜素持卡人
+  handleSearchPersonnel = () => {
+    const { searchUserName: userName = null, searchPhoneNumber: phoneNumber = null, tagDetail: { companyId } } = this.state
+    // 获取单位人员
+    this.fetchEmployees({
+      payload: { companyId, userName, phoneNumber },
+      callback: (list) => {
+        if (!list) return
+        const currentPersonnelList = list.slice(0, defaultPageSize)
+        this.setState({
+          currentPersonnelList,
+          pagination: {
+            pageNum: 1,
+            pageSize: defaultPageSize,
+            total: list ? list.length : 0,
+          },
+        })
+      },
+    })
+  }
+
+
   render() {
 
     const {
@@ -423,8 +481,13 @@ export default class TagManagement extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
       personnelPosition: {
         tag: {
+          // 标签列表
           list,
           isLast,
+          // 标签分页数据
+          pagination: {
+            total: tagTotal = 0,
+          },
         },
         systemConfiguration: { list: systemList },
       },
@@ -434,10 +497,11 @@ export default class TagManagement extends PureComponent {
       modalVisible,
       employeeModalVisible,
       currentPersonnelList,
+      // 选择人员分页数据
       pagination: {
         pageNum,
         pageSize,
-        total = 0,
+        total,
       },
       selectedPersonnerlKeys,
     } = this.state
@@ -464,7 +528,7 @@ export default class TagManagement extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={(
           <div style={{ overflow: 'hidden' }}>
-            <span style={{ lineHeight: '32px' }}>标签数量：{total}</span>
+            <span style={{ lineHeight: '32px' }}>标签数量：{tagTotal}</span>
           </div>
         )}
       >
@@ -547,6 +611,7 @@ export default class TagManagement extends PureComponent {
                   code,             // 编号
                   userName = null,   // 持卡人
                   status,          // 1 在线 0 离线
+                  visitorName = null,  // 临时卡持卡人
                 } = item
                 return (
                   <List.Item key={id}>
@@ -571,7 +636,11 @@ export default class TagManagement extends PureComponent {
                         <div className={styles.detail}>
                           <Ellipsis lines={1} tooltip className={styles.title}>{code}</Ellipsis>
                           <div className={styles.line}>卡分类：{+type === 0 ? '普通卡' : '临时卡'}</div>
-                          <div className={styles.line}>持卡人：{userName || '暂无信息'}</div>
+                          {+type === 0 ? (
+                            <div className={styles.line}>持卡人：{userName || '暂无信息'}</div>
+                          ) : (
+                              <div className={styles.line}>持卡人：{visitorName || '暂无信息'}</div>
+                            )}
                           <div className={styles.line}>
                             电<span style={{ visibility: 'hidden' }}>隐</span>量：
                           <span style={{ color: !battery ? 'inherit' : +battery >= 25 ? 'green' : 'red' }}>{battery ? `${battery}%` : '暂无信息'}</span>
@@ -582,15 +651,7 @@ export default class TagManagement extends PureComponent {
                           </div>
                         </div>
                         {+type === 0 && ((+cardStatus === 0 && (
-                          <div onClick={() => {
-                            confirm({
-                              title: '系统提示',
-                              content: '您确定要进行退卡操作？',
-                              okText: '确认',
-                              cancelText: '取消',
-                              onOk: () => this.checkOut(item),
-                            })
-                          }}
+                          <div onClick={() => this.handleCheckOut(item)}
                             className={styles.fixedButton} style={{ cursor: 'pointer' }}>
                             <span>退卡</span>
                           </div>
@@ -681,11 +742,17 @@ export default class TagManagement extends PureComponent {
         {/* 选择持卡人弹窗 */}
         <Modal
           title="选择持卡人"
-          width={800}
+          width={820}
           visible={employeeModalVisible}
           onCancel={this.handleCloseEmployeeModal}
           onOk={this.selectPersonnel}
+          destroyOnClose
         >
+          <div style={{ marginBottom: '24px', width: '100%' }}>
+            <Input style={{ width: '300px' }} placeholder="请输入用户名" onChange={e => this.changeState('searchUserName', e.target.value)} />
+            <Input style={{ marginLeft: '10px', width: '300px' }} placeholder="请输入手机号" onChange={e => this.changeState('searchPhoneNumber', e.target.value)} />
+            <Button style={{ marginLeft: '10px' }} type="primary" onClick={this.handleSearchPersonnel}>查询</Button>
+          </div>
           <Table
             rowKey="id"
             style={{ marginTop: '10px' }}

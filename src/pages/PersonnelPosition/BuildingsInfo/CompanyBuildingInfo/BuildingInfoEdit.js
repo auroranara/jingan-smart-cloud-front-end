@@ -53,6 +53,14 @@ function generateRules(cName, msg = '输入', ...rules) {
   return [{ required: true, message: `请${msg}${cName}` }, ...rules];
 }
 
+function generateRulesSelect(cName, msg = '选择', ...rules) {
+  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+}
+
+// function generateRulesInput(cName, msg = '输入', ...rules) {
+//   return [{ required: true, message: `请${msg}${cName}，必须是整数` }, ...rules];
+// }
+
 function getOptions(options = []) {
   return options.map(({ value, label }) => (
     <Option key={value} value={value}>
@@ -219,9 +227,12 @@ export default class BuildingInfoEdit extends PureComponent {
       location: {
         query: { name: company_name, companyId: company_Id },
       },
+      user: {
+        currentUser: { companyId: newCompanyId },
+      },
       form: { validateFieldsAndScroll },
     } = this.props;
-
+    console.log('12', this.props);
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
       router.push(
@@ -253,7 +264,7 @@ export default class BuildingInfoEdit extends PureComponent {
         const { companyId } = this.state;
 
         const payload = {
-          companyId: company_Id || companyId,
+          companyId: company_Id || companyId || newCompanyId,
           buildingType,
           buildingName,
           floorNumber,
@@ -488,35 +499,47 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'companyId',
         cName: '单位名称',
-        rules: generateRules('单位名称'),
+        rules: generateRulesSelect('单位名称'),
         component: (
           <div>
-            {company_Id ? (
-              <div>
-                {getFieldDecorator('companyId', { initialValue: company_name })(
-                  <Input disabled placeholder="请输入单位名称" />
-                )}
-              </div>
-            ) : (
-              <div>
-                {getFieldDecorator('companyId', {
-                  initialValue:
-                    unitType === 4 || unitType === 1
-                      ? company_name || defaultName
-                      : company_name
-                        ? company_name
-                        : undefined,
-                })(
-                  <Input
-                    ref={input => {
-                      this.CompanyIdInput = input;
-                    }}
-                    disabled
-                    placeholder="请输入单位名称"
-                    onClick={this.handleCompanyModal}
-                  />
-                )}
-              </div>
+            <Col span={23}>
+              {company_Id ? (
+                <div>
+                  {getFieldDecorator('companyId', { initialValue: company_name })(
+                    <Input disabled placeholder="请选择单位名称" />
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {getFieldDecorator('companyId', {
+                    initialValue:
+                      unitType === 4 || unitType === 1
+                        ? company_name || defaultName
+                        : company_name
+                          ? company_name
+                          : undefined,
+                  })(
+                    <Input
+                      disabled
+                      ref={input => {
+                        this.CompanyIdInput = input;
+                      }}
+                      placeholder="请选择单位名称"
+                    />
+                  )}
+                </div>
+              )}
+            </Col>
+            {defaultName || (company_Id && unitType !== 2) ? null : (
+              <Col span={1}>
+                <Button
+                  type="primary"
+                  onClick={this.handleCompanyModal}
+                  style={{ marginLeft: '10%' }}
+                >
+                  选择单位
+                </Button>
+              </Col>
             )}
           </div>
         ),
@@ -524,7 +547,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'buildingType',
         cName: '建筑物类型',
-        rules: generateRules('建筑物类型'),
+        rules: generateRulesSelect('建筑物类型'),
         component: (
           <div>
             {getFieldDecorator('buildingType', {
@@ -548,7 +571,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'floorNumber',
         cName: '建筑结构',
-        rules: generateRules('建筑结构'),
+        rules: generateRulesSelect('建筑结构'),
         component: (
           <div>
             {getFieldDecorator('floorNumber', { initialValue: editFloorNumber })(
@@ -560,7 +583,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'fireDangerType',
         cName: '火灾危险性分类',
-        rules: generateRules('火灾危险性分类'),
+        rules: generateRulesSelect('火灾危险性分类'),
         component: (
           <div>
             {getFieldDecorator('fireDangerType', { initialValue: editFireDangerType })(
@@ -583,7 +606,7 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'fireRating',
         cName: '耐火等级',
-        rules: generateRules('耐火等级'),
+        rules: generateRulesSelect('耐火等级'),
         component: (
           <div>
             {getFieldDecorator('fireRating', { initialValue: editFireRating })(
@@ -601,8 +624,16 @@ export default class BuildingInfoEdit extends PureComponent {
         rules: generateRules('建筑层数'),
         component: (
           <div>
-            {getFieldDecorator('floorLevel', { initialValue: floorLevel })(
-              <Input placeholder="请输入建筑层数" />
+            {getFieldDecorator('floorLevel', {
+              initialValue: floorLevel,
+            })(
+              <InputNumber
+                style={{ width: '100%' }}
+                min={0}
+                placeholder="请输入建筑层数"
+                formatter={value => (isNaN(value) ? '' : Math.round(value))}
+                parser={value => (isNaN(value) ? '' : Math.round(value))}
+              />
             )}
           </div>
         ),

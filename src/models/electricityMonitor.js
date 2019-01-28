@@ -1,7 +1,7 @@
 
 import {
   getMessages,
-  getCompanyId,
+  // getCompanyId,
   getUnitData,
   getDeviceStatusCount,
   getDevices,
@@ -9,7 +9,9 @@ import {
   getDeviceConfig,
   getDeviceHistoryData,
   getCameraList,
-} from '../services/electricityMonitor'
+  getWarningTrend,
+} from '../services/electricityMonitor';
+// import { getGrids } from '../services/bigPlatform/fireControl';
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -88,6 +90,9 @@ export default {
     deviceHistoryData: [],
     // 摄像头列表
     cameraList: [],
+    warningTrendList: [], // 报警趋势列表(12个月)
+    warningTrendList1: [], // 报警趋势列表(6个月)
+    grids: [], // 网格点列表
   },
 
   effects: {
@@ -108,20 +113,20 @@ export default {
       }
     },
     // 获取网格id
-    *fetchCompanyId({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getCompanyId, payload)
-      if (code === 200) {
-        if (callback) {
-          callback(data);
-        }
-      }
-      else if (callback) {
-        callback();
-      }
-    },
+    // *fetchCompanyId({ payload, callback }, { call, put }) {
+    //   const { code, data } = yield call(getCompanyId, payload)
+    //   if (code === 200) {
+    //     if (callback) {
+    //       callback(data);
+    //     }
+    //   }
+    //   else if (callback) {
+    //     callback();
+    //   }
+    // },
     // 获取单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
-      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics } } = yield call(getUnitData, payload)
+      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics, allCompanyInfoDtoList=[] } } = yield call(getUnitData, payload);
       const statisticsData = {
         // 管辖单位统计数
         jurisdictionalUnitStatistics,
@@ -130,7 +135,7 @@ export default {
         // 接入率
         accessRate: jurisdictionalUnitStatistics > 0 ? `${Math.round(accessUnitStatistics / jurisdictionalUnitStatistics * 100)}%` : '--',
       };
-      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId) };
+      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId), allCompanyList: allCompanyInfoDtoList };
       if (code === 200) {
         yield put({
           type: 'save',
@@ -217,6 +222,23 @@ export default {
       const { list } = response;
       yield put({ type: 'saveCameraList', payload: list });
     },
+    *fetchWarningTrend({ payload }, { call, put }) {
+      const response = yield call(getWarningTrend, payload);
+      const { code=500, data } = response || {};
+      const list = data && Array.isArray(data.list) ? data.list : [];
+      list.sort((item, item1) => item.timeFlag - item1.timeFlag);
+      if (code === 200) {
+        yield put({ type: 'saveWarningTrend', payload: list });
+        yield put({ type: 'saveWarningTrend1', payload: list.slice(6, 12) });
+      }
+    },
+    // *fetchGrids({ payload, callback }, { call, put }) {
+    //   const response = yield call(getGrids);
+    //   if (Array.isArray(response)) {
+    //     yield put({ type: 'saveGrids', payload: response });
+    //     callback && callback(response);
+    //   }
+    // },
   },
   reducers: {
     // 保存
@@ -242,5 +264,14 @@ export default {
     saveCameraList(state, action) {
       return { ...state, cameraList: action.payload };
     },
+    saveWarningTrend(state, action) {
+      return { ...state, warningTrendList: action.payload };
+    },
+    saveWarningTrend1(state, action) {
+      return { ...state, warningTrendList1: action.payload };
+    },
+    // saveGrids(state, action) {
+    //   return { ...state, grids: action.payload };
+    // },
   },
 }

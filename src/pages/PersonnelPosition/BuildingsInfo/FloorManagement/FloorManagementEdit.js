@@ -2,13 +2,14 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import { routerRedux } from 'dva/router';
 import router from 'umi/router';
-import { Form, Input, Button, Card, Col, Icon, InputNumber, Upload, message } from 'antd';
+import { Form, Input, Button, Card, Col, Icon, Upload, message, Select } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { getToken } from 'utils/authority';
 
 import styles from '../BuildingsInfo.less';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 // 编辑页面标题
 const editTitle = '编辑楼层';
@@ -48,7 +49,18 @@ export default class FloorManagementEdit extends PureComponent {
       match: {
         params: { id },
       },
+      location: {
+        query: { id: buildingId },
+      },
     } = this.props;
+
+    // 获取楼层编号
+    dispatch({
+      type: 'buildingsInfo/fetchFloorNumber',
+      payload: {
+        building_id: buildingId,
+      },
+    });
     if (id) {
       // 根据id获取详情
       dispatch({
@@ -104,7 +116,7 @@ export default class FloorManagementEdit extends PureComponent {
     };
 
     const error = () => {
-      message.error(id ? '编辑失败' : '新增失败');
+      message.error(id ? '编辑失败，该建筑已有该楼层！' : '新增失败，该建筑已有该楼层！');
     };
 
     validateFieldsAndScroll((errors, values) => {
@@ -221,6 +233,7 @@ export default class FloorManagementEdit extends PureComponent {
       },
       buildingsInfo: {
         floorData: { list },
+        allFloorNumberLists,
       },
     } = this.props;
 
@@ -265,7 +278,15 @@ export default class FloorManagementEdit extends PureComponent {
                   message: '请输入楼层编号',
                 },
               ],
-            })(<InputNumber style={{ width: '100%' }} placeholder="请输入楼层编号" />)}
+            })(
+              <Select style={{ width: '100%' }} placeholder="请输入楼层编号">
+                {allFloorNumberLists.map(item => (
+                  <Option value={item.id} key={item.id}>
+                    {item.label}
+                  </Option>
+                ))}
+              </Select>
+            )}
           </FormItem>
           <FormItem {...formItemLayout} label={fieldLabels.floorUrl}>
             {getFieldDecorator('floorUrl')(

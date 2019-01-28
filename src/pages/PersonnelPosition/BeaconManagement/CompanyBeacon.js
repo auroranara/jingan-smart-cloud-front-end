@@ -57,9 +57,9 @@ export default class CompanyBeacon extends PureComponent {
       payload: { pageNum: 1, pageSize: defaultPageSize, companyId },
     })
     // 获取系统列表
-    /* this.fetchSystemConfiguration({
+    this.fetchSystemConfiguration({
       payload: { pageNum: 1, pageSize: 50, companyId },
-    }) */
+    })
   }
 
   // 获取信标列表
@@ -137,15 +137,13 @@ export default class CompanyBeacon extends PureComponent {
   // 点击打开新增弹窗
   handleToAdd = () => {
     const {
-      dispatch,
       match: { params: { id: companyId } },
       form: { resetFields },
     } = this.props
     // 获取当前单位的系统配置
-    dispatch({
-      type: 'personnelPosition/fetchSystemConfiguration',
+    /* this.fetchSystemConfiguration({
       payload: { pageNum: 1, pageSize: 100, companyId },
-    })
+    }) */
     this.setState({
       modalVisible: true,
       detail: {},
@@ -174,6 +172,13 @@ export default class CompanyBeacon extends PureComponent {
   // 验证信标坐标
   valiteArea = (rule, value = {}, callback) => {
     if (value.xarea && value.yarea && value.zarea) {
+      const isXErr = isNaN(value.xarea),
+        isYErr = isNaN(value.yarea),
+        isZErr = isNaN(value.zarea)
+      if (isXErr || isYErr || isZErr) {
+        callback('请输入数字')
+        return
+      }
       callback()
     } else callback('请输入信标坐标')
   }
@@ -325,7 +330,7 @@ export default class CompanyBeacon extends PureComponent {
               <Popconfirm title="确认要删除该信标吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
-            ) : (<a style={{ cursor: 'not-allowed' }}>删除</a>)}
+            ) : (<a style={{ cursor: 'not-allowed', color: '#b3b3b3' }}>删除</a>)}
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
