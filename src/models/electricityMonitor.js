@@ -1,7 +1,7 @@
 
 import {
   getMessages,
-  getCompanyId,
+  // getCompanyId,
   getUnitData,
   getDeviceStatusCount,
   getDevices,

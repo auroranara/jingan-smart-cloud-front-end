@@ -472,6 +472,63 @@ function dateValidator(rule, value, callback) {
 export function getFields(type, params, methods) {
   switch (type) {
     case ELECTRICITY_TYPE:
+    return [
+      {
+        id: 'area',
+        label: '区域：',
+        render: () => <Input placeholder="请输入区域" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'location',
+        label: '位置：',
+        render: () => <Input placeholder="请输入位置" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'status',
+        label: '异常类别：',
+        options: { initialValue: '0' },
+        render: () => (
+          <Select placeholder="请选择异常类别">
+            {OPTIONS.map(({ name, key }) => (
+              <Option key={key}>{name}</Option>
+            ))}
+          </Select>
+        ),
+      },
+      // {
+      //   id: 'code',
+      //   label: '异常参数：',
+      //   options: { initialValue: '0' },
+      //   render: () => (
+      //     <Select placeholder="请选择异常参数">
+      //       {params.map(({ name, key }) => (
+      //         <Option key={key}>{name}</Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      // },
+      {
+        id: 'date',
+        label: '日期：',
+        span: { md: 12, sm: 24, xs: 24 },
+        options: {
+          initialValue: getThisMonth(),
+          rules: [{ validator: dateValidator }],
+        },
+        render: () => (
+          <RangePicker
+            format="YYYY-MM-DD HH:mm"
+            placeholder={['开始时间', '结束时间']}
+            showTime={{
+              format: 'HH:mm',
+              defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+            }}
+          />
+        ),
+      },
+    ];
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
       return [
