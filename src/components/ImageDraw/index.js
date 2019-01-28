@@ -9,7 +9,7 @@ import styles from './index.less';
 // 边线宽度
 const weight = 1;
 // 颜色
-const color = '#000';
+const defaultColor = '#000';
 // 默认字体大小
 const defaultFontSize = 14;
 // 默认字体颜色
@@ -128,7 +128,7 @@ const defaultFontColor = '#fff';
   const originalUpdatePathRectangle = L.Rectangle.prototype._updatePath;
   L.Rectangle.include({
     _updatePath: function () {
-      if (this._path.parentNode && this.options.data.name) {
+      if (this._path.parentNode && this.options.data && this.options.data.name) {
         const center = this._map.latLngToLayerPoint(this.getCenter());
         if (this._textNode && this._textNode.parentNode) {
             this._path.parentNode.removeChild(this._textNode);
@@ -151,7 +151,7 @@ const defaultFontColor = '#fff';
   const originalUpdatePathPolygon = L.Polygon.prototype._updatePath;
   L.Polygon.include({
     _updatePath: function () {
-      if (this._path.parentNode && this.options.data.name) {
+      if (this._path.parentNode && this.options.data && this.options.data.name) {
         const center = this._map.latLngToLayerPoint(this.getCenter());
         if (this._textNode && this._textNode.parentNode) {
             this._path.parentNode.removeChild(this._textNode);
@@ -174,7 +174,7 @@ const defaultFontColor = '#fff';
   const originalUpdatePathCircle = L.Circle.prototype._updatePath;
   L.Circle.include({
     _updatePath: function () {
-      if (this._path.parentNode && this.options.data.name) {
+      if (this._path.parentNode && this.options.data && this.options.data.name) {
         const center = this._point;
         if (this._textNode && this._textNode.parentNode) {
             this._path.parentNode.removeChild(this._textNode);
@@ -285,11 +285,11 @@ class ImageDraw extends PureComponent {
    */
   getShapeFeature = (type, layer) => {
     const { bounds: { _northEast: { lat: height, lng: width }  } } = this.state;
-    const { _latlngs: latlngs, _latlng: latlng, _radius: radius } = layer;
+    const { _latlngs: latlngs, _latlng: latlng, _mRadius: radius } = layer;
     switch(type) {
       case 'polygon':
       case 'rectangle':
-      return { latlngs: latlngs.map(({ lat, lng }) => ({ lat: lat / height, lng: lng / width })) };
+      return { latlngs: latlngs[0].map(({ lat, lng }) => ({ lat: lat / height, lng: lng / width })) };
       case 'marker':
       return { latlng: { lat: latlng.lat / height, lng: latlng.lng / width } };
       case 'circle':
@@ -336,10 +336,10 @@ class ImageDraw extends PureComponent {
    */
   handleCreated = ({ layer, layerType }) => {
     const { namable } = this.props;
+    // 保存参数
+    this.layer = layer;
+    this.layerType = layerType;
     if (namable) {
-      // 保存参数
-      this.layer = layer;
-      this.layerType = layerType;
       // 显示设置区域名称弹出框
       this.setState({ visible: true });
     }
@@ -511,6 +511,7 @@ class ImageDraw extends PureComponent {
    * 渲染图形
    */
   renderShape = (item) => {
+    const { color=defaultColor } = this.props;
     const { bounds: { _northEast: { lat: height, lng: width }  } } = this.state;
     const { latlngs, latlng, type, radius, name, render } = item;
     let shape = null;
@@ -590,7 +591,7 @@ class ImageDraw extends PureComponent {
   }
 
   render() {
-    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, data=[], shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
+    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, data=[], color=defaultColor, shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
     const { center, bounds, visible, maxBounds } = this.state;
 
     return (

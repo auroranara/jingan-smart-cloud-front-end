@@ -13,3 +13,4 @@
 * filled 是否按照容器比例拉伸图片，默认false
 * maxBoundsRatio 最大边界比例，默认1
 * shapes=['polygon', 'rectangle', 'circle', 'marker', 'circlemarker'] 可以绘制的图形，默认为['polygon', 'rectangle', 'circle']
+* color 图形颜色，默认为#000
