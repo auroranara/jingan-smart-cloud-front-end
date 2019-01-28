@@ -318,6 +318,7 @@ export default class TagManagementAdd extends PureComponent {
         tag: { detail = {} },
       },
       match: { params: { id } },
+      user: { currentUser: { unitType } },
     } = this.props
     const {
       employeeModalVisible,
@@ -362,6 +363,7 @@ export default class TagManagementAdd extends PureComponent {
       },
       type: 'radio',
     }
+    const isCompany = [1, 4].includes(unitType)
 
     return (
       <PageHeaderLayout
@@ -386,7 +388,7 @@ export default class TagManagementAdd extends PureComponent {
               })(
                 <div style={{ display: 'inline-block', width: '100%' }}>
                   <Input value={company.name} placeholder="请选择" disabled {...itemStyles} />
-                  <Button type="primary" onClick={this.handleViewCompanyModal}>选择单位</Button>
+                  {!isCompany && (<Button type="primary" onClick={this.handleViewCompanyModal}>选择单位</Button>)}
                 </div>
               )}
             </FormItem>
