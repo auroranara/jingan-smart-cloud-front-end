@@ -33,6 +33,12 @@ export async function getAllCards(params) {
   return request(`/acloud_new/v2/accessCard/accessCardInfoForPage?${stringify(params)}`);
 }
 
+// 获取单个报警策略
+export async function getAlarmStrategy(id) {
+  return request(`${URL_BASE}/locationWarningStrategy/${id}`,  {
+  });
+}
+
 // 新增报警策略
 export async function postAlarmStrategy(params) {
   return request(`${URL_BASE}/locationWarningStrategy`,  {

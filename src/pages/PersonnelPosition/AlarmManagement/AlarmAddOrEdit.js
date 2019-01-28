@@ -46,8 +46,18 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   componentDidMount() {
     const { dispatch, match: { params: { companyId, alarmId } } } = this.props;
+    const isAdd = this.isAdd();
     dispatch({ type: 'personPositionAlarm/fetchMapList', payload: { companyId, pageSize: 0 } });
     dispatch({ type: 'personPositionAlarm/fetchAllCards', payload: { companyId, pageSize: 0 } });
+
+    if (!isAdd)
+      dispatch({
+        type: 'personPositionAlarm/fetchAlarmDetail',
+        payload: alarmId,
+        callback: detail => {
+          
+        },
+      });
   }
 
   isAdd = () => {

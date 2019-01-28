@@ -5,6 +5,7 @@ import {
   getSectionList,
   getSectionLimits,
   getAllCards,
+  getAlarmStrategy,
   postAlarmStrategy,
   putAlarmStrategy,
 } from '../services/personnelPosition/alarmManagement';
@@ -72,16 +73,26 @@ export default {
       if (code === 200)
         yield put({ type: 'saveAllCards', payload: data && Array.isArray(data.list) ? data.list : [] });
     },
+    *getAlarmStrategy({ payload, callback }, { call, put }) {
+      let response = yield call(getAlarmStrategy, payload);
+      response = response || {};
+      const { code=500, data } = response;
+      if (code === 200) {
+        const detail = data || {};
+        yield put({ type: 'saveDetail', payload: detail });
+        callback(detail);
+      }
+    },
     *addAlarmStrategy({ payload, callback }, { call, put }) {
       let response = yield call(postAlarmStrategy, payload);
       response = response || {};
-      let { code, msg } = response;
+      const { code, msg } = response;
       callback(code, msg);
     },
     *editAlarmStrategy({ payload, callback }, { call, put }) {
       let response = yield call(putAlarmStrategy, payload);
       response = response || {};
-      let { code, msg } = response;
+      const { code, msg } = response;
       callback(code, msg);
     },
   },
@@ -113,6 +124,9 @@ export default {
     },
     saveAllCards(state, action) {
       return { ...state, allCards: handleAllCards(action.payload) };
+    },
+    saveDetail(state, action) {
+      return { ...state, detail: action.payload };
     },
   },
 };
