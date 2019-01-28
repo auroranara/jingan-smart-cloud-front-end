@@ -300,8 +300,11 @@ class ImageDraw extends PureComponent {
     }
   };
 
+  /**
+   * 验证名称是否重复
+   */
   validateName = (rule, value, callback) => {
-    const { data } = this.props;
+    const { data=[] } = this.props;
     const isExist = data.filter(({ name }) => name === value).length > 0;
     if (isExist) {
       callback('区域名称已存在');
@@ -311,27 +314,50 @@ class ImageDraw extends PureComponent {
     }
   }
 
+  /**
+   * 插入新数据
+   */
+  pushData = (layerType, layer, name="") => {
+    const { data, onUpdate, limit=Infinity } = this.props;
+    if (data && onUpdate && data.length < limit) {
+      onUpdate(data.concat({
+        type: layerType,
+        options: layer.options,
+        name,
+        ...this.getShapeFeature(layerType, layer),
+      }));
+    }
+    this.handleCancel();
+  }
+
 
   /**
    * 图形创建后
    */
   handleCreated = ({ layer, layerType }) => {
-    // 保存参数
-    this.layer = layer;
-    this.layerType = layerType;
-    // 显示设置区域名称弹出框
-    this.setState({ visible: true });
+    const { namable } = this.props;
+    if (namable) {
+      // 保存参数
+      this.layer = layer;
+      this.layerType = layerType;
+      // 显示设置区域名称弹出框
+      this.setState({ visible: true });
+    }
+    else {
+      this.pushData(layerType, layer);
+    }
   }
 
   /**
    * 图形修改后
    */
   handleEdited = ({ layers: { _layers: editedObj } }) => {
-    const editedList = Object.values(editedObj);
-    if (editedList.length > 0) {
-      const editedDataList = editedList.map(({ options: { data } }) => data);
-      this.setState(({ list }) => ({
-        list: list.map(item => {
+    const { data, onUpdate } = this.props;
+    if (data && onUpdate) {
+      const editedList = Object.values(editedObj);
+      if (editedList.length > 0) {
+        const editedDataList = editedList.map(({ options: { data } }) => data);
+        onUpdate(data.map(item => {
           const index = editedDataList.indexOf(item);
           if (index > -1) {
             return {
@@ -340,8 +366,20 @@ class ImageDraw extends PureComponent {
             };
           }
           return item;
-        }),
-      }));
+        }));
+        // this.setState(({ list }) => ({
+        //   list: list.map(item => {
+        //     const index = editedDataList.indexOf(item);
+        //     if (index > -1) {
+        //       return {
+        //         ...item,
+        //         ...this.getShapeFeature(item.type, editedList[index]),
+        //       };
+        //     }
+        //     return item;
+        //   }),
+        // }));
+      }
     }
   }
 
@@ -349,12 +387,16 @@ class ImageDraw extends PureComponent {
    * 图形删除后
    */
   handleDeleted = ({ layers: { _layers: deletedObj } }) => {
-    const deletedList = Object.values(deletedObj);
-    if (deletedList.length > 0) {
-      const deletedDataList = deletedList.map(({ options: { data } }) => data);
-      this.setState(({ list }) => ({
-        list: list.filter((item) => deletedDataList.indexOf(item) === -1),
-      }));
+    const { data, onUpdate } = this.props;
+    if (data && onUpdate) {
+      const deletedList = Object.values(deletedObj);
+      if (deletedList.length > 0) {
+        const deletedDataList = deletedList.map(({ options: { data } }) => data);
+        onUpdate(data.filter((item) => deletedDataList.indexOf(item) === -1));
+        // this.setState(({ list }) => ({
+        //   list: list.filter((item) => deletedDataList.indexOf(item) === -1),
+        // }));
+      }
     }
   }
 
@@ -377,20 +419,21 @@ class ImageDraw extends PureComponent {
     validateFields(['name'], (errors, values) => {
       if (!errors) {
         const { name } = values;
+        this.pushData(this.layerType, this.layer, name);
         // 手动添加layer
-        this.setState(({ list }) => {
-          const { options } = this.layer;
-          return {
-            list: list.concat({
-              type: this.layerType,
-              options,
-              name,
-              ...this.getShapeFeature(this.layerType, this.layer),
-            }),
-          };
-        }, () => {
-          this.handleCancel();
-        });
+        // this.setState(({ list }) => {
+        //   const { options } = this.layer;
+        //   return {
+        //     list: list.concat({
+        //       type: this.layerType,
+        //       options,
+        //       name,
+        //       ...this.getShapeFeature(this.layerType, this.layer),
+        //     }),
+        //   };
+        // }, () => {
+        //   this.handleCancel();
+        // });
       }
     });
   }
@@ -410,7 +453,7 @@ class ImageDraw extends PureComponent {
    */
   handleAdd = ({ target: layer }) => {
     const { options: { data: { type, name } }, _point: point } = layer;
-    // layer.bindTooltip(name, { sticky: true });
+    layer.bindTooltip(name, { sticky: true });
     if (['polygon', 'rectangle', 'circle'].includes(type)) {
       const center = type === 'circle' ? point : layer._map.latLngToLayerPoint(layer.getCenter());
       if (layer._textNode && layer._textNode.parentNode) {
@@ -547,7 +590,7 @@ class ImageDraw extends PureComponent {
   }
 
   render() {
-    const { className, style, mapProps, zoomControlProps, drawable, url, data, form: { getFieldDecorator } } = this.props;
+    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, data=[], shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
     const { center, bounds, visible, maxBounds } = this.state;
 
     return (
@@ -586,7 +629,7 @@ class ImageDraw extends PureComponent {
                     onDrawStop={this.handleDrawStop}
                     draw={{
                       polyline: false,
-                      polygon:  {
+                      polygon: shapes.includes('polygon') && {
                         allowIntersection: false,
                         showArea: false,
                         drawError: {
@@ -598,23 +641,22 @@ class ImageDraw extends PureComponent {
                           color,
                         },
                       },
-                      rectangle: {
+                      rectangle: shapes.includes('rectangle') && {
                         showArea: false,
                         shapeOptions: {
                           weight,
                           color,
                         },
                       },
-                      circle: {
+                      circle: shapes.includes('circle') && {
                         showRadius: false,
                         shapeOptions: {
                           weight,
                           color,
                         },
                       },
-                      // marker: false,
-                      // circlemarker: false,
-                      circlemarker: {
+                      marker: shapes.includes('marker'),
+                      circlemarker: shapes.includes('circlemarker') && {
                         color,
                       },
                     }}
@@ -625,9 +667,10 @@ class ImageDraw extends PureComponent {
                       edit: true,
                       remove: true,
                     }}
+                    {...editControlProps}
                   />
                 )}
-                {data.map(this.renderShape)}
+                {data && data.map(this.renderShape)}
               </FeatureGroup>
             </ImageOverlay>
           )}
