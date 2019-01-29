@@ -53,7 +53,7 @@ export default class AlarmList extends PureComponent {
     }, {
       title: '操作',
       dataIndex: 'operation',
-      render: (text, record) => (<Link to={`/personnel-position/alarm-management/edit/${companyId}/${record.alarmId}`}>编辑</Link>),
+      render: (text, record) => (<Link to={`/personnel-position/alarm-management/edit/${companyId}/${record.id}`}>编辑</Link>),
     }];
   }
 
@@ -94,7 +94,7 @@ export default class AlarmList extends PureComponent {
 
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange,
+      onChange: this.handleSelectChange,
     };
 
     const pagination = { current, total, pageSize: PAGE_SIZE };

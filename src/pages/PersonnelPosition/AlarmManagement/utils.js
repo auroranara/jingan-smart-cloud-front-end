@@ -28,3 +28,13 @@ export function handleAllCards(list) {
 export function msgCallback(code, msg) {
   message[code === 200 ? 'success' : 'error'](msg);
 }
+
+export function handleInitFormValues(values, selected, props) {
+  return selected.reduce((prev, next) => [...prev, ...props[next]], []).reduce((prev, next) => {
+    if (next === 'canEnterUsers')
+      prev[next] = values[next].map(({ cardId }) => cardId);
+    else
+      prev[next] = values[next]
+    return prev;
+  }, {});
+}

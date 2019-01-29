@@ -21,6 +21,7 @@ export default {
     sectionList: [],
     sectionLimits: {},
     allCards: [], // 所有人员列表
+    detail: {},
   },
 
   effects: {
@@ -70,8 +71,10 @@ export default {
       let response = yield call(getAllCards, payload);
       response = response || {};
       let { code=500, data } = response;
-      if (code === 200)
+      if (code === 200) {
         yield put({ type: 'saveAllCards', payload: data && Array.isArray(data.list) ? data.list : [] });
+        callback && callback(data);
+      }
     },
     *getAlarmStrategy({ payload, callback }, { call, put }) {
       let response = yield call(getAlarmStrategy, payload);

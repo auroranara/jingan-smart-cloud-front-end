@@ -5,12 +5,13 @@ import { Button, Card, Checkbox, Form, Input, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AlarmAddOrEdit.less';
-import { msgCallback } from './utils';
+import { msgCallback, handleInitFormValues } from './utils';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
 const { Group: CheckboxGroup } = Checkbox;
 
+const NO_DATA = '暂无信息';
 const CK_VALUES = [2, 3, 4, 5];
 const CK_OPTIONS = ['越界', '长时间不动', '超员', '缺员'].map((label, i) => ({ label, value: CK_VALUES[i] }));
 const FORMITEM_LAYOUT1 = {
@@ -33,6 +34,12 @@ const FORMITEM_LAYOUT = {
     sm: { span: 12 },
   },
 };
+const FORM_PROPS = {
+  [CK_VALUES[0]]: ['canEnterUsers'],
+  [CK_VALUES[1]]: ['fixedlyTimeLimit'],
+  [CK_VALUES[2]]: ['outstripNumLimit'],
+  [CK_VALUES[3]]: ['lackNumLimit', 'lackTimeLimit'],
+};
 
 @connect(({ personPositionAlarm, loading }) => ({ personPositionAlarm, loading: loading.models.personPositionAlarm }))
 @Form.create()
@@ -45,19 +52,29 @@ export default class AlarmAddOrEdit extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch, match: { params: { companyId, alarmId } } } = this.props;
+    const { dispatch, match: { params: { companyId, alarmId } }, form: { setFieldsValue } } = this.props;
     const isAdd = this.isAdd();
-    dispatch({ type: 'personPositionAlarm/fetchMapList', payload: { companyId, pageSize: 0 } });
-    dispatch({ type: 'personPositionAlarm/fetchAllCards', payload: { companyId, pageSize: 0 } });
+    isAdd && dispatch({ type: 'personPositionAlarm/fetchMapList', payload: { companyId, pageSize: 0 } });
+    dispatch({
+      type: 'personPositionAlarm/fetchAllCards',
+      payload: { companyId, pageSize: 0 },
+      callback: () => {
+        if (isAdd)
+          return;
 
-    if (!isAdd)
-      dispatch({
-        type: 'personPositionAlarm/fetchAlarmDetail',
-        payload: alarmId,
-        callback: detail => {
-          
-        },
-      });
+        dispatch({
+          type: 'personPositionAlarm/getAlarmStrategy',
+          payload: alarmId,
+          callback: detail => {
+            const { typeList, areaId } = detail;
+            dispatch({ type: 'personPositionAlarm/fetchSectionLimits', payload: areaId });
+            this.setState({ checkedValues: typeList.map(n => Number(n)) }, () => {
+              setFieldsValue(handleInitFormValues(detail, typeList, FORM_PROPS));
+            });
+          },
+        });
+      },
+    });
   }
 
   isAdd = () => {
@@ -126,7 +143,11 @@ export default class AlarmAddOrEdit extends PureComponent {
   };
 
   handleSubmit = e => {
-    const { dispatch, form: { validateFields }, match: { params: { companyId, alarmId } } } = this.props;
+    const {
+      dispatch,
+      form: { validateFields },
+      match: { params: { companyId, alarmId } },
+    } = this.props;
     const { checkedValues, areaId } = this.state;
     const isAdd = this.isAdd();
 
@@ -160,6 +181,7 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   render() {
     const {
+      loading,
       match: { params: { companyId } },
       form: { getFieldDecorator },
       personPositionAlarm: {
@@ -176,6 +198,7 @@ export default class AlarmAddOrEdit extends PureComponent {
           maxLimitLackNum, // 最大缺员人数
         },
         allCards,
+        detail: { areaName, mapName },
       },
     } = this.props;
     const { checkedValues, mapId, areaId, mapUrl } = this.state;
@@ -230,9 +253,9 @@ export default class AlarmAddOrEdit extends PureComponent {
               </Fragment>
             ): (
               <Fragment>
-                <p>区域编号：001</p>
-                <p>区域名称：危化品存储一处</p>
-                <p>所属地图：1号车间</p>
+                {/* <p>区域编号：001</p> */}
+                <p>区域名称：{areaName || NO_DATA}</p>
+                <p>所属地图：{mapName || NO_DATA}</p>
               </Fragment>
             )
           }
@@ -303,7 +326,7 @@ export default class AlarmAddOrEdit extends PureComponent {
             )}
             <FormItem style={{ textAlign: 'center', marginTop: 24 }}>
               {!!checkedValues.length && (
-                <Button type="primary" htmlType="submit" disabled={!areaId}>
+                <Button type="primary" htmlType="submit" disabled={isAdd ? !areaId : loading}>
                   提交
                 </Button>
               )}
