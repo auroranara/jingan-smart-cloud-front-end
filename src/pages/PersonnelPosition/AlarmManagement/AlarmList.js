@@ -73,6 +73,7 @@ export default class AlarmList extends PureComponent {
 
   fetchList = (pageNum) => {
     const { dispatch, match: { params: { companyId } } } = this.props;
+    console.log(this.alarmType);
     dispatch({
       type: 'personPositionAlarm/fetchAlarmList',
       payload: {
@@ -138,7 +139,7 @@ export default class AlarmList extends PureComponent {
           break;
         case 'multipleSelect':
           v = e.join(',');
-          // console.log(e, v);
+          console.log(e, v);
           break;
         default:
           v = e;
@@ -199,9 +200,6 @@ export default class AlarmList extends PureComponent {
             </Select>
           );
         },
-        transform(value) {
-          return value.trim();
-        },
       }, {
         id: 'type',
         span: 6,
@@ -211,9 +209,6 @@ export default class AlarmList extends PureComponent {
               {CK_OPTIONS.map(({ label, value }) => <Option value={value} key={value}>{label}</Option>)}
             </Select>
           );
-        },
-        transform(value) {
-          return value.trim();
         },
       },
     ];
