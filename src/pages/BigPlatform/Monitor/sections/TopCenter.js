@@ -82,7 +82,7 @@ const missingColumns = [
     key: 'statusTime',
     dataIndex: 'statusTime',
     align: 'center',
-    render: text => <span>{text ? moment(text).format('YYYY-MM-DD hh:mm') : '暂无数据'}</span>,
+    render: text => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '暂无数据'}</span>,
   },
 ];
 
