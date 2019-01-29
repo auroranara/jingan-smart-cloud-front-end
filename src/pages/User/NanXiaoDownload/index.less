@@ -1,17 +1,25 @@
 /* 容器 */
 .container {
   position: relative;
+  min-width: 1024px;
   min-height: 100%;
   background: #fff;
   overflow: hidden;
+  padding-bottom: 10vh; // 156px
 
   // header
   .header {
     position: relative;
-    padding: 4.62963vh 18.75vw 3.7037vh; // 50px 360px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 14.444444vh; // 156px
+    min-height: 66px;
     overflow: hidden;
     .logo {
-      float: left;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      margin-top: -33px;
       width: 337px;
       height: 66px;
       background: url('@/assets/nanxiao_download_logo.png') no-repeat center;
@@ -19,7 +27,10 @@
     }
     // 返回按钮
     .backButtonWrapper {
-      float: right;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      margin-top: -33px;
       height: 66px;
       line-height: 66px;
       .backButton {
@@ -29,17 +40,22 @@
   }
 
   .content {
-    position: relative;
-    padding: 19.25926vh 25.9375vw; // 208px 498px
     background: url('http://data.jingan-china.cn/v2/login/nanxiao/nanxiao_download_background.png') no-repeat center;
     background-size: cover;
-    text-align: right;
+    overflow: hidden;
+
+    .contentInner {
+      position: relative;
+      max-width: 1200px;
+      margin: 50px auto;
+      height: 590px;
+    }
 
     .layer {
       position: absolute;
-      top: 18.2%; // 126px
-      bottom: 5.5%; // 38px
-      left: 18.9583%; // 364px
+      left: 0;
+      bottom: 0;
+      height: 517px;
       z-index: 2;
 
       img {
@@ -50,9 +66,11 @@
       }
     }
     .codeWrapper {
-      position: relative;
-      display: inline-block;
-      vertical-align: top;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      margin-top: -137px;
+      width: 670px;
       z-index: 9;
 
       .code {

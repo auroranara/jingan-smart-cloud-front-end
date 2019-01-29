@@ -458,7 +458,7 @@ export default class LiMinLogin extends PureComponent {
         </div>
         <div className={styles.footer}>
           <div>
-            <div><span>copyright©2019</span><span>南京市消防工程有限公司</span></div>
+            <div><span>copyright©2019</span><span>利民化工股份有限公司</span></div>
             <div><span>运营支持：无锡晶安智慧科技有限公司</span><span>服务电话：400-928-5656</span></div>
           </div>
         </div>
