@@ -12,7 +12,7 @@ import {
   getBigFlatformData, //大屏主页面数据
   getImportingTotal, // 接入单位统计
   getAbnormalingTotal, // 异常单位统计
-  // getPendingMission, // 待处理业务
+  getPendingMission, // 待处理业务
 } from '../services/gas';
 // 获取单位集
 const getUnitSet = function(units) {
@@ -67,20 +67,9 @@ export default {
       // 正常单位
       normalUnit: [],
     },
-
     // 单位id列表
     unitIds: [],
-    // 接入单位统计-饼图
-    AccessStatistics: {
-      Importing: 0,
-      unImporting: 0,
-    },
-    // 接入单位统计-树状图
-    AccessCount: [],
-    // 接入单位统计-卡片列表
-    gasUnitSet: {
-      importingUnits: [],
-    },
+    /** 燃气大屏 */
     // 统计数据
     statisticsData: {
       // 管辖单位统计数
@@ -95,6 +84,39 @@ export default {
       faultCompanyNum: 0,
       // 失联单位
       outContacts: 0,
+    },
+    // 饼图 --接入单位统计
+    AccessStatistics: {
+      Importing: 0,
+      unImporting: 0,
+    },
+    // 树状图 --接入单位统计
+    AccessCount: [],
+    // 单位卡片列表 --接入单位统计
+    gasUnitSet: {
+      importingUnits: [],
+    },
+    // 单位状态统计数据 --异常单位统计
+    companyStatus: {
+      // 报警
+      unnormal: 0,
+      // 故障
+      faultNum: 0,
+      // 失联
+      outContact: 0,
+    },
+    // 报警趋势图数据 --异常单位统计
+    abnormalTrend: {
+      // 报警
+      abUnnormal: 0,
+      // 故障
+      abFaultNum: 0,
+      // 失联
+      abOutContact: 0,
+    },
+    // 单位卡片列表 --异常单位统计
+    gasErrorUnitSet: {
+      errorUnits: [],
     },
     deviceStatusCount: {
       count: 0,
@@ -150,7 +172,7 @@ export default {
       }
     },
 
-    // 获取燃气大屏单位数据
+    // 获取燃气大屏各单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
       const {
         code,
@@ -236,20 +258,65 @@ export default {
       const {
         code,
         data: {
-          // 饼图数据
-          AccessStatistics: { Importing, unImporting },
-          companys: importingUnits,
-          AccessCount,
+          // 单位状态统计数据
+          companyStatus: { unnormal, faultNum, outContact },
+          abnormalTrend: { unnormal: abUnnormal, faultNum: abFaultNum, outContact: abOutContact },
+          companys: { errorUnits },
         },
       } = yield call(getAbnormalingTotal, payload);
-      const AccessStatistics = {
-        Importing,
-        unImporting,
+      const companyStatus = {
+        unnormal,
+        faultNum,
+        outContact,
+      };
+      const abnormalTrend = {
+        abUnnormal,
+        abFaultNum,
+        abOutContact,
       };
       const pay = {
-        gasUnitSet: { importingUnits },
-        AccessCount,
-        AccessStatistics,
+        companyStatus,
+        gasErrorUnitSet: { errorUnits },
+        abnormalTrend,
+      };
+      if (code === 200) {
+        yield put({
+          type: 'saveUnitData',
+          payload: pay,
+        });
+        if (callback) {
+          callback(pay);
+        }
+      } else if (callback) {
+        callback();
+      }
+    },
+    // 燃气大屏待处理业务
+    *fetchPendingMission({ payload, callback }, { call, put }) {
+      const {
+        code,
+        data: {
+          // 报警业务处理统计
+          unnormalMission: { unnormal, faultNum, outContact },
+          // 故障业务处理统计
+          faultMission: { unnormal: abUnnormal, faultNum: abFaultNum, outContact: abOutContact },
+          companys: { pendingUnits },
+        },
+      } = yield call(getPendingMission, payload);
+      const unnormalMission = {
+        unnormal,
+        faultNum,
+        outContact,
+      };
+      const faultMission = {
+        abUnnormal,
+        abFaultNum,
+        abOutContact,
+      };
+      const pay = {
+        unnormalMission,
+        gasErrorUnitSet: { pendingUnits },
+        faultMission,
       };
       if (code === 200) {
         yield put({

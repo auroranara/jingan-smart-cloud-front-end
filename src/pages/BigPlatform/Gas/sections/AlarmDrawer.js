@@ -26,24 +26,6 @@ const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
 const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
 
-const CARDS = [...Array(10).keys()].map(i => ({
-  companyId: i,
-  name: '无锡市新吴区机械制造有限公司',
-  address: '无锡市新吴区汉江路与龙江路交叉口5号',
-  safetyMan: '王长江',
-  safetyPhone: '13288888888',
-  common: Math.floor(Math.random() * 10),
-  alarm: Math.floor(Math.random() * 10),
-  warn: Math.floor(Math.random() * 10),
-  noAccess: Math.floor(Math.random() * 10),
-}));
-
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({
-  id: i,
-  name: (i + 2) % 12 || 12,
-  value: Math.floor(Math.random() * 100),
-}));
-
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
 
@@ -68,6 +50,7 @@ export default class AlarmDrawer extends PureComponent {
   handleClose = () => {
     const { handleDrawerVisibleChange } = this.props;
     handleDrawerVisibleChange(TYPE);
+
     this.setState({ searchValue: '', grahp: 0, selected: 0 });
   };
 
@@ -174,11 +157,9 @@ export default class AlarmDrawer extends PureComponent {
       visible,
       // handleSearch,
       data: {
-        list = CARDS,
-        graphList = GRAPH_LIST,
-        alarmUnit: alarmNum = 0,
-        earlyWarningUnit: warnNum = 0,
-        normalUnit: commonNum = 0,
+        companyStatus: { unnormal = 0, faultNum = 0, outContact = 0 },
+        graphList = [],
+        list = [],
       } = {},
     } = this.props;
     const { graph, selected, searchValue } = this.state;
@@ -204,8 +185,8 @@ export default class AlarmDrawer extends PureComponent {
 
     sortList(filteredList, SELECTED_PROPS[selected]);
 
-    const total = alarmNum + commonNum + warnNum;
-    const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(
+    const total = unnormal + faultNum + outContact;
+    const [alarmPercent, faultPercent, outPercent] = [unnormal, faultNum, outContact].map(
       n => (total ? (n / total) * 100 : 0)
     );
 
@@ -225,7 +206,7 @@ export default class AlarmDrawer extends PureComponent {
           <OvProgress
             title="报警单位"
             percent={alarmPercent}
-            quantity={alarmNum}
+            quantity={unnormal}
             strokeColor="rgb(255,72,72)"
             style={{ marginTop: 40, cursor: 'pointer' }}
             iconStyle={{
@@ -238,8 +219,8 @@ export default class AlarmDrawer extends PureComponent {
           />
           <OvProgress
             title="故障单位"
-            percent={warnPercent}
-            quantity={warnNum}
+            percent={faultPercent}
+            quantity={faultNum}
             strokeColor="rgb(246,181,78)"
             style={{ cursor: 'pointer' }}
             iconStyle={{
@@ -252,8 +233,8 @@ export default class AlarmDrawer extends PureComponent {
           />
           <OvProgress
             title="失联单位"
-            percent={commonPercent}
-            quantity={commonNum}
+            percent={outPercent}
+            quantity={outContact}
             strokeColor="rgb(159,159,159)"
             style={{ cursor: 'pointer' }}
             iconStyle={{
@@ -267,7 +248,7 @@ export default class AlarmDrawer extends PureComponent {
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
           {graph ? (
-            <ReactEcharts option={this.getOption()} className="echarts-for-echarts" />
+            <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
           ) : (
             <ChartLine data={graphList} labelRotate={0} />
           )}

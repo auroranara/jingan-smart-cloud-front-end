@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Input, notification, Icon } from 'antd';
+import { notification, Icon } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
@@ -16,7 +16,7 @@ import AbnormalUnitStatistics from './AbnormalUnitStatistics';
 import ProcessingBusiness from './ProcessingBusiness';
 
 // 告警信息
-import WarningMessage from './WarningMessage';
+// import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
 // 故障/报警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
@@ -45,16 +45,16 @@ const options = {
   pingMsg: 'heartbeat',
 };
 
-const ids = [
-  'JIQ6gDpvQZipWzxz_OPHkw',
-  'q2gaRblYQWyVOWb009ssAA',
-  '2Msqxm1tT1CYSZP72kYhuA',
-  'tnWeDmZxQK6mFhBZp7uaQw',
-  'Fj_1XoafSjKGo3WJDhHsDw',
-  '417MvXHqTK_Es0n2I9C3eg',
-  'ehhHqz8gRn_X_ka7007WCw',
-  '7KhsYnGqTNCK0P15xh2KYA',
-];
+// const ids = [
+//   'JIQ6gDpvQZipWzxz_OPHkw',
+//   'q2gaRblYQWyVOWb009ssAA',
+//   '2Msqxm1tT1CYSZP72kYhuA',
+//   'tnWeDmZxQK6mFhBZp7uaQw',
+//   'Fj_1XoafSjKGo3WJDhHsDw',
+//   '417MvXHqTK_Es0n2I9C3eg',
+//   'ehhHqz8gRn_X_ka7007WCw',
+//   '7KhsYnGqTNCK0P15xh2KYA',
+// ];
 
 /**
  * description: 用电监测
@@ -133,6 +133,21 @@ export default class Gas extends PureComponent {
           gasUnitSet: { importingUnits = [] },
         } = data;
         this.importCardsInfo = genCardsInfo(importingUnits);
+      },
+    });
+
+    // 获取异常单位统计
+    dispatch({
+      type: 'gas/fetchAbnormalingTotal',
+      payload: {
+        status,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasErrorUnitSet: { errorUnits = [] },
+        } = data;
+        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
       },
     });
 
@@ -248,6 +263,8 @@ export default class Gas extends PureComponent {
 
   cardsInfo = [];
   importCardsInfo = [];
+  errorUnitsCardsInfo = [];
+
   getDeviceStatusCount = companyId => {
     const { dispatch } = this.props;
     dispatch({
@@ -567,6 +584,8 @@ export default class Gas extends PureComponent {
         statisticsData,
         AccessStatistics,
         AccessCount,
+        companyStatus,
+        abnormalTrend,
         unitSet,
         deviceStatusCount,
         devices,
@@ -597,6 +616,7 @@ export default class Gas extends PureComponent {
 
     const cardsInfo = this.cardsInfo;
     const importCardsInfo = this.importCardsInfo;
+    const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
 
     const faultList = [
       {
@@ -751,7 +771,7 @@ export default class Gas extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <AlarmDrawer
-          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: abnormalTrend }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
