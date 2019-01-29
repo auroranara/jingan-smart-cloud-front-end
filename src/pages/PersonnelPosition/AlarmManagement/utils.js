@@ -37,7 +37,7 @@ export function handleInitFormValues(values, selected, props) {
     if (next === 'canEnterUsers')
       prev[next] = values[next].map(({ cardId }) => cardId);
     else
-      prev[next] = values[next]
+      prev[next] = String(values[next]); // 原来是数字，直接传到Form中的Input，提交的时候不会报错，但是validateFields中的回调函数也不会被调用
     return prev;
   }, {});
 }

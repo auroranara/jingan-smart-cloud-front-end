@@ -65,7 +65,7 @@ export default class AlarmAddOrEdit extends PureComponent {
           payload: alarmId,
           callback: detail => {
             const { typeList, areaId, mapPhoto } = detail;
-            dispatch({ type: 'personPositionAlarm/fetchSectionLimits', payload: areaId });
+            dispatch({ type: 'personPositionAlarm/fetchAreaLimits', payload: areaId });
             this.setState({
               mapUrl: mapPhoto,
               checkedValues: typeList.map(n => Number(n)),
@@ -91,10 +91,15 @@ export default class AlarmAddOrEdit extends PureComponent {
     const { dispatch, personPositionAlarm: { mapList } } = this.props;
     this.setState({ mapId: value });
     dispatch({
-      type: 'personPositionAlarm/fetchSectionList',
+      type: 'personPositionAlarm/fetchAreaList',
       payload: { mapId: value, pageSize: 0 },
       callback: areas => {
-        this.setState({ areaId: areas.length ? areas[0].id : '' });
+        const areaId = areas.length ? areas[0].id : '';
+        if (!areaId)
+          return;
+
+        this.setState({ areaId });
+        this.handleAreaChange(areaId);
       },
     });
 
@@ -102,11 +107,11 @@ export default class AlarmAddOrEdit extends PureComponent {
     this.setState({ mapUrl: url });
   };
 
-  handleSectionChange = value => {
+  handleAreaChange = value => {
     const { dispatch, personPositionAlarm } = this.props;
     this.setState({ areaId: value });
     dispatch({
-      type: 'personPositionAlarm/fetchSectionLimits',
+      type: 'personPositionAlarm/fetchAreaLimits',
       payload: value,
       callback: ({ minCanEnterUsers }) => {
         this.setCards(minCanEnterUsers);
@@ -116,7 +121,7 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   handleCardsChange = values => {
     // console.log(values);
-    const { personPositionAlarm: { sectionLimits: { minCanEnterUsers } } } = this.props;
+    const { personPositionAlarm: { areaLimits: { minCanEnterUsers } } } = this.props;
     this.setCards(minCanEnterUsers, values);
   };
 
@@ -146,7 +151,7 @@ export default class AlarmAddOrEdit extends PureComponent {
   handleSubmit = e => {
     const {
       dispatch,
-      form: { validateFields },
+      form: { validateFields, getFieldsValue },
       match: { params: { companyId, alarmId } },
     } = this.props;
     const { checkedValues, areaId } = this.state;
@@ -154,6 +159,8 @@ export default class AlarmAddOrEdit extends PureComponent {
 
     e.preventDefault();
 
+    // console.log('submit', getFieldsValue());
+    console.log(areaId);
     validateFields((err, values) => {
       // console.log(err, values);
       if (err)
@@ -187,8 +194,8 @@ export default class AlarmAddOrEdit extends PureComponent {
       form: { getFieldDecorator },
       personPositionAlarm: {
         mapList,
-        sectionList,
-        sectionLimits: {
+        areaList,
+        areaLimits: {
           // minCanEnterUsers, // 最小允许进入范围
           maxCanEnterUsers, // 最大允许进入范围
           minTLongLimitTime, // 最小停留时间
@@ -247,8 +254,8 @@ export default class AlarmAddOrEdit extends PureComponent {
                 </div>
                 <div>
                   区域名称：
-                  <Select placeholder="请选择区域" style={{ width: 200 }} onChange={this.handleSectionChange} value={areaId}>
-                    {sectionList.map(({ id, name }) => <Option value={id} key={id}>{name}</Option>)}
+                  <Select placeholder="请选择区域" style={{ width: 200 }} onChange={this.handleAreaChange} value={areaId}>
+                    {areaList.map(({ id, name }) => <Option value={id} key={id}>{name}</Option>)}
                   </Select>
                 </div>
                 {mapUrl && <img src={mapUrl} alt="map" />}

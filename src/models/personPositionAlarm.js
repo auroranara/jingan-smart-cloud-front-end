@@ -2,8 +2,8 @@ import {
   getCompanyList,
   getAlarmList,
   getMapList,
-  getSectionList,
-  getSectionLimits,
+  getAreaList,
+  getAreaLimits,
   getAllCards,
   getAlarmStrategy,
   postAlarmStrategy,
@@ -19,8 +19,8 @@ export default {
     companyList: [],
     alarmList: [],
     mapList: [],
-    sectionList: [],
-    sectionLimits: {},
+    areaList: [],
+    areaLimits: {},
     allCards: [], // 所有人员列表
     detail: {},
   },
@@ -53,22 +53,22 @@ export default {
       if (code === 200)
         yield put({ type: 'saveMapList', payload: data && Array.isArray(data.list) ? data.list : [] });
     },
-    *fetchSectionList({ payload, callback }, { call, put }) {
-      let response = yield call(getSectionList, payload);
+    *fetchAreaList({ payload, callback }, { call, put }) {
+      let response = yield call(getAreaList, payload);
       response = response || {};
       let { code=500, data } = response;
       if (code === 200) {
         const list = data && Array.isArray(data.list) ? data.list : [];
-        yield put({ type: 'saveSectionList', payload: list });
+        yield put({ type: 'saveAreaList', payload: list });
         callback && callback(list);
       }
     },
-    *fetchSectionLimits({ payload, callback }, { call, put }) {
-      let response = yield call(getSectionLimits, payload);
+    *fetchAreaLimits({ payload, callback }, { call, put }) {
+      let response = yield call(getAreaLimits, payload);
       response = response || {};
       let { code=500, data } = response;
       if (code === 200)
-        yield put({ type: 'saveSectionLimits', payload: data || {} });
+        yield put({ type: 'saveAreaLimits', payload: data || {} });
     },
     *fetchAllCards({ payload, callback }, { call, put }) {
       let response = yield call(getAllCards, payload);
@@ -128,11 +128,11 @@ export default {
     saveMapList(state, action) {
       return { ...state, mapList: action.payload };
     },
-    saveSectionList(state, action) {
-      return { ...state, sectionList: action.payload };
+    saveAreaList(state, action) {
+      return { ...state, areaList: action.payload };
     },
-    saveSectionLimits(state, action) {
-      return { ...state, sectionLimits: action.payload };
+    saveAreaLimits(state, action) {
+      return { ...state, areaLimits: action.payload };
     },
     saveAllCards(state, action) {
       return { ...state, allCards: handleAllCards(action.payload) };

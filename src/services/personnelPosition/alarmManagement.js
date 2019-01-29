@@ -19,12 +19,12 @@ export async function getMapList(params) {
 }
 
 // 获取区域列表
-export async function getSectionList(params) {
+export async function getAreaList(params) {
   return request(`/acloud_new/v2/areaInfo/areaInfoForPage?${stringify(params)}`);
 }
 
 // 获取区域限制
-export async function getSectionLimits(id) {
+export async function getAreaLimits(id) {
   return request(`${URL_BASE}/getLimit/${id}`);
 }
 
@@ -56,6 +56,6 @@ export async function putAlarmStrategy(params) {
 }
 
 // 删除报警策略
-export async function deleteAlarmStrategy(params) {
-  return request(`${URL_BASE}/locationWarningStrategy/${stringify(params)}`,  { method: 'DELETE' });
+export async function deleteAlarmStrategy(ids) {
+  return request(`${URL_BASE}/locationWarningStrategy/${ids}`,  { method: 'DELETE' });
 }
