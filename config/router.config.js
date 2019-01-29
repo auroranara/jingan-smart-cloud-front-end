@@ -1592,7 +1592,7 @@ module.exports = env => {
                 },
                 {
                   name: 'detail',
-                  path: '/personnel-position/alarm-management/detail/:alarmId',
+                  path: '/personnel-position/alarm-management/detail/:companyId/:alarmId',
                   code: 'personnelPosition.alarmManagement.view',
                   component: './PersonnelPosition/AlarmManagement/AlarmDetail',
                 },

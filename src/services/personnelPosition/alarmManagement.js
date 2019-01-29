@@ -54,3 +54,8 @@ export async function putAlarmStrategy(params) {
     body: params,
   });
 }
+
+// 删除报警策略
+export async function deleteAlarmStrategy(params) {
+  return request(`${URL_BASE}/locationWarningStrategy/${stringify(params)}`,  { method: 'DELETE' });
+}

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -7,10 +7,12 @@ import { Button, Card, Input, Select, Table, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
 import styles from './CompanyList.less';
+import { CK_OPTIONS, msgCallback } from './utils';
 
 const { Group: ButtonGroup } = Button;
 const { Option } = Select;
 
+const PAGE_SIZE = 10;
 const title = '报警策略列表';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -18,9 +20,6 @@ const breadcrumbList = [
   { title: '报警管理', name: '报警管理', href: '/personnel-position/alarm-management/index' },
   { title, name: title },
 ];
-
-const NO_DATA = '暂无信息';
-const PAGE_SIZE = 10;
 
 @connect(({ personPositionAlarm, loading }) => ({ personPositionAlarm, loading: loading.effects['personPositionAlarm/fetchAlarmList'] }))
 export default class AlarmList extends PureComponent {
@@ -31,9 +30,11 @@ export default class AlarmList extends PureComponent {
   };
 
   componentDidMount() {
-    const { match: { params: { companyId } } } = this.props;
+    const { dispatch, match: { params: { companyId } } } = this.props;
 
     this.fetchList(1);
+    dispatch({ type: 'personPositionAlarm/fetchMapList', payload: { companyId, pageSize: 0 } });
+
     this.columns = [{
       title: '区域编号',
       dataIndex: 'areaCode',
@@ -53,17 +54,40 @@ export default class AlarmList extends PureComponent {
     }, {
       title: '操作',
       dataIndex: 'operation',
-      render: (text, record) => (<Link to={`/personnel-position/alarm-management/edit/${companyId}/${record.id}`}>编辑</Link>),
+      align: 'center',
+      render: (text, record) => (
+        <Fragment>
+          <Link to={`/personnel-position/alarm-management/detail/${companyId}/${record.id}`} style={{ marginRight: 8 }}>查看</Link>
+          <Link to={`/personnel-position/alarm-management/edit/${companyId}/${record.id}`}>编辑</Link>
+        </Fragment>
+      ),
     }];
   }
 
   columns = [];
+  pageIndex = 1;
+  areaCode=undefined;
+  areaName=undefined;
+  mapId=undefined;
+  alarmType=undefined;
 
   fetchList = (pageNum) => {
     const { dispatch, match: { params: { companyId } } } = this.props;
     dispatch({
       type: 'personPositionAlarm/fetchAlarmList',
-      payload: { pageNum, pageSize: PAGE_SIZE, companyId },
+      payload: {
+        pageNum,
+        companyId,
+        areaCode: this.areaCode,
+        areaName: this.areaName,
+        mapId: this.mapId,
+        type: this.alarmType,
+        pageSize: PAGE_SIZE,
+      },
+      callback: pageIndex => {
+        if (pageIndex)
+          this.pageIndex = pageIndex;
+      },
     });
   };
 
@@ -82,13 +106,55 @@ export default class AlarmList extends PureComponent {
   };
 
   handleDelete = e => {
+    const { dispatch } = this.props;
+    const { selectedRowKeys } = this.state;
 
+    if (selectedRowKeys.length)
+      dispatch({
+        type: 'personPositionAlarm/delAlarmStartegy',
+        payload: selectedRowKeys.join(','),
+        callback: (code, msg) => {
+          msgCallback(code, msg);
+          this.fetchList(this.pageIndex);
+        },
+      });
+  };
+
+  handleSearch = () => {
+    this.fetchList(1);
+  };
+
+  handleReset = () => {
+    ['areaCode', 'areaName', 'mapId', 'alarmType'].forEach(p => this[p] = undefined);
+    this.fetchList(1);
+  };
+
+  genHandleChange = (prop, type='input') => {
+    return e => {
+      let v = undefined;
+      switch(type) {
+        case 'input':
+          v = e.target.value;
+          break;
+        case 'multipleSelect':
+          v = e.join(',');
+          // console.log(e, v);
+          break;
+        default:
+          v = e;
+      }
+
+      this[prop] = v;
+    };
   };
 
   render() {
     const {
       loading,
-      personPositionAlarm: { alarmList },
+      personPositionAlarm: {
+        mapList,
+        alarmList,
+      },
     } = this.props;
     const { selectedRowKeys, current, total } = this.state;
 
@@ -104,9 +170,9 @@ export default class AlarmList extends PureComponent {
     const fields = [{
       id: 'areaCode',
       span: 6,
-      render(onSearch, onReset) {
+      render: (onSearch, onReset) => {
         return (
-          <Input placeholder="区域编号" />
+          <Input placeholder="区域编号" onChange={this.genHandleChange('areaCode')} />
         );
       },
       transform(value) {
@@ -115,9 +181,9 @@ export default class AlarmList extends PureComponent {
       }, {
         id: 'areaName',
         span: 6,
-        render(onSearch, onReset) {
+        render: (onSearch, onReset) => {
           return (
-            <Input placeholder="区域名称" />
+            <Input placeholder="区域名称" onChange={this.genHandleChange('areaName')} />
           );
         },
         transform(value) {
@@ -126,10 +192,10 @@ export default class AlarmList extends PureComponent {
       }, {
         id: 'mapId',
         span: 6,
-        render(onSearch, onReset) {
+        render: (onSearch, onReset) => {
           return (
-            <Select placeholder="报警地图">
-              <Option value="0">全部报警地图</Option>
+            <Select placeholder="报警地图" onChange={this.genHandleChange('mapId', 'select')}>
+              {mapList.map(({ id, mapName }) => <Option value={id} key={id}>{mapName}</Option>)}
             </Select>
           );
         },
@@ -139,10 +205,10 @@ export default class AlarmList extends PureComponent {
       }, {
         id: 'type',
         span: 6,
-        render(onSearch, onReset) {
+        render: (onSearch, onReset) => {
           return (
-            <Select placeholder="所属类型">
-              <Option value="0">全部报警类型</Option>
+            <Select placeholder="所属类型" mode="multiple" onChange={this.genHandleChange('alarmType', 'multipleSelect')}>
+              {CK_OPTIONS.map(({ label, value }) => <Option value={value} key={value}>{label}</Option>)}
             </Select>
           );
         },
@@ -165,7 +231,12 @@ export default class AlarmList extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card>
-          <ToolBar fields={fields} action={buttons} />
+          <ToolBar
+            fields={fields}
+            action={buttons}
+            onSearch={this.handleSearch}
+            onReset={this.handleReset}
+          />
         </Card>
         <Card className={styles.table}>
           <Table

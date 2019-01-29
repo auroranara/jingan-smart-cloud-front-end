@@ -5,15 +5,13 @@ import { Button, Card, Checkbox, Form, Input, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AlarmAddOrEdit.less';
-import { msgCallback, handleInitFormValues } from './utils';
+import { CK_VALUES, CK_OPTIONS, msgCallback, handleInitFormValues } from './utils';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
 const { Group: CheckboxGroup } = Checkbox;
 
 const NO_DATA = '暂无信息';
-const CK_VALUES = [2, 3, 4, 5];
-const CK_OPTIONS = ['越界', '长时间不动', '超员', '缺员'].map((label, i) => ({ label, value: CK_VALUES[i] }));
 const FORMITEM_LAYOUT1 = {
   labelCol: {
     xs: { span: 24 },
@@ -66,9 +64,12 @@ export default class AlarmAddOrEdit extends PureComponent {
           type: 'personPositionAlarm/getAlarmStrategy',
           payload: alarmId,
           callback: detail => {
-            const { typeList, areaId } = detail;
+            const { typeList, areaId, mapPhoto } = detail;
             dispatch({ type: 'personPositionAlarm/fetchSectionLimits', payload: areaId });
-            this.setState({ checkedValues: typeList.map(n => Number(n)) }, () => {
+            this.setState({
+              mapUrl: mapPhoto,
+              checkedValues: typeList.map(n => Number(n)),
+            }, () => {
               setFieldsValue(handleInitFormValues(detail, typeList, FORM_PROPS));
             });
           },
@@ -154,7 +155,7 @@ export default class AlarmAddOrEdit extends PureComponent {
     e.preventDefault();
 
     validateFields((err, values) => {
-      console.log(err, values);
+      // console.log(err, values);
       if (err)
         return;
 
@@ -224,6 +225,7 @@ export default class AlarmAddOrEdit extends PureComponent {
           defaultValue={CK_VALUES}
           onChange={this.handleCkChange}
           className={styles.checks}
+          value={checkedValues}
         />
       </Fragment>
     )
@@ -256,6 +258,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                 {/* <p>区域编号：001</p> */}
                 <p>区域名称：{areaName || NO_DATA}</p>
                 <p>所属地图：{mapName || NO_DATA}</p>
+                {mapUrl && <img src={mapUrl} alt="map" />}
               </Fragment>
             )
           }

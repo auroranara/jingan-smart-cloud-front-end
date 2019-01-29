@@ -8,6 +8,7 @@ import {
   getAlarmStrategy,
   postAlarmStrategy,
   putAlarmStrategy,
+  deleteAlarmStrategy,
 } from '../services/personnelPosition/alarmManagement';
 import { handleAllCards } from '@/pages/PersonnelPosition/AlarmManagement/utils';
 
@@ -40,8 +41,10 @@ export default {
       response = response || {};
       let { code=500, data } = response;
       data = data || {};
-      if (code === 200)
+      if (code === 200) {
         yield put({ type: 'saveAlarmList', payload: data && Array.isArray(data.list) ? data.list : [] });
+        data.pagination && callback && callback(data.pagination.pageNum);
+      }
     },
     *fetchMapList({ payload, callback }, { call, put }) {
       let response = yield call(getMapList, payload);
@@ -57,7 +60,7 @@ export default {
       if (code === 200) {
         const list = data && Array.isArray(data.list) ? data.list : [];
         yield put({ type: 'saveSectionList', payload: list });
-        callback(list);
+        callback && callback(list);
       }
     },
     *fetchSectionLimits({ payload, callback }, { call, put }) {
@@ -83,20 +86,26 @@ export default {
       if (code === 200) {
         const detail = data || {};
         yield put({ type: 'saveDetail', payload: detail });
-        callback(detail);
+        callback && callback(detail);
       }
     },
     *addAlarmStrategy({ payload, callback }, { call, put }) {
       let response = yield call(postAlarmStrategy, payload);
       response = response || {};
       const { code, msg } = response;
-      callback(code, msg);
+      callback && callback(code, msg);
     },
     *editAlarmStrategy({ payload, callback }, { call, put }) {
       let response = yield call(putAlarmStrategy, payload);
       response = response || {};
       const { code, msg } = response;
-      callback(code, msg);
+      callback && callback(code, msg);
+    },
+    *delAlarmStartegy({ payload, callback }, { call, put }) {
+      let response = yield call(deleteAlarmStrategy, payload);
+      response = response || {};
+      const { code, msg } = response;
+      callback && callback(code, msg);
     },
   },
 

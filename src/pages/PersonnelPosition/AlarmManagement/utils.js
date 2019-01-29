@@ -16,6 +16,9 @@ import { message } from 'antd';
 //   });
 // }
 
+export const CK_VALUES = [2, 3, 4, 5];
+export const CK_OPTIONS = ['越界', '长时间不动', '超员', '缺员'].map((label, i) => ({ label, value: CK_VALUES[i] }));
+
 export function handleAllCards(list) {
   return list.map(({ id, type, code, userName, visitorName }) => ({
       cardId: id,
