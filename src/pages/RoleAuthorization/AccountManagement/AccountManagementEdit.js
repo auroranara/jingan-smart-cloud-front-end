@@ -79,6 +79,7 @@ const Supervisions = [
   { id: '1', label: '安全生产' },
   { id: '2', label: '消防' },
   { id: '3', label: '环保' },
+  { id: '4', label: '卫生' },
 ];
 
 const SUPERVISIONS_ALL = Supervisions.map(({ id }) => id);
