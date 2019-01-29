@@ -22,19 +22,6 @@ const OPTIONS = ['全部', '未接入', '已接入'].map((d, i) => ({ value: i, 
 const RING_COLORS = ['159,159,159', '0,255,255'];
 const RING_LABELS = ['未接入', '已接入'];
 
-const CARDS = [...Array(10).keys()].map(i => ({
-  company_id: i,
-  company_name: '无锡市新吴区机械制造有限公司',
-  address: '无锡市新吴区汉江路与龙江路交叉口5号',
-  principal_name: '王长江',
-  principal_phone: '13288888888',
-  normal: Math.floor(Math.random() * 10),
-  unnormal: Math.floor(Math.random() * 10),
-  faultNum: Math.floor(Math.random() * 10),
-  outContact: Math.floor(Math.random() * 10),
-  count: Math.random() > 0.5 ? 0 : 14,
-}));
-
 @connect(({ gas }) => ({
   gas,
 }))
@@ -66,7 +53,7 @@ export default class UnitDrawer extends PureComponent {
     const {
       visible,
       data: {
-        list = CARDS,
+        list = [],
         AccessCount = [],
         AccessStatistics: { Importing = 0, unImporting = 0 },
       } = {},
