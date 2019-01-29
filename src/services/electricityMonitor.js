@@ -5,7 +5,7 @@ const URL_PREFIX = '/acloud_new/v2';
 
 // 获取告警信息列表
 export async function getMessages(params) {
-  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3`);
+  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3&${stringify(params)}`);
 }
 
 // 获取网格id
