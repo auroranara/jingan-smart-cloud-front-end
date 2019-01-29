@@ -12,7 +12,7 @@ export default class AthorityTree extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch, setIdMaps } = this.props;
+    const { dispatch, setIdMaps, setPermissions } = this.props;
     dispatch({
       type: 'role/fetchPermissionTree',
       success: tree => {
@@ -20,6 +20,10 @@ export default class AthorityTree extends PureComponent {
         // console.log(getIdMaps(tree));
         setIdMaps(getIdMaps(tree));
         sortTree(tree);
+
+        // 为了修正当在父组件中调用设置permissions树的值时，当前接口还没有完成，所以在两个接口中都设置permissions树的值，
+        // 在调用函数中判断，当某个接口的值未返回时，不作处理，当两个接口的值都返回时，才真正处理数据并设置值
+        setPermissions && setPermissions();
       },
     });
     // 清空detail，以免从角色页面跳过来时，渲染其获取的detail

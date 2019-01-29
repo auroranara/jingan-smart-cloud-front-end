@@ -1204,17 +1204,31 @@ export default class AssociatedUnit extends PureComponent {
       payload: { id: ids.join(',') },
       success: permissions => {
         this.permissions = permissions;
+
         // console.log(permissions, this.authTreeCheckedKeys);
         // console.log(
         //   removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap)
         // );
-        setFieldsValue({
-          permissions: removeParentKey(
-            mergeArrays(permissions, this.authTreeCheckedKeys),
-            this.idMap
-          ),
-        });
+
+        // setFieldsValue({
+        //   permissions: removeParentKey(
+        //     mergeArrays(permissions, this.authTreeCheckedKeys),
+        //     this.idMap
+        //   ),
+        // });
+
+        this.setPermissions();
       },
+    });
+  };
+
+  setPermissions = () => {
+    const { form: { setFieldsValue } } = this.props;
+    setFieldsValue({
+      permissions: removeParentKey(
+        mergeArrays(this.permissions, this.authTreeCheckedKeys),
+        this.idMap
+      ),
     });
   };
 
@@ -1347,6 +1361,7 @@ export default class AssociatedUnit extends PureComponent {
                   form={form}
                   dispatch={dispatch}
                   setIdMaps={this.setIdMaps}
+                  setPermissions={this.setPermissions}
                   handleChangeAuthTreeCheckedKeys={checkedKeys => {
                     this.authTreeCheckedKeys = checkedKeys;
                   }}
