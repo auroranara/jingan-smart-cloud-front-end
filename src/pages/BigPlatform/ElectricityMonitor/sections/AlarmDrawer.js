@@ -121,27 +121,30 @@ export default class AlarmDrawer extends PureComponent {
             percent={alarmPercent}
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
-            style={{ marginTop: 40, cursor: 'pointer' }}
+            style={{
+              marginTop: 40,
+              // cursor: 'pointer',
+            }}
             iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(2)}
+            // onClick={this.genProgressClick(2)}
           />
           <OvProgress
             title="预警单位"
             percent={warnPercent}
             quantity={warnNum}
             strokeColor="rgb(246,181,78)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitYellowIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(3)}
+            // onClick={this.genProgressClick(3)}
           />
           <OvProgress
             title="正常单位"
             percent={commonPercent}
             quantity={commonNum}
             strokeColor="rgb(0,251,252)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(1)}
+            // onClick={this.genProgressClick(1)}
           />
         </DrawerSection>
         <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>

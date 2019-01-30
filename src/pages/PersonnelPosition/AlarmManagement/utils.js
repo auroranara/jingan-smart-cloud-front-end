@@ -44,10 +44,10 @@ export function handleInitFormValues(values, selected, props) {
 
 export function getRangeMsg(min, max) {
   if (min && max)
-    return `(下级区域设定的值)${min} <= n <= ${max}(上级区域设定的值)`;
+    return `(下级区域设定的值)${min} ≤ n ≤ ${max}(上级区域设定的值)`;
   else if (min)
-    return `n >= ${min}(下级区域设定的值)`;
-  return `n <= ${max}(上级区域设定的值)`;
+    return `n ≥ ${min}(下级区域设定的值)`;
+  return `n ≤ ${max}(上级区域设定的值)`;
 }
 
 function isJSON(json) {
