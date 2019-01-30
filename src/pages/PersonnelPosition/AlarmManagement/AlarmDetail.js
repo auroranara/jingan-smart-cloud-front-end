@@ -4,6 +4,7 @@ import { Card, Checkbox, Form } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AlarmAddOrEdit.less';
+import { getJSONProp } from './utils';
 
 const { Item: FormItem } = Form;
 const { Group: CheckboxGroup } = Checkbox;
@@ -58,6 +59,8 @@ export default class AlarmDetail extends PureComponent {
       },
     } = this.props;
 
+    const mapPhotoUrl = getJSONProp(mapPhoto, 'url');
+
     const types = typeList.map(n => Number(n));
     const title = '详情';
     const breadcrumbList = [
@@ -89,7 +92,7 @@ export default class AlarmDetail extends PureComponent {
           <p>区域编号：{areaCode}</p>
           <p>区域名称：{areaName || NO_DATA}</p>
           <p>所属地图：{mapName || NO_DATA}</p>
-          {mapPhoto && <img src={mapPhoto} alt="map" />}
+          {mapPhotoUrl && <img src={mapPhotoUrl} alt="map" />}
         </Card>
         <Card title={infoTitle} className={styles.card}>
           <Form onSubmit={this.handleSubmit}>

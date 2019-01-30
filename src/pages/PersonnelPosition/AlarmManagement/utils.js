@@ -49,3 +49,22 @@ export function getRangeMsg(min, max) {
     return `n >= ${min}(下级区域设定的值)`;
   return `n <= ${max}(上级区域设定的值)`;
 }
+
+function isJSON(json) {
+  if (json !== null && typeof json === 'object')
+    return true;
+
+  if (typeof json === 'string') {
+    const first = json[0];
+    const last = json[json.length - 1];
+    if (first === '[' && last === ']' || first === '{' && last === '}')
+      return true;
+  }
+
+  return false;
+}
+
+export function getJSONProp(json, prop) {
+  if (isJSON(json))
+    return JSON.parse(json)[prop];
+}

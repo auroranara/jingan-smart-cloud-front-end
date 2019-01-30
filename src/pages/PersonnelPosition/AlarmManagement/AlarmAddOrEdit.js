@@ -5,7 +5,7 @@ import { Button, Card, Checkbox, Form, Input, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AlarmAddOrEdit.less';
-import { CK_VALUES, CK_OPTIONS, msgCallback, handleInitFormValues, getRangeMsg } from './utils';
+import { CK_VALUES, CK_OPTIONS, msgCallback, handleInitFormValues, getRangeMsg, getJSONProp } from './utils';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -44,7 +44,7 @@ const FORM_PROPS = {
 export default class AlarmAddOrEdit extends PureComponent {
   state = {
     checkedValues: CK_VALUES,
-    mapUrl: '',
+    mapPhoto: '',
     mapId: undefined,
     areaId: undefined,
   };
@@ -68,7 +68,7 @@ export default class AlarmAddOrEdit extends PureComponent {
             dispatch({ type: 'personPositionAlarm/fetchAreaLimits', payload: areaId });
             this.setState({
               areaId,
-              mapUrl: mapPhoto,
+              mapPhoto,
               checkedValues: typeList.map(n => Number(n)),
             }, () => {
               setFieldsValue(handleInitFormValues(detail, typeList, FORM_PROPS));
@@ -104,8 +104,8 @@ export default class AlarmAddOrEdit extends PureComponent {
       },
     });
 
-    const url = mapList.find(({ id }) => id === value).mapPhotoUrl;
-    this.setState({ mapUrl: url });
+    const mapPhoto = mapList.find(({ id }) => id === value).mapPhoto;
+    this.setState({ mapPhoto });
   };
 
   handleAreaChange = value => {
@@ -213,8 +213,9 @@ export default class AlarmAddOrEdit extends PureComponent {
         detail: { areaCode, areaName, mapName },
       },
     } = this.props;
-    const { checkedValues, mapId, areaId, mapUrl } = this.state;
+    const { checkedValues, mapId, areaId, mapPhoto } = this.state;
 
+    const mapPhotoUrl = getJSONProp(mapPhoto, 'url');
     const isAdd = this.isAdd();
     const title = isAdd ? '新增' : '编辑';
     const breadcrumbList = [
@@ -262,14 +263,14 @@ export default class AlarmAddOrEdit extends PureComponent {
                     {areaList.map(({ id, name }) => <Option value={id} key={id}>{name}</Option>)}
                   </Select>
                 </div>
-                {mapUrl && <img src={mapUrl} alt="map" />}
+                {mapPhotoUrl && <img src={mapPhotoUrl} className={styles.img} alt="map" />}
               </Fragment>
             ): (
               <Fragment>
                 <p>区域编号：{areaCode}</p>
                 <p>区域名称：{areaName || NO_DATA}</p>
                 <p>所属地图：{mapName || NO_DATA}</p>
-                {mapUrl && <img src={mapUrl} alt="map" />}
+                {mapPhotoUrl && <img src={mapPhotoUrl} alt="map" />}
               </Fragment>
             )
           }
