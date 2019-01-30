@@ -5,7 +5,7 @@ import { Button, Card, Checkbox, Form, Input, Select, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AlarmAddOrEdit.less';
-import { CK_VALUES, CK_OPTIONS, msgCallback, handleInitFormValues } from './utils';
+import { CK_VALUES, CK_OPTIONS, msgCallback, handleInitFormValues, getRangeMsg } from './utils';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -67,6 +67,7 @@ export default class AlarmAddOrEdit extends PureComponent {
             const { typeList, areaId, mapPhoto } = detail;
             dispatch({ type: 'personPositionAlarm/fetchAreaLimits', payload: areaId });
             this.setState({
+              areaId,
               mapUrl: mapPhoto,
               checkedValues: typeList.map(n => Number(n)),
             }, () => {
@@ -108,13 +109,15 @@ export default class AlarmAddOrEdit extends PureComponent {
   };
 
   handleAreaChange = value => {
-    const { dispatch, personPositionAlarm } = this.props;
+    const { dispatch, form: { setFieldsValue }, personPositionAlarm } = this.props;
     this.setState({ areaId: value });
     dispatch({
       type: 'personPositionAlarm/fetchAreaLimits',
       payload: value,
       callback: ({ minCanEnterUsers }) => {
-        this.setCards(minCanEnterUsers);
+        // console.log(minCanEnterUsers);
+        const canEnterUsers = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
+        setFieldsValue({ canEnterUsers });
       },
     });
   };
@@ -122,20 +125,21 @@ export default class AlarmAddOrEdit extends PureComponent {
   handleCardsChange = values => {
     // console.log(values);
     const { personPositionAlarm: { areaLimits: { minCanEnterUsers } } } = this.props;
-    this.setCards(minCanEnterUsers, values);
+    const min = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
+    return Array.from(new Set([...min, ...values]));
   };
 
-  setCards = (minCanEnterUsers, values=[]) => {
-    const { form: { setFieldsValue } } = this.props;
-    const min = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
-    setFieldsValue({ canEnterUsers: [...min, ...values] });
-  };
+  // setCards = (minCanEnterUsers, values=[]) => {
+  //   const { form: { setFieldsValue } } = this.props;
+  //   const min = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
+  //   setFieldsValue({ canEnterUsers: Array.from(new Set([...min, ...values])) });
+  // };
 
   genTimeLimitCheck = (min, max) => {
     return function (rule, value, callback) {
       const val = Number(value.trim());
       if (!val || val < 0) {
-        callback('设定的值必须为一个大于0的数字');
+        callback('值必须为一个大于0的数字');
         return;
       }
 
@@ -144,7 +148,7 @@ export default class AlarmAddOrEdit extends PureComponent {
         return;
       }
 
-      callback(`设定的值必须大于等于下级区域设定的最小值${min}且必须小于等于上级区域设置的最大值${max}`);
+      callback(`设定的值n的范围，${getRangeMsg(min, max)}`);
     };
   };
 
@@ -160,7 +164,7 @@ export default class AlarmAddOrEdit extends PureComponent {
     e.preventDefault();
 
     // console.log('submit', getFieldsValue());
-    console.log(areaId);
+    // console.log(areaId);
     validateFields((err, values) => {
       // console.log(err, values);
       if (err)
@@ -206,7 +210,7 @@ export default class AlarmAddOrEdit extends PureComponent {
           maxLimitLackNum, // 最大缺员人数
         },
         allCards,
-        detail: { areaName, mapName },
+        detail: { areaCode, areaName, mapName },
       },
     } = this.props;
     const { checkedValues, mapId, areaId, mapUrl } = this.state;
@@ -262,7 +266,7 @@ export default class AlarmAddOrEdit extends PureComponent {
               </Fragment>
             ): (
               <Fragment>
-                {/* <p>区域编号：001</p> */}
+                <p>区域编号：{areaCode}</p>
                 <p>区域名称：{areaName || NO_DATA}</p>
                 <p>所属地图：{mapName || NO_DATA}</p>
                 {mapUrl && <img src={mapUrl} alt="map" />}
@@ -276,10 +280,11 @@ export default class AlarmAddOrEdit extends PureComponent {
               <Fragment>
                 <FormItem label="报警类型" {...FORMITEM_LAYOUT}>越界</FormItem>
                 <FormItem label="允许进入人员" {...FORMITEM_LAYOUT1}>
-                  {getFieldDecorator('canEnterUsers', { rules: [
-                    { required: true, message: '请选择允许进入人员' },
-                  ] })(
-                    <Select mode="multiple" onChange={this.handleCardsChange}>
+                  {getFieldDecorator('canEnterUsers', {
+                    rules: [{ required: true, message: '请选择允许进入人员' }],
+                    getValueFromEvent: this.handleCardsChange,
+                  })(
+                    <Select mode="multiple">
                       {cardList.map(({ cardId, cardCode, userName }) => <Option value={cardId} key={cardId}>{cardCode}({userName})</Option>)}
                     </Select>
                   )}

@@ -176,5 +176,14 @@ export default {
       delete: 'personnelPosition.mapManagement.delete',
       associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
     },
+    // 报警策略
+    alarmManagement: {
+      companyList: 'personnelPosition.alarmManagement.companyListView',
+      alarmList: 'personnelPosition.alarmManagement.alarmListView',
+      add: 'personnelPosition.alarmManagement.add',
+      edit: 'personnelPosition.alarmManagement.edit',
+      delete: 'personnelPosition.alarmManagement.delete',
+      view: 'personnelPosition.alarmManagement.view',
+    },
   },
 };

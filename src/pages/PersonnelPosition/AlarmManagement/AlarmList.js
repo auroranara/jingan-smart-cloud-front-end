@@ -6,8 +6,10 @@ import { Button, Card, Input, Select, Table, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
+import { AuthButton, AuthUmiLink } from '@/utils/customAuth';
 import styles from './CompanyList.less';
 import { CK_OPTIONS, msgCallback } from './utils';
+import codes from '@/utils/codes';
 
 const { Group: ButtonGroup } = Button;
 const { Option } = Select;
@@ -57,8 +59,19 @@ export default class AlarmList extends PureComponent {
       align: 'center',
       render: (text, record) => (
         <Fragment>
-          <Link to={`/personnel-position/alarm-management/detail/${companyId}/${record.id}`} style={{ marginRight: 8 }}>查看</Link>
-          <Link to={`/personnel-position/alarm-management/edit/${companyId}/${record.id}`}>编辑</Link>
+          <AuthUmiLink
+            style={{ marginRight: 8 }}
+            code={codes.personnelPosition.alarmManagement.view}
+            to={`/personnel-position/alarm-management/detail/${companyId}/${record.id}`}
+          >
+            查看
+          </AuthUmiLink>
+          <AuthUmiLink
+            code={codes.personnelPosition.alarmManagement.edit}
+            to={`/personnel-position/alarm-management/edit/${companyId}/${record.id}`}
+          >
+            编辑
+          </AuthUmiLink>
         </Fragment>
       ),
     }];
@@ -215,8 +228,21 @@ export default class AlarmList extends PureComponent {
 
     const buttons = (
       <ButtonGroup>
-        <Button type="primary" ghost onClick={this.handleAdd}>新增</Button>
-        <Button type="primary" ghost onClick={this.handleDelete}>删除</Button>
+        <AuthButton
+          code={codes.personnelPosition.alarmManagement.add}
+          type="primary"
+          ghost onClick={this.handleAdd}
+        >
+          新增
+        </AuthButton>
+        <AuthButton
+          code={codes.personnelPosition.alarmManagement.delete}
+          type="primary"
+          ghost
+          onClick={this.handleDelete}
+        >
+          删除
+        </AuthButton>
       </ButtonGroup>
     );
 

@@ -67,8 +67,11 @@ export default {
       let response = yield call(getAreaLimits, payload);
       response = response || {};
       let { code=500, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveAreaLimits', payload: data || {} });
+      if (code === 200) {
+        const limits = data || {};
+        yield put({ type: 'saveAreaLimits', payload: limits });
+        callback && callback(limits);
+      }
     },
     *fetchAllCards({ payload, callback }, { call, put }) {
       let response = yield call(getAllCards, payload);

@@ -6,7 +6,9 @@ import { Card, Input, List, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
+import { AuthDiv } from '@/utils/customAuth';
 import styles from './CompanyList.less';
+import codes from '@/utils/codes';
 
 // 标题
 const title = '报警管理';
@@ -157,24 +159,26 @@ export default class CompanyList extends PureComponent {
 
             return (
               <List.Item key={id}>
-                <Card
-                  className={styles.card}
-                  title={<Ellipsis lines={1} tooltip style={{ height: 24 }}>{name}</Ellipsis>}
-                  onClick={e => this.handleClick(company_id)}
-                >
-                  <p>
-                    主要负责人：
-                    {principalName || NO_DATA}
-                  </p>
-                  <p>
-                    联系电话：
-                    {principalPhone || NO_DATA}
-                  </p>
-                  {practicalAddress
-                    ? <Ellipsis lines={1} tooltip style={{ height: 24 }}>地址：{practicalAddress}</Ellipsis>
-                    : <div>地址：{NO_DATA}</div>
-                  }
-                </Card>
+                <AuthDiv code={codes.personnelPosition.alarmManagement.alarmList}>
+                  <Card
+                    className={styles.card}
+                    title={<Ellipsis lines={1} tooltip style={{ height: 24 }}>{name}</Ellipsis>}
+                    onClick={e => this.handleClick(company_id)}
+                  >
+                    <p>
+                      主要负责人：
+                      {principalName || NO_DATA}
+                    </p>
+                    <p>
+                      联系电话：
+                      {principalPhone || NO_DATA}
+                    </p>
+                    {practicalAddress
+                      ? <Ellipsis lines={1} tooltip style={{ height: 24 }}>地址：{practicalAddress}</Ellipsis>
+                      : <div>地址：{NO_DATA}</div>
+                    }
+                  </Card>
+                </AuthDiv>
               </List.Item>
             );
           }}

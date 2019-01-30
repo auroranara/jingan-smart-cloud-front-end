@@ -44,6 +44,7 @@ export default class AlarmDetail extends PureComponent {
       match: { params: { companyId } },
       personPositionAlarm: {
         detail: {
+          areaCode,
           areaName,
           mapName,
           canEnterUsers,
@@ -85,7 +86,7 @@ export default class AlarmDetail extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card title="区域信息">
-          {/* <p>区域编号：001</p> */}
+          <p>区域编号：{areaCode}</p>
           <p>区域名称：{areaName || NO_DATA}</p>
           <p>所属地图：{mapName || NO_DATA}</p>
           {mapPhoto && <img src={mapPhoto} alt="map" />}
@@ -96,7 +97,7 @@ export default class AlarmDetail extends PureComponent {
               <Fragment>
                 <FormItem label="报警类型" {...FORMITEM_LAYOUT}>越界</FormItem>
                 <FormItem label="允许进入人员" {...FORMITEM_LAYOUT1}>
-                  {canEnterUsers.map(({ cardId, cardCode, userName }) => `${cardCode}(${userName})`).join(',')}
+                  {canEnterUsers.map(({ cardId, cardCode, userName }) => `${cardCode}(${userName})`).join('，')}
                 </FormItem>
               </Fragment>
             )}

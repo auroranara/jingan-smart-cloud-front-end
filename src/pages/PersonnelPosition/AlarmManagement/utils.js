@@ -23,7 +23,7 @@ export function handleAllCards(list) {
   return list.map(({ id, type, code, userName, visitorName }) => ({
       cardId: id,
       cardCode: code,
-      userName: type === '0' ? userName : '访客',
+      userName: type === '0' ? userName || '未领' : '访客',
       // userName: type === '0' ? userName : `访客${visitorName ? `-${visitorName}` : ''}`,
   }));
 }
@@ -40,4 +40,12 @@ export function handleInitFormValues(values, selected, props) {
       prev[next] = String(values[next]); // 原来是数字，直接传到Form中的Input，提交的时候不会报错，但是validateFields中的回调函数也不会被调用
     return prev;
   }, {});
+}
+
+export function getRangeMsg(min, max) {
+  if (min && max)
+    return `(下级区域设定的值)${min} <= n <= ${max}(上级区域设定的值)`;
+  else if (min)
+    return `n >= ${min}(下级区域设定的值)`;
+  return `n <= ${max}(上级区域设定的值)`;
 }
