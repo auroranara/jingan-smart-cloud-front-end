@@ -47,6 +47,29 @@ import {
   fetchMaps,
 } from '@/services/personnelPosition/mapManagement';
 import { getCompanyList } from '@/services/examinationPaper.js';
+import {
+  // 区域公司列表
+  selectAreaCompanys,
+  // 区域树
+  getTree,
+  // 区域列表
+  // areaInfoForPage,
+  // 新增区域
+  addArea,
+  // 编辑区域
+  editArea,
+  // 删除区域
+  deleteArea,
+} from '../services/personnelPosition/sectionManagement';
+
+function delEmptyChildren(tree) {
+  tree.forEach(item => {
+    if (item.hasOwnProperty('children')) {
+      if (Array.isArray(item.children) && item.children.length) delEmptyChildren(item.children);
+      else delete item.children;
+    }
+  });
+}
 
 export default {
   namespace: 'personnelPosition',
@@ -136,6 +159,16 @@ export default {
         pageSize: 10,
         total: 0,
       },
+    },
+    sectionManagement: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      isLast: true,
+      sectionTree: [],
     },
   },
   effects: {
@@ -320,24 +353,87 @@ export default {
     },
     // 标签获取企业列表
     *fetchTagCompanies({ payload, callback }, { call, put }) {
-      const response = yield call(fetchTagCompanies, payload)
+      const response = yield call(fetchTagCompanies, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveTagCompanies',
           payload: response.data,
-        })
-        if (callback) callback()
+        });
+        if (callback) callback();
       }
     },
     // 系统配置选择企业时获取企业列表
     *fetchSysCompanies({ payload, callback }, { call, put }) {
-      const response = yield call(fetchSysCompanies, payload)
+      const response = yield call(fetchSysCompanies, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveSysCompanies',
           payload: response.data,
-        })
-        if (callback) callback()
+        });
+        if (callback) callback();
+      }
+    },
+    // 区域公司列表
+    *fetchAreaCompanys({ payload, success, error }, { call, put }) {
+      const response = yield call(selectAreaCompanys, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'selectAreaCompanys',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 区域树
+    *fetchAreaTree({ payload, success, error }, { call, put }) {
+      const response = yield call(getTree, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'getAreaTree',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 新增区域
+    *addArea({ payload, success, error }, { call, put }) {
+      const response = yield call(addArea, payload);
+      if (response.code === 200) {
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 编辑区域
+    *editArea({ payload, success, error }, { call, put }) {
+      const response = yield call(editArea, payload);
+      if (response.code === 200) {
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 删除区域
+    *deleteArea({ payload, success, error }, { call, put }) {
+      const response = yield call(deleteArea, payload);
+      if (response.code === 200) {
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
       }
     },
   },
@@ -527,7 +623,12 @@ export default {
         },
       };
     },
-    saveTagCompanies(state, { payload: { list = [], pagination = {} } }) {
+    saveTagCompanies(
+      state,
+      {
+        payload: { list = [], pagination = {} },
+      }
+    ) {
       return {
         ...state,
         tagCompany: {
@@ -535,13 +636,55 @@ export default {
           list,
           pagination,
         },
-      }
+      };
     },
     saveSysCompanies(state, { payload }) {
       return {
         ...state,
         sysCompany: payload,
+      };
+    },
+    selectAreaCompanys(
+      state,
+      {
+        payload: {
+          list = [],
+          pagination,
+          pagination: { pageNum, pageSize, total },
+        },
       }
+    ) {
+      if (pageNum === 1) {
+        return {
+          ...state,
+          sectionManagement: {
+            ...state.sectionManagement,
+            list,
+            pagination,
+            isLast: pageNum * pageSize >= total,
+          },
+        };
+      } else {
+        return {
+          ...state,
+          sectionManagement: {
+            ...state.sectionManagement,
+            list: [...state.sectionManagement.list, ...list],
+            pagination,
+            isLast: pageNum * pageSize >= total,
+          },
+        };
+      }
+    },
+    getAreaTree(state, { payload }) {
+      delEmptyChildren(payload.list);
+      return {
+        ...state,
+        sectionManagement: {
+          ...state.sectionManagement,
+          sectionTree: payload.list,
+        },
+      };
     },
   },
 };

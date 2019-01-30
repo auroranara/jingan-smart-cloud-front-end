@@ -1610,6 +1610,32 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            /* 区域管理 */
+            {
+              name: 'sectionManagement',
+              path: '/personnel-position/section-management',
+              code: 'personnelPosition.sectionManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companies',
+                  path: '/personnel-position/section-management',
+                  redirect: '/personnel-position/section-management/companies',
+                },
+                {
+                  name: 'companies',
+                  code: 'personnelPosition.sectionManagement.companies',
+                  path: '/personnel-position/section-management/companies',
+                  component: './PersonnelPosition/SectionManagement/index',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.sectionManagement.listView',
+                  path: '/personnel-position/section-management/company/:id',
+                  component: './PersonnelPosition/SectionManagement/CompanySections',
+                },
+              ],
+            },
           ],
         },
       ],

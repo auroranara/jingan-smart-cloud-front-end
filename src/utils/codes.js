@@ -182,5 +182,13 @@ export default {
       delete: 'personnelPosition.mapManagement.delete',
       associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
     },
+    // 区域管理
+    sectionManagement: {
+      companies: 'personnelPosition.sectionManagement.companies',
+      list: 'personnelPosition.sectionManagement.listView',
+      add: 'personnelPosition.sectionManagement.add',
+      edit: 'personnelPosition.sectionManagement.edit',
+      delete: 'personnelPosition.sectionManagement.delete',
+    },
   },
 };
