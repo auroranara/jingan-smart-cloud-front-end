@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Tooltip } from 'antd';
 
 import Section from '../Section';
 import SignalAnime from '../../Monitor/Components/SignalAnime';
@@ -49,10 +50,25 @@ export default class FireMonitoring extends PureComponent {
             </div>
             <div className={styles.twoTotal}>
               <p className={styles.fireTitle} onClick={fire ? handleShowAlarm : null}>
-                火警 <span className={styles.fireCount}>{fire || 0}</span>
+                <Tooltip
+                  placement="bottomLeft"
+                  overlayClassName={styles.tooltip}
+                  title="有探测器等报警设备报警检测到火警信号。"
+                >
+                  <span className={styles.fireHover}> 火警</span>{' '}
+                </Tooltip>
+                <span className={styles.fireCount}>{fire || 0}</span>
               </p>
+
               <p className={styles.errorTitle} onClick={fault ? handleShowFault : null}>
-                故障 <span className={styles.errorCount}>{fault || 0}</span>
+                <Tooltip
+                  placement="bottomLeft"
+                  overlayClassName={styles.tooltip}
+                  title="表示控制器检测到外部探测器或模块有故障，提示用户立即对控制器进行修复。"
+                >
+                  <span className={styles.errorHover}>故障 </span>{' '}
+                </Tooltip>
+                <span className={styles.errorCount}>{fault || 0}</span>
               </p>
             </div>
           </div>

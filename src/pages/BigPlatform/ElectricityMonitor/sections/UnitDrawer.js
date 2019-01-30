@@ -11,7 +11,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
-import { sortCardList, handleChartLabel } from '../utils';
+import { sortCardList, getChartLabels } from '../utils';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
@@ -55,8 +55,8 @@ export default class UnitDrawer extends PureComponent {
     //     newName = `${name.slice(0, 10)}...`;
     //   return { id: companyId, name: newName, value: equipment };
     // });
-    let barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => ({ id: companyId, name, value: equipment}));
-    barList = handleChartLabel(barList);
+    const barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => ({ id: companyId, name, value: equipment}));
+    const xLabels = getChartLabels(barList);
     const filteredList = sortedList.filter(({ name }) => name.includes(searchValue)).filter(({ equipment }) => {
       switch(selected) {
         case 0:
@@ -80,7 +80,7 @@ export default class UnitDrawer extends PureComponent {
           <ChartRing data={rings} />
         </DrawerSection>
         <DrawerSection title="接入设备数量的单位排名">
-          <ChartBar data={barList} labelRotate={-60} />
+          <ChartBar data={barList} xLabels={xLabels} labelRotate={-60} />
         </DrawerSection>
       </Fragment>
     );

@@ -472,90 +472,24 @@ function dateValidator(rule, value, callback) {
 export function getFields(type, params, methods) {
   switch (type) {
     case ELECTRICITY_TYPE:
-    return [
-      {
-        id: 'area',
-        label: '区域：',
-        render: () => <Input placeholder="请输入区域" />,
-        transform: v => v.trim(),
-      },
-      {
-        id: 'location',
-        label: '位置：',
-        render: () => <Input placeholder="请输入位置" />,
-        transform: v => v.trim(),
-      },
-      {
-        id: 'status',
-        label: '异常类别：',
-        options: { initialValue: '0' },
-        render: () => (
-          <Select placeholder="请选择异常类别">
-            {OPTIONS.map(({ name, key }) => (
-              <Option key={key}>{name}</Option>
-            ))}
-          </Select>
-        ),
-      },
-      // {
-      //   id: 'code',
-      //   label: '异常参数：',
-      //   options: { initialValue: '0' },
-      //   render: () => (
-      //     <Select placeholder="请选择异常参数">
-      //       {params.map(({ name, key }) => (
-      //         <Option key={key}>{name}</Option>
-      //       ))}
-      //     </Select>
-      //   ),
-      // },
-      {
-        id: 'date',
-        label: '日期：',
-        span: { md: 12, sm: 24, xs: 24 },
-        options: {
-          initialValue: getThisMonth(),
-          rules: [{ validator: dateValidator }],
-        },
-        render: () => (
-          <RangePicker
-            format="YYYY-MM-DD HH:mm"
-            placeholder={['开始时间', '结束时间']}
-            showTime={{
-              format: 'HH:mm',
-              defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-            }}
-          />
-        ),
-      },
-    ];
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
       return [
         {
           id: 'area',
           label: '区域：',
-          labelCol: LABEL_COL_4,
-          wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入区域" />,
           transform: v => v.trim(),
         },
         {
           id: 'location',
           label: '位置：',
-          labelCol: LABEL_COL_4,
-          wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入位置" />,
           transform: v => v.trim(),
         },
         {
           id: 'status',
           label: '异常类别：',
-          labelCol: LABEL_COL_6,
-          wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
           options: { initialValue: '0' },
           render: () => (
             <Select placeholder="请选择异常类别">
@@ -565,38 +499,28 @@ export function getFields(type, params, methods) {
             </Select>
           ),
         },
-        {
-          id: 'code',
-          label: '异常参数：',
-          labelCol: LABEL_COL_6,
-          wrapperCol: WRAPPER_COL,
-          inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
-          render: () => (
-            <Select placeholder="请选择异常参数">
-              {params.map(({ name, key }) => (
-                <Option key={key}>{name}</Option>
-              ))}
-            </Select>
-          ),
-        },
+        // {
+        //   id: 'code',
+        //   label: '异常参数：',
+        //   options: { initialValue: '0' },
+        //   render: () => (
+        //     <Select placeholder="请选择异常参数">
+        //       {params.map(({ name, key }) => (
+        //         <Option key={key}>{name}</Option>
+        //       ))}
+        //     </Select>
+        //   ),
+        // },
         {
           id: 'date',
           label: '日期：',
-          labelCol: { span: 2 },
-          wrapperCol: WRAPPER_COL,
-          inputSpan: { span: 18 },
+          span: { md: 12, sm: 24, xs: 24 },
           options: {
             initialValue: getThisMonth(),
             rules: [{ validator: dateValidator }],
           },
           render: () => (
             <RangePicker
-              // 在Form表单中，由于被getFieldDecorator包裹了，所以只能在options中设定初始值
-              // defaultValue={[moment().startOf('month'), moment()]}
-              // 禁用日期后有些小bug，且体验不太好
-              // disabledDate={methods.disabledDate}
-              // onCalendarChange={methods.onCalendarChange}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
               showTime={{
@@ -607,6 +531,84 @@ export function getFields(type, params, methods) {
           ),
         },
       ];
+    // case WASTE_WATER_TYPE:
+    // case WASTE_GAS_TYPE:
+    //   return [
+    //     {
+    //       id: 'area',
+    //       label: '区域：',
+    //       labelCol: LABEL_COL_4,
+    //       wrapperCol: WRAPPER_COL,
+    //       inputSpan: INPUT_SPAN,
+    //       render: () => <Input placeholder="请输入区域" />,
+    //       transform: v => v.trim(),
+    //     },
+    //     {
+    //       id: 'location',
+    //       label: '位置：',
+    //       labelCol: LABEL_COL_4,
+    //       wrapperCol: WRAPPER_COL,
+    //       inputSpan: INPUT_SPAN,
+    //       render: () => <Input placeholder="请输入位置" />,
+    //       transform: v => v.trim(),
+    //     },
+    //     {
+    //       id: 'status',
+    //       label: '异常类别：',
+    //       labelCol: LABEL_COL_6,
+    //       wrapperCol: WRAPPER_COL,
+    //       inputSpan: INPUT_SPAN,
+    //       options: { initialValue: '0' },
+    //       render: () => (
+    //         <Select placeholder="请选择异常类别">
+    //           {OPTIONS.map(({ name, key }) => (
+    //             <Option key={key}>{name}</Option>
+    //           ))}
+    //         </Select>
+    //       ),
+    //     },
+    //     {
+    //       id: 'code',
+    //       label: '异常参数：',
+    //       labelCol: LABEL_COL_6,
+    //       wrapperCol: WRAPPER_COL,
+    //       inputSpan: INPUT_SPAN,
+    //       options: { initialValue: '0' },
+    //       render: () => (
+    //         <Select placeholder="请选择异常参数">
+    //           {params.map(({ name, key }) => (
+    //             <Option key={key}>{name}</Option>
+    //           ))}
+    //         </Select>
+    //       ),
+    //     },
+    //     {
+    //       id: 'date',
+    //       label: '日期：',
+    //       labelCol: { span: 2 },
+    //       wrapperCol: WRAPPER_COL,
+    //       inputSpan: { span: 18 },
+    //       options: {
+    //         initialValue: getThisMonth(),
+    //         rules: [{ validator: dateValidator }],
+    //       },
+    //       render: () => (
+    //         <RangePicker
+    //           // 在Form表单中，由于被getFieldDecorator包裹了，所以只能在options中设定初始值
+    //           // defaultValue={[moment().startOf('month'), moment()]}
+    //           // 禁用日期后有些小bug，且体验不太好
+    //           // disabledDate={methods.disabledDate}
+    //           // onCalendarChange={methods.onCalendarChange}
+    //           format="YYYY-MM-DD HH:mm"
+    //           placeholder={['开始时间', '结束时间']}
+    //           showTime={{
+    //             format: 'HH:mm',
+    //             defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+    //           }}
+    //         />
+    //       ),
+    //     },
+    //   ];
     case STORAGE_TANK_TYPE:
       return [
         {

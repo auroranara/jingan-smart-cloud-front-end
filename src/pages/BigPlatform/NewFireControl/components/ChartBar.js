@@ -7,12 +7,9 @@ const LINE_STYLE =  { width: 2, color: 'rgb(64, 95, 135)' };
 
 export default class ChartBar extends PureComponent {
   render() {
-    // const list = LIST;
-    const { data: list, barWidth=20, labelRotate=-35, yAxisRange=[null, null], sameColor, barColors } = this.props;
+    const { data: list, xLabels, barWidth=20, labelRotate=-35, yAxisRange=[null, null], sameColor, barColors } = this.props;
 
-    // const xData = [...Array(10).keys()].map(i => ({ value: `无锡新吴机械${i}` }));
-    // const seriesData = LIST.map((n, i) => ({ value: n, name: `无锡新吴机械${i}`, itemStyle: { color: `rgb(${COLORS[i > 3 ? 3 : i]})` } }));
-    const xData = list.map(({ name }) => name);
+    const xData = xLabels || list.map(({ name }) => name);
     const colors = barColors || DEFAULT_COLORS;
     const lastColorIndex = colors.length - 1;
     const seriesData = list.map((item, i) => ({ ...item, itemStyle: { color: `rgb(${colors[!sameColor && i < lastColorIndex ? i : lastColorIndex]})` } }));

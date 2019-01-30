@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import pathToRegexp from 'path-to-regexp';
 import { Link } from 'react-router-dom';
+import UmiLink from 'umi/link';
 import { message, Button } from 'antd';
 import { connect } from 'dva';
 
@@ -175,6 +176,8 @@ export const AuthDiv = authWrapper('div');
 export const AuthBtn = authWrapper('button');
 
 export const AuthLink = authWrapper(Link);
+
+export const AuthUmiLink = authWrapper(UmiLink);
 
 // 包装antd组件Button
 export const AuthButton = connect(({ user }) => ({ user }))(function (props) {
