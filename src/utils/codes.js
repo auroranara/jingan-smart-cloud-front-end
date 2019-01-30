@@ -182,5 +182,22 @@ export default {
       delete: 'personnelPosition.mapManagement.delete',
       associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
     },
+    // 区域管理
+    sectionManagement: {
+      companies: 'personnelPosition.sectionManagement.companies',
+      list: 'personnelPosition.sectionManagement.listView',
+      add: 'personnelPosition.sectionManagement.add',
+      edit: 'personnelPosition.sectionManagement.edit',
+      delete: 'personnelPosition.sectionManagement.delete',
+    },
+    // 报警策略
+    alarmManagement: {
+      companyList: 'personnelPosition.alarmManagement.companyListView',
+      alarmList: 'personnelPosition.alarmManagement.alarmListView',
+      add: 'personnelPosition.alarmManagement.add',
+      edit: 'personnelPosition.alarmManagement.edit',
+      delete: 'personnelPosition.alarmManagement.delete',
+      view: 'personnelPosition.alarmManagement.view',
+    },
   },
 };

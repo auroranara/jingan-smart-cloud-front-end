@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Col, Modal, Table, Pagination } from 'antd';
+import { Col, Modal, Table, Pagination, Tooltip } from 'antd';
 import WaterWave from 'components/Charts/ScoreWaterWave';
 import styles from './TopCenter.less';
 import { connect } from 'dva';
@@ -82,7 +82,7 @@ const missingColumns = [
     key: 'statusTime',
     dataIndex: 'statusTime',
     align: 'center',
-    render: text => <span>{text ? moment(text).format('YYYY-MM-DD hh:mm') : '暂无数据'}</span>,
+    render: text => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '暂无数据'}</span>,
   },
 ];
 
@@ -484,18 +484,33 @@ export default class TopCenter extends PureComponent {
                   style={{
                     backgroundImage: `url(${fireHost})`,
                     backgroundRepeat: 'no-repeat',
-                    backgroundSize: '35% 60%',
+                    backgroundSize: '30% 55%',
                   }}
-                />
-                <div className={styles.anime}>
-                  <SignalAnime />
+                >
+                  <div className={styles.anime}>
+                    <SignalAnime />
+                  </div>
                 </div>
                 <div className={styles.arrContainer}>
-                  <p>
-                    火警 <span className={styles.fireCount}>{fire_state}</span>
+                  <p style={{ cursor: 'pointer' }}>
+                    <Tooltip
+                      placement="right"
+                      overlayClassName={styles.tooltip}
+                      title="有探测器等报警设备报警检测到火警信号。"
+                    >
+                      <span className={styles.fireHover}>火警</span>
+                    </Tooltip>
+                    <span className={styles.fireCount}>{fire_state}</span>
                   </p>
-                  <p>
-                    故障 <span className={styles.errorCount}>{fault_state}</span>
+                  <p style={{ cursor: 'pointer' }}>
+                    <Tooltip
+                      placement="right"
+                      overlayClassName={styles.tooltip}
+                      title="表示控制器检测到外部探测器或模块有故障，提示用户立即对控制器进行修复。"
+                    >
+                      <span className={styles.errorHover}>故障</span>
+                    </Tooltip>
+                    <span className={styles.errorCount}>{fault_state}</span>
                   </p>
                 </div>
               </div>

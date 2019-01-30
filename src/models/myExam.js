@@ -26,9 +26,10 @@ export default {
       response = response || EMPTY;
       let { code=DEFAULT_CODE, data } = response;
       data = data || {};
-      if (code === 200)
+      if (code === 200) {
         callback && callback(data.pagination && data.pagination.total ? data.pagination.total : 0);
         yield put({ type: 'saveExamList', payload: data });
+      }
     },
     *fetchSide({ payload, callback }, { call, put }) {
       let response = yield call(getSide, payload);

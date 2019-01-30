@@ -1584,6 +1584,50 @@ module.exports = env => {
                 },
               ],
             },
+            // 报警管理
+            {
+              name: 'alarmManagement',
+              path: '/personnel-position/alarm-management',
+              code: 'personnelPosition.alarmManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'index',
+                  path: '/personnel-position/alarm-management',
+                  redirect: '/personnel-position/alarm-management/index',
+                },
+                {
+                  name: 'index',
+                  path: '/personnel-position/alarm-management/index',
+                  code: 'personnelPosition.alarmManagement.companyListView',
+                  component: './PersonnelPosition/AlarmManagement/CompanyList',
+                },
+                {
+                  name: 'alarmList',
+                  path: '/personnel-position/alarm-management/list/:companyId',
+                  code: 'personnelPosition.alarmManagement.alarmListView',
+                  component: './PersonnelPosition/AlarmManagement/AlarmList',
+                },
+                {
+                  name: 'add',
+                  path: '/personnel-position/alarm-management/add/:companyId',
+                  code: 'personnelPosition.alarmManagement.add',
+                  component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
+                },
+                {
+                  name: 'edit',
+                  path: '/personnel-position/alarm-management/edit/:companyId/:alarmId',
+                  code: 'personnelPosition.alarmManagement.edit',
+                  component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
+                },
+                {
+                  name: 'detail',
+                  path: '/personnel-position/alarm-management/detail/:companyId/:alarmId',
+                  code: 'personnelPosition.alarmManagement.view',
+                  component: './PersonnelPosition/AlarmManagement/AlarmDetail',
+                },
+              ],
+            },
             /* 地图管理 */
             // {
             //   name: 'map',
@@ -1610,6 +1654,38 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            /* 区域管理 */
+            {
+              name: 'sectionManagement',
+              path: '/personnel-position/section-management',
+              code: 'personnelPosition.sectionManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companies',
+                  path: '/personnel-position/section-management',
+                  redirect: '/personnel-position/section-management/companies',
+                },
+                {
+                  name: 'companies',
+                  code: 'personnelPosition.sectionManagement.companies',
+                  path: '/personnel-position/section-management/companies',
+                  component: './PersonnelPosition/SectionManagement/index',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.sectionManagement.listView',
+                  path: '/personnel-position/section-management/company/:id',
+                  component: './PersonnelPosition/SectionManagement/CompanySections',
+                },
+                {
+                  name: 'zoning',
+                  code: 'personnelPosition.sectionManagement.divide',
+                  path: '/personnel-position/section-management/company/:companyId/zoning/:id',
+                  component: './PersonnelPosition/SectionManagement/Zoning',
+                },
+              ],
+            },
           ],
         },
       ],

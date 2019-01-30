@@ -239,19 +239,12 @@ class ImageDraw extends PureComponent {
     const { url } = this.props;
     // 当图片地址发生变化时
     if (url !== prevUrl) {
-      const { filled, maxBoundsRatio=1 } = this.props;
+      const { filled } = this.props;
       // 如果使用填充效果
       if (filled) {
         // 按照容器的比例
         const { clientWidth: width, clientHeight: height } =  this.map.container;
-        this.setState({
-          bounds: L.latLngBounds([0, 0], [height, width]),
-          maxBounds: L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]),
-        }, () => {
-          this.setState({
-            center: L.latLng(height/2, width/2),
-          });
-        });
+        this.initMap(width, height);
       }
       else {
         // 按照图片本身的比例
@@ -259,14 +252,7 @@ class ImageDraw extends PureComponent {
         image.src = url;
         image.onload = (e) => {
           const { width, height } = e.path[0];
-          this.setState({
-            bounds: L.latLngBounds([0, 0], [height, width]),
-            maxBounds: L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]),
-          }, () => {
-            this.setState({
-              center: L.latLng(height/2, width/2),
-            });
-          });
+          this.initMap(width, height);
         }
       }
     }
@@ -278,6 +264,45 @@ class ImageDraw extends PureComponent {
 
   refMap = (map) => {
     this.map = map;
+  }
+
+  initMap = (width, height) => {
+    const { maxBoundsRatio=1, reference } = this.props;
+    let center;
+    let maxBounds;
+    if (reference) {
+      const { latlngs, radius, latLng } = reference;
+      if (radius) {
+        center = latLng;
+        maxBounds = L.circle({ lat: latLng.lat*height, lng: latLng.lng*width }, radius*width*maxBoundsRatio).getBounds();
+      }
+      else {
+        maxBounds = L.latLngBounds(latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width })));
+        center = maxBounds.getCenter();
+        center = { lat: center.lat / height, lng: center.lng / width };
+        if (maxBoundsRatio !== 1) {
+          const { _southWest: { lat: lat1, lng: lng1 }, _northEast: { lat: lat2, lng: lng2 } } = maxBounds;
+          const boundWidth = lng2 - lng1;
+          const boundHeight = lat2 - lat1;
+          maxBounds = L.latLngBounds(
+            [lat1 - boundHeight * (maxBoundsRatio-1), lng1 - boundWidth * (maxBoundsRatio-1)],
+            [lat2 + boundHeight * (maxBoundsRatio-1), lng2 + boundWidth * (maxBoundsRatio-1)]
+          );
+        }
+      }
+    }
+    else {
+      center = { lat: 0.5, lng: 0.5 };
+      maxBounds = L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]);
+    }
+    this.setState({
+      bounds: L.latLngBounds([0, 0], [height, width]),
+      maxBounds,
+    }, () => {
+      this.setState({
+        center: L.latLng(height*center.lat, width*center.lng),
+      });
+    });
   }
 
   /**
@@ -512,7 +537,7 @@ class ImageDraw extends PureComponent {
    */
   renderShape = (item) => {
     const { color=defaultColor } = this.props;
-    const { bounds: { _northEast: { lat: height, lng: width }  } } = this.state;
+    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
     const { latlngs, latlng, type, radius, name, render } = item;
     let shape = null;
     switch(type){
@@ -590,8 +615,16 @@ class ImageDraw extends PureComponent {
     return shape;
   }
 
+  renderImageOverlay = ({ id, url, latlngs }) => {
+    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
+    const bounds = L.latLngBounds(latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width })));
+    return (
+      <ImageOverlay key={id} url={url} bounds={bounds} className={styles.imageOverlay} />
+    );
+  }
+
   render() {
-    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, data=[], color=defaultColor, shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
+    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, hideBackground, data=[], images, color=defaultColor, shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
     const { center, bounds, visible, maxBounds } = this.state;
 
     return (
@@ -615,7 +648,7 @@ class ImageDraw extends PureComponent {
         >
           {bounds && <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />}
           {bounds && (
-            <ImageOverlay url={url} bounds={bounds} className={styles.imageOverlay}>
+            <ImageOverlay url={url} bounds={bounds} className={hideBackground?styles.hiddenImageOverlay:styles.imageOverlay}>
               <FeatureGroup ref={this.refFeatureGroup}>
                 {drawable && (
                   <EditControl
@@ -675,6 +708,7 @@ class ImageDraw extends PureComponent {
               </FeatureGroup>
             </ImageOverlay>
           )}
+          {bounds && images && images.length > 0 && images.map(this.renderImageOverlay)}
         </Map>
         <Modal
           visible={visible}
