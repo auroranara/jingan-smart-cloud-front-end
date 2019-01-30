@@ -15,6 +15,7 @@ import { concatAll, getNextSpreadStates } from './utils';
 import editIcon from './imgs/edit.png';
 import personIcon from './imgs/person.png';
 
+const DELAY = 300;
 const NO_DATA = '暂无信息';
 const COL_STYLE = { backgroundColor: '#FFF' };
 const BTN_STYLE = { width: 120, height: 30, lineHeight: '30px' };
@@ -47,7 +48,7 @@ export default class Examing extends PureComponent {
 
   componentDidMount() {
     this.fetchSide(true);
-    this.debouncedSaveChoice = debounce(this.saveChoice);
+    this.debouncedSaveChoice = debounce(this.saveChoice, DELAY);
   }
 
   list = [];
