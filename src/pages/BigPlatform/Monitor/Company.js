@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
 import Header from '../UnitFireControl/components/Header/Header';
 import styles from './Company.less';
@@ -474,18 +474,19 @@ export default class App extends PureComponent {
         <Header title={projectName} extraContent={companyName ? companyName : '暂无信息'} />
         <div className={styles.mainBody}>
           <Row gutter={12} style={{ height: '100%' }}>
-            <div
-              title="视频监控"
-              className={styles.videoBtn}
-              style={{
-                backgroundImage: `url(${videoBtn})`,
-                backgroundRepeat: 'no-repeat',
-                groundPosition: 'center center',
-                backgroundSize: '100% 100%',
-                transform: 'none',
-              }}
-              onClick={() => this.handleVideoShow(allCamera[0].key_id)}
-            />
+            <Tooltip placement="bottomLeft" overlayClassName={styles.tooltip} title="视频监控">
+              <div
+                className={styles.videoBtn}
+                style={{
+                  backgroundImage: `url(${videoBtn})`,
+                  backgroundRepeat: 'no-repeat',
+                  groundPosition: 'center center',
+                  backgroundSize: '100% 100%',
+                  transform: 'none',
+                }}
+                onClick={() => this.handleVideoShow(allCamera[0].key_id)}
+              />
+            </Tooltip>
             <Col span={6} style={{ height: '100%' }}>
               <div
                 style={{
