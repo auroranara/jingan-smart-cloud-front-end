@@ -14,6 +14,7 @@ import {
   Select,
   message,
 } from 'antd';
+import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
@@ -178,6 +179,11 @@ export default class SectionManagement extends PureComponent {
       },
     });
   };
+
+  handleDivide = (id) => {
+    const { match: { params: { id: companyId } } } = this.props;
+    router.push(`/personnel-position/section-management/company/${companyId}/zoning/${id}`);
+  }
 
   handleCloseModal = () => {
     this.setState({
@@ -416,7 +422,7 @@ export default class SectionManagement extends PureComponent {
               <a style={{ cursor: 'not-allowed' }}>删除</a>
             )}
             <Divider type="vertical" />
-            <AuthA code={editCode}>划分区域</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleDivide(row.id)}>划分区域</AuthA>
           </Fragment>
         ),
       },

@@ -227,6 +227,7 @@ export default {
   'menu.personnelPosition.sectionManagement': '区域管理',
   'menu.personnelPosition.sectionManagement.companies': '区域管理',
   'menu.personnelPosition.sectionManagement.list': '区域列表',
+  'menu.personnelPosition.sectionManagement.zoning': '划分区域',
   'app.home.introduce': '介绍',
   'app.analysis.test': '工专路 {no} 号店',
   'app.analysis.introduce': '指标说明',

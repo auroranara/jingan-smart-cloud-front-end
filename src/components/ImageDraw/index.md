@@ -14,3 +14,6 @@
 * maxBoundsRatio 最大边界比例，默认1
 * shapes=['polygon', 'rectangle', 'circle', 'marker', 'circlemarker'] 可以绘制的图形，默认为['polygon', 'rectangle', 'circle']
 * color 图形颜色，默认为#000
+* hideBackground 是否隐藏背景图片
+* images 额外的图片
+* reference 根据哪一个图形定位，默认为背景

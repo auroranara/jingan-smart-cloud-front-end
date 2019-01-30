@@ -1634,6 +1634,12 @@ module.exports = env => {
                   path: '/personnel-position/section-management/company/:id',
                   component: './PersonnelPosition/SectionManagement/CompanySections',
                 },
+                {
+                  name: 'zoning',
+                  code: 'personnelPosition.sectionManagement.divide',
+                  path: '/personnel-position/section-management/company/:companyId/zoning/:id',
+                  component: './PersonnelPosition/SectionManagement/Zoning',
+                },
               ],
             },
           ],
