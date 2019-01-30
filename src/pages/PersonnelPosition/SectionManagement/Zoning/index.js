@@ -31,13 +31,47 @@ export default class Zoning extends PureComponent {
       },
       callback: (data) => {
         if (data) {
-          const { url, image, name } = data;
-          this.setState({
-            url,
-            images: [image],
-            reference: image,
-            name,
-          });
+          const { areaInfo: { name, range }, companyMap: { id: id1, mapPhoto: image1 }={}, floorMap: { id: id2, mapPhoto: image2, jsonMap }={} } = data;
+          const { url: url1 } = JSON.parse(image1 || '{}');
+          const { url: url2 } = JSON.parse(image2 || '{}');
+          const json = JSON.parse(jsonMap || null);
+          const item = range ? [JSON.parse(range)] : [];
+          if (url1 && url2 && json) {
+            const image = {
+              id: id2,
+              url: url2,
+              ...json,
+            };
+            this.setState({
+              url: url1,
+              images: [image],
+              reference: image,
+              name,
+              data: item,
+            });
+          }
+          else if (url1) {
+            const image = {
+              id: id1,
+              url: url1,
+              latlngs: [
+                { lat: 0, lng: 0 },
+                { lat: 1, lng: 0 },
+                { lat: 1, lng: 1 },
+                { lat: 0, lng: 1 },
+              ],
+            };
+            this.setState({
+              url: url1,
+              images: [image],
+              reference: image,
+              name,
+              data: item,
+            });
+          }
+          else {
+            message.error('数据异常，请联系维护人员或稍后重试！');
+          }
         }
         else {
           message.error('获取数据失败，请稍后重试！');
@@ -53,20 +87,19 @@ export default class Zoning extends PureComponent {
 
   handleSubmit = () => {
     const { dispatch, match: { params: { id } } } = this.props;
-    const { data } = this.state;
-    console.log(data);
+    const { data: [range] } = this.state;
     dispatch({
       type: 'zoning/zoning',
       payload: {
         id,
-        data: JSON.stringify(data),
+        range: range ? JSON.stringify(range) : null,
       },
       callback: (flag) => {
         if (flag) {
           this.goBack();
         }
         else {
-          message.error('提交失败，请联系开发人员！');
+          message.error('提交失败，请联系维护人员！');
         }
       },
     });
