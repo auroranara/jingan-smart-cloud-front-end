@@ -97,9 +97,9 @@ export function handleChemicalFormula(param = '') {
 
   const ms = param.match(/(\d+|\D+)/g);
 
-  const children = ms.map(c => {
+  const children = ms.map((c, i) => {
     const n = Number.parseInt(c, 10);
-    if (n) return <sub>{n}</sub>;
+    if (n) return <sub key={i}>{n}</sub>;
     return c;
   });
 

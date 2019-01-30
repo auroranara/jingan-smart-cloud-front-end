@@ -89,3 +89,12 @@ export function handleChartLabel(list) {
     };
   });
 }
+
+// 作用同上述函数，只是返回值为单独的标签列表
+export function getChartLabels(list) {
+  const length = list.length;
+  return list.map((item, i) => {
+    const name = item.name;
+    return length > 2 && i === length - 1 && name.length > 10 ? `${name.slice(0, 10)}...` : name;
+  });
+}

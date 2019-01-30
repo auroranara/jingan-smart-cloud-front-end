@@ -1,18 +1,13 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
-const LIST = [120, 200, 150, 80, 70, 110, 130, 20, 10, 150];
-
 const LINE_STYLE =  { width: 2, color: 'rgb(64, 95, 135)' };
 
 export default class ChartLine extends PureComponent {
   render() {
-    // const list = LIST;
-    const { data: list, labelRotate=-35 } = this.props;
+    const { data: list, xLabels, labelRotate=-35 } = this.props;
 
-    // const xData = [...Array(10).keys()].map(i => `无锡新吴机械${i}`);
-    // const seriesData = LIST.map((n, i) => ({ value: n, name: `无锡新吴机械${i}` }));
-    const xData = list.map(({ name }) => name);
+    const xData = xLabels || list.map(({ name }) => name);
     const seriesData = list;
 
     const option = {
