@@ -6,8 +6,8 @@ module.exports = env => {
       // component: '../layouts/UserLayout',
       routes: [
         { path: '/user', redirect: '/user/login' },
-        { path: '/user/login', component: '/User/NanXiaoLogin' },
-        { path: '/user/redirect-login', component: '/User/RedirectLogin' },
+        { path: '/user/login', component: './User/NanXiaoLogin' },
+        { path: '/user/redirect-login', component: './User/RedirectLogin' },
         { path: '/user/register', component: './User/Register' },
         { path: '/user/register-result', component: './User/RegisterResult' },
         {
