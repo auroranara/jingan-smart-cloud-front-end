@@ -46,6 +46,7 @@ export default class addMap extends PureComponent {
         callback: ({ mapName, mapHierarchy, companyMapUrl, buildingId, floorId, mapPhoto, jsonMap, actualRange }) => {
           if (mapHierarchy === '1') {
             // 如果是单位图
+            this.setState({ mapHierarchy })
             setFieldsValue({
               mapName,
               mapHierarchy,
@@ -319,12 +320,14 @@ export default class addMap extends PureComponent {
 
   isChecked = ({ modaltype, unitMap, floorMap, item, mapHierarchy }) => {
     if (modaltype === 'unit') {
+      // 判断单位图已勾选
       if (mapHierarchy === '1') {
         return unitMap.url === item.url
-      } else {
+      } else if (mapHierarchy === '2') {
         return unitMap.id === item.id
-      }
+      }else return false
     } else {
+      // 判断楼层图已勾选
       return floorMap.url === item.url
     }
   }

@@ -164,7 +164,7 @@ export default class MapManagementList extends PureComponent {
     ]
     // const scale = getFieldValue('scale')
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={<span>地图总数：{total}</span>}>
         <Card>
           <Row>
             <Button type="primary" disabled={!addAuth} onClick={this.handleToAdd}>新增</Button>
