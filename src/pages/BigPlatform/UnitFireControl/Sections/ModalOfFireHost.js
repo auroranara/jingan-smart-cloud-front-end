@@ -134,7 +134,8 @@ export default class ModalOfFireHost extends PureComponent {
                   </div>
                 </Col>
               ))}
-            </div>) : (<div className={styles.noContent}><span>暂无数据</span></div>)}
+            </div>
+          ) : (<div className={styles.noContent}><span>暂无数据</span></div>)}
         </div>
       </NewModal>
     )

@@ -947,7 +947,7 @@ export default class App extends PureComponent {
         fireHost: { list = [] },
       },
     } = this.props
-    const currentFireHosts = list.filter(item => item.typeName === value).slice(0, 1 * defaultPageSize)
+    const currentFireHosts = list.filter(item => item.typeName === value)
     this.setState({
       currentFireHostType: value,
       fireHostPagination: {
