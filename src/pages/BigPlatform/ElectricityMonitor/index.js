@@ -141,7 +141,7 @@ export default class ElectricityMonitor extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
-        console.log(data);
+        // console.log(data);
         const { type } = data;
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
         if ([31, 32].includes(type)) {
