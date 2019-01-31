@@ -33,11 +33,11 @@ const {
 export default class MapManagementList extends PureComponent {
 
   componentDidMount() {
-    // 获取地图企业列表
+    // 获取地图单位列表
     this.fetchMapCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } })
   }
 
-  // 获取地图企业列表
+  // 获取地图单位列表
   fetchMapCompanies = (actions) => {
     const { dispatch } = this.props
     dispatch({
@@ -47,14 +47,20 @@ export default class MapManagementList extends PureComponent {
   }
 
   // 点击查询
-  handleQuery = () => { }
+  handleQuery = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props
+    const name = getFieldValue('name')
+    this.fetchMapCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize, name } })
+  }
 
   // 点击跳转到地图列表
   handleViewBeacons = ({ id }) => {
     router.push(`/personnel-position/map-management/company-map/${id}`)
   }
 
-  // 加载更多地图企业数据
+  // 加载更多地图单位数据
   handleLoadMore = () => {
     const {
       form: { getFieldValue },
@@ -73,7 +79,7 @@ export default class MapManagementList extends PureComponent {
       user: { currentUser: { permissionCodes } },
       personnelPosition: {
         map: {
-          mapCompanies = [],// 地图企业列表
+          mapCompanies = [],// 地图单位列表
           pagination: {
             pageNum,
             pageSize,
@@ -94,7 +100,7 @@ export default class MapManagementList extends PureComponent {
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
                   {getFieldDecorator('name')(
-                    <Input placeholder="请输入企业名称" />
+                    <Input placeholder="请输入单位名称" />
                   )}
                 </FormItem>
               </Col>
@@ -106,7 +112,7 @@ export default class MapManagementList extends PureComponent {
             </Row>
           </Form>
         </Card>
-        {/* 信标企业列表 */}
+        {/* 信标单位列表 */}
         <InfiniteScroll
           initialLoad={false}
           pageStart={0}
@@ -134,8 +140,8 @@ export default class MapManagementList extends PureComponent {
                 const {
                   id,
                   name, // 公司名称
-                  safetyName = null,
-                  safetyPhone = null,
+                  principalName = null,
+                  principalPhone = null,
                   practicalAddress = null, // 地址
                   mapCount = 0,         // 地图数
                 } = item
@@ -144,11 +150,11 @@ export default class MapManagementList extends PureComponent {
                     <Card title={name} className={styles.card}>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
                         主要负责人：
-                      {safetyName || '暂无信息'}
+                      {principalName || '暂无信息'}
                       </Ellipsis>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
                         联系电话：
-                      {safetyPhone || '暂无信息'}
+                      {principalPhone || '暂无信息'}
                       </Ellipsis>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
                         地址：
