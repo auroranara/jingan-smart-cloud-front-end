@@ -83,6 +83,7 @@ export default class SectionManagement extends PureComponent {
         parentId: undefined,
         buildingId: undefined,
       },
+      mapType: 2, // 1 单位低碳钢，2 楼层地图
     };
     this.nodeNum = 0;
   }
@@ -145,9 +146,15 @@ export default class SectionManagement extends PureComponent {
 
   handleEdit = detail => {
     const { mapId, code, name, id, buildingId, parentId } = detail;
+    const {
+      personnelPosition: {
+        map: { maps },
+      },
+    } = this.props;
     this.setState({
       modalVisible: true,
       modalForm: { mapId, code, name, id, buildingId, parentId },
+      mapType: +maps.find(item => item.id === mapId).mapHierarchy,
     });
   };
 
@@ -192,6 +199,7 @@ export default class SectionManagement extends PureComponent {
   handleCloseModal = () => {
     this.setState({
       modalVisible: false,
+      mapType: 2,
       modalForm: {
         mapId: undefined,
         code: undefined,
@@ -297,6 +305,7 @@ export default class SectionManagement extends PureComponent {
     const {
       modalVisible,
       modalForm: { code, mapId, name, buildingId },
+      mapType,
     } = this.state;
 
     return (
@@ -315,9 +324,22 @@ export default class SectionManagement extends PureComponent {
               rules: [{ required: true, message: '请选择所属地图' }],
               initialValue: mapId,
             })(
-              <Select placeholder="请选择所属地图">
-                {maps.map(({ mapName, id }) => (
-                  <Select.Option key={id} value={id}>
+              <Select
+                placeholder="请选择所属地图"
+                onChange={(value, option) => {
+                  console.log('value', value);
+                  console.log('option', option);
+                }}
+              >
+                {maps.map(({ mapName, id }, index) => (
+                  <Select.Option
+                    key={id}
+                    value={id}
+                    onClick={() => {
+                      console.log('index', index);
+                      this.setState({ mapType: +maps[index].mapHierarchy });
+                    }}
+                  >
                     {mapName}
                   </Select.Option>
                 ))}
@@ -338,19 +360,21 @@ export default class SectionManagement extends PureComponent {
               rules: [{ required: true, message: '请输入区域名称' }],
             })(<Input placeholder="请输入区域编号" />)}
           </Form.Item>
-          <Form.Item label="关联建筑物" {...formItemLayout}>
-            {getFieldDecorator('buildingId', {
-              initialValue: buildingId ? buildingId.split(',') : undefined,
-            })(
-              <Select placeholder="请选择关联建筑物" mode="tags">
-                {buildings.map(({ buildingName, id }) => (
-                  <Select.Option key={id} value={id}>
-                    {buildingName}
-                  </Select.Option>
-                ))}
-              </Select>
-            )}
-          </Form.Item>
+          {mapType === 1 && (
+            <Form.Item label="关联建筑物" {...formItemLayout}>
+              {getFieldDecorator('buildingId', {
+                initialValue: buildingId ? buildingId.split(',') : undefined,
+              })(
+                <Select placeholder="请选择关联建筑物" mode="tags">
+                  {buildings.map(({ buildingName, id }) => (
+                    <Select.Option key={id} value={id}>
+                      {buildingName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          )}
         </Form>
       </Modal>
     );
