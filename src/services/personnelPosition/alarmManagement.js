@@ -1,7 +1,7 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
-const URL_BASE = 'acloud_new/v2/location';
+const URL_BASE = '/acloud_new/v2/location';
 
 // 获取企业列表
 export async function getCompanyList(params) {
