@@ -92,7 +92,7 @@ export default class MapManagementList extends PureComponent {
     const viewAuth = hasAuthority(companyMapCode, permissionCodes)
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={<span>单位总数：{total}</span>}>
         {/* 筛选栏 */}
         <Card>
           <Form>
