@@ -1629,31 +1629,49 @@ module.exports = env => {
               ],
             },
             /* 地图管理 */
-            // {
-            //   name: 'map',
-            //   path: '/personnel-position/map-management',
-            //   code: 'personnelPosition.mapManagement',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       name: 'list',
-            //       path: '/personnel-position/map-management',
-            //       redirect: '/personnel-position/map-management/list',
-            //     },
-            //     {
-            //       name: 'list',
-            //       path: '/personnel-position/map-management/list',
-            //       code: 'personnelPosition.mapManagement.listView',
-            //       component: './PersonnelPosition/Map/MapManagementList',
-            //     },
-            //     {
-            //       name: 'companyMap',
-            //       path: '/personnel-position/map-management/company-map/:id',
-            //       code: 'personnelPosition.mapManagement.companyMap',
-            //       component: './PersonnelPosition/Map/CompanyMap',
-            //     },
-            //   ],
-            // },
+            {
+              name: 'map',
+              path: '/personnel-position/map-management',
+              code: 'personnelPosition.mapManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/map-management',
+                  redirect: '/personnel-position/map-management/list',
+                },
+                {
+                  name: 'list',
+                  path: '/personnel-position/map-management/list',
+                  code: 'personnelPosition.mapManagement.listView',
+                  component: './PersonnelPosition/Map/MapManagementList',
+                },
+                {
+                  name: 'companyMap',
+                  path: '/personnel-position/map-management/company-map/:companyId',
+                  code: 'personnelPosition.mapManagement.companyMap',
+                  component: './PersonnelPosition/Map/CompanyMap',
+                },
+                {
+                  name: 'associateMap',
+                  path: '/personnel-position/map-management/associate-map/:id',
+                  code: 'personnelPosition.mapManagement.associateMap',
+                  component: './PersonnelPosition/Map/AssociateMap',
+                },
+                {
+                  name: 'add',
+                  path: '/personnel-position/map-management/company-map/:companyId/add',
+                  code: 'personnelPosition.mapManagement.add',
+                  component: './PersonnelPosition/Map/AddMap',
+                },
+                {
+                  name: 'edit',
+                  path: '/personnel-position/map-management/company-map/:companyId/edit/:id',
+                  code: 'personnelPosition.mapManagement.edit',
+                  component: './PersonnelPosition/Map/AddMap',
+                },
+              ],
+            },
             /* 区域管理 */
             {
               name: 'sectionManagement',

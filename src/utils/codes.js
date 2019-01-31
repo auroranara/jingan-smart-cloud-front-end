@@ -181,6 +181,7 @@ export default {
       edit: 'personnelPosition.mapManagement.edit',
       delete: 'personnelPosition.mapManagement.delete',
       associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
+      associateMap: 'personnelPosition.mapManagement.associateMap',
     },
     // 区域管理
     sectionManagement: {

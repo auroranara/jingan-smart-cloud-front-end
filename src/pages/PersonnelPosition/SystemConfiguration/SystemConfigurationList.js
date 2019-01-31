@@ -118,13 +118,13 @@ export default class SystemConfiguration extends PureComponent {
           pagination: { pageSize },
         },
       },
-    } = this.props;
+    } = this.props
     dispatch({
       type: 'personnelPosition/deleteSystemConfiguration',
       payload: { id },
       success: () => {
-        message.success('删除成功');
-        this.fetchList({ payload: { pageNum: 1, pageSize } });
+        message.success('删除成功')
+        this.fetchList({ payload: { pageNum: 1, pageSize } })
       },
       error: () => {
         message.error('删除失败');
@@ -168,8 +168,8 @@ export default class SystemConfiguration extends PureComponent {
           pagination: { pageSize },
         },
       },
-    } = this.props;
-    const value = getFieldValue('searchName');
+    } = this.props
+    const value = getFieldValue('searchName')
     this.fetchList({
       payload: {
         pageNum: 1,
@@ -234,14 +234,14 @@ export default class SystemConfiguration extends PureComponent {
           pagination: { pageSize },
         },
       },
-    } = this.props;
-    const { isAdd, currentId } = this.state;
+    } = this.props
+    const { isAdd, currentId } = this.state
 
     const success = () => {
-      message.success(isAdd ? '新增成功' : '编辑成功');
-      this.setState({ modalVisible: false, companyVisible: false });
-      this.fetchList({ payload: { pageNum: 1, pageSize } });
-    };
+      message.success(isAdd ? '新增成功' : '编辑成功')
+      this.setState({ modalVisible: false, companyVisible: false })
+      this.fetchList({ payload: { pageNum: 1, pageSize } })
+    }
     const error = () => {
       message.error(isAdd ? '新增失败' : '编辑失败');
       this.setState({ modalVisible: false, companyVisible: false });
