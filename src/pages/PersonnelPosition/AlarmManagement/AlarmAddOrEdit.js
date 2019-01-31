@@ -137,7 +137,7 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   genTimeLimitCheck = (min, max) => {
     return function (rule, value, callback) {
-      const val = Number(value.trim());
+      const val = value && Number(value.trim());
       if (!val || val < 0) {
         callback('值必须为一个大于0的数字');
         return;
@@ -166,7 +166,7 @@ export default class AlarmAddOrEdit extends PureComponent {
     // console.log('submit', getFieldsValue());
     // console.log(areaId);
     validateFields((err, values) => {
-      // console.log(err, values);
+      console.log(err, values);
       if (err)
         return;
 
@@ -263,14 +263,14 @@ export default class AlarmAddOrEdit extends PureComponent {
                     {areaList.map(({ id, name }) => <Option value={id} key={id}>{name}</Option>)}
                   </Select>
                 </div>
-                {mapPhotoUrl && <img src={mapPhotoUrl} className={styles.img} alt="map" />}
+                {mapPhotoUrl && <img src={mapPhotoUrl} className={styles.img1} alt="map" />}
               </Fragment>
             ): (
               <Fragment>
                 <p>区域编号：{areaCode}</p>
                 <p>区域名称：{areaName || NO_DATA}</p>
                 <p>所属地图：{mapName || NO_DATA}</p>
-                {mapPhotoUrl && <img src={mapPhotoUrl} alt="map" />}
+                {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />}
               </Fragment>
             )
           }
@@ -285,7 +285,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                     rules: [{ required: true, message: '请选择允许进入人员' }],
                     getValueFromEvent: this.handleCardsChange,
                   })(
-                    <Select mode="multiple">
+                    <Select mode="multiple" placeholder="请选择允许进入人员">
                       {cardList.map(({ cardId, cardCode, userName }) => <Option value={cardId} key={cardId}>{cardCode}({userName})</Option>)}
                     </Select>
                   )}
@@ -296,10 +296,13 @@ export default class AlarmAddOrEdit extends PureComponent {
               <Fragment>
                 <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>长时间不动</FormItem>
                 <FormItem label="不动时长" {...FORMITEM_LAYOUT}>
-                  {getFieldDecorator('fixedlyTimeLimit', { rules: [
-                    { required: true, message: '请设置不动时长' },
-                    { validator: this.genTimeLimitCheck(minTLongLimitTime, maxTLongLimitTime) },
-                  ] })(
+                  {getFieldDecorator('fixedlyTimeLimit', {
+                    validateFirst: true,
+                    rules: [
+                      { required: true, message: '请设置不动时长' },
+                      { validator: this.genTimeLimitCheck(minTLongLimitTime, maxTLongLimitTime) },
+                    ],
+                  })(
                     <Input style={{ width: 150 }} placeholder="请输入不动时长" />
                   )}
                   <span className={styles.hour}>小时</span>
@@ -310,10 +313,13 @@ export default class AlarmAddOrEdit extends PureComponent {
               <Fragment>
                 <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>超员</FormItem>
                 <FormItem label="超员人数" {...FORMITEM_LAYOUT}>
-                  {getFieldDecorator('outstripNumLimit', { rules: [
-                    { required: true, message: '请设置超员人数' },
-                    { validator: this.genTimeLimitCheck(minLimitOutstripNum, maxLimitOutstripNum) },
-                  ] })(
+                  {getFieldDecorator('outstripNumLimit', {
+                    validateFirst: true,
+                    rules: [
+                      { required: true, message: '请设置超员人数' },
+                      { validator: this.genTimeLimitCheck(minLimitOutstripNum, maxLimitOutstripNum) },
+                    ],
+                  })(
                     <Input style={{ width: 150 }} placeholder="大于该人数时报警" />
                   )}
                 </FormItem>
@@ -323,10 +329,13 @@ export default class AlarmAddOrEdit extends PureComponent {
               <Fragment>
                 <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>缺员</FormItem>
                 <FormItem label="缺员人数" {...FORMITEM_LAYOUT}>
-                  {getFieldDecorator('lackNumLimit', { rules: [
-                    { required: true, message: '请设置缺员人数' },
-                    { validator: this.genTimeLimitCheck(minLimitLackNum, maxLimitLackNum) },
-                  ] })(
+                  {getFieldDecorator('lackNumLimit', {
+                    validateFirst: true,
+                    rules: [
+                      { required: true, message: '请设置缺员人数' },
+                      { validator: this.genTimeLimitCheck(minLimitLackNum, maxLimitLackNum) },
+                    ],
+                  })(
                     <Input style={{ width: 150 }} placeholder="小于该人数时报警" />
                   )}
                 </FormItem>

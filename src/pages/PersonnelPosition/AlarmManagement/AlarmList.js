@@ -86,7 +86,7 @@ export default class AlarmList extends PureComponent {
 
   fetchList = (pageNum) => {
     const { dispatch, match: { params: { companyId } } } = this.props;
-    console.log(this.alarmType);
+    // console.log(this.alarmType);
     dispatch({
       type: 'personPositionAlarm/fetchAlarmList',
       payload: {
