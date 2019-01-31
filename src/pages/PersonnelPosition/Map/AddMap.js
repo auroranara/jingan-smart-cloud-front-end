@@ -169,9 +169,8 @@ export default class addMap extends PureComponent {
       this.setState({ modalList })
     }
     if (mapHierarchy === '1') {
-      this.fetchMapForSelect({ payload: { companyId, type: mapHierarchy }, callback })
+      this.fetchMapForSelect({ payload: { companyId, type: '1' }, callback })
     } else if (mapHierarchy === '2') {
-      // 如果选择了楼层平面图，从地图列表中获取单位平面图
       this.fetchMaps({
         payload: { companyId, mapHierarchy: '1' },
         callback: list => {
@@ -193,7 +192,7 @@ export default class addMap extends PureComponent {
       match: { params: { companyId } },
       form: { getFieldsValue },
     } = this.props
-    const { mapHierarchy, floorId, unitMap = {} } = getFieldsValue()
+    const { floorId, unitMap = {} } = getFieldsValue()
     if (!unitMap.url) {
       message.warning('请先选择单位平面图')
       return
@@ -203,7 +202,7 @@ export default class addMap extends PureComponent {
       return
     }
     this.fetchMapForSelect({
-      payload: { companyId, type: mapHierarchy, floorId },
+      payload: { companyId, type: '2', floorId },
       callback: modalList => {
         this.setState({ modalVisible: true, modaltype: 'floor', modalList })
       },
@@ -316,6 +315,18 @@ export default class addMap extends PureComponent {
 
   handleCloseModal = () => {
     this.setState({ modalVisible: false })
+  }
+
+  isChecked = ({ modaltype, unitMap, floorMap, item, mapHierarchy }) => {
+    if (modaltype === 'unit') {
+      if (mapHierarchy === '1') {
+        return unitMap.url === item.url
+      } else {
+        return unitMap.id === item.id
+      }
+    } else {
+      return floorMap.url === item.url
+    }
   }
 
   render() {
@@ -468,7 +479,7 @@ export default class addMap extends PureComponent {
         </Card>
         {/* 单位平面图 */}
         <Modal
-          width={700}
+          width={800}
           title={modaltype === 'unit' ? '选择单位平面图' : '选择楼层平面图'}
           visible={modalVisible}
           onCancel={this.handleCloseModal}
@@ -480,7 +491,7 @@ export default class addMap extends PureComponent {
                 <Col span={12} key={i} style={{ padding: '5px' }}>
                   <img className={styles.img} src={item.url} alt={item.name} />
                   <div style={{ padding: '5px' }}>
-                    <Radio value={item.url} onChange={() => this.handleSelectMap(item, mapHierarchy)} checked={(modaltype === 'unit' ? unitMap.url : floorMap.url) === item.url}>{item.name}</Radio>
+                    <Radio value={item.url} onChange={() => this.handleSelectMap(item, mapHierarchy)} checked={this.isChecked({ modaltype, unitMap, floorMap, mapHierarchy, item })}>{modaltype === 'unit' && mapHierarchy === '2' ? item.mapName : item.name}</Radio>
                   </div>
                 </Col>
               ))}

@@ -152,7 +152,7 @@ export default class MapManagementList extends PureComponent {
         render: (val, row) => (
           <span>
             {deleteAuth ? (
-              <Popconfirm title="确认要删除改地图吗？" onConfirm={() => this.handleDelete(row.id)}>
+              <Popconfirm title="确认要删除该地图吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a href="">删除</a>
               </Popconfirm>
             ) : (<span style={{ cursor: 'not-allowed' }}>删除</span>)}
