@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import ImageDraw from '@/components/ImageDraw';
-import styles from './addMap.less';
+import styles from './AddMap.less';
 
 const FormItem = Form.Item;
 
