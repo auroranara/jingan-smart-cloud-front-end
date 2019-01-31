@@ -92,7 +92,7 @@ export default class AlarmDetail extends PureComponent {
           <p>区域编号：{areaCode}</p>
           <p>区域名称：{areaName || NO_DATA}</p>
           <p>所属地图：{mapName || NO_DATA}</p>
-          {mapPhotoUrl && <img src={mapPhotoUrl} alt="map" />}
+          {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />}
         </Card>
         <Card title={infoTitle} className={styles.card}>
           <Form onSubmit={this.handleSubmit}>
