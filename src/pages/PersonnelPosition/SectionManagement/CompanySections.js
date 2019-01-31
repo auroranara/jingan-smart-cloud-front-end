@@ -180,10 +180,14 @@ export default class SectionManagement extends PureComponent {
     });
   };
 
-  handleDivide = (id) => {
-    const { match: { params: { id: companyId } } } = this.props;
+  handleDivide = id => {
+    const {
+      match: {
+        params: { id: companyId },
+      },
+    } = this.props;
     router.push(`/personnel-position/section-management/company/${companyId}/zoning/${id}`);
-  }
+  };
 
   handleCloseModal = () => {
     this.setState({
@@ -205,7 +209,7 @@ export default class SectionManagement extends PureComponent {
       match: {
         params: { id: companyId },
       },
-      form: { getFieldsValue },
+      form: { getFieldsValue, validateFields },
       personnelPosition: {
         sectionManagement: { sectionTree },
         map: { maps, buildings = [] },
@@ -216,68 +220,71 @@ export default class SectionManagement extends PureComponent {
     } = this.state;
     const formData = getFieldsValue();
     const { mapId, buildingId } = formData;
-    this.setState({ loading: true });
-    const newMapName = maps.find(item => item.id === mapId).mapName;
-    const newBuildingName = Array.isArray(buildingId)
-      ? buildingId
-          .map(id => {
-            return buildings.find(item => item.id === id).buildingName;
-          })
-          .join(',')
-      : undefined;
-    if (id) {
-      // 编辑
-      dispatch({
-        type: 'personnelPosition/editArea',
-        payload: {
-          companyId,
-          id,
-          parentId,
-          ...formData,
-          buildingId: Array.isArray(buildingId) ? buildingId.join(',') : undefined,
-        },
-        success: data => {
-          findNode(sectionTree, id, item => {
-            item.mapId = formData.mapId;
-            item.mapName = newMapName;
-            item.name = formData.name;
-            item.code = formData.code;
-            item.buildingId = formData.buildingId.join(',');
-            item.buildingName = newBuildingName;
-          });
-          this.handleCloseModal();
-          this.setState({ loading: false });
-        },
-      });
-    } else {
-      // 新增
-      dispatch({
-        type: 'personnelPosition/addArea',
-        payload: {
-          companyId,
-          parentId,
-          ...formData,
-          buildingId: Array.isArray(buildingId) ? buildingId.join(',') : undefined,
-        },
-        success: data => {
-          const newData = {
-            ...data,
-            mapName: newMapName,
-            buildingName: newBuildingName,
-          };
-          if (parentId) {
-            findNode(sectionTree, parentId, item => {
-              if (item.children) item.children = [...item.children, newData];
-              else item.children = [newData];
+    validateFields((err, values) => {
+      if (err) return;
+      this.setState({ loading: true });
+      const newMapName = maps.find(item => item.id === mapId).mapName;
+      const newBuildingName = Array.isArray(buildingId)
+        ? buildingId
+            .map(id => {
+              return buildings.find(item => item.id === id).buildingName;
+            })
+            .join(',')
+        : undefined;
+      if (id) {
+        // 编辑
+        dispatch({
+          type: 'personnelPosition/editArea',
+          payload: {
+            companyId,
+            id,
+            parentId,
+            ...formData,
+            buildingId: Array.isArray(buildingId) ? buildingId.join(',') : undefined,
+          },
+          success: data => {
+            findNode(sectionTree, id, item => {
+              item.mapId = formData.mapId;
+              item.mapName = newMapName;
+              item.name = formData.name;
+              item.code = formData.code;
+              item.buildingId = Array.isArray(buildingId) ? buildingId.join(',') : undefined;
+              item.buildingName = newBuildingName;
             });
-          } else {
-            sectionTree.splice(0, 0, newData);
-          }
-          this.handleCloseModal();
-          this.setState({ loading: false });
-        },
-      });
-    }
+            this.handleCloseModal();
+            this.setState({ loading: false });
+          },
+        });
+      } else {
+        // 新增
+        dispatch({
+          type: 'personnelPosition/addArea',
+          payload: {
+            companyId,
+            parentId,
+            ...formData,
+            buildingId: Array.isArray(buildingId) ? buildingId.join(',') : undefined,
+          },
+          success: data => {
+            const newData = {
+              ...data,
+              mapName: newMapName,
+              buildingName: newBuildingName,
+            };
+            if (parentId) {
+              findNode(sectionTree, parentId, item => {
+                if (item.children) item.children = [...item.children, newData];
+                else item.children = [newData];
+              });
+            } else {
+              sectionTree.splice(0, 0, newData);
+            }
+            this.handleCloseModal();
+            this.setState({ loading: false });
+          },
+        });
+      }
+    });
   };
 
   renderModal = () => {
@@ -422,7 +429,9 @@ export default class SectionManagement extends PureComponent {
               <a style={{ cursor: 'not-allowed' }}>删除</a>
             )}
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleDivide(row.id)}>划分区域</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleDivide(row.id)}>
+              划分区域
+            </AuthA>
           </Fragment>
         ),
       },

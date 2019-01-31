@@ -18,7 +18,7 @@ export async function areaInfoForPage(params) {
 
 // 新增区域
 export async function addArea(params) {
-  return request('acloud_new/v2/areaInfo/areaInfo', {
+  return request('/acloud_new/v2/areaInfo/areaInfo', {
     method: 'POST',
     body: params,
   });
