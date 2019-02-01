@@ -159,11 +159,11 @@ export default class CompanyList extends PureComponent {
 
             return (
               <List.Item key={id}>
-                <AuthDiv code={codes.personnelPosition.alarmManagement.alarmList}>
+                <AuthDiv code={codes.personnelPosition.alarmManagement.alarmList} onClick={e => this.handleClick(company_id)}>
                   <Card
                     className={styles.card}
                     title={<Ellipsis lines={1} tooltip style={{ height: 24 }}>{name}</Ellipsis>}
-                    onClick={e => this.handleClick(company_id)}
+                    // onClick={e => this.handleClick(company_id)}
                   >
                     <p>
                       主要负责人：
