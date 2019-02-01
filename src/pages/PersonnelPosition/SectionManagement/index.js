@@ -14,7 +14,7 @@ const FormItem = Form.Item;
 // 权限代码
 const {
   personnelPosition: {
-    sectionManagement: { companies: sectionCode },
+    sectionManagement: { list: sectionCode },
   },
 } = codes;
 
