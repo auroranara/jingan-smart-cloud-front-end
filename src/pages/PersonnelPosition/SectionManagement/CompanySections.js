@@ -120,6 +120,15 @@ export default class SectionManagement extends PureComponent {
         pageSize: 999999,
       },
     });
+
+    dispatch({
+      type: 'personnelPosition/fetchAreaCompanys',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        companyId: id,
+      },
+    });
   }
 
   // 获取区域单位列表
@@ -128,6 +137,9 @@ export default class SectionManagement extends PureComponent {
     dispatch({
       type: 'personnelPosition/fetchAreaTree',
       ...actions,
+      success: () => {
+        this.nodeNum = this.props.personnelPosition.sectionManagement.nodeNum;
+      },
     });
   };
 
@@ -178,6 +190,7 @@ export default class SectionManagement extends PureComponent {
             if (data.id === id) tree.splice(index, 1);
           });
         });
+        this.nodeNum = this.nodeNum - 1;
         delEmptyChildren(sectionTree);
         this.setState({ loading: false });
       },
@@ -261,6 +274,7 @@ export default class SectionManagement extends PureComponent {
             });
             this.handleCloseModal();
             this.setState({ loading: false });
+            message.success('编辑成功！');
           },
         });
       } else {
@@ -287,8 +301,10 @@ export default class SectionManagement extends PureComponent {
             } else {
               sectionTree.splice(0, 0, newData);
             }
+            this.nodeNum += 1;
             this.handleCloseModal();
             this.setState({ loading: false });
+            message.success('新增成功！');
           },
         });
       }
@@ -324,22 +340,16 @@ export default class SectionManagement extends PureComponent {
               rules: [{ required: true, message: '请选择所属地图' }],
               initialValue: mapId,
             })(
-              <Select
-                placeholder="请选择所属地图"
-                onChange={(value, option) => {
-                  console.log('value', value);
-                  console.log('option', option);
-                }}
-              >
-                {maps.map(({ mapName, id }, index) => (
+              <Select placeholder="请选择所属地图">
+                {maps.map(({ mapName, id, buildingName, mapHierarchy }, index) => (
                   <Select.Option
                     key={id}
                     value={id}
                     onClick={() => {
-                      console.log('index', index);
                       this.setState({ mapType: +maps[index].mapHierarchy });
                     }}
                   >
+                    {+mapHierarchy === 2 && buildingName + '：'}
                     {mapName}
                   </Select.Option>
                 ))}
@@ -465,7 +475,7 @@ export default class SectionManagement extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        // content={`单位总数：${list.length}`}
+        content={`区域总数：${this.nodeNum}`}
       >
         <Row gutter={16}>
           <Col span={24} className={styles.libraryListContainer}>
