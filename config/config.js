@@ -75,7 +75,8 @@ export default {
   routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
-  publicPath: '/acloud_new/',
+  publicPath: '/',
+  // publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',
   },
