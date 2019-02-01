@@ -185,7 +185,7 @@ export default class AlarmList extends PureComponent {
 
     const fields = [{
       id: 'areaCode',
-      span: 6,
+      span: 8,
       render: (onSearch, onReset) => {
         return (
           <Input placeholder="区域编号" onChange={this.genHandleChange('areaCode')} />
@@ -196,7 +196,7 @@ export default class AlarmList extends PureComponent {
       },
       }, {
         id: 'areaName',
-        span: 6,
+        span: 8,
         render: (onSearch, onReset) => {
           return (
             <Input placeholder="区域名称" onChange={this.genHandleChange('areaName')} />
@@ -207,7 +207,7 @@ export default class AlarmList extends PureComponent {
         },
       }, {
         id: 'mapId',
-        span: 6,
+        span: 8,
         render: (onSearch, onReset) => {
           return (
             <Select placeholder="报警地图" onChange={this.genHandleChange('mapId', 'select')}>
@@ -217,7 +217,7 @@ export default class AlarmList extends PureComponent {
         },
       }, {
         id: 'type',
-        span: 6,
+        span: 10,
         render: (onSearch, onReset) => {
           return (
             <Select placeholder="所属类型" mode="multiple" onChange={this.genHandleChange('alarmType', 'multipleSelect')}>

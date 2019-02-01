@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Row, Col, Input, Button, List, Spin } from 'antd';
+import { Card, Form, Row, Col, Input, Button, List, Spin, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from 'components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -14,7 +14,7 @@ const FormItem = Form.Item;
 // 权限代码
 const {
   personnelPosition: {
-    sectionManagement: { companies: sectionCode },
+    sectionManagement: { list: sectionCode },
   },
 } = codes;
 
@@ -87,8 +87,19 @@ export default class SectionManagement extends PureComponent {
   };
 
   // 点击查看区域列表
-  handleViewBeacons = ({ id }) => {
-    router.push(`/personnel-position/section-management/company/${id}`);
+  handleViewSections = ({ id }) => {
+    const {
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+    // 查看区域权限
+    const viewAuth = hasAuthority(sectionCode, permissionCodes);
+    if (viewAuth) {
+      router.push(`/personnel-position/section-management/company/${id}`);
+      return;
+    }
+    message.warning('您没有权限访问该页面！');
   };
 
   render() {
@@ -101,13 +112,7 @@ export default class SectionManagement extends PureComponent {
           isLast,
         },
       },
-      user: {
-        currentUser: { permissionCodes },
-      },
     } = this.props;
-
-    // 查看区域权限
-    const viewAuth = hasAuthority(sectionCode, permissionCodes);
 
     return (
       <PageHeaderLayout
@@ -189,7 +194,7 @@ export default class SectionManagement extends PureComponent {
                       </div>
                       <div
                         className={styles.countContainer}
-                        onClick={viewAuth ? () => this.handleViewBeacons(item) : null}
+                        onClick={() => this.handleViewSections(item)}
                       >
                         <div className={styles.count}>{area_num}</div>
                         <p className={styles.text}>区域数</p>

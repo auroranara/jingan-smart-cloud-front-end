@@ -123,7 +123,7 @@ export default class CompanyList extends PureComponent {
         id: 'title',
         wrapperCol: { span: 20 },
         inputSpan: { lg: 8, md: 16, sm: 24 },
-        render: (callback) => <Input placeholder="请输入企业名称" onPressEnter={callback} />,
+        render: (callback) => <Input placeholder="请输入单位名称" onPressEnter={callback} />,
         transform: v => v.trim(),
       },
     ];
@@ -159,11 +159,11 @@ export default class CompanyList extends PureComponent {
 
             return (
               <List.Item key={id}>
-                <AuthDiv code={codes.personnelPosition.alarmManagement.alarmList}>
+                <AuthDiv code={codes.personnelPosition.alarmManagement.alarmList} onClick={e => this.handleClick(company_id)}>
                   <Card
                     className={styles.card}
                     title={<Ellipsis lines={1} tooltip style={{ height: 24 }}>{name}</Ellipsis>}
-                    onClick={e => this.handleClick(company_id)}
+                    // onClick={e => this.handleClick(company_id)}
                   >
                     <p>
                       主要负责人：

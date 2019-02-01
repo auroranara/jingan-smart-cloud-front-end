@@ -71,8 +71,10 @@ import {
   deleteArea,
 } from '../services/personnelPosition/sectionManagement';
 
+let nodeNum = 0;
 function delEmptyChildren(tree) {
   tree.forEach(item => {
+    nodeNum += 1;
     if (item.hasOwnProperty('children')) {
       if (Array.isArray(item.children) && item.children.length) delEmptyChildren(item.children);
       else delete item.children;
@@ -85,7 +87,7 @@ export default {
   state: {
     // 系统配置
     systemConfiguration: {
-      list: [],     // 系统配置列表
+      list: [], // 系统配置列表
       pagination: {
         total: 0,
         pageNum: 1,
@@ -151,14 +153,14 @@ export default {
         total: 0,
       },
       isLast: true,
-      maps: [],   // 地图列表
+      maps: [], // 地图列表
       mapPagination: {
         pageNum: 1,
         pageSize: 10,
         total: 0,
       },
       mapIsLast: true,
-      detail: {},  // 地图详情
+      detail: {}, // 地图详情
     },
     // 系统配置企业列表
     sysCompany: {
@@ -181,6 +183,7 @@ export default {
       },
       isLast: true,
       sectionTree: [],
+      nodeNum: 0,
     },
   },
   effects: {
@@ -351,7 +354,7 @@ export default {
           type: 'saveMaps',
           payload: response.data,
         });
-        if (callback) callback(response.data.list)
+        if (callback) callback(response.data.list);
       }
     },
     // 获取楼层列表
@@ -451,54 +454,59 @@ export default {
     },
     // 新增地图
     *addMap({ payload, success, error }, { call }) {
-      const response = yield call(addMap, payload)
+      const response = yield call(addMap, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 编辑地图
     *editMap({ payload, success, error }, { call }) {
-      const response = yield call(editMap, payload)
+      const response = yield call(editMap, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 选择地图获取的地图列表
     *fetchMapForSelect({ payload, callback }, { call, put }) {
-      const response = yield call(fetchMapForSelect, payload)
+      const response = yield call(fetchMapForSelect, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveMapForSelect',
           payload: response.data.list,
-        })
-        if (callback) callback(response.data.list)
+        });
+        if (callback) callback(response.data.list);
       }
     },
     // 获取地图详情
     *fetchMapDetail({ payload, callback }, { call, put }) {
-      const response = yield call(fetchMapDetail, payload)
+      const response = yield call(fetchMapDetail, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveMapDetail',
           payload: response.data,
-        })
-        if (callback) callback(response.data)
+        });
+        if (callback) callback(response.data);
       }
     },
     // 删除地图
     *deleteMap({ payload, success, error }, { call }) {
-      const response = yield call(deleteMap, payload)
+      const response = yield call(deleteMap, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
   },
   reducers: {
-    saveSystemConfiguration(state, { payload: {
-      list = [],
-      pagination,
-      pagination: { pageNum, pageSize, total },
-    } }) {
+    saveSystemConfiguration(
+      state,
+      {
+        payload: {
+          list = [],
+          pagination,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       return {
         ...state,
         systemConfiguration: {
@@ -547,11 +555,16 @@ export default {
         };
       }
     },
-    saveBeaconList(state, { payload: {
-      list = [],
-      pagination,
-      pagination: { pageNum, pageSize, total },
-    } }) {
+    saveBeaconList(
+      state,
+      {
+        payload: {
+          list = [],
+          pagination,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       return {
         ...state,
         beaconManagement: {
@@ -560,13 +573,18 @@ export default {
           beaconPagination: pagination,
           beaconIsLast: pageNum * pageSize >= total,
         },
-      }
+      };
     },
-    saveTagLst(state, { payload: {
-      list,
-      pagination,
-      pagination: { pageNum, pageSize, total },
-    } }) {
+    saveTagLst(
+      state,
+      {
+        payload: {
+          list,
+          pagination,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
       return {
         ...state,
         tag: {
@@ -575,7 +593,7 @@ export default {
           pagination,
           isLast: pageNum * pageSize >= total,
         },
-      }
+      };
     },
     saveTagDetail(state, { payload }) {
       return {
@@ -584,7 +602,7 @@ export default {
           ...state.tag,
           detail: payload,
         },
-      }
+      };
     },
     saveEmployees(state, { payload = [] }) {
       return {
@@ -593,7 +611,7 @@ export default {
           ...state.tag,
           personnelList: payload,
         },
-      }
+      };
     },
     // 保存标签页面搜索栏信息
     saveTagSearchInfo(state, { payload }) {
@@ -603,7 +621,7 @@ export default {
           ...state.tag,
           searchInfo: payload,
         },
-      }
+      };
     },
     saveBuildings(state, { payload = [] }) {
       return {
@@ -612,10 +630,15 @@ export default {
           ...state.map,
           buildings: payload,
         },
-      }
+      };
     },
-    saveMapCompanies(state, { payload: { list = [], pagination = {} } }) {
-      const { pageNum = 1, pageSize = 10, total = 0 } = pagination
+    saveMapCompanies(
+      state,
+      {
+        payload: { list = [], pagination = {} },
+      }
+    ) {
+      const { pageNum = 1, pageSize = 10, total = 0 } = pagination;
       return {
         ...state,
         map: {
@@ -624,10 +647,10 @@ export default {
           pagination,
           isLast: pageNum * pageSize >= total,
         },
-      }
+      };
     },
     saveMaps(state, { payload: { list = [], pagination = {} } = {} }) {
-      const { pageNum = 1, pageSize = 10, total = 0 } = pagination
+      const { pageNum = 1, pageSize = 10, total = 0 } = pagination;
       return {
         ...state,
         map: {
@@ -636,7 +659,7 @@ export default {
           mapPagination: pagination,
           mapIsLast: pageNum * pageSize >= total,
         },
-      }
+      };
     },
     saveFloors(state, { payload }) {
       return {
@@ -701,12 +724,14 @@ export default {
       }
     },
     getAreaTree(state, { payload }) {
+      nodeNum = 0;
       delEmptyChildren(payload.list);
       return {
         ...state,
         sectionManagement: {
           ...state.sectionManagement,
           sectionTree: payload.list,
+          nodeNum,
         },
       };
     },
@@ -714,7 +739,7 @@ export default {
       return {
         ...state,
         mapsForSelect: payload,
-      }
+      };
     },
     saveMapDetail(state, { payload = {} }) {
       return {
@@ -723,7 +748,7 @@ export default {
           ...state.map,
           detail: payload,
         },
-      }
+      };
     },
   },
 };

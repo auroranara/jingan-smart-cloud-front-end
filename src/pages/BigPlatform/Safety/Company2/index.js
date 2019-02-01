@@ -182,8 +182,8 @@ export default class App extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-    // window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
-    window.open(`${window.publicPath}companyIndex.htm?company_id=${companyId}`);
+    window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
+    // window.open(`${window.publicPath}companyIndex.htm?company_id=${companyId}`);
   }
 
   /**
