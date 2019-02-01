@@ -361,14 +361,14 @@ export default class SectionManagement extends PureComponent {
               getValueFromEvent: e => e.target.value.trim(),
               initialValue: code,
               rules: [{ required: true, message: '请输入区域编号' }],
-            })(<Input placeholder={'请选择所属地图'} />)}
+            })(<Input placeholder={'请输入区域编号'} />)}
           </Form.Item>
           <Form.Item label="区域名称" {...formItemLayout}>
             {getFieldDecorator('name', {
               getValueFromEvent: e => e.target.value.trim(),
               initialValue: name,
               rules: [{ required: true, message: '请输入区域名称' }],
-            })(<Input placeholder="请输入区域编号" />)}
+            })(<Input placeholder="请输入区域名称" />)}
           </Form.Item>
           {mapType === 1 && (
             <Form.Item label="关联建筑物" {...formItemLayout}>
@@ -398,6 +398,7 @@ export default class SectionManagement extends PureComponent {
       },
       personnelPosition: {
         sectionManagement: { sectionTree = [] },
+        map: { maps = [] },
       },
     } = this.props;
 
@@ -431,9 +432,14 @@ export default class SectionManagement extends PureComponent {
       },
       {
         title: '所属地图',
-        dataIndex: 'mapName',
+        dataIndex: 'mapId',
         align: 'center',
         width: 300,
+        render: (val, record) => {
+          const mapItem = maps.find(item => item.id === val) || { mapName: record.mapName };
+          const { mapHierarchy, buildingName, mapName } = mapItem;
+          return +mapHierarchy === 2 ? `${buildingName}：${mapName}` : mapName;
+        },
       },
       {
         title: '操作',
@@ -460,7 +466,7 @@ export default class SectionManagement extends PureComponent {
                 <a>删除</a>
               </Popconfirm>
             ) : (
-              <a style={{ cursor: 'not-allowed' }}>删除</a>
+              <a style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</a>
             )}
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleDivide(row.id)}>

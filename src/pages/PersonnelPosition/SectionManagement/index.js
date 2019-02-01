@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Row, Col, Input, Button, List, Spin } from 'antd';
+import { Card, Form, Row, Col, Input, Button, List, Spin, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from 'components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -189,7 +189,11 @@ export default class SectionManagement extends PureComponent {
                       </div>
                       <div
                         className={styles.countContainer}
-                        onClick={viewAuth ? () => this.handleViewBeacons(item) : null}
+                        onClick={
+                          viewAuth
+                            ? () => this.handleViewBeacons(item)
+                            : message.warning('您没有权限访问该页面！')
+                        }
                       >
                         <div className={styles.count}>{area_num}</div>
                         <p className={styles.text}>区域数</p>
