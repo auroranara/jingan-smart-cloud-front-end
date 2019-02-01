@@ -129,7 +129,8 @@ export default {
     start_url: '/index.html',
     icons: [
       {
-        src: '/acloud_new/static/favicon.png',
+        src: '/static/favicon.png',
+        // src: '/acloud_new/static/favicon.png',
         sizes: '48x48',
         type: 'image/png',
       },

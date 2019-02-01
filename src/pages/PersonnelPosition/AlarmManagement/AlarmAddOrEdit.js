@@ -95,12 +95,10 @@ export default class AlarmAddOrEdit extends PureComponent {
       type: 'personPositionAlarm/fetchAreaList',
       payload: { mapId: value, pageSize: 0 },
       callback: areas => {
-        const areaId = areas.length ? areas[0].id : '';
-        if (!areaId)
-          return;
-
+        const areaId = areas.length ? areas[0].id : undefined;
         this.setState({ areaId });
-        this.handleAreaChange(areaId);
+        if (areaId)
+          this.handleAreaChange(areaId);
       },
     });
 
@@ -166,7 +164,7 @@ export default class AlarmAddOrEdit extends PureComponent {
     // console.log('submit', getFieldsValue());
     // console.log(areaId);
     validateFields((err, values) => {
-      console.log(err, values);
+      // console.log(err, values);
       if (err)
         return;
 
