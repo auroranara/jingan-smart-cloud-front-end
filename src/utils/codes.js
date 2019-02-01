@@ -190,6 +190,7 @@ export default {
       add: 'personnelPosition.sectionManagement.add',
       edit: 'personnelPosition.sectionManagement.edit',
       delete: 'personnelPosition.sectionManagement.delete',
+      divide: 'personnelPosition.sectionManagement.divide',
     },
     // 报警策略
     alarmManagement: {

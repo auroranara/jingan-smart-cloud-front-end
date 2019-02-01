@@ -22,7 +22,7 @@ import styles from './index.less';
 // 权限代码
 const {
   personnelPosition: {
-    sectionManagement: { add: addCode, edit: editCode, delete: deleteCode },
+    sectionManagement: { add: addCode, edit: editCode, delete: deleteCode, divide: divideCode },
   },
 } = codes;
 
@@ -469,7 +469,7 @@ export default class SectionManagement extends PureComponent {
               <a style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</a>
             )}
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleDivide(row.id)}>
+            <AuthA code={divideCode} onClick={() => this.handleDivide(row.id)}>
               划分区域
             </AuthA>
           </Fragment>
