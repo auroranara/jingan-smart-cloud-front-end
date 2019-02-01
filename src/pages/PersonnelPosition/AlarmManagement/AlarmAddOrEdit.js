@@ -317,6 +317,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                     validateFirst: true,
                     rules: [
                       { required: true, message: '请设置超员人数' },
+                      { pattern: /^\d+$/, message: '设置的值必须为整数' },
                       { validator: this.genTimeLimitCheck(minLimitOutstripNum, maxLimitOutstripNum) },
                     ],
                   })(
@@ -333,6 +334,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                     validateFirst: true,
                     rules: [
                       { required: true, message: '请设置缺员人数' },
+                      { pattern: /^\d+$/, message: '设置的值必须为整数' },
                       { validator: this.genTimeLimitCheck(minLimitLackNum, maxLimitLackNum) },
                     ],
                   })(

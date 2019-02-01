@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import Link from 'umi/link';
+// import Link from 'umi/link';
 import { Button, Card, Input, Select, Table, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -132,6 +132,8 @@ export default class AlarmList extends PureComponent {
           this.fetchList(this.pageIndex);
         },
       });
+    else
+      message.warn('请先选择要删除的报警策略!');
   };
 
   handleSearch = () => {
@@ -250,6 +252,7 @@ export default class AlarmList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        content={<p className={styles.total}>报警策略总数：{list.length}</p>}
       >
         <Card>
           <ToolBar
