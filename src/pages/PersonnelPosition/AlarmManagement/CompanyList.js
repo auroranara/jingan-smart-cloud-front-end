@@ -159,7 +159,11 @@ export default class CompanyList extends PureComponent {
 
             return (
               <List.Item key={id}>
-                <AuthDiv code={codes.personnelPosition.alarmManagement.alarmList} onClick={e => this.handleClick(company_id)}>
+                <AuthDiv
+                  code={codes.personnelPosition.alarmManagement.alarmList}
+                  onClick={e => this.handleClick(company_id)}
+                  errMsg="您没有查看报警策略列表的权限"
+                >
                   <Card
                     className={styles.card}
                     title={<Ellipsis lines={1} tooltip style={{ height: 24 }}>{name}</Ellipsis>}
