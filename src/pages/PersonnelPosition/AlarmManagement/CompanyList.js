@@ -123,7 +123,7 @@ export default class CompanyList extends PureComponent {
         id: 'title',
         wrapperCol: { span: 20 },
         inputSpan: { lg: 8, md: 16, sm: 24 },
-        render: (callback) => <Input placeholder="请输入企业名称" onPressEnter={callback} />,
+        render: (callback) => <Input placeholder="请输入单位名称" onPressEnter={callback} />,
         transform: v => v.trim(),
       },
     ];
