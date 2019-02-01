@@ -150,6 +150,14 @@ export default class AlarmAddOrEdit extends PureComponent {
     };
   };
 
+  checkTimeLimit = (rule, value, callback) => {
+    const val = value && Number(value.trim());
+    if (!val || val < 0)
+      callback('值必须为一个大于0的数字');
+    else
+      callback();
+  };
+
   handleSubmit = e => {
     const {
       dispatch,
@@ -315,7 +323,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                     validateFirst: true,
                     rules: [
                       { required: true, message: '请设置超员人数' },
-                      { pattern: /^\d+$/, message: '设置的值必须为整数' },
+                      { pattern: /^\d+$/, message: '设置的值必须为正整数' },
                       { validator: this.genTimeLimitCheck(minLimitOutstripNum, maxLimitOutstripNum) },
                     ],
                   })(
@@ -332,7 +340,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                     validateFirst: true,
                     rules: [
                       { required: true, message: '请设置缺员人数' },
-                      { pattern: /^\d+$/, message: '设置的值必须为整数' },
+                      { pattern: /^\d+$/, message: '设置的值必须为正整数' },
                       { validator: this.genTimeLimitCheck(minLimitLackNum, maxLimitLackNum) },
                     ],
                   })(
@@ -340,9 +348,13 @@ export default class AlarmAddOrEdit extends PureComponent {
                   )}
                 </FormItem>
                 <FormItem label="缺员时长" {...FORMITEM_LAYOUT}>
-                  {getFieldDecorator('lackTimeLimit', { rules: [
-                    { required: true, message: '请设置缺员时长' },
-                  ] })(
+                  {getFieldDecorator('lackTimeLimit', {
+                    validateFirst: true,
+                    rules: [
+                      { required: true, message: '请设置缺员时长' },
+                      { validator: this.checkTimeLimit },
+                    ],
+                  })(
                     <Input style={{ width: 150 }} placeholder="请输入缺员时长" />
                   )}
                   <span className={styles.hour}>小时</span>
