@@ -81,8 +81,14 @@ export default class FireMonitoring extends PureComponent {
                 backgroundSize: '2% 100%',
               }}
             >
-              <p className={styles.linkageCount}>{linkage || 0}</p>
-              <p className={styles.linkageTitle}>联动</p>
+              <Tooltip
+                placement="bottomLeft"
+                overlayClassName={styles.tooltip}
+                title="当报警设备探知火灾信号后传递给主机，主机按照设定程序，依次联动灭火设施的过程称之为联动。"
+              >
+                <p className={styles.linkageCount}>{linkage || 0}</p>
+                <p className={styles.linkageTitle}>联动</p>
+              </Tooltip>
             </div>
             <div
               className={styles.regulation}
@@ -92,8 +98,14 @@ export default class FireMonitoring extends PureComponent {
                 backgroundSize: '2% 100%',
               }}
             >
-              <p className={styles.regulationCount}>{supervise || 0}</p>
-              <p className={styles.regulationTitle}>监管</p>
+              <Tooltip
+                placement="bottomLeft"
+                overlayClassName={styles.tooltip}
+                title="当控制器检测到了外部设备信号，比如信号蝶阀，平时常开，一旦关闭后会产生一个信号提示，系统处于监管状态。"
+              >
+                <p className={styles.regulationCount}>{supervise || 0}</p>
+                <p className={styles.regulationTitle}>监管</p>
+              </Tooltip>
             </div>
             <div
               className={styles.shield}
@@ -103,12 +115,24 @@ export default class FireMonitoring extends PureComponent {
                 backgroundSize: '2% 100%',
               }}
             >
-              <p className={styles.shieldCount}>{shield || 0}</p>
-              <p className={styles.shieldTitle}>屏蔽</p>
+              <Tooltip
+                placement="bottomLeft"
+                overlayClassName={styles.tooltip}
+                title="当探测器或模块发生故障后，短时间无法修复时，可将它屏蔽掉，待修理或更换后，再取消屏蔽将设备恢复。"
+              >
+                <p className={styles.shieldCount}>{shield || 0}</p>
+                <p className={styles.shieldTitle}>屏蔽</p>
+              </Tooltip>
             </div>
             <div className={styles.feedback}>
-              <p className={styles.feedbackCount}>{feedback || 0}</p>
-              <p className={styles.feedbackTitle}>反馈</p>
+              <Tooltip
+                placement="bottomLeft"
+                overlayClassName={styles.tooltip}
+                title="消防控制器接收到外接设备的反馈信息，也就是模块输入功能，比如水流指示器动作后，反馈信号给消控主机。"
+              >
+                <p className={styles.feedbackCount}>{feedback || 0}</p>
+                <p className={styles.feedbackTitle}>反馈</p>
+              </Tooltip>
             </div>
           </div>
         </div>
