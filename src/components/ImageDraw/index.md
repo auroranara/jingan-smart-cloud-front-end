@@ -1,6 +1,6 @@
 * className 容器类名
 * style 容器样式
-* url 图片地址，必传
+* url 图片地址，必传且必须通过setState
 * data 数据源，类型为数组，必传
 * onUpdate 用于更新data的回调，当namable为false时，需要为参数对象添加name属性，必传
 * limit 限制绘制图形数量，类型为数字，默认不限制
@@ -17,3 +17,4 @@
 * hideBackground 是否隐藏背景图片
 * images 额外的图片
 * reference 根据哪一个图形定位，默认为背景
+* autoZoom 是否根据图片大小自动设置最佳的zoom等级，默认为false，zoom为0
