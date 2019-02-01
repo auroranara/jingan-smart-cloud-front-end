@@ -152,6 +152,7 @@ export default class Zoning extends PureComponent {
               drawable
               // maxBoundsRatio={1.2}
               color='#00a8ff'
+              autoZoom
             />
             <div style={{ textAlign: 'center', padding: 24 }}>
               <Button onClick={this.goBack} style={{ marginRight: 24 }}>取消</Button>

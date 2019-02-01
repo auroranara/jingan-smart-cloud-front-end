@@ -205,12 +205,11 @@ const defaultFontColor = '#fff';
 @Form.create()
 class ImageDraw extends PureComponent {
   state = {
-    // center: L.latLng(300, 400),
-    // bounds: L.latLngBounds([0,0], [600, 800]),
     center: undefined,
     bounds: undefined,
     visible: false,
     maxBounds: undefined,
+    zoom: 0,
     // list: [
     //   { name: '很长很长的阳台名称', type: 'circle', latlng: { lat: 237, lng: 378 }, radius: 200 },
     //   { name: '矩形', type: 'rectangle', latlngs: [{lat: 349, lng: 78}, {lat: 428, lng: 78},{lat: 428, lng: 140},{lat: 349, lng: 140}]},
@@ -243,8 +242,8 @@ class ImageDraw extends PureComponent {
       // 如果使用填充效果
       if (filled) {
         // 按照容器的比例
-        const { clientWidth: width, clientHeight: height } =  this.map.container;
-        this.initMap(width, height);
+        const { clientWidth, clientHeight } =  this.map.container;
+        this.initMap(clientWidth, clientHeight);
       }
       else {
         // 按照图片本身的比例
@@ -266,34 +265,57 @@ class ImageDraw extends PureComponent {
     this.map = map;
   }
 
+  /**
+   * 获取合适的zoom
+   * @param {number} width reference图片的宽度
+   * @param {number} height reference图片的高度
+   */
+  getFitZoom = (width, height) => {
+    const { filled, autoZoom } = this.props;
+    let zoom = 0;
+    if (autoZoom && !filled) {
+      const { clientWidth, clientHeight } =  this.map.container;
+      zoom = Math.floor(Math.log2(Math.min(clientWidth/width, clientHeight/height)));
+    }
+    return zoom;
+  }
+
+  /**
+   * 初始化地图
+   * @param {number} width 坐标参考图片的宽度
+   * @param {number} height 坐标参考图片的高度
+   */
   initMap = (width, height) => {
     const { maxBoundsRatio=1, reference } = this.props;
     let center;
     let maxBounds;
+    let zoom;
     if (reference) {
       const { latlngs, radius, latLng } = reference;
       if (radius) {
         center = latLng;
-        maxBounds = L.circle({ lat: latLng.lat*height, lng: latLng.lng*width }, radius*width*maxBoundsRatio).getBounds();
+        maxBounds = L.circle({ lat: latLng.lat*height, lng: latLng.lng*width }, radius*width).getBounds();
       }
       else {
         maxBounds = L.latLngBounds(latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width })));
         center = maxBounds.getCenter();
         center = { lat: center.lat / height, lng: center.lng / width };
-        if (maxBoundsRatio !== 1) {
-          const { _southWest: { lat: lat1, lng: lng1 }, _northEast: { lat: lat2, lng: lng2 } } = maxBounds;
-          const boundWidth = lng2 - lng1;
-          const boundHeight = lat2 - lat1;
-          maxBounds = L.latLngBounds(
-            [lat1 - boundHeight * (maxBoundsRatio-1), lng1 - boundWidth * (maxBoundsRatio-1)],
-            [lat2 + boundHeight * (maxBoundsRatio-1), lng2 + boundWidth * (maxBoundsRatio-1)]
-          );
-        }
+      }
+      const { _southWest: { lat: lat1, lng: lng1 }, _northEast: { lat: lat2, lng: lng2 } } = maxBounds;
+      const boundWidth = lng2 - lng1;
+      const boundHeight = lat2 - lat1;
+      zoom = this.getFitZoom(boundWidth, boundHeight);
+      if (maxBoundsRatio !== 1) {
+        maxBounds = L.latLngBounds(
+          [lat1 - boundHeight * (maxBoundsRatio-1), lng1 - boundWidth * (maxBoundsRatio-1)],
+          [lat2 + boundHeight * (maxBoundsRatio-1), lng2 + boundWidth * (maxBoundsRatio-1)]
+        );
       }
     }
     else {
       center = { lat: 0.5, lng: 0.5 };
       maxBounds = L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]);
+      zoom = this.getFitZoom(width, height);
     }
     this.setState({
       bounds: L.latLngBounds([0, 0], [height, width]),
@@ -301,6 +323,7 @@ class ImageDraw extends PureComponent {
     }, () => {
       this.setState({
         center: L.latLng(height*center.lat, width*center.lng),
+        zoom,
       });
     });
   }
@@ -392,18 +415,6 @@ class ImageDraw extends PureComponent {
           }
           return item;
         }));
-        // this.setState(({ list }) => ({
-        //   list: list.map(item => {
-        //     const index = editedDataList.indexOf(item);
-        //     if (index > -1) {
-        //       return {
-        //         ...item,
-        //         ...this.getShapeFeature(item.type, editedList[index]),
-        //       };
-        //     }
-        //     return item;
-        //   }),
-        // }));
       }
     }
   }
@@ -418,9 +429,6 @@ class ImageDraw extends PureComponent {
       if (deletedList.length > 0) {
         const deletedDataList = deletedList.map(({ options: { data } }) => data);
         onUpdate(data.filter((item) => deletedDataList.indexOf(item) === -1));
-        // this.setState(({ list }) => ({
-        //   list: list.filter((item) => deletedDataList.indexOf(item) === -1),
-        // }));
       }
     }
   }
@@ -445,20 +453,6 @@ class ImageDraw extends PureComponent {
       if (!errors) {
         const { name } = values;
         this.pushData(this.layerType, this.layer, name);
-        // 手动添加layer
-        // this.setState(({ list }) => {
-        //   const { options } = this.layer;
-        //   return {
-        //     list: list.concat({
-        //       type: this.layerType,
-        //       options,
-        //       name,
-        //       ...this.getShapeFeature(this.layerType, this.layer),
-        //     }),
-        //   };
-        // }, () => {
-        //   this.handleCancel();
-        // });
       }
     });
   }
@@ -625,7 +619,7 @@ class ImageDraw extends PureComponent {
 
   render() {
     const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, hideBackground, data=[], images, color=defaultColor, shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
-    const { center, bounds, visible, maxBounds } = this.state;
+    const { center, bounds, visible, maxBounds, zoom } = this.state;
 
     return (
       <div className={className} style={{ height: 600, ...style }}>
@@ -633,9 +627,9 @@ class ImageDraw extends PureComponent {
           id="mapContainer"
           className={styles.mapContainer}
           center={center}
-          minZoom={-2}
-          maxZoom={5}
-          zoom={0}
+          minZoom={-3}
+          maxZoom={8}
+          zoom={zoom}
           editable
           crs={L.CRS.Simple}
           attributionControl={false}
