@@ -51,8 +51,15 @@ export default class MapManagementList extends PureComponent {
     const {
       form: { getFieldValue },
     } = this.props
-    const name = getFieldValue('name')
+    const name = getFieldValue('name')||null
     this.fetchMapCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize, name } })
+  }
+
+  // 点击重置
+  handleReset=()=>{
+    const {form:{resetFields}}=this.props
+    resetFields()
+    this.handleQuery()
   }
 
   // 点击跳转到地图列表
@@ -106,7 +113,8 @@ export default class MapManagementList extends PureComponent {
               </Col>
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                  <Button type="primary" onClick={this.handleQuery}>查询</Button>
+                  <Button style={{marginRight:'10px'}} type="primary" onClick={this.handleQuery}>查询</Button>
+                  <Button onClick={this.handleReset}>重置</Button>
                 </FormItem>
               </Col>
             </Row>

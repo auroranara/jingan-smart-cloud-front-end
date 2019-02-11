@@ -30,7 +30,7 @@ export default class addMap extends PureComponent {
     modalList: [],             // 选择图片数据（获取数据后callback内设置）
     points: [],                // 画的坐标数组
     unitMapUrl: undefined,     // 单位图地址（用于关联地图）
-    mapHierarchy: undefined,   // 当前选择的地图层级
+    mapHierarchy: undefined,   // 当前选择的地图层级  '1' 单位平面图  '2' 楼层平面图
     floorMap: {},
   }
 
@@ -354,7 +354,6 @@ export default class addMap extends PureComponent {
       { name: title, title },
     ]
 
-    // 地图层级 '1' 单位平面图  '2' 楼层平面图
     const { unitMap = {} } = getFieldsValue()
 
     return (
@@ -375,7 +374,7 @@ export default class addMap extends PureComponent {
               {getFieldDecorator('mapHierarchy', {
                 rules: [{ required: true, message: '请选择地图层级' }],
               })(
-                <Select placeholder="请选择" {...itemStyles} onSelect={this.handleHierarchyChange}>
+                <Select /* disabled={!!id} */ placeholder="请选择" {...itemStyles} onSelect={this.handleHierarchyChange}>
                   {typeInfo.map(({ label, value }, i) => (
                     <Select.Option key={i} value={value}>{label}</Select.Option>
                   ))}
