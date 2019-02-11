@@ -23,7 +23,7 @@ export default function MonitorCard(props) {
         <p>
           <span className={styles.item}>设备状态</span>
           {status === 2
-          ? <Fragment><span className={styles.red}>报警</span>（{params}）</Fragment>
+          ? <Fragment><span className={styles.red}>报警</span>{params && <span>（{params}）</span>}</Fragment>
           : <span className={styles[CLASSNAMES[status]]}>{params}</span>
           }
         </p>
