@@ -63,7 +63,7 @@
     "leaflet-draw": "^1.0.4",
     "lodash-decorators": "^6.0.0",
     "lodash.isequal": "^4.5.0",
-    "memoize-one": "^4.0.0",
+    "memoize-one": "^5.0.0",
     "moment": "^2.22.2",
     "numeral": "^2.0.6",
     "omit.js": "^1.0.0",
