@@ -218,18 +218,19 @@ export default class BuildingInfoList extends PureComponent {
           payload: {
             buildingId,
           },
-          callback: response => {
-            if (response && response.code === 200) {
-              dispatch({
-                type: 'buildingsInfo/fetchBuildingList',
-                payload: {
-                  company_id: companyId,
-                  pageSize,
-                  pageNum: 1,
-                },
-              });
-              message.success('删除成功！');
-            } else message.warning('删除失败！');
+          success: () => {
+            dispatch({
+              type: 'buildingsInfo/fetchBuildingList',
+              payload: {
+                company_id: companyId,
+                pageSize,
+                pageNum: 1,
+              },
+            });
+            message.success('删除成功！');
+          },
+          error: () => {
+            message.error('删除失败,该建筑物已绑定区域或者地图！');
           },
         });
       },
