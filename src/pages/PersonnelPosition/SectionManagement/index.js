@@ -174,6 +174,7 @@ export default class SectionManagement extends PureComponent {
                   principal_phone = null,
                   practical_address = null, // 地址
                   area_num = 0, // 区域数
+                  search_area = null, // 地址2
                 } = item;
                 return (
                   <List.Item key={id}>
@@ -189,7 +190,7 @@ export default class SectionManagement extends PureComponent {
                       <div className={styles.lsEllipsis}>
                         <Ellipsis tooltip lines={1}>
                           地址：
-                          {practical_address || '暂无信息'}
+                          {search_area || '暂无信息'}
                         </Ellipsis>
                       </div>
                       <div
