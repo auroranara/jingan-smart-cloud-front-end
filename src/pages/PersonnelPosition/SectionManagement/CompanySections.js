@@ -19,6 +19,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import styles from './index.less';
+import { isNull } from 'util';
 // 权限代码
 const {
   personnelPosition: {
@@ -82,6 +83,7 @@ export default class SectionManagement extends PureComponent {
         id: undefined,
         parentId: undefined,
         buildingId: undefined,
+        sort: undefined,
       },
       mapType: 2, // 1 单位低碳钢，2 楼层地图
     };
@@ -143,17 +145,24 @@ export default class SectionManagement extends PureComponent {
     });
   };
 
-  handleAdd = id => {
+  handleAdd = (id, row = {}) => {
     const {
       personnelPosition: {
         map: { maps },
+        sectionManagement: { sectionTree },
       },
     } = this.props;
     if (!maps.length) {
       message.error('请先添加地图！');
       return;
     }
-    this.setState({ modalVisible: true, modalForm: { parentId: id } });
+    const children = row.children && Array.isArray(row.children) ? row.children : [];
+    const sortArray = id ? [...children] : [...sectionTree];
+    const sort =
+      sortArray[sortArray.length - 1] && !isNull(sortArray[sortArray.length - 1].sort)
+        ? +sortArray[sortArray.length - 1].sort + 1
+        : 0;
+    this.setState({ modalVisible: true, modalForm: { parentId: id, sort } });
   };
 
   handleEdit = detail => {
@@ -220,6 +229,7 @@ export default class SectionManagement extends PureComponent {
         id: undefined,
         parentId: undefined,
         buildingId: undefined,
+        sort: undefined,
       },
     });
   };
@@ -237,7 +247,7 @@ export default class SectionManagement extends PureComponent {
       },
     } = this.props;
     const {
-      modalForm: { id, parentId },
+      modalForm: { id, parentId, sort },
     } = this.state;
     const formData = getFieldsValue();
     const { mapId, buildingId } = formData;
@@ -286,6 +296,7 @@ export default class SectionManagement extends PureComponent {
             parentId,
             ...formData,
             buildingId: Array.isArray(buildingId) ? buildingId.join(',') : undefined,
+            sort,
           },
           success: data => {
             const newData = {
@@ -299,7 +310,7 @@ export default class SectionManagement extends PureComponent {
                 else item.children = [newData];
               });
             } else {
-              sectionTree.splice(0, 0, newData);
+              sectionTree.splice(sectionTree.length, 0, newData);
             }
             this.nodeNum += 1;
             this.handleCloseModal();
@@ -349,7 +360,7 @@ export default class SectionManagement extends PureComponent {
                       this.setState({ mapType: +maps[index].mapHierarchy });
                     }}
                   >
-                    {+mapHierarchy === 2 && buildingName + '：'}
+                    {+mapHierarchy === 2 && buildingName && buildingName + '：'}
                     {mapName}
                   </Select.Option>
                 ))}
@@ -438,7 +449,7 @@ export default class SectionManagement extends PureComponent {
         render: (val, record) => {
           const mapItem = maps.find(item => item.id === val) || { mapName: record.mapName };
           const { mapHierarchy, buildingName, mapName } = mapItem;
-          return +mapHierarchy === 2 ? `${buildingName}：${mapName}` : mapName;
+          return +mapHierarchy === 2 && buildingName ? `${buildingName}：${mapName}` : mapName;
         },
       },
       {
@@ -448,7 +459,7 @@ export default class SectionManagement extends PureComponent {
         width: 300,
         render: (val, row) => (
           <Fragment>
-            <AuthA code={addCode} onClick={() => this.handleAdd(row.id)}>
+            <AuthA code={addCode} onClick={() => this.handleAdd(row.id, row)}>
               新增
             </AuthA>
             <Divider type="vertical" />
