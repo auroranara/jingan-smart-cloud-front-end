@@ -330,7 +330,7 @@ export default class CompanyBeacon extends PureComponent {
               <Popconfirm title="确认要删除该信标吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
-            ) : (<a style={{ cursor: 'not-allowed', color: '#b3b3b3' }}>删除</a>)}
+            ) : (<a style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</a>)}
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
