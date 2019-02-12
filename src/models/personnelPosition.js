@@ -124,6 +124,13 @@ export default {
       detail: {}, // 详情
       personnelList: [], // 持卡人
       searchInfo: {},
+      companyList:[],// 标签企业列表
+      companyPagination:{
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      companyIsLast:true,
     },
     companyList: {
       // 企业列表
@@ -136,7 +143,7 @@ export default {
     },
     // 标签-企业
     tagCompany: {
-      list: [],
+      list: [], // 标签列表
       pagination: {
         pageNum: 1,
         pageSize: 10,
@@ -368,7 +375,7 @@ export default {
       }
     },
     // 标签获取企业列表
-    *fetchTagCompanies({ payload, callback }, { call, put }) {
+    /* *fetchTagCompanies({ payload, callback }, { call, put }) {
       const response = yield call(fetchTagCompanies, payload);
       if (response && response.code === 200) {
         yield put({
@@ -376,6 +383,16 @@ export default {
           payload: response.data,
         });
         if (callback) callback();
+      }
+    }, */
+    // 获取标签企业列表
+    *fetchTagCompanies({payload},{call,put}){
+      const response=yield call(fetchTagCompanies,payload)
+      if (response && response.code === 200) {
+        yield put({
+          type:'saveTagCompanies',
+          payload:response.data,
+        })
       }
     },
     // 系统配置选择企业时获取企业列表
@@ -670,7 +687,7 @@ export default {
         },
       };
     },
-    saveTagCompanies(
+    /* saveTagCompanies(
       state,
       {
         payload: { list = [], pagination = {} },
@@ -684,6 +701,17 @@ export default {
           pagination,
         },
       };
+    }, */
+    saveTagCompanies(state,{payload:{list=[],pagination,pagination:{pageNum=1,pageSize=10,total=0}}}){
+      return{
+        ...state,
+        tag:{
+          ...state.tag,
+          companyList:pageNum>1?[...state.tag.companyList,...list]:list,
+          companyPagination:pagination,
+          companyIsLast:pageNum*pageSize>=total,
+        },
+      }
     },
     saveSysCompanies(state, { payload }) {
       return {

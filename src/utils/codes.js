@@ -167,6 +167,7 @@ export default {
     },
     // 标签管理
     tag: {
+      companyList: 'personnelPosition.tagManagement.companyList',
       list: 'personnelPosition.tagManagement.listView',
       add: 'personnelPosition.tagManagement.add',
       edit: 'personnelPosition.tagManagement.edit',
