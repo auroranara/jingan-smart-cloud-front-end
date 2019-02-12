@@ -26,12 +26,7 @@ const {
   },
 } = codes
 
-const title = "标签管理"
-const breadcrumbList = [
-  { title: '首页', name: '首页', href: '/' },
-  { title: '人员定位', name: '人员定位' },
-  { title, name: title },
-]
+const title = "标签列表"
 const defaultPageSize = 10;
 const colWrapper = { lg: 12, md: 12, sm: 24, xs: 24 }
 
@@ -141,6 +136,7 @@ export default class TagManagement extends PureComponent {
   // 加载更多列表数据
   handleLoadMore = () => {
     const {
+      match: { params: { companyId } },
       personnelPosition: {
         tag: { pagination: { pageNum, pageSize } },
       },
@@ -154,6 +150,7 @@ export default class TagManagement extends PureComponent {
         type: searchType,
         cardStatus: searchCardStatus,
         code: searchCode,
+        companyId,
       },
     })
   }
@@ -180,14 +177,16 @@ export default class TagManagement extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    router.push('/personnel-position/tag-management/add')
+    const { match: { params: { companyId } } } = this.props
+    router.push(`/personnel-position/tag-management/add/${companyId}`)
   }
 
   // 点击查看详情
   handleToDetail = ({ id }) => {
+    const { match: { params: { companyId } } } = this.props
     router.push({
       pathname: '/personnel-position/tag-management/detail',
-      query: { id },
+      query: { id, companyId },
     })
   }
 
@@ -196,6 +195,7 @@ export default class TagManagement extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      match: { params: { companyId } },
       personnelPosition: {
         tag: { pagination: { pageSize } },
       },
@@ -208,6 +208,7 @@ export default class TagManagement extends PureComponent {
         type: searchType,
         cardStatus: searchCardStatus,
         code: searchCode,
+        companyId,
       },
     })
     if (needSave) {
@@ -223,6 +224,7 @@ export default class TagManagement extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
+      match: { companyId },
     } = this.props
     resetFields()
     dispatch({
@@ -233,6 +235,7 @@ export default class TagManagement extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
+        companyId,
       },
     })
   }
@@ -313,7 +316,8 @@ export default class TagManagement extends PureComponent {
 
   // 点击跳转到编辑页面
   handleToEdit = (id) => {
-    router.push(`/personnel-position/tag-management/edit/${id}`)
+    const { match: { params: { companyId } } } = this.props
+    router.push(`/personnel-position/tag-management/edit/${companyId}/${id}`)
   }
 
   // 人员列表页面变化
@@ -505,6 +509,12 @@ export default class TagManagement extends PureComponent {
       },
       selectedPersonnerlKeys,
     } = this.state
+    const breadcrumbList = [
+      { title: '首页', name: '首页', href: '/' },
+      { title: '人员定位', name: '人员定位' },
+      { title: '标签管理', name: '标签管理', href: '/personnel-position/tag-management/companies' },
+      { title, name: title },
+    ]
 
     // {id,userName}
     const personnel = getFieldValue('personnel')

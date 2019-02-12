@@ -1554,25 +1554,31 @@ module.exports = env => {
               hideChildrenInMenu: true,
               routes: [
                 {
-                  name: 'list',
+                  name: 'companyList',
                   path: '/personnel-position/tag-management',
-                  redirect: '/personnel-position/tag-management/list',
+                  redirect: '/personnel-position/tag-management/companies',
+                },
+                {
+                  name: 'companyList',
+                  path: '/personnel-position/tag-management/companies',
+                  code: 'personnelPosition.tagManagement.listView',
+                  component: './PersonnelPosition/TagManagement/index',
                 },
                 {
                   name: 'list',
-                  path: '/personnel-position/tag-management/list',
+                  path: '/personnel-position/tag-management/company/:companyId',
                   code: 'personnelPosition.tagManagement.listView',
                   component: './PersonnelPosition/TagManagement/TagManagementList',
                 },
                 {
                   name: 'add',
-                  path: '/personnel-position/tag-management/add',
+                  path: '/personnel-position/tag-management/add/:companyId',
                   code: 'personnelPosition.tagManagement.add',
                   component: './PersonnelPosition/TagManagement/TagManagementAdd',
                 },
                 {
                   name: 'edit',
-                  path: '/personnel-position/tag-management/edit/:id',
+                  path: '/personnel-position/tag-management/edit/:companyId/:id',
                   code: 'personnelPosition.tagManagement.edit',
                   component: './PersonnelPosition/TagManagement/TagManagementAdd',
                 },
