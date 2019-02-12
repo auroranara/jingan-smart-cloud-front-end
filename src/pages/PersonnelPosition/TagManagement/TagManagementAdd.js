@@ -20,10 +20,9 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
 const defaultPageSize = 10;
 
 @Form.create()
-@connect(({ personnelPosition, user, company, loading }) => ({
+@connect(({ personnelPosition, user, loading }) => ({
   personnelPosition,
   user,
-  company,
   companyLoading: loading.effects['personnelPosition/fetchTagCompanies'],
 }))
 export default class TagManagementAdd extends PureComponent {
@@ -52,10 +51,10 @@ export default class TagManagementAdd extends PureComponent {
     } = this.props
     // 获取企业信息
     dispatch({
-      type: 'company/fetchCompany',
-      payload: { id: companyId },
-      success: ({ id, name }) => {
-        setFieldsValue({ company: { id, name } })
+      type: 'personnelPosition/fetchTagCompanies',
+      payload: { companyId },
+      callback: ([{ company_name }]) => {
+        setFieldsValue({ company: { id: companyId, name: company_name } })
       },
     })
     // 获取单位下的系统配置和人员

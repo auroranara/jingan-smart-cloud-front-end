@@ -124,13 +124,13 @@ export default {
       detail: {}, // 详情
       personnelList: [], // 持卡人
       searchInfo: {},
-      companyList:[],// 标签企业列表
-      companyPagination:{
+      companyList: [],// 标签企业列表
+      companyPagination: {
         pageNum: 1,
         pageSize: 10,
         total: 0,
       },
-      companyIsLast:true,
+      companyIsLast: true,
     },
     companyList: {
       // 企业列表
@@ -386,13 +386,14 @@ export default {
       }
     }, */
     // 获取标签企业列表
-    *fetchTagCompanies({payload},{call,put}){
-      const response=yield call(fetchTagCompanies,payload)
+    *fetchTagCompanies({ payload, callback }, { call, put }) {
+      const response = yield call(fetchTagCompanies, payload)
       if (response && response.code === 200) {
         yield put({
-          type:'saveTagCompanies',
-          payload:response.data,
+          type: 'saveTagCompanies',
+          payload: response.data,
         })
+        if (callback) callback(response.data.list)
       }
     },
     // 系统配置选择企业时获取企业列表
@@ -702,14 +703,14 @@ export default {
         },
       };
     }, */
-    saveTagCompanies(state,{payload:{list=[],pagination,pagination:{pageNum=1,pageSize=10,total=0}}}){
-      return{
+    saveTagCompanies(state, { payload: { list = [], pagination, pagination: { pageNum = 1, pageSize = 10, total = 0 } } }) {
+      return {
         ...state,
-        tag:{
+        tag: {
           ...state.tag,
-          companyList:pageNum>1?[...state.tag.companyList,...list]:list,
-          companyPagination:pagination,
-          companyIsLast:pageNum*pageSize>=total,
+          companyList: pageNum > 1 ? [...state.tag.companyList, ...list] : list,
+          companyPagination: pagination,
+          companyIsLast: pageNum * pageSize >= total,
         },
       }
     },
