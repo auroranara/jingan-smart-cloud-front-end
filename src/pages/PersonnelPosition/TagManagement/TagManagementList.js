@@ -136,6 +136,7 @@ export default class TagManagement extends PureComponent {
   // 加载更多列表数据
   handleLoadMore = () => {
     const {
+      match: { params: { companyId } },
       personnelPosition: {
         tag: { pagination: { pageNum, pageSize } },
       },
@@ -149,6 +150,7 @@ export default class TagManagement extends PureComponent {
         type: searchType,
         cardStatus: searchCardStatus,
         code: searchCode,
+        companyId,
       },
     })
   }
@@ -193,6 +195,7 @@ export default class TagManagement extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      match: { params: { companyId } },
       personnelPosition: {
         tag: { pagination: { pageSize } },
       },
@@ -205,6 +208,7 @@ export default class TagManagement extends PureComponent {
         type: searchType,
         cardStatus: searchCardStatus,
         code: searchCode,
+        companyId,
       },
     })
     if (needSave) {
@@ -220,6 +224,7 @@ export default class TagManagement extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
+      match: { companyId },
     } = this.props
     resetFields()
     dispatch({
@@ -230,6 +235,7 @@ export default class TagManagement extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
+        companyId,
       },
     })
   }
