@@ -1,6 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, Spin, Col, Row, Select, Icon, message } from 'antd';
+import {
+  Form,
+  List,
+  Card,
+  Button,
+  Input,
+  Spin,
+  Col,
+  Row,
+  Select,
+  Icon,
+  message,
+  Modal,
+} from 'antd';
 // import { routerRedux } from 'dva/router';
 // import { AuthLink } from '@/utils/customAuth';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -10,6 +23,7 @@ import codesMap from '@/utils/codes';
 import { AuthButton, AuthLink } from '@/utils/customAuth';
 import styles from './CompanyInfo.less';
 
+const { confirm } = Modal;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -193,23 +207,32 @@ export default class BuildingInfoList extends PureComponent {
         params: { id: companyId },
       },
     } = this.props;
-    dispatch({
-      type: 'buildingsInfo/removeBuilding',
-      payload: {
-        buildingId,
-      },
-      callback: response => {
-        if (response && response.code === 200) {
-          dispatch({
-            type: 'buildingsInfo/fetchBuildingList',
-            payload: {
-              company_id: companyId,
-              pageSize,
-              pageNum: 1,
-            },
-          });
-          message.success('删除成功！');
-        } else message.warning('删除失败！');
+    confirm({
+      title: '提示信息',
+      content: '是否删除该建筑物信息',
+      okText: '确认',
+      cancelText: '取消',
+      onOk() {
+        dispatch({
+          type: 'buildingsInfo/removeBuilding',
+          payload: {
+            buildingId,
+          },
+          success: () => {
+            dispatch({
+              type: 'buildingsInfo/fetchBuildingList',
+              payload: {
+                company_id: companyId,
+                pageSize,
+                pageNum: 1,
+              },
+            });
+            message.success('删除成功！');
+          },
+          error: () => {
+            message.error('删除失败,该建筑物已绑定区域或者地图！');
+          },
+        });
       },
     });
   };
@@ -380,7 +403,13 @@ export default class BuildingInfoList extends PureComponent {
                         this.handleShowDeleteConfirm(id);
                       }}
                       shape="circle"
-                      style={{ border: 'none', fontSize: '16px' }}
+                      style={{
+                        border: 'none',
+                        fontSize: '16px',
+                        position: 'absolute',
+                        right: '8px',
+                        top: '12px',
+                      }}
                     >
                       <Icon type="close" />
                     </AuthButton>
@@ -422,7 +451,7 @@ export default class BuildingInfoList extends PureComponent {
                         {floorLevel || getEmptyData()}
                       </p>
                       <AuthButton
-                        code={codesMap.personnelPosition.floorManagement.add}
+                        code={codesMap.personnelPosition.buildingsInfo.floorListView}
                         style={{ cursor: 'pointer' }}
                         href={`#/personnel-position/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
                       >

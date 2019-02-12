@@ -5,6 +5,7 @@ const defaultConfig = {
   region: '无锡市',
   mail: 'jazh@jingan-china.cn',
   mainWeb: 'https://www.jingan-china.cn',
+  // projectKey: 'dev',
   projectKey: 'v2_test',
   projectShortName: '晶安智慧云',
   servicePhone: '400-928-5656',

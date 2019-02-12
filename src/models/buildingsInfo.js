@@ -9,6 +9,7 @@ import {
   addFloor,
   editFloor,
   deleteFloor,
+  queryFloorNumber,
 } from '../services/personnelPosition/buildingsInfo';
 
 export default {
@@ -63,6 +64,8 @@ export default {
         floorNumber: undefined,
       },
     },
+    allFloorNumberLists: [],
+    floorNumberLists: [],
   },
 
   effects: {
@@ -166,15 +169,32 @@ export default {
       }
     },
 
+    // 获取楼层编号
+    *fetchFloorNumber({ payload, success, error }, { call, put }) {
+      const response = yield call(queryFloorNumber, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveFloorNumber',
+          payload: {
+            data: response.data,
+          },
+        });
+      }
+    },
+
     // 删除建筑
-    *removeBuilding({ payload, callback }, { call, put }) {
+    *removeBuilding({ payload, success, error }, { call, put }) {
       const response = yield call(deleteBuildings, payload);
       if (response.code === 200) {
         yield put({
           type: 'delete',
           payload: payload.id,
         });
-        if (callback) callback(response);
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 
@@ -197,10 +217,14 @@ export default {
     // 新增楼层
     *insertFloor({ payload, success, error }, { call, put }) {
       const response = yield call(addFloor, payload);
-      const { data } = response;
-      yield put({ type: 'saveAddFloor', payload: data });
-      if (success) {
-        success();
+      if (response.code === 200) {
+        yield put({
+          type: 'saveAddFloor',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
       } else if (error) {
         error(response.msg);
       }
@@ -333,6 +357,22 @@ export default {
           ...state.detail,
           data: payload,
         },
+      };
+    },
+
+    // 楼层编号
+    saveFloorNumber(
+      state,
+      {
+        payload: {
+          data: { allFloorNumberList, floorNumberList },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        allFloorNumberLists: allFloorNumberList,
+        floorNumberLists: floorNumberList,
       };
     },
 

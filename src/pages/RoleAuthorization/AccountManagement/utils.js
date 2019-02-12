@@ -286,6 +286,10 @@ export function removeParentKey(keys, idMap) {
   //   return prev;
   // }, []);
 
+  // idMap为空对象或keys为空数组时，不做任何处理
+  if (!Object.keys(idMap).length || !keys.length)
+    return [];
+
   const cache = {};
   const indexes = keys.reduce((prev, next, i) => {
     // 若目标节点含有子元素

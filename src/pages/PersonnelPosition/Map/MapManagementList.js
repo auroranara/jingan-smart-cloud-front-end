@@ -47,7 +47,20 @@ export default class MapManagementList extends PureComponent {
   }
 
   // 点击查询
-  handleQuery = () => { }
+  handleQuery = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props
+    const name = getFieldValue('name')||null
+    this.fetchMapCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize, name } })
+  }
+
+  // 点击重置
+  handleReset=()=>{
+    const {form:{resetFields}}=this.props
+    resetFields()
+    this.handleQuery()
+  }
 
   // 点击跳转到地图列表
   handleViewBeacons = ({ id }) => {
@@ -86,7 +99,7 @@ export default class MapManagementList extends PureComponent {
     const viewAuth = hasAuthority(companyMapCode, permissionCodes)
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={<span>单位总数：{total}</span>}>
         {/* 筛选栏 */}
         <Card>
           <Form>
@@ -100,7 +113,8 @@ export default class MapManagementList extends PureComponent {
               </Col>
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                  <Button type="primary" onClick={this.handleQuery}>查询</Button>
+                  <Button style={{marginRight:'10px'}} type="primary" onClick={this.handleQuery}>查询</Button>
+                  <Button onClick={this.handleReset}>重置</Button>
                 </FormItem>
               </Col>
             </Row>
@@ -134,8 +148,8 @@ export default class MapManagementList extends PureComponent {
                 const {
                   id,
                   name, // 公司名称
-                  safetyName = null,
-                  safetyPhone = null,
+                  principalName = null,
+                  principalPhone = null,
                   practicalAddress = null, // 地址
                   mapCount = 0,         // 地图数
                 } = item
@@ -144,11 +158,11 @@ export default class MapManagementList extends PureComponent {
                     <Card title={name} className={styles.card}>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
                         主要负责人：
-                      {safetyName || '暂无信息'}
+                      {principalName || '暂无信息'}
                       </Ellipsis>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
                         联系电话：
-                      {safetyPhone || '暂无信息'}
+                      {principalPhone || '暂无信息'}
                       </Ellipsis>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
                         地址：

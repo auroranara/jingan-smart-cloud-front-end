@@ -1,0 +1,170 @@
+/* 容器 */
+.container {
+  position: relative;
+  min-width: 1024px;
+  min-height: 100%;
+  background: #fff;
+  overflow: hidden;
+  padding-bottom: 10vh; // 156px
+
+  // header
+  .header {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 14.444444vh; // 156px
+    min-height: 66px;
+    overflow: hidden;
+    .logo {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      margin-top: -33px;
+      width: 337px;
+      height: 66px;
+      background: url('@/assets/nanxiao_download_logo.png') no-repeat center;
+      background-size: 100%;
+    }
+    // 返回按钮
+    .backButtonWrapper {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      margin-top: -33px;
+      height: 66px;
+      line-height: 66px;
+      .backButton {
+        vertical-align: bottom;
+      }
+    }
+  }
+
+  .content {
+    background: url('http://data.jingan-china.cn/v2/login/nanxiao/nanxiao_download_background.png') no-repeat center;
+    background-size: cover;
+    overflow: hidden;
+
+    .contentInner {
+      position: relative;
+      max-width: 1200px;
+      margin: 50px auto;
+      height: 590px;
+    }
+
+    .layer {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 517px;
+      z-index: 2;
+
+      img {
+        display: inline-block;
+        width: auto;
+        height: 100%;
+        vertical-align: top;
+      }
+    }
+    .codeWrapper {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      margin-top: -137px;
+      width: 670px;
+      z-index: 9;
+
+      .code {
+        padding: 28px;
+        height: 226px;
+        background: url('@/assets/nanxiao_download_code.png') no-repeat center;
+        background-size: 170px 170px;
+      }
+      .codeDescription {
+        height: 48px;
+        line-height: 48px;
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+    }
+  }
+}
+
+/* 手机端 */
+.mobileContainer {
+  height: 100%;
+
+  .content {
+    position: relative;
+    min-height: 100%;
+    background: url('http://data.jingan-china.cn/v2/login/nanxiao/nanxiao_download_background.png') no-repeat 25%;
+    background-size: auto 100%;
+    overflow: hidden;
+
+    .logo {
+      height: 20.9vh; // 338px
+      background: url('@/assets/nanxiao_download_logo_mobile.png') no-repeat center;
+      background-size: auto 28.994%; // 98px
+    }
+    .layer {
+      height: 32vh; // 517px
+      text-align: center;
+
+      img {
+        display: inline-block;
+        width: auto;
+        height: 100%;
+        vertical-align: top;
+      }
+    }
+    .codeWrapper {
+      padding-top: 1.98vh; // 32px;
+      padding-bottom: 2.599vh; // 42px;
+
+      .code {
+        height: 13.98515vh; // 226px
+        background: url('@/assets/nanxiao_download_code.png') no-repeat center;
+        background-size: auto 75.22124%; // 170px
+      }
+      .codeDescription {
+        font-size: 1.48515vh; // 24px
+        line-height: 2;
+        color: #fff;
+        text-align: center;
+      }
+    }
+    .buttonWrapper {
+      padding: 4.08416vh 0; // 66px
+      text-align: center;
+
+      .downloadButton,
+      .loginButton {
+        display: inline-block;
+        width: 9.5em; // 412px
+        height: 3em; // 132px
+        line-height: 3em;
+        font-size: 2.2277vh;
+        border-radius: 1vh;
+        vertical-align: top;
+        cursor: pointer;
+      }
+      .downloadButton {
+        margin-right: 5%;
+        color: #fff;
+        background-color: #1577E4;
+
+        &:active {
+          opacity: 0.9;
+        }
+      }
+      .loginButton {
+        color: #1577E4;
+        background-color: #fff;
+
+        &:active {
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+}

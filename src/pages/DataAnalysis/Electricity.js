@@ -5,7 +5,8 @@ import { Button, Card, message, notification, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
-import InlineForm from '../BaseInfo/Company/InlineForm';
+// import InlineForm from '../BaseInfo/Company/InlineForm';
+import ToolBar from '@/components/ToolBar';
 import {
   ELECTRICITY_TYPE as TYPE,
   ELECTRICITY_TYPE_LABEL as TYPE_LABEL,
@@ -14,7 +15,7 @@ import {
   PAGE_SIZE,
   getFields,
 } from './constant';
-import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
+import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -181,12 +182,21 @@ export default class Electricity extends PureComponent {
         }
       >
         <Card className={styles.search}>
-          <InlineForm
+          {/* <InlineForm
             fields={fields}
             action={this.renderExportButton()}
             buttonSpan={{ xl: 6, md: 12, sm: 24 }}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
+          /> */}
+          <ToolBar
+            fields={fields}
+            action={this.renderExportButton()}
+            // buttonSpan={{ xl: 8, md: 12, sm: 24 }}
+            onSearch={this.handleSearch}
+            onReset={this.handleReset}
+            buttonStyle={{ textAlign: 'right' }}
+            buttonSpan={{ xl: 12, sm: 24, xs: 24 }}
           />
         </Card>
         <div className={styles.container}>

@@ -150,14 +150,12 @@ export default {
       add: 'personnelPosition.buildingsInfo.add',
       edit: 'personnelPosition.buildingsInfo.edit',
       delete: 'personnelPosition.buildingsInfo.delete',
-    },
-    // 楼层管理
-    floorManagement: {
-      list: 'personnelPosition.floorManagement.listView',
-      view: 'personnelPosition.floorManagement.view',
-      add: 'personnelPosition.floorManagement.add',
-      edit: 'personnelPosition.floorManagement.edit',
-      delete: 'personnelPosition.floorManagement.delete',
+      // 楼层
+      floorListView: 'personnelPosition.buildingsInfo.floorListView',
+      floorAdd: 'personnelPosition.buildingsInfo.floorAdd',
+      floorEdit: 'personnelPosition.buildingsInfo.floorEdit',
+      floorView: 'personnelPosition.buildingsInfo.floorView',
+      floorDelete: 'personnelPosition.buildingsInfo.floorDelete',
     },
     // 信标管理
     beaconManagement: {
@@ -169,6 +167,7 @@ export default {
     },
     // 标签管理
     tag: {
+      companyList: 'personnelPosition.tagManagement.companyList',
       list: 'personnelPosition.tagManagement.listView',
       add: 'personnelPosition.tagManagement.add',
       edit: 'personnelPosition.tagManagement.edit',
@@ -183,6 +182,25 @@ export default {
       edit: 'personnelPosition.mapManagement.edit',
       delete: 'personnelPosition.mapManagement.delete',
       associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
+      associateMap: 'personnelPosition.mapManagement.associateMap',
+    },
+    // 区域管理
+    sectionManagement: {
+      companies: 'personnelPosition.sectionManagement.companies',
+      list: 'personnelPosition.sectionManagement.listView',
+      add: 'personnelPosition.sectionManagement.add',
+      edit: 'personnelPosition.sectionManagement.edit',
+      delete: 'personnelPosition.sectionManagement.delete',
+      divide: 'personnelPosition.sectionManagement.divide',
+    },
+    // 报警策略
+    alarmManagement: {
+      companyList: 'personnelPosition.alarmManagement.companyListView',
+      alarmList: 'personnelPosition.alarmManagement.alarmListView',
+      add: 'personnelPosition.alarmManagement.add',
+      edit: 'personnelPosition.alarmManagement.edit',
+      delete: 'personnelPosition.alarmManagement.delete',
+      view: 'personnelPosition.alarmManagement.view',
     },
   },
 };

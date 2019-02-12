@@ -71,7 +71,7 @@ export default function StorageCards(props) {
             {dataList[0].unit || 'mm'})
             {dataList[0].status !== '0' && dataList[0].limitValue ? (
               <span>
-                ({dataList[0].condition === '1' ? '>=' : '<='}
+                ({dataList[0].condition}
                 {dataList[0].limitValue})
               </span>
             ) : (
@@ -100,7 +100,7 @@ export default function StorageCards(props) {
             {dataList[1].unit || 'MPa'})
             {dataList[1].status !== '0' && dataList[1].limitValue ? (
               <span>
-                ({dataList[1].condition === '1' ? '>=' : '<='}
+                ({dataList[1].condition}
                 {dataList[1].limitValue})
               </span>
             ) : (
@@ -122,7 +122,7 @@ export default function StorageCards(props) {
             {dataList[2].unit || '℃'} )
             {dataList[2].status !== '0' && dataList[2].limitValue ? (
               <span>
-                ({dataList[2].condition === '1' ? '>=' : '<='}
+                ({dataList[2].condition}
                 {dataList[2].limitValue})
               </span>
             ) : (

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { debounce } from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Button, Col, message, Modal, Row } from 'antd';
@@ -14,6 +15,7 @@ import { concatAll, getNextSpreadStates } from './utils';
 import editIcon from './imgs/edit.png';
 import personIcon from './imgs/person.png';
 
+const DELAY = 300;
 const NO_DATA = '暂无信息';
 const COL_STYLE = { backgroundColor: '#FFF' };
 const BTN_STYLE = { width: 120, height: 30, lineHeight: '30px' };
@@ -46,10 +48,12 @@ export default class Examing extends PureComponent {
 
   componentDidMount() {
     this.fetchSide(true);
+    this.debouncedSaveChoice = debounce(this.saveChoice, DELAY);
   }
 
   list = [];
   categories = [];
+  debouncedSaveChoice = null;
 
   fetchSide = (initial=false) => {
     const { match: { params: { id } }, dispatch } = this.props;
@@ -71,36 +75,30 @@ export default class Examing extends PureComponent {
   };
 
   onChoiceChange = v => {
+    const { myExam: { question } } = this.props;
+    const { index } = this.state;
     this.setState({ value: v });
+    this.debouncedSaveChoice(index, v, question);
   };
 
-  fetchQuestion = (index, isSpreadStatesChange) => {
-    const { match: { params: { id } }, dispatch } = this.props;
-
+  // 在点击选择项时就给后台发请求保存当前选择项，用debounce来防止疯狂点击，成功返回后再请求左边的题目列表，改变当前题目的保存状态
+  saveChoice = (index, value, question) => {
+    const { dispatch, match: { params: { id } } } = this.props;
     dispatch({
-      type: 'myExam/fetchQuestion',
-      payload: { paperId: id,  questionId: this.list[index].questionId },
-      callback: (code, msg, question) => {
-        if (code !== 200) {
+      type: 'myExam/putAnswer',
+      payload: {
+        paperId: id,
+        questionId: this.list[index].questionId,
+        arrTestAnswer: value.map(i => question.arrOptions[i].id),
+      },
+      callback: (code, msg) => {
+        if (code === 200)
+          this.fetchSide();
+        else
           message.warn(msg);
-          // msg包含以下字段时，跳转回列表页
-          if (['开始', '结束', '交卷'].map(s => msg.includes(s)).some(b => b))
-            this.backToList();
-          return;
-        }
-
-        let { arrTestAnswer, hasTime } = question;
-        if (hasTime <= 0) {
-          this.handleStop();
-          return;
-        }
-
-        this.setState({ showIndex: index, restTime: hasTime });
-        isSpreadStatesChange && this.setState({ spreadStates: getNextSpreadStates(index, this.categories) });
-        Array.isArray(arrTestAnswer) && this.setState({ value: arrTestAnswer });
       },
     });
-  }
+  };
 
   // 保存当前题目的值，并获取序号为i的题目，不传i，只保存当前题目的值，不获取下一题
   handleSaveChoice = (i, callback, isSpreadStatesChange) => {
@@ -132,6 +130,34 @@ export default class Examing extends PureComponent {
     this.fetchQuestion(i, isSpreadStatesChange);
     this.fetchSide();
   };
+
+  fetchQuestion = (index, isSpreadStatesChange) => {
+    const { match: { params: { id } }, dispatch } = this.props;
+
+    dispatch({
+      type: 'myExam/fetchQuestion',
+      payload: { paperId: id,  questionId: this.list[index].questionId },
+      callback: (code, msg, question) => {
+        if (code !== 200) {
+          message.warn(msg);
+          // msg包含以下字段时，跳转回列表页
+          if (['开始', '结束', '交卷'].map(s => msg.includes(s)).some(b => b))
+            this.backToList();
+          return;
+        }
+
+        let { arrTestAnswer, hasTime } = question;
+        if (hasTime <= 0) {
+          this.handleStop();
+          return;
+        }
+
+        this.setState({ showIndex: index, restTime: hasTime });
+        isSpreadStatesChange && this.setState({ spreadStates: getNextSpreadStates(index, this.categories) });
+        Array.isArray(arrTestAnswer) && this.setState({ value: arrTestAnswer });
+      },
+    });
+  }
 
   handlePrev = () => {
     const { index } = this.state;

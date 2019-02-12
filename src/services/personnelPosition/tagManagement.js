@@ -13,7 +13,8 @@ export async function changeTag(params) {
 
 // 获取未领卡人员
 export async function fetchEmployees(params) {
-  return request(`/acloud_new/v2/accessCard/employee/${params.companyId}`)
+  const { companyId, ...others } = params
+  return request(`/acloud_new/v2/accessCard/employee/${companyId}?${stringify(others)}`)
 }
 
 // 新增标签卡
@@ -33,6 +34,11 @@ export async function editTag(params) {
 }
 
 // 标签-选择企业时获取的企业列表
+// export async function fetchTagCompanies(params) {
+//   return request(`/acloud_new/v2/accessCard/accessCardInfo/companies?${stringify(params)}`)
+// }
+
+// 获取标签企业列表
 export async function fetchTagCompanies(params){
   return request(`/acloud_new/v2/accessCard/accessCardInfo/companies?${stringify(params)}`)
 }

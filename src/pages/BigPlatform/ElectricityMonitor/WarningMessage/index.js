@@ -29,7 +29,7 @@ const Message = function({
       </div>
       <div className={styles.messageContent}>
         {type === 32 ? (
-          <div>{`${area}${location}${paramName}${realtimeVal}${unit}（${condition==='1'?'≥':'≤'}${limitVal}${unit}）`}</div>
+          <div>{`${area}${location}${paramName}${realtimeVal}${unit}（${condition==='>='?'≥':'≤'}${limitVal}${unit}）`}</div>
         ) : (
           <Fragment>
             <div>{`${moment(oldWarningTime).format('HH:mm:ss')} ${area}${location}${paramName}告警`}</div>

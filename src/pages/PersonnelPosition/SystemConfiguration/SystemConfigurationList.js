@@ -46,7 +46,7 @@ const {
   user,
   personnelPosition,
   listLoading: loading.effects['personnelPosition/fetchSystemConfiguration'],
-  companyLoading: loading.effects['personnelPosition/fetchCompanyList'],
+  companyLoading: loading.effects['personnelPosition/fetchSysCompanies'],
 }))
 @Form.create()
 // 系统配置
@@ -73,10 +73,10 @@ export default class SystemConfiguration extends PureComponent {
   };
 
   // 获取单位列表
-  fetchCompanyList = actions => {
+  fetchSysCompanies = actions => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'personnelPosition/fetchCompanyList',
+      type: 'personnelPosition/fetchSysCompanies',
       ...actions,
     });
   };
@@ -118,13 +118,13 @@ export default class SystemConfiguration extends PureComponent {
           pagination: { pageSize },
         },
       },
-    } = this.props;
+    } = this.props
     dispatch({
       type: 'personnelPosition/deleteSystemConfiguration',
       payload: { id },
       success: () => {
-        message.success('删除成功');
-        this.fetchList({ payload: { pageNum: 1, pageSize } });
+        message.success('删除成功')
+        this.fetchList({ payload: { pageNum: 1, pageSize } })
       },
       error: () => {
         message.error('删除失败');
@@ -168,8 +168,8 @@ export default class SystemConfiguration extends PureComponent {
           pagination: { pageSize },
         },
       },
-    } = this.props;
-    const value = getFieldValue('searchName');
+    } = this.props
+    const value = getFieldValue('searchName')
     this.fetchList({
       payload: {
         pageNum: 1,
@@ -211,7 +211,7 @@ export default class SystemConfiguration extends PureComponent {
 
   // 点击打开选择单位弹窗
   handleViewCompanyModal = () => {
-    this.fetchCompanyList({
+    this.fetchSysCompanies({
       payload: { pageNum: 1, pageSize: defaultPageSize },
       callback: () => {
         this.setState({ companyVisible: true });
@@ -234,14 +234,14 @@ export default class SystemConfiguration extends PureComponent {
           pagination: { pageSize },
         },
       },
-    } = this.props;
-    const { isAdd, currentId } = this.state;
+    } = this.props
+    const { isAdd, currentId } = this.state
 
     const success = () => {
-      message.success(isAdd ? '新增成功' : '编辑成功');
-      this.setState({ modalVisible: false, companyVisible: false });
-      this.fetchList({ payload: { pageNum: 1, pageSize } });
-    };
+      message.success(isAdd ? '新增成功' : '编辑成功')
+      this.setState({ modalVisible: false, companyVisible: false })
+      this.fetchList({ payload: { pageNum: 1, pageSize } })
+    }
     const error = () => {
       message.error(isAdd ? '新增失败' : '编辑失败');
       this.setState({ modalVisible: false, companyVisible: false });
@@ -289,7 +289,7 @@ export default class SystemConfiguration extends PureComponent {
           list = [],
           pagination: { pageNum, pageSize, total = 0 },
         },
-        companyList = [],
+        sysCompany,
       },
     } = this.props;
     const { modalVisible, isAdd, companyVisible } = this.state;
@@ -343,7 +343,7 @@ export default class SystemConfiguration extends PureComponent {
                 <a>删除</a>
               </Popconfirm>
             ) : (
-                <a className={styles.disabled}>删除</a>
+                <a className={styles.disabled} style={{ color: '#b3b3b3' }}>删除</a>
               )}
           </span>
         ),
@@ -424,6 +424,7 @@ export default class SystemConfiguration extends PureComponent {
                     value={company.name}
                   />
                   <Button
+                    disabled={!isAdd}
                     type="primary"
                     style={{ marginLeft: '5px' }}
                     onClick={this.handleViewCompanyModal}
@@ -452,8 +453,8 @@ export default class SystemConfiguration extends PureComponent {
           title="选择单位"
           loading={companyLoading}
           visible={companyVisible}
-          modal={companyList}
-          fetch={this.fetchCompanyList}
+          modal={sysCompany}
+          fetch={this.fetchSysCompanies}
           onSelect={this.handleSelectCompany}
           onClose={this.handleCompanyModalCLose}
         />

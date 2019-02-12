@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Col, Modal, Table, Pagination } from 'antd';
+import { Col, Modal, Table, Pagination, Tooltip } from 'antd';
 import WaterWave from 'components/Charts/ScoreWaterWave';
 import styles from './TopCenter.less';
 import { connect } from 'dva';
@@ -82,7 +82,7 @@ const missingColumns = [
     key: 'statusTime',
     dataIndex: 'statusTime',
     align: 'center',
-    render: text => <span>{text ? moment(text).format('YYYY-MM-DD hh:mm') : '暂无数据'}</span>,
+    render: text => <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '暂无数据'}</span>,
   },
 ];
 
@@ -91,6 +91,8 @@ const LOSS = 0; //失联
 const NORMAL = 1; //正常
 const ABNORMAL = 2; // 异常
 const ALL = 3; // 全部
+
+const STATUSES = [-1, 0, 2];
 
 const smokeColumns = [
   {
@@ -105,7 +107,7 @@ const smokeColumns = [
     dataIndex: 'status',
     align: 'center',
     render: val => {
-      return +val === 0 ? '失联' : +val === 1 ? '正常' : '异常';
+      return +val === -1 ? '失联' : +val === 0 ? '正常' : '异常';
     },
   },
   {
@@ -190,12 +192,14 @@ export default class TopCenter extends PureComponent {
   // 打开烟感弹窗
   handleSmokeModal = status => {
     const { dispatch, companyId } = this.props;
+    const sts = {};
+    sts.status = STATUSES[status];
     dispatch({
       type: 'monitor/fetchSmokeList',
       payload: {
         companyId,
         deviceType: 6,
-        status: status,
+        ...sts,
       },
     });
     this.setState({ smokeModalVisible: true, status: status });
@@ -213,24 +217,17 @@ export default class TopCenter extends PureComponent {
   // 处理烟感状态按钮
   handleLabelOnClick = s => {
     const { dispatch, companyId } = this.props;
-    if (+s === 3) {
-      dispatch({
-        type: 'monitor/fetchSmokeList',
-        payload: {
-          companyId,
-          deviceType: 6,
-        },
-      });
-    } else {
-      dispatch({
-        type: 'monitor/fetchSmokeList',
-        payload: {
-          companyId,
-          deviceType: 6,
-          status: s,
-        },
-      });
-    }
+    const sts = {};
+    if (+s !== 3) sts.status = STATUSES[s];
+    dispatch({
+      type: 'monitor/fetchSmokeList',
+      payload: {
+        companyId,
+        deviceType: 6,
+        ...sts,
+      },
+    });
+
     this.setState({
       status: s,
     });
@@ -487,18 +484,33 @@ export default class TopCenter extends PureComponent {
                   style={{
                     backgroundImage: `url(${fireHost})`,
                     backgroundRepeat: 'no-repeat',
-                    backgroundSize: '35% 60%',
+                    backgroundSize: '30% 55%',
                   }}
-                />
-                <div className={styles.anime}>
-                  <SignalAnime />
+                >
+                  <div className={styles.anime}>
+                    <SignalAnime />
+                  </div>
                 </div>
                 <div className={styles.arrContainer}>
-                  <p>
-                    火警 <span className={styles.fireCount}>{fire_state}</span>
+                  <p style={{ cursor: 'pointer' }}>
+                    <Tooltip
+                      placement="right"
+                      overlayClassName={styles.tooltip}
+                      title="有探测器等报警设备报警检测到火警信号。"
+                    >
+                      <span className={styles.fireHover}>火警</span>
+                    </Tooltip>
+                    <span className={styles.fireCount}>{fire_state}</span>
                   </p>
-                  <p>
-                    故障 <span className={styles.errorCount}>{fault_state}</span>
+                  <p style={{ cursor: 'pointer' }}>
+                    <Tooltip
+                      placement="right"
+                      overlayClassName={styles.tooltip}
+                      title="表示控制器检测到外部探测器或模块有故障，提示用户立即对控制器进行修复。"
+                    >
+                      <span className={styles.errorHover}>故障</span>
+                    </Tooltip>
+                    <span className={styles.errorCount}>{fault_state}</span>
                   </p>
                 </div>
               </div>
