@@ -130,6 +130,7 @@ export default class AlarmList extends PureComponent {
         callback: (code, msg) => {
           msgCallback(code, msg);
           this.fetchList(this.pageIndex);
+          this.setState({ selectedRowKeys: [] }); // 删除完成后，将selectedRowKeys重置
         },
       });
     else
