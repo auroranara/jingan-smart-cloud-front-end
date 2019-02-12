@@ -224,7 +224,7 @@ export default class TagManagement extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
-      match: { companyId },
+      match: { params: { companyId } },
     } = this.props
     resetFields()
     dispatch({
