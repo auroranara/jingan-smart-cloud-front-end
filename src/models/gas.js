@@ -260,7 +260,7 @@ export default {
         data: {
           // 单位状态统计数据
           companyStatus: { unnormal, faultNum, outContact },
-          abnormalTrend: { unnormal: abUnnormal, faultNum: abFaultNum, outContact: abOutContact },
+          AbnormalTrend = [],
           companys: { errorUnits },
         },
       } = yield call(getAbnormalingTotal, payload);
@@ -269,15 +269,10 @@ export default {
         faultNum,
         outContact,
       };
-      const abnormalTrend = {
-        abUnnormal,
-        abFaultNum,
-        abOutContact,
-      };
       const pay = {
         companyStatus,
         gasErrorUnitSet: { errorUnits },
-        abnormalTrend,
+        AbnormalTrend,
       };
       if (code === 200) {
         yield put({

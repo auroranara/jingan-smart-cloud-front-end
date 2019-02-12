@@ -147,6 +147,7 @@ export default class Gas extends PureComponent {
         const {
           gasErrorUnitSet: { errorUnits = [] },
         } = data;
+        console.log('1111e', data);
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
       },
     });
@@ -585,7 +586,7 @@ export default class Gas extends PureComponent {
         AccessStatistics,
         AccessCount,
         companyStatus,
-        abnormalTrend,
+        AbnormalTrend,
         unitSet,
         deviceStatusCount,
         devices,
@@ -595,7 +596,7 @@ export default class Gas extends PureComponent {
         cameraList,
       },
     } = this.props;
-
+    console.log('companyStatus', companyStatus);
     const {
       setttingModalVisible,
       unitDrawerVisible,
@@ -771,7 +772,7 @@ export default class Gas extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <AlarmDrawer
-          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: abnormalTrend }}
+          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
