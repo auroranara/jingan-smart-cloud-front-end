@@ -9,13 +9,6 @@ const { Description } = DescriptionList;
 const FormItem = Form.Item;
 
 const title = "标签详情"
-const breadcrumbList = [
-  { title: '首页', name: '首页', href: '/' },
-  { title: '人员定位', name: '人员定位' },
-  { title: '标签管理', name: '标签管理', href: '/personnel-position/tag-management/list' },
-  { title, name: title },
-]
-
 
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -96,8 +89,17 @@ export default class TagManagementDetail extends PureComponent {
         },
         systemConfiguration: { sysList = [] },
       },
+      location: { query: { companyId } },
     } = this.props
     const { newSysName } = this.state
+
+    const breadcrumbList = [
+      { title: '首页', name: '首页', href: '/' },
+      { title: '人员定位', name: '人员定位' },
+      { title: '标签管理', name: '标签管理', href: '/personnel-position/tag-management/companies' },
+      { title: '标签列表', name: '标签列表', href: `/personnel-position/tag-management/company/${companyId}` },
+      { title, name: title },
+    ]
     return (
       <PageHeaderLayout
         title={title}
