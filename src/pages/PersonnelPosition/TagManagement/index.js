@@ -86,6 +86,7 @@ export default class TagManagement extends PureComponent {
       personnelPosition: {
         tag: {
           companyList,// 标签企业列表
+          companyPagination:{total},
           companyIsLast: isLast,
         },
       },
@@ -93,7 +94,7 @@ export default class TagManagement extends PureComponent {
     } = this.props
     const viewTagsAuth = hasAuthority(viewTagsCode, permissionCodes)
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={`单位总数：${total}`}>
         {/* 筛选栏 */}
         <Card>
           <Form>
