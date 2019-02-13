@@ -15,7 +15,7 @@ class RiskDetail extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const {} = this.state;
+    // const {} = this.state;
     const { visible, goBack, hiddenDangerListByDate, riskDetailList, lastSection } = this.props;
     const stylesVisible = classNames(styles.sectionWrapper, rotate.flip, {
       [rotate.in]: visible,

@@ -1,30 +1,17 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 import Header from './components/Header/Header';
 import Section from '@/components/Section';
-import FireAlarmSystem from './components/FireAlarmSystem/FireAlarmSystem';
 import StatisticsOfMaintenance from './components/StatisticsOfMaintenance/StatisticsOfMaintenance';
 import StatisticsOfFireControl from './components/StatisticsOfFireControl/StatisticsOfFireControl';
 import Rotate from 'components/Rotate';
 import VideoPlay from '../FireControl/section/VideoPlay';
-import Ellipsis from '../../../components/Ellipsis';
 import resetKeyIcon from './images/resetKey.png';
 import resetKeyPressIcon from './images/resetKeyPress.png';
 import hostIcon from './images/hostIcon.png';
 import fireHostIcon from './images/fireHostIcon.png';
-import noPhotoIcon from './images/noPhoto.png';
-import noHiddenDangerRecords from './images/noHiddenDangerRecords.png';
-import dfcIcon from './images/dfc.png';
-import wcqIcon from './images/wcq.png';
-import ycqIcon from './images/ycq.png';
 import backIcon from '../FireControl/img/back.png';
-import videoIcon from '@/assets/videoCamera.png';
-import safety from '@/assets/safety.png';
-import fireControl from '@/assets/fire-control.png';
-import environment from '@/assets/environment.png';
-import hygiene from '@/assets/hygiene.png';
 import PendingInformation from './Sections/PendingInformation';
 import InformationHistory from './Sections/InformationHistory';
 import InspectionStatistics from './Sections/InspectionStatistics';
@@ -37,14 +24,6 @@ import ModalOfInspectionStatistics from './Sections/ModalOfInspectionStatistics'
 
 import styles from './UnitFireControl.less';
 const { projectName } = global.PROJECT_CONFIG;
-const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
-const fireIcon = `${prefix}fire_hj.png`;
-const faultIcon = `${prefix}fire_gz.png`;
-const positionBlueIcon = `${prefix}fire_position_blue.png`;
-const positionRedIcon = `${prefix}fire_position_red.png`;
-const splitIcon = `${prefix}split.png`;
-const splitHIcon = `${prefix}split_h.png`;
-
 /**
  * 复位主机
  */
