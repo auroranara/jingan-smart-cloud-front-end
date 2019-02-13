@@ -35,7 +35,7 @@ import {
 } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
-import { genCardsInfo, getAlarmUnits } from './utils';
+import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
 
 // websocket配置
 const options = {
@@ -147,8 +147,22 @@ export default class Gas extends PureComponent {
         const {
           gasErrorUnitSet: { errorUnits = [] },
         } = data;
-        console.log('1111e', data);
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+      },
+    });
+
+    // 获取待处理业务
+    dispatch({
+      type: 'gas/fetchPendingMission',
+      payload: {
+        type: status,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasPendingUnitSet: { companyList = [] },
+        } = data;
+        this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
       },
     });
 
@@ -265,6 +279,7 @@ export default class Gas extends PureComponent {
   cardsInfo = [];
   importCardsInfo = [];
   errorUnitsCardsInfo = [];
+  pendingUnitsCardsInfo = [];
 
   getDeviceStatusCount = companyId => {
     const { dispatch } = this.props;
@@ -588,6 +603,8 @@ export default class Gas extends PureComponent {
         companyStatus,
         AbnormalTrend,
         unitSet,
+        allGasFire,
+        gasChartByMonth,
         deviceStatusCount,
         devices,
         deviceRealTimeData,
@@ -596,7 +613,7 @@ export default class Gas extends PureComponent {
         cameraList,
       },
     } = this.props;
-    console.log('companyStatus', companyStatus);
+
     const {
       setttingModalVisible,
       unitDrawerVisible,
@@ -615,10 +632,9 @@ export default class Gas extends PureComponent {
       alarmIds,
     } = this.state;
 
-    const cardsInfo = this.cardsInfo;
     const importCardsInfo = this.importCardsInfo;
+    const pendingUnitsCardsInfo = this.pendingUnitsCardsInfo;
     const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
-
     const faultList = [
       {
         disaster_desc: '绿绿',
@@ -757,7 +773,7 @@ export default class Gas extends PureComponent {
           style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%', cursor: 'pointer' }}
           onClick={e => this.handleDrawerVisibleChange('business')}
         >
-          <ProcessingBusiness />
+          <ProcessingBusiness allGasFire={allGasFire} />
         </NewSection>
 
         {/* extra info */}
@@ -777,7 +793,7 @@ export default class Gas extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <BusinessDrawer
-          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}
           visible={businessDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

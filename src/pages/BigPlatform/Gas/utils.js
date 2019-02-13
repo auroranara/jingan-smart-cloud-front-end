@@ -41,6 +41,21 @@ export function genCardsInfo(list = []) {
   );
 }
 
+export function genPendingCardsInfo(list = []) {
+  return list.map(
+    ({ gasFire, address, company_id, company_name, principal_name, principal_phone }) => {
+      return {
+        gasFire,
+        address,
+        company_id,
+        company_name,
+        principal_name,
+        principal_phone,
+      };
+    }
+  );
+}
+
 export function sortCardList(list) {
   const newList = Array.from(list);
   newList.sort((item, item1) => {

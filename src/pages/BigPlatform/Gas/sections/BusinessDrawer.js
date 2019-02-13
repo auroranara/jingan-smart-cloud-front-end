@@ -16,33 +16,12 @@ import {
   AlarmChartBar,
   AlarmChartLine,
 } from '../components/Components';
-import { sortList } from '../utils';
 
 const TYPE = 'business';
 const NO_DATA = '暂无信息';
 const LABELS = ['未处理报警', '未处理故障'];
-const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
-const OPTIONS = ['全部', '未处理报警', '未处理故障'].map((d, i) => ({ value: i, desc: d }));
-const SELECTED_PROPS = ['equipment', 'common', 'alarm'];
-
-const CARDS = [...Array(10).keys()].map(i => ({
-  companyId: i,
-  name: '无锡市新吴区机械制造有限公司',
-  address: '无锡市新吴区汉江路与龙江路交叉口5号',
-  safetyMan: '王长江',
-  safetyPhone: '13288888888',
-  common: Math.floor(Math.random() * 10),
-  alarm: Math.floor(Math.random() * 10),
-  warn: Math.floor(Math.random() * 10),
-  noAccess: Math.floor(Math.random() * 10),
-}));
-
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({
-  id: i,
-  name: (i + 2) % 12 || 12,
-  value: Math.floor(Math.random() * 100),
-}));
-
+const COLORS = ['248,51,41', '255,180,0'];
+const OPTIONS = ['全部', '未处理故障', '未处理报警'].map((d, i) => ({ value: i, desc: d }));
 export default class BusinessDrawer extends PureComponent {
   state = { graph: 0, otherGraph: 0, selected: 0, searchValue: '' };
 
@@ -78,7 +57,7 @@ export default class BusinessDrawer extends PureComponent {
     const {
       visible,
       // handleSearch,
-      data: { list = CARDS, graphList = GRAPH_LIST } = {},
+      data: { list = [], graphList = [], graphList1 = [] } = {},
     } = this.props;
     const { graph, selected, searchValue, otherGraph } = this.state;
 
@@ -100,8 +79,6 @@ export default class BusinessDrawer extends PureComponent {
             return false;
         }
       });
-
-    sortList(filteredList, SELECTED_PROPS[selected]);
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const extraOther = <GraphSwitch handleSwitch={this.handleSwitchAlarm} />;
@@ -125,38 +102,43 @@ export default class BusinessDrawer extends PureComponent {
         </DrawerSection>
         <DrawerSection title="故障业务处理统计" titleInfo="最近12个月" extra={extraOther}>
           {otherGraph ? (
-            <AlarmChartBar data={graphList} labelRotate={0} />
+            <AlarmChartBar data={graphList1} labelRotate={0} />
           ) : (
-            <AlarmChartLine data={graphList} labelRotate={0} />
+            <AlarmChartLine data={graphList1} labelRotate={0} />
           )}
         </DrawerSection>
       </Fragment>
     );
 
     const right = (
-      <SearchBar
-        // value={value}
-        onSearch={this.handleSearch}
-        // onChange={this.handleChange}
-        extra={select}
-      >
-        {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm }) => (
-          <DrawerCard
-            key={companyId}
-            name={name || NO_DATA}
-            location={address || NO_DATA}
-            person={safetyMan || NO_DATA}
-            phone={safetyPhone || NO_DATA}
-            style={{ cursor: 'auto' }}
-            more={
-              <p className={styles.more}>
-                {[common, alarm].map((n, i) => (
-                  <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                ))}
-              </p>
-            }
-          />
-        ))}
+      <SearchBar onSearch={this.handleSearch} extra={select}>
+        {filteredList.map(
+          ({
+            company_id,
+            company_name,
+            address,
+            principal_name,
+            principal_phone,
+            gasFire,
+            fault = 0,
+          }) => (
+            <DrawerCard
+              key={company_id}
+              name={company_name || NO_DATA}
+              location={address || NO_DATA}
+              person={principal_name || NO_DATA}
+              phone={principal_phone || NO_DATA}
+              style={{ cursor: 'auto' }}
+              more={
+                <p className={styles.more}>
+                  {[gasFire, fault].map((n, i) => (
+                    <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+                  ))}
+                </p>
+              }
+            />
+          )
+        )}
       </SearchBar>
     );
 

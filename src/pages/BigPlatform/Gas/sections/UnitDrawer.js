@@ -66,7 +66,6 @@ export default class UnitDrawer extends PureComponent {
       itemStyle: { color: `rgb(${RING_COLORS[i]})` },
     }));
 
-    // const sortedList = sortCardList(list);
     const barList = AccessCount.slice(0, 10).map(({ company_id, company_name, count }, i) => {
       let newName = company_name;
       if (i === 9 && name.length > 10) newName = `${name.slice(0, 10)}...`;

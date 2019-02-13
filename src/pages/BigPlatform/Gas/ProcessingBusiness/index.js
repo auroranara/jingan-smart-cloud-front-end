@@ -29,18 +29,20 @@ export default class ProcessingBusiness extends PureComponent {
    * 渲染
    */
   render() {
+    const { allGasFire } = this.props;
+
     return (
       <div className={styles.section}>
         {[
           {
             icon: redLine,
             name: '未处理报警',
-            value: 2,
+            value: allGasFire,
           },
           {
             icon: yellowLine,
             name: '未处理故障',
-            value: 12,
+            value: 0,
           },
         ].map(({ icon, name, value }) => (
           <div className={styles.item} key={name}>

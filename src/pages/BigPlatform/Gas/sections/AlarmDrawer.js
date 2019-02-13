@@ -12,7 +12,6 @@ import {
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import moment from 'moment';
 import { DotItem, ChartLine } from '../components/Components';
-import { sortList } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
 import unitBlueIconGrey from '../imgs/unitBlueIconGrey.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
@@ -24,8 +23,7 @@ const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
 const LABELS = ['报警', '故障', '失联', '正常'];
 const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
-const OPTIONS = ['报警', '故障', '失联', '全部'].map((d, i) => ({ value: i, desc: d }));
-const SELECTED_PROPS = ['normal', 'unnormal', 'outContact', 'all'];
+const OPTIONS = ['全部', '报警', '故障', '失联'].map((d, i) => ({ value: i, desc: d }));
 
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
@@ -35,6 +33,7 @@ export default class AlarmDrawer extends PureComponent {
   };
 
   handleSelectChange = i => {
+    console.log('weqwui', i);
     this.setState({ selected: i });
   };
 
@@ -51,7 +50,6 @@ export default class AlarmDrawer extends PureComponent {
   handleClose = () => {
     const { handleDrawerVisibleChange } = this.props;
     handleDrawerVisibleChange(TYPE);
-
     this.setState({ searchValue: '', grahp: 0, selected: 0 });
   };
 
@@ -170,11 +168,10 @@ export default class AlarmDrawer extends PureComponent {
   render() {
     const {
       visible,
-      // handleSearch,
       data: {
+        list = [],
         companyStatus: { unnormal = 0, faultNum = 0, outContact = 0 },
         graphList = [],
-        list = [],
       } = {},
     } = this.props;
 
@@ -185,17 +182,17 @@ export default class AlarmDrawer extends PureComponent {
       .filter(item => {
         switch (selected) {
           case 0:
-            return item.unnormal;
+            return true;
           case 1:
-            return item.faultNum;
+            return item.unnormal;
           case 2:
+            return item.faultNum;
+          case 3:
             return item.outContact;
           default:
             return false;
         }
       });
-
-    sortList(filteredList, SELECTED_PROPS[selected]);
 
     const total = unnormal + faultNum + outContact;
     const [alarmPercent, faultPercent, outPercent] = [unnormal, faultNum, outContact].map(
@@ -269,12 +266,7 @@ export default class AlarmDrawer extends PureComponent {
     );
 
     const right = (
-      <SearchBar
-        // value={value}
-        onSearch={this.handleSearch}
-        // onChange={this.handleChange}
-        extra={select}
-      >
+      <SearchBar onSearch={this.handleSearch} extra={select}>
         {filteredList.map(
           ({
             company_id,

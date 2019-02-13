@@ -20,7 +20,7 @@ export async function getAbnormalingTotal(params) {
 
 // 燃气--待处理业务
 export async function getPendingMission(params) {
-  return request(`${URL_PREFIX}/gasScreen/pendingMission?${stringify(params)}`);
+  return request(`${URL_PREFIX}/shg/getPendingGas?${stringify(params)}`);
 }
 
 // 获取告警信息列表

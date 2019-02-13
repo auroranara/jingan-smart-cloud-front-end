@@ -2,14 +2,11 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 
-// const LIST = [120, 200, 150, 80, 70, 110, 130, 20, 10, 150];
-
 const LINE_STYLE = { width: 2, color: 'rgb(64, 95, 135)' };
 
 export default class ChartLine extends PureComponent {
   render() {
     const { data: list, labelRotate = -35 } = this.props;
-
     const newList = list.map(item => {
       let obj = {};
       for (const key in item) {

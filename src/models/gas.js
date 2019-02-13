@@ -106,7 +106,7 @@ export default {
       outContact: 0,
     },
     // 报警趋势图数据 --异常单位统计
-    abnormalTrend: {
+    AbnormalTrend: {
       // 报警
       abUnnormal: 0,
       // 故障
@@ -117,6 +117,13 @@ export default {
     // 单位卡片列表 --异常单位统计
     gasErrorUnitSet: {
       errorUnits: [],
+    },
+    // 未处理报警
+    allGasFire: 0,
+    gasChartByMonth: [],
+    // 单位卡片列表 --待处理单位统计
+    gasPendingUnitSet: {
+      companyList: [],
     },
     deviceStatusCount: {
       count: 0,
@@ -261,7 +268,7 @@ export default {
           // 单位状态统计数据
           companyStatus: { unnormal, faultNum, outContact },
           AbnormalTrend = [],
-          companys: { errorUnits },
+          companys: errorUnits,
         },
       } = yield call(getAbnormalingTotal, payload);
       const companyStatus = {
@@ -286,32 +293,21 @@ export default {
         callback();
       }
     },
+
     // 燃气大屏待处理业务
     *fetchPendingMission({ payload, callback }, { call, put }) {
       const {
         code,
         data: {
-          // 报警业务处理统计
-          unnormalMission: { unnormal, faultNum, outContact },
-          // 故障业务处理统计
-          faultMission: { unnormal: abUnnormal, faultNum: abFaultNum, outContact: abOutContact },
-          companys: { pendingUnits },
+          allGasFire, // 未处理报警
+          gasChartByMonth = [], // 报警业务处理统计
+          companyList = [], // 单位列表
         },
       } = yield call(getPendingMission, payload);
-      const unnormalMission = {
-        unnormal,
-        faultNum,
-        outContact,
-      };
-      const faultMission = {
-        abUnnormal,
-        abFaultNum,
-        abOutContact,
-      };
       const pay = {
-        unnormalMission,
-        gasErrorUnitSet: { pendingUnits },
-        faultMission,
+        allGasFire,
+        gasChartByMonth,
+        gasPendingUnitSet: { companyList },
       };
       if (code === 200) {
         yield put({
@@ -414,7 +410,6 @@ export default {
         ...payload,
       };
     },
-    // 接入单位统计
     saveUnitData(state, { payload }) {
       return {
         ...state,
