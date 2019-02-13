@@ -202,6 +202,8 @@ export default function MaintenanceCard(props) {
     // 主机报障
     label,
     install_address,
+    area,
+    location,
     // 相同部分
     safetyPerson,
     safetyPhone,
@@ -242,7 +244,7 @@ export default function MaintenanceCard(props) {
               hour={getTime(save_time, 1)}
             >
               <Occured
-                position={install_address || NO_DATA}
+                position={area + location || NO_DATA}
                 type={typeConfig.name || NO_DATA}
                 safety={safetyPerson || NO_DATA}
                 phone={safetyPhone || NO_DATA}

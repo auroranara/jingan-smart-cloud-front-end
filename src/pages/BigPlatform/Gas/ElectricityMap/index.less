@@ -33,7 +33,7 @@
     .legendItem {
       display: inline-block;
       position: relative;
-      & + .legendItem {
+      &+.legendItem {
         margin-left: 15px;
       }
       .legendIcon {
@@ -56,7 +56,7 @@
   }
   .alarmTip {
     // position: absolute; // top: -30px;
-// left: -79px;
+    // left: -79px;
     white-space: nowrap;
     cursor: pointer;
     width: 200px;
@@ -103,6 +103,7 @@
         float: left;
         width: 24.9%;
         text-align: center;
+        border: 1px solid transparent;
         .statusIcon {
           display: inline-block;
           width: 10px;
@@ -112,11 +113,17 @@
           margin-right: 5px;
         }
       }
+      .itemActive:hover {
+        cursor: pointer;
+        border: 1px solid #474747;
+        background-color: rgba(49, 49, 49, 0.5);
+        border-radius: 6px;
+      }
     }
   }
   :global {
-    .amap-zoom-touch-plus > div,
-    .amap-zoom-touch-minus > div {
+    .amap-zoom-touch-plus>div,
+    .amap-zoom-touch-minus>div {
       font-size: 20px;
     }
     .amap-scalecontrol {
@@ -144,8 +151,8 @@
           height: 30px;
           font-size: 20px;
         }
-        .amap-zoom-touch-minus > div,
-        .amap-zoom-touch-plus > div {
+        .amap-zoom-touch-minus>div,
+        .amap-zoom-touch-plus>div {
           color: #fff;
           line-height: 30px;
         }

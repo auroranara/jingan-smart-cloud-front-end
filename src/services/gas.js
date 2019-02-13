@@ -67,3 +67,8 @@ export async function getDeviceHistoryData(params) {
 export async function getCameraList(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
+
+// 报警处理流程
+export async function getGasForMaintenance(params) {
+  return request(`${URL_PREFIX}/shg/getGasForMaintenance?${stringify(params)}`);
+}
