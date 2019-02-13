@@ -216,7 +216,7 @@ export default class DrawerOfHiddenDanger extends PureComponent {
         placement="left"
         destroyOnClose
         onClose={onClose}
-        closable
+        closable={true}
         width={530}
         left={(
           <Spin wrapperClassName={styles.drawerOfHiddenDanger} spinning={loading}>
