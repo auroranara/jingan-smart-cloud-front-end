@@ -36,14 +36,31 @@
     z-index: 9;
     overflow: hidden;
   }
-  // 图标
-  .logo {
+  // 顶部标题栏
+  .titleWrapper {
     padding-top: 11.666667vh; // 126px;
     padding-bottom: 2.777778vh; // 30px
-    height: 56px;
-    background: url('@/assets/nanxiao_download_logo.png') no-repeat center 11.666667vh;
-    background-size: auto 56px;
-    box-sizing: content-box;
+    text-align: center;
+    .logo {
+      display: inline-block;
+      margin-right: 15px;
+      width: 56px;
+      height: 56px;
+      background: no-repeat center;
+      background-size: contain;
+      vertical-align: top;
+    }
+    .title {
+      position: relative;
+      top: -2px;
+      display: inline-block;
+      height: 56px;
+      line-height: 56px;
+      font-size: 34px;
+      font-weight: bold;
+      color: #333;
+      vertical-align: top;
+    }
   }
   // 警告文字容器
   .alertWrapper {
@@ -146,11 +163,38 @@
     background-color: #E7E8EA;
     overflow: hidden;
 
-    // 图标
-    .logo {
-      height: 20.9vh; // 338px
-      background: url('@/assets/nanxiao_download_logo.png') no-repeat center;
-      background-size: auto 28.994%; // 98px
+    // // 图标
+    // .logo {
+    //   height: 20.9vh; // 338px
+    //   background: url('@/assets/nanxiao_download_logo.png') no-repeat center;
+    //   background-size: auto 28.994%; // 98px
+    // }
+    // 顶部标题栏
+    .titleWrapper {
+      height: 20.792vh;
+      line-height: 20.792vh;
+      font-size: 0;
+      text-align: center;
+      .logo {
+        display: inline-block;
+        margin-right: 1.98vh;
+        width: 5.94vh;
+        height: 5.94vh;
+        background: no-repeat center;
+        background-size: contain;
+        vertical-align: middle;
+      }
+      .title {
+        position: relative;
+        top: -1px;
+        display: inline-block;
+        height: 5.94vh;
+        line-height: 5.94vh;
+        font-size: 3.3416vh;
+        font-weight: bold;
+        color: #333;
+        vertical-align: middle;
+      }
     }
     // 表单容器
     .formWrapper {
@@ -275,35 +319,39 @@
   }
 }
 /* 图片 */
-.image() {
+.imageWrapper {
   height: 100%;
-  background: no-repeat left top;
-  background-size: cover;
+
+  .image {
+    height: 100%;
+    background: no-repeat left top;
+    background-size: cover;
+  }
 }
-.image1 {
-  .image;
-  background-image: url('http://data.jingan-china.cn/v2/login/nx/1.png');
-}
-.image2 {
-  .image;
-  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/2.png');
-}
-.image3 {
-  .image;
-  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/3.png');
-}
-.blurImage1 {
-  .image;
-  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/1_blur.png');
-}
-.blurImage2 {
-  .image;
-  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/2_blur.png');
-}
-.blurImage3 {
-  .image;
-  background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/3_blur.png');
-}
+// .image1 {
+//   .image;
+//   background-image: url('http://data.jingan-china.cn/v2/login/nx/1.png');
+// }
+// .image2 {
+//   .image;
+//   background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/2.png');
+// }
+// .image3 {
+//   .image;
+//   background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/3.png');
+// }
+// .blurImage1 {
+//   .image;
+//   background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/1_blur.png');
+// }
+// .blurImage2 {
+//   .image;
+//   background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/2_blur.png');
+// }
+// .blurImage3 {
+//   .image;
+//   background-image: url('http://data.jingan-china.cn/v2/login/nanxiao/3_blur.png');
+// }
 // 账号删除按钮
 .accountDeleleButton {
   float: right;
@@ -355,27 +403,13 @@
 //   background-color: rgba(0, 0, 0, 0.3);
 //   z-index: 2;
 // }
-// // 顶部标题栏
-// .titleWrapper {
-//   margin-top: 11.666667vh; // 126px;
-//   margin-bottom: 2.777778vh; // 30px
-//   text-align: center;
-//   .logo {
-//     display: inline-block;
-//     margin-right: 15px;
-//     width: 56px;
-//     height: 56px;
-//     background: url('@/assets/nanxiao-logo.png') no-repeat center;
-//     background-size: 100%;
-//     vertical-align: top;
-//   }
-//   .title {
-//     display: inline-block;
-//     height: 56px;
-//     line-height: 56px;
-//     font-size: 36px; // 36px
-//     color: #333;
-//     vertical-align: top;
-//   }
+// // 图标
+// .logo {
+//   padding-top: 11.666667vh; // 126px;
+//   padding-bottom: 2.777778vh; // 30px
+//   height: 56px;
+//   background: url('@/assets/nanxiao_download_logo.png') no-repeat center 11.666667vh;
+//   background-size: auto 56px;
+//   box-sizing: content-box;
 // }
 /*************************************************** 暂存样式结束 ****************************************** */

@@ -2,8 +2,9 @@ import React, { PureComponent } from 'react';
 import { Alert, Input, Carousel, Icon, Form, Button, Checkbox, List, Card, Tabs, Spin, Modal } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
-import debounce from 'lodash/debounce';
+// import debounce from 'lodash/debounce';
 import { aesEncrypt, isMobileExcludeIpad } from '@/utils/utils';
+import config from '../config';
 // 引入样式文件
 import styles from './index.less';
 
@@ -13,7 +14,7 @@ const { TabPane } = Tabs
 // 轮播时间
 const carouselTime = 10 * 1000;
 // localStorage名称
-const localStorageName = 'nanxiao_login_account';
+const localStorageName = '_login_account';
 // 是否为手机端
 const isFromMobile = isMobileExcludeIpad();
 
@@ -93,14 +94,18 @@ export default class NanXiaoLogin extends PureComponent {
    * 获取localStorage数据
    */
   getLocalStorage = () => {
-    this.setState({ commonAccount: JSON.parse(localStorage.getItem(localStorageName)) || [] });
+    const { location: { query: { type } } } = this.props;
+    const { projectShortName } = config[type] || global.PROJECT_CONFIG;
+    this.setState({ commonAccount: JSON.parse(localStorage.getItem(`${projectShortName}${localStorageName}`)) || [] });
   }
 
   /**
    * 存储localStorage数据
    */
   setLocalStorage = (data) => {
-    localStorage.setItem(localStorageName, JSON.stringify(data));
+    const { location: { query: { type } } } = this.props;
+    const { projectShortName } = config[type] || global.PROJECT_CONFIG;
+    localStorage.setItem(`${projectShortName}${localStorageName}`, JSON.stringify(data));
   }
 
   /**
@@ -245,7 +250,8 @@ export default class NanXiaoLogin extends PureComponent {
    * 前往下载页面
    */
   handleToDownload = () => {
-    router.push('/nanxiao/download');
+    const { location: { search } } = this.props;
+    router.push(`/user/download${search}`);
   }
 
   /**
@@ -390,23 +396,31 @@ export default class NanXiaoLogin extends PureComponent {
    * 手机版
    */
   renderMobile() {
-    const { submitting } = this.props;
+    const { submitting, location: { query: { type: configType } } } = this.props;
     const { isMoreUser } = this.state;
+    const { logo } = global.PROJECT_CONFIG;
+    const { projectName, focus } = config[configType] || global.PROJECT_CONFIG;
 
     return (
       <div className={styles.mobileContainer}>
         <div className={styles.main} ref={this.refMain}>
           <Spin spinning={!!submitting}>
-            <div className={styles.logo} />
+            <div className={styles.titleWrapper}>
+              <div className={styles.logo} style={{ backgroundImage: `url(${logo})` }} />
+              <div className={styles.title}>{projectName}</div>
+            </div>
+            {/* <div className={styles.logo} /> */}
             <div className={styles.formWrapper}>
               {isMoreUser ? this.renderMoreUser() : this.renderForm()}
             </div>
           </Spin>
           <div className={styles.carouselWrapper}>
             <Carousel dots={false} ref={this.refSmallCarousel}>
-              <div className={styles.image1} />
-              <div className={styles.image2} />
-              <div className={styles.image3} />
+              {focus.map(url => (
+                <div key={url} className={styles.imageWrapper}>
+                  <div className={styles.image} style={{ backgroundImage: `url(${url})` }} />
+                </div>
+              ))}
             </Carousel>
           </div>
         </div>
@@ -418,34 +432,40 @@ export default class NanXiaoLogin extends PureComponent {
    * PC端
    */
   renderPC() {
-    const { submitting } = this.props;
+    const { submitting, location: { query: { type: configType } } } = this.props;
     const { type, isMoreUser } = this.state;
+    const { logo, unitName, servicePhone, serviceSupport } = global.PROJECT_CONFIG;
+    const { projectName, focus, blur } = config[configType] || global.PROJECT_CONFIG;
 
     return (
       <div className={styles.container}>
         <div className={styles.carouselWrapper}>
           <Carousel dots={false} ref={this.refBigCarousel} effect="fade">
-            <div className={styles.blurImage1} />
-            <div className={styles.blurImage2} />
-            <div className={styles.blurImage3} />
+            {blur.map(url => (
+              <div key={url} className={styles.imageWrapper}>
+                <div className={styles.image} style={{ backgroundImage: `url(${url})` }} />
+              </div>
+            ))}
           </Carousel>
         </div>
         {/* <div className={styles.cover} /> */}
         <div className={styles.wrapper}>
           <div className={styles.carouselWrapper}>
             <Carousel dots={false} ref={this.refSmallCarousel} effect="fade">
-              <div className={styles.image1} />
-              <div className={styles.image2} />
-              <div className={styles.image3} />
+              {focus.map(url => (
+                <div key={url} className={styles.imageWrapper}>
+                  <div className={styles.image} style={{ backgroundImage: `url(${url})` }} />
+                </div>
+              ))}
             </Carousel>
           </div>
           <div className={styles.main} ref={this.refMain}>
             <Spin spinning={!!submitting}>
-              {/* <div className={styles.titleWrapper}>
-                <div className={styles.logo} />
-                <div className={styles.title}>南消智慧云平台</div>
-              </div> */}
-              <div className={styles.logo} />
+              <div className={styles.titleWrapper}>
+                <div className={styles.logo} style={{ backgroundImage: `url(${logo})` }} />
+                <div className={styles.title}>{projectName}</div>
+              </div>
+              {/* <div className={styles.logo} /> */}
               <div className={styles.formWrapper}>
                 {isMoreUser ? this.renderMoreUser() : (
                   <Tabs activeKey={type} onChange={this.handleTabChange}>
@@ -458,8 +478,8 @@ export default class NanXiaoLogin extends PureComponent {
         </div>
         <div className={styles.footer}>
           <div>
-            <div><span>copyright©2019</span><span>南京市消防工程有限公司</span></div>
-            <div><span>运营支持：无锡晶安智慧科技有限公司</span><span>服务电话：400-928-5656</span></div>
+            <div><span>copyright©2019</span><span>{unitName}</span></div>
+            <div><span>运营支持：{serviceSupport}</span><span>服务电话：{servicePhone}</span></div>
           </div>
         </div>
       </div>
