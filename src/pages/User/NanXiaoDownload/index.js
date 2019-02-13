@@ -11,14 +11,19 @@ import styles from './index.less';
  * author: sunkai
  * date: 2019年01月25日
  */
-export default function NanXiaoDownload ({ location: { query: { type: configType }, search } }) {
+export default function NanXiaoDownload({
+  location: {
+    query: { type: configType },
+    search,
+  },
+}) {
   const { logo, code, layer } = global.PROJECT_CONFIG;
   const { projectName } = config[configType] || global.PROJECT_CONFIG;
   // 是否是手机端访问
   const isFromMobile = isMobile();
 
   return (
-    <div className={isFromMobile?styles.mobileContainer:styles.container}>
+    <div className={isFromMobile ? styles.mobileContainer : styles.container}>
       {!isFromMobile && (
         <div className={styles.header}>
           <div className={styles.titleWrapper}>
@@ -27,7 +32,16 @@ export default function NanXiaoDownload ({ location: { query: { type: configType
           </div>
           {/* <div className={styles.logo} /> */}
           <div className={styles.backButtonWrapper}>
-            <Button className={styles.backButton} type="primary" size="large" onClick={() => {router.push(`/user/login${search}`);}}>返回</Button>
+            <Button
+              className={styles.backButton}
+              type="primary"
+              size="large"
+              onClick={() => {
+                router.push(`/user/login${search}`);
+              }}
+            >
+              返回
+            </Button>
           </div>
         </div>
       )}
@@ -40,15 +54,26 @@ export default function NanXiaoDownload ({ location: { query: { type: configType
             </div>
             // <div className={styles.logo} />
           )}
-          <div className={styles.layer}><img src={layer} alt="" /></div>
+          <div className={styles.layer}>
+            <img src={layer} alt="" />
+          </div>
           <div className={styles.codeWrapper}>
-            <div className={styles.code} style={{ backgroundImage: `url(${code})` }}></div>
+            <div className={styles.code} style={{ backgroundImage: `url(${code})` }} />
             <div className={styles.codeDescription}>手机扫一扫，快速下载智慧安全APP</div>
           </div>
           {isFromMobile && (
             <div className={styles.buttonWrapper}>
-              <div className={styles.downloadButton} onClick={() => {alert('该功能暂未开放！');}}>APP下载</div>
-              <div className={styles.loginButton} onClick={() => {router.push('/nanxiao/user/login');}}>登录</div>
+              <div className={styles.downloadButton} onClick={() => {}}>
+                APP下载
+              </div>
+              <div
+                className={styles.loginButton}
+                onClick={() => {
+                  router.push('/nanxiao/user/login');
+                }}
+              >
+                登录
+              </div>
             </div>
           )}
         </div>
