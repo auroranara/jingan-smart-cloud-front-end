@@ -99,9 +99,18 @@ function renderDsp(items, detail, menus) {
           break;
         case 'safetyFourPicture':
           const list = isJSONStr(v) ? JSON.parse(v) : [];
-          val = list.map(({ id, fileName, webUrl }) =><a key={id} style={{ marginRight: 10 }} target="_blank" rel="noopener noreferrer" href={webUrl}>{fileName}</a>)
-          if (!list.length)
-            val = '暂无信息';
+          val = list.map(({ id, fileName, webUrl }) => (
+            <a
+              key={id}
+              style={{ marginRight: 10 }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href={webUrl}
+            >
+              {fileName}
+            </a>
+          ));
+          if (!list.length) val = '暂无信息';
           break;
         // case 'companyType':
         //   val = v === '1' ? '是' : '否';
@@ -123,7 +132,7 @@ function renderDsp(items, detail, menus) {
 function isJSONStr(str) {
   const first = str[0];
   const last = str[str.length - 1];
-  return first === '[' && last === ']' || first === '{' && last === '}';
+  return (first === '[' && last === ']') || (first === '{' && last === '}');
 }
 
 @connect(({ safety }) => ({ safety }))
