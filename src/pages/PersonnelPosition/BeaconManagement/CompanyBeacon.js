@@ -4,8 +4,8 @@ import { Card, Row, Col, Input, Button, Table, Form, Select, Divider, Modal, mes
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { ActionSheet } from 'antd-mobile';
-import { treeAdapters } from '_parse5@3.0.3@parse5';
+import { Map, TileLayer, Marker, Popup, ImageOverlay } from 'react-leaflet';
+import L from 'leaflet';
 
 const Option = Select.Option;
 
@@ -44,8 +44,18 @@ const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 }))
 export default class CompanyBeacon extends PureComponent {
 
-  state = {
-    detail: {},               // 信标详情
+  constructor(props) {
+    super(props)
+    this.state = {
+      detail: {},               // 信标详情
+      modalVisible: false,       // 新增、编辑信标弹窗
+      viewMapVisible: false,     // 查看地图弹窗
+      mapUrl: '',
+      position: {},
+      bounds: undefined,
+    }
+    this.map = null
+    this.mapUrl = null
   }
 
   componentDidMount() {
@@ -59,6 +69,15 @@ export default class CompanyBeacon extends PureComponent {
     // 获取系统列表
     this.fetchSystemConfiguration({
       payload: { pageNum: 1, pageSize: 50, companyId },
+    })
+    // 获取当前单位单位地图
+    this.fetchMaps({
+      payload: { companyId, mapHierarchy: '1' },
+      callback: (list) => {
+        if (list && list.length > 0) {
+          this.mapUrl = JSON.parse(list[0].mapPhoto).url
+        }
+      },
     })
   }
 
@@ -76,6 +95,15 @@ export default class CompanyBeacon extends PureComponent {
     const { dispatch } = this.props
     dispatch({
       type: 'personnelPosition/fetchSystemConfiguration',
+      ...actions,
+    })
+  }
+
+  // 获取地图列表
+  fetchMaps = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'personnelPosition/fetchMaps',
       ...actions,
     })
   }
@@ -260,6 +288,26 @@ export default class CompanyBeacon extends PureComponent {
     })
   }
 
+  // 点击查看地图
+  handleViewMap = ({ xarea, yarea }) => {
+    const mapUrl = this.mapUrl
+    const position = { lat: +yarea, lng: +xarea }
+    this.setState({ viewMapVisible: true, position }, () => {
+      const image = new Image();
+      image.src = mapUrl;
+      image.onload = (e) => {
+        const { width, height } = e.path[0];
+        // const { clientWidth, clientHeight } = this.map
+        // 地图中心
+        const center = L.latLng(height * 0.5, width * 0.5)
+        const bounds = L.latLngBounds([0, 0], [height, width]);
+        this.setState({ bounds, mapUrl }, () => {
+          this.setState({ center })
+        })
+      }
+    })
+  }
+
   render() {
     const {
       loading,
@@ -279,7 +327,7 @@ export default class CompanyBeacon extends PureComponent {
         },
       },
     } = this.props
-    const { detail = {}, modalVisible } = this.state
+    const { detail = {}, modalVisible, viewMapVisible, mapUrl, position, bounds } = this.state
 
     // 添加权限
     const addAuth = hasAuthority(addCode, permissionCodes)
@@ -334,7 +382,7 @@ export default class CompanyBeacon extends PureComponent {
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
-            <a>查看地图</a>
+            <a onClick={() => this.handleViewMap(row)}>查看地图</a>
           </Fragment>
         ),
       },
@@ -455,6 +503,28 @@ export default class CompanyBeacon extends PureComponent {
               )}
             </Form.Item>
           </Form>
+        </Modal>
+        {/* 查看地图弹窗 */}
+        <Modal
+          title="查看地图"
+          visible={viewMapVisible}
+          width={800}
+          onCancel={() => this.setState({ viewMapVisible: false, mapUrl: undefined, center: undefined, position: undefined, bounds: undefined })}
+          destroyOnClose
+        >
+          <Map
+            style={{ width: '100%', height: '600px' }}
+            center={position}
+            zoom={0}
+            crs={L.CRS.Simple}
+            attributionControl={false}
+            bounds={bounds}
+            maxBounds={bounds}
+            minZoom={-3}
+            maxZoom={8}>
+            {bounds && <ImageOverlay url={mapUrl} bounds={bounds} />}
+            {position && <Marker position={position}></Marker>}
+          </Map>
         </Modal>
       </PageHeaderLayout>
     )
