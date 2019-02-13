@@ -164,6 +164,7 @@ export default {
       add: 'personnelPosition.beaconManagement.add',
       edit: 'personnelPosition.beaconManagement.edit',
       delete: 'personnelPosition.beaconManagement.delete',
+      viewMap: 'personnelPosition.beaconManagement.viewMap',
     },
     // 标签管理
     tag: {

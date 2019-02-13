@@ -14,7 +14,6 @@ export default class DrawerContainer extends PureComponent {
     return (
       <Drawer
         visible={visible}
-        onClose={onClose}
         width={width || WIDTH}
         className={styles.drawer}
         style={{ padding: 0, height: '100%', ...style }}

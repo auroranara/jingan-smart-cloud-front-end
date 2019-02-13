@@ -4,7 +4,7 @@ import { Card, Row, Col, Input, Button, Table, Form, Select, Divider, Modal, mes
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { Map, TileLayer, Marker, Popup, ImageOverlay } from 'react-leaflet';
+import { Map, Marker, ImageOverlay } from 'react-leaflet';
 import L from 'leaflet';
 
 const Option = Select.Option;
@@ -16,6 +16,7 @@ const {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
+      viewMap: viewMapCode,
     },
   },
 } = codes
@@ -382,7 +383,7 @@ export default class CompanyBeacon extends PureComponent {
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
-            <a onClick={() => this.handleViewMap(row)}>查看地图</a>
+            <AuthA code={viewMapCode} onClick={() => this.handleViewMap(row)}>查看地图</AuthA>
           </Fragment>
         ),
       },
@@ -511,6 +512,7 @@ export default class CompanyBeacon extends PureComponent {
           width={800}
           onCancel={() => this.setState({ viewMapVisible: false, mapUrl: undefined, center: undefined, position: undefined, bounds: undefined })}
           destroyOnClose
+          footer={null}
         >
           <Map
             style={{ width: '100%', height: '600px' }}
