@@ -25,7 +25,7 @@ export async function getPendingMission(params) {
 
 // 获取告警信息列表
 export async function getMessages(params) {
-  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3`);
+  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=4`);
 }
 
 // 获取网格id

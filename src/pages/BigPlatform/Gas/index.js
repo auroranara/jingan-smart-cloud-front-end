@@ -177,7 +177,7 @@ export default class Gas extends PureComponent {
         const params = {
           companyId,
           env,
-          type: 3,
+          type: 4,
         };
         const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
         // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
@@ -200,35 +200,71 @@ export default class Gas extends PureComponent {
           if (!e.data || e.data.indexOf('heartbeat') > -1) return;
           try {
             const data = JSON.parse(e.data).data;
-            const { type } = data;
+            const { type, messageFlag, companyName, companyId: id } = data;
             // 如果数据为告警或恢复，则将数据插入到列表的第一个
             if ([31, 32].includes(type)) {
               const {
-                gas: { messages },
+                gas: {
+                  // messages,
+                  unitIds,
+                  unitSet,
+                  unitSet: { units },
+                },
               } = this.props;
-              dispatch({
-                type: 'gas/save',
-                payload: { messages: [data].concat(messages) },
-              });
+              const index = unitIds.indexOf(id);
+
+              // dispatch({
+              //   type: 'gas/save',
+              //   payload: { messages: [data].concat(messages) },
+              // });
               // 如果发生告警，弹出通知框，否则关闭通知框
               if (type === 32) {
-                const {
-                  gas: { deviceRealTimeData: { deviceId: selectedDeviceId } = {} },
-                } = this.props;
-                const {
-                  monitorDrawerVisible,
-                  unitDetail: { companyId: selectedCompanyId } = {},
-                } = this.state;
-                const { companyId, messageFlag: deviceId } = data;
+                // const {
+                //   gas: { deviceRealTimeData: { deviceId: selectedDeviceId } = {} },
+                // } = this.props;
+                // const {
+                //   monitorDrawerVisible,
+                //   unitDetail: { companyId: selectedCompanyId } = {},
+                // } = this.state;
+                // const { companyId, messageFlag: deviceId } = data;
+                // const {
+                //   gas: {
+                //     unitIds,
+                //     unitSet: { units },
+                //   },
+                // } = this.props;
+                this.setState({ alarmIds: [...this.state.alarmIds, id] });
                 this.showWarningNotification(data);
-                if (companyId === selectedCompanyId && monitorDrawerVisible) {
-                  this.getDeviceStatusCount(companyId);
-                  if (deviceId === selectedDeviceId) {
-                    this.getDeviceRealTimeData(deviceId);
-                    this.getDeviceHistoryData(deviceId);
-                    this.getDeviceConfig(deviceId);
-                  }
-                }
+                dispatch({
+                  type: 'gas/saveUnitData',
+                  payload: {
+                    unitSet: {
+                      ...unitSet,
+                      units: [
+                        ...units.slice(0, index),
+                        { ...units[index], unnormal: units[index].unnormal + 1 },
+                        ...units.slice(index + 1),
+                      ],
+                    },
+                  },
+                });
+              } else {
+                dispatch({
+                  type: 'gas/saveUnitData',
+                  payload: {
+                    unitSet: {
+                      ...unitSet,
+                      units: [
+                        ...units.slice(0, index),
+                        { ...units[index], unnormal: units[index].unnormal - 1 },
+                        ...units.slice(index + 1),
+                      ],
+                    },
+                  },
+                });
+                const newIds = [...this.state.alarmIds];
+                newIds.splice(index, 1);
+                this.setState({ alarmIds: newIds });
               }
               // else {
               //   this.hideWarningNotification(data);
@@ -445,10 +481,12 @@ export default class Gas extends PureComponent {
         <div
           className={styles.notificationContent}
           onClick={() => {
-            this.showUnitDetail(
-              units.filter(({ companyId: id }) => id === companyId)[0],
-              messageFlag
-            );
+            this.setState({ companyName });
+            this.handleAlarmClick(messageFlag, undefined, companyName);
+            // this.showUnitDetail(
+            //   units.filter(({ companyId: id }) => id === companyId)[0],
+            //   messageFlag
+            // );
           }}
         >
           <div className={styles.notificationText}>

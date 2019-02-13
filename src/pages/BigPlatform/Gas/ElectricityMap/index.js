@@ -63,7 +63,6 @@ export default class MapSection extends PureComponent {
 
   renderMarkers = lvl => {
     const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
-
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
@@ -75,7 +74,7 @@ export default class MapSection extends PureComponent {
           latitude: item.latitude,
         },
         zIndex: selectedCompanyId === item.companyId ? 999 : 100,
-        ...{ zIndex: item.companyId === 'DccBRhlrSiu9gMV7fmvizw' ? 998 : 100 },
+        // ...{ zIndex: item.companyId === 'DccBRhlrSiu9gMV7fmvizw' ? 998 : 100 },
       };
     });
 
@@ -101,14 +100,15 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { status, companyName, companyId } = extData;
+    const { status, companyName, companyId, unnormal, faultNum } = extData;
     let imgSrc = pointNormal;
-    if (+status === 0 || +status === -1) {
-      imgSrc = pointNormal;
-    } else if (+status === 1) {
-      imgSrc = pointPreAlarm;
-    } else if (+status === 2) {
+
+    if (+unnormal > 0) {
       imgSrc = pointAlarm;
+    } else if (+faultNum > 0) {
+      imgSrc = pointPreAlarm;
+    } else {
+      imgSrc = pointNormal;
     }
     return (
       <div style={{ position: 'relative' }} key={companyId}>
@@ -149,13 +149,13 @@ export default class MapSection extends PureComponent {
     return tips.map((item, index) => {
       return (
         <Marker
+          key={index}
           offset={[-100, -72]}
           position={[item.longitude, item.latitude]}
           zIndex={1000}
           extData={item}
           events={{
             click: e => {
-              console.log('e', e);
               const newIds = [...alarmIds];
               newIds.splice(index, 1);
               this.props.handleParentChange({ maintenanceDrawerVisible: true, alarmIds: newIds });
