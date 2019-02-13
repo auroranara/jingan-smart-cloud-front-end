@@ -105,7 +105,7 @@ export default class WbTest extends PureComponent {
     };
 
     // console.log(ws);
-    if (!ws) return;
+    // if (!ws) return;
     ws.onmessage = e => {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;

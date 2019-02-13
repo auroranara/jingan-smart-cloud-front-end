@@ -1,8 +1,9 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Checkbox, Form } from 'antd';
+import { Card, Checkbox, Form, Spin, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import ImageDraw from '@/components/ImageDraw';
 import styles from './AlarmAddOrEdit.less';
 import { getJSONProp } from './utils';
 
@@ -33,15 +34,90 @@ const FORMITEM_LAYOUT = {
   },
 };
 
-@connect(({ personPositionAlarm }) => ({ personPositionAlarm }))
+@connect(({ personPositionAlarm, zoning, loading }) => ({
+  personPositionAlarm,
+  zoning,
+  loading: loading.effects['zoning/fetchZone'] || loading.effects['personPositionAlarm/getAlarmStrategy'],
+}))
 export default class AlarmDetail extends PureComponent {
+  state = {
+    data: [],
+    url: undefined,
+    images: undefined,
+    reference: undefined,
+  };
+
   componentDidMount() {
     const { dispatch, match: { params: { alarmId } } } = this.props;
-    dispatch({ type: 'personPositionAlarm/getAlarmStrategy', payload: alarmId });
+    dispatch({
+      type: 'personPositionAlarm/getAlarmStrategy',
+      payload: alarmId,
+      callback: ({ areaId }) => {
+        areaId && this.getZoning(areaId);
+      },
+    });
   }
+
+  getZoning = id => {
+    const { dispatch } = this.props;
+    // 获取区域信息
+    dispatch({
+      type: 'zoning/fetchZone',
+      payload: { id },
+      callback: (data) => {
+        if (data) {
+          const { areaInfo: { name, range }, companyMap: { id: id1, mapPhoto: image1 }={}, floorMap: { id: id2, mapPhoto: image2, jsonMap }={} } = data;
+          const { url: url1 } = JSON.parse(image1 || '{}');
+          const { url: url2 } = JSON.parse(image2 || '{}');
+          const json = JSON.parse(jsonMap || null);
+          const item = range ? [JSON.parse(range)] : [];
+          if (url1 && url2 && json) {
+            const image = {
+              id: id2,
+              url: url2,
+              ...json,
+            };
+            this.setState({
+              url: url1,
+              images: [image],
+              reference: image,
+              // name,
+              data: item,
+            });
+          }
+          else if (url1) {
+            const image = {
+              id: id1,
+              url: url1,
+              latlngs: [
+                { lat: 0, lng: 0 },
+                { lat: 1, lng: 0 },
+                { lat: 1, lng: 1 },
+                { lat: 0, lng: 1 },
+              ],
+            };
+            this.setState({
+              url: url1,
+              images: [image],
+              reference: image,
+              // name,
+              data: item,
+            });
+          }
+          else {
+            message.error('数据异常，请联系维护人员或稍后重试！');
+          }
+        }
+        else {
+          message.error('获取数据失败，请稍后重试！');
+        }
+      },
+    });
+  };
 
   render() {
     const {
+      loading,
       match: { params: { companyId } },
       personPositionAlarm: {
         detail: {
@@ -58,6 +134,7 @@ export default class AlarmDetail extends PureComponent {
         },
       },
     } = this.props;
+    const { data, url, images, reference } = this.state;
 
     const mapPhotoUrl = getJSONProp(mapPhoto, 'url');
 
@@ -81,7 +158,23 @@ export default class AlarmDetail extends PureComponent {
           value={types}
         />
       </Fragment>
-    )
+    );
+
+    const imgDraw = (
+      <Spin spinning={loading}>
+        <ImageDraw
+          autoZoom
+          hideBackground
+          url={url}
+          data={data}
+          images={images}
+          reference={reference}
+          className={styles.img1}
+          color='#00a8ff'
+          style={{ backgroundColor: '#ccc' }}
+        />
+      </Spin>
+    );
 
     return (
       <PageHeaderLayout
@@ -92,7 +185,8 @@ export default class AlarmDetail extends PureComponent {
           <p>区域编号：{areaCode}</p>
           <p>区域名称：{areaName || NO_DATA}</p>
           <p>所属地图：{mapName || NO_DATA}</p>
-          {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />}
+          {/* {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />} */}
+          {imgDraw}
         </Card>
         <Card title={infoTitle} className={styles.card}>
           <Form onSubmit={this.handleSubmit}>

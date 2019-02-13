@@ -1,9 +1,10 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Button, Card, Checkbox, Form, Input, Select, message } from 'antd';
+import { Button, Card, Checkbox, Form, Input, Select, Spin, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import ImageDraw from '@/components/ImageDraw';
 import styles from './AlarmAddOrEdit.less';
 import { CK_VALUES, CK_OPTIONS, msgCallback, handleInitFormValues, getRangeMsg, getJSONProp } from './utils';
 
@@ -39,7 +40,12 @@ const FORM_PROPS = {
   [CK_VALUES[3]]: ['lackNumLimit', 'lackTimeLimit'],
 };
 
-@connect(({ personPositionAlarm, loading }) => ({ personPositionAlarm, loading: loading.models.personPositionAlarm }))
+@connect(({ personPositionAlarm, zoning, loading }) => ({
+  zoning,
+  personPositionAlarm,
+  loading: loading.models.personPositionAlarm,
+  zoningLoading: loading.effects['zoning/fetchZone'] || loading.effects['personPositionAlarm/fetchMapList'] || loading.effects['personPositionAlarm/fetchAreaList'],
+}))
 @Form.create()
 export default class AlarmAddOrEdit extends PureComponent {
   state = {
@@ -47,12 +53,24 @@ export default class AlarmAddOrEdit extends PureComponent {
     mapPhoto: '',
     mapId: undefined,
     areaId: undefined,
+    data: [],
+    url: undefined,
+    images: undefined,
+    reference: undefined,
   };
 
   componentDidMount() {
     const { dispatch, match: { params: { companyId, alarmId } }, form: { setFieldsValue } } = this.props;
     const isAdd = this.isAdd();
-    isAdd && dispatch({ type: 'personPositionAlarm/fetchMapList', payload: { companyId, pageSize: 0 } });
+    isAdd && dispatch({
+      type: 'personPositionAlarm/fetchMapList',
+      payload: { companyId, pageSize: 0 },
+      callback: maps => {
+        const mapId = maps.length ? maps[0].id : undefined;
+        this.setState({ mapId });
+        this.getAreaList(mapId);
+      },
+    });
     dispatch({
       type: 'personPositionAlarm/fetchAllCards',
       payload: { companyId, pageSize: 0 },
@@ -66,6 +84,7 @@ export default class AlarmAddOrEdit extends PureComponent {
           callback: detail => {
             const { typeList, areaId, mapPhoto } = detail;
             dispatch({ type: 'personPositionAlarm/fetchAreaLimits', payload: areaId });
+            areaId && this.getZoning(areaId);
             this.setState({
               areaId,
               mapPhoto,
@@ -91,6 +110,14 @@ export default class AlarmAddOrEdit extends PureComponent {
   handleMapChange = value => {
     const { dispatch, personPositionAlarm: { mapList } } = this.props;
     this.setState({ mapId: value });
+    this.getAreaList(value);
+
+    const mapPhoto = mapList.find(({ id }) => id === value).mapPhoto;
+    this.setState({ mapPhoto });
+  };
+
+  getAreaList = value => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personPositionAlarm/fetchAreaList',
       payload: { mapId: value, pageSize: 0 },
@@ -101,9 +128,6 @@ export default class AlarmAddOrEdit extends PureComponent {
           this.handleAreaChange(areaId);
       },
     });
-
-    const mapPhoto = mapList.find(({ id }) => id === value).mapPhoto;
-    this.setState({ mapPhoto });
   };
 
   handleAreaChange = value => {
@@ -116,6 +140,64 @@ export default class AlarmAddOrEdit extends PureComponent {
         // console.log(minCanEnterUsers);
         const canEnterUsers = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
         setFieldsValue({ canEnterUsers });
+      },
+    });
+    this.getZoning(value);
+  };
+
+  getZoning = id => {
+    const { dispatch } = this.props;
+    // 获取区域信息
+    dispatch({
+      type: 'zoning/fetchZone',
+      payload: { id },
+      callback: (data) => {
+        if (data) {
+          const { areaInfo: { name, range }, companyMap: { id: id1, mapPhoto: image1 }={}, floorMap: { id: id2, mapPhoto: image2, jsonMap }={} } = data;
+          const { url: url1 } = JSON.parse(image1 || '{}');
+          const { url: url2 } = JSON.parse(image2 || '{}');
+          const json = JSON.parse(jsonMap || null);
+          const item = range ? [JSON.parse(range)] : [];
+          if (url1 && url2 && json) {
+            const image = {
+              id: id2,
+              url: url2,
+              ...json,
+            };
+            this.setState({
+              url: url1,
+              images: [image],
+              reference: image,
+              // name,
+              data: item,
+            });
+          }
+          else if (url1) {
+            const image = {
+              id: id1,
+              url: url1,
+              latlngs: [
+                { lat: 0, lng: 0 },
+                { lat: 1, lng: 0 },
+                { lat: 1, lng: 1 },
+                { lat: 0, lng: 1 },
+              ],
+            };
+            this.setState({
+              url: url1,
+              images: [image],
+              reference: image,
+              // name,
+              data: item,
+            });
+          }
+          else {
+            message.error('数据异常，请联系维护人员或稍后重试！');
+          }
+        }
+        else {
+          message.error('获取数据失败，请稍后重试！');
+        }
       },
     });
   };
@@ -219,7 +301,7 @@ export default class AlarmAddOrEdit extends PureComponent {
         detail: { areaCode, areaName, mapName },
       },
     } = this.props;
-    const { checkedValues, mapId, areaId, mapPhoto } = this.state;
+    const { checkedValues, mapId, areaId, mapPhoto, url, data, images, reference } = this.state;
 
     const mapPhotoUrl = getJSONProp(mapPhoto, 'url');
     const isAdd = this.isAdd();
@@ -246,7 +328,22 @@ export default class AlarmAddOrEdit extends PureComponent {
           value={checkedValues}
         />
       </Fragment>
-    )
+    );
+    const imgDraw = (
+      <Spin spinning={loading}>
+        <ImageDraw
+          autoZoom
+          hideBackground
+          url={url}
+          data={data}
+          images={images}
+          reference={reference}
+          className={styles.img1}
+          color='#00a8ff'
+          style={{ backgroundColor: '#ccc' }}
+        />
+      </Spin>
+    );
 
     return (
       <PageHeaderLayout
@@ -269,14 +366,16 @@ export default class AlarmAddOrEdit extends PureComponent {
                     {areaList.map(({ id, name }) => <Option value={id} key={id}>{name}</Option>)}
                   </Select>
                 </div>
-                {mapPhotoUrl && <img src={mapPhotoUrl} className={styles.img1} alt="map" />}
+                {/* {mapPhotoUrl && <img src={mapPhotoUrl} className={styles.img1} alt="map" />} */}
+                {imgDraw}
               </Fragment>
             ): (
               <Fragment>
                 <p>区域编号：{areaCode}</p>
                 <p>区域名称：{areaName || NO_DATA}</p>
                 <p>所属地图：{mapName || NO_DATA}</p>
-                {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />}
+                {/* {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />} */}
+                {imgDraw}
               </Fragment>
             )
           }

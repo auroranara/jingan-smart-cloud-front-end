@@ -1562,7 +1562,7 @@ module.exports = env => {
                 {
                   name: 'companyList',
                   path: '/personnel-position/tag-management/companies',
-                  code: 'personnelPosition.tagManagement.listView',
+                  code: 'personnelPosition.tagManagement.companyList',
                   component: './PersonnelPosition/TagManagement/index',
                 },
                 {
