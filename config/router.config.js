@@ -7,6 +7,7 @@ module.exports = env => {
       routes: [
         { path: '/user', redirect: '/user/login' },
         { path: '/user/login', component: './User/NanXiaoLogin' },
+        { path: '/user/download', component: './User/NanXiaoDownload' },
         { path: '/user/redirect-login', component: './User/RedirectLogin' },
         { path: '/user/register', component: './User/Register' },
         { path: '/user/register-result', component: './User/RegisterResult' },
@@ -60,36 +61,36 @@ module.exports = env => {
         },
       ],
     },
-    // 南消
-    {
-      path: '/nanxiao',
-      routes: [
-        { path: '/nanxiao', redirect: '/nanxiao/user/login' },
-        {
-          path: '/nanxiao/user/login',
-          component: './User/NanXiaoLogin',
-        },
-        {
-          path: '/nanxiao/download',
-          component: './User/NanXiaoDownload',
-        },
-      ],
-    },
-    // 利民
-    {
-      path: '/limin',
-      routes: [
-        { path: '/limin', redirect: '/limin/user/login' },
-        {
-          path: '/limin/user/login',
-          component: './User/LiMinLogin',
-        },
-        {
-          path: '/limin/download',
-          component: './User/LiMinDownload',
-        },
-      ],
-    },
+    // // 南消
+    // {
+    //   path: '/nanxiao',
+    //   routes: [
+    //     { path: '/nanxiao', redirect: '/nanxiao/user/login' },
+    //     {
+    //       path: '/nanxiao/user/login',
+    //       component: './User/NanXiaoLogin',
+    //     },
+    //     {
+    //       path: '/nanxiao/download',
+    //       component: './User/NanXiaoDownload',
+    //     },
+    //   ],
+    // },
+    // // 利民
+    // {
+    //   path: '/limin',
+    //   routes: [
+    //     { path: '/limin', redirect: '/limin/user/login' },
+    //     {
+    //       path: '/limin/user/login',
+    //       component: './User/LiMinLogin',
+    //     },
+    //     {
+    //       path: '/limin/download',
+    //       component: './User/LiMinDownload',
+    //     },
+    //   ],
+    // },
     //big platform
     {
       path: '/big-platform',

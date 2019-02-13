@@ -15,15 +15,43 @@
     height: 14.444444vh; // 156px
     min-height: 66px;
     overflow: hidden;
-    .logo {
+    // .logo {
+    //   position: absolute;
+    //   left: 0;
+    //   top: 50%;
+    //   margin-top: -33px;
+    //   width: 337px;
+    //   height: 66px;
+    //   background: url('@/assets/nanxiao_download_logo.png') no-repeat center;
+    //   background-size: 100%;
+    // }
+    // 顶部标题栏
+    .titleWrapper {
       position: absolute;
       left: 0;
       top: 50%;
       margin-top: -33px;
-      width: 337px;
       height: 66px;
-      background: url('@/assets/nanxiao_download_logo.png') no-repeat center;
-      background-size: 100%;
+      .logo {
+        display: inline-block;
+        margin-right: 18px;
+        width: 66px;
+        height: 66px;
+        background: no-repeat center;
+        background-size: contain;
+        vertical-align: top;
+      }
+      .title {
+        position: relative;
+        top: -2px;
+        display: inline-block;
+        height: 66px;
+        line-height: 66px;
+        font-size: 34px;
+        font-weight: bold;
+        color: #333;
+        vertical-align: top;
+      }
     }
     // 返回按钮
     .backButtonWrapper {
@@ -76,7 +104,7 @@
       .code {
         padding: 28px;
         height: 226px;
-        background: url('@/assets/nanxiao_download_code.png') no-repeat center;
+        background: no-repeat center;
         background-size: 170px 170px;
       }
       .codeDescription {
@@ -101,10 +129,37 @@
     background-size: auto 100%;
     overflow: hidden;
 
-    .logo {
-      height: 20.9vh; // 338px
-      background: url('@/assets/nanxiao_download_logo_mobile.png') no-repeat center;
-      background-size: auto 28.994%; // 98px
+    // .logo {
+    //   height: 20.9vh; // 338px
+    //   background: url('@/assets/nanxiao_download_logo_mobile.png') no-repeat center;
+    //   background-size: auto 28.994%; // 98px
+    // }
+    // 顶部标题栏
+    .titleWrapper {
+      height: 20.792vh;
+      line-height: 20.792vh;
+      font-size: 0;
+      text-align: center;
+      .logo {
+        display: inline-block;
+        margin-right: 1.98vh;
+        width: 5.94vh;
+        height: 5.94vh;
+        background: no-repeat center;
+        background-size: contain;
+        vertical-align: middle;
+      }
+      .title {
+        position: relative;
+        top: -1px;
+        display: inline-block;
+        height: 5.94vh;
+        line-height: 5.94vh;
+        font-size: 3.3416vh;
+        font-weight: bold;
+        color: #fff;
+        vertical-align: middle;
+      }
     }
     .layer {
       height: 32vh; // 517px
@@ -123,7 +178,7 @@
 
       .code {
         height: 13.98515vh; // 226px
-        background: url('@/assets/nanxiao_download_code.png') no-repeat center;
+        background: no-repeat center;
         background-size: auto 75.22124%; // 170px
       }
       .codeDescription {
