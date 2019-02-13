@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Input, notification, Icon } from 'antd';
+import { notification, Icon } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
@@ -16,7 +16,7 @@ import AbnormalUnitStatistics from './AbnormalUnitStatistics';
 import ProcessingBusiness from './ProcessingBusiness';
 
 // 告警信息
-import WarningMessage from './WarningMessage';
+// import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
 // 故障/报警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
@@ -35,7 +35,7 @@ import {
 } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
-import { genCardsInfo, getAlarmUnits } from './utils';
+import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
 
 // websocket配置
 const options = {
@@ -45,16 +45,16 @@ const options = {
   pingMsg: 'heartbeat',
 };
 
-const ids = [
-  'JIQ6gDpvQZipWzxz_OPHkw',
-  'q2gaRblYQWyVOWb009ssAA',
-  '2Msqxm1tT1CYSZP72kYhuA',
-  'tnWeDmZxQK6mFhBZp7uaQw',
-  'Fj_1XoafSjKGo3WJDhHsDw',
-  '417MvXHqTK_Es0n2I9C3eg',
-  'ehhHqz8gRn_X_ka7007WCw',
-  '7KhsYnGqTNCK0P15xh2KYA',
-];
+// const ids = [
+//   'JIQ6gDpvQZipWzxz_OPHkw',
+//   'q2gaRblYQWyVOWb009ssAA',
+//   '2Msqxm1tT1CYSZP72kYhuA',
+//   'tnWeDmZxQK6mFhBZp7uaQw',
+//   'Fj_1XoafSjKGo3WJDhHsDw',
+//   '417MvXHqTK_Es0n2I9C3eg',
+//   'ehhHqz8gRn_X_ka7007WCw',
+//   '7KhsYnGqTNCK0P15xh2KYA',
+// ];
 
 /**
  * description: 用电监测
@@ -83,7 +83,7 @@ export default class Gas extends PureComponent {
       tooltipVisible: false,
       tooltipPosition: [0, 0],
       maintenanceDrawerVisible: false,
-      drawerType: '', // alarm,fault
+      // drawerType: '', // alarm,fault
       alarmIds: [],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
@@ -118,6 +118,51 @@ export default class Gas extends PureComponent {
           unitSet: { units = [] },
         } = data;
         this.cardsInfo = genCardsInfo(units);
+      },
+    });
+
+    // 获取接入单位统计
+    dispatch({
+      type: 'gas/fetchImportingTotal',
+      payload: {
+        status,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasUnitSet: { importingUnits = [] },
+        } = data;
+        this.importCardsInfo = genCardsInfo(importingUnits);
+      },
+    });
+
+    // 获取异常单位统计
+    dispatch({
+      type: 'gas/fetchAbnormalingTotal',
+      payload: {
+        status,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasErrorUnitSet: { errorUnits = [] },
+        } = data;
+        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+      },
+    });
+
+    // 获取待处理业务
+    dispatch({
+      type: 'gas/fetchPendingMission',
+      payload: {
+        type: status,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasPendingUnitSet: { companyList = [] },
+        } = data;
+        this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
       },
     });
 
@@ -232,6 +277,9 @@ export default class Gas extends PureComponent {
   componentWillUnmount() {}
 
   cardsInfo = [];
+  importCardsInfo = [];
+  errorUnitsCardsInfo = [];
+  pendingUnitsCardsInfo = [];
 
   getDeviceStatusCount = companyId => {
     const { dispatch } = this.props;
@@ -550,7 +598,13 @@ export default class Gas extends PureComponent {
     const {
       gas: {
         statisticsData,
+        AccessStatistics,
+        AccessCount,
+        companyStatus,
+        AbnormalTrend,
         unitSet,
+        allGasFire,
+        gasChartByMonth,
         deviceStatusCount,
         devices,
         deviceRealTimeData,
@@ -559,7 +613,6 @@ export default class Gas extends PureComponent {
         cameraList,
       },
     } = this.props;
-    console.log('this.props', statisticsData);
 
     const {
       setttingModalVisible,
@@ -575,12 +628,13 @@ export default class Gas extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       maintenanceDrawerVisible,
-      drawerType,
+      // drawerType,
       alarmIds,
     } = this.state;
 
-    const cardsInfo = this.cardsInfo;
-
+    const importCardsInfo = this.importCardsInfo;
+    const pendingUnitsCardsInfo = this.pendingUnitsCardsInfo;
+    const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
     const faultList = [
       {
         disaster_desc: '绿绿',
@@ -708,7 +762,7 @@ export default class Gas extends PureComponent {
         />
         {/* 异常单位统计 */}
         <AbnormalUnitStatistics
-          data={unitSet}
+          data={statisticsData}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
@@ -719,7 +773,7 @@ export default class Gas extends PureComponent {
           style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%', cursor: 'pointer' }}
           onClick={e => this.handleDrawerVisibleChange('business')}
         >
-          <ProcessingBusiness />
+          <ProcessingBusiness allGasFire={allGasFire} />
         </NewSection>
 
         {/* extra info */}
@@ -729,17 +783,17 @@ export default class Gas extends PureComponent {
           handleCancel={this.handleSettingCancel}
         />
         <UnitDrawer
-          data={{ list: cardsInfo, statisticsData }}
+          data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <AlarmDrawer
-          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <BusinessDrawer
-          data={{ list: cardsInfo, ...getAlarmUnits(unitSet) }}
+          data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}
           visible={businessDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

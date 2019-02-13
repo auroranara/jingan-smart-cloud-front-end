@@ -3,11 +3,6 @@ import NewSection from '@/components/NewSection';
 // 引入样式文件
 import styles from './index.less';
 
-/**
- * description: 异常单位统计
- * author: pcy
- * date: 2019年01月18日
- */
 export default class AbnormalUnitStatistics extends PureComponent {
   constructor(props) {
     super(props);
@@ -38,14 +33,12 @@ export default class AbnormalUnitStatistics extends PureComponent {
       className,
       // 数据源
       data: {
-        // 所有单位
-        // units,
-        // 告警单位
-        alarmUnit = [],
-        // 预警单位
-        earlyWarningUnit = [],
-        // 正常单位
-        normalUnit = [],
+        // 报警单位
+        unnormalCompanyNum = 0,
+        // 故障单位
+        faultCompanyNum = 0,
+        // 失联单位
+        outContacts = 0,
       },
       // 点击事件
       onClick,
@@ -58,17 +51,17 @@ export default class AbnormalUnitStatistics extends PureComponent {
             {
               border: '2px solid #d93d49',
               name: '报警单位',
-              value: alarmUnit.length,
+              value: unnormalCompanyNum,
             },
             {
               border: '2px solid #deaa26',
               name: '故障单位',
-              value: earlyWarningUnit.length,
+              value: faultCompanyNum,
             },
             {
               border: '2px solid #8795ab',
               name: '失联单位',
-              value: normalUnit.length,
+              value: outContacts,
             },
           ].map(({ border, name, value }) => (
             <div className={styles.item} key={name}>

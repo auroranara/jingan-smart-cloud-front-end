@@ -127,15 +127,7 @@ export default {
     // },
     // 获取单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: {
-          companyInfoDtoList: units,
-          countNum: jurisdictionalUnitStatistics,
-          linkNum: accessUnitStatistics,
-          allCompanyInfoDtoList = [],
-        },
-      } = yield call(getUnitData, payload);
+      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics, allCompanyInfoDtoList=[] } } = yield call(getUnitData, payload);
       const statisticsData = {
         // 管辖单位统计数
         jurisdictionalUnitStatistics,
@@ -147,12 +139,7 @@ export default {
             ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
             : '--',
       };
-      const pay = {
-        unitSet: getUnitSet(units),
-        statisticsData,
-        unitIds: units.map(({ companyId }) => companyId),
-        allCompanyList: allCompanyInfoDtoList,
-      };
+      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId), allCompanyList: allCompanyInfoDtoList };
       if (code === 200) {
         yield put({
           type: 'save',

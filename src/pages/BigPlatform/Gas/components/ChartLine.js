@@ -1,19 +1,27 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-
-// const LIST = [120, 200, 150, 80, 70, 110, 130, 20, 10, 150];
+import moment from 'moment';
 
 const LINE_STYLE = { width: 2, color: 'rgb(64, 95, 135)' };
 
 export default class ChartLine extends PureComponent {
   render() {
-    // const list = LIST;
     const { data: list, labelRotate = -35 } = this.props;
+    const newList = list.map(item => {
+      let obj = {};
+      for (const key in item) {
+        if (item.hasOwnProperty(key)) {
+          const element = item[key];
+          obj = { ...element, month: key };
+        }
+      }
+      return obj;
+    });
 
-    // const xData = [...Array(10).keys()].map(i => `无锡新吴机械${i}`);
-    // const seriesData = LIST.map((n, i) => ({ value: n, name: `无锡新吴机械${i}` }));
-    const xData = list.map(({ name }) => name);
-    // const seriesData = list;
+    const xData = newList.map(item => {
+      const newMonth = item.month;
+      return moment(newMonth).format('MM');
+    });
 
     const option = {
       textStyle: { color: '#FFF' },
@@ -74,7 +82,7 @@ export default class ChartLine extends PureComponent {
               },
             },
           },
-          data: [20, 30, 62, 52, 43, 55, 64, 23, 22, 12, 23, 12],
+          data: newList.map(item => item.unnormal),
         },
         {
           name: '故障',
@@ -87,7 +95,7 @@ export default class ChartLine extends PureComponent {
               },
             },
           },
-          data: [20, 30, 32, 32, 43, 55, 65, 23, 22, 12, 23, 12],
+          data: newList.map(item => item.faultNum),
         },
         {
           name: '失联',
@@ -100,7 +108,7 @@ export default class ChartLine extends PureComponent {
               },
             },
           },
-          data: [10, 52, 34, 32, 43, 54, 65, 23, 22, 52, 43, 12],
+          data: newList.map(item => item.outContact),
         },
       ],
     };

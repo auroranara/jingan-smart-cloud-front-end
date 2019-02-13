@@ -10,8 +10,8 @@ import {
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
+import moment from 'moment';
 import { DotItem, ChartLine } from '../components/Components';
-import { sortList } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
 import unitBlueIconGrey from '../imgs/unitBlueIconGrey.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
@@ -21,28 +21,9 @@ const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
 const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
-const LABELS = ['正常', '告警', '预警', '失联'];
-const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
-const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
-const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
-
-const CARDS = [...Array(10).keys()].map(i => ({
-  companyId: i,
-  name: '无锡市新吴区机械制造有限公司',
-  address: '无锡市新吴区汉江路与龙江路交叉口5号',
-  safetyMan: '王长江',
-  safetyPhone: '13288888888',
-  common: Math.floor(Math.random() * 10),
-  alarm: Math.floor(Math.random() * 10),
-  warn: Math.floor(Math.random() * 10),
-  noAccess: Math.floor(Math.random() * 10),
-}));
-
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({
-  id: i,
-  name: (i + 2) % 12 || 12,
-  value: Math.floor(Math.random() * 100),
-}));
+const LABELS = ['报警', '故障', '失联', '正常'];
+const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
+const OPTIONS = ['全部', '报警', '故障', '失联'].map((d, i) => ({ value: i, desc: d }));
 
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
@@ -52,6 +33,7 @@ export default class AlarmDrawer extends PureComponent {
   };
 
   handleSelectChange = i => {
+    console.log('weqwui', i);
     this.setState({ selected: i });
   };
 
@@ -71,7 +53,18 @@ export default class AlarmDrawer extends PureComponent {
     this.setState({ searchValue: '', grahp: 0, selected: 0 });
   };
 
-  getOption = () => {
+  getOption = graphList => {
+    const newGraphList = graphList.map(item => {
+      let obj = {};
+      for (const key in item) {
+        if (item.hasOwnProperty(key)) {
+          const element = item[key];
+          obj = { ...element, month: key };
+        }
+      }
+      return obj;
+    });
+
     const option = {
       textStyle: {
         color: '#fff',
@@ -140,7 +133,10 @@ export default class AlarmDrawer extends PureComponent {
           color: '#fff',
           fontSize: 14,
         },
-        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        data: newGraphList.map(item => {
+          const newMonth = item.month;
+          return moment(newMonth).format('MM');
+        }),
       },
       series: [
         {
@@ -148,21 +144,21 @@ export default class AlarmDrawer extends PureComponent {
           color: '#ff4848',
           type: 'bar',
           barWidth: 5,
-          data: [20, 12, 12, 34, 55, 66, 34, 44, 22, 11, 22, 34],
+          data: newGraphList.map(item => item.unnormal),
         },
         {
           name: '故障',
           type: 'bar',
           color: '#f6b54e',
           barWidth: 5,
-          data: [20, 13, 12, 36, 52, 66, 34, 44, 22, 11, 22, 34],
+          data: newGraphList.map(item => item.faultNum),
         },
         {
           name: '失联',
           color: '#9f9f9f',
           type: 'bar',
           barWidth: 5,
-          data: [20, 13, 12, 36, 52, 66, 34, 44, 22, 11, 22, 34],
+          data: newGraphList.map(item => item.outContact),
         },
       ],
     };
@@ -172,38 +168,34 @@ export default class AlarmDrawer extends PureComponent {
   render() {
     const {
       visible,
-      // handleSearch,
       data: {
-        list = CARDS,
-        graphList = GRAPH_LIST,
-        alarmUnit: alarmNum = 0,
-        earlyWarningUnit: warnNum = 0,
-        normalUnit: commonNum = 0,
+        list = [],
+        companyStatus: { unnormal = 0, faultNum = 0, outContact = 0 },
+        graphList = [],
       } = {},
     } = this.props;
+
     const { graph, selected, searchValue } = this.state;
 
-    const filteredList = list.filter(({ name }) => name.includes(searchValue)).filter(item => {
-      switch (selected) {
-        case 0:
-          return true;
-        case 1:
-          return item.common;
-        case 2:
-          return item.alarm;
-        case 3:
-          return item.warn;
-        case 4:
-          return item.noAccess;
-        default:
-          return false;
-      }
-    });
+    const filteredList = list
+      .filter(({ company_name }) => company_name.includes(searchValue))
+      .filter(item => {
+        switch (selected) {
+          case 0:
+            return true;
+          case 1:
+            return item.unnormal;
+          case 2:
+            return item.faultNum;
+          case 3:
+            return item.outContact;
+          default:
+            return false;
+        }
+      });
 
-    sortList(filteredList, SELECTED_PROPS[selected]);
-
-    const total = alarmNum + commonNum + warnNum;
-    const [alarmPercent, warnPercent, commonPercent] = [alarmNum, warnNum, commonNum].map(
+    const total = unnormal + faultNum + outContact;
+    const [alarmPercent, faultPercent, outPercent] = [unnormal, faultNum, outContact].map(
       n => (total ? (n / total) * 100 : 0)
     );
 
@@ -223,7 +215,7 @@ export default class AlarmDrawer extends PureComponent {
           <OvProgress
             title="报警单位"
             percent={alarmPercent}
-            quantity={alarmNum}
+            quantity={unnormal}
             strokeColor="rgb(255,72,72)"
             style={{ marginTop: 40, cursor: 'pointer' }}
             iconStyle={{
@@ -236,8 +228,8 @@ export default class AlarmDrawer extends PureComponent {
           />
           <OvProgress
             title="故障单位"
-            percent={warnPercent}
-            quantity={warnNum}
+            percent={faultPercent}
+            quantity={faultNum}
             strokeColor="rgb(246,181,78)"
             style={{ cursor: 'pointer' }}
             iconStyle={{
@@ -250,8 +242,8 @@ export default class AlarmDrawer extends PureComponent {
           />
           <OvProgress
             title="失联单位"
-            percent={commonPercent}
-            quantity={commonNum}
+            percent={outPercent}
+            quantity={outContact}
             strokeColor="rgb(159,159,159)"
             style={{ cursor: 'pointer' }}
             iconStyle={{
@@ -265,7 +257,7 @@ export default class AlarmDrawer extends PureComponent {
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
           {graph ? (
-            <ReactEcharts option={this.getOption()} className="echarts-for-echarts" />
+            <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
           ) : (
             <ChartLine data={graphList} labelRotate={0} />
           )}
@@ -274,20 +266,26 @@ export default class AlarmDrawer extends PureComponent {
     );
 
     const right = (
-      <SearchBar
-        // value={value}
-        onSearch={this.handleSearch}
-        // onChange={this.handleChange}
-        extra={select}
-      >
+      <SearchBar onSearch={this.handleSearch} extra={select}>
         {filteredList.map(
-          ({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
+          ({
+            company_id,
+            company_name,
+            address,
+            principal_name,
+            principal_phone,
+            normal: listNormal,
+            unnormal: listUnnormal,
+            faultNum: listFaultNum,
+            outContact: listOutContact,
+            count,
+          }) => (
             <DrawerCard
-              key={companyId}
-              name={name || NO_DATA}
+              key={company_id}
+              name={company_name || NO_DATA}
               location={address || NO_DATA}
-              person={safetyMan || NO_DATA}
-              phone={safetyPhone || NO_DATA}
+              person={principal_name || NO_DATA}
+              phone={principal_phone || NO_DATA}
               style={{ cursor: 'auto' }}
               infoStyle={{
                 width: 70,
@@ -299,13 +297,13 @@ export default class AlarmDrawer extends PureComponent {
               }}
               info={
                 <Fragment>
-                  <div className={styles.equipment}>{2 || '--'}</div>
+                  <div className={styles.equipment}>{count || '--'}</div>
                   设备数
                 </Fragment>
               }
               more={
                 <p className={styles.more}>
-                  {[common, alarm, warn, noAccess].map((n, i) => (
+                  {[listUnnormal, listFaultNum, listOutContact, listNormal].map((n, i) => (
                     <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
                   ))}
                 </p>
