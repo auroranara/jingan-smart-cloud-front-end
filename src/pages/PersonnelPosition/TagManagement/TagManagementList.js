@@ -470,7 +470,7 @@ export default class TagManagement extends PureComponent {
           pagination: {
             pageNum: 1,
             pageSize: defaultPageSize,
-            total: list ? list.length : 0,
+            total: list.length,
           },
         })
       },
