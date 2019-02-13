@@ -50,8 +50,11 @@ export default {
       let response = yield call(getMapList, payload);
       response = response || {};
       let { code=500, data } = response;
-      if (code === 200)
-        yield put({ type: 'saveMapList', payload: data && Array.isArray(data.list) ? data.list : [] });
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({ type: 'saveMapList', payload: list });
+        callback && callback(list);
+      }
     },
     *fetchAreaList({ payload, callback }, { call, put }) {
       let response = yield call(getAreaList, payload);
