@@ -31,17 +31,17 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.gj}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
     '/mock': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.mock}`,
       changeOrigin: true,
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.gj}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -75,7 +75,8 @@ export default {
   routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
-  publicPath: '/acloud_new/',
+  publicPath: '/',
+  // publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',
   },
@@ -128,7 +129,8 @@ export default {
     start_url: '/index.html',
     icons: [
       {
-        src: '/acloud_new/static/favicon.png',
+        src: '/static/favicon.png',
+        // src: '/acloud_new/static/favicon.png',
         sizes: '48x48',
         type: 'image/png',
       },

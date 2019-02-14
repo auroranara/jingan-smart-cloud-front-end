@@ -63,4 +63,5 @@ export async function getPreview({ id }) {
  */
 export async function getCompanyList(params) {
   return request(`/acloud_new/v2/baseInfo/model/companies?${stringify(params)}`);
+  // return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
 }

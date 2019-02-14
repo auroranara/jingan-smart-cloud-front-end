@@ -5,30 +5,36 @@
   overflow: hidden;
   border: 1px solid #04fdff;
   margin-bottom: 0.5em;
+
   .titleLine {
     width: 100%;
     display: flex;
     justify-content: flex-start;
     flex-direction: row-reverse;
     padding: 0 0 8px 0;
+
     & * {
       font-size: 15px;
     }
+
     .title {
       flex: 1;
       display: flex;
       align-items: center;
     }
+
     .link {
       & span {
         color: #04fdff;
       }
     }
   }
+
   .contentContainer {
     width: 100%;
     overflow: hidden;
     display: flex;
+
     .imageContainer {
       width: 95px;
       height: 125px;
@@ -37,6 +43,7 @@
       align-items: center;
       flex: none;
       background-color: #033069;
+
       .image {
         width: 100%;
         height: 100%;
@@ -45,23 +52,28 @@
         background-repeat: no-repeat;
       }
     }
+
     .content {
       flex: 1;
       height: 100%;
       padding: 0.5em 1em;
+
       .line {
         & span {
           font-size: 14px;
         }
+
         overflow: hidden;
         line-height: 15px;
         display: flex;
+
         .label {
           text-align: justify;
           width: 4em;
           float: left;
           color: #04fdff;
         }
+
         .label::after {
           content: '';
           width: 100%;
@@ -69,9 +81,11 @@
           overflow: hidden;
           height: 0;
         }
+
         .colon {
           color: #04fdff;
         }
+
         .value {
           display: inline-block;
           text-indent: 0.8em;
@@ -81,22 +95,27 @@
         }
       }
     }
+
     .extraContent {
       padding: 1.5em 1em;
       color: #fff;
+
       .line {
         & span {
           font-size: 14px;
         }
+
         overflow: hidden;
         line-height: 15px;
         display: flex;
+
         .label {
           text-align: justify;
           width: 4em;
           float: left;
           color: #04fdff;
         }
+
         .label::after {
           content: '';
           width: 100%;
@@ -104,9 +123,11 @@
           overflow: hidden;
           height: 0;
         }
+
         .colon {
           color: #04fdff;
         }
+
         .value {
           display: inline-block;
           text-indent: 0.8em;
@@ -116,6 +137,7 @@
       }
     }
   }
+
   .statusLogo {
     background-size: 100% 100%;
     position: absolute;
@@ -123,10 +145,10 @@
     height: 79px;
     right: 2%;
     bottom: 6%;
-    background-size: 100% 100%;
     background-position: center center;
     background-repeat: no-repeat;
   }
+
   .rightIcon {
     position: absolute;
     right: 20px;

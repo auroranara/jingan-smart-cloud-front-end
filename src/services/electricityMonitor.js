@@ -5,17 +5,17 @@ const URL_PREFIX = '/acloud_new/v2';
 
 // 获取告警信息列表
 export async function getMessages(params) {
-  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3`);
+  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3&${stringify(params)}`);
 }
 
 // 获取网格id
-export async function getCompanyId(params) {
-  return request(`${URL_PREFIX}/screen/elecSafe/getDefaultGridId`);
-}
+// export async function getCompanyId(params) {
+//   return request(`${URL_PREFIX}/screen/elecSafe/getDefaultGridId`);
+// }
 
 // 获取单位数据
 export async function getUnitData(params) {
-  return request(`${URL_PREFIX}/screen/elecSafe/companyList`);
+  return request(`${URL_PREFIX}/screen/elecSafe/companyList?${stringify(params)}`);
 }
 
 // 获取企业设备统计数

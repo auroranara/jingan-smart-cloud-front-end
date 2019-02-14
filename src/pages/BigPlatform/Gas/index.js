@@ -85,6 +85,7 @@ export default class Gas extends PureComponent {
       maintenanceDrawerVisible: false,
       // drawerType: '', // alarm,fault
       alarmIds: [],
+      companyName: '',
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -176,7 +177,7 @@ export default class Gas extends PureComponent {
         const params = {
           companyId,
           env,
-          type: 3,
+          type: 4,
         };
         const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
         // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
@@ -199,35 +200,71 @@ export default class Gas extends PureComponent {
           if (!e.data || e.data.indexOf('heartbeat') > -1) return;
           try {
             const data = JSON.parse(e.data).data;
-            const { type } = data;
+            const { type, messageFlag, companyName, companyId: id } = data;
             // 如果数据为告警或恢复，则将数据插入到列表的第一个
             if ([31, 32].includes(type)) {
               const {
-                gas: { messages },
+                gas: {
+                  // messages,
+                  unitIds,
+                  unitSet,
+                  unitSet: { units },
+                },
               } = this.props;
-              dispatch({
-                type: 'gas/save',
-                payload: { messages: [data].concat(messages) },
-              });
+              const index = unitIds.indexOf(id);
+
+              // dispatch({
+              //   type: 'gas/save',
+              //   payload: { messages: [data].concat(messages) },
+              // });
               // 如果发生告警，弹出通知框，否则关闭通知框
               if (type === 32) {
-                const {
-                  gas: { deviceRealTimeData: { deviceId: selectedDeviceId } = {} },
-                } = this.props;
-                const {
-                  monitorDrawerVisible,
-                  unitDetail: { companyId: selectedCompanyId } = {},
-                } = this.state;
-                const { companyId, messageFlag: deviceId } = data;
+                // const {
+                //   gas: { deviceRealTimeData: { deviceId: selectedDeviceId } = {} },
+                // } = this.props;
+                // const {
+                //   monitorDrawerVisible,
+                //   unitDetail: { companyId: selectedCompanyId } = {},
+                // } = this.state;
+                // const { companyId, messageFlag: deviceId } = data;
+                // const {
+                //   gas: {
+                //     unitIds,
+                //     unitSet: { units },
+                //   },
+                // } = this.props;
+                this.setState({ alarmIds: [...this.state.alarmIds, id] });
                 this.showWarningNotification(data);
-                if (companyId === selectedCompanyId && monitorDrawerVisible) {
-                  this.getDeviceStatusCount(companyId);
-                  if (deviceId === selectedDeviceId) {
-                    this.getDeviceRealTimeData(deviceId);
-                    this.getDeviceHistoryData(deviceId);
-                    this.getDeviceConfig(deviceId);
-                  }
-                }
+                dispatch({
+                  type: 'gas/saveUnitData',
+                  payload: {
+                    unitSet: {
+                      ...unitSet,
+                      units: [
+                        ...units.slice(0, index),
+                        { ...units[index], unnormal: units[index].unnormal + 1 },
+                        ...units.slice(index + 1),
+                      ],
+                    },
+                  },
+                });
+              } else {
+                dispatch({
+                  type: 'gas/saveUnitData',
+                  payload: {
+                    unitSet: {
+                      ...unitSet,
+                      units: [
+                        ...units.slice(0, index),
+                        { ...units[index], unnormal: units[index].unnormal - 1 },
+                        ...units.slice(index + 1),
+                      ],
+                    },
+                  },
+                });
+                const newIds = [...this.state.alarmIds];
+                newIds.splice(index, 1);
+                this.setState({ alarmIds: newIds });
               }
               // else {
               //   this.hideWarningNotification(data);
@@ -444,10 +481,12 @@ export default class Gas extends PureComponent {
         <div
           className={styles.notificationContent}
           onClick={() => {
-            this.showUnitDetail(
-              units.filter(({ companyId: id }) => id === companyId)[0],
-              messageFlag
-            );
+            this.setState({ companyName });
+            this.handleAlarmClick(messageFlag, undefined, companyName);
+            // this.showUnitDetail(
+            //   units.filter(({ companyId: id }) => id === companyId)[0],
+            //   messageFlag
+            // );
           }}
         >
           <div className={styles.notificationText}>
@@ -591,6 +630,18 @@ export default class Gas extends PureComponent {
     this.setState({ ...newState });
   };
 
+  handleAlarmClick = (id, companyId, companyName) => {
+    const { dispatch } = this.props;
+    this.setState({ companyName });
+    dispatch({
+      type: 'gas/fetchGasForMaintenance',
+      payload: { companyId, id },
+      success: () => {
+        this.handleDrawerVisibleChange('maintenance');
+      },
+    });
+  };
+
   /**
    * 渲染
    */
@@ -611,6 +662,7 @@ export default class Gas extends PureComponent {
         deviceConfig,
         deviceHistoryData,
         cameraList,
+        gasForMaintenance = [],
       },
     } = this.props;
 
@@ -630,84 +682,12 @@ export default class Gas extends PureComponent {
       maintenanceDrawerVisible,
       // drawerType,
       alarmIds,
+      companyName,
     } = this.state;
 
     const importCardsInfo = this.importCardsInfo;
     const pendingUnitsCardsInfo = this.pendingUnitsCardsInfo;
     const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
-    const faultList = [
-      {
-        disaster_desc: '绿绿',
-        fault_state: '1',
-        config_state: '0',
-        loop_number: 101,
-        type: '4',
-        executor: 'db4j3p32u6jv9n7v',
-        create_company_name: '无锡蓝天电子有限公司',
-        id: '5dul5e69ebfaayeq',
-        create_date: 1546506655480,
-        safetyPerson: '张湾',
-        install_address: '5号5楼消防展示厅',
-        self_check_state: '0',
-        del_flag: '0',
-        do_test_state: '0',
-        createByName: '法人',
-        create_time: 1546506056000,
-        createByPhone: '13852323212',
-        feedback_state: '0',
-        manual_fire_state: '0',
-        safetyPhone: '13906184255',
-        delayed_state: '0',
-        server_addr: 1,
-        update_date: 1546506718153,
-        reset_time: 1546506121520,
-        unit_name: '无锡维保公司',
-        phone: '13852012127',
-        save_time: 1546506062453,
-        parent_id: 'b5FoMRn7TOGnMbSB4SjpQg',
-        prepare_elec_state: '0',
-        part_number: 2,
-        dataSource: '2',
-        status: '1',
-        muffling_state: '0',
-        end_date: 1546506718150,
-        d_d_c: 1,
-        component_model: 'TY-GD-G3',
-        start_state: '0',
-        executor_name: '无锡维保',
-        normal_state: '0',
-        remark: '',
-        component_region: 101,
-        unit_type: 31,
-        create_by: 'Fw_0Fih6T4aEeXdRcNshEw',
-        shield_state: '0',
-        lookup_state: '0',
-        data_id: 'EBJq3Y_qt11Nw9eVkwgFmA',
-        line_number: 3,
-        main_elec_state: '0',
-        nstatus: '1',
-        update_by: 'db4j3p32u6jv9n7v',
-        unit_id: 'oEjYOOqkSkmExQCpEEAAMw',
-        value: '31',
-        site_photo: '@@IPEXP_IMP_FILES_WEB/gsafe/fault/190103-171157-032V.jpg',
-        start_date: 1546506676597,
-        fire_state: '0',
-        manual_state: '0',
-        company_id: 'DccBRhlrSiu9gMV7fmvizw',
-        close_fire_state: '0',
-        label: '点型感温火灾探测器',
-        host_id: 'cbuxdh4tv9g477qa',
-        supervise_state: '0',
-        t_d_c: 1,
-        sitePhotos: ['http://data.jingan-china.cn/hello/gsafe/fault/190103-171157-032V.jpg'],
-        client_addr: 1,
-        data_type: '2',
-        install_floor: 5,
-        component_no: 2,
-        main_line_state: '0',
-        reset_state: '0',
-      },
-    ];
 
     return (
       <BigPlatformLayout
@@ -738,6 +718,7 @@ export default class Gas extends PureComponent {
           unitDetail={unitDetail}
           alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
+          handleAlarmClick={this.handleAlarmClick}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -814,13 +795,12 @@ export default class Gas extends PureComponent {
           handleClickCamera={this.handleClickCamera}
         />
         <MaintenanceDrawer
-          title="故障处理动态"
+          title="报警处理动态"
           // type={drawerType}
           type={'alarm'}
-          data={faultList}
+          data={gasForMaintenance}
           visible={maintenanceDrawerVisible}
-          // visible={true}
-          companyName={'晶安'}
+          companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
         />
         {/* <VideoPlay

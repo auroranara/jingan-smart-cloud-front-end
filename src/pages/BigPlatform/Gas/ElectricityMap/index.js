@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
 import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
+import classNames from 'classNames';
 import styles from './index.less';
 import MapTypeBar from './MapTypeBar';
 
@@ -62,7 +63,6 @@ export default class MapSection extends PureComponent {
 
   renderMarkers = lvl => {
     const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
-
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
@@ -73,8 +73,8 @@ export default class MapSection extends PureComponent {
           longitude: item.longitude,
           latitude: item.latitude,
         },
-        zIndex: selectedCompanyId === item.comapnyId ? 999 : 100,
-        ...{ zIndex: item.companyId === 'DccBRhlrSiu9gMV7fmvizw' ? 998 : 100 },
+        zIndex: selectedCompanyId === item.companyId ? 999 : 100,
+        // ...{ zIndex: item.companyId === 'DccBRhlrSiu9gMV7fmvizw' ? 998 : 100 },
       };
     });
 
@@ -100,14 +100,15 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { status, companyName, companyId } = extData;
+    const { status, companyName, companyId, unnormal, faultNum } = extData;
     let imgSrc = pointNormal;
-    if (+status === 0 || +status === -1) {
-      imgSrc = pointNormal;
-    } else if (+status === 1) {
-      imgSrc = pointPreAlarm;
-    } else if (+status === 2) {
+
+    if (+unnormal > 0) {
       imgSrc = pointAlarm;
+    } else if (+faultNum > 0) {
+      imgSrc = pointPreAlarm;
+    } else {
+      imgSrc = pointNormal;
     }
     return (
       <div style={{ position: 'relative' }} key={companyId}>
@@ -131,7 +132,7 @@ export default class MapSection extends PureComponent {
   };
 
   handleMapClick = extData => {
-    if (extData.comapnyId === this.state.infoWindow.companyId) return;
+    if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
     this.setState({
       infoWindowShow: true,
       infoWindow: {
@@ -148,13 +149,13 @@ export default class MapSection extends PureComponent {
     return tips.map((item, index) => {
       return (
         <Marker
+          key={index}
           offset={[-100, -72]}
           position={[item.longitude, item.latitude]}
           zIndex={1000}
           extData={item}
           events={{
             click: e => {
-              console.log('e', e);
               const newIds = [...alarmIds];
               newIds.splice(index, 1);
               this.props.handleParentChange({ maintenanceDrawerVisible: true, alarmIds: newIds });
@@ -182,7 +183,7 @@ export default class MapSection extends PureComponent {
         principalName,
         principalPhone,
         companyName,
-        comapnyId,
+        companyId,
         longitude,
         latitude,
         count,
@@ -192,6 +193,8 @@ export default class MapSection extends PureComponent {
         outContact,
       },
     } = this.state;
+    const { handleAlarmClick } = this.props;
+    const activeStyles = classNames(styles.statusItem, styles.itemActive);
     return (
       <InfoWindow
         position={{ longitude, latitude }}
@@ -199,7 +202,7 @@ export default class MapSection extends PureComponent {
         isCustom={false}
         autoMove={true}
         visible={infoWindowShow}
-        key={comapnyId}
+        key={companyId}
       >
         <div className={styles.comapnyWrapper}>
           <h3 className={styles.comapnyName}>{companyName}</h3>
@@ -232,11 +235,14 @@ export default class MapSection extends PureComponent {
               <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
               正常 {normal}
             </div>
-            <div className={styles.statusItem}>
+            <div
+              className={unnormal > 0 ? activeStyles : styles.statusItem}
+              onClick={() => handleAlarmClick(undefined, companyId, companyName)}
+            >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
               报警 {unnormal}
             </div>
-            <div className={styles.statusItem}>
+            <div className={+faultNum > 0 ? activeStyles : styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
               故障 {faultNum}
             </div>

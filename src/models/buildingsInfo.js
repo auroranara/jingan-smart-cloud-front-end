@@ -183,14 +183,18 @@ export default {
     },
 
     // 删除建筑
-    *removeBuilding({ payload, callback }, { call, put }) {
+    *removeBuilding({ payload, success, error }, { call, put }) {
       const response = yield call(deleteBuildings, payload);
       if (response.code === 200) {
         yield put({
           type: 'delete',
           payload: payload.id,
         });
-        if (callback) callback(response);
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 

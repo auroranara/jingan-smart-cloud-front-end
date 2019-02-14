@@ -8,6 +8,7 @@ import router from 'umi/router';
 import codes from '@/utils/codes';
 import { hasAuthority } from '@/utils/customAuth';
 import styles from './index.less';
+import { message } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -93,8 +94,12 @@ export default class BeaconManagement extends PureComponent {
   }
 
   // 点击查看信标列表
-  handleViewBeacons = ({ id }) => {
-    router.push(`/personnel-position/beacon-management/company/${id}`)
+  handleViewBeacons = ({ id }, auth) => {
+    if (auth) {
+      router.push(`/personnel-position/beacon-management/company/${id}`)
+      return
+    }
+    message.warning('您没有权限访问对应页面')
   }
 
   render() {
@@ -169,8 +174,8 @@ export default class BeaconManagement extends PureComponent {
                 const {
                   id,
                   name, // 公司名称
-                  safetyName = null,
-                  safetyPhone = null,
+                  principalName = null,
+                  principalPhone = null,
                   practicalAddress = null, // 地址
                   beaconCount = 0,         // 信标数
                 } = item
@@ -178,17 +183,17 @@ export default class BeaconManagement extends PureComponent {
                   <List.Item key={id}>
                     <Card title={name} className={styles.card}>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                      {safetyName?`主要负责人：${safetyName}`:'暂无信息'}
+                        主要负责人：{principalName || '暂无信息'}
                       </Ellipsis>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                      {safetyPhone ?`联系电话：${safetyPhone}`: '暂无信息'}
+                        联系电话：{principalPhone || '暂无信息'}
                       </Ellipsis>
                       <div className={styles.lsEllipsis}>
-                      <Ellipsis tooltip lines={1}>
-                         {practicalAddress ?`地址：${practicalAddress}`:'暂无信息'}
-                      </Ellipsis>
+                        <Ellipsis tooltip lines={1}>
+                          地址：{practicalAddress || '暂无信息'}
+                        </Ellipsis>
                       </div>
-                      <div className={styles.countContainer} onClick={viewAuth ? () => this.handleViewBeacons(item) : null}>
+                      <div className={styles.countContainer} onClick={() => this.handleViewBeacons(item, viewAuth)}>
                         <div className={styles.count}>{beaconCount}</div>
                         <p className={styles.text}>信标数</p>
                       </div>

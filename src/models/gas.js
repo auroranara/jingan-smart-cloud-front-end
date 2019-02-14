@@ -13,6 +13,7 @@ import {
   getImportingTotal, // 接入单位统计
   getAbnormalingTotal, // 异常单位统计
   getPendingMission, // 待处理业务
+  getGasForMaintenance,
 } from '../services/gas';
 // 获取单位集
 const getUnitSet = function(units) {
@@ -146,6 +147,8 @@ export default {
     deviceHistoryData: [],
     // 摄像头列表
     cameraList: [],
+    // 报警处理流程
+    gasForMaintenance: [],
   },
 
   effects: {
@@ -401,6 +404,21 @@ export default {
       const { list } = response;
       yield put({ type: 'saveCameraList', payload: list });
     },
+    // 报警处理流程
+    *fetchGasForMaintenance({ payload, success, error }, { call, put }) {
+      const response = yield call(getGasForMaintenance, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'gasForMaintenance',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
   },
   reducers: {
     // 保存
@@ -424,6 +442,12 @@ export default {
     },
     saveCameraList(state, action) {
       return { ...state, cameraList: action.payload };
+    },
+    gasForMaintenance(state, { payload }) {
+      return {
+        ...state,
+        gasForMaintenance: payload.list,
+      };
     },
   },
 };

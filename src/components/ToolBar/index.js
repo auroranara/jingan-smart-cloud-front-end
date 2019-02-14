@@ -123,8 +123,8 @@ class ToolBar extends PureComponent {
       onReset,
       form: { resetFields, getFieldsValue },
     } = this.props;
-    const values = getFieldsValue();
     resetFields();
+    const values = getFieldsValue();
     if (onReset) {
       onReset(values);
     }

@@ -25,7 +25,7 @@ export async function getPendingMission(params) {
 
 // 获取告警信息列表
 export async function getMessages(params) {
-  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=3`);
+  return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=4`);
 }
 
 // 获取网格id
@@ -66,4 +66,9 @@ export async function getDeviceHistoryData(params) {
 // 视频列表
 export async function getCameraList(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
+}
+
+// 报警处理流程
+export async function getGasForMaintenance(params) {
+  return request(`${URL_PREFIX}/shg/getGasForMaintenance?${stringify(params)}`);
 }

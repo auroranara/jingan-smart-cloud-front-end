@@ -3,19 +3,16 @@ import { Form, Button, Card, Row, Col } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import { connect } from 'dva';
+import DescriptionList from '@/components/DescriptionList';
 
+const { Description } = DescriptionList;
 const FormItem = Form.Item;
 
 const title = "标签详情"
-const breadcrumblist = [
-  { title: '首页', name: '首页', href: '/' },
-  { title: '人员定位', name: '人员定位' },
-  { title: '标签管理', name: '标签管理', href: '/personnel-position/tag-management/list' },
-  { title, name: title },
-]
-const formItemLayout = {
-  labelCol: { span: 10 },
-  wrapperCol: { span: 12 },
+
+/* 获取无数据 */
+const getEmptyData = () => {
+  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
 const rowStyle = {
@@ -92,23 +89,41 @@ export default class TagManagementDetail extends PureComponent {
         },
         systemConfiguration: { sysList = [] },
       },
+      location: { query: { companyId } },
     } = this.props
     const { newSysName } = this.state
+
+    const breadcrumbList = [
+      { title: '首页', name: '首页', href: '/' },
+      { title: '人员定位', name: '人员定位' },
+      { title: '标签管理', name: '标签管理', href: '/personnel-position/tag-management/companies' },
+      { title: '标签列表', name: '标签列表', href: `/personnel-position/tag-management/company/${companyId}` },
+      { title, name: title },
+    ]
     return (
       <PageHeaderLayout
         title={title}
-        breadcrumblist={breadcrumblist}
+        breadcrumbList={breadcrumbList}
       >
         <Card>
-          {this.renderRow('标签号', code)}
-          {this.renderRow('所属系统', newSysName)}
-          {this.renderRow('标签分类', +type === 0 ? '普通卡' : '临时卡')}
-          {+type === 0 && (
-            <Fragment>
-              {this.renderRow('持卡人', userName || '暂无数据')}
-              {this.renderRow('联系方式', phoneNumber || '暂无数据')}
-            </Fragment>
-          )}
+          <DescriptionList
+            col={1}
+            style={{
+              position: 'relative',
+              // top: '50%',
+              marginLeft: '45%',
+            }}
+          >
+            <Description term="标签号">{code || getEmptyData()}</Description>
+            <Description term="所属系统">{newSysName || getEmptyData()}</Description>
+            <Description term="标签分类">{+type === 0 ? '普通卡' : '临时卡' || getEmptyData()}</Description>
+            {+type === 0 && (
+              <Fragment>
+                <Description term="持卡人">{userName || getEmptyData()}</Description>
+                <Description term="联系方式">{phoneNumber || getEmptyData()}</Description>
+              </Fragment>
+            )}
+          </DescriptionList>
           {/* <div style={{ marginTop: '24px', textAlign: 'center' }}>
             <Button onClick={() => { router.push('/personnel-position/tag-management/list') }}>返回</Button>
           </div> */}

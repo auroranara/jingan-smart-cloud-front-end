@@ -14,53 +14,6 @@ import {
   queryAddCompanyOptions,
 } from '../services/company/company.js';
 
-// const mergeArea = (area, ids, list) => {
-//   return ids.length === 0
-//   ? list
-//   : area.map(province => {
-//       if (province.id === ids[0]) {
-//         if (ids.length !== 1) {
-//           return {
-//             ...province,
-//             children: province.children.map(city => {
-//               if (city.id === ids[1]) {
-//                 if (ids.length !== 2) {
-//                   return {
-//                     ...city,
-//                     children: city.children.map(district => {
-//                       if (district.id === ids[2]) {
-//                         return {
-//                           ...district,
-//                           children: list,
-//                           loading: false,
-//                         };
-//                       }
-//                       return district;
-//                     }),
-//                   };
-//                 } else {
-//                   return {
-//                     ...city,
-//                     children: list,
-//                     loading: false,
-//                   };
-//                 }
-//               }
-//               return city;
-//             }),
-//           };
-//         } else {
-//           return {
-//             ...province,
-//             children: list,
-//             loading: false,
-//           };
-//         }
-//       }
-//       return province;
-//     });
-// };
-
 export default {
   namespace: 'company',
 
@@ -377,11 +330,12 @@ export default {
         list,
         pagination: { pageNum, pageSize, total },
       } = payload;
-      // console.log('payload', payload);
+      console.log('payload', payload.pagination.pageNum);
       return {
         ...state,
         list,
         data: payload,
+        pageNum,
         isLast: pageNum * pageSize >= total,
       };
     },
@@ -426,15 +380,6 @@ export default {
         },
       };
     },
-    // addCompany(state, { payload }) {
-    //   return {
-    //     ...state,
-    //     detail: {
-    //       ...state.detail,
-    //       data: payload,
-    //     },
-    //   };
-    // },
     updateCompany(state, { payload }) {
       return {
         ...state,

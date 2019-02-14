@@ -79,6 +79,7 @@ const Supervisions = [
   { id: '1', label: '安全生产' },
   { id: '2', label: '消防' },
   { id: '3', label: '环保' },
+  { id: '4', label: '卫生' },
 ];
 
 const SUPERVISIONS_ALL = Supervisions.map(({ id }) => id);
@@ -251,19 +252,19 @@ export default class accountManagementEdit extends PureComponent {
     const success = id
       ? undefined
       : ({ unitType: unitTypes }) => {
-        // 默认选取第一个类型
-        unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
-        // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        unitTypes &&
-          unitTypes.length &&
-          fetchUnitsFuzzy({
-            payload: {
-              unitType: unitTypes[0].id,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
-      };
+          // 默认选取第一个类型
+          unitTypes && unitTypes.length && this.setState({ unitTypeChecked: unitTypes[0].id });
+          // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+          unitTypes &&
+            unitTypes.length &&
+            fetchUnitsFuzzy({
+              payload: {
+                unitType: unitTypes[0].id,
+                pageNum: 1,
+                pageSize: defaultPageSize,
+              },
+            });
+        };
 
     // 清空权限树
     dispatch({ type: 'account/saveMaintenanceTree', payload: {} });
@@ -425,8 +426,8 @@ export default class accountManagementEdit extends PureComponent {
             });
           };
           // 数据权限所有选中的key值
-          const checkedKeys = [...serCheckedKeys, ...subCheckedKeys]
-          const maintenacePermissions = handleMtcTree(checkedKeys, this.childrenMap)
+          const checkedKeys = [...serCheckedKeys, ...subCheckedKeys];
+          const maintenacePermissions = handleMtcTree(checkedKeys, this.childrenMap);
           // 如果id存在的话，为编辑
           if (id) {
             updateAccountDetail({
@@ -591,8 +592,14 @@ export default class accountManagementEdit extends PureComponent {
       searchSerValue: '',
       searchSubValue: '',
       checkedRootKey: undefined,
-    })
-    resetFields(['serCheckedKeys', 'subCheckedKeys', 'isCheckAll', 'isCheckAllSub', 'isCheckAllSer'])
+    });
+    resetFields([
+      'serCheckedKeys',
+      'subCheckedKeys',
+      'isCheckAll',
+      'isCheckAllSub',
+      'isCheckAllSer',
+    ]);
     // 只有类型是维保单位的时候才请求维保树
     // console.log(unitTypeChecked);
     unitTypeChecked === 1 && this.getMaintenanceTree(value.key);
@@ -679,20 +686,18 @@ export default class accountManagementEdit extends PureComponent {
   handleCheckAll = (isCheckAll, checkedRootKey) => {
     const {
       form: { setFieldsValue },
-      account: {
-        maintenanceSerTree = [],
-        maintenanceSubTree = [],
-      },
-    } = this.props
-    const serCheckedKeys = isCheckAll ? maintenanceSerTree.map(item => item.key) : []
-    const subCheckedKeys = isCheckAll ? maintenanceSubTree.map(item => item.key) : []
-    const isCheckAllSub = isCheckAll, isCheckAllSer = isCheckAll
-    let fields = { isCheckAll }
-    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer, serCheckedKeys })
-    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub, subCheckedKeys })
-    setFieldsValue(fields)
-    this.setState({ checkedRootKey: isCheckAll ? checkedRootKey : undefined })
-  }
+      account: { maintenanceSerTree = [], maintenanceSubTree = [] },
+    } = this.props;
+    const serCheckedKeys = isCheckAll ? maintenanceSerTree.map(item => item.key) : [];
+    const subCheckedKeys = isCheckAll ? maintenanceSubTree.map(item => item.key) : [];
+    const isCheckAllSub = isCheckAll,
+      isCheckAllSer = isCheckAll;
+    let fields = { isCheckAll };
+    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer, serCheckedKeys });
+    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub, subCheckedKeys });
+    setFieldsValue(fields);
+    this.setState({ checkedRootKey: isCheckAll ? checkedRootKey : undefined });
+  };
 
   /* 监听勾选全部服务单位 */
   handleCheckAllSer = e => {
@@ -703,20 +708,23 @@ export default class accountManagementEdit extends PureComponent {
         maintenanceSerTree = [],
         maintenanceSubTree = [],
       },
-    } = this.props
-    const checked = e.target.checked
+    } = this.props;
+    const checked = e.target.checked;
     if (checked) {
-      const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub')
+      const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub');
       // 服务单位第一层keys
-      const serCheckedKeys = maintenanceSerTree.map(item => item.key)
+      const serCheckedKeys = maintenanceSerTree.map(item => item.key);
       // 如果分公司没有数据，服务单位就是全选状态
-      setFieldsValue({ isCheckAll: maintenanceSubTree.length === 0 || isCheckAllSub, serCheckedKeys })
-      this.setState({ checkedRootKey: isCheckAllSub ? treeList[0].key : undefined })
+      setFieldsValue({
+        isCheckAll: maintenanceSubTree.length === 0 || isCheckAllSub,
+        serCheckedKeys,
+      });
+      this.setState({ checkedRootKey: isCheckAllSub ? treeList[0].key : undefined });
     } else {
-      setFieldsValue({ isCheckAll: false, serCheckedKeys: [] })
-      this.setState({ checkedRootKey: undefined })
+      setFieldsValue({ isCheckAll: false, serCheckedKeys: [] });
+      this.setState({ checkedRootKey: undefined });
     }
-  }
+  };
 
   /* 监听勾选全部分公司 */
   handleCheckAllSub = e => {
@@ -727,19 +735,22 @@ export default class accountManagementEdit extends PureComponent {
         maintenanceSerTree = [],
         maintenanceSubTree = [],
       },
-    } = this.props
-    const checked = e.target.checked
+    } = this.props;
+    const checked = e.target.checked;
     if (checked) {
-      const isCheckAllSer = maintenanceSerTree.length === 0 || getFieldValue('isCheckAllSer')
+      const isCheckAllSer = maintenanceSerTree.length === 0 || getFieldValue('isCheckAllSer');
       // 分公司第一次层keys
-      const subCheckedKeys = maintenanceSubTree.map(item => item.key)
-      setFieldsValue({ isCheckAll: maintenanceSerTree.length === 0 || isCheckAllSer, subCheckedKeys })
-      this.setState({ checkedRootKey: isCheckAllSer ? treeList[0].key : undefined })
+      const subCheckedKeys = maintenanceSubTree.map(item => item.key);
+      setFieldsValue({
+        isCheckAll: maintenanceSerTree.length === 0 || isCheckAllSer,
+        subCheckedKeys,
+      });
+      this.setState({ checkedRootKey: isCheckAllSer ? treeList[0].key : undefined });
     } else {
-      setFieldsValue({ isCheckAll: false, subCheckedKeys: [] })
-      this.setState({ checkedRootKey: undefined })
+      setFieldsValue({ isCheckAll: false, subCheckedKeys: [] });
+      this.setState({ checkedRootKey: undefined });
     }
-  }
+  };
 
   /* 渲染基础信息 */
   renderBasicInfo() {
@@ -804,8 +815,8 @@ export default class accountManagementEdit extends PureComponent {
                   id ? (
                     <span>{loginName}</span>
                   ) : (
-                      <Input placeholder="请输入用户名" min={1} max={20} />
-                    )
+                    <Input placeholder="请输入用户名" min={1} max={20} />
+                  )
                 )}
               </Form.Item>
             </Col>
@@ -860,7 +871,7 @@ export default class accountManagementEdit extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            <Col lg={8} md={12} sm={24} >
+            <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.userName}>
                 {getFieldDecorator('userName', {
                   initialValue: userName,
@@ -1155,18 +1166,18 @@ export default class accountManagementEdit extends PureComponent {
       account: {
         maintenanceTree: { list = [] },
         maintenanceSerTree = [], // 服务单位公司列表
-        maintenanceSubTree = [],   // 分公司列表
+        maintenanceSubTree = [], // 分公司列表
       },
     } = this.props;
     // 因为服务单位理论上没有children，所以判断length
-    const isCheckAllSer = maintenanceSerTree.length === serCheckedKeys.length
+    const isCheckAllSer = maintenanceSerTree.length === serCheckedKeys.length;
     // 如果分公司无数据，默认当作全选状态
-    const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub')
-    const isCheckAll = isCheckAllSer && isCheckAllSub
-    let fields = { serCheckedKeys, isCheckAll, isCheckAllSer }
-    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub })
+    const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub');
+    const isCheckAll = isCheckAllSer && isCheckAllSub;
+    let fields = { serCheckedKeys, isCheckAll, isCheckAllSer };
+    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub });
     setFieldsValue(fields);
-    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined })
+    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined });
   };
 
   // 勾选分公司及服务单位
@@ -1179,34 +1190,34 @@ export default class accountManagementEdit extends PureComponent {
         maintenanceSubTree = [], // 分公司单位列表
       },
     } = this.props;
-    const subKeys = maintenanceSubTree.map(item => item.key)
-    const isCheckAllSer = getFieldValue('isCheckAllSer')
-    const isCheckAllSub = this.isAContentsB(subCheckedKeys, subKeys)
-    const isCheckAll = isCheckAllSer && isCheckAllSub
-    let fields = { subCheckedKeys, isCheckAll, isCheckAllSub }
-    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer })
+    const subKeys = maintenanceSubTree.map(item => item.key);
+    const isCheckAllSer = getFieldValue('isCheckAllSer');
+    const isCheckAllSub = this.isAContentsB(subCheckedKeys, subKeys);
+    const isCheckAll = isCheckAllSer && isCheckAllSub;
+    let fields = { subCheckedKeys, isCheckAll, isCheckAllSub };
+    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer });
     setFieldsValue(fields);
-    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined })
+    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined });
   };
 
   isAContentsB = (a, b) => {
     for (const item of b) {
-      if (!a.includes(item)) return false
+      if (!a.includes(item)) return false;
     }
-    return true
-  }
+    return true;
+  };
 
   // 展开分公司及服务单位
   onSubExpand = subExpandedKeys => {
     this.setState({
       subExpandedKeys,
     });
-  }
+  };
 
   // 判断两个字符串数组内容是否一样
   isArrContentSame = (first, second) => {
-    return first.sort().join(',') === second.sort().join(',')
-  }
+    return first.sort().join(',') === second.sort().join(',');
+  };
 
   // 数据权限服务单位搜索
   onSerTreeSearch = (value, tree) => {
@@ -1223,7 +1234,7 @@ export default class accountManagementEdit extends PureComponent {
       subExpandedKeys,
       searchSubValue: value,
     });
-  }
+  };
 
   handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
     // console.log(nextTargetKeys);
@@ -1380,46 +1391,56 @@ export default class accountManagementEdit extends PureComponent {
                 <p className={styles.dpTitle}>维保权限</p>
                 <div className={styles.dpContent}>
                   <div className={styles.line}>
-                    <span>本单位：{treeList[0].title}</span>
+                    <span>
+                      本单位：
+                      {treeList[0].title}
+                    </span>
                     {getFieldDecorator('isCheckAll', {
                       valuePropName: 'checked',
                     })(
-                      <Checkbox onChange={e => this.handleCheckAll(e.target.checked, treeList[0].key)}>全选</Checkbox>
+                      <Checkbox
+                        onChange={e => this.handleCheckAll(e.target.checked, treeList[0].key)}
+                      >
+                        全选
+                      </Checkbox>
                     )}
                   </div>
                   <div className={styles.line}>
                     <span>本单位的服务单位：</span>
-                    {maintenanceSerTree.length > 0 && getFieldDecorator('isCheckAllSer', {
-                      valuePropName: 'checked',
-                    })(
-                      <Checkbox onChange={this.handleCheckAllSer}>全选</Checkbox>
-                    )}
+                    {maintenanceSerTree.length > 0 &&
+                      getFieldDecorator('isCheckAllSer', {
+                        valuePropName: 'checked',
+                      })(<Checkbox onChange={this.handleCheckAllSer}>全选</Checkbox>)}
                     {maintenanceSerTree.length > 0 ? (
                       <Fragment>
-                        <Search placeholder="请输入单位名称查询" onChange={e => this.onSerTreeSearch(e.target.value, maintenanceSerTree)} />
+                        <Search
+                          placeholder="请输入单位名称查询"
+                          onChange={e => this.onSerTreeSearch(e.target.value, maintenanceSerTree)}
+                        />
                         {getFieldDecorator('serCheckedKeys', {
                           valuePropName: 'checkedKeys',
                         })(
-                          <Tree
-                            checkable
-                            onCheck={this.onSerCheck}
-                          >
+                          <Tree checkable onCheck={this.onSerCheck}>
                             {renderSearchedTreeNodes(maintenanceSerTree, searchSerValue)}
                           </Tree>
                         )}
                       </Fragment>
-                    ) : (<span>暂无数据</span>)}
+                    ) : (
+                      <span>暂无数据</span>
+                    )}
                   </div>
                   <div className={styles.line}>
                     <span>分公司及其服务单位：</span>
-                    {maintenanceSubTree.length > 0 && getFieldDecorator('isCheckAllSub', {
-                      valuePropName: 'checked',
-                    })(
-                      <Checkbox onChange={this.handleCheckAllSub}>全选</Checkbox>
-                    )}
+                    {maintenanceSubTree.length > 0 &&
+                      getFieldDecorator('isCheckAllSub', {
+                        valuePropName: 'checked',
+                      })(<Checkbox onChange={this.handleCheckAllSub}>全选</Checkbox>)}
                     {maintenanceSubTree.length > 0 ? (
                       <Fragment>
-                        <Search placeholder="请输入单位名称查询" onChange={e => this.onSubTreeSearch(e.target.value, maintenanceSubTree)} />
+                        <Search
+                          placeholder="请输入单位名称查询"
+                          onChange={e => this.onSubTreeSearch(e.target.value, maintenanceSubTree)}
+                        />
                         {getFieldDecorator('subCheckedKeys', {
                           valuePropName: 'checkedKeys',
                         })(
@@ -1433,7 +1454,9 @@ export default class accountManagementEdit extends PureComponent {
                           </Tree>
                         )}
                       </Fragment>
-                    ) : (<span>暂无数据</span>)}
+                    ) : (
+                      <span>暂无数据</span>
+                    )}
                   </div>
                 </div>
               </Col>

@@ -41,7 +41,7 @@ const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
 //   noAccess: Math.floor(Math.random() * 10),
 // }));
 
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
+// const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
 
 export default class AlarmDrawer extends PureComponent {
   state={ graph: 0, selected: 0, searchValue: '' };
@@ -121,27 +121,30 @@ export default class AlarmDrawer extends PureComponent {
             percent={alarmPercent}
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
-            style={{ marginTop: 40, cursor: 'pointer' }}
+            style={{
+              marginTop: 40,
+              // cursor: 'pointer',
+            }}
             iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(2)}
+            // onClick={this.genProgressClick(2)}
           />
           <OvProgress
             title="预警单位"
             percent={warnPercent}
             quantity={warnNum}
             strokeColor="rgb(246,181,78)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitYellowIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(3)}
+            // onClick={this.genProgressClick(3)}
           />
           <OvProgress
             title="正常单位"
             percent={commonPercent}
             quantity={commonNum}
             strokeColor="rgb(0,251,252)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(1)}
+            // onClick={this.genProgressClick(1)}
           />
         </DrawerSection>
         <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>
@@ -150,6 +153,25 @@ export default class AlarmDrawer extends PureComponent {
       </Fragment>
     );
 
+    let cards = <p className={styles.empty}>暂无数据</p>;
+    if (filteredList.length)
+      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
+        <DrawerCard
+          key={companyId}
+          name={name || NO_DATA}
+          location={address || NO_DATA}
+          person={safetyMan || NO_DATA}
+          phone={safetyPhone || NO_DATA}
+          style={{ cursor: 'auto' }}
+          more={
+            <p className={styles.more}>
+              {[common, alarm, warn, noAccess].map((n, i) => (
+                <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+              ))}
+            </p>
+          }
+        />
+      ));
     const right = (
       <SearchBar
         // value={value}
@@ -157,23 +179,7 @@ export default class AlarmDrawer extends PureComponent {
         // onChange={this.handleChange}
         extra={select}
       >
-        {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
-          <DrawerCard
-            key={companyId}
-            name={name || NO_DATA}
-            location={address || NO_DATA}
-            person={safetyMan || NO_DATA}
-            phone={safetyPhone || NO_DATA}
-            style={{ cursor: 'auto' }}
-            more={
-              <p className={styles.more}>
-                {[common, alarm, warn, noAccess].map((n, i) => (
-                  <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                ))}
-              </p>
-            }
-          />
-        ))}
+        {cards}
       </SearchBar>
     );
 

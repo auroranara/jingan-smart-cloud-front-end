@@ -50,15 +50,14 @@ export default class FloorManagementEdit extends PureComponent {
         params: { id },
       },
       location: {
-        query: { id: buildingId },
+        query: { id: buildingId, buildingId: buildingIdNew },
       },
     } = this.props;
-
     // 获取楼层编号
     dispatch({
       type: 'buildingsInfo/fetchFloorNumber',
       payload: {
-        building_id: buildingId,
+        building_id: buildingId || buildingIdNew,
       },
     });
     if (id) {

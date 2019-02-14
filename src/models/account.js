@@ -296,12 +296,14 @@ export default {
     *fetchMaintenanceTree({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceTree, payload);
       if (response && response.code === 200) {
-        const list = response.data.list || []
-        if (list.length < 1) return
-        const [{ children } = {}] = list
-        const maintenanceSerTree = Array.isArray(children) && children.filter(item => item.type === '0') || []
-        const maintenanceSubTree = Array.isArray(children) && children.filter(({ type }) => type === '1') || []
-        const payload = { ...response.data, maintenanceSerTree, maintenanceSubTree }
+        const list = response.data.list || [];
+        if (list.length < 1) return;
+        const [{ children } = {}] = list;
+        const maintenanceSerTree =
+          (Array.isArray(children) && children.filter(item => item.type === '0')) || [];
+        const maintenanceSubTree =
+          (Array.isArray(children) && children.filter(({ type }) => type === '1')) || [];
+        const payload = { ...response.data, maintenanceSerTree, maintenanceSubTree };
         yield put({
           type: 'saveMaintenanceTree',
           payload,
@@ -322,6 +324,7 @@ export default {
         ...state,
         list,
         data: payload,
+        pageNum,
         isLast: pageNum * pageSize >= total,
       };
     },
@@ -463,9 +466,14 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
-      }
+      };
     },
-    saveMaintenanceTree(state, { payload: { list, maintenanceSerTree, maintenanceSubTree } }) {
+    saveMaintenanceTree(
+      state,
+      {
+        payload: { list, maintenanceSerTree, maintenanceSubTree },
+      }
+    ) {
       return {
         ...state,
         maintenanceTree: { list },
@@ -485,7 +493,7 @@ export default {
             pageNum: 1,
           },
         },
-      }
+      };
     },
   },
 };

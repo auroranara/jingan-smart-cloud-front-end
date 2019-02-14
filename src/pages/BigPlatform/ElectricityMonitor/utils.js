@@ -75,3 +75,24 @@ export function getAlarmUnits(unitSet) {
     return prev;
   }, {});
 }
+
+// 将传入图标的数组的横坐标值太长的情况做处理，当大于等于3个项目时，最后一个横坐标的名字大于10个字符时，超出的用省略号替代
+export function handleChartLabel(list) {
+  const length = list.length;
+  return list.map((item, i) => {
+    const name = item.name;
+    return {
+      ...item,
+      name: length > 2 && i === length - 1 && name.length > 10 ? `${name.slice(0, 10)}...` : name,
+    };
+  });
+}
+
+// 作用同上述函数，只是返回值为单独的标签列表
+export function getChartLabels(list) {
+  const length = list.length;
+  return list.map((item, i) => {
+    const name = item.name;
+    return length > 2 && i === length - 1 && name.length > 10 ? `${name.slice(0, 10)}...` : name;
+  });
+}

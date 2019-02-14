@@ -21,7 +21,7 @@ export default {
   },
 
   effects: {
-    *login({ payload, error, handleMoreUser }, { call, put }) {
+    *login({ payload, success, error, handleMoreUser }, { call, put }) {
       const response = yield call(accountLogin, payload);
       if (response && response.code === 200) {
         if (response.data.isMoreUser) {
@@ -43,6 +43,7 @@ export default {
           reloadAuthorized();
           router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
         }
+        success && success ();
       } else error(response.msg);
     },
 

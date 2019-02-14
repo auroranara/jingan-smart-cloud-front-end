@@ -1,12 +1,11 @@
-import { PureComponent, Fragment } from 'react';
-import { Card, Form, Button, Row, Col, Table, Divider, Modal, Input, Select, Tooltip, Icon } from 'antd';
+import { PureComponent } from 'react';
+import { Card, Button, Row, Col, Table, Divider, Popconfirm } from 'antd';
 import codes from '@/utils/codes'
 import { connect } from 'dva';
+import router from 'umi/router';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-
-const FormItem = Form.Item;
-const InputGroup = Input.Group;
+import { message } from 'antd';
 
 const {
   personnelPosition: {
@@ -15,6 +14,7 @@ const {
       edit: editCode,
       delete: deleteCode,
       associateBeacon: associateBeaconCode,
+      associateMap: associateMapCode,
     },
   },
 } = codes
@@ -27,44 +27,23 @@ const breadcrumbList = [
   { name: '地图管理', title: '地图管理', href: '/personnel-position/map-management/list' },
   { name: title, title },
 ];
-
-const typeInfo = [
-  { label: '单位平面图', value: '1' },
-  { label: '楼层平面图', value: '2' },
-]
-const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
-const formLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
-}
-
-@Form.create()
+// const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
+// const formLayout = {
+//   labelCol: { span: 6 },
+//   wrapperCol: { span: 18 },
+// }
 @connect(({ user, personnelPosition, loading }) => ({
   user,
   personnelPosition,
 }))
 export default class MapManagementList extends PureComponent {
 
-  state = {
-    modalVisible: false, // 新增、编辑弹窗可见
-    modalTitle: '新增地图',
-  }
-
   componentDidMount() {
     const {
-      match: { params: { id: companyId } },
+      match: { params: { companyId } },
     } = this.props
     // 获取地图列表
     this.fetchMaps({ payload: { pageNum: 1, pageSize: defaultPageSize, companyId } })
-  }
-
-  // 获取单位列表
-  fetchCompanyList = (actions) => {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'personnelPosition/fetchCompanyList',
-      ...actions,
-    })
   }
 
   // 获取地图列表
@@ -76,48 +55,60 @@ export default class MapManagementList extends PureComponent {
     })
   }
 
-  // 关闭弹窗
-  handleCloseModal = () => {
-    this.setState({ modalVisible: false })
-  }
-
-  // 打开新增地图弹窗
+  // 点击新增按钮
   handleToAdd = () => {
-    this.setState({
-      modalTitle: '新增弹窗',
-      modalVisible: true,
-    })
+    const { match: { params: { companyId } } } = this.props
+    router.push(`/personnel-position/map-management/company-map/${companyId}/add`)
   }
 
-  // 选择建筑物
-  handleSelectBuilding = (value) => {
+  // 点击编辑
+  handleToEdit = ({ id }) => {
+    const { match: { params: { companyId } } } = this.props
+    router.push(`/personnel-position/map-management/company-map/${companyId}/edit/${id}`)
+  }
+
+  // 处理翻页和改变每页显示数量
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      match: { params: { companyId } },
+    } = this.props
+    this.fetchMaps({ payload: { pageSize, pageNum, companyId } })
+  }
+
+  // 删除地图
+  handleDelete = id => {
     const {
       dispatch,
-      form: { resetFields },
+      match: { params: { companyId } },
     } = this.props
-    // 获取楼层
     dispatch({
-      type: 'personnelPosition/fetchFloors',
-      payload: { pageNum: 1, pageSize: 0, building_id: value },
+      type: 'personnelPosition/deleteMap',
+      payload: { id },
+      success: () => {
+        message.success('删除成功')
+        // 更新地图列表
+        this.fetchMaps({ payload: { pageNum: 1, pageSize: defaultPageSize, companyId } })
+      },
+      error: () => { message.error('删除失败') },
     })
-    resetFields(['floorId'])
   }
 
   render() {
     const {
-      form: { getFieldDecorator, getFieldValue },
       user: {
         currentUser: { permissionCodes },
       },
       personnelPosition: {
         map: {
           maps = [],
-          buildings = [], // 建筑物列表
-          floors = [],      // 楼层列表
+          mapPagination: {
+            pageNum,
+            pageSize,
+            total,
+          },
         },
       },
     } = this.props
-    const { modalVisible, modalTitle } = this.state
     // 删除权限
     const deleteAuth = hasAuthority(deleteCode, permissionCodes)
     const addAuth = hasAuthority(addCode, permissionCodes)
@@ -139,20 +130,20 @@ export default class MapManagementList extends PureComponent {
       },
       {
         title: '所属建筑物',
-        dataIndex: 'ownBuilding',
-        key: 'ownBuilding',
+        dataIndex: 'buildingName',
+        key: 'buildingName',
         align: 'center',
         width: 250,
         render: (val) => (<span>{val || '———'}</span>),
       },
-      {
+      /* {
         title: '地图关联',
         dataIndex: 'mapAssociate',
         key: 'mapAssociate',
         align: 'center',
         width: 150,
         render: (val) => (<span>{val ? !!val ? '已关联' : '未关联' : '———'}</span>),
-      },
+      }, */
       {
         title: '操作',
         key: '操作',
@@ -160,26 +151,23 @@ export default class MapManagementList extends PureComponent {
         width: 400,
         render: (val, row) => (
           <span>
-            <a href="">删除</a>
+            {deleteAuth ? (
+              <Popconfirm title="确认要删除该地图吗？" onConfirm={() => this.handleDelete(row.id)}>
+                <a href="">删除</a>
+              </Popconfirm>
+            ) : (<span style={{ cursor: 'not-allowed',color:'rgba(0, 0, 0, 0.25)' }}>删除</span>)}
             <Divider type="vertical" />
-            <AuthA code={editCode}>编辑</AuthA>
-            <Divider type="vertical" />
-            <AuthA code={associateBeaconCode}>关联信标</AuthA>
-            <Divider type="vertical" />
-            <a href="">关联地图</a>
+            <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
           </span>
         ),
       },
     ]
-    // 地图层级 '1' 单位平面图  '2' 楼层平面图
-    const mapHierarchy = getFieldValue('mapHierarchy')
     // const scale = getFieldValue('scale')
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} content={<span>地图总数：{total}</span>}>
         <Card>
           <Row>
-            <Button type="primary" disabled={!addAuth} style={{ marginRight: '10px' }} onClick={this.handleToAdd}>新增</Button>
-            <Button>删除</Button>
+            <Button type="primary" disabled={!addAuth} onClick={this.handleToAdd}>新增</Button>
           </Row>
           {/* 地图表格 */}
           <Table
@@ -187,77 +175,20 @@ export default class MapManagementList extends PureComponent {
             rowKey="id"
             columns={columns}
             dataSource={maps}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handlePageChange,
+              onShowSizeChange: (num, size) => {
+                this.handlePageChange(1, size);
+              },
+            }}
           ></Table>
         </Card>
-        {/* 新增编辑地图 */}
-        <Modal
-          title={modalTitle}
-          width={700}
-          visible={modalVisible}
-          onCancel={this.handleCloseModal}
-        >
-          <Form>
-            <FormItem label="地图名称" {...formLayout}>
-              {getFieldDecorator('mapName', {
-                rules: [{ required: true, message: '请输入地图名称' }],
-              })(
-                <Input placeholder="请输入" {...itemStyles} />
-              )}
-            </FormItem>
-            <FormItem label="地图层级" {...formLayout}>
-              {getFieldDecorator('mapHierarchy', {
-                rules: [{ required: true, message: '请选择地图层级' }],
-              })(
-                <Select placeholder="请选择" {...itemStyles}>
-                  {typeInfo.map(({ label, value }, i) => (
-                    <Select.Option key={i} value={value}>{label}</Select.Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem label="比例尺" {...formLayout}>
-              {getFieldDecorator('scale', {
-                rules: [
-                  { required: mapHierarchy === '1', message: '请输入比例尺' },
-                  { min: 1, message: '请输入大于0的整数' },
-                ],
-              })(
-                <Fragment>
-                  <Col span={3}><span>1(cm) ：</span></Col>
-                  <Col span={3}><Input /></Col>
-                  <Col span={3} offset={1}><span>(m)</span></Col>
-                  {/* <Col offset={1}>
-                    <Tooltip title="图上1cm表示实际距离？米">
-                      <Icon type="question-circle" />
-                    </Tooltip>
-                  </Col> */}
-                </Fragment>
-              )}
-            </FormItem>
-            {mapHierarchy === '2' && (
-              <FormItem label="所属建筑" {...formLayout}>
-                {getFieldDecorator('buildingId')(
-                  <Select placeholder="请选择" onSelect={this.handleSelectBuilding} {...itemStyles}>
-                    {buildings.map((item, i) => (
-                      <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            )}
-            {mapHierarchy === '2' && (
-              <FormItem label="所属楼层" {...formLayout} {...itemStyles}>
-                {/* {getFieldDecorator('floorId')(
-                  <Select placeholder="请选择" >
-                    {floors.map((item,i)=>(
-                      <Select.Option key={i} value={item.}>{item.}</Select.Option>
-                    ))}
-                  </Select>
-                )} */}
-              </FormItem>
-            )}
-          </Form>
-        </Modal>
       </PageHeaderLayout>
     )
   }

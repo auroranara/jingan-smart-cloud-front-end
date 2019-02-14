@@ -28,3 +28,8 @@ export async function deleteSystemConfiguration({ id }) {
     method: 'DELETE',
   });
 }
+
+// 系统配置选择企业时获取企业列表
+export async function fetchSysCompanies(params) {
+  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`)
+}

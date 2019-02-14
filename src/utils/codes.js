@@ -164,9 +164,11 @@ export default {
       add: 'personnelPosition.beaconManagement.add',
       edit: 'personnelPosition.beaconManagement.edit',
       delete: 'personnelPosition.beaconManagement.delete',
+      viewMap: 'personnelPosition.beaconManagement.viewMap',
     },
     // 标签管理
     tag: {
+      companyList: 'personnelPosition.tagManagement.companyList',
       list: 'personnelPosition.tagManagement.listView',
       add: 'personnelPosition.tagManagement.add',
       edit: 'personnelPosition.tagManagement.edit',
@@ -181,6 +183,25 @@ export default {
       edit: 'personnelPosition.mapManagement.edit',
       delete: 'personnelPosition.mapManagement.delete',
       associateBeacon: 'personnelPosition.mapManagement.associateBeacon',
+      associateMap: 'personnelPosition.mapManagement.associateMap',
+    },
+    // 区域管理
+    sectionManagement: {
+      companies: 'personnelPosition.sectionManagement.companies',
+      list: 'personnelPosition.sectionManagement.listView',
+      add: 'personnelPosition.sectionManagement.add',
+      edit: 'personnelPosition.sectionManagement.edit',
+      delete: 'personnelPosition.sectionManagement.delete',
+      divide: 'personnelPosition.sectionManagement.divide',
+    },
+    // 报警策略
+    alarmManagement: {
+      companyList: 'personnelPosition.alarmManagement.companyListView',
+      alarmList: 'personnelPosition.alarmManagement.alarmListView',
+      add: 'personnelPosition.alarmManagement.add',
+      edit: 'personnelPosition.alarmManagement.edit',
+      delete: 'personnelPosition.alarmManagement.delete',
+      view: 'personnelPosition.alarmManagement.view',
     },
   },
 };
