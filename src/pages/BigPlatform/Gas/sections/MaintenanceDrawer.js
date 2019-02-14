@@ -62,6 +62,7 @@ export default class MaintenanceDrawer extends PureComponent {
       <DrawerContainer
         id={ID}
         title={title}
+        zIndex={2000}
         subTitle={companyName}
         width={535}
         left={left}

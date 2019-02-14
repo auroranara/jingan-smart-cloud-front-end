@@ -268,6 +268,7 @@ export default class Gas extends PureComponent {
         params: { gridId },
       },
     } = this.props;
+
     // 获取单位数据
     dispatch({
       type: 'gas/fetchUnitData',
