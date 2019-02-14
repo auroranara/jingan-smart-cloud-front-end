@@ -57,7 +57,6 @@ const Host = ({ data, onClick }) => {
   );
 };
 
-
 /* 默认选中的消防数据统计类型 */
 const defaultFireControlType = 1;
 /* 默认选中的隐患巡查统计类型 */
@@ -75,35 +74,38 @@ const defaultPageSize = 10;
   monitor,
   pendingHistoryLoading: loading.effects['unitFireControl/fetchInformationHistory'],
   hiddenDnagerLoading: loading.effects['unitFireControl/fetchHiddenDangerRecords'],
-  inspectionMoreLoading: loading.effects['unitFireControl/fetchNormalPatrol'] || loading.effects['unitFireControl/fetchAbnormalPatrol'],
+  inspectionMoreLoading:
+    loading.effects['unitFireControl/fetchNormalPatrol'] ||
+    loading.effects['unitFireControl/fetchAbnormalPatrol'],
 }))
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       fireControlType: defaultFireControlType,
-      hiddenDangerType: 'realTime',  // 实时：realTime  月份：YYYY-MM
+      hiddenDangerType: 'realTime', // 实时：realTime  月份：YYYY-MM
       maintenanceType: defaultMaintenanceType,
       frontIndex: 0,
       videoVisible: false,
       selectedInspectionMonth: defaultHiddenDangerType, // 选中的巡查统计时间筛选 今日、本周、本月、本季度依次为 1 2 3 4
       chartSelectVal: '',
-      hiddenDangerVisible: false,  // 隐患抽屉是否可见
-      fireHostVisible: false,      // 消防主机弹窗可见
-      currentFireHostType: null,   // 当前选择的消防主机类型
-      fireHostLoading: false,      // 消防主机弹窗数据加载
-      fireHostPagination: {        // 消防主机表格的分页数据
+      hiddenDangerVisible: false, // 隐患抽屉是否可见
+      fireHostVisible: false, // 消防主机弹窗可见
+      currentFireHostType: null, // 当前选择的消防主机类型
+      fireHostLoading: false, // 消防主机弹窗数据加载
+      fireHostPagination: {
+        // 消防主机表格的分页数据
         pageNum: 1,
         pageSize: defaultPageSize,
         total: 0,
       },
-      currentFireHosts: [],         // 当前分页展示的消防主机
-      pendingInfoStatus: '待处理',   // 待处理信息展示状态 （待处理、处理中）
+      currentFireHosts: [], // 当前分页展示的消防主机
+      pendingInfoStatus: '待处理', // 待处理信息展示状态 （待处理、处理中）
       inspectionModalVisible: false, // 巡查统计数据下钻可见
-      InspectionModalType: 'normal',  // 巡查统计数据数据下钻正常正常还是异常数据（normal、abnormal）
-      dangerCardVisible: false,       // 巡查统计数据下钻显示的隐患卡片
-      hiddenDangerLabel: '',            // 点击隐患统计时保存类型（已超期、待复查、未超期）
-      pendingInfoLoading: true,        // 待办事项是否加载
+      InspectionModalType: 'normal', // 巡查统计数据数据下钻正常正常还是异常数据（normal、abnormal）
+      dangerCardVisible: false, // 巡查统计数据下钻显示的隐患卡片
+      hiddenDangerLabel: '', // 点击隐患统计时保存类型（已超期、待复查、未超期）
+      pendingInfoLoading: true, // 待办事项是否加载
     };
     // 轮询定时器
     this.pollingTimer = null;
@@ -130,15 +132,15 @@ export default class App extends PureComponent {
         pageSize: 50,
       },
       callback: () => {
-        this.setState({ pendingInfoLoading: false })
+        this.setState({ pendingInfoLoading: false });
       },
-    })
+    });
 
     // 获取巡查统计数据 今日、本周、本月、本季度type依次为 1 2 3 4
     dispatch({
       type: 'unitFireControl/fetchInspectionStatistics',
       payload: { type: 1, companyId },
-    })
+    });
 
     // 获取消防主机监测数据
     dispatch({
@@ -176,7 +178,7 @@ export default class App extends PureComponent {
         companyId,
         // date: moment().format('YYYY-MM-DD'),
       },
-    })
+    });
 
     // 获取消防数据统计
     dispatch({
@@ -203,7 +205,6 @@ export default class App extends PureComponent {
         companyId,
       },
     });
-
 
     // 立即执行轮询
     // this.polling();
@@ -247,7 +248,7 @@ export default class App extends PureComponent {
         pageNum: 1,
         pageSize: 50,
       },
-    })
+    });
 
     // 获取消防主机监测数据 1-2
     dispatch({
@@ -350,7 +351,7 @@ export default class App extends PureComponent {
       },
     } = this.props;
     // 实时不传date
-    const date = hiddenDangerType === 'realTime' ? null : hiddenDangerType
+    const date = hiddenDangerType === 'realTime' ? null : hiddenDangerType;
     this.setState({
       hiddenDangerType,
     });
@@ -361,7 +362,7 @@ export default class App extends PureComponent {
         companyId,
         date,
       },
-    })
+    });
   };
 
   /**
@@ -483,14 +484,14 @@ export default class App extends PureComponent {
           isLast,
         },
       },
-    } = this.props
-    if (isLast) return
+    } = this.props;
+    if (isLast) return;
     // 获取更多已处理信息
     dispatch({
       type: 'unitFireControl/fetchInformationHistory',
       payload: { companyId, pageSize, pageNum: pageNum + 1, status: '1' },
-    })
-  }
+    });
+  };
 
   // 查看待处理信息的历史纪录
   handleViewHistory = () => {
@@ -504,47 +505,47 @@ export default class App extends PureComponent {
           pagination: { pageSize },
         },
       },
-    } = this.props
+    } = this.props;
 
     // 获取已处理信息
     dispatch({
       type: 'unitFireControl/fetchInformationHistory',
       payload: { companyId, pageSize, pageNum: 1, status: '1' },
       callback: () => {
-        this.leftSections.style.opacity = 0
-        this.InformationHistory.style.right = 0
+        this.leftSections.style.opacity = 0;
+        this.InformationHistory.style.right = 0;
       },
-    })
+    });
     // this.setState({pendingInfoStatus:'历史报警'})
-  }
+  };
 
   // 点击未处理信息模块筛选栏
-  handlePendingFilterChnage = (e) => {
+  handlePendingFilterChnage = e => {
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
-    const value = e.target.value
-    this.setState({ pendingInfoLoading: true })
+    } = this.props;
+    const value = e.target.value;
+    this.setState({ pendingInfoLoading: true });
     const callback = () => {
-      this.setState({ pendingInfoStatus: value, pendingInfoLoading: false })
-    }
+      this.setState({ pendingInfoStatus: value, pendingInfoLoading: false });
+    };
     if (value === '待处理') {
       dispatch({
         type: 'unitFireControl/fetchPendingInfo',
         payload: { companyId, pageNum: 1, pageSize: 50 },
         callback,
-      })
+      });
     } else if (value === '处理中') {
       dispatch({
         type: 'unitFireControl/fetchPendingInfo',
         payload: { companyId, status: '2', pageNum: 1, pageSize: 50 },
         callback,
-      })
+      });
     }
-  }
+  };
 
   /**
    *   渲染待处理信息模块
@@ -553,12 +554,10 @@ export default class App extends PureComponent {
     const {
       unitFireControl: {
         // 待处理信息
-        pendingInfo: {
-          list,
-        },
+        pendingInfo: { list },
       },
-    } = this.props
-    const { pendingInfoStatus, pendingInfoLoading } = this.state
+    } = this.props;
+    const { pendingInfoStatus, pendingInfoLoading } = this.state;
 
     return (
       <PendingInformation
@@ -571,9 +570,8 @@ export default class App extends PureComponent {
         onFilterChange={this.handlePendingFilterChnage}
         loading={pendingInfoLoading}
       />
-    )
-  }
-
+    );
+  };
 
   /**
    * 渲染消防数据统计块
@@ -610,18 +608,20 @@ export default class App extends PureComponent {
   }
 
   /**
-  * 点击隐患统计图表显示详情抽屉
-  */
-  handleClickChat = (params) => {
-    const { data: { status = null, source_type = null, name = null } } = params
+   * 点击隐患统计图表显示详情抽屉
+   */
+  handleClickChat = params => {
+    const {
+      data: { status = null, source_type = null, name = null },
+    } = params;
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
-    const { hiddenDangerType } = this.state
-    if (source_type) return
+    } = this.props;
+    const { hiddenDangerType } = this.state;
+    if (source_type) return;
     dispatch({
       type: 'unitFireControl/fetchHiddenDangerRecords',
       payload: {
@@ -631,13 +631,13 @@ export default class App extends PureComponent {
         month: hiddenDangerType === 'realTime' ? null : hiddenDangerType,
       },
     });
-    this.setState({ hiddenDangerVisible: true, hiddenDangerLabel: name })
-  }
+    this.setState({ hiddenDangerVisible: true, hiddenDangerLabel: name });
+  };
 
   // 关闭隐患统计抽屉
   closeDrawerOfHiddenDanger = () => {
-    this.setState({ hiddenDangerVisible: false, hiddenDangerLabel: '' })
-  }
+    this.setState({ hiddenDangerVisible: false, hiddenDangerLabel: '' });
+  };
 
   /**
    * 渲染隐患统计
@@ -654,8 +654,8 @@ export default class App extends PureComponent {
             // 监督点
             from_grid_point = 0, */
             company_self_check = 0, // 企业自查
-            gov_check = 0,          // 政府监督
-            maintenance_check = 0,  // 维保检查
+            gov_check = 0, // 政府监督
+            maintenance_check = 0, // 维保检查
           } = {},
         ] = [],
         dangerDto: {
@@ -696,48 +696,49 @@ export default class App extends PureComponent {
   }
 
   /**
-  * 点击巡查统计右侧月份
-  */
+   * 点击巡查统计右侧月份
+   */
   handleInspectionFilter = selectedInspectionMonth => {
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
+    } = this.props;
     this.setState({
       selectedInspectionMonth,
-    })
+    });
     // 更新巡查统计数据 今日、本周、本月、本季度依次为 1 2 3 4
     dispatch({
       type: 'unitFireControl/fetchInspectionStatistics',
       payload: { type: selectedInspectionMonth, companyId },
-    })
-  }
+    });
+  };
 
   /**
-  * 点击查看巡查统计下钻
-  */
-  handleViewInspectionStatistics = (type) => {
+   * 点击查看巡查统计下钻
+   */
+  handleViewInspectionStatistics = type => {
     // type normal:正常  abnormal:异常
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
-    const {
-      selectedInspectionMonth,
-    } = this.state
+    } = this.props;
+    const { selectedInspectionMonth } = this.state;
     // TODO:拿数据
     const callback = () => {
       this.setState({
         inspectionModalVisible: true,
         InspectionModalType: type,
-      })
-    }
+      });
+    };
     dispatch({
-      type: type === 'normal' ? 'unitFireControl/fetchNormalPatrol' : 'unitFireControl/fetchAbnormalPatrol',
+      type:
+        type === 'normal'
+          ? 'unitFireControl/fetchNormalPatrol'
+          : 'unitFireControl/fetchAbnormalPatrol',
       payload: {
         companyId,
         type: selectedInspectionMonth,
@@ -745,12 +746,12 @@ export default class App extends PureComponent {
         pageSize: 10,
       },
       callback,
-    })
-  }
+    });
+  };
 
   /**
-    * 巡查统计数据下钻翻页
-    */
+   * 巡查统计数据下钻翻页
+   */
   handleInspectionPageChange = () => {
     const {
       dispatch,
@@ -759,41 +760,41 @@ export default class App extends PureComponent {
       },
       unitFireControl: {
         inspectionStatistics: {
-          pagination: {
-            pageNum,
-            pageSize,
-          },
+          pagination: { pageNum, pageSize },
         },
       },
-    } = this.props
-    const { InspectionModalType, selectedInspectionMonth } = this.state
+    } = this.props;
+    const { InspectionModalType, selectedInspectionMonth } = this.state;
     dispatch({
-      type: InspectionModalType === 'normal' ? 'unitFireControl/fetchNormalPatrol' : 'unitFireControl/fetchAbnormalPatrol',
+      type:
+        InspectionModalType === 'normal'
+          ? 'unitFireControl/fetchNormalPatrol'
+          : 'unitFireControl/fetchAbnormalPatrol',
       payload: {
         companyId,
         type: selectedInspectionMonth, // 月份
         pageNum: pageNum + 1,
         pageSize,
       },
-    })
-  }
+    });
+  };
 
   /**
-    * 关闭巡查统计数据下钻
-    */
+   * 关闭巡查统计数据下钻
+   */
   handleCloseModalOfInspection = () => {
     this.setState({
       inspectionModalVisible: false,
       dangerCardVisible: false,
-    })
-  }
+    });
+  };
 
   // 巡查统计下钻隐患卡片显示与否
   handleChangeDangerCardVisible = (value = false) => {
     this.setState({
       dangerCardVisible: value,
-    })
-  }
+    });
+  };
 
   /**
    * 巡查统计模块
@@ -801,8 +802,8 @@ export default class App extends PureComponent {
   renderInspectionStatistics = () => {
     const {
       unitFireControl: { inspectionStatistics },
-    } = this.props
-    const { selectedInspectionMonth } = this.state
+    } = this.props;
+    const { selectedInspectionMonth } = this.state;
     return (
       <InspectionStatistics
         type={selectedInspectionMonth}
@@ -810,8 +811,8 @@ export default class App extends PureComponent {
         onClick={this.handleViewInspectionStatistics}
         {...inspectionStatistics}
       />
-    )
-  }
+    );
+  };
 
   fetchPieces = firstDeviceId => {
     const { dispatch } = this.props;
@@ -866,7 +867,7 @@ export default class App extends PureComponent {
       match: {
         params: { unitId: companyId },
       },
-    } = this.props
+    } = this.props;
     dispatch({
       type: 'unitFireControl/fetchFireHosts',
       payload: {
@@ -877,23 +878,22 @@ export default class App extends PureComponent {
           unitFireControl: {
             fireHost: { list = [] },
           },
-        } = this.props
-        const currentFireHosts = list.filter(item => item.typeName === type)
+        } = this.props;
+        const currentFireHosts = list.filter(item => item.typeName === type);
         this.setState({
           currentFireHostType: type,
           currentFireHosts,
           fireHostVisible: true,
           fireHostLoading: true,
-        })
+        });
         setTimeout(() => {
           this.setState({
             fireHostLoading: false,
-          })
+          });
         }, 500);
       },
-    })
-
-  }
+    });
+  };
 
   // 消防主机翻页
   // handleFireHostPageChange = (pageNum, pageSize) => {
@@ -920,13 +920,13 @@ export default class App extends PureComponent {
   // }
 
   // 消防主机筛选
-  handleFireHostFilter = (value) => {
+  handleFireHostFilter = value => {
     const {
       unitFireControl: {
         fireHost: { list = [] },
       },
-    } = this.props
-    const currentFireHosts = list.filter(item => item.typeName === value)
+    } = this.props;
+    const currentFireHosts = list.filter(item => item.typeName === value);
     this.setState({
       currentFireHostType: value,
       fireHostPagination: {
@@ -935,14 +935,13 @@ export default class App extends PureComponent {
       },
       currentFireHosts,
       fireHostLoading: true,
-    })
+    });
     setTimeout(() => {
       this.setState({
         fireHostLoading: false,
-      })
+      });
     }, 500);
-  }
-
+  };
 
   // 关闭消防主机弹窗
   handleCloseModalOfFireHost = () => {
@@ -950,12 +949,12 @@ export default class App extends PureComponent {
       fireHostVisible: false,
       fireHostLoading: false,
       currentFireHosts: [],
-    })
-  }
+    });
+  };
 
   // 关闭历史信息
   handleCloseInfoHistory = () => {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'unitFireControl/saveHistoryInfo',
       payload: {
@@ -964,10 +963,10 @@ export default class App extends PureComponent {
         pageSize: 20,
         total: 0,
       },
-    })
-    this.leftSections.style.opacity = 1
+    });
+    this.leftSections.style.opacity = 1;
     this.InformationHistory.style.right = '110%';
-  }
+  };
 
   /**
    * 维保情况统计
@@ -1029,8 +1028,18 @@ export default class App extends PureComponent {
     } = this.props;
     return (
       <div
-        ref={InformationHistory => { this.InformationHistory = InformationHistory }}
-        style={{ width: '100%', height: '100%', position: 'absolute', top: 0, right: '110%', transition: 'all 0.5s' }}>
+        ref={InformationHistory => {
+          this.InformationHistory = InformationHistory;
+        }}
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          right: '110%',
+          transition: 'all 0.5s',
+        }}
+      >
         <InformationHistory
           title="历史消息"
           data={{ list, alarmTypes: [] }}
@@ -1039,35 +1048,36 @@ export default class App extends PureComponent {
           handleClose={() => this.handleCloseInfoHistory()}
         />
       </div>
-    )
-  }
+    );
+  };
 
   /**
    * 消防主机监测以及主机复位
    */
   renderFireAlarmMonitor = () => {
     const {
-      unitFireControl: {
-        fireAlarmSystem,
-        hosts,
-      } } = this.props;
-    const { frontIndex } = this.state
+      unitFireControl: { fireAlarmSystem, hosts },
+    } = this.props;
+    const { frontIndex } = this.state;
     const isResetAll = hosts.filter(({ isReset }) => isReset).length === hosts.length;
     return (
       <Rotate frontIndex={frontIndex}>
         <FireHostMonitoring
           data={fireAlarmSystem}
-          fixedContent={hosts && hosts.length > 0 && (
-            <Tooltip
-              overlayClassName={styles.tooltip}
-              title="一键复位功能只对平台数据进行复位，并不能控制主机复位。"
-            >
-              <div className={styles.resetButton} onClick={this.handleShowResetSection}>
-                <img src={resetKeyIcon} alt="" />
-                一键复位
-              </div>
-            </Tooltip>
-          )}
+          fixedContent={
+            hosts &&
+            hosts.length > 0 && (
+              <Tooltip
+                overlayClassName={styles.tooltip}
+                title="一键复位功能只对平台数据进行复位，并不能控制主机复位。"
+              >
+                <div className={styles.resetButton} onClick={this.handleShowResetSection}>
+                  <img src={resetKeyIcon} alt="" />
+                  一键复位
+                </div>
+              </Tooltip>
+            )
+          }
           onClick={this.handleViewFireHosts}
         />
         <Section
@@ -1120,14 +1130,14 @@ export default class App extends PureComponent {
               );
             })
           ) : (
-              <div className={styles.hostIsEmpty}>
-                <span>暂无主机</span>
-              </div>
-            )}
+            <div className={styles.hostIsEmpty}>
+              <span>暂无主机</span>
+            </div>
+          )}
         </Section>
       </Rotate>
-    )
-  }
+    );
+  };
 
   /**
    * 渲染函数
@@ -1139,9 +1149,7 @@ export default class App extends PureComponent {
       inspectionMoreLoading,
       unitFireControl: {
         // 隐患统计
-        dangerStatistics: {
-          companyName,
-        },
+        dangerStatistics: { companyName },
         // 隐患巡查记录
         hiddenDangerRecords,
         // 视频列表
@@ -1161,7 +1169,7 @@ export default class App extends PureComponent {
       currentFireHosts,
       inspectionModalVisible,
       InspectionModalType,
-      inspectionCurrentList,
+      // inspectionCurrentList,
       dangerCardVisible,
       hiddenDangerLabel,
     } = this.state;
@@ -1172,7 +1180,10 @@ export default class App extends PureComponent {
         <div className={styles.mainBody}>
           <Row gutter={16} style={{ height: '100%' }}>
             <Col span={6} style={{ height: '100%', position: 'relative' }}>
-              <div ref={leftSections => { this.leftSections = leftSections }}
+              <div
+                ref={leftSections => {
+                  this.leftSections = leftSections;
+                }}
                 style={{ width: '100%', height: '100%', transition: 'opacity 0.5s' }}
               >
                 <div style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
@@ -1197,7 +1208,13 @@ export default class App extends PureComponent {
                   {/* 电气火灾监测 */}
                   <ElectricityCharts
                     title="电气火灾监测"
-                    data={{ chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory }}
+                    data={{
+                      chartDeviceList,
+                      gsmsHstData,
+                      electricityPieces,
+                      chartParams,
+                      deviceDataHistory,
+                    }}
                     selectVal={chartSelectVal}
                     handleSelect={this.handleChartSelect}
                   />
