@@ -61,14 +61,15 @@
 }
 
 .dashboardContainer {
+  margin: 0 !important;
   position: relative;
   background: rgb(92, 156, 217);
-  overflow: hidden;
-  height: 800px;
-  display: -webkit-flex;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden; // height: 800px;
+  // display: -webkit-flex;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  padding: 60px 0 90px 0;
 }
 
 .itemContainer {
@@ -86,8 +87,8 @@
 }
 
 .section {
-  width: 100%;
-  height: 100%;
+  width: 280px;
+  height: auto;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -111,19 +112,16 @@
       transition: all 0.8s;
     }
   }
-  .textItem {
-    flex-grow: 1;
+  .text {
     width: 100%;
-    padding: 20px;
     background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .text {
-      font-size: 23px;
-      font-weight: 700;
-      letter-spacing: 6px;
-      transition: all 0.8s;
-    }
+    font-size: 1.7em;
+    font-weight: 700;
+    letter-spacing: 6px;
+    transition: all 0.8s;
+    height: 4.5em;
+    line-height: 4.5em;
+    text-align: center;
+    overflow: hidden;
   }
 }

@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-
 // import Carousel3d from './Carousel3d';
 import codes from '@/utils/codes';
 import styles from './Dashboard.less';
+import { Row, Col } from 'antd';
+import Ellipsis from '@/components/Ellipsis';
 // 用电安全驾驶舱图
 import electricImg from '../../assets/dashboard-electricity.png';
 
@@ -214,31 +215,34 @@ export default class Dashboard extends PureComponent {
       win.focus();
     };
 
-    const hasFourItems = { width: '330px', height: '425px', padding: '25px' };
-    const hasLittleItems = { width: '405px', height: '480px', padding: '40px' };
+    // const hasFourItems = { width: '330px', height: '425px', padding: '25px' };
+    // const hasLittleItems = { width: '405px', height: '480px', padding: '40px' };
 
-    const children = imgWrapper.map((item, i) => (
-      <div
-        key={i.toString()}
-        style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}
-      >
-        {/* <div
+    return (
+      <Row gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }} className={styles.dashboardContainer}>
+        {imgWrapper.map((item, i) => (
+          <Col
+            span={8}
+            key={i.toString()}
+            style={{ display: 'flex', justifyContent: ['flex-end', 'center', 'flex-start'][i % 3], marginTop: '30px' }}
+          // style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}
+          >
+            {/* <div
           className={styles.imgItem}
           onClick={() => goToBigScreen(item.url)}
           style={{
             backgroundImage: `url(${item.src})`,
           }}
         /> */}
-        <div className={styles.section} onClick={() => goToBigScreen(item.url)}>
-          <div className={styles.imgContainer}>
-            <img src={item.src} alt="" />
-          </div>
-          <div className={styles.textItem}>
-            <div className={styles.text}>{item.label}</div>
-          </div>
-        </div>
-      </div>
-    ));
-    return <div className={styles.dashboardContainer}>{children}</div>;
+            <div className={styles.section} onClick={() => goToBigScreen(item.url)}>
+              <div className={styles.imgContainer}>
+                <img src={item.src} alt="" />
+              </div>
+              <div className={styles.text}><Ellipsis lines={1}>{item.label}</Ellipsis></div>
+            </div>
+          </Col>
+        ))}
+      </Row>
+    )
   }
 }
