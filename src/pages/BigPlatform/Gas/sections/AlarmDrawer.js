@@ -216,42 +216,42 @@ export default class AlarmDrawer extends PureComponent {
             percent={alarmPercent}
             quantity={unnormal}
             strokeColor="rgb(255,72,72)"
-            style={{ marginTop: 40, cursor: 'pointer' }}
+            style={{ marginTop: 40 }}
             iconStyle={{
               backgroundImage: `url(${unitRedIcon})`,
               width: ICON_WIDTH,
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-            onClick={this.genProgressClick(1)}
+            // onClick={this.genProgressClick(1)}
           />
           <OvProgress
             title="故障单位"
             percent={faultPercent}
             quantity={faultNum}
             strokeColor="rgb(246,181,78)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{
               backgroundImage: `url(${unitYellowIcon})`,
               width: ICON_WIDTH,
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-            onClick={this.genProgressClick(2)}
+            // onClick={this.genProgressClick(2)}
           />
           <OvProgress
             title="失联单位"
             percent={outPercent}
             quantity={outContact}
             strokeColor="rgb(159,159,159)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{
               backgroundImage: `url(${unitBlueIconGrey})`,
               width: ICON_WIDTH,
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-            onClick={this.genProgressClick(3)}
+            // onClick={this.genProgressClick(3)}
           />
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
