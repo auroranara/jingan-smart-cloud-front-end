@@ -19,8 +19,8 @@ import {
 
 const TYPE = 'business';
 const NO_DATA = '暂无信息';
-const LABELS = ['未处理报警', '未处理故障'];
-const COLORS = ['248,51,41', '255,180,0'];
+// const LABELS = ['未处理报警', '未处理故障'];
+// const COLORS = ['248,51,41', '255,180,0'];
 const OPTIONS = ['全部', '未处理故障', '未处理报警'].map((d, i) => ({ value: i, desc: d }));
 
 export default class BusinessDrawer extends PureComponent {
@@ -55,8 +55,71 @@ export default class BusinessDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, data: { list = [], graphList = [], graphList1 = [] } = {} } = this.props;
+    const { visible, data: { list = [], graphList = [] } = {} } = this.props;
     const { graph, selected, searchValue, otherGraph } = this.state;
+
+    const faultList = [
+      {
+        date: '2018-03',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-04',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-05',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-06',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-07',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-08',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-09',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-10',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-11',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2018-12',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2019-01',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2019-02',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+    ];
 
     const filteredList = list
       .filter(({ company_name }) => company_name.includes(searchValue))
@@ -95,9 +158,9 @@ export default class BusinessDrawer extends PureComponent {
         </DrawerSection>
         <DrawerSection title="故障业务处理统计" titleInfo="最近12个月" extra={extraOther}>
           {otherGraph ? (
-            <AlarmChartBar data={graphList1} labelRotate={0} />
+            <AlarmChartBar data={faultList} labelRotate={0} />
           ) : (
-            <AlarmChartLine data={graphList1} labelRotate={0} />
+            <AlarmChartLine data={faultList} labelRotate={0} />
           )}
         </DrawerSection>
       </Fragment>
@@ -124,9 +187,12 @@ export default class BusinessDrawer extends PureComponent {
               style={{ cursor: 'auto' }}
               more={
                 <p className={styles.more}>
-                  {[gasFire, fault].map((n, i) => (
-                    <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                  ))}
+                  {gasFire > 0 && (
+                    <DotItem title="未处理报警" color={`rgb(248,51,41)`} quantity={gasFire} />
+                  )}
+                  {fault > 0 && (
+                    <DotItem title="未处理故障" color={`rgb(255,180,0)`} quantity={fault} />
+                  )}
                 </p>
               }
             />
