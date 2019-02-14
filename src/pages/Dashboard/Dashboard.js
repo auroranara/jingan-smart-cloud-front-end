@@ -73,7 +73,7 @@ export default class Dashboard extends PureComponent {
     ] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应) 4=>卫生(暂时没有大屏对应)
-    const [clfcSafetyAuth, clfcFireControlAuth, clfcEnviromentAuth] = [1, 2, 3].map(k =>
+    const [clfcSafetyAuth, clfcFireControlAuth /* clfcEnviromentAuth */] = [1, 2, 3].map(k =>
       classification.includes(k)
     );
     // console.log([safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]);
@@ -142,7 +142,7 @@ export default class Dashboard extends PureComponent {
           safetyProduction: safetyAuth,
           fireService: fireControlAuth,
           electricityMonitor: electricityMonitorAuth,
-          gasVisible: 1,
+          gasVisible: gasAuth,
         });
         break;
 
