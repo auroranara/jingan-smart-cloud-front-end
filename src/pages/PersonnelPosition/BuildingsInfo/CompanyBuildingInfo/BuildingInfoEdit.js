@@ -69,10 +69,9 @@ function getOptions(options = []) {
   ));
 }
 
-@connect(({ buildingsInfo, user, loading, videoMonitor }) => ({
+@connect(({ buildingsInfo, user, loading }) => ({
   buildingsInfo,
   user,
-  videoMonitor,
   loading: loading.models.buildingsInfo,
 }))
 @Form.create()
@@ -164,7 +163,7 @@ export default class BuildingInfoEdit extends PureComponent {
   // 获取单位列表
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'videoMonitor/fetchModelList', payload });
+    dispatch({ type: 'buildingsInfo/fetchModelList', payload });
   };
 
   // 显示单位弹出框
@@ -173,7 +172,7 @@ export default class BuildingInfoEdit extends PureComponent {
     const { dispatch } = this.props;
     this.setState({ visible: true });
     dispatch({
-      type: 'videoMonitor/fetchModelList',
+      type: 'buildingsInfo/fetchModelList',
       payload: {
         pageSize: 10,
         pageNum: 1,
@@ -201,7 +200,7 @@ export default class BuildingInfoEdit extends PureComponent {
   // 渲染选择单位弹出框
   renderCompanyModal() {
     const {
-      videoMonitor: { modal },
+      buildingsInfo: { modal },
       loading,
     } = this.props;
     const { visible } = this.state;

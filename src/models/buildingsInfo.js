@@ -10,12 +10,21 @@ import {
   editFloor,
   deleteFloor,
   queryFloorNumber,
+  queryModelList,
 } from '../services/personnelPosition/buildingsInfo';
 
 export default {
   namespace: 'buildingsInfo',
 
   state: {
+    modal: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    },
     data: {
       list: [],
       pagination: {
@@ -257,6 +266,17 @@ export default {
         if (callback) callback(response);
       }
     },
+
+    // 企业列表弹出框
+    *fetchModelList({ payload }, { call, put }) {
+      const response = yield call(queryModelList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveModelList',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -443,6 +463,16 @@ export default {
           ...state.floorData,
           list: state.floorData.list.filter(item => item.id !== id),
         },
+      };
+    },
+
+    // 企业弹出框
+    saveModelList(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        modal: payload,
       };
     },
   },
