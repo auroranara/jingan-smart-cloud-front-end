@@ -151,15 +151,15 @@ export default class BusinessDrawer extends PureComponent {
       <Fragment>
         <DrawerSection title="报警业务处理统计" titleInfo="最近12个月" extra={extra}>
           {graph ? (
-            <BussinessChartBar
-              data={graphList.length > 0 ? graphList : faultList}
-              labelRotate={0}
-            />
+            graphList.length > 0 ? (
+              <BussinessChartBar data={graphList} labelRotate={0} />
+            ) : (
+              <div style={{ textAlign: 'center' }}>暂无数据</div>
+            )
+          ) : graphList.length > 0 ? (
+            <BussinessChartLine data={graphList} labelRotate={0} />
           ) : (
-            <BussinessChartLine
-              data={graphList.length > 0 ? graphList : faultList}
-              labelRotate={0}
-            />
+            <div style={{ height: '22em', textAlign: 'center', lineHeight: '22em' }}>暂无数据</div>
           )}
         </DrawerSection>
         <DrawerSection title="故障业务处理统计" titleInfo="最近12个月" extra={extraOther}>
