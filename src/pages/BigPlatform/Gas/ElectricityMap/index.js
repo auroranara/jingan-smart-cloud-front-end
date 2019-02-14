@@ -114,7 +114,11 @@ export default class MapSection extends PureComponent {
       imgSrc = pointNormal;
     }
     return (
-      <div style={{ position: 'relative' }} key={companyId}>
+      <div
+        style={{ position: 'relative' }}
+        className={+unnormal > 0 ? styles.imgAnimate : styles.imgContainer}
+        key={companyId}
+      >
         <img
           src={imgSrc}
           alt=""
@@ -147,10 +151,13 @@ export default class MapSection extends PureComponent {
   renderTips = () => {
     const { units = [], alarmIds = [], handleAlarmClick } = this.props;
     const tips = alarmIds.map(data => {
-      return {...units.find(item => item.companyId === data.companyId), messageFlag:data.messageFlag };
+      return {
+        ...units.find(item => item.companyId === data.companyId),
+        messageFlag: data.messageFlag,
+      };
     });
     return tips.map((item, index) => {
-      return (
+      return item.unnormal > 0 ? (
         <Marker
           key={index}
           offset={[-100, -72]}
@@ -174,7 +181,7 @@ export default class MapSection extends PureComponent {
             );
           }}
         />
-      );
+      ) : null;
     });
   };
 
