@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -59,14 +59,14 @@ const pageSize = 18;
 const defaultPageSize = 20;
 
 // 默认表单值
-const defaultFormData = {
-  loginName: undefined,
-  userName: undefined,
-  phoneNumber: undefined,
-  unitType: undefined,
-  unitId: undefined,
-  // accountStatus: undefined,
-};
+// const defaultFormData = {
+//   loginName: undefined,
+//   userName: undefined,
+//   phoneNumber: undefined,
+//   unitType: undefined,
+//   unitId: undefined,
+//   // accountStatus: undefined,
+// };
 
 /* 账号状态 */
 const statusList = {
@@ -164,7 +164,7 @@ const getEmptyData = () => {
   })
 )
 @Form.create()
-export default class accountManagementList extends PureComponent {
+export default class accountManagementList extends React.Component {
   constructor(props) {
     super(props);
     // this.formData = defaultFormData;
@@ -237,6 +237,8 @@ export default class accountManagementList extends PureComponent {
             payload: {
               pageSize,
               pageNum: 1,
+              // 初始获取企事业主页的列表
+              unitType: 4,
             },
           });
         }
@@ -825,7 +827,7 @@ export default class accountManagementList extends PureComponent {
         data: {
           pagination: { total },
         },
-        list,
+        /*   list, */
         isLast,
       },
       loading,
