@@ -1,19 +1,15 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-
-// const LIST = [120, 200, 150, 80, 70, 110, 130, 20, 10, 150];
-
-const LINE_STYLE = { width: 2, color: 'rgb(64, 95, 135)' };
+import moment from 'moment';
 
 export default class BussinessChartBar extends PureComponent {
   render() {
-    // const list = LIST;
-    const { data: list, labelRotate = -35 } = this.props;
+    const { data: list } = this.props;
 
-    // const xData = [...Array(10).keys()].map(i => `无锡新吴机械${i}`);
-    // const seriesData = LIST.map((n, i) => ({ value: n, name: `无锡新吴机械${i}` }));
-    const xData = list.map(({ name }) => name);
-    // const seriesData = list;
+    const xData = list.map(item => {
+      const newMonth = item.date;
+      return moment(newMonth).format('MM');
+    });
 
     const option = {
       textStyle: {
@@ -83,7 +79,7 @@ export default class BussinessChartBar extends PureComponent {
           color: '#fff',
           fontSize: 14,
         },
-        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        data: xData,
       },
       series: [
         {
@@ -91,14 +87,14 @@ export default class BussinessChartBar extends PureComponent {
           color: '#f6b54e',
           type: 'bar',
           barWidth: 5,
-          data: [20, 12, 12, 34, 55, 66, 34, 44, 22, 11, 22, 34],
+          data: list.map(item => item.untreatedGas),
         },
         {
           name: '已处理故障',
           type: 'bar',
           color: '#9f9f9f',
           barWidth: 5,
-          data: [20, 13, 12, 36, 52, 66, 34, 44, 22, 11, 22, 34],
+          data: list.map(item => item.finishGas),
         },
       ],
     };
