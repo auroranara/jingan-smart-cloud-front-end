@@ -478,6 +478,7 @@ export default class Gas extends PureComponent {
   };
 
   handleAlarmClick = (id, companyId, companyName) => {
+    console.log('id, companyId, companyName');
     const { dispatch } = this.props;
     this.setState({ companyName });
     dispatch({
