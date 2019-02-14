@@ -18,6 +18,7 @@ export default class DrawerContainer extends PureComponent {
         className={styles.drawer}
         style={{ padding: 0, height: '100%', ...style }}
         title={null}
+        closable={false}
         // style={{ padding: '108px 0 0 1px' }}
         {...restProps}
       >

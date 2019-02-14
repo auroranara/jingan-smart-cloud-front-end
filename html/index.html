@@ -1,4 +1,5 @@
-<!DOCTYPE html> <!--eslint-disable-line-->
+<!DOCTYPE html>
+<!--eslint-disable-line-->
 <html lang="en">
 
 <head>
@@ -9,8 +10,113 @@
   <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>晶安智慧云</title>
-  <script src="./js/jquery-3.3.1.min.js"></script>
-  <link rel="stylesheet" href="./index.css" />
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    html ul,
+    body ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #root {
+      width: 100%;
+      height: 100%;
+      background: url("http://data.jingan-china.cn/v2/solution-business/bg.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .main {
+      width: 80%;
+      height: 80%;
+      position: absolute;
+      top: 11%;
+      left: 10%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main .top {
+      width: 100%;
+      height: 66%;
+      display: flex;
+    }
+
+    .main .bottom {
+      flex: 1;
+      width: 100%;
+      margin-top: 18px;
+      display: flex;
+    }
+
+    .main .item {
+      flex: 1;
+      color: #fff;
+      padding: 0 32px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .main .item:hover {
+      /* border: 2px solid rgba(255, 255, 255, 0.5); */
+      box-shadow: 0px 0px 8px #fff;
+    }
+
+    .item+.item {
+      height: 100%;
+      margin-left: 20px;
+    }
+
+    .item-title {
+      font-size: 28px;
+      margin-top: 40px;
+      margin-bottom: 25px;
+    }
+
+    .top .item-title {
+      margin-top: 60px;
+    }
+
+    .item-p {
+      font-size: 16px;
+    }
+
+    .safe\&fire {
+      background: url("http://data.jingan-china.cn/v2/solution-business/safe&fire.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .production {
+      background: url("http://data.jingan-china.cn/v2/solution-business/production.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .fire {
+      background: url("http://data.jingan-china.cn/v2/solution-business/fire.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .electricity {
+      background: url("http://data.jingan-china.cn/v2/solution-business/electricity.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .gas {
+      background: url("http://data.jingan-china.cn/v2/solution-business/gas.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .smoke {
+      background: url("http://data.jingan-china.cn/v2/solution-business/smoke.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+  </style>
 </head>
 
 <body>
@@ -58,9 +164,12 @@
 </body>
 
 <script>
-    $('.item').on('click', function() {
-      const id = $(this).prop('id');
-      window.open(`http://www.jinganyun.net/#/user/login?type=${encodeURI(id)}`);
-    });
+  const doms = document.getElementsByClassName('item')
+  for (const dom of doms) {
+    dom.addEventListener('click', function () {
+      window.open(`http://www.jinganyun.net/#/user/login?type=${encodeURI(dom.id)}`)
+    }, false)
+  }
 </script>
+
 </html>
