@@ -3,7 +3,7 @@ import code from '../src/assets/jingan_download_code.png';
 import nanxiaoLogo from '../src/assets/logo_nanxiao.svg';
 import nanxiaoCode from '../src/assets/nanxiao_download_code.png';
 import liminLogo from '../src/assets/logo_limin.svg';
-import liminCode from '../src/assets/nanxiao_download_code.png';
+import liminCode from '../src/assets/limin_download_code.jpg';
 const defaultConfig = {
   logo,
   code,
