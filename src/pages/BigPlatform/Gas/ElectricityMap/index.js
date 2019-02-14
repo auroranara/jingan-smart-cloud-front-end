@@ -240,10 +240,16 @@ export default class MapSection extends PureComponent {
             </div>
             <div
               className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
-              onClick={() => handleAlarmClick(undefined, companyId, companyName)}
+              onClick={() => {
+                if (unnormal > 0) {
+                  handleAlarmClick(undefined, companyId, companyName, unnormal);
+                } else {
+                  return null;
+                }
+              }}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-              报警 {unnormal}
+              报警 {unnormal > 0 ? unnormal : 0}
             </div>
             <div className={+faultNum > 0 ? styles.itemActive : styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />

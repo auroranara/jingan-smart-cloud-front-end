@@ -6,6 +6,7 @@ import BussinessChartLine from './BussinessChartLine';
 import BussinessChartBar from './BussinessChartBar';
 import AlarmChartLine from './AlarmChartLine';
 import AlarmChartBar from './AlarmChartBar';
+import GridSelect from './GridSelect';
 
 export {
   ChartGauge,
@@ -16,4 +17,5 @@ export {
   BussinessChartBar,
   AlarmChartLine,
   AlarmChartBar,
+  GridSelect,
 };

@@ -179,6 +179,9 @@ export default class Dashboard extends PureComponent {
     electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${
       grids.length ? grids[0].value : 'index'
       }`;
+    gasItem.url = `${window.publicPath}#/big-platform/gas/${
+      grids.length ? grids[0].value : 'index'
+      }`;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =
