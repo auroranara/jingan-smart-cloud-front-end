@@ -154,7 +154,9 @@ export default class BusinessDrawer extends PureComponent {
             graphList.length > 0 ? (
               <BussinessChartBar data={graphList} labelRotate={0} />
             ) : (
-              <div style={{ textAlign: 'center' }}>暂无数据</div>
+              <div style={{ height: '22em', textAlign: 'center', lineHeight: '22em' }}>
+                暂无数据
+              </div>
             )
           ) : graphList.length > 0 ? (
             <BussinessChartLine data={graphList} labelRotate={0} />
