@@ -107,14 +107,7 @@ export default {
       outContact: 0,
     },
     // 报警趋势图数据 --异常单位统计
-    AbnormalTrend: {
-      // 报警
-      abUnnormal: 0,
-      // 故障
-      abFaultNum: 0,
-      // 失联
-      abOutContact: 0,
-    },
+    AbnormalTrend: [],
     // 单位卡片列表 --异常单位统计
     gasErrorUnitSet: {
       errorUnits: [],

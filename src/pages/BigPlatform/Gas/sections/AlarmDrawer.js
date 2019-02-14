@@ -25,6 +25,12 @@ const NO_DATA = '暂无信息';
 // const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
 const OPTIONS = ['全部', '报警', '故障', '失联'].map((d, i) => ({ value: i, desc: d }));
 
+// const GRAPH_LIST = [...Array(12).keys()].map(i => ({
+//   id: i,
+//   name: (i + 2) % 12 || 12,
+//   value: Math.floor(Math.random() * 100),
+// }));
+
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
 
@@ -174,6 +180,7 @@ export default class AlarmDrawer extends PureComponent {
         graphList = [],
       } = {},
     } = this.props;
+
     const { graph, selected, searchValue } = this.state;
 
     const filteredList = list
@@ -256,9 +263,15 @@ export default class AlarmDrawer extends PureComponent {
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
           {graph ? (
-            <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
-          ) : (
+            graphList.length > 0 ? (
+              <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
+            ) : (
+              <div style={{ textAlign: 'center' }}>暂无数据</div>
+            )
+          ) : graphList.length > 0 ? (
             <ChartLine data={graphList} labelRotate={0} />
+          ) : (
+            <div style={{ textAlign: 'center' }}>暂无数据</div>
           )}
         </DrawerSection>
       </Fragment>

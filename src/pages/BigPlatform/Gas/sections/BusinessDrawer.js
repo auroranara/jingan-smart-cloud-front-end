@@ -21,7 +21,7 @@ const TYPE = 'business';
 const NO_DATA = '暂无信息';
 // const LABELS = ['未处理报警', '未处理故障'];
 // const COLORS = ['248,51,41', '255,180,0'];
-const OPTIONS = ['全部', '未处理故障', '未处理报警'].map((d, i) => ({ value: i, desc: d }));
+const OPTIONS = ['  全部业务 ', '未处理故障', '未处理报警'].map((d, i) => ({ value: i, desc: d }));
 
 export default class BusinessDrawer extends PureComponent {
   state = { graph: 0, otherGraph: 0, selected: 0, searchValue: '' };
@@ -151,9 +151,15 @@ export default class BusinessDrawer extends PureComponent {
       <Fragment>
         <DrawerSection title="报警业务处理统计" titleInfo="最近12个月" extra={extra}>
           {graph ? (
-            <BussinessChartBar data={graphList} labelRotate={0} />
+            <BussinessChartBar
+              data={graphList.length > 0 ? graphList : faultList}
+              labelRotate={0}
+            />
           ) : (
-            <BussinessChartLine data={graphList} labelRotate={0} />
+            <BussinessChartLine
+              data={graphList.length > 0 ? graphList : faultList}
+              labelRotate={0}
+            />
           )}
         </DrawerSection>
         <DrawerSection title="故障业务处理统计" titleInfo="最近12个月" extra={extraOther}>
