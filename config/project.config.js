@@ -121,7 +121,7 @@ const configs = {
     projectKey: 'shanxi',
     projectShortName: '山西晶安智慧云',
   },
-  yanshi: {
+  show: {
     region: '无锡',
     projectKey: 'yanshi_pro',
     projectShortName: '晶安智慧云',
@@ -137,7 +137,7 @@ export default class Config {
         this.config.projectName += '（测试）';
         this.config.projectShortName += '测试';
         break;
-      case 'yanshi':
+      case 'show':
         this.config.projectName += '（演示）';
         this.config.projectShortName += '演示';
         break;
