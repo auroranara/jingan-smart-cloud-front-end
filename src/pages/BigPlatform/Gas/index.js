@@ -280,21 +280,22 @@ export default class Gas extends PureComponent {
         this.cardsInfo = genCardsInfo(units);
       },
     });
+
     // 获取异常单位统计
-    // dispatch({
-    //   type: 'gas/fetchAbnormalingTotal',
-    //   payload: {
-    //     status,
-    //     gridId,
-    //   },
-    //   callback: data => {
-    //     if (!data) return;
-    //     const {
-    //       gasErrorUnitSet: { errorUnits = [] },
-    //     } = data;
-    //     this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-    //   },
-    // });
+    dispatch({
+      type: 'gas/fetchAbnormalingTotal',
+      payload: {
+        status,
+        gridId,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasErrorUnitSet: { errorUnits = [] },
+        } = data;
+        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+      },
+    });
 
     // 获取待处理业务
     dispatch({
