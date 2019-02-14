@@ -31,29 +31,34 @@ class MapSearch extends PureComponent {
 
   render() {
     const { selectList, value, style } = this.props;
+    console.log('value', value);
+    let options = [];
+    if (!value) options = [];
+    else {
+      options = selectList.map(item => {
+        const { companyName, companyId } = item;
+        let children = companyName;
+        // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
+        if (companyName.includes(value)) {
+          const [front, end] = companyName.split(value);
+          children = [
+            front,
+            <span key={companyId} className={styles.highlight}>
+              {value}
+            </span>,
+            end,
+          ];
+        }
+
+        return (
+          <Option key={item.companyId} label={item} style={{ color: '#FFF' }}>
+            {children}
+          </Option>
+        );
+      });
+    }
     // const { selectList, value, style, handleChange } = this.props;
     // const { selectedItem: { id, name } } = this.state;
-    const options = selectList.map(item => {
-      const { companyName, companyId } = item;
-      let children = companyName;
-      // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
-      if (companyName.includes(value)) {
-        const [front, end] = companyName.split(value);
-        children = [
-          front,
-          <span key={companyId} className={styles.highlight}>
-            {value}
-          </span>,
-          end,
-        ];
-      }
-
-      return (
-        <Option key={item.companyId} label={item} style={{ color: '#FFF' }}>
-          {children}
-        </Option>
-      );
-    });
 
     // console.log('render value', value);
     // console.log('render selectList', selectList);

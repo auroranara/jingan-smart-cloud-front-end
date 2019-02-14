@@ -30,6 +30,7 @@ import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './section
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
+import { GridSelect } from './components/Components';
 
 // websocket配置
 const options = {
@@ -87,7 +88,12 @@ export default class Gas extends PureComponent {
    */
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
     // // 获取告警信息列表
     // dispatch({
     //   type: 'gas/fetchMessages',
@@ -96,6 +102,7 @@ export default class Gas extends PureComponent {
     // 获取单位数据
     dispatch({
       type: 'gas/fetchUnitData',
+      payload: { gridId },
       callback: data => {
         if (!data) return;
         const {
@@ -110,6 +117,7 @@ export default class Gas extends PureComponent {
       type: 'gas/fetchImportingTotal',
       payload: {
         status,
+        gridId,
       },
       callback: data => {
         if (!data) return;
@@ -125,6 +133,7 @@ export default class Gas extends PureComponent {
       type: 'gas/fetchAbnormalingTotal',
       payload: {
         status,
+        gridId,
       },
       callback: data => {
         if (!data) return;
@@ -140,6 +149,7 @@ export default class Gas extends PureComponent {
       type: 'gas/fetchPendingMission',
       payload: {
         type: status,
+        gridId,
       },
       callback: data => {
         if (!data) return;
@@ -150,138 +160,148 @@ export default class Gas extends PureComponent {
       },
     });
 
-    // 获取网格点id
-    dispatch({
-      type: 'gas/fetchCompanyId',
-      callback: companyId => {
-        if (!companyId) {
-          return;
-        }
-        const params = {
-          companyId,
-          env,
-          type: 4,
-        };
-        const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-        // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
+    const params = {
+      companyId: gridId,
+      env,
+      type: 4,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+    // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
 
-        // 链接webscoket
-        const ws = new WebsocketHeartbeatJs({ url, ...options });
+    // 链接webscoket
+    const ws = new WebsocketHeartbeatJs({ url, ...options });
 
-        ws.onopen = () => {
-          console.log('connect success');
-          ws.send('heartbeat');
-        };
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
 
-        ws.onmessage = e => {
-          // 判断是否是心跳
-          if (!e.data || e.data.indexOf('heartbeat') > -1) return;
-          try {
-            const data = JSON.parse(e.data).data;
-            const { type, companyId: id } = data;
-            const {
-              gas: {
-                // messages,
-                unitIds,
-                unitSet,
-                unitSet: { units },
-              },
-            } = this.props;
-            const index = unitIds.indexOf(id);
-            // 如果数据为告警或恢复，则将数据插入到列表的第一个
-            if ([31, 32].includes(type)) {
-              // dispatch({
-              //   type: 'gas/save',
-              //   payload: { messages: [data].concat(messages) },
-              // });
-              // 如果发生告警，弹出通知框，否则关闭通知框
-              this.fetchAbnormal();
-              if (type === 32) {
-                this.setState({ alarmIds: [...this.state.alarmIds, id] });
-                this.showWarningNotification(data);
-                dispatch({
-                  type: 'gas/saveUnitData',
-                  payload: {
-                    unitSet: {
-                      ...unitSet,
-                      units: [
-                        ...units.slice(0, index),
-                        { ...units[index], unnormal: units[index].unnormal + 1 },
-                        ...units.slice(index + 1),
-                      ],
-                    },
-                  },
-                });
-              } else {
-                dispatch({
-                  type: 'gas/saveUnitData',
-                  payload: {
-                    unitSet: {
-                      ...unitSet,
-                      units: [
-                        ...units.slice(0, index),
-                        { ...units[index], unnormal: units[index].unnormal - 1 },
-                        ...units.slice(index + 1),
-                      ],
-                    },
-                  },
-                });
-                const newIds = [...this.state.alarmIds];
-                newIds.splice(index, 1);
-                this.setState({ alarmIds: newIds });
-              }
-            }
-            // 如果为33，则修改单位状态
-            if (type === 33) {
-              this.fetchAbnormal();
-              dispatch({
-                type: 'gas/saveUnitData',
-                payload: {
-                  unitSet: {
-                    ...unitSet,
-                    units: [
-                      ...units.slice(0, index),
-                      { ...units[index], faultNum: units[index].faultNum - 1 },
-                      ...units.slice(index + 1),
-                    ],
-                  },
-                },
-              });
-            }
-          } catch (error) {
-            console.log('error', error);
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data).data;
+        const { type, companyId: id } = data;
+        const {
+          gas: {
+            // messages,
+            unitIds,
+            unitSet,
+            unitSet: { units },
+          },
+        } = this.props;
+        const index = unitIds.indexOf(id);
+        // 如果数据为告警或恢复，则将数据插入到列表的第一个
+        if ([31, 32].includes(type)) {
+          // dispatch({
+          //   type: 'gas/save',
+          //   payload: { messages: [data].concat(messages) },
+          // });
+          // 如果发生告警，弹出通知框，否则关闭通知框
+          this.fetchAbnormal();
+          if (type === 32) {
+            this.setState({ alarmIds: [...this.state.alarmIds, id] });
+            this.showWarningNotification(data);
+            // dispatch({
+            //   type: 'gas/saveUnitData',
+            //   payload: {
+            //     unitSet: {
+            //       ...unitSet,
+            //       units: [
+            //         ...units.slice(0, index),
+            //         { ...units[index], unnormal: units[index].unnormal + 1 },
+            //         ...units.slice(index + 1),
+            //       ],
+            //     },
+            //   },
+            // });
+          } else {
+            // dispatch({
+            //   type: 'gas/saveUnitData',
+            //   payload: {
+            //     unitSet: {
+            //       ...unitSet,
+            //       units: [
+            //         ...units.slice(0, index),
+            //         { ...units[index], unnormal: units[index].unnormal - 1 },
+            //         ...units.slice(index + 1),
+            //       ],
+            //     },
+            //   },
+            // });
+            const newIds = [...this.state.alarmIds];
+            newIds.splice(index, 1);
+            this.setState({ alarmIds: newIds });
           }
-        };
+        }
+        // 如果为33，则修改单位状态
+        if (type === 33) {
+          this.fetchAbnormal();
+          // dispatch({
+          //   type: 'gas/saveUnitData',
+          //   payload: {
+          //     unitSet: {
+          //       ...unitSet,
+          //       units: [
+          //         ...units.slice(0, index),
+          //         { ...units[index], faultNum: units[index].faultNum - 1 },
+          //         ...units.slice(index + 1),
+          //       ],
+          //     },
+          //   },
+          // });
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
 
-        ws.onreconnect = () => {
-          console.log('reconnecting...');
-        };
-      },
-    });
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
   }
 
   fetchAbnormal = () => {
-    const { dispatch } = this.props;
-    // 获取异常单位统计
-    dispatch({
-      type: 'gas/fetchAbnormalingTotal',
-      payload: {
-        status,
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
       },
+    } = this.props;
+    // 获取单位数据
+    dispatch({
+      type: 'gas/fetchUnitData',
+      payload: { gridId },
       callback: data => {
         if (!data) return;
         const {
-          gasErrorUnitSet: { errorUnits = [] },
+          unitSet: { units = [] },
         } = data;
-        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+        this.cardsInfo = genCardsInfo(units);
       },
     });
+    // 获取异常单位统计
+    // dispatch({
+    //   type: 'gas/fetchAbnormalingTotal',
+    //   payload: {
+    //     status,
+    //     gridId,
+    //   },
+    //   callback: data => {
+    //     if (!data) return;
+    //     const {
+    //       gasErrorUnitSet: { errorUnits = [] },
+    //     } = data;
+    //     this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+    //   },
+    // });
 
     // 获取待处理业务
     dispatch({
       type: 'gas/fetchPendingMission',
       payload: {
         type: status,
+        gridId,
       },
       callback: data => {
         if (!data) return;
@@ -477,12 +497,17 @@ export default class Gas extends PureComponent {
     this.setState({ ...newState });
   };
 
-  handleAlarmClick = (id, companyId, companyName) => {
-    const { dispatch } = this.props;
+  handleAlarmClick = (id, companyId, companyName, num) => {
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
     this.setState({ companyName });
     dispatch({
       type: 'gas/fetchGasForMaintenance',
-      payload: { companyId, id },
+      payload: { companyId, id, gridId, num },
       success: () => {
         this.handleDrawerVisibleChange('maintenance');
       },
@@ -510,6 +535,9 @@ export default class Gas extends PureComponent {
         deviceStatusCount,
         gasForMaintenance = [],
       },
+      match: {
+        params: { gridId },
+      },
     } = this.props;
 
     const {
@@ -532,11 +560,11 @@ export default class Gas extends PureComponent {
     const importCardsInfo = this.importCardsInfo;
     const pendingUnitsCardsInfo = this.pendingUnitsCardsInfo;
     const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
-
+    const extra = <GridSelect gridId={gridId} urlBase="/big-platform/gas" />;
     return (
       <BigPlatformLayout
         title="晶安智慧燃气平台"
-        extra="无锡市"
+        extra={extra}
         style={{ backgroundImage: 'none' }}
         headerStyle={{
           position: 'absolute',
@@ -550,8 +578,8 @@ export default class Gas extends PureComponent {
         }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
-        // settable
-        // onSet={this.handleClickSetButton}
+        settable
+        onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <ElectricityMap
