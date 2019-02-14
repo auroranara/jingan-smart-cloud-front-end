@@ -13,7 +13,7 @@ import {
   Input,
   Modal,
   Upload,
-  Radio,
+  // Radio,
   Select,
 } from 'antd';
 // import FooterToolbar from 'components/FooterToolbar';
@@ -24,9 +24,9 @@ import { getToken } from 'utils/authority';
 const { RangePicker } = DatePicker;
 const { Item: FormItem } = Form;
 const { Option } = Select;
-const { Group: RadioGroup } = Radio;
+// const { Group: RadioGroup } = Radio;
 
-const SAFETY_IMPORTANT = 'companyType';
+// const SAFETY_IMPORTANT = 'companyType';
 const UPLOADERS = ['companyLogo', 'reachGradeAccessory'];
 // const UPLOADERS = ['companyLogo', 'reachGradeAccessory', 'safetyFourPicture'];
 const UPLOADERS_MAP = { companyLogo: 'logoList', reachGradeAccessory: 'standardList' };
@@ -61,16 +61,16 @@ const itemLayout = {
   },
 };
 
-const gridLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 4 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 10 },
-  },
-};
+// const gridLayout = {
+//   labelCol: {
+//     xs: { span: 24 },
+//     sm: { span: 4 },
+//   },
+//   wrapperCol: {
+//     xs: { span: 24 },
+//     sm: { span: 10 },
+//   },
+// };
 
 const itemLayout1 = {
   labelCol: {
@@ -114,7 +114,7 @@ function generateRules(cName, msg = '输入', ...rules) {
 }
 
 function genCheckFileList(msg) {
-  return function (rule, value, callback) {
+  return function(rule, value, callback) {
     if (!value || !value.fileList || !value.fileList.length) callback(`请上传${msg}`);
     else callback();
   };
@@ -310,7 +310,7 @@ export default class Safety extends PureComponent {
             response: { code: 200 },
           }));
           // 数据库存的只是个链接
-        } else
+        } else {
           list = [
             {
               name: '已上传文件',
@@ -322,9 +322,9 @@ export default class Safety extends PureComponent {
             },
           ];
 
-        this.setState({ [UPLOADERS_MAP[next]]: list });
-        prev[next] = { fileList: list };
-        // console.log(list);
+          this.setState({ [UPLOADERS_MAP[next]]: list });
+          prev[next] = { fileList: list };
+        }
       } else prev[next] = val;
 
       return prev;

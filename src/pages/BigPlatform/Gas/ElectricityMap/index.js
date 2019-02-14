@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
 import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
-import classNames from 'classNames';
+// import classNames from 'classNames';
 import styles from './index.less';
 import MapTypeBar from './MapTypeBar';
 
@@ -194,7 +194,7 @@ export default class MapSection extends PureComponent {
       },
     } = this.state;
     const { handleAlarmClick } = this.props;
-    const activeStyles = classNames(styles.statusItem, styles.itemActive);
+    // const activeStyles = classNames(styles.statusItem, styles.itemActive);
     return (
       <InfoWindow
         position={{ longitude, latitude }}
@@ -236,13 +236,13 @@ export default class MapSection extends PureComponent {
               正常 {normal}
             </div>
             <div
-              className={unnormal > 0 ? activeStyles : styles.statusItem}
+              className={styles.statusItem}
               onClick={() => handleAlarmClick(undefined, companyId, companyName)}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
               报警 {unnormal}
             </div>
-            <div className={+faultNum > 0 ? activeStyles : styles.statusItem}>
+            <div className={styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
               故障 {faultNum}
             </div>
