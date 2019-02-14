@@ -181,7 +181,7 @@ export default class Gas extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
-        const { type, companyId: id } = data;
+        const { type, companyId, messageFlag } = data;
         const {
           gas: {
             // messages,
@@ -190,7 +190,8 @@ export default class Gas extends PureComponent {
             unitSet: { units },
           },
         } = this.props;
-        const index = unitIds.indexOf(id);
+        const { alarmIds } = this.state;
+        const index = unitIds.indexOf(companyId);
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
         if ([31, 32].includes(type)) {
           // dispatch({
@@ -200,7 +201,20 @@ export default class Gas extends PureComponent {
           // 如果发生告警，弹出通知框，否则关闭通知框
           this.fetchAbnormal();
           if (type === 32) {
-            this.setState({ alarmIds: [...this.state.alarmIds, id] });
+            // const sameItem = alarmIds.find(item=>item.companyId===companyId);
+            let sameIndex;
+            alarmIds.forEach((item, i) => {
+              if (item.companyId === companyId) sameIndex = i;
+            });
+            const newList =
+              sameIndex !== undefined
+                ? [
+                    ...alarmIds.slice(0, sameIndex),
+                    { companyId, messageFlag },
+                    ...alarmIds.slice(sameIndex + 1),
+                  ]
+                : [...alarmIds, { companyId, messageFlag }];
+            this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
             // dispatch({
             //   type: 'gas/saveUnitData',
@@ -229,9 +243,14 @@ export default class Gas extends PureComponent {
             //     },
             //   },
             // });
-            const newIds = [...this.state.alarmIds];
-            newIds.splice(index, 1);
-            this.setState({ alarmIds: newIds });
+            let sameIndex;
+            alarmIds.forEach((item, i) => {
+              if (item.messageFlag === messageFlag) sameIndex = i;
+            });
+            if (sameIndex !== undefined) {
+              const newIds = [...alarmIds.slice(0, sameIndex), ...alarmIds.slice(sameIndex + 1)];
+              this.setState({ alarmIds: newIds });
+            }
           }
         }
         // 如果为33，则修改单位状态
