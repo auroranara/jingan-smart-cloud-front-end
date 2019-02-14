@@ -22,7 +22,7 @@
     "build:xuexiao": "cross-env PROJECT_ENV=xuexiao ESLINT=none umi build",
     "build:nanxiao": "cross-env PROJECT_ENV=nanxiao ESLINT=none umi build",
     "build:shanxi": "cross-env PROJECT_ENV=shanxi ESLINT=none umi build",
-    "build:yanshi": "cross-env PROJECT_ENV=yanshi ESLINT=none umi build",
+    "build:show": "cross-env PROJECT_ENV=show ESLINT=none umi build",
     "build:limin": "cross-env PROJECT_ENV=limin ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",
     "analyze": "cross-env ESLINT=none ANALYZE=1 umi build",
