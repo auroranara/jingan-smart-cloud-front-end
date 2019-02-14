@@ -133,14 +133,14 @@ const defaultFontColor = '#fff';
         if (this._textNode && this._textNode.parentNode) {
             this._path.parentNode.removeChild(this._textNode);
         }
-        const zoom = this._map.getZoom();
+        // const zoom = this._map.getZoom();
         const textNode = L.SVG.create('text');
         textNode.setAttribute('text-anchor', 'middle');
         textNode.setAttribute('style', 'font-weight:bold');
         textNode.setAttribute('fill', defaultFontColor);
         textNode.setAttribute('x', center.x);
         textNode.setAttribute('y', center.y);
-        textNode.setAttribute('font-size', zoom > 0 ? defaultFontSize * zoom * 2 : defaultFontSize);
+        textNode.setAttribute('font-size', defaultFontSize);
         textNode.appendChild(document.createTextNode(this.options.data.name));
         this._path.parentNode.appendChild(textNode);
         this._textNode = textNode;
@@ -156,14 +156,14 @@ const defaultFontColor = '#fff';
         if (this._textNode && this._textNode.parentNode) {
             this._path.parentNode.removeChild(this._textNode);
         }
-        const zoom = this._map.getZoom();
+        // const zoom = this._map.getZoom();
         const textNode = L.SVG.create('text');
         textNode.setAttribute('text-anchor', 'middle');
         textNode.setAttribute('style', 'font-weight:bold');
         textNode.setAttribute('fill', defaultFontColor);
         textNode.setAttribute('x', center.x);
         textNode.setAttribute('y', center.y);
-        textNode.setAttribute('font-size', zoom > 0 ? defaultFontSize * zoom * 2 : defaultFontSize);
+        textNode.setAttribute('font-size', defaultFontSize);
         textNode.appendChild(document.createTextNode(this.options.data.name));
         this._path.parentNode.appendChild(textNode);
         this._textNode = textNode;
@@ -179,14 +179,14 @@ const defaultFontColor = '#fff';
         if (this._textNode && this._textNode.parentNode) {
             this._path.parentNode.removeChild(this._textNode);
         }
-        const zoom = this._map.getZoom();
+        // const zoom = this._map.getZoom();
         const textNode = L.SVG.create('text');
         textNode.setAttribute('text-anchor', 'middle');
         textNode.setAttribute('style', 'font-weight:bold');
         textNode.setAttribute('fill', defaultFontColor);
         textNode.setAttribute('x', center.x);
         textNode.setAttribute('y', center.y);
-        textNode.setAttribute('font-size', zoom > 0 ? defaultFontSize * zoom * 2 : defaultFontSize);
+        textNode.setAttribute('font-size', defaultFontSize);
         textNode.appendChild(document.createTextNode(this.options.data.name));
         this._path.parentNode.appendChild(textNode);
         this._textNode = textNode;
@@ -205,10 +205,15 @@ const defaultFontColor = '#fff';
 @Form.create()
 class ImageDraw extends PureComponent {
   state = {
+    // 地图中心点
     center: undefined,
+    // 地图边界，用于坐标参考
     bounds: undefined,
+    // 命名弹出框是否显示
     visible: false,
+    // 最大边界，用于实际可见范围
     maxBounds: undefined,
+    // 缩放等级，0为正常大小，1为乘以2，-1为除以2
     zoom: 0,
     // list: [
     //   { name: '很长很长的阳台名称', type: 'circle', latlng: { lat: 237, lng: 378 }, radius: 200 },
@@ -217,8 +222,10 @@ class ImageDraw extends PureComponent {
     // ],
   }
 
+  // 暂时存放的图形对象
   layer = null;
 
+  // 暂时存放的图形类型
   layerType = null;
 
   // 是否处于编辑状态
@@ -231,36 +238,34 @@ class ImageDraw extends PureComponent {
   drawing = false;
 
   componentDidMount() {
-
-  }
-
-  componentDidUpdate({ url: prevUrl }) {
     const { url } = this.props;
-    // 当图片地址发生变化时
-    if (url !== prevUrl) {
-      const { filled } = this.props;
-      // 如果使用填充效果
-      if (filled) {
-        // 按照容器的比例
-        const { clientWidth, clientHeight } =  this.map.container;
-        this.initMap(clientWidth, clientHeight);
-      }
-      else {
-        // 按照图片本身的比例
-        const image = new Image();
-        image.src = url;
-        image.onload = (e) => {
-          const { width, height } = e.path[0];
-          this.initMap(width, height);
-        }
-      }
+    if (url) {
+      this.dynamicInitMap(url);
     }
   }
 
+  componentDidUpdate({ url: prevUrl, reference: prevReference }) {
+    const { url, reference } = this.props;
+    if (url !== prevUrl) {
+      if (url) {
+        this.dynamicInitMap(url);
+      }
+      else {
+        // 当url不存在时，通过清除bounds来清除所有元素
+        this.setState({ bounds: undefined });
+      }
+    }
+    else if (reference !== prevReference) {
+      this.initReference();
+    }
+  }
+
+  // 图形容器
   refFeatureGroup = (drawnItems) => {
     this.drawnItems = drawnItems;
   }
 
+  // 地图实例
   refMap = (map) => {
     this.map = map;
   }
@@ -281,15 +286,76 @@ class ImageDraw extends PureComponent {
   }
 
   /**
+   * 动态初始化地图
+   * @param {string} url 背景图片地址
+   */
+  dynamicInitMap = (url) => {
+    const { filled } = this.props;
+    // 如果使用填充效果
+    if (filled) {
+      // 按照容器的比例
+      const { clientWidth, clientHeight } =  this.map.container;
+      this.initMap(clientWidth, clientHeight);
+    }
+    else {
+      // 按照图片本身的比例
+      const image = new Image();
+      image.src = url;
+      image.onload = (e) => {
+        const { width, height } = e.path[0];
+        this.initMap(width, height);
+      }
+    }
+  }
+
+  /**
    * 初始化地图
    * @param {number} width 坐标参考图片的宽度
    * @param {number} height 坐标参考图片的高度
    */
   initMap = (width, height) => {
+    const { maxBounds, center, zoom } = this.getReferenceParams(width, height);
+    this.setState({
+      bounds: L.latLngBounds([0, 0], [height, width]),
+      maxBounds,
+    }, () => {
+      this.setState({
+        center,
+        zoom,
+      });
+    });
+  }
+
+  /**
+   * 初始化引用
+   */
+  initReference = () => {
+    const { bounds } = this.state;
+    if (bounds) {
+      const { _northEast: { lat: height, lng: width } } = bounds;
+      const { maxBounds, center, zoom } = this.getReferenceParams(width, height);
+      this.setState({
+        maxBounds,
+      }, () => {
+        this.setState({
+          center,
+          zoom,
+        });
+      });
+    }
+  }
+
+  /**
+   * 获取引用相关参数，包括maxBounds，zoom，center
+   * @param {number} width 坐标参考图片的宽度
+   * @param {number} height 坐标参考图片的高度
+   */
+  getReferenceParams = (width, height) => {
     const { maxBoundsRatio=1, reference } = this.props;
     let center;
     let maxBounds;
     let zoom;
+    // 如果reference存在，则使用reference数据计算最大边界及设置缩放等级以适应容器
     if (reference) {
       const { latlngs, radius, latLng } = reference;
       if (radius) {
@@ -312,24 +378,23 @@ class ImageDraw extends PureComponent {
         );
       }
     }
+    // 否则使用url图片计算最大边界及设置缩放等级以适应容器
     else {
       center = { lat: 0.5, lng: 0.5 };
       maxBounds = L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]);
       zoom = this.getFitZoom(width, height);
     }
-    this.setState({
-      bounds: L.latLngBounds([0, 0], [height, width]),
+    return {
+      center: L.latLng(height*center.lat, width*center.lng),
       maxBounds,
-    }, () => {
-      this.setState({
-        center: L.latLng(height*center.lat, width*center.lng),
-        zoom,
-      });
-    });
+      zoom,
+    };
   }
 
   /**
    * 获取图形特征
+   * @param {string} type 图形类型
+   * @param {object} layer 图形对象
    */
   getShapeFeature = (type, layer) => {
     const { bounds: { _northEast: { lat: height, lng: width }  } } = this.state;
@@ -364,6 +429,9 @@ class ImageDraw extends PureComponent {
 
   /**
    * 插入新数据
+   * @param {string} type 图形类型
+   * @param {object} layer 图形对象
+   * @param {string} name 图形名称
    */
   pushData = (layerType, layer, name="") => {
     const { data, onUpdate, limit=Infinity } = this.props;
@@ -378,9 +446,8 @@ class ImageDraw extends PureComponent {
     this.handleCancel();
   }
 
-
   /**
-   * 图形创建后
+   * 点击绘制图形完成按钮
    */
   handleCreated = ({ layer, layerType }) => {
     const { namable } = this.props;
@@ -397,7 +464,7 @@ class ImageDraw extends PureComponent {
   }
 
   /**
-   * 图形修改后
+   * 点击修改图形完成按钮
    */
   handleEdited = ({ layers: { _layers: editedObj } }) => {
     const { data, onUpdate } = this.props;
@@ -420,7 +487,7 @@ class ImageDraw extends PureComponent {
   }
 
   /**
-   * 图形删除后
+   * 点击删除图形完成按钮或清空图形按钮
    */
   handleDeleted = ({ layers: { _layers: deletedObj } }) => {
     const { data, onUpdate } = this.props;
@@ -445,62 +512,78 @@ class ImageDraw extends PureComponent {
   }
 
   /**
-   * 弹出框ok事件
+   * 弹出框确定事件
    */
   handleOk = () => {
     const { form: { validateFields } } = this.props;
     validateFields(['name'], (errors, values) => {
       if (!errors) {
         const { name } = values;
+        // 将绘制的图形对象插入数据源并清除绘制的图形
         this.pushData(this.layerType, this.layer, name);
       }
     });
   }
 
   /**
-   * 取消
+   * 弹出框取消事件
    */
   handleCancel = () => {
     const { form: { setFieldsValue } } = this.props;
+    // 清除绘制的图形
     this.drawnItems.leafletElement.removeLayer(this.layer);
+    // 清除输入框内容
     setFieldsValue({ name: undefined });
+    // 隐藏弹出框
     this.setState({ visible: false });
   }
 
   /**
-   * 添加后
+   * 数据源图形渲染以后
    */
   handleAdd = ({ target: layer }) => {
     const { options: { data: { type, name } }, _point: point } = layer;
+    // 绑定tooltip
     layer.bindTooltip(name, { sticky: true });
+    // 绑定文字
     if (['polygon', 'rectangle', 'circle'].includes(type)) {
       const center = type === 'circle' ? point : layer._map.latLngToLayerPoint(layer.getCenter());
       if (layer._textNode && layer._textNode.parentNode) {
         layer._path.parentNode.removeChild(layer._textNode);
       }
-      const zoom = layer._map.getZoom();
+      // const zoom = layer._map.getZoom();
       const textNode = L.SVG.create('text');
       textNode.setAttribute('text-anchor', 'middle');
       textNode.setAttribute('style', 'font-weight:bold');
       textNode.setAttribute('fill', defaultFontColor);
       textNode.setAttribute('x', center.x);
       textNode.setAttribute('y', center.y);
-      textNode.setAttribute('font-size', zoom > 0 ? defaultFontSize * zoom * 2 : defaultFontSize);
+      textNode.setAttribute('font-size', defaultFontSize);
       textNode.appendChild(document.createTextNode(name));
       layer._path.parentNode.appendChild(textNode);
       layer._textNode = textNode;
     }
   }
 
+  // /**
+  //  * 删除状态下点击图形删除或点击清空按钮触发
+  //  */
+  // handleRemove = ({ target: layer }) => {
+  //   console.log('remove');
+  //   // 删除文字
+  //   if (layer._textNode) {
+  //     layer._textNode.parentNode.removeChild(layer._textNode);
+  //   }
+  // }
+
   /**
-   * 图形移除
+   * 图形容器委托监听图形删除
    */
-  handleRemove = ({ target: layer }) => {
+  handleLayerRemove = ({ layer }) => {
     if (layer._textNode) {
       layer._textNode.parentNode.removeChild(layer._textNode);
     }
   }
-
 
   handleEditStart = () => {
     this.editing = true;
@@ -643,7 +726,7 @@ class ImageDraw extends PureComponent {
           {bounds && <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />}
           {bounds && (
             <ImageOverlay url={url} bounds={bounds} className={hideBackground?styles.hiddenImageOverlay:styles.imageOverlay}>
-              <FeatureGroup ref={this.refFeatureGroup}>
+              <FeatureGroup ref={this.refFeatureGroup} onLayerRemove={this.handleLayerRemove}>
                 {drawable && (
                   <EditControl
                     onEdited={this.handleEdited}
