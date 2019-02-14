@@ -226,7 +226,7 @@ export default class Dashboard extends PureComponent {
       <Row
         gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }}
         className={styles.dashboardContainer}
-        style={{ height: imgWrapper.length > 0 ? 'auto' : '800px' }}
+        style={{ minHeight: '80vh', height: imgWrapper.length > 0 ? 'auto' : '800px' }}
       >
         {imgWrapper.map((item, i) => (
           <Col
