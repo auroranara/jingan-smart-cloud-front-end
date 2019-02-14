@@ -365,7 +365,7 @@ export default class Gas extends PureComponent {
           className={styles.notificationContent}
           onClick={() => {
             this.setState({ companyName });
-            this.handleAlarmClick(messageFlag, undefined, companyName);
+            this.handleAlarmClick(messageFlag, companyId, companyName);
           }}
         >
           <div className={styles.notificationText}>

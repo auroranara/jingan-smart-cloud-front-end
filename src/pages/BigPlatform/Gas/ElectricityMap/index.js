@@ -243,7 +243,7 @@ export default class MapSection extends PureComponent {
               onClick={() => handleAlarmClick(undefined, companyId, companyName)}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-              报警 {unnormal}
+              报警 {unnormal > 0 ? unnormal : 0}
             </div>
             <div className={+faultNum > 0 ? styles.itemActive : styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
