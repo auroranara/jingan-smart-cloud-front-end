@@ -35,7 +35,7 @@ export default class SettingModal extends PureComponent {
             <FormItem label="标题名称显示">
               {getFieldDecorator('title', { initialValue: 0 })(
                 <RadioGroup>
-                  <Radio value={0}>晶安智慧用电监测平台</Radio>
+                  <Radio value={0}>晶安智慧燃气平台</Radio>
                   <Radio value={1}><Input placeholder="请输入自定义平台名" /></Radio>
                 </RadioGroup>
               )}
