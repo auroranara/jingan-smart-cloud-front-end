@@ -75,7 +75,8 @@ export default {
   routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
-  publicPath: '/',
+  // 如果是演示环境 publicPath目录为xshow
+  publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
   // publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',

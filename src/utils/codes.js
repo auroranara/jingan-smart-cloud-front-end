@@ -5,6 +5,7 @@ export default {
     dynamicMonitor: 'dashboard.dynamicMonitorView',
     personnelPosition: 'dashboard.personnelPositioningView',
     electricityMonitor: 'dashboard.electricityMonitorView',
+    gas: 'dashboard.gasView',
   },
   role: {
     list: 'roleAuthorization.role.listView',

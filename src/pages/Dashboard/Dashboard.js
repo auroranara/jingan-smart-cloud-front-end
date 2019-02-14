@@ -20,7 +20,7 @@ const fireItem = { src: fire, url: '', label: '消防驾驶舱' };
 const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
 const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' };
 const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
-const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' }
+const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
@@ -34,7 +34,7 @@ export default class Dashboard extends PureComponent {
     monitorService: 0, // 动态监测可见
     personnelPositioning: 0, // 人员定位可见
     electricityMonitor: 0, // 用电安全可见
-    gasVisible: 0,           // 燃气入口可见
+    gasVisible: 0, // 燃气入口可见
   };
 
   componentDidMount() {
@@ -69,10 +69,11 @@ export default class Dashboard extends PureComponent {
       dynamicMonitorAuth,
       personnelPositionAuth,
       electricityMonitorAuth,
+      gasAuth,
     ] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应) 4=>卫生(暂时没有大屏对应)
-    const [clfcSafetyAuth, clfcFireControlAuth, clfcEnviromentAuth] = [1, 2, 3].map(k =>
+    const [clfcSafetyAuth, clfcFireControlAuth /* clfcEnviromentAuth */] = [1, 2, 3].map(k =>
       classification.includes(k)
     );
     // console.log([safetyAuth, clfcSafetyAuth], [fireControlAuth, clfcFireControlAuth], [dynamicMonitorAuth, clfcDynamicMonitorAuth]);
@@ -131,7 +132,7 @@ export default class Dashboard extends PureComponent {
           safetyProduction: safetyProduction && safetyAuth && clfcSafetyAuth,
           fireService: fireService && fireControlAuth && clfcFireControlAuth,
           electricityMonitor: electricityMonitorAuth,
-          gasVisible: 1,
+          gasVisible: gasAuth,
         });
         break;
 
@@ -141,7 +142,7 @@ export default class Dashboard extends PureComponent {
           safetyProduction: safetyAuth,
           fireService: fireControlAuth,
           electricityMonitor: electricityMonitorAuth,
-          gasVisible: 1,
+          gasVisible: gasAuth,
         });
         break;
 
@@ -175,13 +176,13 @@ export default class Dashboard extends PureComponent {
       personnelPositioning,
       electricityMonitor,
       gasVisible,
-    } = this.state
+    } = this.state;
     electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
     gasItem.url = `${window.publicPath}#/big-platform/gas/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =
@@ -222,13 +223,21 @@ export default class Dashboard extends PureComponent {
     // const hasLittleItems = { width: '405px', height: '480px', padding: '40px' };
 
     return (
-      <Row gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }} className={styles.dashboardContainer} style={{ height: imgWrapper.length > 0 ? 'auto' : '800px' }}>
+      <Row
+        gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }}
+        className={styles.dashboardContainer}
+        style={{ height: imgWrapper.length > 0 ? 'auto' : '800px' }}
+      >
         {imgWrapper.map((item, i) => (
           <Col
             span={8}
             key={i.toString()}
-            style={{ display: 'flex', justifyContent: ['flex-end', 'center', 'flex-start'][i % 3], marginTop: '30px' }}
-          // style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}
+            style={{
+              display: 'flex',
+              justifyContent: ['flex-end', 'center', 'flex-start'][i % 3],
+              marginTop: '30px',
+            }}
+            // style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}
           >
             {/* <div
           className={styles.imgItem}
@@ -241,11 +250,13 @@ export default class Dashboard extends PureComponent {
               <div className={styles.imgContainer}>
                 <img src={item.src} alt="" />
               </div>
-              <div className={styles.text}><Ellipsis lines={1}>{item.label}</Ellipsis></div>
+              <div className={styles.text}>
+                <Ellipsis lines={1}>{item.label}</Ellipsis>
+              </div>
             </div>
           </Col>
         ))}
       </Row>
-    )
+    );
   }
 }
