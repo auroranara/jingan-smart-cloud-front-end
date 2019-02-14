@@ -71,3 +71,8 @@ export async function deleteFloor({ floorId }) {
     method: 'DELETE',
   });
 }
+
+/* 企业列表弹出框 */
+export async function queryModelList(params) {
+  return request(`/acloud_new/v2/baseInfo/getCompanyByUser?${stringify(params)}`);
+}

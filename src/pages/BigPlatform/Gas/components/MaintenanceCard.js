@@ -202,6 +202,7 @@ export default function MaintenanceCard(props) {
     // 主机报障
     label,
     install_address,
+    realtime,
     area,
     location,
     // 相同部分
@@ -240,8 +241,8 @@ export default function MaintenanceCard(props) {
             <TimelineItem
               spans={SPANS}
               label={`${typeConfig.name}发生`}
-              day={getTime(save_time)}
-              hour={getTime(save_time, 1)}
+              day={getTime(realtime)}
+              hour={getTime(realtime, 1)}
             >
               <Occured
                 position={area + location || NO_DATA}

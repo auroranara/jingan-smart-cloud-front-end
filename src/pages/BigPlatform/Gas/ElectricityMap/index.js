@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
 import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
-// import classNames from 'classNames';
 import styles from './index.less';
 import MapTypeBar from './MapTypeBar';
 
 import pointNormal from './imgs/point-normal.png';
 import pointAlarm from './imgs/point-alarm.png';
-import pointPreAlarm from './imgs/point-preAlarm.png';
+// import pointPreAlarm from './imgs/point-preAlarm.png';
 import iconAddress from './imgs/icon-address.png';
 import iconMan from './imgs/icon-man.png';
 
@@ -28,14 +27,14 @@ function MapLegend(props) {
         <div className={styles.legendIcon}>
           <div className={styles.legendColor} style={{ backgroundColor: '#f83329' }} />
         </div>
-        告警单位
+        报警单位
       </div>
-      <div className={styles.legendItem}>
+      {/* <div className={styles.legendItem}>
         <div className={styles.legendIcon}>
           <div className={styles.legendColor} style={{ backgroundColor: '#ffb400' }} />
         </div>
         预警单位
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -59,6 +58,10 @@ export default class MapSection extends PureComponent {
         latitude: 31.544389,
       },
     };
+  }
+
+  componentDidMount() {
+    this.props.onRef(this);
   }
 
   renderMarkers = lvl => {
@@ -100,13 +103,13 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { status, companyName, companyId, unnormal, faultNum } = extData;
+    const { companyName, companyId, unnormal /* faultNum */ } = extData;
     let imgSrc = pointNormal;
 
     if (+unnormal > 0) {
       imgSrc = pointAlarm;
-    } else if (+faultNum > 0) {
-      imgSrc = pointPreAlarm;
+      // } else if (+faultNum > 0) {
+      //   imgSrc = pointPreAlarm;
     } else {
       imgSrc = pointNormal;
     }
@@ -198,7 +201,7 @@ export default class MapSection extends PureComponent {
     return (
       <InfoWindow
         position={{ longitude, latitude }}
-        offset={[175, 120]}
+        offset={[175, 125]}
         isCustom={false}
         autoMove={true}
         visible={infoWindowShow}
@@ -236,13 +239,13 @@ export default class MapSection extends PureComponent {
               正常 {normal}
             </div>
             <div
-              className={styles.statusItem}
+              className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
               onClick={() => handleAlarmClick(undefined, companyId, companyName)}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-              报警 {unnormal}
+              报警 {unnormal > 0 ? unnormal : 0}
             </div>
-            <div className={styles.statusItem}>
+            <div className={+faultNum > 0 ? styles.itemActive : styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
               故障 {faultNum}
             </div>
@@ -311,7 +314,7 @@ export default class MapSection extends PureComponent {
               this.mapInstance.setFitView(
                 this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
               );
-              handleParentChange({ infoWindowShow: false });
+              this.setState({ infoWindowShow: false });
             }}
           >
             <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
