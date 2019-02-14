@@ -145,9 +145,9 @@ export default class MapSection extends PureComponent {
   };
 
   renderTips = () => {
-    const { units = [], alarmIds = [] } = this.props;
-    const tips = alarmIds.map(id => {
-      return units.find(item => item.companyId === id);
+    const { units = [], alarmIds = [], handleAlarmClick } = this.props;
+    const tips = alarmIds.map(data => {
+      return {...units.find(item => item.companyId === data.companyId), messageFlag:data.messageFlag };
     });
     return tips.map((item, index) => {
       return (
@@ -159,9 +159,10 @@ export default class MapSection extends PureComponent {
           extData={item}
           events={{
             click: e => {
-              const newIds = [...alarmIds];
-              newIds.splice(index, 1);
-              this.props.handleParentChange({ maintenanceDrawerVisible: true, alarmIds: newIds });
+              const { messageFlag, companyId, comapnyName } = item;
+              handleAlarmClick(messageFlag, companyId, comapnyName);
+              const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
+              this.props.handleParentChange({ alarmIds: newIds });
             },
           }}
           render={() => {
