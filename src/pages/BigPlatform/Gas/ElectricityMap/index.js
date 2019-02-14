@@ -103,7 +103,7 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { companyName, companyId, unnormal, faultNum } = extData;
+    const { companyName, companyId, unnormal /* faultNum */ } = extData;
     let imgSrc = pointNormal;
 
     if (+unnormal > 0) {
