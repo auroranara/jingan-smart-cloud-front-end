@@ -278,6 +278,10 @@ export default class Gas extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+
+    setInterval(() => {
+      this.fetchPending();
+    }, 10000);
   }
 
   fetchAbnormal = () => {
@@ -318,6 +322,17 @@ export default class Gas extends PureComponent {
     });
 
     // 获取待处理业务
+    // this.fetchPending()
+  };
+
+  fetchPending = () => {
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
+    // 获取待处理业务
     dispatch({
       type: 'gas/fetchPendingMission',
       payload: {
@@ -332,7 +347,7 @@ export default class Gas extends PureComponent {
         this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
       },
     });
-  };
+  }
 
   /**
    * 更新后
