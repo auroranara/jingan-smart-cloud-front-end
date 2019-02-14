@@ -178,24 +178,28 @@ export default class BusinessDrawer extends PureComponent {
             gasFire,
             fault = 0,
           }) => (
-            <DrawerCard
-              key={company_id}
-              name={company_name || NO_DATA}
-              location={address || NO_DATA}
-              person={principal_name || NO_DATA}
-              phone={principal_phone || NO_DATA}
-              style={{ cursor: 'auto' }}
-              more={
-                <p className={styles.more}>
-                  {gasFire > 0 && (
-                    <DotItem title="未处理报警" color={`rgb(248,51,41)`} quantity={gasFire} />
-                  )}
-                  {fault > 0 && (
-                    <DotItem title="未处理故障" color={`rgb(255,180,0)`} quantity={fault} />
-                  )}
-                </p>
-              }
-            />
+            <div style={{ marginBottom: '10px' }}>
+              {gasFire > 0 && (
+                <DrawerCard
+                  key={company_id}
+                  name={company_name || NO_DATA}
+                  location={address || NO_DATA}
+                  person={principal_name || NO_DATA}
+                  phone={principal_phone || NO_DATA}
+                  style={{ cursor: 'auto' }}
+                  more={
+                    <p className={styles.more}>
+                      {gasFire > 0 && (
+                        <DotItem title="未处理报警" color={`rgb(248,51,41)`} quantity={gasFire} />
+                      )}
+                      {fault > 0 && (
+                        <DotItem title="未处理故障" color={`rgb(255,180,0)`} quantity={fault} />
+                      )}
+                    </p>
+                  }
+                />
+              )}
+            </div>
           )
         )}
       </SearchBar>
