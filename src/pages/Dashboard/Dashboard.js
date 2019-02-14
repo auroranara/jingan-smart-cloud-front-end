@@ -7,18 +7,19 @@ import styles from './Dashboard.less';
 // 用电安全驾驶舱图
 import electricImg from '../../assets/dashboard-electricity.png';
 
-// const fire = 'http://data.jingan-china.cn/v2/dashboard/fire-control.png';
-// const safe = 'http://data.jingan-china.cn/v2/dashboard/safety.png';
+// 大屏入口图片路径
 const fire = 'http://data.jingan-china.cn/v2/dashboard/home-fire.png';
 const safe = 'http://data.jingan-china.cn/v2/dashboard/home-safety.png';
 const monitor = 'http://data.jingan-china.cn/v2/dashboard/home-monitor.png';
 const psoitionImg = 'http://data.jingan-china.cn/v2/dashboard/personnel-positioning.png';
+const gasImg = 'http://data.jingan-china.cn/v2/dashboard/gas.png';
 
 const safeItem = { src: safe, url: '', label: '安全驾驶舱' };
 const fireItem = { src: fire, url: '', label: '消防驾驶舱' };
 const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
 const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' };
 const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
+const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' }
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
@@ -32,6 +33,7 @@ export default class Dashboard extends PureComponent {
     monitorService: 0, // 动态监测可见
     personnelPositioning: 0, // 人员定位可见
     electricityMonitor: 0, // 用电安全可见
+    gasVisible: 0,           // 燃气入口可见
   };
 
   componentDidMount() {
@@ -77,6 +79,7 @@ export default class Dashboard extends PureComponent {
     safeItem.url = `${window.publicPath}#/big-platform/safety/government/index`;
     // fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`;
+    gasItem.url = `${window.publicPath}#/big-platform/gas`;
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
@@ -127,6 +130,7 @@ export default class Dashboard extends PureComponent {
           safetyProduction: safetyProduction && safetyAuth && clfcSafetyAuth,
           fireService: fireService && fireControlAuth && clfcFireControlAuth,
           electricityMonitor: electricityMonitorAuth,
+          gasVisible: 1,
         });
         break;
 
@@ -136,6 +140,7 @@ export default class Dashboard extends PureComponent {
           safetyProduction: safetyAuth,
           fireService: fireControlAuth,
           electricityMonitor: electricityMonitorAuth,
+          gasVisible: 1,
         });
         break;
 
@@ -168,11 +173,11 @@ export default class Dashboard extends PureComponent {
       monitorService,
       personnelPositioning,
       electricityMonitor,
-    } = this.state;
-
+      gasVisible,
+    } = this.state
     electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${
       grids.length ? grids[0].value : 'index'
-    }`;
+      }`;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =
@@ -191,14 +196,14 @@ export default class Dashboard extends PureComponent {
     // if (monitorService) {
     //   imgWrapper.push(monitorItem)
     // }
-
-    const items = [safeItem, fireItem, monitorItem, positionItem, electricItem];
+    const items = [safeItem, fireItem, monitorItem, positionItem, electricItem, gasItem];
     const imgWrapper = [
       safetyProduction,
       fireService,
       monitorService,
       personnelPositioning,
       electricityMonitor,
+      gasVisible,
     ].reduce((prev, next, i) => {
       next && prev.push(items[i]);
       return prev;
