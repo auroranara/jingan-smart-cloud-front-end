@@ -224,7 +224,7 @@ export default class AlarmDrawer extends PureComponent {
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-            onClick={this.genProgressClick(2)}
+            onClick={this.genProgressClick(1)}
           />
           <OvProgress
             title="故障单位"
@@ -238,7 +238,7 @@ export default class AlarmDrawer extends PureComponent {
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-            onClick={this.genProgressClick(3)}
+            onClick={this.genProgressClick(2)}
           />
           <OvProgress
             title="失联单位"
@@ -252,7 +252,7 @@ export default class AlarmDrawer extends PureComponent {
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-            onClick={this.genProgressClick(1)}
+            onClick={this.genProgressClick(3)}
           />
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>

@@ -22,6 +22,7 @@ const NO_DATA = '暂无信息';
 const LABELS = ['未处理报警', '未处理故障'];
 const COLORS = ['248,51,41', '255,180,0'];
 const OPTIONS = ['全部', '未处理故障', '未处理报警'].map((d, i) => ({ value: i, desc: d }));
+
 export default class BusinessDrawer extends PureComponent {
   state = { graph: 0, otherGraph: 0, selected: 0, searchValue: '' };
 
@@ -54,11 +55,7 @@ export default class BusinessDrawer extends PureComponent {
   };
 
   render() {
-    const {
-      visible,
-      // handleSearch,
-      data: { list = [], graphList = [], graphList1 = [] } = {},
-    } = this.props;
+    const { visible, data: { list = [], graphList = [], graphList1 = [] } = {} } = this.props;
     const { graph, selected, searchValue, otherGraph } = this.state;
 
     const filteredList = list
@@ -70,11 +67,7 @@ export default class BusinessDrawer extends PureComponent {
           case 1:
             return item.common;
           case 2:
-            return item.alarm;
-          case 3:
-            return item.warn;
-          case 4:
-            return item.noAccess;
+            return item.gasFire;
           default:
             return false;
         }
