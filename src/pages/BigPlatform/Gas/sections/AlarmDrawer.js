@@ -21,8 +21,8 @@ const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
 const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
-const LABELS = ['报警', '故障', '失联', '正常'];
-const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
+// const LABELS = ['报警', '故障', '失联', '正常'];
+// const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
 const OPTIONS = ['全部', '报警', '故障', '失联'].map((d, i) => ({ value: i, desc: d }));
 
 export default class AlarmDrawer extends PureComponent {
@@ -33,7 +33,6 @@ export default class AlarmDrawer extends PureComponent {
   };
 
   handleSelectChange = i => {
-    console.log('weqwui', i);
     this.setState({ selected: i });
   };
 
@@ -167,6 +166,7 @@ export default class AlarmDrawer extends PureComponent {
 
   render() {
     const {
+      handleAlarmClick,
       visible,
       data: {
         list = [],
@@ -174,7 +174,6 @@ export default class AlarmDrawer extends PureComponent {
         graphList = [],
       } = {},
     } = this.props;
-
     const { graph, selected, searchValue } = this.state;
 
     const filteredList = list
@@ -275,7 +274,7 @@ export default class AlarmDrawer extends PureComponent {
             principal_name,
             principal_phone,
             normal: listNormal,
-            unnormal: listUnnormal,
+            unnormal: listUnnormal = 0,
             faultNum: listFaultNum,
             outContact: listOutContact,
             count,
@@ -303,9 +302,16 @@ export default class AlarmDrawer extends PureComponent {
               }
               more={
                 <p className={styles.more}>
-                  {[listUnnormal, listFaultNum, listOutContact, listNormal].map((n, i) => (
-                    <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                  ))}
+                  <DotItem
+                    title="报警"
+                    color={`rgb(248,51,41)`}
+                    quantity={listUnnormal}
+                    className={listUnnormal > 0 ? styles.itemActive : ''}
+                    onClick={() => handleAlarmClick(undefined, company_id, company_name)}
+                  />
+                  <DotItem title="故障" color={`rgb(255,180,0)`} quantity={listFaultNum} />
+                  <DotItem title="失联" color={`rgb(159,159,159)`} quantity={listOutContact} />
+                  <DotItem title="正常" color={`rgb(55,164,96)`} quantity={listNormal} />
                 </p>
               }
             />

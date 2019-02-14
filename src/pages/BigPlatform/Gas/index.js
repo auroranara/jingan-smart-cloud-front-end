@@ -478,6 +478,7 @@ export default class Gas extends PureComponent {
   };
 
   handleAlarmClick = (id, companyId, companyName) => {
+    console.log('id, companyId, companyName');
     const { dispatch } = this.props;
     this.setState({ companyName });
     dispatch({
@@ -617,6 +618,7 @@ export default class Gas extends PureComponent {
           data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          handleAlarmClick={this.handleAlarmClick}
         />
         <BusinessDrawer
           data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}
