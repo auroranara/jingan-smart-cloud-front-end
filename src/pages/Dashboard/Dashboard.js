@@ -222,7 +222,7 @@ export default class Dashboard extends PureComponent {
     // const hasLittleItems = { width: '405px', height: '480px', padding: '40px' };
 
     return (
-      <Row gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }} className={styles.dashboardContainer}>
+      <Row gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }} className={styles.dashboardContainer} style={{ height: imgWrapper.length > 0 ? 'auto' : '800px' }}>
         {imgWrapper.map((item, i) => (
           <Col
             span={8}
