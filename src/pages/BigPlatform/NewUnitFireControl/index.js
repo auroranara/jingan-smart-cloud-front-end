@@ -756,7 +756,7 @@ export default class App extends PureComponent {
     } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchWorkOrder',
-      payload: { companyId, id, status },
+      payload: { companyId, id, status, except: 3 },
     });
   };
 
