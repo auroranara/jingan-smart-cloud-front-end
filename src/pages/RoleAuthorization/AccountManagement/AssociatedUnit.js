@@ -1223,7 +1223,9 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   setPermissions = () => {
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     setFieldsValue({
       permissions: removeParentKey(
         mergeArrays(this.permissions, this.authTreeCheckedKeys),

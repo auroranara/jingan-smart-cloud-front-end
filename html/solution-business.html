@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--eslint-disable-line-->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>晶安智慧云</title>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    html ul,
+    body ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #root {
+      width: 100%;
+      height: 100%;
+      background: url("http://data.jingan-china.cn/v2/solution-business/bg.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .main {
+      width: 80%;
+      height: 80%;
+      position: absolute;
+      top: 11%;
+      left: 10%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main .top {
+      width: 100%;
+      height: 66%;
+      display: flex;
+    }
+
+    .main .bottom {
+      flex: 1;
+      width: 100%;
+      margin-top: 18px;
+      display: flex;
+    }
+
+    .main .item {
+      flex: 1;
+      color: #fff;
+      padding: 0 32px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .main .item:hover {
+      /* border: 2px solid rgba(255, 255, 255, 0.5); */
+      box-shadow: 0px 0px 8px #fff;
+    }
+
+    .item+.item {
+      height: 100%;
+      margin-left: 20px;
+    }
+
+    .item-title {
+      font-size: 28px;
+      margin-top: 40px;
+      margin-bottom: 25px;
+    }
+
+    .top .item-title {
+      margin-top: 60px;
+    }
+
+    .item-p {
+      font-size: 16px;
+    }
+
+    .safe\&fire {
+      background: url("http://data.jingan-china.cn/v2/solution-business/safe&fire.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .production {
+      background: url("http://data.jingan-china.cn/v2/solution-business/production.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .fire {
+      background: url("http://data.jingan-china.cn/v2/solution-business/fire.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .electricity {
+      background: url("http://data.jingan-china.cn/v2/solution-business/electricity.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .gas {
+      background: url("http://data.jingan-china.cn/v2/solution-business/gas.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    .smoke {
+      background: url("http://data.jingan-china.cn/v2/solution-business/smoke.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <div class="main">
+      <div class="top">
+        <div class="item safe&fire" id="integration">
+          <div class="item-title">安消一体化</div>
+          <p class="item-p">依托物联感知技术，结合物联网硬件产品，</p>
+          <p class="item-p">提供安消一体化平台+IoT终端+APP+安全服务。</p>
+        </div>
+        <div class="item production" id="production">
+          <div class="item-title">智慧安全生产</div>
+          <p class="item-p">电子化安全巡查，闭环化隐患治理，24小时动态监测，</p>
+          <p class="item-p">大数据分析预警，实现安全管理过程化、</p>
+          <p class="item-p">信息化、全面化。</p>
+        </div>
+        <div class="item fire" id="fire">
+          <div class="item-title">智慧消防</div>
+          <p class="item-p">基于物联传感技术，实时监测消防设施设备状态，</p>
+          <p class="item-p">预警提醒；整合电子化巡查工具，</p>
+          <p class="item-p">全面提升消防工作效率。</p>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="item gas" id="gas">
+          <div class="item-title">智慧燃气</div>
+          <p class="item-p">对生产设施、环境参数等信息实时采集</p>
+          <p class="item-p">与监测预警，防患于未然。</p>
+        </div>
+        <div class="item electricity" id="electricity">
+          <div class="item-title">智慧用电</div>
+          <p class="item-p">通过独立IoT设备或物联网网关设备，实时采集</p>
+          <p class="item-p">设备的状态参数，并进行可视化呈现。</p>
+        </div>
+        <div class="item smoke" id="smoke">
+          <div class="item-title">智能烟感</div>
+          <p class="item-p">基于NB-IoT的智慧烟感可实时上报火灾状况，</p>
+          <p class="item-p">及时通知火警状态；可接入大数据平台。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  const doms = document.getElementsByClassName('item')
+  for (const dom of doms) {
+    dom.addEventListener('click', function() {
+      window.open(`http://www.jinganyun.net/xshow/#/user/login?type=${encodeURI(dom.id)}`)
+    }, false)
+  }
+</script>
+
+</html>

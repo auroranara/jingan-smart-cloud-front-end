@@ -102,7 +102,10 @@ class OverHdCom extends PureComponent {
                                           },
                                         });
                                         // goComponent('hdOverDetail');
-                                        handleParentChange({ dangerInfo: true });
+                                        handleParentChange({
+                                          dangerInfo: true,
+                                          dangerCompanyLast: '',
+                                        });
                                         if (document.querySelector('#overRisk')) {
                                           document.querySelector('#overRisk').scrollTop = 0;
                                         }

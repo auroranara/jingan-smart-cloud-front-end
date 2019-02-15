@@ -13,22 +13,26 @@
   font-size: 14px;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.3);
+
   &>div {
     display: flex;
     width: 50%;
     align-items: center;
     float: left;
     padding: 8px 16px;
+
     &> :first-child {
       flex: none;
       margin-right: 12px;
       width: 14px;
       height: 14px;
     }
+
     &> :nth-child(2) {
       flex: none;
       font-size: 14px;
     }
+
     &> :nth-child(3) {
       flex: 1;
       text-align: right;
@@ -43,9 +47,11 @@
   align-items: center;
   padding: 30px 21px 0 5px;
   overflow: hidden;
+
   &>div:first-child {
     margin-bottom: 10px;
   }
+
   .statusItem {
     width: 100%;
     height: 90px;
@@ -54,29 +60,34 @@
     display: flex;
     flex-direction: column;
     cursor: pointer;
+
     .statistic {
       display: flex;
       justify-content: left;
+
       .title {
         flex: none;
         width: 60px;
       }
+
       .number {
         font-weight: 500;
       }
     }
+
     .barItem {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
+
       .barContainer {
         width: 100%;
         background: rgb(0, 25, 56);
         border-radius: 5px;
         height: 9px;
-        border-radius: 10p;
         overflow: hidden;
+
         .bar {
           height: 100%;
           border-radius: 9px;

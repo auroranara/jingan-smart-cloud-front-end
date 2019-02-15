@@ -13,7 +13,7 @@ const hosts = {
   ct: '192.168.10.8:8080', //陈涛
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18081', // 开发
-  test: '192.168.10.68:18082', // 测试
+  test: 'test.jinganyun.net', // 测试
   pro: '192.168.10.68:18083', // 测试
   mock: '118.126.110.115:3001/mock/28',
   jb: '192.168.10.3', // 杰宝
@@ -23,6 +23,7 @@ const hosts = {
   jiangxi: '58.215.178.100:12083',
   xuzhou: '58.215.178.100:12081',
   shanxi: '58.215.178.100:12085',
+  nanxiao: '58.215.178.100:12084',
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
 };
@@ -74,7 +75,9 @@ export default {
   routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
-  publicPath: '/acloud_new/',
+  // 如果是演示环境 publicPath目录为xshow
+  publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
+  // publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',
   },
@@ -127,7 +130,8 @@ export default {
     start_url: '/index.html',
     icons: [
       {
-        src: '/acloud_new/static/favicon.png',
+        src: '/static/favicon.png',
+        // src: '/acloud_new/static/favicon.png',
         sizes: '48x48',
         type: 'image/png',
       },

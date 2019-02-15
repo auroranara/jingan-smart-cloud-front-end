@@ -47,7 +47,7 @@ export default class ExhaustMonitor extends PureComponent {
     } = this.props;
 
     let rtData = realTimeData;
-    if (status === '0') rtData = {};
+    if (status === '-1') rtData = {};
 
     const handledParams = params.map(({ id, code, desc, unit }) => ({
       id,
@@ -58,7 +58,9 @@ export default class ExhaustMonitor extends PureComponent {
     }));
 
     const sectionStyle = {
-      boxShadow: `0 0 1.1em rgba(${status === '2' ? '200,70,70' : '9,103,211'}, 0.9) inset`,
+      boxShadow: `0 0 1.1em rgba(${
+        status === '1' || status === '2' ? '200,70,70' : '9,103,211'
+      }, 0.9) inset`,
     };
 
     return (

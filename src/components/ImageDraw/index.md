@@ -1,0 +1,20 @@
+* className 容器类名
+* style 容器样式
+* url 图片地址，必传且必须通过setState
+* data 数据源，类型为数组，必传
+* onUpdate 用于更新data的回调，当namable为false时，需要为参数对象添加name属性，必传
+* limit 限制绘制图形数量，类型为数字，默认不限制
+* drawable 是否显示绘制按钮，默认false
+* namable 是否可以命名，默认为false
+* onClick 图片上的标记的点击事件
+* mapProps 地图参数
+* zoomControlProps 缩放控制器参数
+* editControlProps 绘制控件参数
+* filled 是否按照容器比例拉伸图片，默认false
+* maxBoundsRatio 最大边界比例，默认1
+* shapes=['polygon', 'rectangle', 'circle', 'marker', 'circlemarker'] 可以绘制的图形，默认为['polygon', 'rectangle', 'circle']
+* color 图形颜色，默认为#000
+* hideBackground 是否隐藏背景图片
+* images 额外的图片
+* reference 根据哪一个图形定位，默认为背景
+* autoZoom 是否根据图片大小自动设置最佳的zoom等级，默认为false，zoom为0

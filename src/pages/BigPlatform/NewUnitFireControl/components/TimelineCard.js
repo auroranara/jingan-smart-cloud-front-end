@@ -10,13 +10,13 @@ import flowImg from '../imgs/flow.png';
 const STATUS = { 1: '误报火警', 2: '真实火警' };
 
 function Alarmed(props) {
-  const { deviceCode, position, type, safety, phone } = props;
+  const { deviceCode, deviceAddress, position, type, safety, phone } = props;
 
   return (
     <div className={styles.card}>
       <p>{position}</p>
       <p>{type}</p>
-      <p>主机编号：{deviceCode}</p>
+      <p>消防主机：{deviceCode} {deviceAddress}</p>
       <p>安全负责人：{safety} {phone}</p>
     </div>
   );
@@ -79,6 +79,7 @@ export default function TimelineCard(props) {
             {isStarted && (
               <Alarmed
                 deviceCode={startMap.deviceCode || NO_DATA}
+                deviceAddress={startMap.deviceAddress}
                 position={startMap.installAddress || NO_DATA}
                 type={startMap.unitType || NO_DATA}
                 safety={startMap.safetyMan || NO_DATA}

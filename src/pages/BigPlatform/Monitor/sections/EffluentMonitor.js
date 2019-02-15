@@ -12,7 +12,7 @@ import waterBg from '../imgs/waterBg.png';
 const Option = Select.Option;
 
 const warningColor = 'rgb(200, 70, 70)';
-const defaultColor = 'rgb(9,103,211)';
+const defaultColor = 'rgb(0,168,255)';
 
 function getDayTime(t) {
   return moment(t).format('YYYY-MM-DD');
@@ -34,7 +34,7 @@ export default function EffluentMonitor(props) {
   } = props;
 
   let rtData = realTimeData;
-  if (status === '0') rtData = {};
+  if (status === '-1') rtData = {};
 
   const handledParams = params.map(({ id, code, desc, unit }) => ({
     id,
@@ -43,9 +43,12 @@ export default function EffluentMonitor(props) {
     value: rtData[code],
     isBeyond: unnormalCodes.includes(code),
   }));
+  console.log('handledParams', handledParams);
 
   const sectionStyle = {
-    boxShadow: `0 0 1.1em rgba(${status === '2' ? '200,70,70' : '9,103,211'}, 0.9) inset`,
+    boxShadow: `0 0 1.1em rgba(${
+      status === '1' || status === '2' ? '200,70,70' : '9,103,211'
+    }, 0.9) inset`,
   };
 
   return (

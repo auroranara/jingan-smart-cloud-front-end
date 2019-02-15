@@ -328,6 +328,8 @@ export default class CompanyList extends PureComponent {
     if (isLast) {
       return;
     }
+    console.log('pageNum', pageNum);
+
     // 请求数据
     appendFetch({
       payload: {
@@ -542,17 +544,17 @@ export default class CompanyList extends PureComponent {
                       部门
                     </Link>,
                   ]}
-                // extra={hasDeleteAuthority ? (
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // ) : null}
+                  // extra={hasDeleteAuthority ? (
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // ) : null}
                 >
                   <div
                   // onClick={hasDetailAuthority ? () => {
@@ -595,12 +597,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                        <img
-                          className={styles.defaultIcon}
-                          src={safetyProduction ? safe : safeGray}
-                          alt="safe"
-                        />
-                      )}
+                      <img
+                        className={styles.defaultIcon}
+                        src={safetyProduction ? safe : safeGray}
+                        alt="safe"
+                      />
+                    )}
                     {unitType === 3 ? (
                       <Popconfirm
                         className={styles.ml30}
@@ -621,12 +623,12 @@ export default class CompanyList extends PureComponent {
                         />
                       </Popconfirm>
                     ) : (
-                        <img
-                          className={`${styles.defaultIcon} ${styles.ml30}`}
-                          src={fireService ? fire : fireGray}
-                          alt="fire"
-                        />
-                      )}
+                      <img
+                        className={`${styles.defaultIcon} ${styles.ml30}`}
+                        src={fireService ? fire : fireGray}
+                        alt="fire"
+                      />
+                    )}
                   </div>
                 </Card>
               </List.Item>

@@ -4,8 +4,8 @@ import { Card, Row, Col, Input, Button, Table, Form, Select, Divider, Modal, mes
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { ActionSheet } from 'antd-mobile';
-import { treeAdapters } from '_parse5@3.0.3@parse5';
+import { Map, Marker, ImageOverlay } from 'react-leaflet';
+import L from 'leaflet';
 
 const Option = Select.Option;
 
@@ -16,6 +16,7 @@ const {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
+      viewMap: viewMapCode,
     },
   },
 } = codes
@@ -44,10 +45,18 @@ const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 }))
 export default class CompanyBeacon extends PureComponent {
 
-  state = {
-    beaconStatus: undefined, // 筛选栏信标状态
-    beaconCode: undefined,   // 筛选栏信标编号
-    detail: {},               // 信标详情
+  constructor(props) {
+    super(props)
+    this.state = {
+      detail: {},               // 信标详情
+      modalVisible: false,       // 新增、编辑信标弹窗
+      viewMapVisible: false,     // 查看地图弹窗
+      mapUrl: '',
+      position: {},
+      bounds: undefined,
+    }
+    this.map = null
+    this.mapUrl = null
   }
 
   componentDidMount() {
@@ -59,9 +68,18 @@ export default class CompanyBeacon extends PureComponent {
       payload: { pageNum: 1, pageSize: defaultPageSize, companyId },
     })
     // 获取系统列表
-    /* this.fetchSystemConfiguration({
+    this.fetchSystemConfiguration({
       payload: { pageNum: 1, pageSize: 50, companyId },
-    }) */
+    })
+    // 获取当前单位单位地图
+    this.fetchMaps({
+      payload: { companyId, mapHierarchy: '1' },
+      callback: (list) => {
+        if (list && list.length > 0) {
+          this.mapUrl = JSON.parse(list[0].mapPhoto).url
+        }
+      },
+    })
   }
 
   // 获取信标列表
@@ -78,6 +96,15 @@ export default class CompanyBeacon extends PureComponent {
     const { dispatch } = this.props
     dispatch({
       type: 'personnelPosition/fetchSystemConfiguration',
+      ...actions,
+    })
+  }
+
+  // 获取地图列表
+  fetchMaps = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'personnelPosition/fetchMaps',
       ...actions,
     })
   }
@@ -99,6 +126,7 @@ export default class CompanyBeacon extends PureComponent {
   // 点击查询
   handleQuery = () => {
     const {
+      form: { getFieldsValue },
       match: { params: { id: companyId } },
       personnelPosition: {
         beaconManagement: {
@@ -106,17 +134,26 @@ export default class CompanyBeacon extends PureComponent {
         },
       },
     } = this.props
-    const { beaconCode, beaconStatus } = this.state
+    const { searchBeaconCode, searchBeaconStatus } = getFieldsValue()
     const payload = {
       pageNum: 1,
       pageSize,
       companyId,
-      beaconCode,
-      status: beaconStatus,
+      beaconCode: searchBeaconCode,
+      status: searchBeaconStatus,
     }
     this.fetchBeacons({
       payload,
     })
+  }
+
+  // 点击重置
+  handleReset = () => {
+    const {
+      form: { resetFields },
+    } = this.props
+    resetFields(['searchBeaconCode', 'searchBeaconStatus'])
+    this.handleQuery()
   }
 
   // 更新state,key为键值
@@ -129,15 +166,13 @@ export default class CompanyBeacon extends PureComponent {
   // 点击打开新增弹窗
   handleToAdd = () => {
     const {
-      dispatch,
       match: { params: { id: companyId } },
       form: { resetFields },
     } = this.props
-    // 获取当前企业的系统配置
-    dispatch({
-      type: 'personnelPosition/fetchSystemConfiguration',
+    // 获取当前单位的系统配置
+    /* this.fetchSystemConfiguration({
       payload: { pageNum: 1, pageSize: 100, companyId },
-    })
+    }) */
     this.setState({
       modalVisible: true,
       detail: {},
@@ -166,6 +201,13 @@ export default class CompanyBeacon extends PureComponent {
   // 验证信标坐标
   valiteArea = (rule, value = {}, callback) => {
     if (value.xarea && value.yarea && value.zarea) {
+      const isXErr = isNaN(value.xarea),
+        isYErr = isNaN(value.yarea),
+        isZErr = isNaN(value.zarea)
+      if (isXErr || isYErr || isZErr) {
+        callback('请输入数字')
+        return
+      }
       callback()
     } else callback('请输入信标坐标')
   }
@@ -190,21 +232,12 @@ export default class CompanyBeacon extends PureComponent {
   handleDelete = (id) => {
     const {
       dispatch,
-      match: { params: { id: companyId } },
-      personnelPosition: {
-        beaconManagement: {
-          beaconPagination: { pageSize },
-        },
-      },
     } = this.props
-    const { beaconStatus, beaconCode } = this.state
     dispatch({
       type: 'personnelPosition/deleteBeacon',
       payload: { id },
       success: () => {
-        this.fetchBeacons({
-          payload: { pageNum: 1, pageSize, companyId, status: beaconStatus, beaconCode },
-        })
+        this.handleQuery()
       },
       error: () => {
         message.error('删除失败')
@@ -218,22 +251,15 @@ export default class CompanyBeacon extends PureComponent {
       dispatch,
       form: { validateFields },
       match: { params: { id: companyId } },
-      personnelPosition: {
-        beaconManagement: {
-          beaconPagination: { pageSize },
-        },
-      },
     } = this.props
-    const { detail = {}, beaconCode, beaconStatus } = this.state
+    const { detail = {} } = this.state
     const success = () => {
       message.success(detail.id ? '编辑成功' : '新增成功')
       this.setState({
         modalVisible: false,
         detail: {},
       }, () => {
-        this.fetchBeacons({
-          payload: { pageNum: 1, pageSize, companyId, status: beaconStatus, beaconCode },
-        })
+        this.handleQuery()
       })
     }
     const error = (msg) => {
@@ -241,7 +267,7 @@ export default class CompanyBeacon extends PureComponent {
     }
     validateFields((err, values) => {
       if (err) return
-      const { area, ...others } = values
+      const { area, searchBeaconCode, searchBeaconStatus, ...others } = values
       const payload = { ...others, companyId }
       // 如果编辑
       if (detail.id) {
@@ -263,6 +289,26 @@ export default class CompanyBeacon extends PureComponent {
     })
   }
 
+  // 点击查看地图
+  handleViewMap = ({ xarea, yarea }) => {
+    const mapUrl = this.mapUrl
+    const position = { lat: +yarea, lng: +xarea }
+    this.setState({ viewMapVisible: true, position }, () => {
+      const image = new Image();
+      image.src = mapUrl;
+      image.onload = (e) => {
+        const { width, height } = e.path[0];
+        // const { clientWidth, clientHeight } = this.map
+        // 地图中心
+        const center = L.latLng(height * 0.5, width * 0.5)
+        const bounds = L.latLngBounds([0, 0], [height, width]);
+        this.setState({ bounds, mapUrl }, () => {
+          this.setState({ center })
+        })
+      }
+    })
+  }
+
   render() {
     const {
       loading,
@@ -274,7 +320,7 @@ export default class CompanyBeacon extends PureComponent {
         /* 信标管理 */
         beaconManagement: {
           beaconList,
-          beaconPagination: { pageNum, pageSize, total },
+          beaconPagination: { pageNum, pageSize, total = 0 },
         },
         /* 系统配置 */
         systemConfiguration: {
@@ -282,7 +328,7 @@ export default class CompanyBeacon extends PureComponent {
         },
       },
     } = this.props
-    const { detail = {}, modalVisible } = this.state
+    const { detail = {}, modalVisible, viewMapVisible, mapUrl, position, bounds } = this.state
 
     // 添加权限
     const addAuth = hasAuthority(addCode, permissionCodes)
@@ -313,7 +359,7 @@ export default class CompanyBeacon extends PureComponent {
         title: '状态',
         dataIndex: 'status',
         align: 'center',
-        render: (val) => (<span>{val ? !!val ? '在线' : '离线' : '暂无数据'}</span>),
+        render: (val) => (<span>{val ? +val === 1 ? '在线' : '离线' : '暂无数据'}</span>),
         width: 120,
       },
       {
@@ -333,11 +379,11 @@ export default class CompanyBeacon extends PureComponent {
               <Popconfirm title="确认要删除该信标吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
-            ) : (<a style={{ cursor: 'not-allowed' }}>删除</a>)}
+            ) : (<a style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</a>)}
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
-            <a>查看地图</a>
+            <AuthA code={viewMapCode} onClick={() => this.handleViewMap(row)}>查看地图</AuthA>
           </Fragment>
         ),
       },
@@ -347,22 +393,28 @@ export default class CompanyBeacon extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        content={`信标总数：${total}`}
       >
         {/* 上方筛选栏 */}
         <Card>
           <Row gutter={18}>
             <Col {...colWrapper} style={{ padding: '4px 8px' }}>
-              <Input placeholder="信标号码" onChange={(e) => this.changeState('beaconCode', e.target.value)} />
+              {getFieldDecorator('searchBeaconCode')(
+                <Input placeholder="信标编号" />
+              )}
             </Col>
             <Col {...colWrapper} style={{ padding: '4px 8px' }}>
-              <Select placeholder="信标状态" style={{ width: '100%' }} onChange={(value) => this.changeState('beaconStatus', value)}>
-                {statusInfo.map((item, i) => (
-                  <Option key={i} value={item.value}>{item.label}</Option>
-                ))}
-              </Select>
+              {getFieldDecorator('searchBeaconStatus')(
+                <Select placeholder="信标状态" style={{ width: '100%' }}>
+                  {statusInfo.map((item, i) => (
+                    <Option key={i} value={item.value}>{item.label}</Option>
+                  ))}
+                </Select>
+              )}
             </Col>
             <Col {...colWrapper} style={{ padding: '4px 8px' }}>
               <Button type="primary" style={{ marginRight: '10px' }} onClick={this.handleQuery}>查询</Button>
+              <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
               <Button type="primary" style={{ marginRight: '10px' }} onClick={this.handleToAdd} disabled={!addAuth}>新增</Button>
               {/* <Button style={{ marginRight: '10px' }} disabled={!deleteAuth}>删除</Button> */}
               {/* <Button type="primary" >导入</Button> */}
@@ -452,6 +504,29 @@ export default class CompanyBeacon extends PureComponent {
               )}
             </Form.Item>
           </Form>
+        </Modal>
+        {/* 查看地图弹窗 */}
+        <Modal
+          title="查看地图"
+          visible={viewMapVisible}
+          width={800}
+          onCancel={() => this.setState({ viewMapVisible: false, mapUrl: undefined, center: undefined, position: undefined, bounds: undefined })}
+          destroyOnClose
+          footer={null}
+        >
+          <Map
+            style={{ width: '100%', height: '600px' }}
+            center={position}
+            zoom={0}
+            crs={L.CRS.Simple}
+            attributionControl={false}
+            bounds={bounds}
+            maxBounds={bounds}
+            minZoom={-3}
+            maxZoom={8}>
+            {bounds && <ImageOverlay url={mapUrl} bounds={bounds} />}
+            {position && <Marker position={position}></Marker>}
+          </Map>
         </Modal>
       </PageHeaderLayout>
     )

@@ -272,7 +272,8 @@ export default class CompanyDetail extends PureComponent {
     // console.log(typeof companyIchnographyList);
 
     let fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
-    fireIchnographyList = fireIchnographyList ? fireIchnographyList : fireIchnographyList.dbUrl;
+    // fireIchnographyList 肯定为true
+    // fireIchnographyList = fireIchnographyList ? fireIchnographyList : fireIchnographyList.dbUrl;
 
     return (
       <Card title="基础信息" className={styles.card} bordered={false}>

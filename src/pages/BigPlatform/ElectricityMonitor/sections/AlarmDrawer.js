@@ -1,4 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
+import moment from 'moment';
 
 import styles from './AlarmDrawer.less';
 import {
@@ -28,19 +29,19 @@ const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
 const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
 
-const CARDS = [...Array(10).keys()].map(i => ({
-  companyId: i,
-  name: '无锡市新吴区机械制造有限公司',
-  address: '无锡市新吴区汉江路与龙江路交叉口5号',
-  safetyMan: '王长江',
-  safetyPhone: '13288888888',
-  common: Math.floor(Math.random() * 10),
-  alarm: Math.floor(Math.random() * 10),
-  warn: Math.floor(Math.random() * 10),
-  noAccess: Math.floor(Math.random() * 10),
-}));
+// const CARDS = [...Array(10).keys()].map(i => ({
+//   companyId: i,
+//   name: '无锡市新吴区机械制造有限公司',
+//   address: '无锡市新吴区汉江路与龙江路交叉口5号',
+//   safetyMan: '王长江',
+//   safetyPhone: '13288888888',
+//   common: Math.floor(Math.random() * 10),
+//   alarm: Math.floor(Math.random() * 10),
+//   warn: Math.floor(Math.random() * 10),
+//   noAccess: Math.floor(Math.random() * 10),
+// }));
 
-const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
+// const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
 
 export default class AlarmDrawer extends PureComponent {
   state={ graph: 0, selected: 0, searchValue: '' };
@@ -74,8 +75,8 @@ export default class AlarmDrawer extends PureComponent {
       visible,
       // handleSearch,
       data: {
-        list=CARDS,
-        graphList=GRAPH_LIST,
+        list=[],
+        graphList=[],
         alarmUnit: alarmNum=0,
         earlyWarningUnit: warnNum=0,
         normalUnit: commonNum=0,
@@ -83,7 +84,7 @@ export default class AlarmDrawer extends PureComponent {
     } = this.props;
     const { graph, selected, searchValue } = this.state;
 
-    const filteredList = list.filter(({ name }) => name.includes(searchValue)).filter(item => {
+    const filteredList = list.filter(({ equipment }) => equipment).filter(({ name }) => name.includes(searchValue)).filter(item => {
       switch(selected) {
         case 0:
           return true;
@@ -110,6 +111,8 @@ export default class AlarmDrawer extends PureComponent {
       <OvSelect cssType={1} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
     );
 
+    const handledGraphList = graphList.map(({ timeFlag, count }) => ({ name: moment(timeFlag).format('MM'), value: count }));
+
     const left = (
       <Fragment>
         <DrawerSection title="单位状态统计">
@@ -118,35 +121,57 @@ export default class AlarmDrawer extends PureComponent {
             percent={alarmPercent}
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
-            style={{ marginTop: 40, cursor: 'pointer' }}
+            style={{
+              marginTop: 40,
+              // cursor: 'pointer',
+            }}
             iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(2)}
+            // onClick={this.genProgressClick(2)}
           />
           <OvProgress
             title="预警单位"
             percent={warnPercent}
             quantity={warnNum}
             strokeColor="rgb(246,181,78)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitYellowIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(3)}
+            // onClick={this.genProgressClick(3)}
           />
           <OvProgress
             title="正常单位"
             percent={commonPercent}
             quantity={commonNum}
             strokeColor="rgb(0,251,252)"
-            style={{ cursor: 'pointer' }}
+            // style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
-            onClick={this.genProgressClick(1)}
+            // onClick={this.genProgressClick(1)}
           />
         </DrawerSection>
         <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>
-          {graph ? <ChartBar data={graphList} labelRotate={0} sameColor /> : <ChartLine data={graphList} labelRotate={0} />}
+          {graph ? <ChartBar data={handledGraphList} labelRotate={0} sameColor /> : <ChartLine data={handledGraphList} labelRotate={0} />}
         </DrawerSection>
       </Fragment>
     );
 
+    let cards = <p className={styles.empty}>暂无数据</p>;
+    if (filteredList.length)
+      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
+        <DrawerCard
+          key={companyId}
+          name={name || NO_DATA}
+          location={address || NO_DATA}
+          person={safetyMan || NO_DATA}
+          phone={safetyPhone || NO_DATA}
+          style={{ cursor: 'auto' }}
+          more={
+            <p className={styles.more}>
+              {[common, alarm, warn, noAccess].map((n, i) => (
+                <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+              ))}
+            </p>
+          }
+        />
+      ));
     const right = (
       <SearchBar
         // value={value}
@@ -154,23 +179,7 @@ export default class AlarmDrawer extends PureComponent {
         // onChange={this.handleChange}
         extra={select}
       >
-        {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
-          <DrawerCard
-            key={companyId}
-            name={name || NO_DATA}
-            location={address || NO_DATA}
-            person={safetyMan || NO_DATA}
-            phone={safetyPhone || NO_DATA}
-            style={{ cursor: 'auto' }}
-            more={
-              <p className={styles.more}>
-                {[common, alarm, warn, noAccess].map((n, i) => (
-                  <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-                ))}
-              </p>
-            }
-          />
-        ))}
+        {cards}
       </SearchBar>
     );
 

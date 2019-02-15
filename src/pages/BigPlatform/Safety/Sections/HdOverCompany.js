@@ -14,7 +14,6 @@ class HdOverCompany extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const {} = this.state;
     const {
       visible,
       dispatch,

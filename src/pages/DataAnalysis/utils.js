@@ -40,7 +40,7 @@ export function handleFormVals(vals) {
 
   // 储罐异常参数查询时，若没有参数，或者参数选择的是全部，即modelCode=0，将modelCode属性删除，默认全部
   // if (!vals.modelCode || vals.modelCode === '0') delete newVals.modelCode;
-  if (!vals.newModel || vals.newModel === '0') delete newVals.newModel;
+  if (!vals.classModel || vals.classModel === '0') delete newVals.classModel;
 
   // [newVals.startTime, newVals.endTime] = vals.date.map(m => +m);
   [newVals.startTime, newVals.endTime] = vals.date.map(m => m.format(DATE_FORMAT));
@@ -75,7 +75,8 @@ export function handleTableData(list = [], indexBase) {
       value: sts === -1 || realtimeData === null ? '-' : renderVal(realtimeData, u),
       limitValue: limitValue || limitValue === 0 ? renderVal(limitValue, u) : '-',
       // limitValue: <p style={{color: 'red'}}>limit</p>,
-      condition: sts === -1 ? '设备失联' : `${CONDITION_MAP[condition]}界限值`,
+      // condition: sts === -1 ? '设备失联' : `${CONDITION_MAP[condition]}界限值`,
+      condition: sts === -1 ? '设备失联' : `${condition}界限值`,
       parameter: sts === -1 || desc === null ? '-' : desc,
     };
   });
@@ -96,9 +97,9 @@ export function handleChemicalFormula(param = '') {
 
   const ms = param.match(/(\d+|\D+)/g);
 
-  const children = ms.map(c => {
+  const children = ms.map((c, i) => {
     const n = Number.parseInt(c, 10);
-    if (n) return <sub>{n}</sub>;
+    if (n) return <sub key={i}>{n}</sub>;
     return c;
   });
 

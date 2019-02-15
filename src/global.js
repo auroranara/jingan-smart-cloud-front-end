@@ -12,5 +12,5 @@ import Config from '../config/project.config';
 const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
 const config = new Config(PROJECT_ENV);
 global.PROJECT_CONFIG = config.toValue();
-// console.log('PROJECT_ENV', global.PROJECT_CONFIG);
+
 // console.log('window.publicPath', window.publicPath);

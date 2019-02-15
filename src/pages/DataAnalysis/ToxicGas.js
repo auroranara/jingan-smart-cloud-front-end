@@ -5,7 +5,7 @@ import { Button, Card, message, notification, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
-import InlineForm from '../BaseInfo/Company/InlineForm';
+// import InlineForm from '../BaseInfo/Company/InlineForm';
 import ToolBar from '@/components/ToolBar';
 import {
   TOXIC_GAS_TYPE as TYPE,
@@ -14,7 +14,7 @@ import {
   PAGE_SIZE,
   getFields,
 } from './constant';
-import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
+import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },

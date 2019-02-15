@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Col, Drawer, Row,Icon } from 'antd';
+import { Col, Drawer, Row, Icon } from 'antd';
 
 import styles from './index.less';
 
@@ -8,16 +8,17 @@ const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
   render() {
-    const { title, width, visible, onClose, left = null, right = null, id, style,closable, ...restProps } = this.props;
+    const { title, width, visible, onClose, left = null, right = null, id, style, closable, ...restProps } = this.props;
 
     // right不存在时，默认全部渲染left
     return (
       <Drawer
         visible={visible}
-        onClose={onClose}
         width={width || WIDTH}
         className={styles.drawer}
         style={{ padding: 0, height: '100%', ...style }}
+        title={null}
+        closable={false}
         // style={{ padding: '108px 0 0 1px' }}
         {...restProps}
       >
@@ -36,10 +37,10 @@ export default class DrawerContainer extends PureComponent {
               </Col>
             )}
           </div>
-          {closable&&(
+          {closable && (
             <div className={styles.closeTag}>
               <Icon onClick={onClose} type="close" />
-              </div>
+            </div>
           )}
         </div>
       </Drawer>

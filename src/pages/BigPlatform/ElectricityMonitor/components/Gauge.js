@@ -54,7 +54,7 @@ export default function Gauge(props) {
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>
         <p>
-          实时温度值：
+          实时参数值：
           <span style={{ color: isOutOfContact?undefined:COLORS[status] }}>
             {isOutOfContact || value === null || value === undefined ? '--' : `${value}${unit}`}
           </span>

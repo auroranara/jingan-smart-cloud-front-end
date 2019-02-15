@@ -3,11 +3,12 @@ module.exports = env => {
     // user
     {
       path: '/user',
-      component: '../layouts/UserLayout',
+      // component: '../layouts/UserLayout',
       routes: [
         { path: '/user', redirect: '/user/login' },
-        { path: '/user/login', component: '/User/Login' },
-        { path: '/user/redirect-login', component: '/User/RedirectLogin' },
+        { path: '/user/login', component: './User/NanXiaoLogin' },
+        { path: '/user/download', component: './User/NanXiaoDownload' },
+        { path: '/user/redirect-login', component: './User/RedirectLogin' },
         { path: '/user/register', component: './User/Register' },
         { path: '/user/register-result', component: './User/RegisterResult' },
         {
@@ -60,6 +61,36 @@ module.exports = env => {
         },
       ],
     },
+    // // 南消
+    // {
+    //   path: '/nanxiao',
+    //   routes: [
+    //     { path: '/nanxiao', redirect: '/nanxiao/user/login' },
+    //     {
+    //       path: '/nanxiao/user/login',
+    //       component: './User/NanXiaoLogin',
+    //     },
+    //     {
+    //       path: '/nanxiao/download',
+    //       component: './User/NanXiaoDownload',
+    //     },
+    //   ],
+    // },
+    // // 利民
+    // {
+    //   path: '/limin',
+    //   routes: [
+    //     { path: '/limin', redirect: '/limin/user/login' },
+    //     {
+    //       path: '/limin/user/login',
+    //       component: './User/LiMinLogin',
+    //     },
+    //     {
+    //       path: '/limin/download',
+    //       component: './User/LiMinDownload',
+    //     },
+    //   ],
+    // },
     //big platform
     {
       path: '/big-platform',
@@ -106,8 +137,12 @@ module.exports = env => {
           component: './BigPlatform/Position/History',
         },
         {
-          path: '/big-platform/electricity-monitor',
+          path: '/big-platform/electricity-monitor/:gridId',
           component: './BigPlatform/ElectricityMonitor',
+        },
+        {
+          path: '/big-platform/gas/:gridId',
+          component: './BigPlatform/Gas',
         },
       ],
     },
@@ -1421,32 +1456,265 @@ module.exports = env => {
                 },
               ],
             },
+            /* 建筑物信息 */
+            {
+              name: 'buildingsInfo',
+              path: '/personnel-position/buildings-info',
+              code: 'personnelPosition.buildingsInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/buildings-info',
+                  redirect: '/personnel-position/buildings-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.buildingsInfo.listView',
+                  path: '/personnel-position/buildings-info/list',
+                  component: './PersonnelPosition/BuildingsInfo/CompanyList',
+                },
+                {
+                  name: 'view',
+                  code: 'personnelPosition.buildingsInfo.view',
+                  path: '/personnel-position/buildings-info/detail/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+                },
+                {
+                  name: 'add',
+                  code: 'personnelPosition.buildingsInfo.add',
+                  path: '/personnel-position/buildings-info/add',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'personnelPosition.buildingsInfo.edit',
+                  path: '/personnel-position/buildings-info/edit/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'floorList',
+                  code: 'personnelPosition.buildingsInfo.floorListView',
+                  path: '/personnel-position/buildings-info/floor/list/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
+                },
+                {
+                  name: 'floorAdd',
+                  code: 'personnelPosition.buildingsInfo.floorAdd',
+                  path: '/personnel-position/buildings-info/floor/add',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorEdit',
+                  code: 'personnelPosition.buildingsInfo.floorEdit',
+                  path: '/personnel-position/buildings-info/floor/edit/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorDetail',
+                  code: 'personnelPosition.buildingsInfo.floorView',
+                  path: '/personnel-position/buildings-info/floor/detail/:id',
+                  component:
+                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
+                },
+              ],
+            },
             /* 信标管理 */
-            // {
-            //   name: 'beaconManagement',
-            //   path: '/personnel-position/beacon-management',
-            //   code: 'personnelPosition.beaconManagement',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       name: 'companies',
-            //       path: '/personnel-position/beacon-management',
-            //       redirect: '/personnel-position/beacon-management/companies',
-            //     },
-            //     {
-            //       name: 'companies',
-            //       code: 'personnelPosition.beaconManagement.listView',
-            //       path: '/personnel-position/beacon-management/companies',
-            //       component: './PersonnelPosition/BeaconManagement/index',
-            //     },
-            //     {
-            //       name: 'companyBeacon',
-            //       code: 'personnelPosition.beaconManagement.companyBeacon',
-            //       path: '/personnel-position/beacon-management/company/:id',
-            //       component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
-            //     },
-            //   ],
-            // },
+            {
+              name: 'beaconManagement',
+              path: '/personnel-position/beacon-management',
+              code: 'personnelPosition.beaconManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companies',
+                  path: '/personnel-position/beacon-management',
+                  redirect: '/personnel-position/beacon-management/companies',
+                },
+                {
+                  name: 'companies',
+                  code: 'personnelPosition.beaconManagement.listView',
+                  path: '/personnel-position/beacon-management/companies',
+                  component: './PersonnelPosition/BeaconManagement/index',
+                },
+                {
+                  name: 'companyBeacon',
+                  code: 'personnelPosition.beaconManagement.companyBeacon',
+                  path: '/personnel-position/beacon-management/company/:id',
+                  component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
+                },
+              ],
+            },
+            /* 标签管理 */
+            {
+              name: 'tagManagement',
+              path: '/personnel-position/tag-management',
+              code: 'personnelPosition.tagManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companyList',
+                  path: '/personnel-position/tag-management',
+                  redirect: '/personnel-position/tag-management/companies',
+                },
+                {
+                  name: 'companyList',
+                  path: '/personnel-position/tag-management/companies',
+                  code: 'personnelPosition.tagManagement.companyList',
+                  component: './PersonnelPosition/TagManagement/index',
+                },
+                {
+                  name: 'list',
+                  path: '/personnel-position/tag-management/company/:companyId',
+                  code: 'personnelPosition.tagManagement.listView',
+                  component: './PersonnelPosition/TagManagement/TagManagementList',
+                },
+                {
+                  name: 'add',
+                  path: '/personnel-position/tag-management/add/:companyId',
+                  code: 'personnelPosition.tagManagement.add',
+                  component: './PersonnelPosition/TagManagement/TagManagementAdd',
+                },
+                {
+                  name: 'edit',
+                  path: '/personnel-position/tag-management/edit/:companyId/:id',
+                  code: 'personnelPosition.tagManagement.edit',
+                  component: './PersonnelPosition/TagManagement/TagManagementAdd',
+                },
+                {
+                  name: 'detail',
+                  path: '/personnel-position/tag-management/detail',
+                  code: 'personnelPosition.tagManagement.view',
+                  component: './PersonnelPosition/TagManagement/TagManagementDetail',
+                },
+              ],
+            },
+            // 报警管理
+            {
+              name: 'alarmManagement',
+              path: '/personnel-position/alarm-management',
+              code: 'personnelPosition.alarmManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'index',
+                  path: '/personnel-position/alarm-management',
+                  redirect: '/personnel-position/alarm-management/index',
+                },
+                {
+                  name: 'index',
+                  path: '/personnel-position/alarm-management/index',
+                  code: 'personnelPosition.alarmManagement.companyListView',
+                  component: './PersonnelPosition/AlarmManagement/CompanyList',
+                },
+                {
+                  name: 'alarmList',
+                  path: '/personnel-position/alarm-management/list/:companyId',
+                  code: 'personnelPosition.alarmManagement.alarmListView',
+                  component: './PersonnelPosition/AlarmManagement/AlarmList',
+                },
+                {
+                  name: 'add',
+                  path: '/personnel-position/alarm-management/add/:companyId',
+                  code: 'personnelPosition.alarmManagement.add',
+                  component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
+                },
+                {
+                  name: 'edit',
+                  path: '/personnel-position/alarm-management/edit/:companyId/:alarmId',
+                  code: 'personnelPosition.alarmManagement.edit',
+                  component: './PersonnelPosition/AlarmManagement/AlarmAddOrEdit',
+                },
+                {
+                  name: 'detail',
+                  path: '/personnel-position/alarm-management/detail/:companyId/:alarmId',
+                  code: 'personnelPosition.alarmManagement.view',
+                  component: './PersonnelPosition/AlarmManagement/AlarmDetail',
+                },
+              ],
+            },
+            /* 地图管理 */
+            {
+              name: 'map',
+              path: '/personnel-position/map-management',
+              code: 'personnelPosition.mapManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/personnel-position/map-management',
+                  redirect: '/personnel-position/map-management/list',
+                },
+                {
+                  name: 'list',
+                  path: '/personnel-position/map-management/list',
+                  code: 'personnelPosition.mapManagement.listView',
+                  component: './PersonnelPosition/Map/MapManagementList',
+                },
+                {
+                  name: 'companyMap',
+                  path: '/personnel-position/map-management/company-map/:companyId',
+                  code: 'personnelPosition.mapManagement.companyMap',
+                  component: './PersonnelPosition/Map/CompanyMap',
+                },
+                {
+                  name: 'associateMap',
+                  path: '/personnel-position/map-management/associate-map/:id',
+                  code: 'personnelPosition.mapManagement.associateMap',
+                  component: './PersonnelPosition/Map/AssociateMap',
+                },
+                {
+                  name: 'add',
+                  path: '/personnel-position/map-management/company-map/:companyId/add',
+                  code: 'personnelPosition.mapManagement.add',
+                  component: './PersonnelPosition/Map/AddMap',
+                },
+                {
+                  name: 'edit',
+                  path: '/personnel-position/map-management/company-map/:companyId/edit/:id',
+                  code: 'personnelPosition.mapManagement.edit',
+                  component: './PersonnelPosition/Map/AddMap',
+                },
+              ],
+            },
+            /* 区域管理 */
+            {
+              name: 'sectionManagement',
+              path: '/personnel-position/section-management',
+              code: 'personnelPosition.sectionManagement',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'companies',
+                  path: '/personnel-position/section-management',
+                  redirect: '/personnel-position/section-management/companies',
+                },
+                {
+                  name: 'companies',
+                  code: 'personnelPosition.sectionManagement.companies',
+                  path: '/personnel-position/section-management/companies',
+                  component: './PersonnelPosition/SectionManagement/index',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.sectionManagement.listView',
+                  path: '/personnel-position/section-management/company/:id',
+                  component: './PersonnelPosition/SectionManagement/CompanySections',
+                },
+                {
+                  name: 'zoning',
+                  code: 'personnelPosition.sectionManagement.divide',
+                  path: '/personnel-position/section-management/company/:companyId/zoning/:id',
+                  component: './PersonnelPosition/SectionManagement/Zoning',
+                },
+              ],
+            },
           ],
         },
       ],

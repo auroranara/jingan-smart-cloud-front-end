@@ -1,7 +1,6 @@
-
 import {
   getMessages,
-  getCompanyId,
+  // getCompanyId,
   getUnitData,
   getDeviceStatusCount,
   getDevices,
@@ -9,7 +8,9 @@ import {
   getDeviceConfig,
   getDeviceHistoryData,
   getCameraList,
-} from '../services/electricityMonitor'
+  getWarningTrend,
+} from '../services/electricityMonitor';
+// import { getGrids } from '../services/bigPlatform/fireControl';
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -18,17 +19,17 @@ const getUnitSet = function(units) {
   const earlyWarningUnit = [];
   // 正常单位
   const normalUnit = [];
-  units.forEach((unit) => {
-    switch(+unit.status) {
+  units.forEach(unit => {
+    switch (+unit.status) {
       case 2:
-      alarmUnit.push(unit);
-      break;
+        alarmUnit.push(unit);
+        break;
       case 1:
-      earlyWarningUnit.push(unit);
-      break;
+        earlyWarningUnit.push(unit);
+        break;
       default:
-      normalUnit.push(unit);
-      break;
+        normalUnit.push(unit);
+        break;
     }
   });
   return {
@@ -88,59 +89,66 @@ export default {
     deviceHistoryData: [],
     // 摄像头列表
     cameraList: [],
+    warningTrendList: [], // 报警趋势列表(12个月)
+    warningTrendList1: [], // 报警趋势列表(6个月)
+    grids: [], // 网格点列表
   },
 
   effects: {
     // 获取告警信息列表
     *fetchMessages({ payload, callback }, { call, put }) {
-      const { code, data: { list } } = yield call(getMessages, payload)
+      const {
+        code,
+        data: { list },
+      } = yield call(getMessages, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { messages: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
-      }
-      else if (callback) {
+      } else if (callback) {
         callback();
       }
     },
     // 获取网格id
-    *fetchCompanyId({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getCompanyId, payload)
-      if (code === 200) {
-        if (callback) {
-          callback(data);
-        }
-      }
-      else if (callback) {
-        callback();
-      }
-    },
+    // *fetchCompanyId({ payload, callback }, { call, put }) {
+    //   const { code, data } = yield call(getCompanyId, payload)
+    //   if (code === 200) {
+    //     if (callback) {
+    //       callback(data);
+    //     }
+    //   }
+    //   else if (callback) {
+    //     callback();
+    //   }
+    // },
     // 获取单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
-      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics } } = yield call(getUnitData, payload)
+      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics, allCompanyInfoDtoList=[] } } = yield call(getUnitData, payload);
       const statisticsData = {
         // 管辖单位统计数
         jurisdictionalUnitStatistics,
         // 接入单位统计数
         accessUnitStatistics,
         // 接入率
-        accessRate: jurisdictionalUnitStatistics > 0 ? `${Math.round(accessUnitStatistics / jurisdictionalUnitStatistics * 100)}%` : '--',
+        accessRate:
+          jurisdictionalUnitStatistics > 0
+            ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
+            : '--',
       };
-      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId) };
+      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId), allCompanyList: allCompanyInfoDtoList };
       if (code === 200) {
         yield put({
           type: 'save',
           payload: pay,
-        })
+        });
         if (callback) {
           callback(pay);
         }
-      }
-      else if (callback) {
+      } else if (callback) {
         callback();
       }
     },
@@ -161,12 +169,15 @@ export default {
     },
     // 获取设备列表
     *fetchDevices({ payload, callback }, { call, put }) {
-      const { code, data: { list } } = yield call(getDevices, payload)
+      const {
+        code,
+        data: { list },
+      } = yield call(getDevices, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { devices: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
@@ -174,12 +185,12 @@ export default {
     },
     // 获取设备实时数据
     *fetchDeviceRealTimeData({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getDeviceRealTimeData, payload)
+      const { code, data } = yield call(getDeviceRealTimeData, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { deviceRealTimeData: data },
-        })
+        });
         if (callback) {
           callback(data);
         }
@@ -187,12 +198,15 @@ export default {
     },
     // 获取设备配置策略
     *fetchDeviceConfig({ payload, callback }, { call, put }) {
-      const { code, data: { list } } = yield call(getDeviceConfig, payload)
+      const {
+        code,
+        data: { list },
+      } = yield call(getDeviceConfig, payload);
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { deviceConfig: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
@@ -201,12 +215,12 @@ export default {
     // 获取设备历史数据
     *fetchDeviceHistoryData({ payload, callback }, { call, put }) {
       const { code, data } = yield call(getDeviceHistoryData, payload);
-      const list = data && data.list ? data.list: [];
+      const list = data && data.list ? data.list : [];
       if (code === 200) {
         yield put({
           type: 'save',
           payload: { deviceHistoryData: list },
-        })
+        });
         if (callback) {
           callback(list);
         }
@@ -217,6 +231,23 @@ export default {
       const { list } = response;
       yield put({ type: 'saveCameraList', payload: list });
     },
+    *fetchWarningTrend({ payload }, { call, put }) {
+      const response = yield call(getWarningTrend, payload);
+      const { code = 500, data } = response || {};
+      const list = data && Array.isArray(data.list) ? data.list : [];
+      list.sort((item, item1) => item.timeFlag - item1.timeFlag);
+      if (code === 200) {
+        yield put({ type: 'saveWarningTrend', payload: list });
+        yield put({ type: 'saveWarningTrend1', payload: list.slice(6, 12) });
+      }
+    },
+    // *fetchGrids({ payload, callback }, { call, put }) {
+    //   const response = yield call(getGrids);
+    //   if (Array.isArray(response)) {
+    //     yield put({ type: 'saveGrids', payload: response });
+    //     callback && callback(response);
+    //   }
+    // },
   },
   reducers: {
     // 保存
@@ -242,5 +273,14 @@ export default {
     saveCameraList(state, action) {
       return { ...state, cameraList: action.payload };
     },
+    saveWarningTrend(state, action) {
+      return { ...state, warningTrendList: action.payload };
+    },
+    saveWarningTrend1(state, action) {
+      return { ...state, warningTrendList1: action.payload };
+    },
+    // saveGrids(state, action) {
+    //   return { ...state, grids: action.payload };
+    // },
   },
-}
+};
