@@ -54,7 +54,7 @@ export default function Gauge(props) {
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>
         <p>
-          参数实时值：
+          实时数值：
           <span style={{ color: isOutOfContact?undefined:COLORS[status] }}>
             {isOutOfContact || value === null || value === undefined ? '--' : `${value}${unit}`}
           </span>
