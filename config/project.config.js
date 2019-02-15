@@ -111,7 +111,7 @@ const configs = {
       'http://data.jingan-china.cn/v2/login/nanxiao/3_blur.png',
     ],
     focus: [
-      'http://data.jingan-china.cn/v2/login/nx/1.png',
+      'http://data.jingan-china.cn/v2/login/nanxiao/1.png',
       'http://data.jingan-china.cn/v2/login/nanxiao/2.png',
       'http://data.jingan-china.cn/v2/login/nanxiao/3.png',
     ],
