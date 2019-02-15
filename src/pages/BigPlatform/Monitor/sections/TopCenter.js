@@ -425,7 +425,7 @@ export default class TopCenter extends PureComponent {
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
         {/* 监测指数 */}
         <Col span={12} style={{ height: '100%', padding: '0 6px' }}>
-          <div className={styles.sectionMain}>
+          <div className={styles.sectionMainMonitor}>
             <div className={styles.shadowIn}>
               <div className={styles.topTitle}>监测指数</div>
               <div className={styles.monitorContent}>

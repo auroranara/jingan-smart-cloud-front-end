@@ -1,6 +1,13 @@
 .list {
   display: flex;
-  margin-top: 7%;
+  height: 100%;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+
+  &:hover {
+    background-color: rgba(9, 103, 211, 0.2);
+    box-shadow: 0 0 2em rgba(9, 103, 211, 1) inset;
+  }
 
   .item {
     flex: 1;
@@ -17,6 +24,7 @@
       border-radius: 50%;
       color: #fff;
       background: transparent;
+      margin-bottom: 10%;
     }
 
     .name {
