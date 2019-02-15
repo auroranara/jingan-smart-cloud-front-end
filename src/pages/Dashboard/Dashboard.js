@@ -165,24 +165,29 @@ export default class Dashboard extends PureComponent {
     }
   }
 
+  generateAlign = (arr, i) => {
+    if (!arr || !Array.isArray(arr)) return
+    const length = arr.length
+    switch (length) {
+      case 1:
+        return 'center'
+      case 2:
+        return (i === 0 && 'flex-end') || (i === 1 && 'flex-start')
+      default:
+        return ['flex-end', 'center', 'flex-start'][i % 3]
+    }
+  }
+
   render() {
     const {
       user: { grids },
     } = this.props;
-    const {
-      safetyProduction,
-      fireService,
-      monitorService,
-      personnelPositioning,
-      electricityMonitor,
-      gasVisible,
-    } = this.state;
     electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${
       grids.length ? grids[0].value : 'index'
-    }`;
+      }`;
     gasItem.url = `${window.publicPath}#/big-platform/gas/${
       grids.length ? grids[0].value : 'index'
-    }`;
+      }`;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =
@@ -201,16 +206,12 @@ export default class Dashboard extends PureComponent {
     // if (monitorService) {
     //   imgWrapper.push(monitorItem)
     // }
+
+    // items中的参数必须与state中一一对应
     const items = [safeItem, fireItem, monitorItem, positionItem, electricItem, gasItem];
-    const imgWrapper = [
-      safetyProduction,
-      fireService,
-      monitorService,
-      personnelPositioning,
-      electricityMonitor,
-      gasVisible,
-    ].reduce((prev, next, i) => {
-      next && prev.push(items[i]);
+    // 如果state中不全是控制大屏显示的参数，则需要修改
+    const imgWrapper = Object.entries(this.state).reduce((prev, [, value], i) => {
+      value && prev.push(items[i]);
       return prev;
     }, []);
 
@@ -226,7 +227,7 @@ export default class Dashboard extends PureComponent {
       <Row
         gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }}
         className={styles.dashboardContainer}
-        style={{ minHeight: '80vh', height: imgWrapper.length > 0 ? 'auto' : '800px' }}
+        style={imgWrapper.length > 3 ? { height: 'auto' } : { height: '800px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
       >
         {imgWrapper.map((item, i) => (
           <Col
@@ -234,18 +235,10 @@ export default class Dashboard extends PureComponent {
             key={i.toString()}
             style={{
               display: 'flex',
-              justifyContent: ['flex-end', 'center', 'flex-start'][i % 3],
-              marginTop: '30px',
+              justifyContent: this.generateAlign(imgWrapper, i),
+              marginTop: '40px',
             }}
-            // style={imgWrapper && imgWrapper.length >= 4 ? hasFourItems : hasLittleItems}
           >
-            {/* <div
-          className={styles.imgItem}
-          onClick={() => goToBigScreen(item.url)}
-          style={{
-            backgroundImage: `url(${item.src})`,
-          }}
-        /> */}
             <div className={styles.section} onClick={() => goToBigScreen(item.url)}>
               <div className={styles.imgContainer}>
                 <img src={item.src} alt="" />

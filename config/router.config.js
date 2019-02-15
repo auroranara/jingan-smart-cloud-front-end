@@ -982,6 +982,12 @@ module.exports = env => {
                   name: 'edit',
                   component: './SystemManagement/PageAuthority/PageAuthorityAddOrEdit',
                 },
+                {
+                  path: '/system-management/page-authority/sort',
+                  code: 'systemManagement.pageAuthority.edit',
+                  name: 'sort',
+                  component: './SystemManagement/PageAuthority/PageAuthoritySort',
+                },
               ],
             },
           ],
