@@ -107,7 +107,7 @@ const smokeColumns = [
     dataIndex: 'status',
     align: 'center',
     render: val => {
-      return +val === -1 ? '失联' : +val === 0 ? '正常' : '异常';
+      return +val === -1 ? '失联' : +val === 0 ? '正常' : '火警';
     },
   },
   {
