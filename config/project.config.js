@@ -50,6 +50,8 @@ const configs = {
     region: '无锡市',
     projectKey: 'jiangxi_pro',
     projectShortName: '无锡晶安智慧云',
+    code,
+    layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
   },
   xuzhou: {
     region: '徐州市',
@@ -92,6 +94,7 @@ const configs = {
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
     code: changshuCode,
+    layer: 'http://data.jingan-china.cn/v2/login/changshu_download_layer.png',
   },
   eye: {},
   xuexiao: {
@@ -124,11 +127,13 @@ const configs = {
     projectKey: 'shanxi',
     projectShortName: '山西晶安智慧云',
     code: shanxiCode,
+    layer: 'http://data.jingan-china.cn/v2/login/shanxi_download_layer.png',
   },
   show: {
     region: '无锡',
     projectKey: 'yanshi_pro',
     projectShortName: '晶安智慧云',
+    layer: 'http://data.jingan-china.cn/v2/login/show_download_layer.png',
   },
 };
 
