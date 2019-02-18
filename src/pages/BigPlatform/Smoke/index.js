@@ -10,10 +10,10 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 // 接入单位统计
 import AccessUnitStatistics from './AccessUnitStatistics';
-// 异常单位统计
-import AbnormalUnitStatistics from './AbnormalUnitStatistics';
-// 待处理业务
-import ProcessingBusiness from './ProcessingBusiness';
+// 实时火警
+import RealTimeFire from './RealTimeFire';
+// 历史火警
+import HistoricalFire from './HistoricalFire';
 
 // 告警信息
 // import WarningMessage from './WarningMessage';
@@ -29,7 +29,7 @@ import styles from './index.less';
 import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
-import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
+import { genCardsInfo, genPendingCardsInfo } from './utils';
 import { GridSelect } from './components/Components';
 
 // websocket配置
@@ -186,8 +186,8 @@ export default class Gas extends PureComponent {
           smoke: {
             // messages,
             unitIds,
-            unitSet,
-            unitSet: { units },
+            // unitSet,
+            // unitSet: { units },
           },
         } = this.props;
         const { alarmIds } = this.state;
@@ -651,21 +651,20 @@ export default class Gas extends PureComponent {
           onClick={e => this.handleDrawerVisibleChange('unit')}
         />
         {/* 异常单位统计 */}
-        <AbnormalUnitStatistics
+        <RealTimeFire
           data={statisticsData}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
-        {/* 待处理业务 */}
+        {/* 历史火警单位统计 */}
         <NewSection
-          title="待处理业务"
+          title="历史火警单位统计"
           className={styles.left}
           style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%', cursor: 'pointer' }}
           onClick={e => this.handleDrawerVisibleChange('business')}
         >
-          <ProcessingBusiness allGasFire={allGasFire} />
+          <HistoricalFire allGasFire={allGasFire} />
         </NewSection>
-
         {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}

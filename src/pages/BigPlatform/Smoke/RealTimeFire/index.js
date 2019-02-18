@@ -3,7 +3,7 @@ import NewSection from '@/components/NewSection';
 // 引入样式文件
 import styles from './index.less';
 
-export default class AbnormalUnitStatistics extends PureComponent {
+export default class RealTimeFire extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
@@ -45,12 +45,12 @@ export default class AbnormalUnitStatistics extends PureComponent {
     } = this.props;
 
     return (
-      <NewSection title="异常单位统计" className={className} onClick={onClick}>
+      <NewSection title="实时火警单位统计" className={className} onClick={onClick}>
         <div className={styles.list}>
           {[
             {
               border: '2px solid #d93d49',
-              name: '报警单位',
+              name: '火警单位',
               value: unnormalCompanyNum,
             },
             {

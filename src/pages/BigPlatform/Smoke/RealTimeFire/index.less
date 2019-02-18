@@ -1,4 +1,4 @@
-.section {
+.list {
   display: flex;
   height: 100%;
   margin-left: 0.5em;
@@ -13,24 +13,25 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    margin-top: 8%;
+    align-items: center;
 
-    .line {
-      width: 45px;
-      height: 65px;
-      line-height: 65px;
-      margin-right: 3%;
-      margin-left: 3%;
+    .quantity {
+      width: 64px;
+      height: 64px;
+      line-height: 64px;
       text-align: center;
-      font-size: 30px;
+      font-size: 25px;
+      border-radius: 50%;
       color: #fff;
       background: transparent;
+      margin-bottom: 10%;
     }
 
     .name {
       font-size: 14px;
       position: absolute;
-      top: 72%;
+      top: 75%;
+      margin-left: 4px;
     }
   }
 }
