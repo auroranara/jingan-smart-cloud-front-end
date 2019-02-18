@@ -347,7 +347,7 @@ export default class Gas extends PureComponent {
         this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
       },
     });
-  }
+  };
 
   /**
    * 更新后
@@ -599,7 +599,7 @@ export default class Gas extends PureComponent {
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
       <BigPlatformLayout
-        title="晶安智慧燃气平台"
+        title="晶安智能烟感平台"
         extra={extra}
         style={{ backgroundImage: 'none' }}
         headerStyle={{
