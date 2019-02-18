@@ -4,8 +4,8 @@ import nanxiaoLogo from '../src/assets/logo_nanxiao.svg';
 import nanxiaoCode from '../src/assets/nanxiao_download_code.png';
 import liminLogo from '../src/assets/logo_limin.svg';
 import liminCode from '../src/assets/limin_download_code.jpg';
-import changshuCode from '../src/assets/changshu_download_code.jpg';
-import shanxiCode from '../src/assets/shanxi_download_code.jpg';
+import changshuCode from '../src/assets/changshu_download_code.png';
+import shanxiCode from '../src/assets/shanxi_download_code.png';
 const defaultConfig = {
   logo,
   code,
