@@ -4,6 +4,8 @@ import nanxiaoLogo from '../src/assets/logo_nanxiao.svg';
 import nanxiaoCode from '../src/assets/nanxiao_download_code.png';
 import liminLogo from '../src/assets/logo_limin.svg';
 import liminCode from '../src/assets/limin_download_code.jpg';
+import changshuCode from '../src/assets/changshu_download_code.jpg';
+import shanxiCode from '../src/assets/shanxi_download_code.jpg';
 const defaultConfig = {
   logo,
   code,
@@ -89,6 +91,7 @@ const configs = {
     projectShortName: '常熟晶安智慧云',
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
+    code: changshuCode,
   },
   eye: {},
   xuexiao: {
@@ -120,6 +123,7 @@ const configs = {
     region: '山西',
     projectKey: 'shanxi',
     projectShortName: '山西晶安智慧云',
+    code: shanxiCode,
   },
   show: {
     region: '无锡',
