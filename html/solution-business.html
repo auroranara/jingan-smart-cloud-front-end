@@ -36,7 +36,7 @@
       width: 80%;
       height: 80%;
       position: absolute;
-      top: 11%;
+      /* top: 11%; */
       left: 10%;
       display: flex;
       flex-direction: column;
@@ -116,11 +116,37 @@
       background: url("http://data.jingan-china.cn/v2/solution-business/smoke.png") no-repeat center center;
       background-size: 100% 100%;
     }
+
+    .title {
+      display: flex;
+      width: 100%;
+      height: 11%;
+      font-size: 56px;
+      font-weight: 500;
+      letter-spacing: 30px;
+      margin-left: 15px;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .divider {
+      background: -webkit-linear-gradient(left, transparent , #1475d9, transparent); /* Safari 5.1 - 6.0 */
+      background: -o-linear-gradient(right, transparent , #1475d9, transparent); /* Opera 11.1 - 12.0 */
+      background: -moz-linear-gradient(right, transparent , #1475d9, transparent); /* Firefox 3.6 - 15 */
+      background: linear-gradient(to right, transparent , #1475d9, transparent); /* 标准的语法 */
+
+      width: 100%;
+      height: 2px;
+      margin-bottom: 25px;
+    }
   </style>
 </head>
 
 <body>
   <div id="root">
+    <div class="title">晶安智慧云</div>
+    <div class="divider"></div>
     <div class="main">
       <div class="top">
         <div class="item safe&fire" id="integration">

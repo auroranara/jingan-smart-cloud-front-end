@@ -17,7 +17,9 @@ class CommunityCom extends PureComponent {
   componentWillUnmount() {}
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
-    return JSON.stringify(this.props.countGridCompany) !== JSON.stringify(prevProps.countGridCompany);
+    return (
+      JSON.stringify(this.props.countGridCompany) !== JSON.stringify(prevProps.countGridCompany)
+    );
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -29,7 +31,7 @@ class CommunityCom extends PureComponent {
   handleInit = () => {
     const { countGridCompany = [] } = this.props;
     if (countGridCompany.length > 4) this.handleScroll();
-  }
+  };
 
   handleScroll = () => {
     const speed = 50;
@@ -75,6 +77,8 @@ class CommunityCom extends PureComponent {
     });
     xdata.reverse();
     ydata.reverse();
+    const colors = ['#e86767', '#f6b54e', '#edeb8a', '#00a8ff', '#00a8ff'];
+    colors.reverse();
     const option = {
       tooltip: {
         trigger: 'axis',
@@ -88,7 +92,7 @@ class CommunityCom extends PureComponent {
         backgroundColor: 'rgba(46,78,111,0.5)',
         padding: [5, 15, 5, 15],
       },
-      color: ['#00a8ff'],
+      // color: ['#e86767', '#f6b54e', '#edeb8a', '#00a8ff', '#00a8ff'],
       grid: {
         top: '10px',
         left: '25px',
@@ -147,7 +151,9 @@ class CommunityCom extends PureComponent {
           name: '接入单位数',
           type: 'bar',
           barWidth: '36%',
-          data: ydata,
+          data: ydata.map((data, index) => {
+            return { value: data, itemStyle: { color: colors[index] } };
+          }),
           label: {
             show: true,
             position: 'right',
