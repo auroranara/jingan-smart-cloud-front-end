@@ -144,6 +144,10 @@ module.exports = env => {
           path: '/big-platform/gas/:gridId',
           component: './BigPlatform/Gas',
         },
+        {
+          path: '/big-platform/smoke',
+          component: './BigPlatform/Smoke',
+        },
       ],
     },
 
