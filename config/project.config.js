@@ -46,7 +46,7 @@ const configs = {
   default: {
     unitName: '无锡晶安智慧科技有限公司',
   },
-  jiangxi: {
+  wuxi: {
     region: '无锡市',
     projectKey: 'jiangxi_pro',
     projectShortName: '无锡晶安智慧云',
