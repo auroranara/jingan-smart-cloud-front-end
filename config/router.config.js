@@ -1552,7 +1552,7 @@ module.exports = env => {
                 {
                   name: 'companyBeacon',
                   code: 'personnelPosition.beaconManagement.companyBeacon',
-                  path: '/personnel-position/beacon-management/company/:id',
+                  path: '/personnel-position/beacon-management/company/:companyId',
                   component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
                 },
               ],
