@@ -1,38 +1,30 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import moment from 'moment';
+// import moment from 'moment';
 
 // import styles from './index.less';
-const months = Array(6)
-  .fill(true)
-  .map((_, index) => {
-    return (
-      moment()
-        .month(index - 5)
-        .format('M') + '月'
-    );
-  });
+// const months = Array(6)
+//   .fill(true)
+//   .map((_, index) => {
+//     return (
+//       moment()
+//         .month(index - 5)
+//         .format('M') + '月'
+//     );
+//   });
 
-export default class AlarmChart extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
+export default class EquipmentStatistics extends PureComponent {
   getChartOption() {
-    const { data } = this.props;
+    // const { data = [], xLabels = [] } = this.props;
     const option = {
       color: ['#00ffff'],
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          type: 'line',
-          lineStyle: {
-            color: '#405f85',
+          type: 'shadow',
+          shadowStyle: {
+            color: 'rgba(46,78,111,0.5)',
+            opacity: 0.6,
           },
         },
         backgroundColor: 'rgba(46,78,111,0.5)',
@@ -53,14 +45,17 @@ export default class AlarmChart extends PureComponent {
       //   },
       // },
       legend: {
-        data: ['报警次数'],
+        data: ['设备数量', '故障数量'],
         textStyle: {
           color: '#fff',
         },
+        orient: 'horizontal',
+        left: 'right',
+        icon: 'rect',
       },
       xAxis: {
         type: 'category',
-        axisTick: { show: true, inside: true },
+        axisTick: { show: true },
         axisLine: {
           show: true,
           lineStyle: {
@@ -72,7 +67,20 @@ export default class AlarmChart extends PureComponent {
           color: '#fff',
           fontSize: 14,
         },
-        data: months,
+        data: [
+          '1月',
+          '2月',
+          '3月',
+          '4月',
+          '5月',
+          '6月',
+          '7月',
+          '8月',
+          '9月',
+          '10月',
+          '11月',
+          '12月',
+        ],
       },
       yAxis: [
         {
@@ -103,10 +111,18 @@ export default class AlarmChart extends PureComponent {
       ],
       series: [
         {
-          name: '报警次数',
-          type: 'line',
-          symbol: 'circle',
-          data: [26, 18, 12, 34, 17, 24],
+          name: '设备数量',
+          color: 'rgb(4, 253, 255)',
+          type: 'bar',
+          barWidth: 5,
+          data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 14, 13, 48.7, 18.8, 6.0, 2.3],
+        },
+        {
+          name: '故障数量',
+          type: 'bar',
+          color: 'rgb(217, 61, 73)',
+          barWidth: 5,
+          data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 11, 12, 48.7, 18.8, 6.0, 2.3],
         },
       ],
     };

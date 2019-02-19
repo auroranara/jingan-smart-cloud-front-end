@@ -14,6 +14,8 @@ import AccessUnitStatistics from './AccessUnitStatistics';
 import RealTimeFire from './RealTimeFire';
 // 历史火警
 import HistoricalFire from './HistoricalFire';
+// 设备故障统计
+import EquipmentStatistics from './EquipmentStatistics';
 
 // 告警信息
 // import WarningMessage from './WarningMessage';
@@ -660,10 +662,17 @@ export default class Gas extends PureComponent {
         <NewSection
           title="历史火警单位统计"
           className={styles.left}
-          style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%', cursor: 'pointer' }}
+          style={{ top: 'calc(41.184444% + 92px)', height: '18%', cursor: 'pointer' }}
           onClick={e => this.handleDrawerVisibleChange('business')}
         >
           <HistoricalFire allGasFire={allGasFire} />
+        </NewSection>
+        <NewSection
+          title="设备故障统计"
+          className={styles.left}
+          style={{ top: 'calc(60.184444% + 92px)', height: '25%', cursor: 'pointer' }}
+        >
+          <EquipmentStatistics allGasFire={allGasFire} />
         </NewSection>
         {/* extra info */}
         <SettingModal

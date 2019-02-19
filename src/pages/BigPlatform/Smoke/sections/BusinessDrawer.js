@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { DatePicker } from 'antd';
 import moment from 'moment';
 
-import styles from './AlarmDrawer.less';
+import styles from './BusinessDrawer.less';
 import {
   DrawerContainer,
   DrawerSection,
@@ -28,11 +28,12 @@ export default class BusinessDrawer extends PureComponent {
     const left = (
       <Fragment>
         <RangePicker
-          format="YYYY-MM-DD HH:mm:ss"
+          format="YYYY-MM-DD"
+          className={styles.rangePicker}
           placeholder={['开始时间', '结束时间']}
-          showTime={{
-            defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-          }}
+          // showTime={{
+          //   defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+          // }}
         />
         <DrawerSection title="处理单位统计" style={{ marginBottom: 50 }}>
           <ChartRing data={graphList} />
