@@ -7,6 +7,7 @@ import liminCode from '../src/assets/limin_download_code.jpg';
 import changshuCode from '../src/assets/changshu_download_code.png';
 import shanxiCode from '../src/assets/shanxi_download_code.png';
 import yanshiCode from '../src/assets/yanshi_download_code.png';
+import xiaoyuanCode from '../src/assets/xiaoyuan_download_code.png';
 const defaultConfig = {
   logo,
   code,
@@ -110,6 +111,7 @@ const configs = {
     projectKey: 'v2_test',
     projectShortName: '校园智慧安全云',
     servicePhone: '400-928-5656',
+    code: xiaoyuanCode,
     ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/campus/official_version/CAMPUSInterSafe.plist&ran=",
     android: "http://58.215.178.100:12082/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
