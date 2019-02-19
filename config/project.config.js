@@ -111,6 +111,7 @@ const configs = {
     projectKey: 'v2_test',
     projectShortName: '校园智慧安全云',
     servicePhone: '400-928-5656',
+    layer: 'http://data.jingan-china.cn/v2/login/school_download_layer.png',
     code: xiaoyuanCode,
     ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/campus/official_version/CAMPUSInterSafe.plist&ran=",
     android: "http://58.215.178.100:12082/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
