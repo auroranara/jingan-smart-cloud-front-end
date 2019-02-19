@@ -19,7 +19,7 @@
     "build:xuzhou": "cross-env PROJECT_ENV=xuzhou ESLINT=none umi build",
     "build:changshu": "cross-env PROJECT_ENV=changshu ESLINT=none umi build",
     "build:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi build",
-    "build:xuexiao": "cross-env PROJECT_ENV=xuexiao ESLINT=none umi build",
+    "build:xiaoyuan": "cross-env PROJECT_ENV=xiaoyuan ESLINT=none umi build",
     "build:nanxiao": "cross-env PROJECT_ENV=nanxiao ESLINT=none umi build",
     "build:shanxi": "cross-env PROJECT_ENV=shanxi ESLINT=none umi build",
     "build:show": "cross-env PROJECT_ENV=show ESLINT=none umi build",

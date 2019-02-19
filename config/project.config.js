@@ -107,7 +107,7 @@ const configs = {
     android: "http://58.215.178.100:12080/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   eye: {},
-  xuexiao: {
+  xiaoyuan: {
     projectKey: 'v2_test',
     projectShortName: '校园智慧安全云',
     servicePhone: '400-928-5656',
